@@ -835,69 +835,70 @@ package com.monsters.chat
       
       private function showChatMessage(param1:Channel, param2:String, param3:String) : void
       {
-         var _loc5_:* = null;
-         var _loc6_:String = null;
-         var _loc7_:* = null;
+         var _loc4_:* = null;
+         var _loc5_:String = null;
+         var _loc6_:* = null;
+         var _loc7_:String = null;
          if(param3 == "")
-         {
-            return;
-         }
-         var _loc4_:String = this.fetchDisplayName(param2);
-         if(_loc4_ == null)
          {
             return;
          }
          param3 = ProfanityFilter.filterMessage(param3);
          if(param2 == null)
          {
-            _loc5_ = "<i>" + param3 + "</i>";
-            _loc6_ = "System";
+            _loc4_ = "<i>" + param3 + "</i>";
+            _loc5_ = "System";
          }
          else
          {
+            _loc7_ = this.fetchDisplayName(param2);
+            if(_loc7_ == null)
+            {
+               return;
+            }
             if(param2 == "Administrator")
             {
-               _loc5_ = "<b><font color=\"#FF0000\">Admin: </font></b>";
-               _loc7_ = "<b><font color=\"#FF0000\">Admin: </font></b>";
-               _loc6_ = "Administrator";
+               _loc4_ = "<b><font color=\"#FF0000\">Admin: </font></b>";
+               _loc6_ = "<b><font color=\"#FF0000\">Admin: </font></b>";
+               _loc5_ = "Administrator";
             }
             else if(param2 == "Moderator")
             {
-               _loc5_ = "<b><font color=\"#FF0000\">Mod: </font></b>";
-               _loc7_ = "<b><font color=\"#FF0000\">Mod: </font></b>";
-               _loc6_ = "Moderator";
+               _loc4_ = "<b><font color=\"#FF0000\">Mod: </font></b>";
+               _loc6_ = "<b><font color=\"#FF0000\">Mod: </font></b>";
+               _loc5_ = "Moderator";
             }
             else if(param1.Type == "private")
             {
-               _loc5_ = "<b><font color=\"#076bbf\">";
-               _loc7_ = "<b><font color=\"#076bbf\">";
+               _loc4_ = "<b><font color=\"#076bbf\">";
+               _loc6_ = "<b><font color=\"#076bbf\">";
                if(_userRecord.Name == param2)
                {
-                  _loc5_ += "to " + _loc4_ + ": ";
-                  _loc7_ += "to " + _loc4_ + ": ";
+                  _loc4_ += "to " + _loc7_ + ": ";
+                  _loc6_ += "to " + _loc7_ + ": ";
                }
                else
                {
-                  _loc5_ += _loc4_ + ": ";
-                  _loc7_ += _loc4_ + ": ";
+                  _loc4_ += _loc7_ + ": ";
+                  _loc6_ += _loc7_ + ": ";
                }
-               _loc5_ += "</font></b>";
-               _loc7_ += "</font></b>";
-               _loc6_ = "Private";
+               _loc4_ += "</font></b>";
+               _loc6_ += "</font></b>";
+               _loc5_ = "Private";
             }
             else
             {
-               _loc5_ = "<font color=\"#000000\">";
-               _loc7_ = "<font color=\"#000000\">";
-               _loc5_ += "<b>" + _loc4_ + ":</b> ";
-               _loc7_ += "<b>" + _loc4_ + ":</b> ";
-               _loc5_ += "</font>";
-               _loc7_ += "</font>";
-               _loc6_ = "Default";
+               _loc4_ = "<font color=\"#000000\">";
+               _loc6_ = "<font color=\"#000000\">";
+               _loc4_ += "<b>" + _loc7_ + ":</b> ";
+               _loc6_ += "<b>" + _loc7_ + ":</b> ";
+               _loc4_ += "</font>";
+               _loc6_ += "</font>";
+               _loc5_ = "Default";
             }
-            _loc5_ += param3;
+            _loc4_ += param3;
          }
-         this.chatBox.push(_loc5_,_loc7_,param2,_loc6_);
+         this.chatBox.push(_loc4_,_loc6_,param2,_loc5_);
       }
       
       public function ignoreUser(param1:String = null, param2:String = null) : void

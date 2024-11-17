@@ -52,6 +52,10 @@ package
             GLOBAL.Message("You have no Champions!");
             return;
          }
+         if(Boolean(BASE._guardianData) && CREATURES._guardian == null)
+         {
+            GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get());
+         }
          if(!_open)
          {
             _open = true;

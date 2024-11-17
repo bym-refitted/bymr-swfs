@@ -1744,7 +1744,7 @@ package
             BASE._guardianData.t = int(this._creatureID.substr(1,1));
             BASE._guardianData.fb = new SecNum(this._foodBonus.Get());
          }
-         if(!param1 || GLOBAL._mode == "build")
+         if(!param1 && GLOBAL._mode != "build" || param1 && GLOBAL._mode == "build")
          {
             GLOBAL._playerGuardianData = {};
             GLOBAL._playerGuardianData.hp = new SecNum(this._health.Get());

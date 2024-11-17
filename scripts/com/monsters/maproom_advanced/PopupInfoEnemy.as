@@ -878,6 +878,10 @@ package com.monsters.maproom_advanced
          _popupmc = new bubblepopupRight();
          _popupmc.Setup(param1,param2,param3,150);
          _popupmc.Nudge("left");
+         if(_popupmc.mcArrow.x < _popupmc.mcBG.x + _popupmc.mcBG.width - 5)
+         {
+            _popupmc.mcArrow.x = _popupmc.mcBG.x + _popupmc.mcBG.width - 5;
+         }
          _popupdo = this.parent.addChild(_popupmc);
       }
       

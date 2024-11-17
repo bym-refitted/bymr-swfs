@@ -1949,6 +1949,7 @@ package
          var popupWhatsNew:MovieClip = null;
          var display:Boolean = false;
          var newWhatsnewid:int = 0;
+         var hasBigGulp:Boolean = false;
          var fbPromoTimer:Number = NaN;
          var fbPromoPopup:MovieClip = null;
          var helper:int = 0;
@@ -2166,38 +2167,53 @@ package
             {
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && !GLOBAL._displayedPromoNew)
                {
-                  fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
-                  if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
+                  hasBigGulp = Boolean(_buildingsStored["b120"]);
+                  if(!hasBigGulp)
                   {
-                     MoreInfo711 = function(param1:MouseEvent):void
+                     for each(building in _buildingsAll)
                      {
-                        GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,[63,1]);
-                        POPUPS.Next();
-                     };
-                     if(GLOBAL._displayedPromoNew)
-                     {
-                        return;
+                        if(building._type == 2 * 60)
+                        {
+                           hasBigGulp = true;
+                           break;
+                        }
                      }
-                     fbPromoPopup = new FBPROMO_711_CLIP();
-                     fbPromoPopup.bAction3.buttonMode = true;
-                     fbPromoPopup.bAction3.useHandCursor = true;
-                     fbPromoPopup.bAction3.mouseChildren = false;
-                     fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
-                     fbPromoPopup.bAction3.bg.visible = false;
-                     fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                     fbPromoPopup.bAction4.buttonMode = true;
-                     fbPromoPopup.bAction4.useHandCursor = true;
-                     fbPromoPopup.bAction4.mouseChildren = false;
-                     fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
-                     fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                     fbPromoPopup.bAction4.bg.visible = false;
-                     fbPromoPopup.bInfo.useHandCursor = true;
-                     fbPromoPopup.bInfo.buttonMode = true;
-                     fbPromoPopup.bInfo.mouseChildren = false;
-                     fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                     POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
-                     GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
-                     GLOBAL._displayedPromoNew = true;
+                  }
+                  if(!hasBigGulp)
+                  {
+                     fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
+                     if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
+                     {
+                        MoreInfo711 = function(param1:MouseEvent):void
+                        {
+                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,[63,1]);
+                           POPUPS.Next();
+                        };
+                        if(GLOBAL._displayedPromoNew)
+                        {
+                           return;
+                        }
+                        fbPromoPopup = new FBPROMO_711_CLIP();
+                        fbPromoPopup.bAction3.buttonMode = true;
+                        fbPromoPopup.bAction3.useHandCursor = true;
+                        fbPromoPopup.bAction3.mouseChildren = false;
+                        fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
+                        fbPromoPopup.bAction3.bg.visible = false;
+                        fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        fbPromoPopup.bAction4.buttonMode = true;
+                        fbPromoPopup.bAction4.useHandCursor = true;
+                        fbPromoPopup.bAction4.mouseChildren = false;
+                        fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
+                        fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        fbPromoPopup.bAction4.bg.visible = false;
+                        fbPromoPopup.bInfo.useHandCursor = true;
+                        fbPromoPopup.bInfo.buttonMode = true;
+                        fbPromoPopup.bInfo.mouseChildren = false;
+                        fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
+                        GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                        GLOBAL._displayedPromoNew = true;
+                     }
                   }
                }
             }
@@ -4726,12 +4742,12 @@ package
       
       public static function BaseLevel() : Object
       {
-         var StreamPost:Function;
          var points:Number = NaN;
          var lvl:Object = null;
          var levels:Array = null;
          var i:int = 0;
          var mc:popup_levelup = null;
+         var StreamPost:Function = null;
          CalcBaseValue();
          points = _basePoints + Number(_baseValue);
          lvl = {

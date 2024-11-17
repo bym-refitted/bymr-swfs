@@ -1568,7 +1568,7 @@ package
          {
             if(this._health.Get() > this._maxHealth)
             {
-               LOGGER.Log("hak","Regular monster health exceeds maximum");
+               LOGGER.Log("err","Regular monster health exceeds maximum");
                GLOBAL.ErrorMessage("CREEP hack 1");
                return false;
             }
@@ -1576,13 +1576,13 @@ package
             {
                if(this._secureSpeedMult.Get() != int(this._speedMult * 100))
                {
-                  LOGGER.Log("hak","Regular monster speed buff incorrect");
+                  LOGGER.Log("err","Regular monster speed buff incorrect");
                   GLOBAL.ErrorMessage("CREEP hack 4");
                   return false;
                }
                if(this._secureDamageMult.Get() != int(this._damageMult * 100))
                {
-                  LOGGER.Log("hak","Regular monster damage buff incorrect");
+                  LOGGER.Log("err","Regular monster damage buff incorrect");
                   GLOBAL.ErrorMessage("CREEP hack 5");
                   return false;
                }
