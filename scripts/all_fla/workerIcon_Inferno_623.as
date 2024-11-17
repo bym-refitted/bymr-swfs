@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol291")]
-   public dynamic class MapRoomCellNameBar_barbar_351 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1941")]
+   public dynamic class workerIcon_Inferno_623 extends MovieClip
    {
-      public function MapRoomCellNameBar_barbar_351()
+      public function workerIcon_Inferno_623()
       {
          super();
          addFrameScript(0,this.frame1);

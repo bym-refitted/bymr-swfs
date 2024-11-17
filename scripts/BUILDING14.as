@@ -7,8 +7,6 @@ package
    
    public class BUILDING14 extends BSTORAGE
    {
-      public static const UNDERHALL_LEVEL:String = "underhalLevel";
-      
       public function BUILDING14()
       {
          super();
@@ -176,31 +174,12 @@ package
          LOGGER.KongStat([2,_lvl.Get()]);
          ACHIEVEMENTS.Check("thlevel",_lvl.Get());
          super.Upgraded();
-         this.UnlockQuakeTower();
-      }
-      
-      private function UnlockQuakeTower() : void
-      {
-         var _loc1_:int = 0;
-         if(GLOBAL._mode == "build")
-         {
-            _loc1_ = _lvl.Get();
-            if(BASE.isInferno())
-            {
-               GLOBAL.StatSet(UNDERHALL_LEVEL,_loc1_);
-            }
-            else if(_loc1_ >= 5)
-            {
-               GLOBAL._buildingProps[INFERNOQUAKETOWER.TYPE - 1].block = false;
-            }
-         }
       }
       
       override public function Setup(param1:Object) : *
       {
          super.Setup(param1);
          GLOBAL._bTownhall = this;
-         this.UnlockQuakeTower();
          ACHIEVEMENTS.Check("thlevel",_lvl.Get());
       }
    }

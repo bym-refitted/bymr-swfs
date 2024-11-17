@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2094")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2066")]
    public dynamic class QUESTGROUP extends MovieClip
    {
       public var tLabel:TextField;

@@ -21,16 +21,16 @@ package
          var _loc6_:Number = NaN;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
-         var _loc1_:Array = ["8ae3862588f852a6f4ddc1f517acc28a","280d2443b3ac8d0f0ab08b7c796b0dfc","5146fa64031909f9282acc1b2f8e2388"];
+         var _loc1_:Array = ["e62d46a32543629641c35d4358f4865f","280d2443b3ac8d0f0ab08b7c796b0dfc","b62c46b38d18036ec147390edba0f996"];
          if(GLOBAL._local && !checkedAllYards)
          {
             checkedAllYards = true;
-            GLOBAL._buildingProps = YARD_PROPS._yardProps;
+            GLOBAL._buildingProps = GLOBAL._yardProps;
             if(GLOBAL.Check() != _loc1_[0])
             {
                GLOBAL.ErrorMessage("Fix the main yard checker, it\'s wrong",GLOBAL.ERROR_ORANGE_BOX_ONLY);
             }
-            GLOBAL._buildingProps = OUTPOST_YARD_PROPS._outpostProps;
+            GLOBAL._buildingProps = GLOBAL._outpostProps;
             if(GLOBAL.Check() != _loc1_[1])
             {
                GLOBAL.ErrorMessage("Fix the outpost checker, it\'s wrong",GLOBAL.ERROR_ORANGE_BOX_ONLY);
@@ -46,11 +46,11 @@ package
                   GLOBAL._buildingProps = INFERNOYARDPROPS._infernoYardProps;
                   break;
                case BASE.OUTPOST:
-                  GLOBAL._buildingProps = OUTPOST_YARD_PROPS._outpostProps;
+                  GLOBAL._buildingProps = GLOBAL._outpostProps;
                   break;
                case BASE.MAIN_YARD:
                default:
-                  GLOBAL._buildingProps = YARD_PROPS._yardProps;
+                  GLOBAL._buildingProps = GLOBAL._yardProps;
             }
          }
          var _loc2_:String = GLOBAL.Check();
@@ -70,7 +70,7 @@ package
          {
             if(BASE._yardType >= BASE.INFERNO_YARD)
             {
-               if(QUESTS.CheckB() != "3c3ba914913cded32255af497510ff93")
+               if(QUESTS.CheckB() != "f824e2629f24188985fbeb687bc55fc2")
                {
                   LOGGER.Log("err","CHECKER.Quests FB " + QUESTS.CheckB());
                   GLOBAL.ErrorMessage("CHECKER.Quests FB");

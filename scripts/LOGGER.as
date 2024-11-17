@@ -649,12 +649,6 @@ package
                      }
                      st2 = yardType;
                   }
-                  else if(data[0] == 89)
-                  {
-                     st1 = "attackpref";
-                     st2 = "inferno";
-                     name = data[1];
-                  }
                }
             }
             if(st1)

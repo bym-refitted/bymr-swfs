@@ -8,7 +8,6 @@ package
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.net.*;
-   import flash.system.Capabilities;
    
    public class LOGIN
    {
@@ -218,20 +217,6 @@ package
          {
             BASE._yardType = BASE.MAIN_YARD;
             BASE.Load();
-         }
-      }
-      
-      private static function logFlashCapabilities() : void
-      {
-         var _loc1_:Object = null;
-         if(ExternalInterface.available)
-         {
-            _loc1_ = {
-               "flash_version":Capabilities.version,
-               "screen_resolution":Capabilities.screenResolutionX + "x" + Capabilities.screenResolutionY,
-               "screen_dpi":Capabilities.screenDPI
-            };
-            ExternalInterface.call("logFlashCapabilities",_loc1_);
          }
       }
       

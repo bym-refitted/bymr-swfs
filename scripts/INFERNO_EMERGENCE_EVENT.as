@@ -62,13 +62,9 @@ package
       
       public static function Initialize() : Boolean
       {
-         if(GLOBAL._mode != "build")
-         {
-            return false;
-         }
          _lastLevel = GLOBAL.StatGet(_LAST_LEVEL_LABEL);
          _currentDate = new Date();
-         if(ShouldShowPortal() && _maxLevel > 5 || BASE.isInferno() && MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "build")
+         if(ShouldRunEvent() && _maxLevel > 5 || BASE.isInferno() && MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "build")
          {
             INFERNOPORTAL.AddPortal(5);
             return false;
@@ -78,7 +74,7 @@ package
          {
             ShowUpgradePopup();
          }
-         if(!ShouldShowPortal())
+         if(!ShouldRunEvent())
          {
             return false;
          }
@@ -150,7 +146,7 @@ package
       
       public static function FocusOnPortal() : void
       {
-         if(!ShouldShowPortal())
+         if(!ShouldRunEvent())
          {
             return;
          }
@@ -168,7 +164,7 @@ package
       
       private static function FocusedOnPortal() : void
       {
-         if(!ShouldShowPortal())
+         if(!ShouldRunEvent())
          {
             return;
          }
@@ -184,7 +180,7 @@ package
       
       private static function UpgradePortal(param1:Event = null) : void
       {
-         if(!ShouldShowPortal())
+         if(!ShouldRunEvent())
          {
             return;
          }
@@ -233,14 +229,9 @@ package
          return _loc2_ / _loc3_ > _MINIMUM_BASE_HEALTH;
       }
       
-      public static function ShouldShowPortal() : Boolean
-      {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
-      }
-      
       public static function ShouldRunEvent() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && _lastLevel < 5 && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
       }
       
       public static function ShouldShowUpgradePopup() : Boolean

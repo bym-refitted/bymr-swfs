@@ -1715,7 +1715,7 @@ package
             else if(_loc20_ == "BIP")
             {
                _loc21_.t = KEYS.Get("str_code_bip_title");
-               _loc21_.d = KEYS.Get(BASE.isInferno() ? "str_code_bipi_body2" : "str_code_bip_body2");
+               _loc21_.d = KEYS.Get("str_code_bip_body2");
             }
             else if(_loc20_ == "MUSK")
             {

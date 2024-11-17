@@ -108,30 +108,36 @@ package com.monsters.ai
       
       public static function DescentData(param1:Array) : void
       {
-         var _loc2_:int = 0;
-         var _loc3_:Array = null;
-         var _loc4_:Object = null;
+         var _loc2_:Boolean = false;
+         var _loc3_:int = 0;
+         var _loc4_:Array = null;
+         var _loc5_:Object = null;
          _descentMode = true;
          if(GLOBAL._mode == "build" && Boolean(param1))
          {
-            _loc2_ = 1;
+            _loc2_ = true;
+            _loc3_ = 1;
             _descentBases = [];
-            for each(_loc3_ in param1)
+            for each(_loc4_ in param1)
             {
-               _loc4_ = {};
-               _loc4_.baseid = _loc3_[0];
-               _loc4_.tribe = MAPROOM_DESCENT._descentTribe;
-               _loc4_.level = _loc3_[1];
-               _loc4_.destroyed = _loc3_[2];
-               _descentBases.push(_loc4_);
-               if(_loc4_.destroyed == 1)
+               _loc5_ = {};
+               _loc5_.baseid = _loc4_[0];
+               _loc5_.tribe = MAPROOM_DESCENT._descentTribe;
+               _loc5_.level = _loc4_[1];
+               _loc5_.destroyed = _loc4_[2];
+               _descentBases.push(_loc5_);
+               if(_loc5_.destroyed == 1)
                {
-                  _loc2_++;
+                  _loc3_++;
+               }
+               else
+               {
+                  _loc2_ = false;
                }
             }
             _descentBases.sortOn("level",Array.NUMERIC);
-            GLOBAL.StatSet("descentLvl",_loc2_);
-            MAPROOM_DESCENT._descentLvl = _loc2_;
+            GLOBAL.StatSet("descentLvl",_loc3_);
+            MAPROOM_DESCENT._descentLvl = _loc3_;
          }
       }
       

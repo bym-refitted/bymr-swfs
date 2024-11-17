@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol969")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol957")]
    public dynamic class BUILDINGBUTTONSOON extends MovieClip
    {
       public var t:TextField;

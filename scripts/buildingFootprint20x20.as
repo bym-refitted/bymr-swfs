@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol567")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol555")]
    public dynamic class buildingFootprint20x20 extends MovieClip
    {
       public function buildingFootprint20x20()

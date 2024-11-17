@@ -1672,7 +1672,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,0,0,0],
+         "quantity":[0,2,3,3,4,4],
          "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
          "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,18 * 60 * 60,24 * 60 * 60]
       },{
@@ -5674,7 +5674,7 @@ package
                "shadowdestroyed":["shadow.3.jpg",new Point(-67,14)]
             }
          },
-         "quantity":[0,0,0,0,0,0,0,0,0,0],
+         "quantity":[0,0,0,0,1,1,1,1,1,1],
          "hp":[16000],
          "repairTime":[60 * 60]
       },{
@@ -5931,7 +5931,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_quaketower_desc",
-         "block":false,
+         "block":true,
          "stats":[{
             "range":160,
             "damage":1100,
@@ -5980,14 +5980,14 @@ package
             "r3":2875000,
             "r4":0,
             "time":3 * 24 * 60 * 60,
-            "re":[[14,1,5]]
+            "re":[[14,1,4]]
          },{
             "r1":250 * 60 * 1000,
             "r2":9000000,
             "r3":100 * 60 * 1000,
             "r4":0,
             "time":108 * 60 * 60,
-            "re":[[14,1,5]]
+            "re":[[14,1,4]]
          }],
          "fortify_costs":[{
             "r1":50000,
@@ -6023,7 +6023,7 @@ package
             "1":{
                "anim":["anim.1.png",new Rectangle(-37,-75,75,132),33],
                "shadow":["shadow.1.v2.jpg",new Point(-37,17)],
-               "animdamaged":["anim.1.damaged.png",new Rectangle(-37,-75,75,132),33],
+               "topdamaged":["top.1.damaged.png",new Point(-40,-75)],
                "shadowdamaged":["shadow.1.v2.jpg",new Point(-40,16)],
                "topdestroyed":["top.1.destroyed.png",new Point(-42,-8)],
                "shadowdestroyed":["shadow.1.v2.jpg",new Point(-44,10)]
@@ -6057,7 +6057,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,2,2,4],
+         "quantity":[0,0,0,0,0,0],
          "hp":[10000,16000,22000,28000,34000],
          "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
       },{
@@ -6329,7 +6329,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_magmatower_desc",
-         "block":false,
+         "block":true,
          "stats":[{
             "range":3 * 60,
             "damage":3 * 60,
@@ -6365,7 +6365,7 @@ package
             "r1":187500,
             "r2":250000,
             "r3":62500,
-            "r4":0,
+            "r4":1,
             "time":5 * 60 * 60,
             "re":[[14,1,3]]
          },{
@@ -6388,14 +6388,14 @@ package
             "r3":1250000,
             "r4":0,
             "time":4 * 24 * 60 * 60,
-            "re":[[14,1,5]]
+            "re":[[14,1,4]]
          },{
             "r1":200 * 60 * 1000,
             "r2":10000000,
             "r3":2000000,
             "r4":0,
-            "time":6 * 24 * 60 * 60,
-            "re":[[14,1,5]]
+            "time":60 * 24 * 60 * 60,
+            "re":[[14,1,4]]
          }],
          "fortify_costs":[{
             "r1":215000,
@@ -6465,7 +6465,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,1,2,2],
+         "quantity":[0,0,0,0,0,0],
          "hp":[250 * 60,22000,500 * 60,49000,59000],
          "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
       }];

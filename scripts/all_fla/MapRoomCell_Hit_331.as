@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2365")]
-   public dynamic class descentBase_images_274 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol235")]
+   public dynamic class MapRoomCell_Hit_331 extends MovieClip
    {
-      public function descentBase_images_274()
+      public function MapRoomCell_Hit_331()
       {
          super();
          addFrameScript(0,this.frame1);

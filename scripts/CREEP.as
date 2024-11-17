@@ -65,8 +65,6 @@ package
       
       public var _venom:SecNum;
       
-      public var _damagePerSecond:SecNum;
-      
       public var _targetRotation:Number;
       
       public var _targetPosition:Point;
@@ -187,7 +185,6 @@ package
          this._secureDamageMult = new SecNum(100);
          this._secureSpeedMult = new SecNum(100);
          this._venom = new SecNum(0);
-         this._damagePerSecond = new SecNum(0);
          this._tmpPoint = new Point(0,0);
          super();
          var _loc11_:int = getTimer();
@@ -1546,25 +1543,15 @@ package
       {
          var _loc1_:int = 0;
          var _loc2_:Array = null;
-         var _loc3_:int = 0;
          if(BASE.isInferno() && (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack"))
          {
             _loc2_ = [0,0,0,0,0,0,0,0,0,4 * 60,210,3 * 60,150,2 * 60,60,10,5,1];
-            _loc3_ = 5;
-            if(MAPROOM_DESCENT._descentLvl >= 13)
-            {
-               _loc3_ = 12;
-            }
-            else if(MAPROOM_DESCENT._descentLvl > 10)
-            {
-               _loc3_ = 8;
-            }
             if(MAPROOM_DESCENT._descentLvl >= _loc2_.length)
             {
                _loc1_ = this._health.Get() / 40;
             }
-            _loc1_ = Math.max(this._health.Get() / (40 * _loc2_[MAPROOM_DESCENT._descentLvl - 1]),_loc3_);
-            this._damagePerSecond.Add(_loc1_);
+            _loc1_ = Math.max(this._health.Get() / (40 * _loc2_[MAPROOM_DESCENT._descentLvl - 1]),1);
+            this._venom.Add(_loc1_);
          }
       }
       
@@ -1653,13 +1640,6 @@ package
          if(this._venom.Get() > 0)
          {
             this._health.Add(-(this._venom.Get() * this._damageMult));
-         }
-         if(this._damagePerSecond.Get() > 0)
-         {
-            if(this._frameNumber % 60 == 0)
-            {
-               this._health.Add(-(this._damagePerSecond.Get() * this._damageMult));
-            }
          }
          if(this._behaviour == "retreat" || this._behaviour == "juice" || this._behaviour == "feed")
          {

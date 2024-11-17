@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1906")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1887")]
    public dynamic class bubblepopupBG_4 extends MovieClip
    {
       public function bubblepopupBG_4()

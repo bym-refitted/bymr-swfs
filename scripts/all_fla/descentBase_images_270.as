@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1908")]
-   public dynamic class bubblepopupArrowRight_508 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol2337")]
+   public dynamic class descentBase_images_270 extends MovieClip
    {
-      public function bubblepopupArrowRight_508()
+      public function descentBase_images_270()
       {
          super();
          addFrameScript(0,this.frame1);

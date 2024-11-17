@@ -3,7 +3,7 @@ package com.monsters.maproom_inferno.views
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2487")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2463")]
    public dynamic class DescentBasePopup_CLIP extends MovieClip
    {
       public var depthBar:MovieClip;

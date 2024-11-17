@@ -348,14 +348,7 @@ package com.monsters.maproom_inferno
             }
             else
             {
-               if(MAPROOM_DESCENT.DescentPassed)
-               {
-                  _loc4_ = KEYS.Get("infmap_msg_nomonsters");
-               }
-               else
-               {
-                  _loc4_ = KEYS.Get("map_msg_nomonsters");
-               }
+               _loc4_ = KEYS.Get("infmap_msg_nomonsters");
                GLOBAL.Message(_loc4_);
             }
          }

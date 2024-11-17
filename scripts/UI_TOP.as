@@ -1,6 +1,5 @@
 package
 {
-   import com.monsters.maproom_inferno.views.DescentDebuffPopup;
    import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -29,8 +28,6 @@ package
       public var _catapult:CATAPULTPOPUP;
       
       public var _buttonIcons:Array;
-      
-      public var _descentDebuff:DescentDebuffPopup;
       
       public function UI_TOP()
       {
@@ -247,10 +244,6 @@ package
                this._catapult.Setup();
             }
          }
-         else
-         {
-            this.DescentDebuffHide();
-         }
          this.Update();
       }
       
@@ -356,17 +349,6 @@ package
          else
          {
             mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonstersinferno");
-         }
-         if((GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iattack") && !MAPROOM_DESCENT.DescentPassed)
-         {
-            if(BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed)
-            {
-               this.DescentDebuffShow();
-            }
-            else
-            {
-               this.DescentDebuffHide();
-            }
          }
       }
       
@@ -777,28 +759,6 @@ package
                BUY.Offers("earn");
             }
          };
-      }
-      
-      public function DescentDebuffShow() : void
-      {
-         var _loc1_:Boolean = (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed && (MAPROOM_DESCENT.DescentLevel > 9 && MAPROOM_DESCENT.DescentLevel < MAPROOM_DESCENT._descentLvlMax);
-         if(this._descentDebuff)
-         {
-            this.DescentDebuffHide();
-         }
-         if(_loc1_)
-         {
-            this._descentDebuff = new DescentDebuffPopup();
-            this._descentDebuff.Show(MAPROOM_DESCENT.DescentLevel);
-         }
-      }
-      
-      public function DescentDebuffHide() : void
-      {
-         if(this._descentDebuff)
-         {
-            this._descentDebuff.Hide();
-         }
       }
       
       public function DisplayBuffs() : void

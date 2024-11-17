@@ -58,15 +58,13 @@ package
       
       public static var _infernoMonsterKeys:Array = ["IC1","IC2","IC3","IC4","IC5","IC6","IC7","IC8"];
       
-      public static var _infernoLooters:Array = ["IC3","IC3","IC3","IC6"];
+      public static var _infernoLooters:Array = ["IC3","IC6"];
       
-      public static var _infernoDps:Array = ["IC1","IC1","IC2","IC3","IC4","IC6","IC7","IC8"];
+      public static var _infernoDps:Array = ["IC1","IC4","IC6","IC7","IC8"];
       
-      public static var _infernoTanks:Array = ["IC2","IC2","IC2","IC2","IC7"];
+      public static var _infernoTanks:Array = ["IC2","IC7"];
       
-      public static var _infernoAnything:Array = ["IC1","IC1","IC1","IC1","IC8"];
-      
-      public static var _infernoHunters:Array = ["IC1","IC1","IC2","IC5"];
+      public static var _infernoAnything:Array = ["IC1","IC8"];
       
       public static var _infernoFodder:Array = ["IC1","IC1","IC1","IC2","IC3"];
       
@@ -148,10 +146,6 @@ package
                _history.attackPreference = 0;
             }
             _history.sessionsSinceLastAttack += 1;
-            if(GLOBAL._aiDesignMode)
-            {
-               _sessionsBetweenAttacks = 1;
-            }
             _inProgress = false;
             if(_history["s1"])
             {
@@ -269,20 +263,6 @@ package
          }
       }
       
-      public static function InfernoSafe() : Boolean
-      {
-         var _loc1_:int = GLOBAL.GetABTestHash("wildmonsters109",2);
-         if(!BASE.isInferno())
-         {
-            return false;
-         }
-         if(_loc1_ >= 84 && _loc1_ < 168)
-         {
-            return true;
-         }
-         return false;
-      }
-      
       public static function Tick() : void
       {
          var count:int = 0;
@@ -314,7 +294,7 @@ package
                t += 1;
                if(_queued != null && !_inProgress)
                {
-                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !InfernoSafe())
+                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
                   {
                      try
                      {
@@ -325,7 +305,7 @@ package
                         LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
                      }
                   }
-                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !InfernoSafe())
+                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
                   {
                      try
                      {
@@ -380,7 +360,7 @@ package
                }
                else if(!_inProgress)
                {
-                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !InfernoSafe())
+                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
                   {
                      _processing = true;
                      try
@@ -573,14 +553,8 @@ package
                   {
                      if(b.destroyed == 0 && b.level >= BASE._baseLevel - 10)
                      {
-                        _attackersBaseID = b.baseid;
-                        if(BASE.isInferno())
-                        {
-                           _type = WMATTACK.TYPE_SWARM;
-                           proc = PROCESS_INFERNO1;
-                           break;
-                        }
                         _type = b.tribe.type;
+                        _attackersBaseID = b.baseid;
                         proc = b.tribe.process;
                         break;
                      }
@@ -677,11 +651,10 @@ package
       public static function SendAttack(param1:Object, param2:Number, param3:Object) : void
       {
          var _loc8_:String = null;
-         var _loc14_:Array = null;
+         var _loc13_:int = 0;
          var _loc15_:Array = null;
-         var _loc16_:int = 0;
-         var _loc17_:Number = NaN;
-         var _loc18_:* = undefined;
+         var _loc16_:Array = null;
+         var _loc17_:* = undefined;
          if(_history)
          {
             if(_history["s1"] && _history["s1"][0] == 1 && _history["s1"][2] == 0 && !BASE.isInferno())
@@ -712,114 +685,89 @@ package
          var _loc10_:Object = {};
          var _loc11_:Object = {};
          var _loc12_:Object = {};
-         var _loc13_:Object = {};
-         if(BASE.isInferno())
+         _loc13_ = 0;
+         while(_loc13_ < _looters.length)
          {
-            _loc17_ = param2;
-            for(_loc8_ in param1)
+            _loc12_[_looters[_loc13_]] = param1[_looters[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoLooters.length)
+         {
+            _loc12_[_looters[_loc13_]] = param1[_infernoLooters[_loc13_]];
+            _loc13_++;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _dps.length)
+         {
+            _loc11_[_dps[_loc13_]] = param1[_dps[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoDps.length)
+         {
+            _loc11_[_infernoDps[_loc13_]] = param1[_infernoDps[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _tanks.length)
+         {
+            _loc10_[_tanks[_loc13_]] = param1[_tanks[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoTanks.length)
+         {
+            _loc10_[_infernoTanks[_loc13_]] = param1[_infernoTanks[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _kamikaze.length)
+         {
+            _loc11_[_kamikaze[_loc13_]] = param1[_kamikaze[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoKamikaze.length)
+         {
+            _loc11_[_infernoKamikaze[_loc13_]] = param1[_infernoKamikaze[_loc13_]];
+            _loc13_ += 1;
+         }
+         var _loc14_:Number = param2;
+         for(_loc8_ in _loc10_)
+         {
+            if(_loc10_[_loc8_] > 0)
             {
-               _loc7_.push([_loc8_,"bounce",param1[_loc8_],param3[_loc8_],_loc17_,0,0]);
+               _loc7_.push([_loc8_,"bounce",_loc10_[_loc8_],param3[_loc8_],_loc14_,0,0]);
+               break;
             }
          }
-         else
+         for(_loc8_ in _loc11_)
          {
-            _loc16_ = 0;
-            while(_loc16_ < _looters.length)
+            if(_loc11_[_loc8_] > 0)
             {
-               _loc12_[_looters[_loc16_]] = param1[_looters[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _infernoLooters.length)
-            {
-               _loc12_[_looters[_loc16_]] = param1[_infernoLooters[_loc16_]];
-               _loc16_++;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _dps.length)
-            {
-               _loc11_[_dps[_loc16_]] = param1[_dps[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _infernoDps.length)
-            {
-               _loc11_[_infernoDps[_loc16_]] = param1[_infernoDps[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _tanks.length)
-            {
-               _loc10_[_tanks[_loc16_]] = param1[_tanks[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _infernoTanks.length)
-            {
-               _loc10_[_infernoTanks[_loc16_]] = param1[_infernoTanks[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _kamikaze.length)
-            {
-               _loc11_[_kamikaze[_loc16_]] = param1[_kamikaze[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _infernoKamikaze.length)
-            {
-               _loc11_[_infernoKamikaze[_loc16_]] = param1[_infernoKamikaze[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc16_ = 0;
-            while(_loc16_ < _infernoHunters.length)
-            {
-               _loc13_[_infernoHunters[_loc16_]] = param1[_infernoHunters[_loc16_]];
-               _loc16_ += 1;
-            }
-            _loc17_ = param2;
-            for(_loc8_ in _loc10_)
-            {
-               if(_loc10_[_loc8_] > 0)
-               {
-                  _loc7_.push([_loc8_,"bounce",_loc10_[_loc8_],param3[_loc8_],_loc17_,0,0]);
-                  break;
-               }
-            }
-            for(_loc8_ in _loc11_)
-            {
-               if(_loc11_[_loc8_] > 0)
-               {
-                  _loc7_.push([_loc8_,"bounce",_loc11_[_loc8_],param3[_loc8_],_loc17_,0,0]);
-                  _loc9_ += 1;
-               }
-            }
-            for(_loc8_ in _loc12_)
-            {
-               if(_loc12_[_loc8_] > 0)
-               {
-                  _loc7_.push([_loc8_,"bounce",_loc12_[_loc8_],param3[_loc8_],_loc17_,0,0]);
-               }
-            }
-            for(_loc8_ in _loc13_)
-            {
-               if(_loc13_[_loc8_] > 0)
-               {
-                  _loc7_.push([_loc8_,"bounce",_loc13_[_loc8_],param3[_loc8_],_loc17_,0,0]);
-               }
+               _loc7_.push([_loc8_,"bounce",_loc11_[_loc8_],param3[_loc8_],_loc14_,0,0]);
+               _loc9_ += 1;
             }
          }
-         _loc14_ = SpawnA(_loc7_);
-         for each(_loc15_ in _loc14_)
+         for(_loc8_ in _loc12_)
          {
-            for each(_loc18_ in _loc15_)
+            if(_loc12_[_loc8_] > 0)
             {
-               _loc18_._hitLimit = _hitsPerCreep;
+               _loc7_.push([_loc8_,"bounce",_loc12_[_loc8_],param3[_loc8_],_loc14_,0,0]);
             }
          }
-         if(_loc14_.length > 0 && _loc14_[0].length > 0)
+         _loc15_ = SpawnA(_loc7_);
+         for each(_loc16_ in _loc15_)
          {
-            MAP.FocusTo(_loc14_[0][0].x,_loc14_[0][0].y,1);
+            for each(_loc17_ in _loc16_)
+            {
+               _loc17_._hitLimit = _hitsPerCreep;
+            }
+         }
+         if(_loc15_.length > 0 && _loc15_[0].length > 0)
+         {
+            MAP.FocusTo(_loc15_[0][0].x,_loc15_[0][0].y,1);
          }
       }
       
@@ -1136,47 +1084,27 @@ package
       
       public static function set _attackPreference(param1:int) : void
       {
-         var _loc2_:Boolean = false;
-         var _loc3_:int = GLOBAL.GetABTestHash("wildmonsters109",2);
-         if(_loc3_ < 84 && BASE.isInferno())
-         {
-            _loc2_ = true;
-         }
          switch(param1)
          {
             case -1:
-               _history.nextAttack = _history.lastattack + (_loc2_ ? 691200 : 4 * 24 * 60 * 60);
+               _history.nextAttack = _history.lastattack + 4 * 24 * 60 * 60;
                _attackVolumeAmplifier = 0.5;
                _hitsPerCreep = 20;
                _history.attackPreference = -1;
-               if(BASE.isInferno())
-               {
-                  LOGGER.Stat([89,"slow"]);
-               }
                break;
             case 0:
             default:
-               _history.nextAttack = _history.lastattack + (_loc2_ ? 518400 : 3 * 24 * 60 * 60);
+               _history.nextAttack = _history.lastattack + 3 * 24 * 60 * 60;
                _attackVolumeAmplifier = 1;
                _hitsPerCreep = 30;
                _history.attackPreference = 0;
-               if(BASE.isInferno())
-               {
-                  LOGGER.Stat([89,"med"]);
-               }
                break;
             case 1:
-               _history.nextAttack = _history.lastattack + (_loc2_ ? 345600 : 2 * 24 * 60 * 60);
+               _history.nextAttack = _history.lastattack + 2 * 24 * 60 * 60;
                _attackVolumeAmplifier = 1.3;
                _hitsPerCreep = 50;
                _history.attackPreference = 1;
-               if(BASE.isInferno())
-               {
-                  LOGGER.Stat([89,"fast"]);
-                  break;
-               }
          }
-         BASE.Save();
       }
       
       public static function dpsAtPoint(param1:Solution, param2:Point) : Number

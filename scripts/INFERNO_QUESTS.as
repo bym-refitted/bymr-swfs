@@ -184,7 +184,7 @@ package
       },{
          "order":12,
          "list":true,
-         "reward":[10000,0,0,0,0],
+         "reward":[0,10000,0,0,0],
          "id":"IC9",
          "group":0,
          "name":"q_upgrade_name",
@@ -505,46 +505,6 @@ package
          "monster_reward":15
       },{
          "order":28,
-         "list":true,
-         "reward":[500 * 60,20000,20000,20000,0],
-         "id":"IT3",
-         "group":0,
-         "name":"q_build_name",
-         "description":"q_build_description",
-         "hint":"q_build_hint",
-         "keyvars":{
-            "v1":"Magma Tower",
-            "v2":"",
-            "v3":"Defensive"
-         },
-         "questimage":"building-magma_tower.png",
-         "questicon":"icon-magma_tower.png",
-         "streamTitle":"q_magmatower_streamtitle",
-         "streamDescription":"q_magmatower_streambody",
-         "streamImage":"quests/magma_tower.png",
-         "rules":{"b132lvl":1}
-      },{
-         "order":29,
-         "list":true,
-         "reward":[500 * 60,20000,20000,20000,0],
-         "id":"IQT1",
-         "group":0,
-         "name":"q_build_name",
-         "description":"q_build_description",
-         "hint":"q_build_hint",
-         "keyvars":{
-            "v1":"Quake Tower",
-            "v2":"",
-            "v3":"Defensive"
-         },
-         "questimage":"building-quake_tower.png",
-         "questicon":"icon-quake_tower.png",
-         "streamTitle":"q_c0_streamtitle",
-         "streamDescription":"q_c0_streamdescription",
-         "streamImage":"quests/quake_tower.png",
-         "rules":{"b129lvl":1}
-      },{
-         "order":30,
          "prereq":"IBK1",
          "list":true,
          "reward":[2000,2000,2000,2000,0],
@@ -560,7 +520,7 @@ package
          "streamImage":"quests/trenchcoat.png",
          "rules":{"singleclickbank":20000}
       },{
-         "order":31,
+         "order":29,
          "prereq":"IC14",
          "list":true,
          "reward":[0,0,0,0,0],
@@ -583,7 +543,7 @@ package
          "reward_creatureid":"IC4",
          "monster_reward":20
       },{
-         "order":32,
+         "order":30,
          "prereq":"IUC9",
          "list":true,
          "reward":[0,0,0,0,0],
@@ -602,7 +562,7 @@ package
          "reward_creatureid":"IC5",
          "monster_reward":20
       },{
-         "order":33,
+         "order":31,
          "prereq":"IUC10",
          "list":true,
          "reward":[0,0,0,0,0],
@@ -621,49 +581,7 @@ package
          "reward_creatureid":"IC7",
          "monster_reward":5
       },{
-         "order":34,
-         "prereq":"IT3",
-         "list":true,
-         "reward":[60 * 1000,40000,40000,40000,0],
-         "id":"IUT3",
-         "group":0,
-         "name":"q_upgrade_name",
-         "description":"q_upgrade_description",
-         "hint":"q_upgrade_hint",
-         "keyvars":{
-            "v1":"Magma Tower",
-            "v2":"3",
-            "v3":"Defensive"
-         },
-         "questimage":"building-magma_tower.png",
-         "questicon":"icon-magma_tower.png",
-         "streamTitle":"q_c0_streamtitle",
-         "streamDescription":"q_c0_streamdescription",
-         "streamImage":"quests/magma_tower.png",
-         "rules":{"b132lvl":3}
-      },{
-         "order":35,
-         "prereq":"IQT1",
-         "list":true,
-         "reward":[60 * 1000,40000,40000,40000,0],
-         "id":"IQT3",
-         "group":0,
-         "name":"q_upgrade_name",
-         "description":"q_upgrade_description",
-         "hint":"q_upgrade_hint",
-         "keyvars":{
-            "v1":"Quake Tower",
-            "v2":"3",
-            "v3":"Defensive"
-         },
-         "questimage":"building-quake_tower.png",
-         "questicon":"icon-quake_tower.png",
-         "streamTitle":"q_c0_streamtitle",
-         "streamDescription":"q_c0_streamdescription",
-         "streamImage":"quests/quake_tower.png",
-         "rules":{"b129lvl":3}
-      },{
-         "order":36,
+         "order":32,
          "prereq":"IC14",
          "list":true,
          "reward":[0,0,0,0,0],
@@ -686,7 +604,7 @@ package
          "reward_creatureid":"IC7",
          "monster_reward":5
       },{
-         "order":37,
+         "order":33,
          "prereq":"IUC13",
          "list":true,
          "reward":[0,0,0,0,0],
@@ -705,7 +623,7 @@ package
          "reward_creatureid":"IC8",
          "monster_reward":2
       },{
-         "order":38,
+         "order":34,
          "prereq":"IBK2",
          "list":true,
          "reward":[10000,10000,10000,10000,0],
@@ -721,7 +639,7 @@ package
          "streamImage":"quests/wallstreet.png",
          "rules":{"singleclickbank":100000}
       },{
-         "order":39,
+         "order":35,
          "prereq":"IBK3",
          "list":true,
          "reward":[50000,50000,50000,50000,0],

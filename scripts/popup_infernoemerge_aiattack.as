@@ -3,22 +3,22 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2067")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2039")]
    public dynamic class popup_infernoemerge_aiattack extends MovieClip
    {
       public var tName:TextField;
       
-      public var c1:HousingPopupMonster_CLIP;
+      public var c1:MovieClip;
       
-      public var c2:HousingPopupMonster_CLIP;
+      public var c2:MovieClip;
       
       public var tTitle:TextField;
       
-      public var c3:HousingPopupMonster_CLIP;
+      public var c3:MovieClip;
       
-      public var c4:HousingPopupMonster_CLIP;
+      public var c4:MovieClip;
       
-      public var c5:HousingPopupMonster_CLIP;
+      public var c5:MovieClip;
       
       public var mcImage:MovieClip;
       

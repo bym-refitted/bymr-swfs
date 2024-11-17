@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol247")]
-   public dynamic class MapRoomCell_Hit_335 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1889")]
+   public dynamic class bubblepopupArrowRight_506 extends MovieClip
    {
-      public function MapRoomCell_Hit_335()
+      public function bubblepopupArrowRight_506()
       {
          super();
          addFrameScript(0,this.frame1);

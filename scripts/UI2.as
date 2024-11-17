@@ -692,10 +692,6 @@ package
             _top.mcSound.x = _loc4_.width - 70;
             _top.mcMusic.x = _loc4_.width - 40;
             _top.mcBuffHolder.x = _loc4_.width - 200;
-            if(_top._descentDebuff)
-            {
-               _top._descentDebuff.x = _loc4_.width - 160;
-            }
          }
          if(_warning)
          {

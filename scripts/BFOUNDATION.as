@@ -1245,7 +1245,6 @@ package
          var BragTotem:Function;
          var tmpBuildTime:int = 0;
          var fromStorage:int = 0;
-         var isInfernoBuilding:Boolean = false;
          var mc:MovieClip = null;
          var totemImgUrl:String = null;
          var e:MouseEvent = param1;
@@ -1311,11 +1310,10 @@ package
                   {
                      if(!this._buildInstant)
                      {
-                        isInfernoBuilding = BASE.isInfernoBuilding(this._type);
-                        BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
-                        BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
-                        BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
-                        BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
+                        BASE.Charge(1,this._buildingProps.costs[0].r1);
+                        BASE.Charge(2,this._buildingProps.costs[0].r2);
+                        BASE.Charge(3,this._buildingProps.costs[0].r3);
+                        BASE.Charge(4,this._buildingProps.costs[0].r4);
                         if(STORE._storeItems["BUILDING" + this._type])
                         {
                            BASE.Purchase("BUILDING" + this._type,1,"building");
@@ -1693,23 +1691,12 @@ package
       public function HasWorker() : *
       {
          var _loc1_:* = 0;
-         var _loc2_:int = 0;
-         var _loc3_:* = 0;
          this._hasWorker = true;
          if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
-            _loc1_ = BASE.isInfernoBuilding(this._type) || BASE.isInferno() ? 5 : 1;
-            _loc2_ = 1;
-            while(_loc2_ < 5)
-            {
-               _loc3_ = uint(this._buildingProps.costs[this._lvl.Get()]["r" + _loc2_]);
-               if(_loc3_)
-               {
-                  ResourcePackages.Create(_loc1_,this,_loc3_,true);
-               }
-               _loc1_++;
-               _loc2_++;
-            }
+            _loc1_ = BASE.isInferno() ? 5 : 1;
+            ResourcePackages.Create(_loc1_,this,2,true);
+            ResourcePackages.Create(_loc1_ + 1,this,2,true);
          }
       }
       
@@ -1985,7 +1972,6 @@ package
          var GetFriends:Function;
          var canUpgrade:Object = null;
          var o:* = undefined;
-         var isInfernoBuilding:Boolean = false;
          var tmpUpgradeTime:int = 0;
          var popupMC:* = undefined;
          if(this._countdownUpgrade.Get() == 0)
@@ -1994,22 +1980,21 @@ package
             if(!canUpgrade.error)
             {
                o = this.UpgradeCost();
-               isInfernoBuilding = BASE.isInfernoBuilding(this._type);
                if(o.r1 > 0)
                {
-                  BASE.Charge(1,o.r1,false,isInfernoBuilding);
+                  BASE.Charge(1,o.r1);
                }
                if(o.r2 > 0)
                {
-                  BASE.Charge(2,o.r2,false,isInfernoBuilding);
+                  BASE.Charge(2,o.r2);
                }
                if(o.r3 > 0)
                {
-                  BASE.Charge(3,o.r3,false,isInfernoBuilding);
+                  BASE.Charge(3,o.r3);
                }
                if(o.r4 > 0)
                {
-                  BASE.Charge(4,o.r4,false,isInfernoBuilding);
+                  BASE.Charge(4,o.r4);
                }
                tmpUpgradeTime = int(this._buildingProps.costs[this._lvl.Get()].time * GLOBAL._buildTime);
                this._countdownUpgrade.Set(tmpUpgradeTime);
@@ -2142,28 +2127,26 @@ package
       public function UpgradeCancelC() : *
       {
          var _loc1_:Object = null;
-         var _loc2_:Boolean = false;
          if(this._countdownUpgrade.Get() > 0)
          {
             QUEUE.Remove("building" + this._id,false,this);
             this._countdownUpgrade.Set(0);
             _loc1_ = this.UpgradeCost();
-            _loc2_ = BASE.isInfernoBuilding(this._type);
-            if(_loc1_.r1)
+            if(_loc1_.r1 > 0)
             {
-               BASE.Fund(1,int(_loc1_.r1),false,null,_loc2_);
+               BASE.Fund(1,int(_loc1_.r1));
             }
-            if(_loc1_.r2)
+            if(_loc1_.r2 > 0)
             {
-               BASE.Fund(2,int(_loc1_.r2),false,null,_loc2_);
+               BASE.Fund(2,int(_loc1_.r2));
             }
-            if(_loc1_.r3)
+            if(_loc1_.r3 > 0)
             {
-               BASE.Fund(3,int(_loc1_.r3),false,null,_loc2_);
+               BASE.Fund(3,int(_loc1_.r3));
             }
-            if(_loc1_.r4)
+            if(_loc1_.r4 > 0)
             {
-               BASE.Fund(4,int(_loc1_.r4),false,null,_loc2_);
+               BASE.Fund(4,int(_loc1_.r4));
             }
             BASE.Save();
          }
@@ -2304,7 +2287,6 @@ package
       public function RecycleB(param1:MouseEvent = null) : *
       {
          var _loc2_:* = undefined;
-         var _loc3_:Boolean = false;
          BUILDINGOPTIONS.Hide();
          if(this._class != "decoration" && !this._blockRecycle)
          {
@@ -2312,22 +2294,21 @@ package
             {
                this._recycled = true;
                _loc2_ = this.RecycleCost();
-               _loc3_ = BASE.isInfernoBuilding(this._type);
                if(_loc2_.r1)
                {
-                  BASE.Fund(1,int(_loc2_.r1),false,null,_loc3_);
+                  BASE.Fund(1,int(_loc2_.r1),false);
                }
                if(_loc2_.r2)
                {
-                  BASE.Fund(2,int(_loc2_.r2),false,null,_loc3_);
+                  BASE.Fund(2,int(_loc2_.r2),false);
                }
                if(_loc2_.r3)
                {
-                  BASE.Fund(3,int(_loc2_.r3),false,null,_loc3_);
+                  BASE.Fund(3,int(_loc2_.r3),false);
                }
                if(_loc2_.r4)
                {
-                  BASE.Fund(4,int(_loc2_.r4),false,null,_loc3_);
+                  BASE.Fund(4,int(_loc2_.r4),false);
                }
                this.RecycleC();
                LOGGER.Stat([40,this._type,this._lvl.Get()]);

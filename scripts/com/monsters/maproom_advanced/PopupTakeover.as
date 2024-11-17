@@ -44,7 +44,7 @@ package com.monsters.maproom_advanced
             numPosts = int(GLOBAL._mapOutpost.length);
             if(numPosts >= 5)
             {
-               this._resourceCost.Set(Math.min(10000000,2000000 + 2000000 * (numPosts - 4)));
+               this._resourceCost.Set(2000000 + 2000000 * (numPosts - 4));
             }
          }
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))

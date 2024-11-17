@@ -146,39 +146,17 @@ package
             }
          }
          img = "resourcetwigs.png";
-         if(!BASE.isInferno())
+         if(resourceID == 2)
          {
-            if(resourceID == 2)
-            {
-               img = "resourcepebbles.png";
-            }
-            if(resourceID == 3)
-            {
-               img = "resourceputty.png";
-            }
-            if(resourceID == 4)
-            {
-               img = "resourcegoo.png";
-            }
+            img = "resourcepebbles.png";
          }
-         else
+         if(resourceID == 3)
          {
-            if(resourceID == 1)
-            {
-               img = "resource-cauldron_bones.png";
-            }
-            if(resourceID == 2)
-            {
-               img = "resource-cauldron_coal.png";
-            }
-            if(resourceID == 3)
-            {
-               img = "resource-cauldron_sulphur.png";
-            }
-            if(resourceID == 4)
-            {
-               img = "resource-cauldron_magma.png";
-            }
+            img = "resourceputty.png";
+         }
+         if(resourceID == 4)
+         {
+            img = "resourcegoo.png";
          }
          POPUPS.Push(_mc,GIFTS.Fund,[giftID,resourceID,giftValue],"",img,false,"gifts");
       }
@@ -322,12 +300,10 @@ package
          var giftValue:int = param3;
          return function(param1:MouseEvent = null):*
          {
-            resourceID = BASE.isInferno() ? resourceID + 4 : resourceID;
-            var _loc2_:* = "gift" + resourceID + ".png";
             GLOBAL.CallJS("sendFeed",["thanks",KEYS.Get("pop_givethanks_streamtitle"),KEYS.Get("pop_givethanks_streambody",{
                "v1":GLOBAL.FormatNumber(giftValue),
                "v2":KEYS.Get(GLOBAL._resourceNames[resourceID - 1])
-            }),_loc2_,giftFromID]);
+            }),"gift" + resourceID + ".png",giftFromID]);
             POPUPS.Next();
          };
       }

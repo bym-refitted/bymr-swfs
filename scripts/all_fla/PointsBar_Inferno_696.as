@@ -3,8 +3,8 @@ package all_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1042")]
-   public dynamic class PointsBar_682 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1124")]
+   public dynamic class PointsBar_Inferno_696 extends MovieClip
    {
       public var tInfo:TextField;
       
@@ -16,7 +16,7 @@ package all_fla
       
       public var mcBar:MovieClip;
       
-      public function PointsBar_682()
+      public function PointsBar_Inferno_696()
       {
          super();
          addFrameScript(0,this.frame1);

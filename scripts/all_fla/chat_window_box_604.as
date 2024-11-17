@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2266")]
-   public dynamic class mis_msg_bg_609 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1822")]
+   public dynamic class chat_window_box_604 extends MovieClip
    {
-      public function mis_msg_bg_609()
+      public function chat_window_box_604()
       {
          super();
          addFrameScript(0,this.frame1,4,this.frame5);
