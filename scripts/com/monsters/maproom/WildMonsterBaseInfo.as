@@ -3,7 +3,7 @@ package com.monsters.maproom
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2178")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2183")]
    public dynamic class WildMonsterBaseInfo extends MovieClip
    {
       public var info_txt:TextField;

@@ -2,14 +2,14 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol326")]
-   public dynamic class icon_tips_409 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol330")]
+   public dynamic class icon_tips_410 extends MovieClip
    {
       public var mcSpinner:MovieClip;
       
       public var mcRing:MovieClip;
       
-      public function icon_tips_409()
+      public function icon_tips_410()
       {
          super();
          addFrameScript(0,this.frame1);

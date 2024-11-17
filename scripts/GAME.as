@@ -6,6 +6,7 @@ package
    import flash.display.*;
    import flash.events.Event;
    import flash.external.ExternalInterface;
+   import flash.geom.Rectangle;
    import flash.system.Security;
    
    public class GAME extends Sprite
@@ -13,6 +14,10 @@ package
       public static var _instance:GAME;
       
       public static var _contained:Boolean;
+      
+      public static var _isSmallSize:Boolean = false;
+      
+      private var _checkScreenSize:Boolean = true;
       
       public function GAME()
       {
@@ -52,6 +57,20 @@ package
                   _loc1_._statsURL = "http://bym-vx2-vip.sjc.kixeye.com/recordstats.php";
                   _loc1_._mapURL = "http://bym-vx2-vip.sjc.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-vx2-vip.sjc.kixeye.com/alliance/";
+                  break;
+               case 5:
+                  _loc1_._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-inferno.dev.kixeye.com/api/";
+                  _loc1_._statsURL = "http://bym-fb-inferno.dev.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-inferno.dev.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-inferno.dev.kixeye.com/alliance/";
+                  break;
+               case 6:
+                  _loc1_._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
+                  _loc1_._apiURL = "https://bym-fb-lbns.dc.kixeye.com/api/";
+                  _loc1_._statsURL = "https://bym-fb-lbns.dc.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "https://bym-fb-lbns.dc.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "https://bym-fb-lbns.dc.kixeye.com/alliance/";
                   break;
                default:
                   _loc1_._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
@@ -193,6 +212,18 @@ package
             {
                GLOBAL.ShowMap();
             });
+         }
+         if(this._checkScreenSize)
+         {
+            GLOBAL._SCREENINIT = new Rectangle(0,0,stage.stageWidth,stage.stageHeight);
+            if(_isSmallSize)
+            {
+               GLOBAL._SCREENINIT = new Rectangle(0,0,760,670);
+            }
+            else
+            {
+               GLOBAL._SCREENINIT = new Rectangle(0,0,760,750);
+            }
          }
       }
    }

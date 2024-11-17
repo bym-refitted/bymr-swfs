@@ -302,7 +302,11 @@ package
                      }
                   }
                   this._logged = true;
-                  ATTACK.Log("b" + _id,"<font color=\"#FF0000\">A level " + _lvl.Get() + " " + KEYS.Get(_buildingProps.name) + " unleashed " + GLOBAL.Array2String(_loc11_) + "!</font>");
+                  ATTACK.Log("b" + _id,"<font color=\"#FF0000\">" + KEYS.Get("attacklog_unleashed",{
+                     "v1":_lvl.Get(),
+                     "v2":KEYS.Get(_buildingProps.name),
+                     "v3":GLOBAL.Array2String(_loc11_)
+                  }) + "</font>");
                }
                if(this._targetFlyers.length > 0 && (_loc4_ == "C12" || _loc4_ == "C5"))
                {

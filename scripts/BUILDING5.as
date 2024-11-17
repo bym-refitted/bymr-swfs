@@ -57,7 +57,7 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = "Upgrade to increase the size of the bucket to fling in larger groups of monsters.";
+         _upgradeDescription = KEYS.Get("building_flinger_upgrade_desc");
       }
       
       override public function Update(param1:Boolean = false) : *

@@ -125,12 +125,12 @@ package
          this.btn_resource.mcTime.visible = false;
          this.btn_resource.mcTime.tTitle.htmlText = "<b>" + KEYS.Get("#r_time#") + "</b>";
          this.btn_resource.mcTime.gotoAndStop(6);
-         this.btn_instant.tDescription.htmlText = "<b>Keep your resources <br>and upgrade instantly</b>";
-         this.tf_statusIdle.htmlText = "<b>No ability is currently being researched.<br>Select an Ability to research from the list to the left.</b>";
+         this.btn_instant.tDescription.htmlText = "<b>" + KEYS.Get("lab_upgradeinstant") + "</b>";
+         this.tf_statusIdle.htmlText = "<b>" + KEYS.Get("lab_selectability") + "</b>";
          if(_bMonsterLab._upgrading)
          {
-            this.tf_statusTitle.htmlText = "<b>Currently Researching: " + KEYS.Get(MONSTERLAB._powerupProps[_bMonsterLab._upgrading].name) + "</b>";
-            this.tf_statusDesc.htmlText = "<b>Level " + _bMonsterLab._upgradeLevel + "</b>";
+            this.tf_statusTitle.htmlText = KEYS.Get("monsterlab_currentlyresearching",{"v1":KEYS.Get(MONSTERLAB._powerupProps[_bMonsterLab._upgrading].name)});
+            this.tf_statusDesc.htmlText = "<b>" + KEYS.Get("lab_level",{"v1":_bMonsterLab._upgradeLevel}) + "</b>";
             _loc2_ = _bMonsterLab._upgradeFinishTime.Get() - GLOBAL.Timestamp();
             this.tf_statusPBarLabel.htmlText = "<b>" + GLOBAL.ToTime(_loc2_,true) + "</b>";
             _loc3_ = MONSTERLAB.GetTimeCost(_bMonsterLab._upgrading,_bMonsterLab._upgradeLevel);
@@ -138,10 +138,10 @@ package
             mcPBarStatus.mcBar.width = _loc4_;
             mcPBarStatus.mcBar2.width = _loc4_;
          }
-         this.tf_stats.htmlText = "<b>Dave Rockets Level 0</b><br>Gives dave super powers";
-         this.tf_statsPBar.htmlText = "<b>Ability</b>";
-         this.tf_statsPBarLabel.htmlText = "<b>Rockets</b>";
-         this.tf_statsWarning.htmlText = "<b>Locked until you upgrade your Monster Lab to level2</b>";
+         this.tf_stats.htmlText = "<b>" + KEYS.Get("lab_rocketslevel",{"v1":0}) + "</b>" + "<br>" + KEYS.Get("lab_rockets_desc");
+         this.tf_statsPBar.htmlText = "<b>" + KEYS.Get("lab_ability") + "</b>";
+         this.tf_statsPBarLabel.htmlText = "<b>" + KEYS.Get("lab_davename") + "</b>";
+         this.tf_statsWarning.htmlText = "<b>" + KEYS.Get("lab_locked",{"v1":2}) + "</b>";
          if(_bMonsterLab._upgrading)
          {
             this.Setup(_bMonsterLab._upgrading);
@@ -313,13 +313,13 @@ package
                _loc15_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
                _loc16_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
                _instantUnlockCost = MONSTERLAB.GetShinyCost(_creatureID,_unlockLevel);
-               this.btn_instant.tDescription.htmlText = "<b>Keep your resources and upgrade instantly!</b>";
+               this.btn_instant.tDescription.htmlText = "<b>" + KEYS.Get("buildoptions_upgradeinstant") + "</b>";
                this.btn_instant.gArrow.visible = true;
                this.btn_instant.tDescription.visible = true;
                this.btn_instant.gCoin.visible = true;
                this.btn_instant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantMonsterPowerup);
                this.btn_instant.bAction.removeEventListener(MouseEvent.CLICK,this.CancelMonsterPowerup);
-               this.btn_instant.bAction.Setup("Use " + _instantUnlockCost + " Shiny");
+               this.btn_instant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_instantUnlockCost}));
                this.btn_instant.bAction.Enabled = true;
                this.btn_instant.bAction.Highlight = true;
                this.btn_instant.bAction.addEventListener(MouseEvent.CLICK,this.InstantMonsterPowerup);
@@ -342,13 +342,13 @@ package
                _loc15_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
                _loc16_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
                _instantUnlockCost = MONSTERLAB.GetShinyCost(_creatureID,_unlockLevel);
-               this.btn_instant.tDescription.htmlText = "<b>Keep your resources and train instantly!</b>";
+               this.btn_instant.tDescription.htmlText = KEYS.Get("academy_traininstantly");
                this.btn_instant.tDescription.visible = true;
                this.btn_instant.gArrow.visible = true;
                this.btn_instant.gCoin.visible = true;
                this.btn_instant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantMonsterPowerup);
                this.btn_instant.bAction.removeEventListener(MouseEvent.CLICK,this.CancelMonsterPowerup);
-               this.btn_instant.bAction.Setup("Use " + _instantUnlockCost + " Shiny");
+               this.btn_instant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_instantUnlockCost}));
                this.btn_instant.bAction.Enabled = true;
                this.btn_instant.bAction.Highlight = true;
                this.btn_instant.bAction.addEventListener(MouseEvent.CLICK,this.InstantMonsterPowerup);
@@ -391,18 +391,24 @@ package
                this.btn_resource.visible = false;
                if(_bMonsterLab._lvl.Get() < _unlockLevel)
                {
-                  this.tf_statsWarning.htmlText = "<b>Required:  Monster Lab Level " + _unlockLevel + "</b>";
+                  this.tf_statsWarning.htmlText = KEYS.Get("monsterlab_requiredlevel",{"v1":_unlockLevel});
                   this.tf_statsWarning.visible = true;
                }
                else if(CREATURELOCKER._lockerData[_creatureID] == null || CREATURELOCKER._lockerData[_creatureID].t < 2 || ACADEMY._upgrades[_creatureID] == null || ACADEMY._upgrades[_creatureID].level <= _unlockLevel)
                {
                   if(_bMonsterLab._lvl.Get() < _unlockLevel)
                   {
-                     this.tf_statsWarning.htmlText += "<br><b>Requires:  " + KEYS.Get(CREATURELOCKER._creatures[_creatureID].name) + " Level " + (_unlockLevel + 1) + "</b>";
+                     this.tf_statsWarning.htmlText += "<br>" + KEYS.Get("monsterlab_requiredlevel2",{
+                        "v1":KEYS.Get(CREATURELOCKER._creatures[_creatureID].name),
+                        "v2":_unlockLevel + 1
+                     });
                   }
                   else
                   {
-                     this.tf_statsWarning.htmlText = "<b>Requires:  " + KEYS.Get(CREATURELOCKER._creatures[_creatureID].name) + " Level " + (_unlockLevel + 1) + "</b>";
+                     this.tf_statsWarning.htmlText = KEYS.Get("monsterlab_requiredlevel2",{
+                        "v1":KEYS.Get(CREATURELOCKER._creatures[_creatureID].name),
+                        "v2":_unlockLevel + 1
+                     });
                   }
                   this.tf_statsWarning.visible = true;
                }
@@ -429,8 +435,8 @@ package
          var _loc3_:int = 0;
          if(_bMonsterLab._upgrading)
          {
-            this.tf_statusTitle.htmlText = "<b>Currently Researching: " + KEYS.Get(MONSTERLAB._powerupProps[_bMonsterLab._upgrading].name) + "</b>";
-            this.tf_statusDesc.htmlText = "<b>Level " + _bMonsterLab._upgradeLevel + "</b>";
+            this.tf_statusTitle.htmlText = KEYS.Get("monsterlab_currentlyresearching",{"v1":KEYS.Get(MONSTERLAB._powerupProps[_bMonsterLab._upgrading].name)});
+            this.tf_statusDesc.htmlText = "<b>" + KEYS.Get("lab_level",{"v1":_bMonsterLab._upgradeLevel}) + "</b>";
             _loc1_ = _bMonsterLab._upgradeFinishTime.Get() - GLOBAL.Timestamp();
             this.tf_statusPBarLabel.htmlText = "<b>" + GLOBAL.ToTime(_loc1_,true) + "</b>";
             _loc2_ = MONSTERLAB.GetTimeCost(_bMonsterLab._upgrading,_bMonsterLab._upgradeLevel);

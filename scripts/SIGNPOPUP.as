@@ -102,11 +102,11 @@ package
       {
          if(this._mode == "create")
          {
-            this.sendBtn.Setup("Send");
+            this.sendBtn.SetupKey("btn_send");
          }
          else if(this._mode == "edit")
          {
-            this.sendBtn.Setup("Save");
+            this.sendBtn.SetupKey("btn_save");
             this.subject_txt.text = this._subject;
          }
          this.status_txt.text = "";
@@ -157,6 +157,7 @@ package
       {
          if(Boolean(stage) && stage.displayState == StageDisplayState.FULL_SCREEN)
          {
+            this.fsWarning.tBody.htmlText = KEYS.Get("fswarning");
             addChild(this.fsWarning);
          }
          else if(this.contains(this.fsWarning))

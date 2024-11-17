@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1484")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1485")]
    public dynamic class WORKER_CLIP extends MovieClip
    {
       public var mcMarker:MovieClip;

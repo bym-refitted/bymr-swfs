@@ -916,7 +916,7 @@ package
                      var fbid:int = param2;
                      return function(param1:MouseEvent):*
                      {
-                        GLOBAL.CallJS("sendFeed",["tauntB","YOU attacked my yard!?! Remember, revenge is a dish best served cold...","Taunted!","taunt" + n + ".png",fbid]);
+                        GLOBAL.CallJS("sendFeed",["tauntB",KEYS.Get("js_attackedmyyard"),KEYS.Get("js_tauned"),"taunt" + n + ".png",fbid]);
                         POPUPS.Next();
                      };
                   };
@@ -1102,10 +1102,18 @@ package
                   case 1:
                      if(GLOBAL._baseURL == "http://bym-fb-trunk.dev.kixeye.com/base/")
                      {
-                        GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base";
+                        GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base/";
                         break;
                      }
-                     GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base";
+                     GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
+                     break;
+                  case 2:
+                     if(GLOBAL._baseURL == "http://bm-kg-web2.dev.casualcollective.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
                      break;
                   case 3:
                      if(GLOBAL._baseURL == "http://bmdev.vx.casualcollective.com/base/")
@@ -1122,6 +1130,22 @@ package
                         break;
                      }
                      GLOBAL._baseURL = "http://bym-vx2-vip.sjc.kixeye.com/base/";
+                     break;
+                  case 5:
+                     if(GLOBAL._baseURL == "http://bym-fb-inferno.dev.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
+                     break;
+                  case 6:
+                     if(GLOBAL._baseURL == "https://bym-fb-lbns.dc.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
                      break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
@@ -1273,9 +1297,6 @@ package
          var length1:int = 0;
          var length2:int = 0;
          var ijx:int = 0;
-         var lastDigit:int = 0;
-         var secondDigit:int = 0;
-         var sum:int = 0;
          var thl:int = 0;
          var tmpcount:int = 0;
          var hp:int = 0;
@@ -1467,38 +1488,6 @@ package
                      "t":2,
                      "l":1
                   });
-                  if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-                  {
-                     if(GLOBAL.GetABTestHash("tutorial") < 14)
-                     {
-                        b = addBuildingC(3);
-                        b.Setup({
-                           "X":60,
-                           "Y":140,
-                           "id":count++,
-                           "t":3,
-                           "l":1
-                        });
-                     }
-                  }
-                  else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-                  {
-                     lastDigit = int(LOGIN._digits[LOGIN._digits.length - 1]);
-                     secondDigit = int(LOGIN._digits[LOGIN._digits.length - 2]);
-                     sum = lastDigit + secondDigit;
-                     sum %= 10;
-                     if(sum < 2)
-                     {
-                        b = addBuildingC(3);
-                        b.Setup({
-                           "X":60,
-                           "Y":140,
-                           "id":count++,
-                           "t":3,
-                           "l":1
-                        });
-                     }
-                  }
                   b = addBuildingC(12);
                   b.Setup({
                      "X":60,
@@ -2035,7 +2024,7 @@ package
                      newWhatsnewid = 1041;
                      if(GLOBAL._bCage)
                      {
-                        popupWhatsNew.bAction.Setup("Feed Now");
+                        popupWhatsNew.bAction.SetupKey("btn_feednow");
                         popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction41);
                      }
                      else
@@ -2053,7 +2042,7 @@ package
                      };
                      popupWhatsNew = new popup_whatsnew42();
                      newWhatsnewid = 1042;
-                     popupWhatsNew.bAction.Setup("View Merchandise");
+                     popupWhatsNew.bAction.SetupKey("btn_viewmerchandise");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction42);
                      display = true;
                   }
@@ -2069,7 +2058,7 @@ package
                      newWhatsnewid = 1043;
                      if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() > 4)
                      {
-                        popupWhatsNew.bAction.Setup("Build Now");
+                        popupWhatsNew.bAction.SetupKey("btn_buildnow");
                         popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction43);
                      }
                      else
@@ -2087,7 +2076,7 @@ package
                      };
                      popupWhatsNew = new popup_whatsnew44();
                      newWhatsnewid = 1044;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction44);
                      display = true;
                   }
@@ -2100,7 +2089,7 @@ package
                      };
                      popupWhatsNew = new popup_whatsnew45();
                      newWhatsnewid = 1045;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction45);
                      display = true;
                   }
@@ -2122,7 +2111,7 @@ package
                      popupWhatsNew = new popup_whatsnew47();
                      newWhatsnewid = 1047;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction47);
                   }
                   else if(GLOBAL._whatsnewid < 1048)
@@ -2136,7 +2125,7 @@ package
                      popupWhatsNew = new popup_whatsnew48();
                      newWhatsnewid = 1048;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Upgrade Now");
+                     popupWhatsNew.bAction.SetupKey("btn_upgradenow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction48);
                   }
                   else if(GLOBAL._whatsnewid < 1049 && Boolean(GLOBAL._advancedMap))
@@ -2149,7 +2138,7 @@ package
                      popupWhatsNew = new popup_whatsnew49();
                      newWhatsnewid = 1049;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction49);
                   }
                   else if(GLOBAL._whatsnewid < 1050)
@@ -2164,7 +2153,7 @@ package
                      popupWhatsNew = new popup_whatsnew49();
                      newWhatsnewid = 1050;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction50);
                   }
                   if(display)
@@ -2200,35 +2189,34 @@ package
                      fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
                      if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
                      {
-                        MoreInfo711 = function(param1:MouseEvent):void
+                        if(GLOBAL._countryCode == "us")
                         {
-                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
-                           POPUPS.Next();
-                        };
-                        if(GLOBAL._displayedPromoNew)
-                        {
-                           return;
+                           MoreInfo711 = function(param1:MouseEvent):void
+                           {
+                              GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
+                              POPUPS.Next();
+                           };
+                           fbPromoPopup = new FBPROMO_711_CLIP();
+                           fbPromoPopup.bAction3.buttonMode = true;
+                           fbPromoPopup.bAction3.useHandCursor = true;
+                           fbPromoPopup.bAction3.mouseChildren = false;
+                           fbPromoPopup.bAction3.txt.htmlText = KEYS.Get("btn_goldenbiggulp");
+                           fbPromoPopup.bAction3.bg.visible = false;
+                           fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           fbPromoPopup.bAction4.buttonMode = true;
+                           fbPromoPopup.bAction4.useHandCursor = true;
+                           fbPromoPopup.bAction4.mouseChildren = false;
+                           fbPromoPopup.bAction4.txt.htmlText = KEYS.Get("btn_hatcheryoverdrives");
+                           fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           fbPromoPopup.bAction4.bg.visible = false;
+                           fbPromoPopup.bInfo.useHandCursor = true;
+                           fbPromoPopup.bInfo.buttonMode = true;
+                           fbPromoPopup.bInfo.mouseChildren = false;
+                           fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
+                           GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                           GLOBAL._displayedPromoNew = true;
                         }
-                        fbPromoPopup = new FBPROMO_711_CLIP();
-                        fbPromoPopup.bAction3.buttonMode = true;
-                        fbPromoPopup.bAction3.useHandCursor = true;
-                        fbPromoPopup.bAction3.mouseChildren = false;
-                        fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
-                        fbPromoPopup.bAction3.bg.visible = false;
-                        fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.buttonMode = true;
-                        fbPromoPopup.bAction4.useHandCursor = true;
-                        fbPromoPopup.bAction4.mouseChildren = false;
-                        fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
-                        fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.bg.visible = false;
-                        fbPromoPopup.bInfo.useHandCursor = true;
-                        fbPromoPopup.bInfo.buttonMode = true;
-                        fbPromoPopup.bInfo.mouseChildren = false;
-                        fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
-                        GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
-                        GLOBAL._displayedPromoNew = true;
                      }
                   }
                }
@@ -2297,17 +2285,6 @@ package
                else
                {
                   GLOBAL.Message(KEYS.Get("base_nohelpneeded"));
-               }
-            }
-            if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
-            {
-               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._countryCode != "ph")
-               {
-                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 && GLOBAL.StatGet("lasttdpopup") < 6)
-                  {
-                     SPECIALEVENT.ShowTShirtPopup("wait");
-                  }
-                  SPECIALEVENT.FlagChanged();
                }
             }
          }
@@ -2435,22 +2412,22 @@ package
             {
                BragA = function():*
                {
-                  GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered a " + _takeoverPreviousOwnersName + " base!","In war, there are no unwounded monsters.","build-outpost.png"]);
+                  GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("conqueredbase",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("newmap_destroyed3"),"build-outpost.png"]);
                   POPUPS.Next();
                };
                ACHIEVEMENTS.Check("wmoutpost",1);
-               POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed a " + _takeoverPreviousOwnersName + " base. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragA);
+               POPUPS.DisplayGeneric(KEYS.Get("venividivici"),KEYS.Get("destroyedbase_takeover",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("btn_brag"),"building-outpost.png",BragA);
             }
             else if(_takeoverFirstOpen == 2)
             {
                BragB = function():*
                {
-                  GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered " + _takeoverPreviousOwnersName + "\'s Outpost!","Veni, Vidi, Vici!","build-outpost.png"]);
+                  GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("conqueredoutpost",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("venividivici"),"build-outpost.png"]);
                   POPUPS.Next();
                };
                ++ACHIEVEMENTS._stats.playeroutpost;
                ACHIEVEMENTS.Check();
-               POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed " + _takeoverPreviousOwnersName + "\'s Outpost. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragB);
+               POPUPS.DisplayGeneric(KEYS.Get("venividivici"),KEYS.Get("destroyedoutpost_takeover",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("btn_brag"),"building-outpost.png",BragB);
             }
          }
          _takeoverFirstOpen = 0;
@@ -5019,7 +4996,7 @@ package
                });
                _loc2_ = GRID.ToISO(_loc2_.x,_loc2_.y,0);
                MAP.FocusTo(_loc2_.x,_loc2_.y,2);
-               GLOBAL.Message("<b>We found your missing Town Hall!</b><br><br>It\'s polished it up and ready to move back into your Yard. Don\'t leave it out in the cold, it will be prone to Attack!");
+               GLOBAL.Message(KEYS.Get("msg_rebuildTH"));
             }
          }
       }

@@ -46,11 +46,11 @@ package
             _loc2_ += "<br><b>" + KEYS.Get("bdg_infopop_levelnum",{"v1":param1._lvl.Get()}) + "</b>";
             if(_building._fortification.Get() > 0)
             {
-               _loc2_ += "<br><b>Fortified Level " + _building._fortification.Get() + "</b>";
+               _loc2_ += "<br><b>" + KEYS.Get("bdg_fortified_level",{"v1":_building._fortification.Get()}) + "</b>";
             }
             if(_building._class == "tower" && _building._type != 22 && GLOBAL._towerOverdrive && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp() && _building._countdownBuild.Get() == 0 && _building._countdownUpgrade.Get() == 0)
             {
-               _loc2_ += "<font color=\"#0000ff\"> <br><b>(25% Boost)</b></font>";
+               _loc2_ += "<font color=\"#0000ff\"> <br><b>" + KEYS.Get("bdg_25%boost") + "</b></font>";
             }
          }
          _mc.tName.htmlText = _loc2_;

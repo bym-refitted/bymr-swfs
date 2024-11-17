@@ -24,7 +24,7 @@ package
             this["img" + _loc2_].addEventListener(MouseEvent.CLICK,this.Enlarge(_loc2_));
             this["img" + _loc2_].buttonMode = true;
             _loc1_ = this.GetBuildings(_loc2_).costs;
-            this["c" + _loc2_].htmlText = "<b>" + GLOBAL.FormatNumber(_loc1_[0].Get()) + " Twigs<br>" + GLOBAL.FormatNumber(_loc1_[1].Get()) + " Pebbles<br>" + GLOBAL.FormatNumber(_loc1_[2].Get()) + " Putty</b>";
+            this["c" + _loc2_].htmlText = "<b>" + GLOBAL.FormatNumber(_loc1_[0].Get()) + " " + KEYS.Get("#r_twigs#") + "<br>" + GLOBAL.FormatNumber(_loc1_[1].Get()) + " " + KEYS.Get("#r_pebbles#") + "<br>" + GLOBAL.FormatNumber(_loc1_[2].Get()) + " " + KEYS.Get("#r_putty#") + "</b>";
             this["b" + _loc2_].SetupKey("btn_useresources");
             this["b" + _loc2_].addEventListener(MouseEvent.CLICK,this.PreSelect(_loc2_));
             this["b" + _loc2_ + "s"].Setup(KEYS.Get("btn_useshiny",{"v1":_loc1_[3].Get()}));

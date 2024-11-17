@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1522")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1523")]
    public dynamic class bubble_selecttarget extends MovieClip
    {
       public var bCancel:Button_CLIP;

@@ -3,22 +3,20 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol42")]
-   public dynamic class popup_generic extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol19")]
+   public dynamic class popup_dialogue extends MovieClip
    {
       public var mcBG:frame2_CLIP;
       
-      public var tA:TextField;
+      public var tBody:TextField;
       
-      public var tB:TextField;
+      public var tTitle:TextField;
       
       public var mcImage:MovieClip;
       
       public var bAction:Button_CLIP;
       
-      public var mcImageFrame:MovieClip;
-      
-      public function popup_generic()
+      public function popup_dialogue()
       {
          super();
       }

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2144")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2149")]
    public dynamic class MapRoomPopup_takeover_CLIP extends MovieClip
    {
       public var mcBG:frame2_CLIP;

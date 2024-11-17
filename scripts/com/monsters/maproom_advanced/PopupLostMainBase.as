@@ -29,7 +29,7 @@ package com.monsters.maproom_advanced
             {
                tDesc.htmlText = "<b>" + KEYS.Get("empiredestroyed2") + "</b>";
             }
-            tWarning.htmlText = "<b>WARNING: By relocating to a new area you will lose all your outposts in this location and start fresh with just your new main yard.</b>";
+            tWarning.htmlText = "<b>" + KEYS.Get("msg_moveyard_warn2") + "</b>";
          }
          else
          {

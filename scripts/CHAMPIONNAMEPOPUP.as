@@ -26,7 +26,7 @@ package
             tInput.text = "Fomor";
             mcGuard.gotoAndStop(13);
          }
-         bAction.Setup("Accept");
+         bAction.SetupKey("btn_accept");
          bAction.addEventListener(MouseEvent.CLICK,this.Accept);
          bAction.Highlight = false;
          SOUNDS.Play("levelup");

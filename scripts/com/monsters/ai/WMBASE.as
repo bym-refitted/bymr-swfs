@@ -212,7 +212,7 @@ package com.monsters.ai
          var shareDown:Function;
          if(GLOBAL._advancedMap)
          {
-            GLOBAL.Message("Yard Destroyed! You can now take it over and build an outpost","Show Map",ShowMapAgain);
+            GLOBAL.Message(KEYS.Get("msg_yarddestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
             MapRoom._mc.ShowInfoEnemy(GLOBAL._currentCell);
          }
          else
@@ -246,7 +246,7 @@ package com.monsters.ai
             _destroyed = true;
             if(GLOBAL._advancedMap)
             {
-               _mc.b1.Setup("Open Map");
+               _mc.b1.SetupKey("btn_openmap");
             }
             else
             {
@@ -303,7 +303,7 @@ package com.monsters.ai
          var base:Object = null;
          if(GLOBAL._advancedMap)
          {
-            GLOBAL.Message("Yard not destroyed","Show Map",ShowMapAgain);
+            GLOBAL.Message(KEYS.Get("msg_notdestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
          }
          else
          {
@@ -334,7 +334,7 @@ package com.monsters.ai
             }
             if(GLOBAL._advancedMap)
             {
-               _mc.b1.Setup("Open Map");
+               _mc.b1.SetupKey("btn_openmap");
             }
             else
             {

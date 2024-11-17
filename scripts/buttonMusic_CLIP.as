@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol977")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol981")]
    public dynamic class buttonMusic_CLIP extends buttonMusic
    {
       public function buttonMusic_CLIP()

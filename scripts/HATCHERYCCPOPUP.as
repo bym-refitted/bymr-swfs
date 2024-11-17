@@ -198,7 +198,7 @@ package
          {
             _loc13_ = int(ACADEMY._upgrades[_loc3_].level);
          }
-         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("acad_status_level",{"v1":_loc13_}) + " " + KEYS.Get(_loc4_.name) + "</b><br>" + KEYS.Get(_loc4_.description);
+         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("hatcherypopup_level",{"v1":_loc13_}) + " " + KEYS.Get(_loc4_.name) + "</b><br>" + KEYS.Get(_loc4_.description);
          if(Boolean(CREATURELOCKER._lockerData[_loc3_]) && CREATURELOCKER._lockerData[_loc3_].t == 2)
          {
             mcMonsterInfo.mcLocked.visible = false;
@@ -307,11 +307,17 @@ package
                GLOBAL.Array2String(_loc2_);
                if(GLOBAL._bHatcheryCC._finishAll)
                {
-                  GLOBAL.Message("Do you want to finish your queue of " + GLOBAL.Array2String(_loc2_) + " now for " + GLOBAL._bHatcheryCC._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
+                  GLOBAL.Message(KEYS.Get("msg_finishqueue",{
+                     "v1":GLOBAL.Array2String(_loc2_),
+                     "v2":GLOBAL._bHatcheryCC._finishCost.Get()
+                  }),KEYS.Get("str_finishnow"),this.DoFinish);
                }
                else
                {
-                  GLOBAL.Message("You have room in your Housing for " + GLOBAL.Array2String(_loc2_) + ", do you want to finish them now for " + GLOBAL._bHatcheryCC._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
+                  GLOBAL.Message(KEYS.Get("msg_fillhousing",{
+                     "v1":GLOBAL.Array2String(_loc2_),
+                     "v2":GLOBAL._bHatcheryCC._finishCost.Get()
+                  }),KEYS.Get("str_finishnow"),this.DoFinish);
                }
             }
             else
@@ -321,7 +327,7 @@ package
          }
          else if(GLOBAL._bHatcheryCC._finishCost.Get() <= 0)
          {
-            GLOBAL.Message("There is no room in Housing for any of the monsters currently in production.");
+            GLOBAL.Message(KEYS.Get("msg_housingfull"));
          }
       }
       
@@ -503,7 +509,7 @@ package
             _loc5_ = 100;
          }
          mcGoo.mcBar.width = _loc5_;
-         txtGoo.htmlText = "<b>" + GLOBAL.FormatNumber(BASE._resources.r4.Get()) + " Goo remaining</b>";
+         txtGoo.htmlText = "<b>" + KEYS.Get("hat_gooremaining",{"v1":GLOBAL.FormatNumber(BASE._resources.r4.Get())}) + "</b>";
          bTopup.gotoAndStop(1);
          if(BASE._resources.r4.Get() < BASE._resources.r4max * 0.1)
          {

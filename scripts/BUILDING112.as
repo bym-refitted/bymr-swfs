@@ -49,17 +49,17 @@ package
       
       override public function Recycle() : *
       {
-         GLOBAL.Message("You cannot Recycle your Outpost.");
+         GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
       override public function RecycleB(param1:MouseEvent = null) : *
       {
-         GLOBAL.Message("You cannot Recycle your Outpost.");
+         GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
       override public function RecycleC() : *
       {
-         GLOBAL.Message("You cannot Recycle your Outpost.");
+         GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
       override public function Destroyed(param1:Boolean = true) : *

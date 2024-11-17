@@ -49,7 +49,7 @@ package
          var _loc1_:CHAMPIONCHAMBER = GLOBAL._bChamber as CHAMPIONCHAMBER;
          if(CREATURES._guardian == null && (_loc1_ && _loc1_._frozen.length == 0))
          {
-            GLOBAL.Message("You have no Champions!");
+            GLOBAL.Message(KEYS.Get("msg_chamber_nochamp"));
             return;
          }
          if(Boolean(BASE._guardianData) && CREATURES._guardian == null)

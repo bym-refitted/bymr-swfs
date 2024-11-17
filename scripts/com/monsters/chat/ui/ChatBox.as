@@ -159,7 +159,7 @@ package com.monsters.chat.ui
          this._scrollbar.AutoHideEnabled = false;
          this._scrollbar.visible = false;
          this._sendBtn = new Button_CLIP();
-         this._sendBtn.Setup("Say");
+         this._sendBtn.SetupKey("btn_say");
          this._sendBtn.x = 383;
          this._sendBtn.y = 8;
          this._sendBtn.width = 40;

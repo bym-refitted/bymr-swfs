@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1847")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1851")]
    public dynamic class lastSeenBtn_267 extends MovieClip
    {
       public var sorter_mc:MovieClip;

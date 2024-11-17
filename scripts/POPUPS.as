@@ -554,8 +554,8 @@ package
          var mc:MovieClip = new popup_noworker();
          if(BASE._isOutpost)
          {
-            mc.tA.htmlText = "<b>Your Worker Is Busy</b>";
-            mc.tB.htmlText = "Speed-up the worker\'s task for " + QUEUE.GetFinishCost() + " Shiny.";
+            mc.tA.htmlText = KEYS.Get("worker_busy");
+            mc.tB.htmlText = KEYS.Get("worker_speedupoutpost",{"v1":QUEUE.GetFinishCost()});
             mc.bGet.SetupKey("btn_speedup");
             mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
             {
@@ -568,7 +568,7 @@ package
             mc.tA.htmlText = "<b>" + KEYS.Get("pop_hireanother_title") + "</b>";
             if(QUEUE.GetBuilding())
             {
-               mc.tB.htmlText = "Speed-up a worker\'s task for " + QUEUE.GetFinishCost() + " Shiny.";
+               mc.tB.htmlText = KEYS.Get("worker_speedup",{"v1":QUEUE.GetFinishCost()});
                mc.bGet.SetupKey("btn_speedup");
                mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
                {
@@ -623,6 +623,44 @@ package
          _loc6_.bAction.y = _loc6_.mcBG.y + _loc6_.mcBG.height - 45;
          (_loc6_.mcBG as frame2).Setup();
          POPUPS.Push(_loc6_,null,null,"",param4);
+      }
+      
+      public static function DisplayDialogue(param1:String, param2:String, param3:String, param4:String, param5:Function) : *
+      {
+         var popupMC:popup_dialogue = null;
+         var imageCompleteDialogue:Function = null;
+         var title:String = param1;
+         var message:String = param2;
+         var button:String = param3;
+         var image:String = param4;
+         var action:Function = param5;
+         imageCompleteDialogue = function(param1:String, param2:BitmapData):void
+         {
+            var _loc3_:* = new Bitmap(param2);
+            _loc3_.y = -_loc3_.height;
+            popupMC.mcImage.addChild(_loc3_);
+         };
+         popupMC = new popup_dialogue();
+         popupMC.tTitle.autoSize = TextFieldAutoSize.LEFT;
+         popupMC.tBody.autoSize = TextFieldAutoSize.LEFT;
+         popupMC.tTitle.htmlText = "<b>" + title + "</b>";
+         popupMC.tBody.htmlText = message;
+         popupMC.bAction.Setup(button);
+         popupMC.bAction.addEventListener(MouseEvent.CLICK,action);
+         popupMC.bAction.Highlight = true;
+         popupMC.tBody.y = popupMC.tTitle.y + popupMC.tTitle.height + 5;
+         popupMC.mcBG.height = 0 - popupMC.mcBG.y + popupMC.tTitle.y + popupMC.tTitle.height + 50;
+         if(popupMC.mcBG.height < 190)
+         {
+            popupMC.mcBG.height = 190;
+         }
+         popupMC.bAction.y = popupMC.mcBG.y + popupMC.mcBG.height - 45;
+         (popupMC.mcBG as frame2).Setup();
+         if(image)
+         {
+            ImageCache.GetImageWithCallBack("popups/" + image,imageCompleteDialogue);
+         }
+         POPUPS.Push(popupMC,null,null,"",image);
       }
       
       public static function DisplayRate() : *

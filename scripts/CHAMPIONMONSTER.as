@@ -1154,7 +1154,11 @@ package
          var _loc5_:Point = null;
          if(this._health.Get() <= 0)
          {
-            ATTACK.Log(this._creatureID,BASE._ownerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " was critically injured and fled the battle.");
+            ATTACK.Log(this._creatureID,KEYS.Get("attacklog_champ_injured",{
+               "v1":BASE._ownerName,
+               "v2":this._level.Get(),
+               "v3":CHAMPIONCAGE._guardians[this._creatureID].name
+            }));
             this._venom.Set(0);
             this.ModeRetreat();
             if(GLOBAL._mode == "attack")
@@ -1390,7 +1394,7 @@ package
                   CHAMPIONCAGE.Hide();
                   if(!GLOBAL._catchup)
                   {
-                     GLOBAL.Message("Your Champion is starving and his evolution has stalled!  Now you must start feeding him over in order to get him to evolve!");
+                     GLOBAL.Message(KEYS.Get("msg_champion_starving"));
                   }
                   this._feeds.Add(-1);
                   if(this._feeds.Get() < 0)
@@ -1409,7 +1413,7 @@ package
                   CHAMPIONCAGE.Hide();
                   if(!GLOBAL._catchup)
                   {
-                     GLOBAL.Message("Your Champion is hungry!  You must feed him within " + GLOBAL.ToTime(this._feedTime.Get() - GLOBAL.Timestamp() + _starveTimer) + " or his evolution will stall!");
+                     GLOBAL.Message(KEYS.Get("msg_champion_hungry",{"v1":GLOBAL.ToTime(this._feedTime.Get() - GLOBAL.Timestamp() + _starveTimer)}));
                   }
                   this._warned = true;
                }
@@ -1481,7 +1485,11 @@ package
          {
             MAP.CreepCellDelete(this._id,this.node);
             this.ModeRetreat();
-            ATTACK.Log(this._creatureID,LOGIN._playerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " retreated.");
+            ATTACK.Log(this._creatureID,KEYS.Get("attacklog_champ_retreated",{
+               "v1":LOGIN._playerName,
+               "v2":this._level.Get(),
+               "v3":CHAMPIONCAGE._guardians[this._creatureID].name
+            }));
             if(GLOBAL._mode == "attack")
             {
                LOGGER.Stat([54,this._creatureID,1,this._level.Get()]);
@@ -1765,7 +1773,7 @@ package
             _loc1_ = this.GetHealCost();
             if(_loc1_ > 0)
             {
-               GLOBAL.Message("Heal your Champion for " + _loc1_ + " Shiny?","Heal",this.HealB);
+               GLOBAL.Message(KEYS.Get("msg_healchampion",{"v1":_loc1_}),KEYS.Get("str_heal"),this.HealB);
             }
          }
       }

@@ -172,13 +172,13 @@ package
          {
             if(!_loc3_.error)
             {
-               bA.tDescription.htmlText = "<b>Keep your resources and train instantly!</b>";
+               bA.tDescription.htmlText = KEYS.Get("academy_traininstantly");
                this.CalculateInstantCost();
                bA.gArrow.visible = true;
                bA.tDescription.visible = true;
                bA.gCoin.visible = true;
                bA.bAction.removeEventListener(MouseEvent.CLICK,this.SpeedUp);
-               bA.bAction.Setup("Use " + _instantUpgradeCost + " Shiny");
+               bA.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_instantUpgradeCost}));
                bA.bAction.removeEventListener(MouseEvent.CLICK,this.SpeedUp);
                bA.bAction.Enabled = true;
                bA.bAction.Highlight = true;
@@ -201,7 +201,7 @@ package
                bA.tDescription.visible = true;
                bA.gArrow.visible = true;
                bA.gCoin.visible = true;
-               bA.tDescription.htmlText = "<b>Keep your resources and train instantly!</b>";
+               bA.tDescription.htmlText = KEYS.Get("academy_traininstantly");
                bB.mcR1.visible = true;
                bB.mcR2.visible = true;
                bB.mcR3.visible = true;
@@ -210,7 +210,7 @@ package
                bB.mcTime.visible = true;
                bB.mcTime.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc4_[1]) + "</b>";
                this.CalculateInstantCost();
-               bA.bAction.Setup("Use " + _instantUpgradeCost + " Shiny");
+               bA.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_instantUpgradeCost}));
                bA.bAction.removeEventListener(MouseEvent.CLICK,this.InstantMonsterUpgrade);
                bA.bAction.addEventListener(MouseEvent.CLICK,this.InstantMonsterUpgrade);
                bA.bAction.removeEventListener(MouseEvent.CLICK,this.SpeedUp);

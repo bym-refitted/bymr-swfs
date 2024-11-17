@@ -102,7 +102,7 @@ package com.monsters.radio
             if(_loc2_.error != "noname")
             {
                LOGGER.Log("err","radio: " + _loc2_.error);
-               GLOBAL.Message("There was a problem with the Radio Tower: " + _loc2_.error + "<br><br>Please try again.");
+               GLOBAL.Message(KEYS.Get("msg_err_radio") + _loc2_.error + "<br><br>" + KEYS.Get("msg_tryagain"));
             }
          }
          else if(_loc2_.name)
@@ -174,7 +174,7 @@ package com.monsters.radio
       
       public static function TwitterBrag() : *
       {
-         GLOBAL.CallJS("sendFeed",["build-radio","#fname#\'s Radio Tower is complete.","#fname# is following @BackyardMonster and is now receiving Attack Alerts.","build-radio.v2.png"]);
+         GLOBAL.CallJS("sendFeed",["build-radio",KEYS.Get("radiobuilt_streamtitle"),KEYS.Get("radiobuilt_streambody"),"build-radio.v2.png"]);
       }
       
       public static function Export() : Object

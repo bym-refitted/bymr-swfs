@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1060")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1665")]
    public dynamic class NEXTWAVEBAR_CLIP extends MovieClip
    {
       public var bNext:MovieClip;

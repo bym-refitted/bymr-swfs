@@ -22,6 +22,10 @@ package
       
       public static var feedIcons:Array;
       
+      private static var statsStringsArr:Array;
+      
+      private static var buffsStringsArr:Array;
+      
       public static var _bCage:CHAMPIONCAGE;
       
       public static var _page:int = 0;
@@ -59,6 +63,7 @@ package
       public function CHAMPIONCAGEPOPUP()
       {
          super();
+         tTitle.htmlText = KEYS.Get("gcage_title");
          _bCage = GLOBAL._bCage as CHAMPIONCAGE;
          page1Assets = [mcImage,tEvoStage,damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff,tEvoDesc,tHP,barHP,bHeal];
          page2Assets = [barDNA,barDNA_bg,barDNA_mask,mcCurrGuardian,mcNextGuardian,tNextFeed,tFeedsFrom,mcInstant,mcFeed1,mcFeed2,gFeedBG,bEvolve,bFeedTimer,tNextFeedTitle];
@@ -84,12 +89,12 @@ package
             if(GLOBAL._bCage)
             {
                this.UpdateVars();
-               b1.Setup("Champion",false,0,0);
+               b1.SetupKey("btn_champion",false,0,0);
                b1.addEventListener(MouseEvent.CLICK,this.SwitchClick(0));
-               b2.Setup("Evolution",false,0,0);
+               b2.SetupKey("btn_evolution",false,0,0);
                if(this.guardLevel == 6)
                {
-                  b2.Setup("Daily Feed",false,0,0);
+                  b2.SetupKey("btn_dailyfeed",false,0,0);
                }
                b2.addEventListener(MouseEvent.CLICK,this.SwitchClick(1));
                tEvoStage.mouseEnabled = false;
@@ -192,7 +197,7 @@ package
             {
                this.UpdatePortrait();
                this.UpdateStats();
-               bHeal.Setup("Heal Champion",false,0,0);
+               bHeal.SetupKey("btn_healchampion",false,0,0);
                if(CREATURES._guardian._health.Get() >= CREATURES._guardian._maxHealth)
                {
                   bHeal.Enabled = false;
@@ -230,9 +235,9 @@ package
                      mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("gcage_instantFeed") + "</b>";
                      mcInstant.bAction.Highlight = false;
                      _loc7_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedShiny");
-                     mcInstant.bAction.Setup("Use " + _loc7_ + " Shiny",false,0,0);
+                     mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_loc7_}),false,0,0);
                      mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.InstantClick);
-                     bEvolve.Setup("Feed Now",false,0,0);
+                     bEvolve.SetupKey("btn_feednow",false,0,0);
                      bEvolve.visible = true;
                      bEvolve.Enabled = true;
                      bEvolve.Highlight = false;
@@ -249,10 +254,10 @@ package
                      _loc8_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedShiny");
                      _loc8_ = _loc8_ * 2;
                      _loc8_ = _loc8_ * (CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedCount") - CREATURES._guardian._feeds.Get());
-                     mcInstant.bAction.Setup("Use " + _loc8_ + " Shiny",false,0,0);
+                     mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_loc8_}),false,0,0);
                      mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantClick);
                      mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.EvolveClick);
-                     bEvolve.Setup("Feed Now",false,0,0);
+                     bEvolve.SetupKey("btn_feednow",false,0,0);
                      bEvolve.visible = true;
                      bEvolve.Enabled = false;
                      bEvolve.Highlight = false;
@@ -288,7 +293,7 @@ package
                      mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("gcage_instantBuff") + "</b>";
                      mcInstant.bAction.Highlight = false;
                      _loc7_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny");
-                     mcInstant.bAction.Setup("Use " + _loc7_ + " Shiny",false,0,0);
+                     mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_loc7_}),false,0,0);
                      if(CREATURES._guardian._foodBonus.Get() >= 3)
                      {
                         mcInstant.bAction.Enabled = false;
@@ -298,7 +303,7 @@ package
                      {
                         mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.InstantClick);
                      }
-                     bEvolve.Setup("Feed Now",false,0,0);
+                     bEvolve.SetupKey("btn_feednow",false,0,0);
                      bEvolve.visible = true;
                      bEvolve.Enabled = true;
                      bEvolve.Highlight = false;
@@ -313,7 +318,7 @@ package
                      mcInstant.bAction.Enabled = true;
                      _loc8_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny");
                      _loc8_ = _loc8_ * 2;
-                     mcInstant.bAction.Setup("Use " + _loc8_ + " Shiny",false,0,0);
+                     mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_loc8_}),false,0,0);
                      mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantClick);
                      if(CREATURES._guardian._foodBonus.Get() >= 3)
                      {
@@ -324,7 +329,7 @@ package
                      {
                         mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.InstantClick);
                      }
-                     bEvolve.Setup("Feed Now",false,0,0);
+                     bEvolve.SetupKey("btn_feednow",false,0,0);
                      bEvolve.visible = true;
                      bEvolve.Enabled = false;
                      bEvolve.Highlight = false;
@@ -505,6 +510,10 @@ package
             health_txt.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
             speed_txt.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
             buff_txt.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
+            damage_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelDamage") + "</b>";
+            health_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
+            speed_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
+            buff_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
             _loc1_ = KEYS.Get("mon_gorgodesc");
             _loc2_ = KEYS.Get("mon_drulldesc");
             _loc3_ = KEYS.Get("mon_fomordesc");

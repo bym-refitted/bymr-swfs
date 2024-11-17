@@ -35,7 +35,11 @@ package
          {
             _loc1_ = int(_buildingProps.hp[_lvl.Get() - 1]);
             _loc2_ = int(_buildingProps.hp[_lvl.Get()]);
-            _upgradeDescription = "Increases hit points from " + GLOBAL.FormatNumber(_loc1_) + " to " + GLOBAL.FormatNumber(_loc2_) + " (+" + (int(100 / _loc1_ * _loc2_) - 100) + "%).";
+            _upgradeDescription = KEYS.Get("building_wall_upgrade",{
+               "v1":GLOBAL.FormatNumber(_loc1_),
+               "v2":GLOBAL.FormatNumber(_loc2_),
+               "v3":int(100 / _loc1_ * _loc2_) - 100
+            });
          }
       }
       

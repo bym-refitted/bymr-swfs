@@ -80,7 +80,7 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = "Increases the Musk capacity and regeneration rate, letting you attract bigger groups of Wild Monsters.";
+         _upgradeDescription = KEYS.Get("building_baiter_upgrade_desc");
       }
       
       override public function Update(param1:Boolean = false) : *

@@ -195,30 +195,30 @@ package com.monsters.alliances
             PLEASEWAIT.Hide();
             if(param1.response == "success")
             {
-               GLOBAL.Message("An invitation to join your alliance has been sent! ");
+               GLOBAL.Message(KEYS.Get("msg_allianceinvitesent"));
                return;
             }
             if(param1.error)
             {
-               GLOBAL.Message("There was an error in processing your invitation. \nError - " + param1.error + ": " + param1.error_code);
+               GLOBAL.Message(KEYS.Get("msg_err_processinginvite_long") + " - " + param1.error + ": " + param1.error_code);
             }
             else
             {
-               GLOBAL.Message("There was an error in processing your invitation.");
+               GLOBAL.Message(KEYS.Get("msg_err_processinginvite_short"));
             }
          };
          onAllianceInviteFail = function(param1:IOErrorEvent):void
          {
-            GLOBAL.Message("There was an error in sending your invitation.");
+            GLOBAL.Message(KEYS.Get("msg_err_sendinginvite"));
          };
          if(_cell._base < 2)
          {
-            GLOBAL.Message("You cannot send an invitation to",_cell._name);
+            GLOBAL.Message(KEYS.Get("msg_cannotinvite",{"v1":_cell._name}));
             return;
          }
          if(!_myAlliance)
          {
-            GLOBAL.Message("You are not in an alliance. ");
+            GLOBAL.Message(KEYS.Get("msg_notinalliance"));
             return;
          }
          r = new URLLoaderApi();
