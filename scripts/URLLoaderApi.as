@@ -148,7 +148,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt(class_1.method_1(77,-165));
+         return this.decodeSalt(class_1.method_1(-289,-737));
       }
       
       private function decodeSalt(param1:String) : String
@@ -427,7 +427,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","URLLoaderApi.fireComplete catch URL: " + _baseUrl + " RET: " + _req.data);
+            LOGGER.Log("err","URLLoaderApi.fireComplete catch URL: " + _baseUrl + " RET: " + _req.data + " MSG:" + e.message);
          }
       }
    }

@@ -118,49 +118,57 @@ package com.monsters.maproom
          var handleLoadError:Function = null;
          handleLoadSuccessful = function(param1:Object):*
          {
-            var _loc2_:Object = null;
-            var _loc3_:String = null;
-            var _loc4_:int = 0;
-            var _loc5_:Object = null;
-            MapRoom.BRIDGE.GLOBAL.WaitHide();
-            if(param1.error == 0)
+            var aib:Object = null;
+            var ai:String = null;
+            var start:int = 0;
+            var _o:Object = null;
+            var obj:Object = param1;
+            try
             {
-               param1.wmbases = [];
-               _loc2_ = MapRoom.BRIDGE.WMBASE._bases;
-               for(_loc3_ in _loc2_)
+               MapRoom.BRIDGE.GLOBAL.WaitHide();
+               if(obj.error == 0)
                {
-                  if(_loc2_[_loc3_].destroyed == false)
+                  obj.wmbases = [];
+                  aib = MapRoom.BRIDGE.WMBASE._bases;
+                  for(ai in aib)
                   {
-                     _loc5_ = {};
-                     if(_loc2_[_loc3_].tribe)
+                     if(aib[ai].destroyed == false)
                      {
-                        _loc5_.baseid = _loc2_[_loc3_].baseid;
-                        _loc5_.level = _loc2_[_loc3_].level;
-                        _loc5_.type = _loc2_[_loc3_].tribe.type;
-                        _loc5_.description = _loc2_[_loc3_].tribe.description;
-                        _loc5_.wm = 1;
-                        _loc5_.friend = 0;
-                        _loc5_.pic = _loc2_[_loc3_].tribe.profilepic;
-                        _loc5_.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":_loc2_[_loc3_].tribe.name});
-                        if(_loc5_.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                        _o = {};
+                        if(aib[ai].tribe)
                         {
-                           param1.wmbases.push(_loc5_);
+                           _o.baseid = aib[ai].baseid;
+                           _o.level = aib[ai].level;
+                           _o.type = aib[ai].tribe.type;
+                           _o.description = aib[ai].tribe.description;
+                           _o.wm = 1;
+                           _o.friend = 0;
+                           _o.pic = aib[ai].tribe.profilepic;
+                           _o.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
+                           if(_o.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                           {
+                              obj.wmbases.push(_o);
+                           }
                         }
                      }
                   }
+                  start = getTimer();
+                  Create(obj);
+                  _getting = false;
+                  _lastUpdated = MapRoom.BRIDGE.GLOBAL.Timestamp() + int(Math.random() * 5);
+                  dispatchEvent(new Event(Event.COMPLETE));
                }
-               _loc4_ = getTimer();
-               Create(param1);
-               _getting = false;
-               _lastUpdated = MapRoom.BRIDGE.GLOBAL.Timestamp() + int(Math.random() * 5);
-               dispatchEvent(new Event(Event.COMPLETE));
+               else
+               {
+                  MapRoom.BRIDGE.Log("err","MAPROOMPOPUP.Get: " + obj.error);
+                  MapRoom.BRIDGE.GLOBAL.ErrorMessage("");
+               }
+               MiniMap.getInstance().Update(basesForeign,basesWM);
             }
-            else
+            catch(e:Error)
             {
-               MapRoom.BRIDGE.Log("err","MAPROOMPOPUP.Get: " + param1.error);
-               MapRoom.BRIDGE.GLOBAL.ErrorMessage("");
+               LOGGER.Log("err","PlayerLayer: " + e.message);
             }
-            MiniMap.getInstance().Update(basesForeign,basesWM);
          };
          handleLoadError = function(param1:IOErrorEvent):void
          {

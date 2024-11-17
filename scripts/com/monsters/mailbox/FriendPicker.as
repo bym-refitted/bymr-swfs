@@ -175,7 +175,7 @@ package com.monsters.mailbox
       private function onKey(param1:KeyboardEvent) : void
       {
          var _loc7_:Number = NaN;
-         var _loc2_:String = class_1.method_1(80,-166);
+         var _loc2_:String = class_1.method_1(-290,-738);
          var _loc3_:Array = [65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90];
          var _loc4_:Object = {};
          var _loc5_:Number = 0;

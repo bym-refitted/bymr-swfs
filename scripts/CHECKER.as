@@ -56,7 +56,7 @@ package
             LOGGER.Log("err","CHECKER.Creatures " + CREATURELOCKER.Check());
             GLOBAL.ErrorMessage("");
          }
-         if(ResourceBombs.Check() != class_1.method_1(78,-164))
+         if(ResourceBombs.Check() != class_1.method_1(-288,-736))
          {
             LOGGER.Log("err","CHECKER.ResourceBombs " + ResourceBombs.Check());
             GLOBAL.ErrorMessage("");
