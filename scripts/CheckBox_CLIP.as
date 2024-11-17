@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol207")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol211")]
    public dynamic class CheckBox_CLIP extends MovieClip
    {
       public function CheckBox_CLIP()

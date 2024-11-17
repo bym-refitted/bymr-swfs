@@ -5931,7 +5931,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_quaketower_desc",
-         "block":true,
+         "block":false,
          "stats":[{
             "range":160,
             "damage":1100,
@@ -5980,14 +5980,14 @@ package
             "r3":2875000,
             "r4":0,
             "time":3 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
          },{
             "r1":250 * 60 * 1000,
             "r2":9000000,
             "r3":100 * 60 * 1000,
             "r4":0,
             "time":108 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
          }],
          "fortify_costs":[{
             "r1":50000,
@@ -6023,7 +6023,7 @@ package
             "1":{
                "anim":["anim.1.png",new Rectangle(-37,-75,75,132),33],
                "shadow":["shadow.1.v2.jpg",new Point(-37,17)],
-               "topdamaged":["top.1.damaged.png",new Point(-40,-75)],
+               "animdamaged":["anim.1.damaged.png",new Rectangle(-37,-75,75,132),33],
                "shadowdamaged":["shadow.1.v2.jpg",new Point(-40,16)],
                "topdestroyed":["top.1.destroyed.png",new Point(-42,-8)],
                "shadowdestroyed":["shadow.1.v2.jpg",new Point(-44,10)]
@@ -6057,7 +6057,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,0,0,0],
+         "quantity":[0,0,0,2,2,4],
          "hp":[10000,16000,22000,28000,34000],
          "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
       },{
@@ -6388,14 +6388,14 @@ package
             "r3":1250000,
             "r4":0,
             "time":4 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
          },{
             "r1":200 * 60 * 1000,
             "r2":10000000,
             "r3":2000000,
             "r4":0,
-            "time":60 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "time":6 * 24 * 60 * 60,
+            "re":[[14,1,5]]
          }],
          "fortify_costs":[{
             "r1":215000,

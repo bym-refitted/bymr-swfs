@@ -211,6 +211,10 @@ package
       
       private static var _tmpPercent:Number;
       
+      public static var _ideltaResources:Object = null;
+      
+      public static var _iresources:Object = null;
+      
       public static var _allianceArmamentTime:SecNum = new SecNum(0);
       
       public static var _loadedYardType:int = 0;
@@ -274,6 +278,27 @@ package
          _isFan = 0;
          _isBookmarked = 0;
          _installsGenerated = 0;
+         _ideltaResources = {
+            "dirty":false,
+            "r1":new SecNum(0),
+            "r2":new SecNum(0),
+            "r3":new SecNum(0),
+            "r4":new SecNum(0),
+            "r1max":0,
+            "r2max":0,
+            "r3max":0,
+            "r4max":0
+         };
+         _iresources = {
+            "r1":new SecNum(0),
+            "r2":new SecNum(0),
+            "r3":new SecNum(0),
+            "r4":new SecNum(0),
+            "r1max":0,
+            "r2max":0,
+            "r3max":0,
+            "r4max":0
+         };
          _deltaResources = {
             "dirty":false,
             "r1":new SecNum(0),
@@ -470,6 +495,7 @@ package
             var r:Object = null;
             var bd:Object = null;
             var i:String = null;
+            var ir:Object = null;
             var kx:int = 0;
             var id:String = null;
             var ooo:Object = null;
@@ -647,6 +673,18 @@ package
                _resources.r2bonus = r.r2bonus;
                _resources.r3bonus = r.r3bonus;
                _resources.r4bonus = r.r4bonus;
+               if(obj.iresources)
+               {
+                  ir = obj.iresources;
+                  _iresources.r1 = new SecNum(int(ir.r1));
+                  _iresources.r2 = new SecNum(int(ir.r2));
+                  _iresources.r3 = new SecNum(int(ir.r3));
+                  _iresources.r4 = new SecNum(int(ir.r4));
+                  _iresources.r1max = int(ir.r1max);
+                  _iresources.r2max = int(ir.r2max);
+                  _iresources.r3max = int(ir.r3max);
+                  _iresources.r4max = int(ir.r4max);
+               }
                if(Boolean(obj.updates) && obj.updates.length > 0)
                {
                   UPDATES.Process(obj.updates);
@@ -2059,6 +2097,7 @@ package
          var WhatsNewAction50:Function;
          var ShowBuilding:Function;
          var LoadInferno:Function;
+         var ShowQuakeBuilding:Function;
          var popupWhatsNewDisplayed:Function;
          var MoreInfo711:Function;
          var Action:Function;
@@ -2316,7 +2355,6 @@ package
                      {
                         BUILDINGS._buildingID = 132;
                         BUILDINGS.Show();
-                        BUILDINGS._mc.ShowInfo(132);
                         POPUPS.Next();
                      };
                      LoadInferno = function(param1:MouseEvent):void
@@ -2344,7 +2382,7 @@ package
                         popupWhatsNew.bAction.visible = false;
                      }
                   }
-                  else if(GLOBAL._whatsnewid < 1052 && BASE.isInferno())
+                  else if(GLOBAL._whatsnewid < 1052)
                   {
                      popupWhatsNew = new popup_whatsnew51();
                      popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
@@ -2352,6 +2390,29 @@ package
                      popupWhatsNew.bAction.visible = false;
                      newWhatsnewid = 1052;
                      display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1053)
+                  {
+                     ShowQuakeBuilding = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.SwitchB(3,1,0);
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew52();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew_quaketower");
+                     newWhatsnewid = 1053;
+                     display = true;
+                     if(GLOBAL._bTownhall._lvl.Get() >= 5)
+                     {
+                        popupWhatsNew.bAction.SetupKey("btn_buildnow");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,ShowQuakeBuilding);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.visible = false;
+                     }
                   }
                   if(display)
                   {
@@ -2871,6 +2932,8 @@ package
          var tmpQ:String = null;
          var _bn:String = null;
          var loadObjects:Object = null;
+         var ir:Object = null;
+         var tmpIR:String = null;
          var hatchery:BUILDING13 = null;
          var guardObj:Object = null;
          var attackresources:Object = null;
@@ -3216,6 +3279,28 @@ package
                "inventory":STORE.InventoryExport(),
                "achieved":com.adobe.serialization.json.JSON.encode(ACHIEVEMENTS.Report())
             };
+            ir = {
+               "r1":_ideltaResources.r1.Get(),
+               "r2":_ideltaResources.r2.Get(),
+               "r3":_ideltaResources.r3.Get(),
+               "r4":_ideltaResources.r4.Get(),
+               "r1max":_iresources.r1max,
+               "r2max":_iresources.r2max,
+               "r3max":_iresources.r3max,
+               "r4max":_iresources.r4max
+            };
+            for(s in ir)
+            {
+               if(!ir[s])
+               {
+                  delete ir[s];
+               }
+            }
+            tmpIR = com.adobe.serialization.json.JSON.encode(ir);
+            if(Boolean(ir.r1) || Boolean(ir.r2) || Boolean(ir.r3) || Boolean(ir.r4))
+            {
+               loadObjects.iresources = tmpIR;
+            }
             if(GLOBAL._advancedMap)
             {
                loadObjects.monsters = com.adobe.serialization.json.JSON.encode(mm);
@@ -3546,7 +3631,7 @@ package
             LOGGER.Log("err","BASE.SaveB " + e.errorID + " | " + e.getStackTrace);
             GLOBAL.ErrorMessage("BASE.SaveB 1");
          }
-         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved","fbpromos"];
+         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved","fbpromos","iresources"];
          loadVars = [];
          so = 0;
          while(so < saveOrder.length)
@@ -3772,6 +3857,9 @@ package
          var _loc20_:int = 0;
          var _loc21_:* = undefined;
          var _loc22_:int = 0;
+         var _loc23_:Boolean = false;
+         var _loc24_:Object = null;
+         var _loc25_:Array = null;
          var _loc3_:Object = {};
          var _loc4_:Boolean = false;
          var _loc5_:String = "";
@@ -3809,7 +3897,10 @@ package
             _loc9_ = 0;
             if(GLOBAL._bTownhall)
             {
-               _loc9_ = GLOBAL._bTownhall._lvl.Get();
+               if(_loc3_.costs[0].re[0])
+               {
+                  _loc9_ = _loc3_.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID ? GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) : GLOBAL._bTownhall._lvl.Get();
+               }
             }
             _loc10_ = int(_loc8_[_loc9_]);
             if(_loc3_.type == "decoration")
@@ -3832,7 +3923,7 @@ package
                   if(_loc8_[_loc12_] > 0)
                   {
                      _loc4_ = true;
-                     _loc5_ = KEYS.Get("base_builderr_thlevelreqd",{"v1":_loc12_});
+                     _loc5_ = KEYS.Get(isInfernoBuilding(param1) || isInferno() ? "base_builderr_uhlevelreqd" : "base_builderr_thlevelreqd",{"v1":_loc12_});
                      break;
                   }
                   _loc12_++;
@@ -3853,7 +3944,7 @@ package
                   _loc4_ = true;
                   if(_loc11_ > _loc10_)
                   {
-                     _loc5_ = KEYS.Get("base_builderr_uth");
+                     _loc5_ = KEYS.Get(isInfernoBuilding(param1) || isInferno() ? "base_builderr_uuh" : "base_builderr_uth");
                   }
                   else
                   {
@@ -3870,11 +3961,21 @@ package
             while(_loc12_ < _loc14_.length)
             {
                _loc6_ = 0;
-               for each(_loc13_ in BASE._buildingsAll)
+               if(_loc14_[_loc12_][0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
-                  if(_loc13_._type == _loc14_[_loc12_][0] && _loc13_._lvl.Get() >= _loc14_[_loc12_][2])
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc14_[_loc12_][2])
                   {
                      _loc6_++;
+                  }
+               }
+               else
+               {
+                  for each(_loc13_ in BASE._buildingsAll)
+                  {
+                     if(_loc13_._type == _loc14_[_loc12_][0] && _loc13_._lvl.Get() >= _loc14_[_loc12_][2])
+                     {
+                        _loc6_++;
+                     }
                   }
                }
                if(_loc6_ >= _loc14_[_loc12_][1])
@@ -3899,30 +4000,33 @@ package
             _loc22_ = 0;
             if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
-               if(_loc16_ > BASE._resources.r1.Get())
+               _loc23_ = isInfernoBuilding(param1);
+               _loc24_ = _loc23_ ? BASE._iresources : BASE._resources;
+               if(_loc16_ > _loc24_.r1.Get())
                {
                   _loc21_ = 1;
-                  _loc22_ = _loc16_ - BASE._resources.r1.Get();
+                  _loc22_ = _loc16_ - _loc24_.r1.Get();
                }
-               if(_loc17_ > BASE._resources.r2.Get())
+               if(_loc17_ > _loc24_.r2.Get())
                {
                   _loc21_ = 2;
-                  _loc22_ = _loc17_ - BASE._resources.r2.Get();
+                  _loc22_ = _loc17_ - _loc24_.r2.Get();
                }
-               if(_loc18_ > BASE._resources.r3.Get())
+               if(_loc18_ > _loc24_.r3.Get())
                {
                   _loc21_ = 3;
-                  _loc22_ = _loc18_ - BASE._resources.r3.Get();
+                  _loc22_ = _loc18_ - _loc24_.r3.Get();
                }
-               if(_loc19_ > BASE._resources.r4.Get())
+               if(_loc19_ > _loc24_.r4.Get())
                {
                   _loc21_ = 4;
-                  _loc22_ = _loc19_ - BASE._resources.r4.Get();
+                  _loc22_ = _loc19_ - _loc24_.r4.Get();
                }
                if(_loc21_ > 0)
                {
                   _loc4_ = true;
-                  _loc5_ = "You need " + GLOBAL.FormatNumber(_loc22_) + " more " + KEYS.Get(GLOBAL._resourceNames[_loc21_ - 1]);
+                  _loc25_ = _loc23_ ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
+                  _loc5_ = "You need " + GLOBAL.FormatNumber(_loc22_) + " more " + KEYS.Get(_loc25_[_loc21_ - 1]);
                }
             }
          }
@@ -3940,9 +4044,13 @@ package
          var _loc9_:Array = null;
          var _loc10_:Array = null;
          var _loc11_:int = 0;
-         var _loc12_:BFOUNDATION = null;
-         var _loc13_:* = undefined;
-         var _loc14_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:BFOUNDATION = null;
+         var _loc14_:Array = null;
+         var _loc15_:* = undefined;
+         var _loc16_:int = 0;
+         var _loc17_:Boolean = false;
+         var _loc18_:Object = null;
          if(param1._class == "mushroom")
          {
             return {"error":false};
@@ -3998,11 +4106,23 @@ package
             for each(_loc10_ in _loc8_[_loc6_].re)
             {
                _loc11_ = 0;
-               for each(_loc12_ in BASE._buildingsAll)
+               if(_loc10_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
-                  if(_loc12_._type == _loc10_[0] && _loc12_._lvl.Get() >= _loc10_[2])
+                  _loc12_ = "#bi_townhall#";
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc10_[2])
                   {
                      _loc11_++;
+                  }
+               }
+               else
+               {
+                  _loc12_ = GLOBAL._buildingProps[_loc10_[0] - 1].name;
+                  for each(_loc13_ in BASE._buildingsAll)
+                  {
+                     if(_loc13_._type == _loc10_[0] && _loc13_._lvl.Get() >= _loc10_[2])
+                     {
+                        _loc11_++;
+                     }
                   }
                }
                if(_loc11_ < _loc10_[1])
@@ -4011,20 +4131,20 @@ package
                   {
                      if(_loc10_[2] == 1)
                      {
-                        _loc9_.push([0,KEYS.Get("base_uperr_bdgpart1",{"v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)})]);
+                        _loc9_.push([0,KEYS.Get("base_uperr_bdgpart1",{"v1":KEYS.Get(_loc12_)})]);
                      }
                      else
                      {
                         _loc9_.push([0,KEYS.Get("base_uperr_bdgpart2",{
                            "v1":_loc10_[2],
-                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)
+                           "v2":KEYS.Get(_loc12_)
                         })]);
                      }
                   }
                   else if(_loc10_[2] == 1)
                   {
                      _loc9_.push([0,KEYS.Get("base_uperr_bdgpart3",{
-                        "v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v1":KEYS.Get(_loc12_),
                         "v2":_loc10_[1]
                      })]);
                   }
@@ -4032,7 +4152,7 @@ package
                   {
                      _loc9_.push([0,KEYS.Get("base_uperr_bdgpart4",{
                         "v1":_loc10_[2],
-                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v2":KEYS.Get(_loc12_),
                         "v3":_loc10_[1]
                      })]);
                   }
@@ -4043,6 +4163,12 @@ package
                _loc4_ = true;
                _loc5_ = KEYS.Get("base_uperr_buildings",{"v1":GLOBAL.Array2StringB(_loc9_)});
             }
+            if(_loc15_ > 0)
+            {
+               _loc4_ = true;
+               _loc14_ = !!isInfernoBuilding ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
+               _loc5_ = "You need " + GLOBAL.FormatNumber(_loc16_) + " more " + KEYS.Get(_loc14_[_loc15_ - 1]);
+            }
             if(!_loc4_)
             {
                if(_loc6_ < _loc8_.length)
@@ -4050,33 +4176,35 @@ package
                   _loc3_ = _loc8_[_loc6_];
                   if(!_loc4_)
                   {
-                     _loc14_ = 0;
-                     if(_loc3_.r1 > BASE._resources.r1.Get())
+                     _loc16_ = 0;
+                     _loc17_ = isInfernoBuilding(param1._type);
+                     _loc18_ = _loc17_ ? BASE._iresources : BASE._resources;
+                     if(_loc3_.r1 > _loc18_.r1.Get())
                      {
-                        _loc13_ = 1;
-                        _loc14_ = _loc3_.r1 - BASE._resources.r1.Get();
+                        _loc15_ = 1;
+                        _loc16_ = _loc3_.r1 - _loc18_.r1.Get();
                      }
-                     if(_loc3_.r2 > BASE._resources.r2.Get())
+                     if(_loc3_.r2 > _loc18_.r2.Get())
                      {
-                        _loc13_ = 2;
-                        _loc14_ = _loc3_.r2 - BASE._resources.r2.Get();
+                        _loc15_ = 2;
+                        _loc16_ = _loc3_.r2 - _loc18_.r2.Get();
                      }
-                     if(_loc3_.r3 > BASE._resources.r3.Get())
+                     if(_loc3_.r3 > _loc18_.r3.Get())
                      {
-                        _loc13_ = 3;
-                        _loc14_ = _loc3_.r3 - BASE._resources.r3.Get();
+                        _loc15_ = 3;
+                        _loc16_ = _loc3_.r3 - _loc18_.r3.Get();
                      }
-                     if(_loc3_.r4 > BASE._resources.r4.Get())
+                     if(_loc3_.r4 > _loc18_.r4.Get())
                      {
-                        _loc13_ = 4;
-                        _loc14_ = _loc3_.r4 - BASE._resources.r4.Get();
+                        _loc15_ = 4;
+                        _loc16_ = _loc3_.r4 - _loc18_.r4.Get();
                      }
-                     if(_loc13_ > 0)
+                     if(_loc15_ > 0)
                      {
                         _loc4_ = true;
                         _loc5_ = KEYS.Get("base_uperr_resources",{
-                           "v1":GLOBAL.FormatNumber(_loc14_),
-                           "v2":KEYS.Get(GLOBAL._resourceNames[_loc13_ - 1])
+                           "v1":GLOBAL.FormatNumber(_loc16_),
+                           "v2":KEYS.Get(GLOBAL._resourceNames[_loc15_ - 1])
                         });
                      }
                   }
@@ -4087,7 +4215,7 @@ package
             "error":_loc4_,
             "errorMessage":_loc5_,
             "costs":_loc3_,
-            "needResource":_loc13_
+            "needResource":_loc15_
          };
       }
       
@@ -4624,37 +4752,63 @@ package
          }
       }
       
-      public static function Charge(param1:int, param2:int, param3:Boolean = false) : int
+      public static function Charge(param1:int, param2:int, param3:Boolean = false, param4:Boolean = false) : int
       {
-         var _loc4_:Object = null;
          var _loc5_:Object = null;
+         var _loc6_:Object = null;
+         var _loc7_:Object = null;
          if(param3)
          {
          }
-         _loc4_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _resources : GLOBAL._attackersResources;
-         _loc5_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
-         if(param2 <= _loc4_["r" + param1].Get())
+         if(param4 && isInferno())
+         {
+            param4 = false;
+         }
+         _loc5_ = param4 ? _ideltaResources : _deltaResources;
+         _loc6_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? (param4 ? _iresources : _resources) : GLOBAL._attackersResources;
+         _loc7_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
+         if(param2 <= _loc6_["r" + param1].Get())
          {
             if(!param3)
             {
-               _loc4_["r" + param1].Add(-param2);
-               _loc5_["r" + param1] -= param2;
+               _loc6_["r" + param1].Add(-param2);
+               if(!param4)
+               {
+                  _loc7_["r" + param1] -= param2;
+               }
                if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
-                  if(_deltaResources["r" + param1])
+                  if(param4)
                   {
-                     _deltaResources["r" + param1].Add(int(-param2));
-                     _hpDeltaResources["r" + param1] += int(-param2);
+                     if(_loc5_["r" + param1])
+                     {
+                        _loc5_["r" + param1].Add(int(-param2));
+                     }
+                     else
+                     {
+                        _loc5_["r" + param1] = new SecNum(int(-param2));
+                     }
+                     _loc5_.dirty = true;
+                     GLOBAL._resources["r" + param1].Add(-param2);
+                     GLOBAL._hpResources["r" + param1] -= param2;
                   }
                   else
                   {
-                     _deltaResources["r" + param1] = new SecNum(int(-param2));
-                     _hpDeltaResources["r" + param1] = int(-param2);
+                     if(_loc5_["r" + param1])
+                     {
+                        _loc5_["r" + param1].Add(int(-param2));
+                        _hpDeltaResources["r" + param1] += int(-param2);
+                     }
+                     else
+                     {
+                        _loc5_["r" + param1] = new SecNum(int(-param2));
+                        _hpDeltaResources["r" + param1] = int(-param2);
+                     }
+                     _loc5_.dirty = true;
+                     _hpDeltaResources.dirty = true;
+                     GLOBAL._resources["r" + param1].Add(-param2);
+                     GLOBAL._hpResources["r" + param1] -= param2;
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
-                  GLOBAL._resources["r" + param1].Add(-param2);
-                  GLOBAL._hpResources["r" + param1] -= param2;
                }
                else
                {
@@ -4678,67 +4832,83 @@ package
          return 0;
       }
       
-      public static function Fund(param1:int, param2:int, param3:Boolean = false, param4:* = null) : *
+      public static function Fund(param1:int, param2:int, param3:Boolean = false, param4:* = null, param5:Boolean = false) : *
       {
-         var _loc5_:String = null;
-         var _loc6_:* = null;
-         var _loc7_:int = 0;
+         var _loc6_:Object = null;
+         var _loc7_:Object = null;
+         var _loc8_:Object = null;
+         var _loc9_:String = null;
+         var _loc10_:* = null;
+         var _loc11_:int = 0;
+         if(param5 && isInferno())
+         {
+            param5 = false;
+         }
          if(param1 < 5)
          {
-            _loc5_ = "r" + param1;
-            _loc6_ = "r" + param1 + "max";
-            _loc7_ = 0;
-            if(_resources[_loc5_].Get() < _resources[_loc6_] || param3)
+            _loc6_ = param5 ? _iresources : _resources;
+            _loc7_ = param5 ? _ideltaResources : _deltaResources;
+            _loc8_ = param5 ? {} : _hpDeltaResources;
+            _loc9_ = "r" + param1;
+            _loc10_ = "r" + param1 + "max";
+            _loc11_ = 0;
+            if(_loc6_[_loc9_].Get() < _loc6_[_loc10_] || param3)
             {
-               if(_resources[_loc5_].Get() + param2 < _resources[_loc6_] || param3)
+               if(_loc6_[_loc9_].Get() + param2 < _loc6_[_loc10_] || param3)
                {
-                  _resources[_loc5_].Add(int(param2));
-                  _hpResources[_loc5_] += int(param2);
-                  if(_deltaResources[_loc5_])
+                  _loc6_[_loc9_].Add(int(param2));
+                  if(!param5)
                   {
-                     _deltaResources[_loc5_].Add(int(param2));
-                     _hpDeltaResources[_loc5_] += int(param2);
+                     _hpResources[_loc9_] += int(param2);
+                  }
+                  if(_loc7_[_loc9_])
+                  {
+                     _loc7_[_loc9_].Add(int(param2));
+                     _loc8_[_loc9_] += int(param2);
                   }
                   else
                   {
-                     _deltaResources[_loc5_] = new SecNum(int(param2));
-                     _hpDeltaResources[_loc5_] = int(param2);
+                     _loc7_[_loc9_] = new SecNum(int(param2));
+                     _loc8_[_loc9_] = int(param2);
                   }
                   if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
-                     GLOBAL._resources[_loc5_].Add(int(param2));
-                     GLOBAL._hpResources[_loc5_] += int(param2);
+                     GLOBAL._resources[_loc9_].Add(int(param2));
+                     GLOBAL._hpResources[_loc9_] += int(param2);
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
-                  _loc7_ = param2;
+                  _loc7_.dirty = true;
+                  _loc8_.dirty = true;
+                  _loc11_ = param2;
                }
                else
                {
-                  _loc7_ = _resources[_loc6_] - _resources[_loc5_].Get();
-                  _resources[_loc5_].Set(_resources[_loc6_]);
-                  _hpResources[_loc5_] = _resources[_loc6_];
-                  if(_deltaResources[_loc5_])
+                  _loc11_ = _loc6_[_loc10_] - _loc6_[_loc9_].Get();
+                  _loc6_[_loc9_].Set(_loc6_[_loc10_]);
+                  if(!param5)
                   {
-                     _deltaResources[_loc5_].Add(int(_loc7_));
-                     _hpDeltaResources[_loc5_] += int(_loc7_);
+                     _hpResources[_loc9_] = _loc6_[_loc10_];
+                  }
+                  if(_loc7_[_loc9_])
+                  {
+                     _loc7_[_loc9_].Add(int(_loc11_));
+                     _loc8_[_loc9_] += int(_loc11_);
                   }
                   else
                   {
-                     _deltaResources[_loc5_] = new SecNum(int(_loc7_));
-                     _hpDeltaResources[_loc5_] = int(_loc7_);
+                     _loc7_[_loc9_] = new SecNum(int(_loc11_));
+                     _loc8_[_loc9_] = int(_loc11_);
                   }
                   if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
-                     GLOBAL._resources[_loc5_].Add(int(_loc7_));
-                     GLOBAL._hpResources[_loc5_] += int(_loc7_);
+                     GLOBAL._resources[_loc9_].Add(int(_loc11_));
+                     GLOBAL._hpResources[_loc9_] += int(_loc11_);
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
+                  _loc7_.dirty = true;
+                  _loc8_.dirty = true;
                }
-               _bankedValue += _loc7_;
+               _bankedValue += _loc11_;
                _bankedTime = GLOBAL.Timestamp();
-               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+               if((GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && !param5)
                {
                   UI2._top.mc["mcR" + param1].x = -15;
                   TweenLite.to(UI2._top.mc["mcR" + param1],0.6,{
@@ -4747,26 +4917,26 @@ package
                   });
                }
             }
-            else if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+            else if((GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && !param5)
             {
                UI2._top.OverchargeShow(param1);
             }
             if(param4)
             {
-               param4._stored.Add(-_loc7_);
+               param4._stored.Add(-_loc11_);
                if(!param4._producing)
                {
                   param4.StartProduction();
                }
                param4.Update();
             }
-            if(_loc7_ > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
+            if(_loc11_ > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
             {
                Save();
             }
          }
          UI2.Update();
-         return _loc7_;
+         return _loc11_;
       }
       
       public static function SaveDeltaResources() : *
@@ -5362,6 +5532,11 @@ package
       public static function isInferno() : Boolean
       {
          return BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
+      }
+      
+      public static function isInfernoBuilding(param1:uint) : Boolean
+      {
+         return param1 == 129 && !BASE.isInferno();
       }
    }
 }

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1201")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1205")]
    public dynamic class MONSTERBAITERPOPUP_CLIP extends MovieClip
    {
       public var m8:MovieClip;

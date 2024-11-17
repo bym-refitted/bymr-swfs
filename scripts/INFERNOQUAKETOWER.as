@@ -1,12 +1,18 @@
 package
 {
    import com.monsters.display.BuildingOverlay;
+   import flash.display.MovieClip;
    import flash.events.Event;
+   import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class INFERNOQUAKETOWER extends BTOWER
    {
+      public static const UNDERHALL_ID:int = 999;
+      
+      public static const TYPE:int = 129;
+      
       private var _shouldAnimate:Boolean;
       
       public function INFERNOQUAKETOWER()
@@ -139,13 +145,14 @@ package
       
       private function DelayedFire() : void
       {
+         var _loc3_:QuakeGraphic = null;
          var _loc2_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc2_ = 1.25;
          }
          this.Quake(int(_damage * 1 * _loc2_));
-         var _loc3_:QuakeGraphic = new QuakeGraphic(20,_range * 2);
+         _loc3_ = new QuakeGraphic(20,_range * 2);
          _loc3_.graphic.y += _top;
          _mc.addChild(_loc3_.graphic);
          _origin = new Point(x,y);
@@ -185,6 +192,56 @@ package
       private function GetCreepsInRange() : Array
       {
          return MAP.CreepCellFind(new Point(_mc.x,_mc.y),_range,-1);
+      }
+      
+      override public function Upgraded() : *
+      {
+         var _loc1_:MovieClip = null;
+         super.Upgraded();
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         {
+            _loc1_ = new popup_building();
+            _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{
+               "v1":KEYS.Get(_buildingProps.name),
+               "v2":_lvl.Get()
+            }) + "</b>";
+            _loc1_.tB.htmlText = KEYS.Get("pop_tupgraded_body",{"v1":KEYS.Get(_buildingProps.name)});
+            _loc1_.bPost.SetupKey("btn_brag");
+            _loc1_.bPost.addEventListener(MouseEvent.CLICK,this.UpgradedBrag);
+            _loc1_.bPost.Highlight = true;
+            POPUPS.Push(_loc1_,null,null,null,"build.png");
+         }
+      }
+      
+      private function UpgradedBrag(param1:MouseEvent) : *
+      {
+         GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("upgrade_quaketower_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("upgrade_quaketower_streambody"),"quests/quake_tower.png"]);
+         POPUPS.Next();
+      }
+      
+      override public function Constructed() : *
+      {
+         var _loc1_:MovieClip = null;
+         super.Constructed();
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         {
+            _loc1_ = new popup_building();
+            _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{
+               "v1":KEYS.Get(_buildingProps.name),
+               "v2":_lvl.Get()
+            }) + "</b>";
+            _loc1_.tB.htmlText = KEYS.Get("pop_tbuild_body",{"v1":KEYS.Get(_buildingProps.name)});
+            _loc1_.bPost.SetupKey("btn_brag");
+            _loc1_.bPost.addEventListener(MouseEvent.CLICK,this.ConstructedBrag);
+            _loc1_.bPost.Highlight = true;
+            POPUPS.Push(_loc1_,null,null,null,"build.png");
+         }
+      }
+      
+      private function ConstructedBrag(param1:MouseEvent) : *
+      {
+         GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("build_quaketower_streamtitle"),KEYS.Get("build_quaketower_streambody"),"quests/quake_tower.png"]);
+         POPUPS.Next();
       }
       
       override public function Setup(param1:Object) : *

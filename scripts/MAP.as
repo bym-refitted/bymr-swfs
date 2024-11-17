@@ -188,7 +188,6 @@ package
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
             if(GLOBAL._local)
             {
-               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownLocal);
             }
             if(!GLOBAL._aiDesignMode)
             {

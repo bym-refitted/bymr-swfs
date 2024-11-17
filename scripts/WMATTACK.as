@@ -1145,14 +1145,7 @@ package
          switch(param1)
          {
             case -1:
-               if(GLOBAL._aiDesignMode)
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 6 * 60 : 3 * 60);
-               }
-               else
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 691200 : 4 * 24 * 60 * 60);
-               }
+               _history.nextAttack = _history.lastattack + (_loc2_ ? 691200 : 4 * 24 * 60 * 60);
                _attackVolumeAmplifier = 0.5;
                _hitsPerCreep = 20;
                _history.attackPreference = -1;
@@ -1163,14 +1156,7 @@ package
                break;
             case 0:
             default:
-               if(GLOBAL._aiDesignMode)
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 4 * 60 : 2 * 60);
-               }
-               else
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 518400 : 3 * 24 * 60 * 60);
-               }
+               _history.nextAttack = _history.lastattack + (_loc2_ ? 518400 : 3 * 24 * 60 * 60);
                _attackVolumeAmplifier = 1;
                _hitsPerCreep = 30;
                _history.attackPreference = 0;
@@ -1180,14 +1166,7 @@ package
                }
                break;
             case 1:
-               if(GLOBAL._aiDesignMode)
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 2 * 60 : 60);
-               }
-               else
-               {
-                  _history.nextAttack = _history.lastattack + (_loc2_ ? 345600 : 2 * 24 * 60 * 60);
-               }
+               _history.nextAttack = _history.lastattack + (_loc2_ ? 345600 : 2 * 24 * 60 * 60);
                _attackVolumeAmplifier = 1.3;
                _hitsPerCreep = 50;
                _history.attackPreference = 1;

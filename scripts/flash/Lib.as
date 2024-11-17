@@ -86,7 +86,7 @@ package flash
          return new _loc2_();
       }
       
-      public static function method_3(param1:*, param2:Class) : Object
+      public static function method_4(param1:*, param2:Class) : Object
       {
          return param1 as param2;
       }

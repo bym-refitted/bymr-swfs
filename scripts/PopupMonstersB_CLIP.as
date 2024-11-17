@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1717")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1721")]
    public dynamic class PopupMonstersB_CLIP extends MovieClip
    {
       public var bCancel:Button_CLIP;

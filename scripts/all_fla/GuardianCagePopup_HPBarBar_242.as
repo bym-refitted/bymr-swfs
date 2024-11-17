@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1616")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1620")]
    public dynamic class GuardianCagePopup_HPBarBar_242 extends MovieClip
    {
       public function GuardianCagePopup_HPBarBar_242()

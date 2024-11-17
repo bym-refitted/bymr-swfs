@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol229")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol233")]
    public dynamic class icon_tips_458 extends MovieClip
    {
       public var mcSpinner:MovieClip;

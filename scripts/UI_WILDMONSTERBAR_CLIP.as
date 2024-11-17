@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1250")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1254")]
    public dynamic class UI_WILDMONSTERBAR_CLIP extends MovieClip
    {
       public var tA:TextField;

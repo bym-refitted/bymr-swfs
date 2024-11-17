@@ -252,7 +252,7 @@ package
          var mc:MovieClip = null;
          super.Upgraded();
          this.Props();
-         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         if(GLOBAL._mode == "build" && !(BASE.isInfernoBuilding(_type) || BASE.isInferno()))
          {
             Brag = function(param1:MouseEvent):*
             {

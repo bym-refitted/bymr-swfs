@@ -271,7 +271,6 @@ package com.monsters.mailbox
       public function displayArray(param1:Array) : void
       {
          var _loc4_:Number = 0;
-         var _loc5_:Number = 0;
          var _loc6_:InboxMessage = null;
          var _loc2_:Array = [];
          var _loc3_:Number = 0;
@@ -310,7 +309,7 @@ package com.monsters.mailbox
             bPrevious.visible = false;
          }
          _loc4_ = 50;
-         _loc5_ = 0;
+         var _loc5_:Number = 0;
          while(_loc5_ < _loc2_.length)
          {
             _loc6_ = _loc2_[_loc5_];

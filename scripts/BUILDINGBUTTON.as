@@ -21,8 +21,9 @@ package
       {
          var _loc6_:String = null;
          var _loc7_:* = null;
-         var _loc8_:* = undefined;
-         var _loc9_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:* = undefined;
+         var _loc10_:int = 0;
          this._id = param1;
          this._buildingProps = GLOBAL._buildingProps[this._id - 1];
          mouseChildren = false;
@@ -38,24 +39,32 @@ package
          var _loc3_:int = 0;
          if(GLOBAL._bTownhall)
          {
-            _loc3_ = GLOBAL._bTownhall._lvl.Get();
+            if(Boolean(this._buildingProps.costs[0].re) && Boolean(this._buildingProps.costs[0].re[0]))
+            {
+               _loc8_ = int(this._buildingProps.costs[0].re[0][0]);
+               _loc3_ = this._buildingProps.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID ? GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) : GLOBAL._bTownhall._lvl.Get();
+            }
+            else
+            {
+               _loc3_ = GLOBAL._bTownhall._lvl.Get();
+            }
          }
          var _loc4_:int = int(this._buildingProps.quantity[_loc3_]);
          var _loc5_:int = 0;
          for(_loc6_ in BASE._buildingsAll)
          {
-            _loc8_ = BASE._buildingsAll[_loc6_];
-            if(_loc8_._type == this._id)
+            _loc9_ = BASE._buildingsAll[_loc6_];
+            if(_loc9_._type == this._id)
             {
                _loc5_++;
             }
          }
          if(this._buildingProps.type == "decoration")
          {
-            _loc9_ = BASE.BuildingStorageCount(this._id);
-            if(_loc9_ > 0)
+            _loc10_ = BASE.BuildingStorageCount(this._id);
+            if(_loc10_ > 0)
             {
-               tQuantity.htmlText = "<font color=\"#0000CC\"><b>" + KEYS.Get("bdg_numinstorage",{"v1":_loc9_}) + "</b></font>";
+               tQuantity.htmlText = "<font color=\"#0000CC\"><b>" + KEYS.Get("bdg_numinstorage",{"v1":_loc10_}) + "</b></font>";
             }
             else
             {
@@ -97,6 +106,28 @@ package
       
       public function ShowInfo(param1:MouseEvent) : *
       {
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         if(Boolean(this._buildingProps.costs[0].re[0]) && this._buildingProps.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID)
+         {
+            if(!MAPROOM_DESCENT.DescentPassed)
+            {
+               GLOBAL.Message(KEYS.Get("quake_tower_requirement"));
+               return;
+            }
+            _loc2_ = int(this._buildingProps.costs[0].re[0][2]);
+            _loc3_ = GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL);
+            if(!_loc3_)
+            {
+               GLOBAL.Message(KEYS.Get("base_builderr_noinfstate",{"v1":_loc2_}));
+               return;
+            }
+            if(_loc3_ < _loc2_)
+            {
+               GLOBAL.Message(KEYS.Get("base_builderr_uhlevelreqd",{"v1":_loc2_}));
+               return;
+            }
+         }
          SOUNDS.Play("click1");
          MovieClip(parent.parent).ShowInfo(this._id);
       }

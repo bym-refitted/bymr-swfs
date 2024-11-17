@@ -118,7 +118,7 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = this.GetFBDataEric();
+            _loc1_ = this.GetFBDataKevin();
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
          }
@@ -203,7 +203,7 @@ package
          }
          if(GLOBAL._localMode == 6)
          {
-            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"rz5q6vAkfz7qbL3l78SWaZEF6gmlUZDR-mnQOfW1dHU.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI3MTIwMDAsImlzc3VlZF9hdCI6MTMyMjcwNjUwMiwib2F1dGhfdG9rZW4iOiJBQUFCd3ZldWh6M01CQUIyejhEN01EbGt1WkJUTldtaVFUa3dkTGtpMjczYmo4aXgyWkM2WkJJNlF4S2dxT2RaQ0RZMGZIOEd5aGhjaE5EdHIwd0JwcnMwNW9jaFh0YWFhRFF2ZE94YldTVUxvUXJPQjNrdlgiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAABwveuhz3MBAB2z8D7MDlkuZBTNWmiQTkwdLki273bj8ix2ZC6ZBI6QxKgqOdZCDY0fH8GyhhchNDtr0wBprs05ochXtaaaDQvdOxbWSULoQrOB3kvX\",\"PHPSESSID\":\"7a8ee868877b9307330e0a6fd7dc3529\",\"app_id\":\"123961004380019\",\"tpid\":false}");
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"ku-aGpvdqc4J3EJkiBHJMe3uIrrSnf_b-x5mmeithig.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjY0MTI4MDAsImlzc3VlZF9hdCI6MTMyNjQwNzAyNiwib2F1dGhfdG9rZW4iOiJBQUFBQVQ4bVNEcmdCQUUxWUFpMXZieGJaQ2lRanpEU1RsaUtGcWhpWWtleHRDQzZtelpCS2h3VG90UkpVdEpnR1k0SFlic2RxOWJnbzl0RWxBMVZ5R0kxQnRDeEZKNktwSWtaQVJuNk5hVnJscHA1cnVFZSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTAwMDAyMjY5OTEzNDYzIn0\",\"access_token\":\"AAAAAT8mSDrgBAE1YAi1vbxbZCiQjzDSTliKFqhiYkextCC6mzZBKhwTotRJUtJgGY4HYbsdq9bgo9tElA1VyGI1BtCxFJ6KpIkZARn6NaVrlpp5ruEe\",\"PHPSESSID\":\"213b7e3472769b2a6c92317228ef61bf\",\"app_id\":\"342684208824\",\"tpid\":false}");
          }
          if(GLOBAL._localMode == 8)
          {
@@ -212,6 +212,10 @@ package
          if(GLOBAL._localMode == 9)
          {
             return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"AxnEnbAL7nbHkxEGv46S1IHY8U3lc9nTa1p87lCkJ4M.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ0MjIwMDAsImlzc3VlZF9hdCI6MTMyNDQxNzk3OCwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBQ2dMcUg4YXJubWh4VzVDVlpBM1lkVVh5YU1QbzNMYnhnWkFaQ0NJRFUzVzUyRTVQMmhMbmI0M3BlV3pDdGI5bURkZGsxdk9HaGh4dW1FZVlNbmlVZWVYejVFb3ZYa2EwNnQ4QVpBdCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTAwMDAyMjY5OTEzNDYzIn0\",\"access_token\":\"AAAB42FeHZBZBQBACgLqH8arnmhxW5CVZA3YdUXyaMPo3LbxgZAZCCIDU3W52E5P2hLnb43peWzCtb9mDddk1vOGhhxumEeYMniUeeXz5EovXka06t8AZAt\",\"PHPSESSID\":\"f6e0763b85c9f387a1916943d03e6325\",\"app_id\":\"132870576798692\",\"tpid\":false}");
+         }
+         if(GLOBAL._localMode == 10)
+         {
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"qANiA2GARrlckgr4LrdElVd-zf4bUH6NxK0zbm6W47I.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjY0MDkyMDAsImlzc3VlZF9hdCI6MTMyNjQwNDY1OSwib2F1dGhfdG9rZW4iOiJBQUFBQVQ4bVNEcmdCQU1lQlU0WTMxVnAwbkJLaWNaQ1NCcmYwVVkwd25taTFnRUdVOGJjcHNkY2xwRzg4M3NYMGlDZVEwRWtrdE5VTUdYSnZYdURMT0xLWkFnQjY4SzZiQXRFTVpDUjNBWkRaRCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTY2MDA5NTYifQ\",\"access_token\":\"AAAAAT8mSDrgBAMeBU4Y31Vp0nBKicZCSBrf0UY0wnmi1gEGU8bcpsdclpG883sX0iCeQ0EkktNUMGXJvXuDLOLKZAgB68K6bAtEMZCR3AZDZD\",\"PHPSESSID\":\"7ad967f372fe5a9ab10a175cdb18d042\",\"app_id\":\"342684208824\",\"tpid\":false}");
          }
          return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"XMcUmtokOBufSfOxSatYxwS2NBZsFKnJbrKhW_ikGtM.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI3OTEyMDAsImlzc3VlZF9hdCI6MTMyMjc4NTE1Nywib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUFOaGtRYlpBZWlLZ1VhOUYyaHZ0YUMwYjRCSjZVbmxPc1RoTlJnV2VlY0FtaVN6UmhHdll0Vm5XcnI2a01FaHV2ZE9laWNMRkJ4cE9pVEgyTTg1REdYZEx3TklpWW1VcUFEWU8iLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAAAAc29fTNYBAANhkQbZAeiKgUa9F2hvtaC0b4BJ6UnlOsThNRgWeecAmiSzRhGvYtVnWrr6kMEhuvdOeicLFBxpOiTH2M85DGXdLwNIiYmUqADYO\",\"PHPSESSID\":\"0a3287793c5da304c64d0f43cd38d6c1\",\"app_id\":\"495789755606\",\"tpid\":false}");
       }
