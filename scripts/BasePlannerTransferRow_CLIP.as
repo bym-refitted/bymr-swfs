@@ -4,7 +4,7 @@ package
    import flash.display.SimpleButton;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2653")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2656")]
    public dynamic class BasePlannerTransferRow_CLIP extends MovieClip
    {
       public var tTemplateName:TextField;

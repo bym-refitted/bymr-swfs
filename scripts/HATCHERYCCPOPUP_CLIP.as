@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1965")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1968")]
    public dynamic class HATCHERYCCPOPUP_CLIP extends MovieClip
    {
       public var tHousingLabel:TextField;
@@ -20,6 +20,8 @@ package
       
       public var hatchery2:HatcheryMonsterIcon_CLIP;
       
+      public var hatcheryBG4:MovieClip;
+      
       public var monsterCanvas:MovieClip;
       
       public var mcRemove4:buttonClose_CLIP;
@@ -29,6 +31,8 @@ package
       public var hatchery3:HatcheryMonsterIcon_CLIP;
       
       public var mcCount2:MovieClip;
+      
+      public var hatcheryBG5:MovieClip;
       
       public var monsterMask:MovieClip;
       
@@ -100,6 +104,8 @@ package
       
       public var tProgress4:TextField;
       
+      public var hatcheryBG2:MovieClip;
+      
       public var mcSlotsGoldFrame:MovieClip;
       
       public var slot6:HatcheryMonsterIcon_CLIP;
@@ -109,6 +115,8 @@ package
       public var mcRemove2:buttonClose_CLIP;
       
       public var tProgress3:TextField;
+      
+      public var hatcheryBG3:MovieClip;
       
       public var slot7:HatcheryMonsterIcon_CLIP;
       
@@ -126,9 +134,11 @@ package
       
       public var hatlabel2_txt:TextField;
       
+      public var mcCount6:MovieClip;
+      
       public var tProgress1:TextField;
       
-      public var mcCount6:MovieClip;
+      public var hatcheryBG1:MovieClip;
       
       public var bSpeedup:MovieClip;
       

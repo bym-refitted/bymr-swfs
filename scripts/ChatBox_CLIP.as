@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2270")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2273")]
    public dynamic class ChatBox_CLIP extends MovieClip
    {
       public var input:MovieClip;

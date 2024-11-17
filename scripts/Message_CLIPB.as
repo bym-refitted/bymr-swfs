@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1405")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1408")]
    public dynamic class Message_CLIPB extends MovieClip
    {
       public var charsLeft_txt:TextField;

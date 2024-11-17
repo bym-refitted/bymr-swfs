@@ -4,7 +4,7 @@ package com.monsters.maproom
    import flash.display.SimpleButton;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2608")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2611")]
    public dynamic class WildMonsterBase_CLIP extends MovieClip
    {
       public var mediumhit:SimpleButton;

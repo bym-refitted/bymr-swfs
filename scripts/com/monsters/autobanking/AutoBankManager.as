@@ -4,7 +4,7 @@ package com.monsters.autobanking
    
    public class AutoBankManager
    {
-      public static const AUTOBANK_FIX:Boolean = false;
+      public static const AUTOBANK_FIX:Boolean = true;
       
       public function AutoBankManager(param1:ManagerEnforcer)
       {

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1063")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1066")]
    public dynamic class points_txt extends MovieClip
    {
       public var txt:TextField;

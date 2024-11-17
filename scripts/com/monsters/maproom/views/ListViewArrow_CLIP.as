@@ -2,7 +2,7 @@ package com.monsters.maproom.views
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2637")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2640")]
    public dynamic class ListViewArrow_CLIP extends MovieClip
    {
       public var mcArrow:MovieClip;

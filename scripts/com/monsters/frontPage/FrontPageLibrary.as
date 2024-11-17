@@ -8,6 +8,7 @@ package com.monsters.frontPage
    import com.monsters.frontPage.messages.news.News03Vorg;
    import com.monsters.frontPage.messages.news.News04Slimeattikus;
    import com.monsters.frontPage.messages.news.News05YardPlanner2;
+   import com.monsters.frontPage.messages.news.News06TownHallLevel10;
    import com.monsters.frontPage.messages.promotions.Promo01DaveClub;
    import com.monsters.frontPage.messages.underusedFeatures.Underused01MonsterLocker;
    import com.monsters.frontPage.messages.underusedFeatures.Underused02Academy;
@@ -48,6 +49,7 @@ package com.monsters.frontPage
          NEWS.addMessage(new News03Vorg());
          NEWS.addMessage(new News04Slimeattikus());
          NEWS.addMessage(new News05YardPlanner2());
+         NEWS.addMessage(new News06TownHallLevel10());
          PROMOTIONS.addMessage(new Promo01DaveClub());
          UNDERUSED_FEATURES.addMessage(new Underused01MonsterLocker());
          UNDERUSED_FEATURES.addMessage(new Underused02Academy());

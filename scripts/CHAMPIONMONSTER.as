@@ -1050,7 +1050,6 @@ package
          var _loc3_:* = undefined;
          var _loc4_:CreepBase = null;
          var _loc5_:Point = null;
-         var _loc6_:int = 0;
          if(_health.Get() <= 0)
          {
             MAP.CreepCellDelete(_id,node);
@@ -1174,30 +1173,13 @@ package
                   }
                   else if(_targetBuilding)
                   {
-                     _loc6_ = _damage.Get() * _loc1_;
+                     _targetBuilding.Damage(_damage.Get() * _loc1_,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
                      if(_creatureID === "G5" && _targetBuilding is ILootable)
                      {
-                        if(_targetBuilding is BRESOURCE)
-                        {
-                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[BRESOURCE].Get());
-                        }
-                        else
-                        {
-                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[BSTORAGE].Get());
-                        }
-                        if(_targetBuilding._stored.Get() < 0)
-                        {
-                           _targetBuilding._stored.Set(0);
-                        }
                         if(_targetBuilding._looted)
                         {
                            this.FindTarget();
                         }
-                        _targetBuilding.Damage(_loc6_,_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
-                     }
-                     else
-                     {
-                        _targetBuilding.Damage(_loc6_,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
                      }
                   }
                   else
@@ -1610,10 +1592,9 @@ package
       
       public function TickBBuff() : *
       {
-         var _loc1_:Number = NaN;
          var _loc2_:* = undefined;
          var _loc3_:Point = null;
-         _loc1_ = 1;
+         var _loc1_:Number = 1;
          if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc1_ *= 1.25;

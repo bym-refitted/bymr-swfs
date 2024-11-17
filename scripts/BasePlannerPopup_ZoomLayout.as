@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2780")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2783")]
    public dynamic class BasePlannerPopup_ZoomLayout extends MovieClip
    {
       public var scrollbar:MovieClip;

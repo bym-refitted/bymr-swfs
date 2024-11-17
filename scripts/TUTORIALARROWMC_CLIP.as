@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1003")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1006")]
    public dynamic class TUTORIALARROWMC_CLIP extends MovieClip
    {
       public var mcArrow:MovieClip;

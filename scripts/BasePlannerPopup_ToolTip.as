@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2828")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2831")]
    public dynamic class BasePlannerPopup_ToolTip extends MovieClip
    {
       public var mcBG:MovieClip;

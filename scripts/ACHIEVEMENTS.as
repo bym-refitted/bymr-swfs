@@ -51,7 +51,7 @@ package
       }},{"rules":{"map2":1}},{"rules":{"wmoutpost":1}},{"rules":{"playeroutpost":5}},{
          "block":true,
          "rules":{"hugerage":1}
-      },{"rules":{"wm2hall":1}},{"rules":{"monstersblended":5000}},{"rules":{"blocksbuilt":200}},{"rules":{"starterkit":1}},{"rules":{"alliance":1}},{"rules":{"stockpile":1}},{"rules":{"heavytraps":8}},{"rules":{"unlock_monster":1}},{"rules":{"DESCENT_LEVEL":1}},{"rules":{"DESCENT_LEVEL":MAPROOM_DESCENT._descentLvlMax}},{"rules":{"UNDERHALL_LEVEL":5}},{"rules":{"INFERNO_QUESTS_COMPLETED":10}}];
+      },{"rules":{"wm2hall":1}},{"rules":{"monstersblended":5000}},{"rules":{"blocksbuilt":200}},{"rules":{"starterkit":1}},{"rules":{"alliance":1}},{"rules":{"stockpile":1}},{"rules":{"heavytraps":8}},{"rules":{"unlock_monster":1}},{"rules":{"DESCENT_LEVEL":1}},{"rules":{"DESCENT_LEVEL":MAPROOM_DESCENT._descentLvlMax}},{"rules":{"UNDERHALL_LEVEL":5}},{"rules":{"INFERNO_QUESTS_COMPLETED":10}},{"rules":{"thlevel":10}}];
       
       public function ACHIEVEMENTS()
       {

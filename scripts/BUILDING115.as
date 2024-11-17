@@ -19,7 +19,7 @@ package
       
       public var _fireStage:int = 1;
       
-      public var _targetArray:Array = [4,4,6,8,10,12];
+      public var _targetArray:Array = [4,4,6,8,10,12,14,16];
       
       public function BUILDING115()
       {

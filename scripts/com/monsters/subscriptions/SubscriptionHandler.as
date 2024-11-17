@@ -99,9 +99,14 @@ package com.monsters.subscriptions
          return _instance._service;
       }
       
+      private function specialUser() : Boolean
+      {
+         return LOGIN._playerID == 12467111 || LOGIN._playerID == 3099454;
+      }
+      
       public function initialize(param1:Object = null) : void
       {
-         if(GLOBAL._flags["subscriptions_ab"] > 0 && !ABTest.isInTestGroup("davesclub108",64) || !GLOBAL.isAtHome() || !GLOBAL._flags["subscriptions"] || GLOBAL.isNoob())
+         if(GLOBAL._flags["subscriptions_ab"] > 0 && !ABTest.isInTestGroup("davesclub108",64) && !this.specialUser() || !GLOBAL.isAtHome() || !GLOBAL._flags["subscriptions"] || GLOBAL.isNoob())
          {
             return;
          }
