@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol954")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol956")]
    public dynamic class buttonReinforcement_CLIP extends MovieClip
    {
       public var tCountdown:TextField;

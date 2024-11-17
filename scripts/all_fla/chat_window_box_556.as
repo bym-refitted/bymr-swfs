@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1704")]
-   public dynamic class bubblepopupArrowRight_457 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1654")]
+   public dynamic class chat_window_box_556 extends MovieClip
    {
-      public function bubblepopupArrowRight_457()
+      public function chat_window_box_556()
       {
          super();
          addFrameScript(0,this.frame1);

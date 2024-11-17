@@ -51,7 +51,7 @@ package
       
       private function NewWorld() : *
       {
-         PLEASEWAIT.Show("Entering New World....");
+         PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
          ACHIEVEMENTS.Check("map2",1);
          if(this.callPending)
          {
@@ -177,7 +177,7 @@ package
             POPUPS.Next();
          };
          POPUPS.DisplayGeneric(KEYS.Get("newmap_upgraded1"),KEYS.Get("newmap_upgraded2"),KEYS.Get("btn_brag"),"building-map.png",Brag);
-         PLEASEWAIT.Show("Entering New World...");
+         PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
          super.Upgraded();
       }
       

@@ -7,7 +7,7 @@ package
    
    public class SPECIALEVENT
    {
-      private static const ACTIVE_OVERRIDE:Boolean = false;
+      private static const INVASIONPOP_OVERRIDE:int = -1;
       
       private static var _setupCalled:Boolean = false;
       
@@ -29,9 +29,17 @@ package
       
       private static var _retreatAllMonsters:Boolean = false;
       
+      private static var _eventStartTime:Number = -1;
+      
+      private static var _eventEndTime:Number = -1;
+      
+      private static var _eventExtensionTime:Number = -1;
+      
       public static var _currentAttackers:Array = new Array();
       
-      public static const WONSTAGE:Array = [1,10,20,30,31];
+      private static var _knownFlag:int = -1;
+      
+      public static const WONSTAGE:Array = [1,10,20,30,31,32];
       
       private static const DIR:Object = {
          "N":270,
@@ -44,8 +52,14 @@ package
       
       private static const GUARDIAN:int = 1;
       
+      public static const BONUSWAVE:int = 31;
+      
+      public static const BONUSWAVE2:int = 32;
+      
+      public static const EVENTEND:int = 33;
+      
       public static const WAVES_DESC:Array = ["<b>Wave 1</b><br>5 Octo-oozes","<b>Wave 2</b><br>4 Octo-oozes, 5 Bolts","<b>Wave 3</b><br>5 Octo-oozes, 5 Pokeys","<b>Wave 4</b><br>10 Pokeys, 10 Bolts","<b>Wave 5</b><br>10 Finks","<b>Wave 6</b><br>5 Octo-oozes, 2 Finks","<b>Wave 7</b><br>10 Ichis, 50 Bolts","<b>Wave 8</b><br>40 Pokeys, 8 Finks","<b>Wave 9</b><br>10 Octo-oozes, 10 Pokeys, 10 Finks, 10 Bolts","<b>Wave 10</b><br>8 Ichis, 8 Finks","<b>Wave 11</b><br>10 Finks, 10 Banditos, 10 ??????","<b>Wave 12</b><br>16 Ichis, 30 Banditos","<b>Wave 13</b><br>16 Banditos, 30 Ichis","<b>Wave 14</b><br>20 Ichis, 30 Banditos, 10 Fangs","<b>Wave 15</b><br>20 Ichis, 15 Fangs","<b>Wave 16</b><br>20 Banditos, 20 Fangs","<b>Wave 17</b><br>24 Ichis, 36 Banditos, 15 Fangs","<b>Wave 18</b><br>50 Banditos, 25 Fangs","<b>Wave 19</b><br>20 Ichis, 20 Fangs, 30 Banditos","<b>Wave 20</b><br>10 Eye-ras, 40 Banditos, 10 Project X\'s, 10 Crabatrons, Drull (L1)","<b>Wave 21</b><br>30 Wormzers (Level 6, Splash Damage), 15 ??????"
-      ,"<b>Wave 22</b><br>20 Bolts (L3), 10 Brains (L3, Invisibility), Gorgo (L3)","<b>Wave 23</b><br>60 Crabatrons (L6), 5 Zafreetis (L5)","<b>Wave 24</b><br>40 Pokeys (L6), 30 Ichis (L6), 20 Banditos (L6), 10 Crabatrons (L6), 5 D.A.V.E.s (L6)","<b>Wave 25</b><br>30 Eye-ras (L6, Airburst 3), 30 Bolts (L6, Teleportation 3), 30 Wormzers (L6, Splash Damage 3), 30 Finks (L6, Claws 3), 30 Banditos (L6, Whirlwind 3), 30 Fangs (L6, Venom 3), 30 Brains (L6, Invisibility 3)","<b>Wave 26</b><br>40 Eye-ras (L6, Airburst 3), 50 ?????? (L6), Drull (L6)","<b>Wave 27</b><br>30 Teratorns (L6)","<b>Wave 28</b><br>80 Project Xs (L6, Acid Spores 3), 80 Wormzers (L6, Splash Damage 3)","<b>Wave 29</b><br>40 D.A.V.E.s (L6, Rockets 3)","<b>Wave 30</b><br>30 D.A.V.E.s (L6, Rockets 3), 30 Wormzers (L6, Splash Damage 3), 10 Zafreetis (L5), Fomor (L6)","<b>Bonus Wave</b><br>??????"];
+      ,"<b>Wave 22</b><br>20 Bolts (L3), 10 Brains (L3, Invisibility), Gorgo (L3)","<b>Wave 23</b><br>60 Crabatrons (L6), 5 Zafreetis (L5)","<b>Wave 24</b><br>40 Pokeys (L6), 30 Ichis (L6), 20 Banditos (L6), 10 Crabatrons (L6), 5 D.A.V.E.s (L6)","<b>Wave 25</b><br>30 Eye-ras (L6, Airburst 3), 30 Bolts (L6, Teleportation 3), 30 Wormzers (L6, Splash Damage 3), 30 Finks (L6, Claws 3), 30 Banditos (L6, Whirlwind 3), 30 Fangs (L6, Venom 3), 30 Brains (L6, Invisibility 3)","<b>Wave 26</b><br>40 Eye-ras (L6, Airburst 3), 50 ?????? (L6), Drull (L6)","<b>Wave 27</b><br>30 Teratorns (L6)","<b>Wave 28</b><br>80 Project Xs (L6, Acid Spores 3), 80 Wormzers (L6, Splash Damage 3)","<b>Wave 29</b><br>40 D.A.V.E.s (L6, Rockets 3)","<b>Wave 30</b><br>30 D.A.V.E.s (L6, Rockets 3), 30 Wormzers (L6, Splash Damage 3), 10 Zafreetis (L5), Fomor (L6)","<b>Bonus Wave</b><br>??????","<b>Bonus Wave 2</b><br>??????"];
       
       private static const WAVES:Array = [[{
          "type":CREEP,
@@ -704,6 +718,102 @@ package
          "direction":0,
          "health":60 * 1000,
          "foodbonus":0
+      }],[{
+         "type":CREEP,
+         "wave":[["IC2","bounce",40,250,DIR.N,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC2","bounce",40,250,DIR.S,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC2","bounce",40,250,DIR.W,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC2","bounce",40,250,DIR.E,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },60,{
+         "type":CREEP,
+         "wave":[["C13","bounce",30,250,DIR.N,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":25
+      },{
+         "type":CREEP,
+         "wave":[["C13","bounce",30,250,DIR.W,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":25
+      },{
+         "type":CREEP,
+         "wave":[["C13","bounce",30,250,DIR.E,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":25
+      },{
+         "type":CREEP,
+         "wave":[["C13","bounce",30,250,DIR.S,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":25
+      },60,{
+         "type":CREEP,
+         "wave":[["IC7","bounce",10,250,DIR.N,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC7","bounce",10,250,DIR.W,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC7","bounce",10,250,DIR.E,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["IC7","bounce",10,250,DIR.S,0,0]],
+         "powerup":0,
+         "level":6,
+         "rage":30
+      },{
+         "type":CREEP,
+         "wave":[["C14","bounce",5,250,DIR.N,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":10
+      },{
+         "type":CREEP,
+         "wave":[["C14","bounce",5,250,DIR.W,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":10
+      },{
+         "type":CREEP,
+         "wave":[["C14","bounce",5,250,DIR.S,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":10
+      },{
+         "type":CREEP,
+         "wave":[["C14","bounce",5,250,DIR.E,0,0]],
+         "powerup":3,
+         "level":6,
+         "rage":10
       }]];
       
       private static const DEBUGCREATURES:Array = ["C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12","C13","C14","C15","IC1"];
@@ -722,6 +832,24 @@ package
          _setupCalled = true;
          _round = GLOBAL.StatGet("wmi_wave");
          _wave = 0;
+         _knownFlag = invasionpop;
+         InitializeTimes();
+      }
+      
+      private static function InitializeTimes() : void
+      {
+         var _loc1_:Date = new Date();
+         _loc1_.setUTCFullYear(2011,10,10);
+         _loc1_.setUTCHours(20,0,0,0);
+         _eventStartTime = Math.floor(_loc1_.getTime() / 1000);
+         var _loc2_:Date = new Date();
+         _loc2_.setUTCFullYear(2011,10,17);
+         _loc2_.setUTCHours(20,0,0,0);
+         _eventExtensionTime = Math.floor(_loc2_.getTime() / 1000);
+         var _loc3_:Date = new Date();
+         _loc3_.setUTCFullYear(2011,10,17);
+         _loc3_.setUTCHours(4,45,0,0);
+         _eventEndTime = Math.floor(_loc3_.getTime() / 1000);
       }
       
       public static function StartRound() : void
@@ -746,22 +874,54 @@ package
       public static function EndRound(param1:Boolean, param2:Boolean = false) : void
       {
          var _loc3_:MovieClip = null;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:* = undefined;
+         var _loc8_:BFOUNDATION = null;
          if(param1)
          {
             LOGGER.Stat([80,_round]);
             StartRepairs();
             _loc3_ = new WMIROUNDCOMPLETE(wave);
-            POPUPS.Push(_loc3_,DEFENSEEVENTPOPUP.LogPopupShown,null,null,null,false,"now");
+            POPUPS.Push(_loc3_,null,null,null,null,false,"now");
             ++_round;
             UI_BOTTOM._nextwave.SetWave(wave);
             GLOBAL.StatSet("wmi_wave",_round);
+            if(GLOBAL._bTotem)
+            {
+               GLOBAL._bTotem._renderState = null;
+            }
          }
          else
          {
             LOGGER.Stat([81,_round]);
             StartRepairs();
             _loc3_ = new WMIROUNDCOMPLETE(-1,param2);
-            POPUPS.Push(_loc3_,DEFENSEEVENTPOPUP.LogPopupShown,null,null,null,false,"now");
+            POPUPS.Push(_loc3_,null,null,null,null,false,"now");
+         }
+         if(GLOBAL._aiDesignMode)
+         {
+            _loc4_ = 0;
+            _loc5_ = 0;
+            for(_loc7_ in BASE._buildingsAll)
+            {
+               _loc8_ = BASE._buildingsAll[_loc7_];
+               if(!(_loc8_._class == "trap" && _loc8_._fired || _loc8_._type == 53 && _loc8_._expireTime < GLOBAL.Timestamp()))
+               {
+                  if(_loc8_._class != "wall")
+                  {
+                     _loc4_ += _loc8_._hp.Get();
+                     _loc5_ += _loc8_._hpMax.Get();
+                  }
+                  if(BTOTEM.IsTotem(_loc8_._type))
+                  {
+                     _loc8_._type = SPECIALEVENT.TotemQualified(_loc8_._type);
+                  }
+               }
+            }
+            _loc6_ = 100 - 100 / _loc5_ * _loc4_;
+            GLOBAL.Message("Base is " + _loc6_ + " percent destroyed.");
          }
          ClearWildMonsterPowerups();
          _active = false;
@@ -792,11 +952,12 @@ package
          var _loc2_:String = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:Array = null;
-         var _loc6_:* = undefined;
-         var _loc7_:Number = NaN;
-         var _loc8_:Point = null;
-         var _loc9_:CHAMPIONMONSTER = null;
+         var _loc5_:int = 0;
+         var _loc6_:Array = null;
+         var _loc7_:* = undefined;
+         var _loc8_:Number = NaN;
+         var _loc9_:Point = null;
+         var _loc10_:CHAMPIONMONSTER = null;
          if(_round >= WAVES.length)
          {
             return;
@@ -810,19 +971,28 @@ package
                _loc2_ = _loc1_[0][0];
                _loc3_ = int(WAVES[_round][_wave].powerup);
                _loc4_ = int(WAVES[_round][_wave].level);
+               _loc5_ = int(WAVES[_round][_wave].rage);
                GLOBAL._wmCreaturePowerups[_loc2_] = _loc3_;
                GLOBAL._wmCreatureLevels[_loc2_] = _loc4_;
                _loc1_[0][4] = (_loc1_[0][4] + _randomDirection) % 360;
                _loc1_[0][3] = GLOBAL._mapWidth * 0.25;
-               _loc5_ = CUSTOMATTACKS.WMIAttack(_loc1_);
-               _currentAttackers = _currentAttackers.concat(_loc5_);
+               if(_loc5_)
+               {
+                  WMATTACK._rage = _loc5_;
+               }
+               _loc6_ = CUSTOMATTACKS.WMIAttack(_loc1_);
+               if(_loc5_)
+               {
+                  WMATTACK._rage = 0;
+               }
+               _currentAttackers = _currentAttackers.concat(_loc6_);
                break;
             case GUARDIAN:
-               _loc6_ = WAVES[_round][_wave];
-               _loc7_ = (_loc6_.angle + _randomDirection) % 360;
-               _loc8_ = GRID.ToISO(Math.cos(_loc7_ * 0.0174532925) * 900,Math.sin(_loc7_ * 0.0174532925) * 900,0);
-               _loc9_ = CREEPS.SpawnGuardian(_loc6_.guardianID,MAP._BUILDINGTOPS,"bounce",_loc6_.level,_loc8_,_loc6_.direction,_loc6_.health,_loc6_.foodbonus,true);
-               _currentAttackers.push([_loc9_]);
+               _loc7_ = WAVES[_round][_wave];
+               _loc8_ = (_loc7_.angle + _randomDirection) % 360;
+               _loc9_ = GRID.ToISO(Math.cos(_loc8_ * 0.0174532925) * 900,Math.sin(_loc8_ * 0.0174532925) * 900,0);
+               _loc10_ = CREEPS.SpawnGuardian(_loc7_.guardianID,MAP._BUILDINGTOPS,"bounce",_loc7_.level,_loc9_,_loc7_.direction,_loc7_.health,_loc7_.foodbonus,true);
+               _currentAttackers.push([_loc10_]);
          }
          _timeOfNextWave = GLOBAL.Timestamp();
          while(++_wave < WAVES[_round].length && WAVES[_round][_wave] instanceof Number)
@@ -840,9 +1010,13 @@ package
       private static function updateWarningText() : void
       {
          var _loc1_:String = KEYS.Get("wmi_warning",{"v1":String(wave)});
-         if(wave >= WAVES.length)
+         if(wave == BONUSWAVE)
          {
             _loc1_ = KEYS.Get("wmi_warningbonus");
+         }
+         else if(wave == BONUSWAVE2)
+         {
+            _loc1_ = KEYS.Get("wmi_warningbonus2");
          }
          UI2._warning.Update("<font size=\"26\">" + _loc1_ + "</font>");
       }
@@ -875,6 +1049,10 @@ package
             return;
          }
          _lastTimestamp = GLOBAL.Timestamp();
+         if(_knownFlag != invasionpop)
+         {
+            FlagChanged();
+         }
          if(_retreatAllMonsters)
          {
             _loc1_ = 0;
@@ -912,38 +1090,68 @@ package
       
       public static function GetTimeUntilStart() : Number
       {
-         var _loc1_:Date = new Date();
-         _loc1_.setUTCFullYear(2011,10,10);
-         _loc1_.setUTCHours(20,0,0,0);
-         var _loc2_:Number = Math.floor(_loc1_.getTime() / 1000);
-         return _loc2_ - GLOBAL.Timestamp();
+         return _eventStartTime - GLOBAL.Timestamp();
+      }
+      
+      public static function GetTimeUntilExtension() : Number
+      {
+         return _eventExtensionTime - GLOBAL.Timestamp();
       }
       
       public static function GetTimeUntilEnd() : Number
       {
-         var _loc1_:Date = new Date();
-         _loc1_.setUTCFullYear(2011,10,17);
-         _loc1_.setUTCHours(20,0,0,0);
-         var _loc2_:Number = Math.floor(_loc1_.getTime() / 1000);
-         return _loc2_ - GLOBAL.Timestamp();
+         return _eventEndTime - GLOBAL.Timestamp();
       }
       
       public static function TimerClicked(param1:MouseEvent) : void
       {
          if(!_active)
          {
-            ShowDefenseEventPopup("now");
+            if(invasionpop == 5)
+            {
+               ShowExtensionPopup("now");
+            }
+            else
+            {
+               ShowDefenseEventPopup("now");
+            }
          }
       }
       
       public static function ShowDefenseEventPopup(param1:String) : void
       {
          var _loc2_:MovieClip = null;
-         if(!DEFENSEEVENTPOPUP.open)
+         if(!DEFENSEEVENTPOPUP.open && !_active)
          {
             _loc2_ = new DEFENSEEVENTPOPUP(SPECIALEVENT.invasionpop);
-            POPUPS.Push(_loc2_,DEFENSEEVENTPOPUP.LogPopupShown,null,null,null,false,param1);
+            POPUPS.Push(_loc2_,null,null,null,null,false,param1);
             GLOBAL.StatSet("lasttdpopup",SPECIALEVENT.invasionpop);
+         }
+      }
+      
+      public static function ShowExtensionPopup(param1:String) : void
+      {
+         var _loc2_:MovieClip = null;
+         if(!WMIEXTENSIONPOPUP.open && !_active)
+         {
+            _loc2_ = new WMIEXTENSIONPOPUP();
+            POPUPS.Push(_loc2_,null,null,null,null,false,param1);
+            GLOBAL.StatSet("lasttdpopup",SPECIALEVENT.invasionpop);
+         }
+      }
+      
+      public static function ShowTShirtPopup(param1:String) : void
+      {
+      }
+      
+      public static function ShowEventEndPopup() : void
+      {
+         var _loc1_:MovieClip = null;
+         if(!WMIROUNDCOMPLETE.open && !_active)
+         {
+            _loc1_ = new WMIROUNDCOMPLETE(EVENTEND);
+            POPUPS.Push(_loc1_,null,null,null,null,false,"wait");
+            GLOBAL.StatSet("wmi_end",1);
          }
       }
       
@@ -953,11 +1161,15 @@ package
          {
             return false;
          }
-         return SPECIALEVENT.invasionpop == 4 || ACTIVE_OVERRIDE;
+         return SPECIALEVENT.invasionpop == 4 || SPECIALEVENT.invasionpop == 5;
       }
       
       public static function get invasionpop() : Number
       {
+         if(INVASIONPOP_OVERRIDE > 0)
+         {
+            return INVASIONPOP_OVERRIDE;
+         }
          if(GLOBAL._flags.invasionpop2 == -1)
          {
             return -1;
@@ -989,7 +1201,7 @@ package
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
-         if(param1 == 121 || param1 == 122 || param1 == 123 || param1 == 124 || param1 == 125)
+         if(BTOTEM.IsTotem(param1))
          {
             _loc2_ = GLOBAL.StatGet("wmi_wave");
             _loc3_ = 0;
@@ -1019,11 +1231,48 @@ package
                case 5:
                   param1 = 125;
                   break;
+               case 6:
+                  param1 = 126;
+                  break;
                default:
                   param1 = 121;
             }
          }
          return param1;
+      }
+      
+      public static function FlagChanged() : void
+      {
+         _knownFlag = invasionpop;
+         switch(_knownFlag)
+         {
+            case -1:
+            case 0:
+               GLOBAL.StatSet("lasttdpopup",0);
+               break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+               if(GLOBAL.StatGet("lasttdpopup") < _knownFlag)
+               {
+                  ShowDefenseEventPopup("wait");
+               }
+               break;
+            case 5:
+               if(GLOBAL.StatGet("lasttdpopup") < 5)
+               {
+                  if(wave == BONUSWAVE2 && UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible)
+                  {
+                     UI_BOTTOM._nextwave.visible = true;
+                  }
+                  ShowExtensionPopup("wait");
+               }
+               else if(GLOBAL.StatGet("lasttdpopup") == 5)
+               {
+                  ShowTShirtPopup("wait");
+               }
+         }
       }
       
       public static function DEBUGOVERRIDEROUND(param1:int) : void
@@ -1091,6 +1340,11 @@ package
       public static function get active() : Boolean
       {
          return _active;
+      }
+      
+      public static function get numWaves() : int
+      {
+         return WAVES.length;
       }
    }
 }

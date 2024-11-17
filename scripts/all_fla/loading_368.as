@@ -3,10 +3,10 @@ package all_fla
    import flash.display.MovieClip;
    import flash.events.Event;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol321")]
-   public dynamic class button_spinner_192 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol854")]
+   public dynamic class loading_368 extends MovieClip
    {
-      public function button_spinner_192()
+      public function loading_368()
       {
          super();
          addFrameScript(0,this.frame1);
@@ -14,10 +14,7 @@ package all_fla
       
       public function Tick(param1:Event) : *
       {
-         if(visible)
-         {
-            rotation += 4;
-         }
+         rotation -= 12;
       }
       
       internal function frame1() : *

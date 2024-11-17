@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2024")]
-   public dynamic class mis_msg_bg_557 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol2029")]
+   public dynamic class mis_msg_bg_559 extends MovieClip
    {
-      public function mis_msg_bg_557()
+      public function mis_msg_bg_559()
       {
          super();
          addFrameScript(0,this.frame1);

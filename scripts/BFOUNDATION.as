@@ -1147,6 +1147,9 @@ package
                                     break;
                                  case 125:
                                     GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
+                                    break;
+                                 case 126:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
                               }
                               POPUPS.Next();
                            };
@@ -1187,8 +1190,11 @@ package
                               case 125:
                                  totemImgUrl = "building-wmitotem5.png";
                                  break;
+                              case 126:
+                                 totemImgUrl = "building-wmitotem6.png";
+                                 break;
                               default:
-                                 totemImgUrl = "building-wmitotem5.png";
+                                 totemImgUrl = "building-wmitotem6.png";
                            }
                            POPUPS.Push(mc,null,null,null,totemImgUrl);
                         }
@@ -1203,6 +1209,11 @@ package
                }
                else
                {
+                  if(BTOTEM.IsTotem(this._type))
+                  {
+                     BASE.BuildingStorageAdd(this._type);
+                     GLOBAL._bTotem = null;
+                  }
                   this.Cancel();
                }
             }
@@ -3076,6 +3087,10 @@ package
          if(this._type == 125)
          {
             return new building125hit();
+         }
+         if(this._type == 126)
+         {
+            return new building126hit();
          }
          return new building1hit();
       }

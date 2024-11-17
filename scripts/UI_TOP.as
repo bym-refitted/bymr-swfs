@@ -670,7 +670,7 @@ package
                }
                else
                {
-                  GLOBAL.Message("<b>Mailbox Disabled</b><br>We\'re just updating the Mailbox and while it updates we\'ve disabled access to it. Please check back in a few minutes.");
+                  GLOBAL.Message(KEYS.Get("mail_disabled"));
                }
             }
             else if(label == "daily")

@@ -301,7 +301,7 @@ package
       
       public static var _localMode:int = 0;
       
-      public static var _version:SecNum = new SecNum(119);
+      public static var _version:SecNum = new SecNum(2 * 60);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -6408,7 +6408,7 @@ package
                   "back":["fort70_B4.png",new Point(-61,-36)]
                }
             },
-            "quantity":[0,0,0,0,0,2,2,2,2,2],
+            "quantity":[0,0,0,0,0,2,3,3,3,3],
             "hp":[294 * 60,34400,750 * 60,58000,75500,25 * 60 * 60],
             "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000,69000]
          },{
@@ -6630,6 +6630,38 @@ package
                "baseurl":"buildings/decorations/wmitotem/",
                "1":{
                   "top":["top5.png",new Point(-30,-110)],
+                  "shadow":["shadow4.jpg",new Point(-67,-82)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":126,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem6",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem6_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top6.png",new Point(-30,-110)],
                   "shadow":["shadow4.jpg",new Point(-67,-82)]
                }
             },
@@ -12189,6 +12221,20 @@ package
             "tutstage":200,
             "sale":0,
             "description":"bdg_wmitotem5_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":126,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem6",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem6_desc",
             "block":true,
             "quantity":[0]
          }];

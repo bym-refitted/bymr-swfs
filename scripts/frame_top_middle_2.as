@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/2126_frame_top_middle_2_frame_top_middle_2.png")]
+   [Embed(source="/_assets/2130_frame_top_middle_2_frame_top_middle_2.png")]
    public dynamic class frame_top_middle_2 extends BitmapData
    {
       public function frame_top_middle_2(param1:int = 280, param2:int = 40)

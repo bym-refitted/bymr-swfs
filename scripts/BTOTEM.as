@@ -13,7 +13,7 @@ package
       private static function RemoveAllFromStorage() : void
       {
          var _loc1_:Number = 121;
-         while(_loc1_ <= 125)
+         while(_loc1_ <= 126)
          {
             if(BASE._buildingsStored["b" + _loc1_])
             {
@@ -32,15 +32,18 @@ package
          }
          else
          {
-            _loc1_ = SPECIALEVENT.TotemQualified(121);
             RemoveAllFromStorage();
-            BASE._buildingsStored["b" + _loc1_] = new SecNum(1);
+            if(GLOBAL.StatGet("wmi_wave") > 0)
+            {
+               _loc1_ = SPECIALEVENT.TotemQualified(121);
+               BASE._buildingsStored["b" + _loc1_] = new SecNum(1);
+            }
          }
       }
       
       public static function IsTotem(param1:int) : Boolean
       {
-         return param1 >= 121 && param1 <= 125;
+         return param1 >= 121 && param1 <= 126;
       }
       
       override public function Tick() : *
@@ -51,6 +54,11 @@ package
          {
             _type = earnedType;
             _renderState = null;
+            if(GLOBAL._bTotem)
+            {
+               GLOBAL._bTotem._renderState = null;
+            }
+            Update(true);
             try
             {
                _buildingProps = GLOBAL._buildingProps[_type - 1];
@@ -124,7 +132,11 @@ package
          QUEUE.Remove("building" + _id,false,this);
          BASE.BuildingDeselect();
          RemoveAllFromStorage();
-         BASE.BuildingStorageAdd(_type);
+         if(GLOBAL.StatGet("wmi_wave") > 0)
+         {
+            BASE.BuildingStorageAdd(_type);
+         }
+         GLOBAL._bTotem = null;
          Clean();
          BASE.Save();
          return true;

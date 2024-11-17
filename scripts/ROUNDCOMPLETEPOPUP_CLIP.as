@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1552")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1555")]
    public dynamic class ROUNDCOMPLETEPOPUP_CLIP extends MovieClip
    {
       public var mcTitle:TextField;
@@ -29,6 +29,12 @@ package
       public function ROUNDCOMPLETEPOPUP_CLIP()
       {
          super();
+         addFrameScript(1,this.frame2);
+      }
+      
+      internal function frame2() : *
+      {
+         stop();
       }
    }
 }

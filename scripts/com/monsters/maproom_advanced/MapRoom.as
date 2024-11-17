@@ -435,7 +435,7 @@ package com.monsters.maproom_advanced
                   "r4":RESOURCECOST.Get()
                })]);
             }
-            PLEASEWAIT.Show("Moving Base...");
+            PLEASEWAIT.Show(KEYS.Get("wait_movebase"));
             MailBox.Hide();
             if(_migrateThread.parent)
             {
@@ -492,7 +492,7 @@ package com.monsters.maproom_advanced
             {
                LOGGER.Log("err","MapRoom.RejectInvitation HTTP");
             };
-            PLEASEWAIT.Show("Rejecting...");
+            PLEASEWAIT.Show(KEYS.Get("wait_rejecting"));
             url = GLOBAL._baseURL + "rejectmigratetofriend";
             loadvars = [["baseid",_inviteBaseID],["threadid",_migrateThread.data.threadid]];
             if(_migrateThread.parent)

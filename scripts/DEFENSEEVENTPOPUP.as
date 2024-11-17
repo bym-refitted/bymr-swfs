@@ -48,6 +48,12 @@ package
                rsvpBtn.visible = false;
             }
          }
+         else if(popupnum == 5)
+         {
+            rsvpBtn.Setup(KEYS.Get("str_zazzle"),false,0,0);
+            rsvpBtn.Highlight = true;
+            rsvpBtn.addEventListener(MouseEvent.CLICK,this.merchandiseDown);
+         }
          else
          {
             rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup1"),false,0,0);
@@ -57,10 +63,14 @@ package
          if(popupnum > 0 && popupnum < 5)
          {
             ImageCache.GetImageWithCallBack("specialevent/200x200_" + popupnum + ".jpg",imageComplete);
+            mcText.htmlText = KEYS.Get("wmi_popup" + popupnum);
+         }
+         else if(popupnum == 5)
+         {
+            ImageCache.GetImageWithCallBack("specialevent/tshirt.jpg",imageComplete);
+            mcText.htmlText = KEYS.Get("wmi_tshirt");
          }
          mcFrame.Setup(true);
-         rsvpBtn.stop();
-         mcText.text = KEYS.Get("wmi_popup" + popupnum);
          _open = true;
       }
       
@@ -69,19 +79,21 @@ package
          return _open;
       }
       
-      public static function LogPopupShown() : void
-      {
-      }
-      
       public function rsvpDown(param1:MouseEvent) : void
       {
-         GLOBAL.gotoURL("http://www.facebook.com/event.php?eid=141841065917218",null,true,[63,1]);
+         GLOBAL.gotoURL("http://www.facebook.com/event.php?eid=141841065917218",null,true,null);
          POPUPS.Next();
       }
       
       public function startDown(param1:MouseEvent) : void
       {
          this.Hide();
+      }
+      
+      private function merchandiseDown(param1:MouseEvent) : void
+      {
+         GLOBAL.gotoURL("http://www.zazzle.com/i_survived_wild_monster_invasion_t_shirt-235280147840199053",null,true,[63,1]);
+         POPUPS.Next();
       }
       
       public function Hide() : void

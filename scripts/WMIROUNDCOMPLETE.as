@@ -48,22 +48,29 @@ package
             ImageCache.GetImageWithCallBack(GetImageName(wave,true),imageComplete);
          }
          mcFrame.Setup(wave != 1);
-         lBtn.stop();
-         mBtn.stop();
-         rBtn.stop();
-         bragBtn.stop();
          if(isMajorWave(wave))
          {
             mcTitle.htmlText = KEYS.Get("wmi_winwavetitle");
-            mcText.htmlText = KEYS.Get("wmi_winwave",{"v1":wave});
-            mcStats.htmlText = KEYS.Get("wmi_completedwaves",{"v1":wave});
+            mcText.htmlText = KEYS.Get("wmi_winwave" + wave);
+            if(wave == SPECIALEVENT.BONUSWAVE)
+            {
+               mcStats.htmlText = KEYS.Get("wmi_completedwave31");
+            }
+            else if(wave == SPECIALEVENT.BONUSWAVE2)
+            {
+               mcStats.htmlText = KEYS.Get("wmi_completedwave32");
+            }
+            else
+            {
+               mcStats.htmlText = KEYS.Get("wmi_completedwaves",{"v1":wave});
+            }
             rBtn.Highlight = true;
             if(wave == 1)
             {
                SPECIALEVENT.TotemReward();
                this.ButtonsVisible(false,false,true,false);
                rBtn.SetupKey("wmi_placetotembtn");
-               rBtn.addEventListener(MouseEvent.CLICK,PlaceTotem);
+               rBtn.addEventListener(MouseEvent.CLICK,this.PlaceTotem);
             }
             else
             {
@@ -99,28 +106,31 @@ package
             {
                this.ButtonsVisible(false,true,true,false);
                mBtn.SetupKey("btn_startrepairs");
-               mBtn.addEventListener(MouseEvent.CLICK,StartRepairsClicked);
+               mBtn.addEventListener(MouseEvent.CLICK,this.StartRepairsClicked);
                rBtn.SetupKey("btn_repairall");
                rBtn.Highlight = true;
-               rBtn.addEventListener(MouseEvent.CLICK,RepairAllClicked);
+               rBtn.addEventListener(MouseEvent.CLICK,this.RepairAllClicked);
             }
             else
             {
                this.ButtonsVisible(false,false,false,false);
             }
          }
+         else if(wave == SPECIALEVENT.EVENTEND)
+         {
+            mcTitle.htmlText = "";
+            mcText.htmlText = KEYS.Get("wmi_eventover");
+            mcStats.htmlText = "";
+            this.ButtonsVisible(false,false,false,true);
+            bragBtn.SetupKey("btn_brag");
+            bragBtn.Highlight = true;
+            bragBtn.addEventListener(MouseEvent.CLICK,Brag);
+         }
          else
          {
             mcTitle.htmlText = KEYS.Get("wmi_winwavetitle");
             mcText.htmlText = KEYS.Get("wmi_winwave");
-            if(wave == 31)
-            {
-               mcStats.htmlText = KEYS.Get("wmi_completedwave31");
-            }
-            else
-            {
-               mcStats.htmlText = KEYS.Get("wmi_completedwaves",{"v1":wave});
-            }
+            mcStats.htmlText = KEYS.Get("wmi_completedwaves",{"v1":wave});
             numDamagedBuildings = 0;
             for each(b in BASE._buildingsAll)
             {
@@ -139,7 +149,7 @@ package
                {
                   this.ButtonsVisible(false,false,true,false);
                   rBtn.SetupKey("wmi_nextwavebtn");
-                  rBtn.addEventListener(MouseEvent.CLICK,NextWaveClicked);
+                  rBtn.addEventListener(MouseEvent.CLICK,this.NextWaveClicked);
                }
             }
             else
@@ -152,13 +162,13 @@ package
                {
                   this.ButtonsVisible(true,true,true,false);
                   lBtn.SetupKey("wmi_nextwavebtn");
-                  lBtn.addEventListener(MouseEvent.CLICK,NextWaveClicked);
+                  lBtn.addEventListener(MouseEvent.CLICK,this.NextWaveClicked);
                }
                mBtn.SetupKey("btn_startrepairs");
-               mBtn.addEventListener(MouseEvent.CLICK,StartRepairsClicked);
+               mBtn.addEventListener(MouseEvent.CLICK,this.StartRepairsClicked);
                rBtn.SetupKey("btn_repairall");
                rBtn.Highlight = true;
-               rBtn.addEventListener(MouseEvent.CLICK,RepairAllClicked);
+               rBtn.addEventListener(MouseEvent.CLICK,this.RepairAllClicked);
             }
          }
          _open = true;
@@ -178,21 +188,11 @@ package
             case 20:
             case 30:
             case 31:
+            case 32:
                return true;
             default:
                return false;
          }
-      }
-      
-      private static function PlaceholderButtonClicked(param1:MouseEvent) : void
-      {
-         POPUPS.Next();
-      }
-      
-      private static function NextWaveClicked(param1:MouseEvent) : void
-      {
-         SPECIALEVENT.StartRound();
-         POPUPS.Next();
       }
       
       private static function Brag(param1:MouseEvent) : void
@@ -213,33 +213,13 @@ package
                break;
             case 31:
                GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
+               break;
+            case 32:
+               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
+               break;
+            case 33:
+               GLOBAL.CallJS("sendFeed",["wmi-eventover",KEYS.Get("wmi_eventoverstreamtitle"),KEYS.Get("wmi_eventoverstreamdesc",{"v1":GLOBAL.StatGet("wmi_wave")}),"wmi_aftermath.png"]);
          }
-         POPUPS.Next();
-      }
-      
-      private static function StartRepairsClicked(param1:MouseEvent) : void
-      {
-         var _loc2_:* = undefined;
-         for each(_loc2_ in BASE._buildingsAll)
-         {
-            if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
-            {
-               _loc2_.Repair();
-            }
-         }
-         SOUNDS.Play("repair1",0.25);
-         POPUPS.Next();
-      }
-      
-      private static function RepairAllClicked(param1:MouseEvent) : void
-      {
-         STORE.ShowB(3,1,["FIX"],true);
-         POPUPS.Next();
-      }
-      
-      private static function PlaceTotem(param1:MouseEvent) : void
-      {
-         SPECIALEVENT.TotemPlace();
          POPUPS.Next();
       }
       
@@ -259,6 +239,10 @@ package
                   return "popups/building-wmitotem4.png";
                case 31:
                   return "popups/building-wmitotem5.png";
+               case 32:
+                  return "popups/building-wmitotem6.png";
+               case 33:
+                  return "popups/wmieventend.png";
                default:
                   if(param1 < 10)
                   {
@@ -297,6 +281,43 @@ package
          mBtn.visible = param2;
          rBtn.visible = param3;
          bragBtn.visible = param4;
+      }
+      
+      private function PlaceholderButtonClicked(param1:MouseEvent) : void
+      {
+         this.Hide();
+      }
+      
+      private function NextWaveClicked(param1:MouseEvent) : void
+      {
+         SPECIALEVENT.StartRound();
+         this.Hide();
+      }
+      
+      private function StartRepairsClicked(param1:MouseEvent) : void
+      {
+         var _loc2_:* = undefined;
+         for each(_loc2_ in BASE._buildingsAll)
+         {
+            if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+            {
+               _loc2_.Repair();
+            }
+         }
+         SOUNDS.Play("repair1",0.25);
+         this.Hide();
+      }
+      
+      private function RepairAllClicked(param1:MouseEvent) : void
+      {
+         STORE.ShowB(3,1,["FIX"],true);
+         this.Hide();
+      }
+      
+      private function PlaceTotem(param1:MouseEvent) : void
+      {
+         SPECIALEVENT.TotemPlace();
+         this.Hide();
       }
    }
 }

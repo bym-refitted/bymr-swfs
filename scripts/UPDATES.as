@@ -5,6 +5,7 @@ package
    import flash.display.MovieClip;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
+   import flash.geom.Point;
    import flash.text.TextFieldAutoSize;
    
    public class UPDATES
@@ -91,136 +92,229 @@ package
       
       public static function Action(param1:Object) : *
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:Object = null;
+         var building:BFOUNDATION = null;
+         var popupMC:MovieClip = null;
+         var time:int = 0;
+         var length:int = 0;
+         var i:int = 0;
+         var monsterdata:Object = null;
+         var refundName:String = null;
+         var refundType:int = 0;
+         var refundFeeds:int = 0;
+         var refundLevel:int = 0;
+         var refundBuff:int = 0;
+         var refundID:String = null;
+         var refundHealth:int = 0;
+         var refundFeedtime:int = 0;
+         var update:Object = param1;
+         var freezeChamp:Function = function():void
+         {
+            if(CREATURES._guardian)
+            {
+               CREATURES._guardian._health.Set(CREATURES._guardian._maxHealth);
+               CREATURES._guardian.Export();
+               CREATURES._guardian.ModeFreeze();
+               BASE._guardianData.ft -= GLOBAL.Timestamp();
+               (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.push(BASE._guardianData);
+               BASE._guardianData = null;
+               CREATURES._guardian = null;
+               if(GLOBAL._mode == "build")
+               {
+                  GLOBAL._playerGuardianData = null;
+               }
+            }
+         };
+         var thawChamp:Function = function(param1:int):void
+         {
+            var _loc3_:Point = null;
+            var _loc4_:int = 0;
+            var _loc5_:Point = null;
+            var _loc6_:Array = null;
+            var _loc7_:Array = null;
+            var _loc8_:int = 0;
+            var _loc2_:int = 0;
+            while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
+            {
+               if((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t == param1)
+               {
+                  _loc3_ = new Point(GLOBAL._bChamber.x,GLOBAL._bChamber.y + 80);
+                  _loc4_ = int((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get());
+                  _loc5_ = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
+                  CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
+                  CREATURES._guardian.Export();
+                  _loc6_ = ["Gorgo","Drull","Fomor"];
+                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                  CREATURES._guardian.ModeCage();
+                  _loc7_ = [];
+                  _loc8_ = 0;
+                  while(_loc8_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
+                  {
+                     if(_loc2_ != _loc8_)
+                     {
+                        _loc7_.push((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc8_]);
+                     }
+                     _loc8_++;
+                  }
+                  (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen = _loc7_;
+                  break;
+               }
+               _loc2_++;
+            }
+         };
          if(!GLOBAL._save)
          {
             return;
          }
-         if(param1.data[1] == "BU")
+         if(update.data[1] == "BU")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_.UpgradeB();
+               building.UpgradeB();
             }
          }
-         if(param1.data[1] == "BUC")
+         if(update.data[1] == "BUC")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_.UpgradeCancelC();
+               building.UpgradeCancelC();
             }
          }
-         if(param1.data[1] == "BF")
+         if(update.data[1] == "BF")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_.FortifyB();
+               building.FortifyB();
             }
          }
-         if(param1.data[1] == "BFC")
+         if(update.data[1] == "BFC")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_.FortifyCancelC();
+               building.FortifyCancelC();
             }
          }
-         if(param1.data[1] == "BMU")
+         if(update.data[1] == "BMU")
          {
-            _loc5_ = int(param1.data.length);
+            length = int(update.data.length);
             if(HOUSING._creatures)
             {
-               _loc6_ = 2;
-               while(_loc6_ < _loc5_)
+               i = 2;
+               while(i < length)
                {
-                  _loc7_ = param1.data[_loc6_];
-                  if(Boolean(HOUSING._creatures[_loc7_.creatureID]) && HOUSING._creatures[_loc7_.creatureID].Get() > 0)
+                  monsterdata = update.data[i];
+                  if(Boolean(HOUSING._creatures[monsterdata.creatureID]) && HOUSING._creatures[monsterdata.creatureID].Get() > 0)
                   {
-                     HOUSING._creatures[_loc7_.creatureID].Add(-_loc7_.count);
-                     if(HOUSING._creatures[_loc7_.creatureID].Get() <= 0)
+                     HOUSING._creatures[monsterdata.creatureID].Add(-monsterdata.count);
+                     if(HOUSING._creatures[monsterdata.creatureID].Get() <= 0)
                      {
-                        HOUSING._creatures[_loc7_.creatureID].Set(0);
+                        HOUSING._creatures[monsterdata.creatureID].Set(0);
                      }
                   }
-                  else if(_loc7_.count < 0)
+                  else if(monsterdata.count < 0)
                   {
-                     HOUSING._creatures[_loc7_.creatureID] = new SecNum(-_loc7_.count);
+                     HOUSING._creatures[monsterdata.creatureID] = new SecNum(-monsterdata.count);
                   }
-                  _loc6_++;
+                  i++;
                }
             }
          }
-         if(param1.data[1] == "BH")
+         if(update.data[1] == "BH")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_._helpList.push(param1.data[3]);
+               building._helpList.push(update.data[3]);
             }
-            if(_loc2_)
+            if(building)
             {
-               _loc4_ = _loc2_.HelpB();
+               time = building.HelpB();
             }
-            if(_loc4_ > 0 && GLOBAL._mode == "build")
+            if(time > 0 && GLOBAL._mode == "build")
             {
-               _catchupList.push(["build",param1.fbid,param1.name,GLOBAL._buildingProps[_loc2_._type - 1].name,_loc4_]);
+               _catchupList.push(["build",update.fbid,update.name,GLOBAL._buildingProps[building._type - 1].name,time]);
             }
          }
-         if(param1.data[1] == "BP")
+         if(update.data[1] == "BP")
          {
             if(GLOBAL._mode != "build")
             {
-               _loc2_ = BASE.addBuildingC(param1.data[2]);
-               _loc2_.Setup(param1.data[3]);
+               building = BASE.addBuildingC(update.data[2]);
+               building.Setup(update.data[3]);
             }
          }
-         if(param1.data[1] == "DBU")
+         if(update.data[1] == "DBU")
          {
-            BASE._damagedBaseWarnTime = param1.data[0];
+            BASE._damagedBaseWarnTime = update.data[0];
          }
-         if(param1.data[1] == "BT")
+         if(update.data[1] == "BT")
          {
-            _loc2_ = GetBuilding(param1.data[2]);
-            if(_loc2_)
+            building = GetBuilding(update.data[2]);
+            if(building)
             {
-               _loc2_._threadid = param1.data[3];
+               building._threadid = update.data[3];
             }
-            if(_loc2_)
+            if(building)
             {
-               _loc2_._subject = param1.data[4];
+               building._subject = update.data[4];
             }
-            if(_loc2_)
+            if(building)
             {
-               _loc2_._senderid = param1.data[5];
+               building._senderid = update.data[5];
             }
-            if(_loc2_)
+            if(building)
             {
-               _loc2_._senderName = param1.data[6];
+               building._senderName = update.data[6];
             }
-            if(_loc2_)
+            if(building)
             {
-               _loc2_._senderPic = param1.data[7];
+               building._senderPic = update.data[7];
             }
          }
-         if(param1.data[1] == "BE")
+         if(update.data[1] == "BE")
          {
-            BASE._resources.r1.Add(-param1.data[3]);
-            BASE._hpResources.r1 -= param1.data[3];
-            BASE._resources.r2.Add(-param1.data[4]);
-            BASE._hpResources.r2 -= param1.data[4];
-            BASE._resources.r3.Add(-param1.data[5]);
-            BASE._hpResources.r3 -= param1.data[5];
-            BASE._resources.r4.Add(-param1.data[6]);
-            BASE._hpResources.r4 -= param1.data[6];
-            BASE._credits.Add(-param1.data[7]);
-            BASE._hpCredits -= param1.data[7];
+            BASE._resources.r1.Add(-update.data[3]);
+            BASE._hpResources.r1 -= update.data[3];
+            BASE._resources.r2.Add(-update.data[4]);
+            BASE._hpResources.r2 -= update.data[4];
+            BASE._resources.r3.Add(-update.data[5]);
+            BASE._hpResources.r3 -= update.data[5];
+            BASE._resources.r4.Add(-update.data[6]);
+            BASE._hpResources.r4 -= update.data[6];
+            BASE._credits.Add(-update.data[7]);
+            BASE._hpCredits -= update.data[7];
+         }
+         if(update.data[1] == "CMR")
+         {
+            refundName = update.data[2];
+            refundType = int(update.data[3]);
+            refundFeeds = int(update.data[4]);
+            refundLevel = int(update.data[5]);
+            refundBuff = int(update.data[6]);
+            refundID = "G" + refundType;
+            refundHealth = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"health");
+            refundFeedtime = GLOBAL.Timestamp();
+            if(Boolean(CREATURES._guardian) && CREATURES._guardian._creatureID == refundID)
+            {
+               CREATURES._guardian.Clear();
+            }
+            else if(GLOBAL._bChamber)
+            {
+               if(Boolean(CREATURES._guardian) && CREATURES._guardian._creatureID != refundID)
+               {
+                  freezeChamp();
+               }
+               if(CHAMPIONCHAMBER.HasFrozen(refundType))
+               {
+                  thawChamp(refundType);
+               }
+               CREATURES._guardian.Clear();
+            }
+            GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
+            BASE.Save();
          }
       }
       
@@ -306,7 +400,7 @@ package
                _loc5_ += ", <b>" + KEYS.Get("pop_helped_3a",{"v1":GLOBAL.ToTime(_loc7_,false,false)}) + "</b>";
                _loc8_.tB.htmlText = _loc5_;
                _loc8_.bPost.Setup(KEYS.Get("pop_helped_saythanks_btn",{"v1":_loc3_[0][1]}));
-               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(_loc3_[0][0],KEYS.Get("pop_helped_streamtitle"),"","quests/build.png"));
+               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(_loc3_[0][0],KEYS.Get("pop_helped_streamtitle"),KEYS.Get("pop_helped_pl_streambody",{"v1":_loc3_[0][1]}),"quests/build.png"));
                _loc8_.bPost.Highlight = true;
             }
             else

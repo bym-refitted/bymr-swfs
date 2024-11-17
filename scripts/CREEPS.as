@@ -116,12 +116,19 @@ package
          }
       }
       
-      public static function Spawn(param1:String, param2:*, param3:String, param4:Point, param5:Number, param6:Number = 1, param7:Boolean = false) : CREEP
+      public static function Spawn(param1:String, param2:*, param3:String, param4:Point, param5:Number, param6:Number = 1, param7:Boolean = false) : *
       {
-         var _loc8_:CREEP = null;
+         var _loc8_:* = undefined;
          ++_creepID;
          ++_creepCount;
-         _loc8_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
+         if(param1.substr(0,1) == "I")
+         {
+            _loc8_ = param2.addChild(new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7));
+         }
+         else
+         {
+            _loc8_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
+         }
          _creeps[_creepID] = _loc8_;
          return _loc8_;
       }

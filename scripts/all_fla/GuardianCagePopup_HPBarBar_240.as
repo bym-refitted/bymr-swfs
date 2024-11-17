@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol157")]
-   public dynamic class MapRoomCell_Hit_294 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1430")]
+   public dynamic class GuardianCagePopup_HPBarBar_240 extends MovieClip
    {
-      public function MapRoomCell_Hit_294()
+      public function GuardianCagePopup_HPBarBar_240()
       {
          super();
          addFrameScript(0,this.frame1);

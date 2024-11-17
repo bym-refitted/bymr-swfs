@@ -136,6 +136,55 @@ package
             "height":28,
             "middle":new Point(12,14)
          };
+         _sprites.IC2 = {
+            "key":"monsters/zagnoid.png",
+            "sprite":null,
+            "width":64.4,
+            "height":46,
+            "middle":new Point(32,23)
+         };
+         _sprites.IC3 = {
+            "key":"monsters/malphus.png",
+            "sprite":null,
+            "width":51,
+            "height":35,
+            "middle":new Point(25,17)
+         };
+         _sprites.IC4 = {
+            "key":"monsters/valgos.png",
+            "sprite":null,
+            "width":26,
+            "height":23,
+            "middle":new Point(11,15)
+         };
+         _sprites.IC5 = {
+            "key":"monsters/balthazar.png",
+            "sprite":null,
+            "width":56,
+            "height":37,
+            "middle":new Point(28,18.5)
+         };
+         _sprites.IC6 = {
+            "key":"monsters/grokus.png",
+            "sprite":null,
+            "width":57,
+            "height":39,
+            "middle":new Point(28,20)
+         };
+         _sprites.IC7 = {
+            "key":"monsters/sabnox.png",
+            "sprite":null,
+            "width":42,
+            "height":34,
+            "middle":new Point(21,17)
+         };
+         _sprites.IC8 = {
+            "key":"monsters/13.png",
+            "sprite":null,
+            "width":40,
+            "height":26,
+            "middle":new Point(19,17)
+         };
          _sprites.G1_1 = {
             "key":"monsters/ape_1.png",
             "sprite":null,
@@ -494,11 +543,67 @@ package
          }
          if(param2 == "IC1")
          {
-            if(param6 != param4 / 12 + param5 % 9 / 3 * 30)
+            if(param6 != param4 / 12)
             {
-               GetFrame(param1,_sprites.IC1,int(param4 / 12),param5 % 9 / 3);
+               GetFrame(param1,_sprites.IC1,param4 / 12,param5 / 8 % 2 + 1);
             }
-            return param4 / 12 + param5 % 9 / 3 * 30;
+            return param4 / 12;
+         }
+         if(param2 == "IC2")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC2,param4 / 12);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC3")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC3,param4 / 12,param5 / 8 % 8 + 1);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC4")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC4,param4 / 12);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC5")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC5,param4 / 12,param5 / 8 % 6 + 1);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC6")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC6,param4 / 12);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC7")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC7,param4 / 12);
+            }
+            return param4 / 12;
+         }
+         if(param2 == "IC8")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.IC8,param4 / 12);
+            }
+            return param4 / 12;
          }
          if(param2.substr(0,2) == "G1" || param2.substr(0,2) == "G2")
          {

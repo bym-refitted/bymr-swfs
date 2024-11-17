@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1548")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1557")]
    public dynamic class DEFENSEEVENTPOPUP_CLIP extends MovieClip
    {
       public var mcBanner:MovieClip;
@@ -19,6 +19,12 @@ package
       public function DEFENSEEVENTPOPUP_CLIP()
       {
          super();
+         addFrameScript(1,this.frame2);
+      }
+      
+      internal function frame2() : *
+      {
+         stop();
       }
    }
 }

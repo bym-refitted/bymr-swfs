@@ -81,7 +81,7 @@ package com.monsters.maproom_advanced
          };
          var relocateVars:Array = [["type","random"],["baseid",0],["shiny",0]];
          POPUPS.Next();
-         PLEASEWAIT.Show("Relocating Main Yard");
+         PLEASEWAIT.Show(KEYS.Get("wait_relocating"));
          new URLLoaderApi().load(GLOBAL._baseURL + "migrate",relocateVars,RelocateSuccess,RelocateFail);
       }
       

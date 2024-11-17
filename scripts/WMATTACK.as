@@ -98,6 +98,8 @@ package
       
       public static var _attackersBaseID:int = 1;
       
+      public static var _rage:int = 0;
+      
       public function WMATTACK()
       {
          super();
@@ -812,6 +814,10 @@ package
             _loc7_ = _loc12_.random() * param2 / 2;
             _loc8_ = param1.add(new Point(Math.cos(_loc6_) * _loc7_,Math.sin(_loc6_) * _loc7_));
             _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc12_.random() * 360,_loc11_,false);
+            if(_rage)
+            {
+               _loc9_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
+            }
             _loc13_.push(_loc9_);
             _loc14_++;
          }

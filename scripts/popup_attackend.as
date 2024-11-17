@@ -37,16 +37,16 @@ package
          }
          else
          {
-            this.tTitle.htmlText = "Attack Ended";
+            this.tTitle.htmlText = KEYS.Get("popup_attackended_title");
             if(GLOBAL._advancedMap)
             {
                if(GLOBAL._mode == "wmattack")
                {
-                  this.tMessage.htmlText = "You failed to destroy this Wild Monster yard, rebuild your monsters and try again.";
+                  this.tMessage.htmlText = KEYS.Get("popup_attackended_failedWMYard");
                }
                else if(BASE._isOutpost)
                {
-                  this.tMessage.htmlText = "You failed to destroy this outpost, rebuild your monsters and try again.";
+                  this.tMessage.htmlText = KEYS.Get("popup_attackended_failedOutpost");
                }
                else
                {
@@ -55,22 +55,22 @@ package
             }
             else if(GLOBAL._mode == "wmattack")
             {
-               this.tMessage.htmlText = "You failed to destroy the Town Hall of this Wild Monster yard, rebuild your monsters and try again.";
+               this.tMessage.htmlText = KEYS.Get("popup_attackended_failedWMTH");
             }
             else
             {
                this.tMessage.htmlText = "";
             }
          }
-         this.tProcessing.htmlText = "Please Wait...";
+         this.tProcessing.htmlText = KEYS.Get("please_wait");
          this.bAction.Enabled = false;
          if(!GLOBAL._advancedMap)
          {
-            this.bAction.Setup("Return Home");
+            this.bAction.Setup(KEYS.Get("btn_returnhome"));
          }
          else
          {
-            this.bAction.Setup("Open Map");
+            this.bAction.Setup(KEYS.Get("btn_openmap"));
          }
          this.addEventListener(Event.ENTER_FRAME,this.Tick);
       }

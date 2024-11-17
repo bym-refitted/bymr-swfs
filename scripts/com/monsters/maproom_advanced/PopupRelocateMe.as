@@ -199,7 +199,7 @@ package com.monsters.maproom_advanced
                      LOGGER.Log("err","Null home cell when transfering base");
                   }
                   MapRoom.ClearCells();
-                  PLEASEWAIT.Show("Packing Up Yard");
+                  PLEASEWAIT.Show(KEYS.Get("wait_packingyard"));
                   addEventListener(Event.ENTER_FRAME,RelocateComplete);
                   MapRoom.Tick();
                }
@@ -240,7 +240,7 @@ package com.monsters.maproom_advanced
                "r4":this.RESOURCECOST.Get()
             })]);
          }
-         PLEASEWAIT.Show("Relocating Main Yard");
+         PLEASEWAIT.Show(KEYS.Get("wait_relocating"));
          new URLLoaderApi().load(GLOBAL._baseURL + "migrate",relocateVars,RelocateSuccess,RelocateFail);
       }
       

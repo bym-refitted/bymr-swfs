@@ -31,7 +31,11 @@ package
          {
             return false;
          }
-         if(SPECIALEVENT.wave > 31)
+         if(SPECIALEVENT.wave > SPECIALEVENT.numWaves)
+         {
+            return false;
+         }
+         if(SPECIALEVENT.active)
          {
             return false;
          }
@@ -67,7 +71,7 @@ package
       public function WaveShow(param1:MouseEvent) : void
       {
          var _loc7_:bubblepopupDownBuff = null;
-         if(SPECIALEVENT.wave == 31)
+         if(SPECIALEVENT.wave >= SPECIALEVENT.BONUSWAVE)
          {
             return;
          }
@@ -109,7 +113,7 @@ package
       
       public function SetWave(param1:int) : void
       {
-         if(param1 > 31)
+         if(param1 > SPECIALEVENT.numWaves)
          {
             this.visible = false;
             return;
@@ -120,11 +124,15 @@ package
          }
          if(param1 == 31)
          {
-            tR.text = KEYS.Get("wmi_bonuswave");
+            tR.htmlText = KEYS.Get("wmi_bonuswave");
+         }
+         else if(param1 == 32)
+         {
+            tR.htmlText = KEYS.Get("wmi_bonuswave2");
          }
          else
          {
-            tR.text = KEYS.Get("wmi_nextwave",{"v1":param1});
+            tR.htmlText = KEYS.Get("wmi_nextwave",{"v1":param1});
          }
       }
    }

@@ -21,9 +21,9 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "5bfd9f7a961f2e4544209e3bc818ff1a")
+            if(GLOBAL.Check() != "793ea934506b9c8ed367f5e53edfa52a")
             {
-               if(GLOBAL.Check() == "3d98775e6a82a8f2f189cb71cc6fb4d8")
+               if(GLOBAL.Check() == "7e7e8c0038240f52b4c59ef887821d0a")
                {
                   LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch " + GLOBAL.Check());
                }
@@ -34,9 +34,9 @@ package
                }
             }
          }
-         else if(GLOBAL.Check() != "3d98775e6a82a8f2f189cb71cc6fb4d8")
+         else if(GLOBAL.Check() != "7e7e8c0038240f52b4c59ef887821d0a")
          {
-            if(GLOBAL.Check() == "5bfd9f7a961f2e4544209e3bc818ff1a")
+            if(GLOBAL.Check() == "793ea934506b9c8ed367f5e53edfa52a")
             {
                LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch " + GLOBAL.Check());
             }

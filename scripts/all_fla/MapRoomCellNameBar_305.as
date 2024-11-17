@@ -4,7 +4,7 @@ package all_fla
    import flash.text.TextField;
    
    [Embed(source="/_assets/assets.swf", symbol="symbol210")]
-   public dynamic class MapRoomCellNameBar_304 extends MovieClip
+   public dynamic class MapRoomCellNameBar_305 extends MovieClip
    {
       public var txt:TextField;
       
@@ -14,7 +14,7 @@ package all_fla
       
       public var txtAlliance:TextField;
       
-      public function MapRoomCellNameBar_304()
+      public function MapRoomCellNameBar_305()
       {
          super();
          addFrameScript(0,this.frame1);

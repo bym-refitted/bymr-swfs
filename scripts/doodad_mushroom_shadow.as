@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1211")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1216")]
    public dynamic class doodad_mushroom_shadow extends MovieClip
    {
       public function doodad_mushroom_shadow()

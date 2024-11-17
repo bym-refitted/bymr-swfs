@@ -268,7 +268,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_railgunbuilt_streamtitle"),KEYS.Get("pop_rbuilt_streambody"),"build_railgun.png"]);
+               GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_railgunbuilt_streamtitle"),KEYS.Get("pop_railgunbuilt_streambody"),"build_railgun.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

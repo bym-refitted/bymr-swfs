@@ -3,7 +3,7 @@ package all_fla
    import flash.display.MovieClip;
    import flash.events.Event;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1521")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1526")]
    public dynamic class loading_39 extends MovieClip
    {
       public function loading_39()

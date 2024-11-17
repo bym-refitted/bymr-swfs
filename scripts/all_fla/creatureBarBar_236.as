@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1163")]
-   public dynamic class guardianBar_Fill_233 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1086")]
+   public dynamic class creatureBarBar_236 extends MovieClip
    {
-      public function guardianBar_Fill_233()
+      public function creatureBarBar_236()
       {
          super();
          addFrameScript(0,this.frame1);

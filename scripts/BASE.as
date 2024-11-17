@@ -1935,6 +1935,7 @@ package
          var WhatsNewAction47:Function;
          var WhatsNewAction48:Function;
          var WhatsNewAction49:Function;
+         var WhatsNewAction50:Function;
          var popupWhatsNewDisplayed:Function;
          var MoreInfo711:Function;
          var RepairAll:Function;
@@ -2151,6 +2152,21 @@ package
                      popupWhatsNew.bAction.Setup("Open Map");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction49);
                   }
+                  else if(GLOBAL._whatsnewid < 1050)
+                  {
+                     WhatsNewAction50 = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS._buildingID = 118;
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.SwitchB(3,1,0);
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew49();
+                     newWhatsnewid = 1050;
+                     display = true;
+                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction50);
+                  }
                   if(display)
                   {
                      popupWhatsNewDisplayed = function():*
@@ -2186,7 +2202,7 @@ package
                      {
                         MoreInfo711 = function(param1:MouseEvent):void
                         {
-                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,[63,1]);
+                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
                            POPUPS.Next();
                         };
                         if(GLOBAL._displayedPromoNew)
@@ -2287,10 +2303,11 @@ package
             {
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._countryCode != "ph")
                {
-                  if(SPECIALEVENT.invasionpop > GLOBAL.StatGet("lasttdpopup") || SPECIALEVENT.invasionpop == -1)
+                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 && GLOBAL.StatGet("lasttdpopup") < 6)
                   {
-                     SPECIALEVENT.ShowDefenseEventPopup("wait");
+                     SPECIALEVENT.ShowTShirtPopup("wait");
                   }
+                  SPECIALEVENT.FlagChanged();
                }
             }
          }
@@ -2796,6 +2813,7 @@ package
                   }
                   if(BTOTEM.IsTotem(building._type))
                   {
+                     GLOBAL._bTotem.Tick();
                      building._type = SPECIALEVENT.TotemQualified(building._type);
                   }
                   tmpExport = building.Export();
@@ -3436,7 +3454,7 @@ package
       {
          if(_buildingsStored["b" + param1])
          {
-            if(param1 >= 121 && param1 <= 125)
+            if(BTOTEM.IsTotem(param1))
             {
                if(_buildingsStored["b121"])
                {
@@ -3457,6 +3475,10 @@ package
                if(_buildingsStored["b125"])
                {
                   delete _buildingsStored["b125"];
+               }
+               if(_buildingsStored["b126"])
+               {
+                  delete _buildingsStored["b126"];
                }
                return true;
             }
@@ -3984,33 +4006,54 @@ package
       
       public static function addBuildingB(param1:int, param2:Boolean = false) : *
       {
-         var _loc4_:Object = null;
+         var queueAble:Boolean;
+         var e:Object = null;
+         var n:int = param1;
+         var instantBuild:Boolean = param2;
          BuildingDeselect();
-         var _loc3_:* = GLOBAL._buildingProps[param1 - 1].costs[0].time == 0;
-         if(!_loc3_)
+         queueAble = GLOBAL._buildingProps[n - 1].costs[0].time == 0;
+         if(!queueAble)
          {
-            _loc3_ = QUEUE.CanDo().error == false;
+            queueAble = QUEUE.CanDo().error == false;
          }
-         if(BuildingStorageCount(param1) > 0)
+         if(BuildingStorageCount(n) > 0)
          {
-            _loc3_ = true;
+            queueAble = true;
          }
-         if(_loc3_)
+         if(queueAble)
          {
-            _loc4_ = CanBuild(param1,param2);
-            if(!_loc4_.error)
+            e = CanBuild(n,instantBuild);
+            if(!e.error)
             {
                BASE.BuildingDeselect();
                ShowFootprints();
-               GLOBAL._newBuilding = addBuildingC(param1);
-               GLOBAL._newBuilding.FollowMouse();
+               GLOBAL._newBuilding = addBuildingC(n);
+               if(GLOBAL._newBuilding)
+               {
+                  GLOBAL._newBuilding.FollowMouse();
+               }
+               else
+               {
+                  if(BTOTEM.IsTotem(n))
+                  {
+                     try
+                     {
+                        throw new Error("whatever");
+                     }
+                     catch(e:Error)
+                     {
+                     }
+                     BASE.BuildingStorageAdd(n);
+                  }
+                  BuildingDeselect();
+               }
                return GLOBAL._newBuilding;
             }
-            GLOBAL.Message(_loc4_.errorMessage);
+            GLOBAL.Message(e.errorMessage);
          }
          else
          {
-            POPUPS.DisplayWorker(0,param1);
+            POPUPS.DisplayWorker(0,n);
          }
          return false;
       }
@@ -4022,9 +4065,18 @@ package
          {
             if(BTOTEM.IsTotem(param1))
             {
-               if(GLOBAL._bTotem == null)
+               if(GLOBAL._bTotem == null && GLOBAL.StatGet("wmi_wave") > 0)
                {
                   _loc2_ = new BTOTEM(param1);
+               }
+               else
+               {
+                  if(!GLOBAL._bTotem)
+                  {
+                  }
+                  if(GLOBAL.StatGet("wmi_wave") <= 0)
+                  {
+                  }
                }
             }
             else

@@ -105,7 +105,7 @@ package
                      {
                         _logFunction("err","missing key: " + key);
                      }
-                     return "";
+                     return "[[" + key + "]]";
                   }
                }
             }
@@ -118,7 +118,7 @@ package
                   {
                      _logFunction("err","missing key: " + key);
                   }
-                  return "";
+                  return "[[" + key + "]]";
                }
                for(k in values)
                {
