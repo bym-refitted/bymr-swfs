@@ -19,6 +19,11 @@ package com.monsters.subscriptions
          this.subscriptionID = param4;
          super(param1,bubbles,cancelable);
       }
+      
+      override public function toString() : String
+      {
+         return "renewalDate:" + this.renewalDate + " expirationDate:" + this.expirationDate + " subscriptionID:" + this.subscriptionID;
+      }
    }
 }
 

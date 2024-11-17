@@ -2739,15 +2739,15 @@ package
          }
       }
       
-      public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
       {
-         var _loc6_:int = param1;
+         var _loc7_:int = param1;
          if(this._fortification.Get() > 0)
          {
-            _loc6_ *= 100 - (this._fortification.Get() * 10 + 10);
-            _loc6_ = _loc6_ / 100;
+            _loc7_ *= 100 - (this._fortification.Get() * 10 + 10);
+            _loc7_ = _loc7_ / 100;
          }
-         this._hp.Add(-_loc6_);
+         this._hp.Add(-_loc7_);
          if(this._hp.Get() <= 0)
          {
             this._hp.Set(0);
@@ -2768,7 +2768,7 @@ package
          BASE.Save();
       }
       
-      public function Loot(param1:int) : *
+      public function Loot(param1:int) : void
       {
       }
       
@@ -3491,6 +3491,10 @@ package
          if(this._type == 132)
          {
             return new magmaTowerHit();
+         }
+         if(this._type == 135)
+         {
+            return new building135hit();
          }
          return !!_loc1_.hitCls ? new _loc1_.hitCls() : new building1hit();
       }

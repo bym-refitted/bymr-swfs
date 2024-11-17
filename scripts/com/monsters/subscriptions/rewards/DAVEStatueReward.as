@@ -15,7 +15,7 @@ package com.monsters.subscriptions.rewards
          super();
       }
       
-      public static function makeVisibleInStore(param1:Function) : void
+      public static function unlockTeaserInformation(param1:Function) : void
       {
          GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].block = false;
          GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].locked = true;
@@ -38,6 +38,11 @@ package com.monsters.subscriptions.rewards
             }
          }
          return null;
+      }
+      
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
       }
       
       override protected function onApplication() : void
@@ -65,6 +70,12 @@ package com.monsters.subscriptions.rewards
             }
          }
          BASE.BuildingStorageRemove(DAVE_STATUE_TYPE_ID);
+      }
+      
+      override public function reset() : void
+      {
+         GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].block = false;
+         GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].locked = true;
       }
    }
 }

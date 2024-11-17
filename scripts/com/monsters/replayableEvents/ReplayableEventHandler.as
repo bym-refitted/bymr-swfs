@@ -3,6 +3,7 @@ package com.monsters.replayableEvents
    import com.cc.tests.ABTest;
    import com.monsters.debug.Console;
    import com.monsters.frontPage.FrontPageGraphic;
+   import com.monsters.frontPage.messages.DebugMessage;
    import com.monsters.frontPage.messages.Message;
    import com.monsters.ui.UI_BOTTOM;
    import flash.events.Event;
@@ -92,7 +93,7 @@ package com.monsters.replayableEvents
                "st2":activeEvent.name
             },"event_end");
             _loc1_ = activeEvent.getCurrentMessage();
-            if(Boolean(_loc1_) && !_loc1_.hasBeenSeen)
+            if(_loc1_ && !_loc1_.hasBeenSeen && !(_loc1_ is DebugMessage))
             {
                POPUPS.Push(new FrontPageGraphic(_loc1_));
                _loc1_.viewed();

@@ -734,7 +734,7 @@ package
             case 4:
                _hpLoot4 += param2;
          }
-         var _loc8_:int = param2;
+         var _loc8_:Number = param2;
          var _loc9_:Number = Number(GLOBAL._resources["r" + param1 + "max"]);
          var _loc10_:Number = Number(GLOBAL._resources["r" + param1].Get());
          var _loc11_:KOTHChampion = CREEPS.krallen;
@@ -926,7 +926,7 @@ package
          {
             EndB();
          }
-         var _loc2_:int = _loot.r1.Get() + _loot.r2.Get() + _loot.r3.Get() + _loot.r4.Get();
+         var _loc2_:Number = _loot.r1.Get() + _loot.r2.Get() + _loot.r3.Get() + _loot.r4.Get();
          LOGGER.KongStat([3,_loc2_]);
       }
       
@@ -935,7 +935,7 @@ package
          EndB();
       }
       
-      public static function EndB() : *
+      public static function EndB() : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;

@@ -3,6 +3,7 @@ package
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.events.Event;
    import flash.events.MouseEvent;
    
    public class CHAMPIONBUTTON extends GUARDIANBUTTON_CLIP
@@ -19,13 +20,15 @@ package
       
       private var _index:int = 0;
       
+      private const MAX_ICON_LEVEL:uint = 6;
+      
       public function CHAMPIONBUTTON(param1:String, param2:int, param3:int)
       {
          super();
          this._index = param3;
          this._creatureID = param1;
          this._creatureData = CHAMPIONCAGE._guardians[param1];
-         this._level = param2;
+         this._level = Math.min(this.MAX_ICON_LEVEL,param2);
          var _loc4_:String = CHAMPIONCAGE._guardians[param1].name;
          txtName.htmlText = "<b>" + _loc4_ + "</b>";
          ImageCache.GetImageWithCallBack("monsters/" + this._creatureID + "_L" + this._level + "-small.png",this.IconLoaded,true,1);
@@ -95,6 +98,7 @@ package
       
       public function Over(param1:MouseEvent) : *
       {
+         dispatchEvent(new Event(UI_TOP.CREATUREBUTTONOVER));
          this._description.visible = true;
       }
       

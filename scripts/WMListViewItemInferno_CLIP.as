@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2880")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2887")]
    public dynamic class WMListViewItemInferno_CLIP extends MovieClip
    {
       public var name_txt:TextField;

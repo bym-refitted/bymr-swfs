@@ -34,7 +34,7 @@ package
       public static var _open:Boolean = false;
       
       public static var _guardians:Object = {
-         "length":4,
+         "length":5,
          "G1":{
             "name":"Gorgo",
             "description":"mon_gorgodesc",
@@ -477,7 +477,7 @@ package
       
       public static function CanTrainGuardian(param1:int) : Boolean
       {
-         return _guardians["G" + param1].props.powerLevel > 0;
+         return _guardians["G" + param1].props.powerLevel > 0 && _guardians["G" + param1].classType == CLASS_TYPE_BASIC;
       }
       
       public static function GetAllGuardianData() : Object
@@ -946,6 +946,10 @@ package
       override public function Export() : *
       {
          return super.Export();
+      }
+      
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      {
       }
       
       public function RemoveGuardian(param1:uint) : void

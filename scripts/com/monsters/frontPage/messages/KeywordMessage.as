@@ -6,10 +6,11 @@ package com.monsters.frontPage.messages
       
       protected var _keyword:String;
       
-      public function KeywordMessage(param1:String, param2:String = null)
+      public function KeywordMessage(param1:String, param2:String = null, param3:String = null)
       {
          this._keyword = param1;
-         super(PREFIX + this._keyword + "_title",PREFIX + this._keyword,PREFIX + param1 + ".jpg",param2,videoURL);
+         var _loc4_:String = !!param3 ? param3 : PREFIX + param1 + ".jpg";
+         super(PREFIX + this._keyword + "_title",PREFIX + this._keyword,_loc4_,param2,videoURL);
          name = this._keyword;
       }
       

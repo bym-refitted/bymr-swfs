@@ -344,19 +344,19 @@ package
          super.Update(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
          {
             param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
          }
-         var _loc6_:int = param1;
+         var _loc7_:int = param1;
          if(_fortification.Get() > 0)
          {
-            _loc6_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc6_ = _loc6_ / 100;
+            _loc7_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc7_ = _loc7_ / 100;
          }
-         _hp.Add(-_loc6_);
+         _hp.Add(-_loc7_);
          if(_hp.Get() <= 0)
          {
             _hp.Set(0);

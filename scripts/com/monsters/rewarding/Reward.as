@@ -19,10 +19,20 @@ package com.monsters.rewarding
          super();
       }
       
-      internal function applyReward() : void
+      internal function applyReward() : Boolean
       {
+         if(!this.canBeApplied())
+         {
+            return false;
+         }
          this._hasBeenApplied = true;
          this.onApplication();
+         return true;
+      }
+      
+      public function canBeApplied() : Boolean
+      {
+         return true;
       }
       
       protected function onApplication() : void
@@ -67,6 +77,10 @@ package com.monsters.rewarding
       }
       
       public function removed() : void
+      {
+      }
+      
+      public function reset() : void
       {
       }
       

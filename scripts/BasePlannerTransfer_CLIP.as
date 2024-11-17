@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2297")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2301")]
    public dynamic class BasePlannerTransfer_CLIP extends MovieClip
    {
       public var tTitle:TextField;

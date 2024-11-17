@@ -6,6 +6,8 @@ package com.monsters.subscriptions.ui.controlPanel
    
    public class MembershipPopup extends subscriptions_membership_popup
    {
+      private var _cancelConfirm:SubscriptionCancelPopup;
+      
       public function MembershipPopup()
       {
          var _loc1_:Boolean = false;
@@ -15,11 +17,11 @@ package com.monsters.subscriptions.ui.controlPanel
          tDescription.htmlText = KEYS.Get("dc_benefits_desc");
          if(_loc1_)
          {
-            tRenew.htmlText = KEYS.Get("dc_benefits_renew",{"v1":GLOBAL.ToTime(SubscriptionHandler.instance.renewalDate)});
+            tRenew.htmlText = KEYS.Get("dc_benefits_renew",{"v1":new Date(SubscriptionHandler.instance.renewalDate * 1000).toLocaleDateString()});
          }
          else
          {
-            tRenew.htmlText = KEYS.Get("dc_benefits_expire",{"v1":GLOBAL.ToTime(SubscriptionHandler.instance.expirationDate)});
+            tRenew.htmlText = KEYS.Get("dc_benefits_expire",{"v1":new Date(SubscriptionHandler.instance.expirationDate * 1000).toLocaleDateString()});
          }
          if(_loc1_)
          {
@@ -38,17 +40,23 @@ package com.monsters.subscriptions.ui.controlPanel
          if(_loc1_)
          {
             bCancel.Setup(KEYS.Get("btn_cancelsub"));
-            bCancel.addEventListener(MouseEvent.CLICK,this.clickedCancel);
+            bCancel.addEventListener(MouseEvent.CLICK,this.clickedCancelConfirm);
          }
          else
          {
             bCancel.Setup(KEYS.Get("btn_reactivatesub"));
-            bCancel.addEventListener(MouseEvent.CLICK,this.clickedChange);
+            bCancel.addEventListener(MouseEvent.CLICK,this.clickedReactivate);
          }
          bClose.Highlight = true;
          bClose.buttonMode = true;
          bClose.Setup(KEYS.Get("btn_close"));
          bClose.addEventListener(MouseEvent.CLICK,this.Hide);
+      }
+      
+      protected function clickedReactivate(param1:MouseEvent) : void
+      {
+         dispatchEvent(new Event(SubscriptionHandler.REACTIVATE));
+         this.Hide();
       }
       
       private function subscriptionActive() : Boolean
@@ -68,8 +76,33 @@ package com.monsters.subscriptions.ui.controlPanel
          this.Hide(param1);
       }
       
+      private function eventCancel(param1:Event = null) : void
+      {
+         this.clickedCancel();
+      }
+      
+      private function clickedCancelConfirm(param1:MouseEvent = null) : void
+      {
+         this._cancelConfirm = new SubscriptionCancelPopup();
+         POPUPS.Add(this._cancelConfirm);
+         this._cancelConfirm.addEventListener(SubscriptionHandler.CANCELCONFIRM,this.eventCancel);
+         this._cancelConfirm.addEventListener(SubscriptionHandler.CLOSECONFIRM,this.removeConfirmationPopup);
+         POPUPSETTINGS.AlignToCenter(this._cancelConfirm);
+      }
+      
+      private function removeConfirmationPopup(param1:Event = null) : void
+      {
+         this._cancelConfirm.removeEventListener(SubscriptionHandler.CANCELCONFIRM,this.clickedCancel);
+         this._cancelConfirm.removeEventListener(SubscriptionHandler.CLOSECONFIRM,this.removeConfirmationPopup);
+         POPUPS.Remove(this._cancelConfirm);
+      }
+      
       public function Hide(param1:MouseEvent = null) : *
       {
+         if(this._cancelConfirm)
+         {
+            this.removeConfirmationPopup();
+         }
          bChange.removeEventListener(MouseEvent.CLICK,this.clickedChange);
          bCancel.removeEventListener(MouseEvent.CLICK,this.clickedCancel);
          bClose.removeEventListener(MouseEvent.CLICK,this.Hide);

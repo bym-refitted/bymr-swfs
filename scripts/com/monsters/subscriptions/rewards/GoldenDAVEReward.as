@@ -1,6 +1,7 @@
 package com.monsters.subscriptions.rewards
 {
    import com.monsters.display.CreepSkinManager;
+   import com.monsters.events.CreepEvent;
    import com.monsters.rewarding.Reward;
    
    public class GoldenDAVEReward extends Reward
@@ -20,11 +21,36 @@ package com.monsters.subscriptions.rewards
       {
          var _loc1_:String = !!_value ? GOLD_SKIN_ID : null;
          CreepSkinManager.instance.SetSkin(DAVE_CREEP_ID,_loc1_);
+         GLOBAL.eventDispatcher.addEventListener(CreepEvent.ATTACKING_CREEP_SPAWNED,this.onAttackingCreepSpawned);
+         GLOBAL.eventDispatcher.addEventListener(CreepEvent.DEFENDING_CREEP_SPAWNED,this.onDefendingCreepSpawned);
       }
       
       override public function removed() : void
       {
          CreepSkinManager.instance.SetSkin(DAVE_CREEP_ID,null);
+         GLOBAL.eventDispatcher.removeEventListener(CreepEvent.ATTACKING_CREEP_SPAWNED,this.onAttackingCreepSpawned);
+         GLOBAL.eventDispatcher.removeEventListener(CreepEvent.DEFENDING_CREEP_SPAWNED,this.onDefendingCreepSpawned);
+      }
+      
+      override public function reset() : void
+      {
+         this.removed();
+      }
+      
+      private function onAttackingCreepSpawned(param1:CreepEvent) : void
+      {
+         if(GLOBAL.isAtHome() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
+         {
+            param1.creep.currentSkinOverride = DAVE_CREEP_ID;
+         }
+      }
+      
+      private function onDefendingCreepSpawned(param1:CreepEvent) : void
+      {
+         if(!GLOBAL.isAtHome() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
+         {
+            param1.creep.currentSkinOverride = DAVE_CREEP_ID;
+         }
       }
    }
 }

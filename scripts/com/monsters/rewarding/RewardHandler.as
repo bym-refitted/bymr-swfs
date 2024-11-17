@@ -41,7 +41,7 @@ package com.monsters.rewarding
       {
          if(this.addReward(param1))
          {
-            param1.applyReward();
+            this.applyReward(param1);
          }
       }
       
@@ -55,7 +55,7 @@ package com.monsters.rewarding
          var _loc1_:int = 0;
          while(_loc1_ < this.rewards.length)
          {
-            this.rewards[_loc1_].applyReward();
+            this.applyReward(this.rewards[_loc1_]);
             _loc1_++;
          }
       }
@@ -97,10 +97,17 @@ package com.monsters.rewarding
       
       public function initialize(param1:Object = null) : void
       {
-         if(GLOBAL._mode != "build")
+         if(GLOBAL._mode != "build" || BASE.isInferno())
          {
             return;
          }
+         var _loc2_:int = 0;
+         while(_loc2_ < this.rewards.length)
+         {
+            this.rewards[_loc2_].reset();
+            _loc2_++;
+         }
+         this.rewards.length = 0;
          UPDATES.addAction(this.processUpdate,this.name);
          RewardLibrary.initialize();
          if(param1)
@@ -113,7 +120,7 @@ package com.monsters.rewarding
       public function exportData() : Object
       {
          var _loc3_:Reward = null;
-         if(GLOBAL._mode != "build")
+         if(GLOBAL._mode != "build" || BASE.isInferno())
          {
             return null;
          }

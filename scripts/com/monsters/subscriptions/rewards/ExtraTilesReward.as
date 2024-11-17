@@ -11,14 +11,19 @@ package com.monsters.subscriptions.rewards
          super();
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       override protected function onApplication() : void
       {
-         MAP.swapBG(this.value);
+         MAP.swapIntBG(this.value);
       }
       
       override public function removed() : void
       {
-         MAP.swapBG(0);
+         MAP.swapIntBG(0);
       }
    }
 }

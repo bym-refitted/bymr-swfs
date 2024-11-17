@@ -46,7 +46,7 @@ package com.monsters.components.abilities
                {
                   if((_loc5_._lootMult < 1 + this._championOwner._buff || _loc5_._lootMultTime <= GLOBAL.Timestamp()) && _loc3_(this._championOwner._tmpPoint,_loc5_._tmpPoint) < this._radiusSqrd.Get())
                   {
-                     _loc5_.ModeLoot(GLOBAL.Timestamp() + 1,1 + this._championOwner._buff);
+                     _loc5_.ModeLootBuff(GLOBAL.Timestamp() + 1,1 + this._championOwner._buff);
                   }
                }
             }

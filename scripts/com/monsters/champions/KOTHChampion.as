@@ -12,21 +12,21 @@ package com.monsters.champions
       
       public static const TYPE:uint = 5;
       
-      public const _lootMults:Vector.<SecNum>;
+      public var _lootMults:Dictionary;
       
       public function KOTHChampion(param1:String, param2:Point, param3:Number, param4:Point = null, param5:Boolean = false, param6:BFOUNDATION = null, param7:int = 1, param8:int = 0, param9:int = 0, param10:int = 1, param11:int = 20000, param12:int = 0, param13:int = 1)
       {
          var _loc14_:Array = null;
          var _loc17_:Number = 0;
          var _loc18_:Class = null;
-         this._lootMults = new Vector.<SecNum>(2,true);
          param13 = Math.min(param13,MAX_POWERLEVEL);
          super(param1,param2,param3,param4,param5,param6,param7,param8,param9,param10,param11,0,param13);
          _loc14_ = CHAMPIONCAGE.GetGuardianProperties(_creatureID,"abilities");
          var _loc15_:Number = _powerLevel.Get();
          var _loc16_:uint = _loc14_.length;
-         this._lootMults[0] = new SecNum(2);
-         this._lootMults[1] = new SecNum(3);
+         this._lootMults = new Dictionary();
+         this._lootMults[BRESOURCE] = new SecNum(2);
+         this._lootMults[BSTORAGE] = new SecNum(3);
          _buff = CHAMPIONCAGE.GetGuardianProperty(_creatureID,_level.Get(),"buffs");
          while(_loc17_ < _loc16_)
          {
@@ -237,6 +237,11 @@ package com.monsters.champions
                }
             }
          }
+      }
+      
+      public function clear() : void
+      {
+         this._lootMults = null;
       }
    }
 }

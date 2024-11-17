@@ -48,15 +48,16 @@ package com.monsters.display
          super();
       }
       
-      public function Init(param1:Sprite, param2:MovieClip, param3:int = 0, param4:Number = 0, param5:Number = 128, param6:Number = 30) : void
+      public function Init(param1:Sprite, param2:MovieClip, param3:int = 0, param4:Number = 0, param5:Number = 128, param6:Number = 30, param7:Number = 0) : void
       {
-         var _loc7_:Number = NaN;
+         var _loc8_:Number = NaN;
          this._Container = param1;
          this._ContainerHeight = param1.height;
          this._Mask = param2;
          this._ScrollBarHeight = param5;
          this._MinScrollerHeight = param6;
          this._OffsetY = param4;
+         this._BottomPadding = param7;
          param3 = GLOBAL.InfernoMode() ? 1 : 0;
          if(param3 < 0 || param3 >= NUM_COLORS)
          {
@@ -87,8 +88,8 @@ package com.monsters.display
             {
                param1.height = 1;
             }
-            _loc7_ = param5 * (param2.height / param1.height);
-            this.mcScroller.height = _loc7_ < param6 ? param6 : _loc7_;
+            _loc8_ = param5 * (param2.height / param1.height);
+            this.mcScroller.height = _loc8_ < param6 ? param6 : _loc8_;
             this.Show();
          }
          this._IsInitialized = true;

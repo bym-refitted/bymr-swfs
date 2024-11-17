@@ -192,15 +192,22 @@ package
       
       protected var _secureSpeedMult:SecNum = new SecNum(100);
       
-      protected var _secureLootMult:SecNum = new SecNum(1);
+      protected var _secureLootMult:SecNum = new SecNum(100);
       
       public var _graphicMC:DisplayObject;
       
       public var _altitude:int = 0;
       
+      protected var _currentSkinOverride:String = null;
+      
       public function CreepBase()
       {
          super();
+      }
+      
+      public function set currentSkinOverride(param1:String) : void
+      {
+         this._currentSkinOverride = param1;
       }
       
       public function addStatusEffect(param1:CStatusEffect) : void
@@ -314,7 +321,7 @@ package
          }
          if(this._lootMultTime !== 0 && this._lootMultTime < GLOBAL.Timestamp())
          {
-            this.ModeLoot(0,1);
+            this.ModeLootBuff(0,1);
          }
          if(this._enraged == 0 && filters.length > 0)
          {
@@ -351,7 +358,7 @@ package
          this.UpdateBuffs();
       }
       
-      public function ModeLoot(param1:int, param2:Number) : void
+      public function ModeLootBuff(param1:int, param2:Number) : void
       {
          this._lootMultTime = param1;
          this._lootMult = param2;
@@ -487,7 +494,7 @@ package
          }
          this._secureSpeedMult = new SecNum(int(this._speedMult * 100));
          this._secureDamageMult = new SecNum(int(this._damageMult * 100));
-         this._secureLootMult = new SecNum(this._lootMult);
+         this._secureLootMult = new SecNum(int(this._lootMult * 100));
       }
       
       public function PoweredUp() : Boolean

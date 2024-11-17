@@ -15,6 +15,8 @@ package com.monsters.subscriptions.ui.controlPanel
       
       public static const PLACE_DAVE_STATUE:String = "placeDAVEStatue";
       
+      public static const REMOVE_DAVE_STATUE:String = "removeDAVEStatue";
+      
       public var bgTileSelected:int;
       
       public var goldDavesToggle:int;
@@ -37,16 +39,17 @@ package com.monsters.subscriptions.ui.controlPanel
          if(DAVEStatueReward.doesStatueRewardExistsInInventory())
          {
             bPlaceDave.buttonMode = true;
+            bPlaceDave.Setup(KEYS.Get("btn_placedave"));
+            bPlaceDave.addEventListener(MouseEvent.CLICK,this.clickedPlaceDaveStatue);
          }
          else
          {
-            bPlaceDave.Enabled = false;
-            bPlaceDave.buttonMode = false;
-            bPlaceDave.mouseEnabled = false;
+            bPlaceDave.buttonMode = true;
+            bPlaceDave.Setup(KEYS.Get("btn_removedave"));
+            bPlaceDave.addEventListener(MouseEvent.CLICK,this.clickedRemoveDaveStatue);
          }
-         bPlaceDave.Setup(KEYS.Get("btn_placedave"));
-         bPlaceDave.addEventListener(MouseEvent.CLICK,this.clickedPlaceDaveStatue);
          bSave.buttonMode = true;
+         bSave.Highlight = true;
          bSave.Setup(KEYS.Get("btn_save"));
          bSave.addEventListener(MouseEvent.CLICK,this.clickedSave);
          bMembership.Setup(KEYS.Get("btn_membership"));
@@ -69,7 +72,7 @@ package com.monsters.subscriptions.ui.controlPanel
                   this._tiles[_loc1_].mcTerrain.gotoAndStop("isograss1");
                   break;
                case 1:
-                  this._tiles[_loc1_].mcTerrain.gotoAndStop("isorock2");
+                  this._tiles[_loc1_].mcTerrain.gotoAndStop("rockgrass");
                   break;
                case 2:
                   this._tiles[_loc1_].mcTerrain.gotoAndStop("isosand3");
@@ -101,6 +104,12 @@ package com.monsters.subscriptions.ui.controlPanel
          this.Hide();
       }
       
+      private function clickedRemoveDaveStatue(param1:MouseEvent = null) : void
+      {
+         dispatchEvent(new Event(REMOVE_DAVE_STATUE));
+         this.Hide();
+      }
+      
       private function clickedSave(param1:MouseEvent = null) : void
       {
          dispatchEvent(new Event(SAVE));
@@ -109,11 +118,17 @@ package com.monsters.subscriptions.ui.controlPanel
       private function clickedMembership(param1:MouseEvent = null) : void
       {
          this._memberPopup = new MembershipPopup();
+         this._memberPopup.addEventListener(SubscriptionHandler.REACTIVATE,this.membershipReactivated);
          this._memberPopup.addEventListener(SubscriptionHandler.CHANGE,this.membershipChanged);
          this._memberPopup.addEventListener(SubscriptionHandler.CANCEL,this.membershipCancel);
          this._memberPopup.addEventListener(Event.CLOSE,this.clickedCloseMembership);
          POPUPS.Add(this._memberPopup);
          POPUPSETTINGS.AlignToCenter(this._memberPopup);
+      }
+      
+      protected function membershipReactivated(param1:Event) : void
+      {
+         dispatchEvent(new Event(SubscriptionHandler.REACTIVATE));
       }
       
       private function membershipChanged(param1:Event) : void
@@ -130,6 +145,7 @@ package com.monsters.subscriptions.ui.controlPanel
       {
          if(this._memberPopup)
          {
+            this._memberPopup.removeEventListener(SubscriptionHandler.REACTIVATE,this.membershipReactivated);
             this._memberPopup.removeEventListener(SubscriptionHandler.CHANGE,this.membershipChanged);
             this._memberPopup.removeEventListener(SubscriptionHandler.CANCEL,this.membershipCancel);
             this._memberPopup.removeEventListener(Event.CLOSE,this.clickedCloseMembership);

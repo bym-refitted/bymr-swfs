@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.events.CreepEvent;
    import flash.geom.Point;
    
    public class CREATURES
@@ -159,6 +160,7 @@ package
          {
             _loc8_._spawned = true;
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new CreepEvent(CreepEvent.DEFENDING_CREEP_SPAWNED,_loc8_));
          return _loc8_;
       }
       
@@ -225,6 +227,20 @@ package
             _loc2_++;
          }
          return null;
+      }
+      
+      public static function getGuardianIndex(param1:int) : int
+      {
+         var _loc2_:int = 0;
+         while(_loc2_ < _guardianList.length)
+         {
+            if(int(_guardianList[_loc2_]._creatureID.substr(1)) == param1)
+            {
+               return _loc2_;
+            }
+            _loc2_++;
+         }
+         return -1;
       }
       
       public static function set _guardian(param1:CHAMPIONMONSTER) : void

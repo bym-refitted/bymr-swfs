@@ -1,9 +1,10 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.interfaces.ILootable;
    import flash.events.*;
    
-   public class BSTORAGE extends BFOUNDATION
+   public class BSTORAGE extends BFOUNDATION implements ILootable
    {
       private static var _LOOT_MAX_TH:Number = 10000000;
       
@@ -28,29 +29,31 @@ package
          super();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
       {
-         var _loc6_:int = param1;
+         var _loc8_:Number = NaN;
+         var _loc7_:int = param1;
          if(_fortification.Get() > 0)
          {
-            _loc6_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc6_ = _loc6_ / 100;
+            _loc7_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc7_ = _loc7_ / 100;
          }
          if(param5)
          {
+            _loc8_ = !!param6 ? param6.Get() * 0.01 : 1;
             if(param4 == 3)
             {
-               this.Loot(_loc6_ * 3);
+               this.Loot(_loc7_ * 3 * _loc8_);
             }
             else
             {
-               this.Loot(_loc6_ * 0.5);
+               this.Loot(_loc7_ * 0.5 * _loc8_);
             }
          }
-         super.Damage(param1,param2,param3,param4,param5);
+         super.Damage(param1,param2,param3,param4,param5,param6);
       }
       
-      override public function Loot(param1:int) : *
+      override public function Loot(param1:int) : void
       {
          var _loc4_:Object = null;
          var _loc2_:int = 0;

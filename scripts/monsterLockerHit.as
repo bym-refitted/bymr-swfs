@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol821")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol824")]
    public dynamic class monsterLockerHit extends MovieClip
    {
       public function monsterLockerHit()

@@ -40,8 +40,6 @@ package
       
       private var _dead:Boolean = false;
       
-      private var _currentSkinOverride:String = null;
-      
       public function CREEP(param1:String, param2:String, param3:Point, param4:Number, param5:Point = null, param6:Boolean = false, param7:BFOUNDATION = null, param8:Number = 1, param9:Boolean = false, param10:* = null)
       {
          var _loc12_:Point = null;
@@ -221,11 +219,6 @@ package
          }
          UpdateBuffs();
          this.Render();
-      }
-      
-      public function set currentSkinOverride(param1:String) : void
-      {
-         this._currentSkinOverride = param1;
       }
       
       public function ModeJuice() : void
@@ -707,7 +700,7 @@ package
             {
                if(_targetBuilding)
                {
-                  _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
+                  _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,false,_secureLootMult);
                   _targetBuilding.Update(true);
                }
                tmpPointA = PATHING.FromISO(_tmpPoint).add(new Point(-5,-5));
@@ -728,7 +721,7 @@ package
                      {
                         if(building != _targetBuilding)
                         {
-                           building.Damage(int(_damage.Get() * tmpAttDamage * ((tmpRange - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
+                           building.Damage(int(_damage.Get() * tmpAttDamage * ((tmpRange - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false,_secureLootMult);
                            building.Update(true);
                         }
                      }
@@ -991,7 +984,7 @@ package
                      dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                      if(dist < 100)
                      {
-                        building.Damage(int(_damage.Get() * tmpAttDamage * ((100 - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
+                        building.Damage(int(_damage.Get() * tmpAttDamage * ((100 - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false,_secureLootMult);
                         building.Update(true);
                      }
                   }
@@ -1331,7 +1324,7 @@ package
                         dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                         if(dist < 60)
                         {
-                           building.Damage(int(_damage.Get() * tmpAttDamage * ((60 - dist) / 60)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
+                           building.Damage(int(_damage.Get() * tmpAttDamage * ((60 - dist) / 60)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false,_secureLootMult);
                            building.Update(true);
                         }
                      }
@@ -1453,7 +1446,7 @@ package
                   {
                      if(!_targetCreep)
                      {
-                        _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode);
+                        _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode,_secureLootMult);
                      }
                      try
                      {
@@ -1484,12 +1477,12 @@ package
                                     {
                                        if(_explode)
                                        {
-                                          building.Damage(int(_damage.Get() * tmpAttDamage * ((60 - dist) / 60)),_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode);
+                                          building.Damage(int(_damage.Get() * tmpAttDamage * ((60 - dist) / 60)),_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode,_secureLootMult);
                                           building.Update(true);
                                        }
                                        else
                                        {
-                                          building.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode);
+                                          building.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,!_explode,_secureLootMult);
                                           building.Update(true);
                                           numTargets--;
                                           if(numTargets <= 0)
@@ -1586,7 +1579,7 @@ package
                   }
                   else
                   {
-                     _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup);
+                     _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
                   }
                   if(!_targetCreep)
                   {
@@ -1617,8 +1610,8 @@ package
                else if(_behaviour == k_sBHVR_LOOT)
                {
                   damageAmt = _damage.Get() * tmpAttDamage;
-                  _targetBuilding.Loot(damageAmt * _secureLootMult.Get());
-                  _targetBuilding.Damage(damageAmt,_tmpPoint.x,_tmpPoint.y);
+                  _targetBuilding.Loot(damageAmt);
+                  _targetBuilding.Damage(damageAmt,_tmpPoint.x,_tmpPoint.y,1,true,_secureLootMult);
                   if(_targetBuilding._stored.Get() < 0)
                   {
                      _targetBuilding._stored.Set(0);
@@ -2656,32 +2649,32 @@ package
                SPRITES.GetSprite(_shadow,"shadow","shadow",0);
                if(_health.Get() <= 0)
                {
-                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"landed",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"landed",mcMarker.rotation,0,this._lastFrame,_currentSkinOverride);
                }
                else
                {
-                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,_frameNumber,this._lastFrame,this._currentSkinOverride);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,_frameNumber,this._lastFrame,_currentSkinOverride);
                }
             }
             else if(_creatureID == "C15")
             {
                SPRITES.GetSprite(_shadow,"bigshadow","bigshadow",0);
-               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
+               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,0,this._lastFrame,_currentSkinOverride);
             }
             else if(_creatureID == "C9")
             {
                if(PoweredUp() && _invisibleTime >= GLOBAL.Timestamp())
                {
-                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"invisible",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"invisible",mcMarker.rotation,0,this._lastFrame,_currentSkinOverride);
                }
                else
                {
-                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,0,this._lastFrame,_currentSkinOverride);
                }
             }
             else
             {
-               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame,this._currentSkinOverride);
+               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame,_currentSkinOverride);
             }
             _lastRotation = int(mcMarker.rotation / 12);
             if(_health.Get() < _maxHealth)

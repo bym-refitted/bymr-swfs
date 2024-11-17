@@ -1179,11 +1179,11 @@ package
                      {
                         if(_targetBuilding is BRESOURCE)
                         {
-                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[0].Get());
+                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[BRESOURCE].Get());
                         }
                         else
                         {
-                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[1].Get());
+                           _targetBuilding.Loot(_loc6_ * (this as KOTHChampion)._lootMults[BSTORAGE].Get());
                         }
                         if(_targetBuilding._stored.Get() < 0)
                         {
@@ -1193,8 +1193,12 @@ package
                         {
                            this.FindTarget();
                         }
+                        _targetBuilding.Damage(_loc6_,_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
                      }
-                     _targetBuilding.Damage(_loc6_,_tmpPoint.x,_tmpPoint.y,_targetGroup);
+                     else
+                     {
+                        _targetBuilding.Damage(_loc6_,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
+                     }
                   }
                   else
                   {
@@ -1216,11 +1220,13 @@ package
       
       public function TickBDefend() : *
       {
-         var _loc1_:* = undefined;
-         var _loc2_:Array = null;
-         var _loc3_:int = 0;
-         var _loc4_:int = 0;
-         var _loc5_:Point = null;
+         var _loc1_:Object = null;
+         var _loc2_:Vector.<CHAMPIONMONSTER> = null;
+         var _loc3_:Object = null;
+         var _loc4_:Array = null;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:Point = null;
          if(_health.Get() <= 0)
          {
             ATTACK.Log(_creatureID,KEYS.Get("attacklog_champ_injured",{
@@ -1243,9 +1249,18 @@ package
          }
          if(_creatureID == "G3" && _frameNumber % 100 == 0)
          {
-            for each(_loc1_ in CREATURES._creatures)
+            _loc2_ = CREATURES._guardianList;
+            _loc3_ = CREATURES._creatures;
+            for each(_loc1_ in _loc2_)
             {
-               if(_loc1_._behaviour == "defend" && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,_tmpPoint) < 250 && _loc1_ != this)
+               if(_loc1_._behaviour === k_sBHVR_DEFEND && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,_tmpPoint) < 250 && _loc1_ != this)
+               {
+                  _loc1_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
+               }
+            }
+            for each(_loc1_ in _loc3_)
+            {
+               if(_loc1_._behaviour === k_sBHVR_DEFEND && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,_tmpPoint) < 250 && _loc1_ != this)
                {
                   _loc1_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
                }
@@ -1309,15 +1324,15 @@ package
                attackCooldown += int(_attackDelay / _speedMult);
                if(_creatureID == "G3" || _creatureID == "G4" && this._powerLevel.Get() >= KORATH_POWER_FIREBALL && this._level.Get() > 3 && _targetCreep._movement == "fly")
                {
-                  _loc5_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetCreep._tmpPoint,0.8);
+                  _loc7_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetCreep._tmpPoint,0.8);
                   if(_creatureID == "G4")
                   {
-                     FIREBALLS.Spawn2(_loc5_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() / 4,0,FIREBALLS.TYPE_MAGMA);
+                     FIREBALLS.Spawn2(_loc7_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() / 4,0,FIREBALLS.TYPE_MAGMA);
                      this.AddFlameDOT(_targetCreep);
                   }
                   else
                   {
-                     FIREBALLS.Spawn2(_loc5_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get(),0);
+                     FIREBALLS.Spawn2(_loc7_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get(),0);
                      FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                   }
                }
@@ -1350,24 +1365,24 @@ package
                      _targetCreep._hasTarget = true;
                   }
                }
-               _loc2_ = MAP.CreepCellFind(_tmpPoint,50);
-               _loc3_ = int(_loc2_.length);
-               _loc4_ = 0;
-               while(_loc4_ < 5 && _loc4_ < _loc3_)
+               _loc4_ = MAP.CreepCellFind(_tmpPoint,50);
+               _loc5_ = int(_loc4_.length);
+               _loc6_ = 0;
+               while(_loc6_ < 5 && _loc6_ < _loc5_)
                {
-                  if(_movement != "fly" || _loc2_[_loc4_].creep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
+                  if(_movement != "fly" || _loc4_[_loc6_].creep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
                   {
-                     if(!_loc2_[_loc4_].creep._explode && _loc2_[_loc4_].creep._behaviour != "heal")
+                     if(!_loc4_[_loc6_].creep._explode && _loc4_[_loc6_].creep._behaviour != "heal")
                      {
-                        _loc2_[_loc4_].creep._targetCreep = this;
-                        if(_loc2_[_loc4_].creep.CanShootCreep() || GLOBAL.QuickDistance(_loc2_[_loc4_].creep._tmpPoint,_tmpPoint) < 50 && _movement != "fly" || _loc2_[_loc4_].creep._creatureID == "C14")
+                        _loc4_[_loc6_].creep._targetCreep = this;
+                        if(_loc4_[_loc6_].creep.CanShootCreep() || GLOBAL.QuickDistance(_loc4_[_loc6_].creep._tmpPoint,_tmpPoint) < 50 && _movement != "fly" || _loc4_[_loc6_].creep._creatureID == "C14")
                         {
-                           _loc2_[_loc4_].creep._atTarget = true;
+                           _loc4_[_loc6_].creep._atTarget = true;
                         }
-                        _loc2_[_loc4_].creep._hasTarget = true;
+                        _loc4_[_loc6_].creep._hasTarget = true;
                      }
                   }
-                  _loc4_++;
+                  _loc6_++;
                }
             }
             else
@@ -1595,9 +1610,10 @@ package
       
       public function TickBBuff() : *
       {
+         var _loc1_:Number = NaN;
          var _loc2_:* = undefined;
          var _loc3_:Point = null;
-         var _loc1_:Number = 1;
+         _loc1_ = 1;
          if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc1_ *= 1.25;

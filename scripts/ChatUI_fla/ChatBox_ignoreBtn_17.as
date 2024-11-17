@@ -2,7 +2,7 @@ package ChatUI_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2278")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2282")]
    public dynamic class ChatBox_ignoreBtn_17 extends MovieClip
    {
       public function ChatBox_ignoreBtn_17()

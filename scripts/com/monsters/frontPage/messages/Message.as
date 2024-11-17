@@ -155,6 +155,14 @@ package com.monsters.frontPage.messages
             this.buyBuilding(param1);
          }
       }
+      
+      public function markAsUnseenIfOlderThan(param1:*) : void
+      {
+         if(GLOBAL.Timestamp() - this.timeLastSeen >= param1)
+         {
+            this.timeLastSeen = 0;
+         }
+      }
    }
 }
 

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.events.Event;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1007")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1009")]
    public class BUILDINGSARROW extends MovieClip
    {
       public var mcArrow:MovieClip;

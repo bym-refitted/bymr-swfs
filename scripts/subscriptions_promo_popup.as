@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1561")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1563")]
    public dynamic class subscriptions_promo_popup extends MovieClip
    {
       public var mcCircle3:MovieClip;

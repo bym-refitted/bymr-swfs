@@ -116,7 +116,8 @@ package com.monsters.maproom.views
          {
             for each(_loc3_ in this.players.baseData)
             {
-               _loc2_ = _loc3_.wm.Get() == 1 ? new WMListViewItem() : new ListViewItem();
+               §§push(_loc3_.wm.Get() == 1 ? new WMListViewItem() : new ListViewItem());
+               _loc2_ = §§pop();
                _loc2_.Setup(_loc3_);
                this.rows.push(_loc2_);
             }

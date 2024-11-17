@@ -4738,11 +4738,12 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["96.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-baseball/",
             "1":{
-               "top":["top.png",new Point(-20,-36)],
-               "shadow":["shadow.jpg",new Point(-21,10)]
+               "top":["top.v2.png",new Point(-20,-36)],
+               "shadow":["shadow.v2.jpg",new Point(-21,10)]
             }
          },
          "quantity":[0],
@@ -4771,11 +4772,12 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["97.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-football/",
             "1":{
-               "top":["top.png",new Point(-19,-39)],
-               "shadow":["shadow.jpg",new Point(-17,10)]
+               "top":["top.v2.png",new Point(-19,-39)],
+               "shadow":["shadow.v2.jpg",new Point(-17,10)]
             }
          },
          "quantity":[0],
@@ -4804,11 +4806,12 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["98.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-soccer/",
             "1":{
-               "top":["top.png",new Point(-23,-36)],
-               "shadow":["shadow.jpg",new Point(-15,12)]
+               "top":["top.v2.png",new Point(-23,-36)],
+               "shadow":["shadow.v2.jpg",new Point(-15,12)]
             }
          },
          "quantity":[0],
@@ -4837,11 +4840,12 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["99.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-liberty/",
             "1":{
-               "top":["top.png",new Point(-37,-118)],
-               "shadow":["shadow.jpg",new Point(-31,20)]
+               "top":["top.v2.png",new Point(-37,-118)],
+               "shadow":["shadow.v2.jpg",new Point(-31,20)]
             }
          },
          "quantity":[0],
@@ -4870,6 +4874,7 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["100.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-eiffeltower/",
             "1":{
@@ -4903,11 +4908,12 @@ package
             "time":0,
             "re":[]
          }],
+         "buildingbuttons":["101.v2"],
          "imageData":{
             "baseurl":"buildings/decorations/statue-bigben/",
             "1":{
-               "top":["top.png",new Point(-32,-104)],
-               "shadow":["shadow.jpg",new Point(-32,19)]
+               "top":["top.v2.png",new Point(-32,-104)],
+               "shadow":["shadow.v2.jpg",new Point(-32,19)]
             }
          },
          "quantity":[0],
@@ -6435,7 +6441,7 @@ package
          }],
          "names":["bdg_wmi2totem1","bdg_wmi2totem2","bdg_wmi2totem3","bdg_wmi2totem4","bdg_wmi2totem5","bdg_wmi2totem6"],
          "descriptions":["bdg_wmi2totem1_desc","bdg_wmi2totem2_desc","bdg_wmi2totem3_desc","bdg_wmi2totem4_desc","bdg_wmi2totem5_desc","bdg_wmi2totem6_desc"],
-         "buildingbuttons":["131.bb1","131.bb2","131.bb3","131.bb4","131.bb5","131.bb6"],
+         "buildingbuttons":["131.bb1","131.bb2","131.bb3","131.bb4","131.bb5.v2","131.bb6"],
          "imageData":{
             "baseurl":"buildings/decorations/wmitotem2/",
             "1":{
@@ -6455,7 +6461,7 @@ package
                "shadow":["shadow4.jpg",new Point(-66,-83)]
             },
             "5":{
-               "top":["top5.png",new Point(-31,-122)],
+               "top":["top5.v2.png",new Point(-30,-125)],
                "shadow":["shadow4.jpg",new Point(-66,-83)]
             },
             "6":{

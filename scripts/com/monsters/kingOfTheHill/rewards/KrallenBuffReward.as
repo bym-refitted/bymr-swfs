@@ -31,6 +31,11 @@ package com.monsters.kingOfTheHill.rewards
          this.updateChampionBuff(0);
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       private function updateChampionBuff(param1:uint) : void
       {
          var _loc2_:CHAMPIONMONSTER = CREATURES.getGuardian(KOTHChampion.TYPE);

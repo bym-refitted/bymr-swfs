@@ -84,6 +84,7 @@ package
       
       public function Over(param1:MouseEvent) : *
       {
+         dispatchEvent(new Event(UI_TOP.CREATUREBUTTONOVER));
          this._description.visible = true;
       }
       

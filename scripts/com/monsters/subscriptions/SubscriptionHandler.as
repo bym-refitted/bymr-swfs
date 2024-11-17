@@ -1,6 +1,8 @@
 package com.monsters.subscriptions
 {
+   import com.cc.tests.ABTest;
    import com.monsters.baseplanner.BasePlanner;
+   import com.monsters.frontPage.FrontPageHandler;
    import com.monsters.frontPage.FrontPageLibrary;
    import com.monsters.frontPage.messages.promotions.Promo01DaveClub;
    import com.monsters.interfaces.IHandler;
@@ -24,6 +26,10 @@ package com.monsters.subscriptions
       public static const JOIN:String = "startSubscription";
       
       public static const CANCEL:String = "cancelSubscription";
+      
+      public static const CANCELCONFIRM:String = "cancelConfirmation";
+      
+      public static const CLOSECONFIRM:String = "closeConfirmation";
       
       public static const CHANGE:String = "changeSubscription";
       
@@ -75,7 +81,7 @@ package com.monsters.subscriptions
       
       public function get isSubscriptionActive() : Boolean
       {
-         return this._renewalDate;
+         return Boolean(this._renewalDate) || Boolean(this._expirationDate);
       }
       
       public function get renewalDate() : uint
@@ -88,15 +94,29 @@ package com.monsters.subscriptions
          return this._expirationDate;
       }
       
+      public function get service() : SubscriptionService
+      {
+         return _instance._service;
+      }
+      
       public function initialize(param1:Object = null) : void
       {
+         if(GLOBAL._flags["subscriptions_ab"] > 0 && !ABTest.isInTestGroup("davesclub108",64) || !GLOBAL.isAtHome() || !GLOBAL._flags["subscriptions"] || GLOBAL.isNoob())
+         {
+            return;
+         }
+         this.unlockTeaserInformation();
+         this.addIcon();
+         this._service.addEventListener(SubscriptionStatusEvent.STATUS_EVENT,this.recievedSubscriptionData);
+         this._service.getSubscriptionData();
       }
       
       protected function recievedSubscriptionData(param1:SubscriptionStatusEvent) : void
       {
          this._subscriptionID = param1.subscriptionID;
-         this._renewalDate = param1.expirationDate;
+         this._renewalDate = param1.renewalDate;
          this._expirationDate = param1.expirationDate;
+         print("recievedSubscriptionData: _subscriptionID:" + this._subscriptionID + " _renewalDate:" + this._renewalDate + " _expirationDate" + this._expirationDate);
          this.updateSubscriptionStatus();
       }
       
@@ -104,12 +124,37 @@ package com.monsters.subscriptions
       {
          this.updateRewards();
          this._icon.update(this.isSubscriptionActive);
+         if(this.isSubscriptionActive)
+         {
+            return;
+         }
+         var _loc1_:Promo01DaveClub = FrontPageLibrary.getMessageByName(Promo01DaveClub.NAME) as Promo01DaveClub;
+         if(_loc1_ == null)
+         {
+            return;
+         }
+         _loc1_.canBeShown = true;
+         if(FrontPageHandler.hasBeenSetupThisSession == false)
+         {
+            return;
+         }
+         if(FrontPageHandler.hasBeenSeenThisSession == false)
+         {
+            FrontPageHandler.showPopup();
+         }
+         else if(POPUPS.hasPopupsOpen())
+         {
+            FrontPageHandler.refresh();
+         }
       }
       
       private function unlockTeaserInformation() : void
       {
-         FrontPageLibrary.PROMOTIONS.addMessage(new Promo01DaveClub());
-         DAVEStatueReward.makeVisibleInStore(this.showPromoPopup);
+         var _loc1_:DAVEStatueReward = RewardHandler.instance.getRewardByID(DAVEStatueReward.ID) as DAVEStatueReward;
+         if(_loc1_ == null || _loc1_.hasBeenApplied == false)
+         {
+            DAVEStatueReward.unlockTeaserInformation(this.showPromoPopup);
+         }
          BasePlanner.maxNumberOfSlots = 10;
       }
       
@@ -139,7 +184,9 @@ package com.monsters.subscriptions
          _loc1_.addEventListener(Event.CLOSE,this.clickedClosePanel);
          _loc1_.addEventListener(CHANGE,this.clickedChange);
          _loc1_.addEventListener(CANCEL,this.clickedCancel);
+         _loc1_.addEventListener(REACTIVATE,this.clickedReactivate);
          _loc1_.addEventListener(SubscriptionControlPanelPopup.PLACE_DAVE_STATUE,this.clickedPlace);
+         _loc1_.addEventListener(SubscriptionControlPanelPopup.REMOVE_DAVE_STATUE,this.clickedRemove);
          _loc1_.addEventListener(SubscriptionControlPanelPopup.SAVE,this.clickedSave);
       }
       
@@ -149,9 +196,16 @@ package com.monsters.subscriptions
          _loc2_.removeEventListener(Event.CLOSE,this.clickedClosePanel);
          _loc2_.removeEventListener(CHANGE,this.clickedChange);
          _loc2_.removeEventListener(CANCEL,this.clickedCancel);
+         _loc2_.removeEventListener(REACTIVATE,this.clickedReactivate);
          _loc2_.removeEventListener(SubscriptionControlPanelPopup.PLACE_DAVE_STATUE,this.clickedPlace);
+         _loc2_.removeEventListener(SubscriptionControlPanelPopup.REMOVE_DAVE_STATUE,this.clickedRemove);
          _loc2_.removeEventListener(SubscriptionControlPanelPopup.SAVE,this.clickedSave);
          POPUPS.Next();
+      }
+      
+      protected function clickedReactivate(param1:Event) : void
+      {
+         this._service.reactivateSubscription(this._subscriptionID);
       }
       
       protected function clickedChange(param1:Event) : void
@@ -166,28 +220,49 @@ package com.monsters.subscriptions
       
       protected function clickedPlace(param1:Event) : void
       {
+         LOGGER.StatB({"st1":"daves_club"},"golden_dave_placed");
          BASE.addBuildingB(DAVEStatueReward.DAVE_STATUE_TYPE_ID,true);
+      }
+      
+      protected function clickedRemove(param1:Event) : void
+      {
+         var _loc2_:BFOUNDATION = DAVEStatueReward.findStatueRewardInWorld();
+         if(_loc2_ != null)
+         {
+            _loc2_.RecycleC();
+         }
       }
       
       protected function clickedSave(param1:Event) : void
       {
          var _loc2_:SubscriptionControlPanelPopup = param1.target as SubscriptionControlPanelPopup;
          var _loc3_:Reward = RewardHandler.instance.getRewardByID(GoldenDAVEReward.ID);
-         this.updateRewardValue(_loc3_,_loc2_.goldDavesToggle);
+         if(this.updateRewardValue(_loc3_,_loc2_.goldDavesToggle))
+         {
+            if(_loc2_.goldDavesToggle)
+            {
+               LOGGER.StatB({"st1":"daves_club"},"dave_on");
+            }
+            else
+            {
+               LOGGER.StatB({"st1":"daves_club"},"dave_off");
+            }
+         }
          _loc3_ = RewardHandler.instance.getRewardByID(ExtraTilesReward.ID);
          this.updateRewardValue(_loc3_,_loc2_.bgTileSelected);
          POPUPS.Next();
          BASE.Save();
       }
       
-      private function updateRewardValue(param1:Reward, param2:Number) : void
+      private function updateRewardValue(param1:Reward, param2:Number) : Boolean
       {
          if(param1.value == param2)
          {
-            return;
+            return false;
          }
          param1.value = param2;
          RewardHandler.instance.applyReward(param1);
+         return true;
       }
       
       public function showPromoPopup() : void
@@ -236,10 +311,15 @@ package com.monsters.subscriptions
       
       public function importData(param1:Object) : void
       {
+         this._renewalDate = GLOBAL.StatGet("renewal");
+         this._expirationDate = GLOBAL.StatGet("expiration");
+         this.updateRewards();
       }
       
       public function exportData() : Object
       {
+         GLOBAL.StatSet("renewal",this._renewalDate,false);
+         GLOBAL.StatSet("expiration",this._expirationDate,false);
          return null;
       }
    }

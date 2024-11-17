@@ -1,6 +1,5 @@
 package
 {
-   import com.monsters.interfaces.ILootable;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -9,7 +8,7 @@ package
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   public class BUILDING6 extends BSTORAGE implements ILootable
+   public class BUILDING6 extends BSTORAGE
    {
       public var _field:BitmapData;
       

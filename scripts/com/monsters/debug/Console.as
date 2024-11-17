@@ -34,6 +34,7 @@ package com.monsters.debug
          view = new ConsoleView();
          _commands = new Dictionary();
          param1.addChild(view);
+         param1.tabChildren = false;
          view.deactivate();
          param1.addEventListener(KeyboardEvent.KEY_UP,onKeyDown);
          ConsoleCommands.initialize();
@@ -134,6 +135,11 @@ package com.monsters.debug
             _loc2_++;
          }
          return false;
+      }
+      
+      public static function get commands() : Dictionary
+      {
+         return _commands;
       }
    }
 }

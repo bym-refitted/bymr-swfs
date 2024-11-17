@@ -316,7 +316,6 @@ package
             if(BASE._resources["r" + _loc1_ + "max"] > BASE._resources["r" + _loc1_].Get())
             {
                _loc18_ = BASE._resources["r" + _loc1_ + "max"] - BASE._resources["r" + _loc1_].Get();
-               _loc19_ = BASE._iresources["r" + _loc1_ + "max"] - BASE._iresources["r" + _loc1_].Get();
                _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc18_ / 2),0.75))];
                _loc16_.d = KEYS.Get("str_top_fill",{
                   "v1":GLOBAL.FormatNumber(_loc18_),
@@ -338,6 +337,7 @@ package
             {
                if(_loc17_)
                {
+                  _loc19_ = BASE._iresources["r" + _loc1_ + "max"] - BASE._iresources["r" + _loc1_].Get();
                   _loc17_.c = [Math.ceil(Math.pow(Math.sqrt(_loc19_ / 2),0.75))];
                   _loc17_.d = KEYS.Get("str_top_fill",{
                      "v1":GLOBAL.FormatNumber(_loc19_),

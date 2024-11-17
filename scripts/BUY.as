@@ -131,6 +131,7 @@ package
       public static function FBCNcp(param1:String) : void
       {
          var _loc2_:MovieClip = null;
+         print("|BUY| - FBCNCP CallBack");
          TweenLite.killDelayedCallsTo(BUY.FBCNcpCancelled);
          if(param1 == "1" || param1 == "2")
          {

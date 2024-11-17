@@ -28,6 +28,11 @@ package com.monsters.kingOfTheHill.rewards
          }
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       private function updateKrallenStatus(param1:uint) : void
       {
          var _loc3_:CHAMPIONCAGE = null;

@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.utils.SecNum;
    import flash.display.Shape;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -424,7 +425,7 @@ package
          ++this._frameNumber;
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"defense"))
          {

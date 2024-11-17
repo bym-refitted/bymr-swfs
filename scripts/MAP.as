@@ -121,14 +121,7 @@ package
             ty = GLOBAL._SCREENINIT.height / 2;
             _GROUND = GLOBAL._layerMap.addChild(new MovieClip());
             _BGTILES = _GROUND.addChild(new MovieClip());
-            if(BASE.isInferno())
-            {
-               swapBG(MAP_TYPE_LAVA);
-            }
-            else
-            {
-               swapBG(MAP_TYPE_GRASS);
-            }
+            swapBG(texture);
          }
          catch(e:Error)
          {
@@ -206,11 +199,34 @@ package
          _inited = true;
       }
       
-      public static function swapBG(param1:int) : void
+      public static function swapBG(param1:String) : void
+      {
+         var _loc5_:* = undefined;
+         var _loc6_:* = undefined;
+         while(_BGTILES.numChildren)
+         {
+            _BGTILES.removeChildAt(0);
+         }
+         var _loc3_:* = MAPBG.MakeTile(param1);
+         var _loc4_:* = -2;
+         while(_loc4_ < 2)
+         {
+            _loc5_ = -2;
+            while(_loc5_ < 2)
+            {
+               _loc6_ = _BGTILES.addChild(new Bitmap(_loc3_));
+               _loc6_.x = _loc4_ * 998;
+               _loc6_.y = _loc5_ * 498;
+               _loc6_.cacheAsBitmap = true;
+               _loc5_++;
+            }
+            _loc4_++;
+         }
+      }
+      
+      public static function swapIntBG(param1:int) : void
       {
          var _loc2_:String = null;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
          switch(param1)
          {
             case MAP_TYPE_ROCK:
@@ -229,7 +245,7 @@ package
             default:
                _loc2_ = "grass";
          }
-         continue loop0;
+         swapBG(_loc2_);
       }
       
       public static function Clear() : void

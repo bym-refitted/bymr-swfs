@@ -22,9 +22,21 @@ package com.monsters.frontPage
       
       private static var _hasBeenSeenThisSession:Boolean = false;
       
+      private static var _hasBeenSetupThisSession:Boolean = false;
+      
       public function FrontPageHandler()
       {
          super();
+      }
+      
+      public static function get hasBeenSeenThisSession() : Boolean
+      {
+         return _hasBeenSeenThisSession;
+      }
+      
+      public static function get hasBeenSetupThisSession() : Boolean
+      {
+         return _hasBeenSetupThisSession;
       }
       
       public static function set activeCategory(param1:Category) : void
@@ -128,6 +140,12 @@ package com.monsters.frontPage
          BASE.Save();
       }
       
+      public static function refresh() : void
+      {
+         updateQualifiedCategories();
+         activeCategory = _qualifiedCategories[0];
+      }
+      
       protected static function updateQualifiedCategories() : Vector.<Category>
       {
          var _loc2_:Category = null;
@@ -200,6 +218,7 @@ package com.monsters.frontPage
       {
          var _loc2_:String = null;
          var _loc3_:Category = null;
+         _hasBeenSetupThisSession = true;
          for(_loc2_ in param1)
          {
             _loc3_ = FrontPageLibrary.getCategoryByName(_loc2_);

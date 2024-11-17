@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.display.CreepSkinManager;
    import com.monsters.pathing.PATHING;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Decoy;
@@ -263,21 +264,21 @@ package
          var _loc1_:* = 0;
          if(_enraged > 0)
          {
-            if(_enraged > 0)
-            {
-               if(_glow)
-               {
-                  _glow.color = 16724735;
-                  _glow.blurX = 3;
-                  _glow.blurY = 3;
-                  _glow.strength = 5;
-               }
-               else
-               {
-                  _glow = new GlowFilter(16724735,1,3,3,5,1);
-               }
-               filters = [_glow];
-            }
+            _glow = _glow || new GlowFilter();
+            _glow.color = 16724735;
+            _glow.blurX = 3;
+            _glow.blurY = 3;
+            _glow.strength = 5;
+            filters = [_glow];
+         }
+         else if(_lootMultTime > 0)
+         {
+            _glow = _glow || new GlowFilter();
+            _glow.color = 5635873;
+            _glow.blurX = 3;
+            _glow.blurY = 3;
+            _glow.strength = 5;
+            filters = [_glow];
          }
          else if(!BASE.isInferno())
          {
@@ -333,14 +334,14 @@ package
             }
             else
             {
-               _damageMult = 1;
-               _speedMult = 1;
+               _damageMult = _speedMult = _lootMult = 1;
                filters = [];
                _glow = null;
             }
          }
          _secureSpeedMult = new SecNum(int(_speedMult * 100));
          _secureDamageMult = new SecNum(int(_damageMult * 100));
+         _secureLootMult = new SecNum(int(_lootMult * 100));
       }
       
       public function ModeHunt() : void
@@ -854,7 +855,7 @@ package
                      dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                      if(dist < 100)
                      {
-                        building.Damage(int(_damage.Get() * tmpAttDamage * ((100 - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false);
+                        building.Damage(int(_damage.Get() * tmpAttDamage * ((100 - dist) / 100)),_tmpPoint.x,_tmpPoint.y,_targetGroup,false,_secureLootMult);
                         building.Update(true);
                      }
                   }
@@ -1221,7 +1222,7 @@ package
                }
                else
                {
-                  _targetBuilding.Damage(_damage.Get() * _loc1_,_tmpPoint.x,_tmpPoint.y,_targetGroup);
+                  _targetBuilding.Damage(_damage.Get() * _loc1_,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
                }
                if(!_targetCreep)
                {
@@ -2035,7 +2036,7 @@ package
             {
                SPRITES.GetSprite(_shadow,"shadow","shadow",0);
             }
-            this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame);
+            this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame,_currentSkinOverride);
             _lastRotation = int(mcMarker.rotation / 12);
             if(_health.Get() < _maxHealth)
             {

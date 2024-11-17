@@ -47,6 +47,7 @@ package com.monsters.debug
          Console.registerCommand("setChampionPL",setChampionPL);
          Console.registerCommand("deletechamps",deleteChampions);
          Console.registerCommand("sam",sam);
+         Console.registerCommand("ROFLPWN",roflpwn);
          Console.registerCommand("printMaxResources",printMaxResources);
          Console.registerCommand("kothdata",getKOTHdata);
          Console.registerCommand("showbuffradius",showBuffRadius);
@@ -54,8 +55,14 @@ package com.monsters.debug
          Console.registerCommand("expirationDate",setSubscriptionsExpirationDate);
          Console.registerCommand("renewalDate",setSubscriptionsRenewalDate);
          Console.registerCommand("showbaseresources",showBaseResources);
+         Console.registerCommand("getsubscriptiondata",subscriptionsGetSubscriptionData);
+         Console.registerCommand("startsubscription",subscriptionsStartSubscription);
+         Console.registerCommand("reactivatesubscription",subscriptionsReactivateSubscription);
+         Console.registerCommand("changesubscription",subscriptionsChangeSubscription);
+         Console.registerCommand("cancelsubscription",subscriptionsCancelSubscription);
          Console.registerCommand("printJS",printJSCalls);
          Console.registerCommand("fullscreen",toggleFullScreen);
+         Console.registerCommand("ncpElligible",fbCNcpElligibility);
       }
       
       private static function setSubscriptionsRenewalDate(param1:*) : String
@@ -128,6 +135,23 @@ package com.monsters.debug
             shape.height = GLOBAL._SCREEN.height + 100;
          });
          return "";
+      }
+      
+      private static function roflpwn(param1:*) : String
+      {
+         var _loc2_:int = 1;
+         while(_loc2_ < CHAMPIONCAGE._guardians.length + 1)
+         {
+            CHAMPIONCAGE._guardians["G" + _loc2_].classType = CHAMPIONCAGE.CLASS_TYPE_SPECIAL;
+            _loc2_++;
+         }
+         _loc2_ = 1;
+         while(_loc2_ < CHAMPIONCAGE._guardians.length + 1)
+         {
+            GLOBAL._bCage.SpawnGuardian(6,0,0,_loc2_,1000000000,"",0,3);
+            _loc2_++;
+         }
+         return "  lolol";
       }
       
       private static function printMaxResources(param1:*) : String
@@ -607,6 +631,42 @@ package com.monsters.debug
             }
          }
          return _loc2_;
+      }
+      
+      public static function subscriptionsGetSubscriptionData(param1:* = null) : String
+      {
+         SubscriptionHandler.instance.service.getSubscriptionData();
+         return "SUBSCRIPTIONS> trying to get data";
+      }
+      
+      public static function subscriptionsStartSubscription(param1:* = null) : String
+      {
+         SubscriptionHandler.instance.service.getSubscriptionData();
+         return "SUBSCRIPTIONS> trying to get data";
+      }
+      
+      public static function subscriptionsReactivateSubscription(param1:* = null) : String
+      {
+         SubscriptionHandler.instance.service.getSubscriptionData();
+         return "SUBSCRIPTIONS> trying to get data";
+      }
+      
+      public static function subscriptionsChangeSubscription(param1:* = null) : String
+      {
+         SubscriptionHandler.instance.service.getSubscriptionData();
+         return "SUBSCRIPTIONS> trying to get data";
+      }
+      
+      public static function subscriptionsCancelSubscription(param1:* = null) : String
+      {
+         SubscriptionHandler.instance.service.getSubscriptionData();
+         return "SUBSCRIPTIONS> trying to get data";
+      }
+      
+      public static function fbCNcpElligibility(param1:* = null) : String
+      {
+         BUY.FBCNcpCheckEligibility();
+         return "console: trying to check ncp";
       }
    }
 }

@@ -23,10 +23,7 @@ package com.monsters.frontPage.categories
          var _loc1_:int = 0;
          while(_loc1_ < _messages.length)
          {
-            if(GLOBAL.Timestamp() - _messages[_loc1_].timeLastSeen >= _TIME_UNTIL_RESET)
-            {
-               _messages[_loc1_].timeLastSeen = 0;
-            }
+            _messages[_loc1_].markAsUnseenIfOlderThan(_TIME_UNTIL_RESET);
             _loc1_++;
          }
       }

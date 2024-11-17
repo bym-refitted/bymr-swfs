@@ -13,6 +13,11 @@ package com.monsters.subscriptions.rewards
          super();
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       override protected function onApplication() : void
       {
          HATCHERYCC.queueLimit = this._QUEUE_LIMIT;
@@ -20,6 +25,11 @@ package com.monsters.subscriptions.rewards
          {
             HATCHERYCC.doesShowInfernoCreeps = true;
          }
+      }
+      
+      override public function reset() : void
+      {
+         this.removed();
       }
       
       override public function removed() : void

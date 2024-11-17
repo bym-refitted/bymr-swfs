@@ -12,9 +12,19 @@ package com.monsters.rewarding.rewards
          this._monsterID = param1;
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       override protected function onApplication() : void
       {
          CREATURELOCKER._creatures[this._monsterID].blocked = false;
+      }
+      
+      override public function reset() : void
+      {
+         CREATURELOCKER._creatures[this._monsterID].blocked = true;
       }
    }
 }

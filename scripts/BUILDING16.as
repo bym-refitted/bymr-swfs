@@ -35,63 +35,84 @@ package
       override public function Description() : *
       {
          super.Description();
+         _recycleDescription = KEYS.Get("hcc_msg_recycle");
       }
       
       override public function Destroyed(param1:Boolean = true) : *
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc2_:SecNum = new SecNum(0);
+         var _loc2_:Vector.<SecNum> = new Vector.<SecNum>(2);
+         var _loc3_:int = 0;
+         _loc3_ = 0;
+         while(_loc3_ < _loc2_.length)
+         {
+            _loc2_[_loc3_] = new SecNum(0);
+            _loc3_++;
+         }
          if(_monsterQueue.length > 0)
          {
             _loc5_ = int(_monsterQueue.length);
-            _loc6_ = 0;
-            while(_loc6_ < _loc5_)
+            _loc3_ = 0;
+            while(_loc3_ < _loc5_)
             {
-               _loc2_.Add(CREATURES.GetProperty(_monsterQueue[_loc6_][0],"cResource") * _monsterQueue[_loc6_][1]);
-               _loc6_++;
+               if(BASE.isInfernoCreep(_monsterQueue[_loc3_][0]))
+               {
+                  _loc2_[1].Add(CREATURES.GetProperty(_monsterQueue[_loc3_][0],"cResource") * _monsterQueue[_loc3_][1]);
+               }
+               else
+               {
+                  _loc2_[0].Add(CREATURES.GetProperty(_monsterQueue[_loc3_][0],"cResource") * _monsterQueue[_loc3_][1]);
+               }
+               _loc3_++;
             }
             _monsterQueue = [];
          }
-         BASE.Fund(4,Math.ceil(_loc2_.Get() * 0.75),false,this);
-         var _loc3_:int = 0;
-         if(_loc2_.Get() > 20000)
-         {
-            _loc3_ = 12;
-         }
-         else if(_loc2_.Get() > 10000)
-         {
-            _loc3_ = 9;
-         }
-         else if(_loc2_.Get() > 5000)
-         {
-            _loc3_ = 7;
-         }
-         else if(_loc2_.Get() > 1000)
-         {
-            _loc3_ = 5;
-         }
-         else if(_loc2_.Get() > 400)
-         {
-            _loc3_ = 4;
-         }
-         else if(_loc2_.Get() > 200)
-         {
-            _loc3_ = 3;
-         }
-         else if(_loc2_.Get() > 100)
-         {
-            _loc3_ = 2;
-         }
-         else if(_loc2_.Get() > 0)
-         {
-            _loc3_ = 1;
-         }
          var _loc4_:int = 0;
-         while(_loc4_ < _loc3_)
+         _loc3_ = 0;
+         while(_loc3_ < _loc2_.length)
          {
-            ResourcePackages.Spawn(this,GLOBAL._bTownhall,BASE.isInferno() ? 8 : 4,_loc4_);
-            _loc4_++;
+            BASE.Fund(4,Math.ceil(_loc2_[_loc3_].Get() * 0.75),false,this,_loc3_);
+            _loc4_ = 0;
+            if(_loc2_[_loc3_].Get() > 20000)
+            {
+               _loc4_ = 12;
+            }
+            else if(_loc2_[_loc3_].Get() > 10000)
+            {
+               _loc4_ = 9;
+            }
+            else if(_loc2_[_loc3_].Get() > 5000)
+            {
+               _loc4_ = 7;
+            }
+            else if(_loc2_[_loc3_].Get() > 1000)
+            {
+               _loc4_ = 5;
+            }
+            else if(_loc2_[_loc3_].Get() > 400)
+            {
+               _loc4_ = 4;
+            }
+            else if(_loc2_[_loc3_].Get() > 200)
+            {
+               _loc4_ = 3;
+            }
+            else if(_loc2_[_loc3_].Get() > 100)
+            {
+               _loc4_ = 2;
+            }
+            else if(_loc2_[_loc3_].Get() > 0)
+            {
+               _loc4_ = 1;
+            }
+            _loc6_ = 0;
+            while(_loc6_ < _loc4_)
+            {
+               ResourcePackages.Spawn(this,GLOBAL._bTownhall,BASE.isInferno() || Boolean(_loc3_) ? 8 : 4,_loc6_);
+               _loc6_++;
+            }
+            _loc3_++;
          }
          super.Destroyed(param1);
       }

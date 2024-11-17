@@ -28,7 +28,6 @@ package
       {
          var _loc6_:String = null;
          var _loc7_:* = null;
-         var _loc8_:int = 0;
          var _loc9_:* = undefined;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
@@ -117,7 +116,7 @@ package
                _loc7_ = "buildingbuttons/" + this._id + ".jpg";
             }
          }
-         _loc8_ = int(Math.max.apply(Math,this._buildingProps.quantity));
+         var _loc8_:int = int(Math.max.apply(Math,this._buildingProps.quantity));
          mcShroud.visible = _loc5_ >= _loc4_ && _loc4_ > 0;
          mcCheck.visible = _loc5_ >= _loc8_ && _loc8_ > 0;
          mcNew.visible = false;

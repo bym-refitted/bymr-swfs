@@ -2,7 +2,6 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.ai.WMBASE;
-   import com.monsters.interfaces.ILootable;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Vacuum;
    import flash.display.Bitmap;
@@ -17,7 +16,7 @@ package
    import gs.TweenLite;
    import gs.easing.Expo;
    
-   public class BUILDING14 extends BSTORAGE implements ILootable
+   public class BUILDING14 extends BSTORAGE
    {
       public static const END_URL:String = "siegeimages/anim1.bottom.png";
       

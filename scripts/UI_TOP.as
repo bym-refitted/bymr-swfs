@@ -19,6 +19,8 @@ package
    
    public class UI_TOP extends UI_TOP_CLIP
    {
+      public static const CREATUREBUTTONOVER:String = "creatureButtonOver";
+      
       public var _popup:*;
       
       public var _popupWarning:*;
@@ -209,6 +211,7 @@ package
                   {
                      _loc7_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc4_].t,GLOBAL._playerGuardianData[_loc4_].l.Get(),_loc4_));
                      _loc7_.y = 25 + 60 * _loc3_;
+                     _loc7_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
                      this._creatureButtons.push(_loc7_);
                      _loc3_++;
                   }
@@ -227,6 +230,7 @@ package
                      {
                         _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc9_));
                         _loc10_.y = 25 + _loc3_ * 60;
+                        _loc10_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
                         if(_loc3_ > 5)
                         {
                            if(this.HasChampionButton())
@@ -287,6 +291,11 @@ package
             this.DescentDebuffHide();
          }
          this.Update();
+      }
+      
+      private function sortCreatureButtons(param1:Event = null) : void
+      {
+         this._creatureButtonsMC.addChild(param1.target);
       }
       
       private function InfoShow(param1:MouseEvent) : *
@@ -392,6 +401,9 @@ package
                mc.bDailyDeal.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
                mc.bDailyDeal.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
             }
+         }
+         else if(GLOBAL._mode == "attack")
+         {
          }
       }
       
@@ -725,9 +737,10 @@ package
          var _loc10_:Boolean = false;
          var _loc11_:int = 0;
          var _loc12_:Boolean = false;
-         var _loc13_:int = 0;
+         var _loc13_:MovieClip = null;
          var _loc14_:int = 0;
-         var _loc15_:String = null;
+         var _loc15_:int = 0;
+         var _loc16_:String = null;
          if(!GLOBAL._catchup)
          {
             if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
@@ -897,6 +910,16 @@ package
                   {
                      _loc12_ = SubscriptionHandler.instance.isSubscriptionActive;
                      (this._daveClub as MovieClip).gotoAndStop(_loc12_ ? "on" : "off");
+                     if(GLOBAL._advancedMap)
+                     {
+                        _loc13_ = mc.mcOutposts;
+                     }
+                     else
+                     {
+                        _loc13_ = mc.mcR4;
+                     }
+                     this._daveClub.x = -4;
+                     this._daveClub.y = _loc13_.y + 37;
                   }
                }
             }
@@ -916,28 +939,28 @@ package
                   this._creatureButtons[_loc1_].Update();
                   _loc1_++;
                }
-               _loc13_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               _loc14_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
                if(MAPROOM_DESCENT.InDescent)
                {
-                  _loc13_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+                  _loc14_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
                }
                if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
                {
-                  _loc13_ += _loc13_ * 0.25;
+                  _loc14_ += _loc14_ * 0.25;
                }
-               _loc14_ = _loc13_;
-               for(_loc15_ in ATTACK._flingerBucket)
+               _loc15_ = _loc14_;
+               for(_loc16_ in ATTACK._flingerBucket)
                {
-                  if(_loc15_.substr(0,1) == "G")
+                  if(_loc16_.substr(0,1) == "G")
                   {
-                     _loc14_ -= CHAMPIONCAGE.GetGuardianProperty(_loc15_.substr(0,2),1,"bucket");
+                     _loc15_ -= CHAMPIONCAGE.GetGuardianProperty(_loc16_.substr(0,2),1,"bucket");
                   }
                   else
                   {
-                     _loc14_ -= CREATURES.GetProperty(_loc15_,"bucket") * ATTACK._flingerBucket[_loc15_].Get();
+                     _loc15_ -= CREATURES.GetProperty(_loc16_,"bucket") * ATTACK._flingerBucket[_loc16_].Get();
                   }
                }
-               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc13_ * _loc14_;
+               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc14_ * _loc15_;
                if(GLOBAL._mode != GLOBAL._loadmode)
                {
                   if(ATTACK._countdown > 0)

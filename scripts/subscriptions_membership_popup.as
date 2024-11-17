@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2295")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2299")]
    public dynamic class subscriptions_membership_popup extends MovieClip
    {
       public var bClose:Button_CLIP;

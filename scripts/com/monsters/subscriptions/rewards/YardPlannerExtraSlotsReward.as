@@ -12,9 +12,19 @@ package com.monsters.subscriptions.rewards
          super();
       }
       
+      override public function canBeApplied() : Boolean
+      {
+         return GLOBAL.isAtHome();
+      }
+      
       override protected function onApplication() : void
       {
          BasePlanner.maxNumberOfSlots = 10;
+      }
+      
+      override public function reset() : void
+      {
+         this.removed();
       }
       
       override public function removed() : void

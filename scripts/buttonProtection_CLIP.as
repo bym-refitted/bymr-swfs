@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol1122")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1124")]
    public dynamic class buttonProtection_CLIP extends buttonProtection
    {
       public function buttonProtection_CLIP()

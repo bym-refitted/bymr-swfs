@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol1146")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1148")]
    public dynamic class buttonZoom_CLIP extends buttonZoom
    {
       public function buttonZoom_CLIP()

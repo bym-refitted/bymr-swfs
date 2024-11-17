@@ -30,8 +30,8 @@ package com.monsters.subscriptions.ui
       
       public function setup() : void
       {
-         ImageCache.GetImageWithCallBack(this._DAVECLUB_IMAGEURL + "daveclub_promo_BG_buttons.png",this.daveClubImageLoaded,true,1,"",[mcImageBG]);
-         ImageCache.GetImageWithCallBack(this._DAVECLUB_IMAGEURL + "daveclub_promo_pricetag.png",this.daveClubImageLoaded,true,1,"",[mcImagePrice]);
+         ImageCache.GetImageWithCallBack(this._DAVECLUB_IMAGEURL + "daveclub_promo_BG_buttons.v2.png",this.daveClubImageLoaded,true,1,"",[mcImageBG]);
+         ImageCache.GetImageWithCallBack(this._DAVECLUB_IMAGEURL + "daveClub_promo_pricetag_995.png",this.daveClubImageLoaded,true,1,"",[mcImagePrice]);
          var _loc1_:int = 0;
          while(_loc1_ < this.circleNavigation.length)
          {

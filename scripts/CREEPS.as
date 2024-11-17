@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.champions.KOTHChampion;
+   import com.monsters.events.CreepEvent;
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.utils.getTimer;
@@ -154,6 +155,7 @@ package
             _loc8_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
          }
          _creeps[_creepID] = _loc8_;
+         GLOBAL.eventDispatcher.dispatchEvent(new CreepEvent(CreepEvent.ATTACKING_CREEP_SPAWNED,_loc8_));
          return _loc8_;
       }
       

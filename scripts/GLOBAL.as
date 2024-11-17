@@ -335,6 +335,8 @@ package
       
       public static const _radtodeg:* = 57.2957795;
       
+      public static const MODE_ATTACK:String = "attack";
+      
       public static var iresourceNames:Array = ["#r_bone#","#r_coal#","#r_sulfur#","#r_magma#","#r_shiny#","#r_time#"];
       
       public static var _muted:Boolean = false;
@@ -2169,6 +2171,11 @@ package
       public static function isAtHome() : Boolean
       {
          return _mode == "build" && BASE._yardType == BASE.MAIN_YARD;
+      }
+      
+      public static function isNoob() : Boolean
+      {
+         return TUTORIAL._stage <= 200 && _sessionCount < 5;
       }
    }
 }

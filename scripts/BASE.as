@@ -5,6 +5,7 @@ package
    import com.monsters.ai.TRIBES;
    import com.monsters.ai.WMBASE;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.autobanking.AutoBankManager;
    import com.monsters.baseplanner.BaseTemplate;
    import com.monsters.baseplanner.BaseTemplateNode;
    import com.monsters.baseplanner.PlannerTemplate;
@@ -446,6 +447,10 @@ package
          {
             param3 = 0;
          }
+         if(isNaN(param2))
+         {
+            param2 = 0;
+         }
          if(Boolean(GLOBAL._advancedMap) && MapRoom._open)
          {
             MapRoom.Hide();
@@ -798,7 +803,7 @@ package
                   {
                      delete _rawGIP["b" + GLOBAL._homeBaseID];
                   }
-                  if(Boolean(_rawGIP["t"]) && GLOBAL._mode != "attack")
+                  if(Boolean(_rawGIP["t"]) && (GLOBAL._mode !== GLOBAL.MODE_ATTACK || AutoBankManager.AUTOBANK_FIX))
                   {
                      _lastProcessedGIP = _rawGIP["t"];
                      delete _rawGIP["t"];
@@ -2107,7 +2112,7 @@ package
             _catchupTime = _currentTime - _lastProcessed;
             if(_yardType != INFERNO_YARD)
             {
-               BASE.Autobank(_currentTime - _lastProcessedGIP);
+               AutoBankManager.autobank(_currentTime - _lastProcessedGIP);
             }
             hatqueue2 = [];
             hatcount2 = 0;
@@ -2837,7 +2842,7 @@ package
                CHECKER.Check();
                if(_yardType != INFERNO_YARD)
                {
-                  Autobank();
+                  AutoBankManager.autobank();
                }
             }
             pageInterval = int(Math.random() * 10) + 25;
@@ -2950,9 +2955,11 @@ package
          var j:int;
          var ir:Object;
          var saveOrder:Array;
+         var length:int;
          var k:int;
          var loadVars:Array;
-         var so:int;
+         var hard:uint;
+         var so:uint;
          var tmpExport:Object = null;
          var i:String = null;
          var buildingString:String = null;
@@ -2974,7 +2981,6 @@ package
          var handler:IHandler = null;
          var saveData:Object = null;
          var localGIP:Object = null;
-         var opKey:String = null;
          var thisOp:Object = null;
          var harvester:BFOUNDATION = null;
          var level:int = 0;
@@ -3388,29 +3394,7 @@ package
          {
             loadObjects.monsters = JSON.encode(mm);
             localGIP = {};
-            for(opKey in _processedGIP)
-            {
-               if(opKey == "t")
-               {
-                  if(_yardType != INFERNO_YARD)
-                  {
-                     localGIP[opKey] = GLOBAL.Timestamp();
-                  }
-                  else
-                  {
-                     localGIP[opKey] = _lastProcessedGIP;
-                  }
-               }
-               else
-               {
-                  localGIP[opKey] = {
-                     "r1":_processedGIP[opKey]["r1"].Get(),
-                     "r2":_processedGIP[opKey]["r2"].Get(),
-                     "r3":_processedGIP[opKey]["r3"].Get(),
-                     "r4":_processedGIP[opKey]["r4"].Get()
-                  };
-               }
-            }
+            AutoBankManager.setLocalGIP(localGIP);
             if(BASE._yardType == BASE.OUTPOST)
             {
                thisOp = {
@@ -3473,7 +3457,6 @@ package
                _GIP["r4"].Add(thisOp["r4"]);
                localGIP["b" + _baseID] = thisOp;
             }
-            localGIP["t"] = GLOBAL.Timestamp();
             loadObjects.buildingresources = JSON.encode(localGIP);
          }
          else
@@ -3845,21 +3828,23 @@ package
          }
          GLOBAL._timePlayed = 0;
          saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","attackersiege","purchasecomplete","achieved","fbpromos","iresources","siege","buildingresources","frontpage","events"];
+         length = int(HANDLERS.length);
          k = 0;
-         while(k < HANDLERS.length)
+         while(k < length)
          {
             saveOrder.push(HANDLERS[k].name);
             k++;
          }
          loadVars = [];
+         hard = saveOrder.length;
          so = 0;
-         while(so < saveOrder.length)
+         while(so < hard)
          {
             if(loadObjects.hasOwnProperty(saveOrder[so]))
             {
                loadVars.push([saveOrder[so],loadObjects[saveOrder[so]]]);
             }
-            so += 1;
+            so++;
          }
          if(!GLOBAL._save)
          {
@@ -5740,75 +5725,6 @@ package
             LOGIN._playerLevel = lvl.level;
          }
          return lvl;
-      }
-      
-      public static function Autobank(param1:int = 10) : void
-      {
-         var _loc2_:int = 0;
-         var _loc3_:SecNum = null;
-         var _loc4_:Array = null;
-         var _loc5_:SecNum = null;
-         if(GLOBAL._advancedMap)
-         {
-            _loc3_ = new SecNum(0);
-            _loc4_ = [new SecNum(0),new SecNum(0),new SecNum(0),new SecNum(0)];
-            if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && Boolean(GLOBAL._harvesterOverdrivePower.Get()))
-            {
-               _loc5_ = GLOBAL._harvesterOverdrivePower;
-            }
-            else
-            {
-               _loc5_ = new SecNum(1);
-            }
-            if(Boolean(_GIP["r1"]) && Boolean(_GIP["r1"].Get()))
-            {
-               _loc4_[0].Set(BASE.Fund(1,_GIP["r1"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
-               _loc3_.Add(_loc4_[0].Get());
-            }
-            if(Boolean(_GIP["r2"]) && Boolean(_GIP["r2"].Get()))
-            {
-               _loc4_[1].Set(BASE.Fund(2,_GIP["r2"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
-               _loc3_.Add(_loc4_[1].Get());
-            }
-            if(Boolean(_GIP["r3"]) && Boolean(_GIP["r3"].Get()))
-            {
-               _loc4_[2].Set(BASE.Fund(3,_GIP["r3"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
-               _loc3_.Add(_loc4_[2].Get());
-            }
-            if(Boolean(_GIP["r4"]) && Boolean(_GIP["r4"].Get()))
-            {
-               _loc4_[3].Set(BASE.Fund(4,_GIP["r4"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
-               _loc3_.Add(_loc4_[3].Get());
-            }
-            --_autobankCounter;
-            BASE.PointsAdd(Math.ceil(_loc3_.Get() * 0.375));
-            if(param1 > 10)
-            {
-               _loc2_ = 1;
-               while(_loc2_ < 5)
-               {
-                  if(_loc4_[_loc2_ - 1].Get() > 0)
-                  {
-                     LOGGER.Stat([96,_loc2_,_loc4_[_loc2_ - 1].Get()]);
-                  }
-                  _loc2_++;
-               }
-               _autobankCounter = 10;
-            }
-            else if(_autobankCounter == 0)
-            {
-               _loc2_ = 1;
-               while(_loc2_ < 5)
-               {
-                  if(_loc4_[_loc2_ - 1].Get() > 0)
-                  {
-                     LOGGER.Stat([96,_loc2_,_loc4_[_loc2_ - 1].Get() * 10]);
-                  }
-                  _loc2_++;
-               }
-               _autobankCounter = 10;
-            }
-         }
       }
       
       public static function GetBuildingOverlap(param1:Number, param2:Number, param3:Number, param4:Vector.<BFOUNDATION>) : void

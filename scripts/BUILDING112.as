@@ -1,12 +1,11 @@
 package
 {
    import com.monsters.ai.WMBASE;
-   import com.monsters.interfaces.ILootable;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   public class BUILDING112 extends BSTORAGE implements ILootable
+   public class BUILDING112 extends BSTORAGE
    {
       public function BUILDING112()
       {

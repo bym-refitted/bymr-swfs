@@ -32,7 +32,6 @@ package
       {
          var _loc1_:String = null;
          var _loc2_:int = 0;
-         var _loc4_:Point = null;
          var _loc5_:int = 0;
          var _loc7_:Array = null;
          var _loc10_:MovieClip = null;
@@ -70,7 +69,7 @@ package
          this._scrollSet.x = scroller.x;
          this._scrollSet.y = scroller.y;
          this._scrollSet.width = scroller.width;
-         this._scrollSet.Init(monsterCanvas,monsterMask,ScrollSet.BROWN,monsterMask.y,monsterMask.height);
+         this._scrollSet.Init(monsterCanvas,monsterMask,ScrollSet.BROWN,monsterMask.y,monsterMask.height,20,10);
          this._scrollSet.AutoHideEnabled = false;
          this._scrollSet.isHiddenWhileUnnecessary = true;
          this._scrollSetContainer = new Sprite();
@@ -79,7 +78,7 @@ package
          scroller.visible = false;
          _loc2_ = 0;
          var _loc3_:int = 0;
-         _loc4_ = new Point(10,14);
+         var _loc4_:Point = new Point(10,14);
          _loc5_ = 5;
          this._monsterSlots = [];
          _loc7_ = CREATURELOCKER.GetSortedCreatures(true);
@@ -471,7 +470,7 @@ package
          var _loc2_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          if(_loc2_.length >= this._monsterIndex)
          {
-            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterIndex - 1][0],"cResource"),false,null,HATCHERYCC.doesShowInfernoCreeps);
+            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterIndex - 1][0],"cResource"),false,null,BASE.isInfernoCreep(_loc2_[this._monsterIndex - 1][0]));
             --_loc2_[this._monsterIndex - 1][1];
             if(_loc2_[this._monsterIndex - 1][1] <= 0)
             {
@@ -505,7 +504,7 @@ package
                {
                   if(_loc3_._inProduction != "" && _loc2_ == n)
                   {
-                     BASE.Fund(4,CREATURES.GetProperty(_loc3_._inProduction,"cResource"),false,null,HATCHERYCC.doesShowInfernoCreeps);
+                     BASE.Fund(4,CREATURES.GetProperty(_loc3_._inProduction,"cResource"),false,null,BASE.isInfernoCreep(_loc3_._inProduction));
                      _loc3_._inProduction = "";
                      _loc3_.ResetProduction();
                   }
@@ -671,6 +670,14 @@ package
             this["slot" + _loc2_].addEventListener(MouseEvent.MOUSE_OVER,this.ShowRemove(this["mcRemove" + _loc2_]));
             this["slot" + _loc2_].addEventListener(MouseEvent.MOUSE_OUT,this.HideRemove(this["mcRemove" + _loc2_]));
             this["slot" + _loc2_].buttonMode = true;
+            if(HATCHERYCC.queueLimit > HATCHERYCC.DEFAULT_QUEUE_LIMIT)
+            {
+               this["slot" + _loc2_].gotoAndStop(2);
+            }
+            else
+            {
+               this["slot" + _loc2_].gotoAndStop(1);
+            }
             this["mcRemove" + _loc2_].visible = false;
             this["mcRemove" + _loc2_].mouseEnabled = false;
             this["mcRemove" + _loc2_].mouseChildren = false;

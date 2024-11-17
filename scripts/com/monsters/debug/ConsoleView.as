@@ -7,11 +7,13 @@ package com.monsters.debug
    import flash.events.FullScreenEvent;
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
+   import flash.system.System;
    import flash.text.TextField;
    import flash.text.TextFieldType;
    import flash.text.TextFormat;
    import flash.text.TextFormatAlign;
    import flash.ui.Keyboard;
+   import flash.utils.Dictionary;
    
    public class ConsoleView extends Sprite
    {
@@ -95,6 +97,7 @@ package com.monsters.debug
          }
          this.resize();
          this._outputBitmap.name = "ConsoleOutput";
+         addEventListener(MouseEvent.DOUBLE_CLICK,this.onBitmapDoubleClick);
          this._outputBitmap.alpha = 0.85;
          addChild(this._outputBitmap);
          addChild(this._input);
@@ -114,6 +117,38 @@ package com.monsters.debug
       
       protected function onInputKeyDown(param1:KeyboardEvent) : void
       {
+         var _loc2_:Dictionary = null;
+         var _loc3_:Vector.<String> = null;
+         var _loc4_:String = null;
+         var _loc5_:int = 0;
+         if(param1.keyCode == Keyboard.TAB)
+         {
+            _loc2_ = Console.commands;
+            _loc3_ = new Vector.<String>();
+            this.tabCompletionPrefix = this._input.text.toLowerCase();
+            for(_loc4_ in _loc2_)
+            {
+               if(_loc4_.substr(0,this.tabCompletionPrefix.length).toLowerCase() == this.tabCompletionPrefix)
+               {
+                  _loc3_.push(_loc4_);
+               }
+            }
+            if(_loc3_.length >= 1)
+            {
+               this._input.text = _loc3_[0] + " ";
+               if(_loc3_.length >= 2)
+               {
+                  _loc5_ = 0;
+                  while(_loc5_ < _loc3_.length)
+                  {
+                     print("    " + _loc3_[_loc5_]);
+                     _loc5_++;
+                  }
+               }
+               stage.focus = this._input;
+               this._input.setSelection(5,6);
+            }
+         }
          param1.stopImmediatePropagation();
          param1.stopPropagation();
       }
@@ -132,8 +167,16 @@ package com.monsters.debug
          this.onFrame();
       }
       
-      protected function onBitmapClick(param1:MouseEvent) : void
+      protected function onBitmapDoubleClick(param1:MouseEvent = null) : void
       {
+         var _loc2_:String = "";
+         var _loc3_:int = 0;
+         while(_loc3_ < this.logCache.length)
+         {
+            _loc2_ += this.logCache[_loc3_].text + "\n";
+            _loc3_++;
+         }
+         System.setClipboard(_loc2_);
       }
       
       protected function resize(param1:Event = null) : void
@@ -245,13 +288,10 @@ package com.monsters.debug
                }
             }
          }
-         else if(param1.keyCode != Keyboard.TAB)
+         else if(Console.isKey(param1.keyCode))
          {
-            if(Console.isKey(param1.keyCode))
-            {
-               this.toggleActive();
-               this._input.text = "";
-            }
+            this.toggleActive();
+            this._input.text = "";
          }
          this._dirtyConsole = true;
          param1.stopImmediatePropagation();
