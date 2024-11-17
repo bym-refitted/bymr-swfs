@@ -261,6 +261,7 @@ package
       
       public function SubMenu(param1:Array) : *
       {
+         var _loc3_:int = 0;
          var _loc4_:Button = null;
          if(this._subButtonsMC)
          {
@@ -268,7 +269,7 @@ package
          }
          this._subButtonsMC = this.addChild(new MovieClip());
          var _loc2_:* = [];
-         var _loc3_:int = 0;
+         _loc3_ = 0;
          while(_loc3_ < param1.length)
          {
             _loc4_ = this._subButtonsMC.addChild(new Button_CLIP());

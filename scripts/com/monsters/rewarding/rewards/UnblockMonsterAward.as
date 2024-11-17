@@ -6,13 +6,13 @@ package com.monsters.rewarding.rewards
    {
       protected var _monsterID:String;
       
-      public function UnblockMonsterAward(param1:String, param2:String)
+      public function UnblockMonsterAward(param1:String)
       {
-         super(param1);
-         this._monsterID = param2;
+         super();
+         this._monsterID = param1;
       }
       
-      override public function applyReward() : void
+      override protected function onApplication() : void
       {
          CREATURELOCKER._creatures[this._monsterID].blocked = false;
       }

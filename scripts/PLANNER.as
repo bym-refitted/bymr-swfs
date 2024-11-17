@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.baseplanner.BasePlanner;
    import flash.display.StageDisplayState;
    import flash.events.MouseEvent;
    
@@ -7,11 +8,15 @@ package
    {
       public static var _mc:*;
       
+      public static var basePlanner:BasePlanner;
+      
       public static const TYPE:uint = 10;
       
       public static var _open:Boolean = false;
       
       public static var _selected:Boolean = false;
+      
+      public static var _useOldPlanner:Boolean = true;
       
       public function PLANNER()
       {
@@ -31,17 +36,40 @@ package
          }
          BASE.BuildingDeselect();
          _selected = false;
+         if(GLOBAL._flags.yp_version)
+         {
+            if(GLOBAL._flags.yp_version == 1)
+            {
+               _useOldPlanner = true;
+            }
+            else if(GLOBAL._flags.yp_version == 2)
+            {
+               _useOldPlanner = false;
+            }
+         }
          if(!_open)
          {
             _open = true;
             SOUNDS.Play("click1");
             BASE.BuildingDeselect();
-            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
-            {
-               GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
-            }
             GLOBAL.BlockerAdd();
-            _mc = GLOBAL._layerWindows.addChild(new PLANNERPOPUP());
+            if(_useOldPlanner)
+            {
+               if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+               {
+                  GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
+               }
+               _mc = GLOBAL._layerWindows.addChild(new PLANNERPOPUP());
+            }
+            else if(basePlanner)
+            {
+               basePlanner.setup();
+            }
+            else
+            {
+               basePlanner = new BasePlanner();
+               basePlanner.setup();
+            }
          }
       }
       
@@ -59,11 +87,18 @@ package
          BASE.BuildingDeselect();
          if(_open)
          {
-            _mc.Remove();
             SOUNDS.Play("close");
             _open = false;
-            GLOBAL._layerWindows.removeChild(_mc);
-            _mc = null;
+            if(_useOldPlanner)
+            {
+               _mc.Remove();
+               GLOBAL._layerWindows.removeChild(_mc);
+               _mc = null;
+            }
+            else
+            {
+               basePlanner.hide();
+            }
          }
       }
       
@@ -71,9 +106,12 @@ package
       {
          if(_open)
          {
-            STORE.Hide();
-            Hide();
-            Show();
+            if(_useOldPlanner)
+            {
+               STORE.Hide();
+               Hide();
+               Show();
+            }
          }
       }
    }

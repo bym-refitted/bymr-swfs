@@ -5,6 +5,24 @@ package
    
    public class BSTORAGE extends BFOUNDATION
    {
+      private static var _LOOT_MAX_TH:Number = 10000000;
+      
+      private static var _LOOT_MAX_OUTPOST:Number = 10000000;
+      
+      private static var _LOOT_MAX_SILO:Number = 4000000;
+      
+      private static var _LOOT_MAX_WM_TH:Number = 2000000;
+      
+      private static var _LOOT_MAX_WM_SILO:Number = 500000;
+      
+      private static var _LOOT_PCT_TH:Number = 0.1;
+      
+      private static var _LOOT_PCT_OUTPOST:Number = 0.05;
+      
+      private static var _LOOT_PCT_BASE:Number = 0.04;
+      
+      private static var _LOOT_GOO_LIMITER:Number = 0.5;
+      
       public function BSTORAGE()
       {
          super();
@@ -118,14 +136,14 @@ package
          var _loc4_:int = 0;
          if(param1)
          {
-            _loc2_ = 0.04;
+            _loc2_ = _LOOT_PCT_BASE;
             if(_type == 14)
             {
-               _loc2_ = 0.1;
+               _loc2_ = _LOOT_PCT_TH;
             }
             if(_type == 112)
             {
-               _loc2_ = 0.05;
+               _loc2_ = _LOOT_PCT_OUTPOST;
             }
             _loc3_ = 1;
             while(_loc3_ < 5)
@@ -133,27 +151,27 @@ package
                _loc4_ = int(BASE._resources["r" + _loc3_].Get() * _loc2_);
                if(_type == 6)
                {
-                  _loc4_ = Math.min(_loc4_,4000000);
+                  _loc4_ = Math.min(_loc4_,_LOOT_MAX_SILO);
                   if(GLOBAL._advancedMap && GLOBAL._currentCell && GLOBAL._currentCell._base == 1)
                   {
-                     _loc4_ = Math.min(_loc4_,500000);
+                     _loc4_ = Math.min(_loc4_,_LOOT_MAX_WM_SILO);
                   }
                }
                if(_type == 14)
                {
-                  _loc4_ = Math.min(_loc4_,10000000);
+                  _loc4_ = Math.min(_loc4_,_LOOT_MAX_TH);
                   if(GLOBAL._advancedMap && GLOBAL._currentCell && GLOBAL._currentCell._base == 1)
                   {
-                     _loc4_ = Math.min(_loc4_,2000000);
+                     _loc4_ = Math.min(_loc4_,_LOOT_MAX_WM_TH);
                   }
                }
                if(_type == 112)
                {
-                  _loc4_ = Math.min(_loc4_,10000000);
+                  _loc4_ = Math.min(_loc4_,_LOOT_MAX_OUTPOST);
                }
                if(_loc3_ == 4)
                {
-                  _loc4_ = Math.ceil(_loc4_ / 2);
+                  _loc4_ = Math.ceil(_loc4_ * _LOOT_GOO_LIMITER);
                }
                if(_loc4_ > 0)
                {

@@ -1035,10 +1035,11 @@ package
                break;
             case "full":
             default:
+               _loc3_ = {};
                _loc5_ = CREATURELOCKER._creatures;
                for(_loc4_ in _loc5_)
                {
-                  if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+                  if(_loc4_ != "C200")
                   {
                      _loc3_[_loc4_] = _loc5_[_loc4_];
                   }
@@ -1146,7 +1147,7 @@ package
             }
             _loc3_.sortOn(["index"],Array.NUMERIC);
          }
-         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed;
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && BASE.isInferno();
          if(_loc7_)
          {
             _loc12_ = CREATURELOCKER.GetCreatures("inferno");

@@ -181,6 +181,8 @@ package com.flashdynamix.utils
       private static function resize(param1:Event) : void
       {
          content.update(runningTime,minFps,maxFps,minMem,maxMem,currentFps,currentMem,averageFps,fpsList,memList,history);
+         content.x = GLOBAL._SCREEN.x;
+         content.y = GLOBAL._SCREEN.y;
       }
       
       private static function draw(param1:Event) : void

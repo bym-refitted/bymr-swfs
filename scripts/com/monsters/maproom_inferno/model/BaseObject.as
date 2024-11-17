@@ -67,8 +67,8 @@ package com.monsters.maproom_inferno.model
       public function BaseObject(param1:Object)
       {
          super();
-         this.level = new SecNum(int(param1.level));
-         this.baseid = new SecNum(int(param1.baseid));
+         this.level = new SecNum(param1.level);
+         this.baseid = new SecNum(param1.baseid);
          this.basename = param1.basename;
          this.ownerName = this.basename.split("\'s")[0];
          this.pic = param1.pic;

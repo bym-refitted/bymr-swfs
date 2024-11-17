@@ -22,7 +22,7 @@ package com.monsters.maproom_advanced
       
       public var _base:int;
       
-      public var _baseID:int;
+      public var _baseID:Number;
       
       public var _allianceID:int;
       

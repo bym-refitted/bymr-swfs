@@ -12,7 +12,7 @@ package
       {
          super();
          this._success = param1;
-         if(param1)
+         if(this._success)
          {
             this.tTitle.htmlText = KEYS.Get("newmap_destroyed");
             if(GLOBAL._advancedMap)

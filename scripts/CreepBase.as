@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.components.Component;
    import com.monsters.components.statusEffects.CStatusEffect;
+   import com.monsters.interfaces.ILootable;
    import com.monsters.pathing.PATHING;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -13,6 +14,36 @@ package
    
    public class CreepBase extends CREEP_CLIP
    {
+      public static const k_sBHVR_ATTACK:String = "attack";
+      
+      public static const k_sBHVR_RETREAT:String = "retreat";
+      
+      public static const k_sBHVR_JUICE:String = "juice";
+      
+      public static const k_sBHVR_HOUSING:String = "housing";
+      
+      public static const k_sBHVR_PEN:String = "pen";
+      
+      public static const k_sBHVR_DEFEND:String = "defend";
+      
+      public static const k_sBHVR_FEED:String = "feed";
+      
+      public static const k_sBHVR_JUMP:String = "jump";
+      
+      public static const k_sBHVR_DECOY:String = "decoy";
+      
+      public static const k_sBHVR_BUNKER:String = "bunker";
+      
+      public static const k_sBHVR_HEAL:String = "heal";
+      
+      public static const k_sBHVR_LOOT:String = "loot";
+      
+      public static const k_sBHVR_WANDER:String = "wander";
+      
+      public static const k_sBHVR_BOUNCE:String = "bounce";
+      
+      public static const k_sBHVR_HUNT:String = "hunt";
+      
       public var _components:Vector.<Component> = new Vector.<Component>();
       
       public var _frameNumber:int;
@@ -258,22 +289,23 @@ package
       
       public function Tick(param1:int = 1) : Boolean
       {
-         var _loc2_:int = 0;
-         while(_loc2_ < this._components.length)
+         var _loc3_:int = 0;
+         var _loc2_:int = int(this._components.length);
+         while(_loc3_ < _loc2_)
          {
-            this._components[_loc2_].tick(param1);
-            _loc2_++;
+            this._components[_loc3_].tick(param1);
+            _loc3_++;
          }
          return true;
       }
       
       public function ModeAttack() : void
       {
-         if(this._behaviour == "retreat")
+         if(this._behaviour === k_sBHVR_RETREAT)
          {
             return;
          }
-         this._behaviour = "attack";
+         this._behaviour = k_sBHVR_ATTACK;
          this._hasTarget = false;
          this._atTarget = false;
          this._hasPath = false;
@@ -287,7 +319,7 @@ package
       
       public function ModeRetreat() : void
       {
-         this._behaviour = "retreat";
+         this._behaviour = k_sBHVR_RETREAT;
          this._hasTarget = false;
          this._atTarget = false;
          this._hasPath = false;
@@ -306,7 +338,7 @@ package
       
       public function ModeHousing() : void
       {
-         this._behaviour = "housing";
+         this._behaviour = k_sBHVR_HOUSING;
          this._hasTarget = false;
          this._atTarget = false;
          this._hasPath = false;
@@ -477,7 +509,7 @@ package
          {
             for each(_loc5_ in BASE._buildingsMain)
             {
-               if(_loc5_._hp.Get() > 0 && (_loc5_._class == "resource" || _loc5_._type == 6 || _loc5_._type == 14 || _loc5_._type == 112) && !_loc5_._looted)
+               if(_loc5_._hp.Get() > 0 && _loc5_ is ILootable && !_loc5_._looted)
                {
                   _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
                   _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc5_._middle;
@@ -687,7 +719,7 @@ package
       public function WaypointTo(param1:Point, param2:BFOUNDATION = null) : void
       {
          var _loc3_:Boolean = false;
-         if(this._behaviour == "juice" || this._behaviour == "housing" || this._behaviour == "pen" || this._behaviour == "defend" || this._behaviour == "feed" || this._movement == "jump" || this._behaviour == "decoy")
+         if(this._behaviour === k_sBHVR_JUICE || this._behaviour === k_sBHVR_HOUSING || this._behaviour === k_sBHVR_PEN || this._behaviour === k_sBHVR_DEFEND || this._behaviour === k_sBHVR_FEED || this._movement === k_sBHVR_JUMP || this._behaviour === k_sBHVR_DECOY)
          {
             _loc3_ = true;
          }
@@ -706,17 +738,16 @@ package
          var _loc4_:Boolean = false;
          if(param3)
          {
-            if(this._behaviour == "attack")
+            switch(this._behaviour)
             {
-               this.FindTarget(this._targetGroup);
-            }
-            if(this._behaviour == "housing")
-            {
-               this.ModeHousing();
-            }
-            if(this._behaviour == "retreat")
-            {
-               this.ModeRetreat();
+               case k_sBHVR_ATTACK:
+                  this.FindTarget(this._targetGroup);
+                  break;
+               case k_sBHVR_HOUSING:
+                  this.ModeHousing();
+                  break;
+               case k_sBHVR_RETREAT:
+                  this.ModeRetreat();
             }
          }
          else
@@ -734,7 +765,7 @@ package
             {
                _loc4_ = true;
             }
-            if(this._behaviour == "defend")
+            if(this._behaviour == k_sBHVR_DEFEND)
             {
                _loc4_ = true;
             }

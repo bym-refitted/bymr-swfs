@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol48")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol75")]
    public dynamic class popup_noworker extends MovieClip
    {
       public var bGet:Button_CLIP;

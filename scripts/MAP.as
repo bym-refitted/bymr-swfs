@@ -191,6 +191,10 @@ package
             {
                _GROUND.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
             }
+            if(GLOBAL.DOES_USE_SCROLL)
+            {
+               _GROUND.stage.addEventListener(MouseEvent.MOUSE_WHEEL,onMouseScroll);
+            }
             _GROUND.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
             _EDGE = null;
          }
@@ -285,6 +289,11 @@ package
             }
             _loc5_++;
          }
+      }
+      
+      private static function onMouseScroll(param1:MouseEvent) : void
+      {
+         GLOBAL.magnification += param1.delta * 0.05;
       }
       
       public static function KeyDownPublic(param1:KeyboardEvent) : *
@@ -485,25 +494,25 @@ package
       
       public static function Scroll(param1:Event = null) : *
       {
-         var _loc11_:int = 0;
-         var _loc12_:MovieClip = null;
-         var _loc13_:* = undefined;
+         var _loc12_:int = 0;
+         var _loc13_:MovieClip = null;
          var _loc14_:* = undefined;
+         var _loc15_:* = undefined;
          if(_following)
          {
             tx = 0;
             ty = 0;
-            _loc11_ = 0;
-            for each(_loc12_ in CREEPS._creeps)
+            _loc12_ = 0;
+            for each(_loc13_ in CREEPS._creeps)
             {
-               if(_loc12_._behaviour == "attack" || _loc12_._behaviour == "loot")
+               if(_loc13_._behaviour == "attack" || _loc13_._behaviour == "loot")
                {
-                  _loc11_++;
-                  tx += _loc12_.x;
-                  ty += _loc12_.y;
+                  _loc12_++;
+                  tx += _loc13_.x;
+                  ty += _loc13_.y;
                }
             }
-            if(_loc11_ <= 0)
+            if(_loc12_ <= 0)
             {
                tx = _dragX;
                ty = _dragY;
@@ -513,8 +522,8 @@ package
                }
                return;
             }
-            tx /= _loc11_;
-            ty /= _loc11_;
+            tx /= _loc12_;
+            ty /= _loc12_;
             tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth / 2;
             ty = 0 - ty + GLOBAL.GetGameHeight() / 2;
             _dragX = tx;
@@ -524,9 +533,9 @@ package
          {
             tx = int(stage.mouseX - _dragX);
             ty = int(stage.mouseY - _dragY);
-            _loc13_ = stage.mouseX - (_dragX + _startX);
-            _loc14_ = stage.mouseY - (_dragY + _startY);
-            _dragDistance = Math.abs(Math.sqrt(_loc13_ * _loc13_ + _loc14_ * _loc14_));
+            _loc14_ = stage.mouseX - (_dragX + _startX);
+            _loc15_ = stage.mouseY - (_dragY + _startY);
+            _dragDistance = Math.abs(Math.sqrt(_loc14_ * _loc14_ + _loc15_ * _loc15_));
             if(_dragDistance > 10)
             {
                _dragged = true;

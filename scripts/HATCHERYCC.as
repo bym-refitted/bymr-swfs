@@ -8,6 +8,12 @@ package
       
       public static const TYPE:int = 16;
       
+      public static const DEFAULT_QUEUE_LIMIT:uint = 20;
+      
+      public static var queueLimit:uint = DEFAULT_QUEUE_LIMIT;
+      
+      public static var doesShowInfernoCreeps:Boolean = true;
+      
       public static var _open:Boolean = false;
       
       public function HATCHERYCC()
@@ -15,7 +21,7 @@ package
          super();
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(!_open)
          {
@@ -28,7 +34,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -41,7 +47,7 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          try
          {

@@ -9,7 +9,6 @@ package de.polygonal.ds
       public static function toArray2(param1:Array, param2:int, param3:int) : Array2
       {
          var _loc8_:int = 0;
-         null;
          var _loc4_:Array2 = new Array2(param2,param3);
          var _loc5_:Array = _loc4_._a;
          var _loc6_:int = 0;
@@ -47,6 +46,7 @@ package de.polygonal.ds
          var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
+         null;
          var _loc2_:int = int(param1.length);
          var _loc3_:ArrayedQueue = new ArrayedQueue(_loc2_ > 0 && (_loc2_ & _loc2_ - 1) == 0 ? _loc2_ : (_loc4_ = _loc2_, _loc4_ |= _loc4_ >> 1, _loc4_ = _loc4_ | _loc4_ >> 1 | _loc4_ >> 2, _loc4_ = _loc4_ | _loc4_ >> 1 | _loc4_ >> 2 | _loc4_ >> 3, _loc4_ = _loc4_ | _loc4_ >> 1 | _loc4_ >> 2 | _loc4_ >> 3 | _loc4_ >> 4, _loc4_ = _loc4_ | _loc4_ >> 1 | _loc4_ >> 2 | _loc4_ >> 3 | _loc4_ >> 4 | _loc4_ >> 5, (_loc4_ | _loc4_ >> 1 | _loc4_ >> 2 | _loc4_ >> 3 | _loc4_ >> 4 | _loc4_ >> 5) + 1));
          _loc4_ = 0;
@@ -86,7 +86,6 @@ package de.polygonal.ds
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         null;
          var _loc2_:ArrayedStack = new ArrayedStack(int(param1.length));
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);
@@ -135,6 +134,7 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = null as DLLNode;
          var _loc8_:* = null as DLLNode;
+         null;
          var _loc2_:DLL = new DLL();
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);
@@ -170,7 +170,6 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = null as LinkedQueueNode;
          var _loc8_:* = null as LinkedQueueNode;
-         null;
          var _loc2_:LinkedQueue = new LinkedQueue();
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);
@@ -200,6 +199,7 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = null as LinkedStackNode;
          var _loc8_:* = null as LinkedStackNode;
+         null;
          var _loc2_:LinkedStack = new LinkedStack();
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);

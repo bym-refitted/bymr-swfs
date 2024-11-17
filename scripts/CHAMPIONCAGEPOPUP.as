@@ -14,11 +14,15 @@ package
       
       public static var page2Assets:Array;
       
+      public static var page3Assets:Array;
+      
       public static var pagesArr:Array;
       
       public static var statsArr:Array;
       
       public static var buffsArr:Array;
+      
+      public static var kothStatsArr:Array;
       
       public static var feedIcons:Array;
       
@@ -29,6 +33,8 @@ package
       public static var _bCage:CHAMPIONCAGE;
       
       public static var _page:int = 0;
+      
+      public static var _kothEnabled:Boolean = false;
       
       public static var _maxSpeed:Number = 4;
       
@@ -50,13 +56,27 @@ package
       
       private var guardLevel:int;
       
-      private var foodBonus:int;
-      
       private var guardID:String;
+      
+      private var foodBonus:int;
       
       private var totalFeeds:Number;
       
       private var currFeeds:Number;
+      
+      private var koth:CHAMPIONMONSTER;
+      
+      private var kothType:int;
+      
+      private var kothLevel:int;
+      
+      private var kothID:String;
+      
+      private var kothBonus:int;
+      
+      private var kothAbilities:int;
+      
+      private var _testKOTH:int = 1;
       
       public function CHAMPIONCAGEPOPUP()
       {
@@ -65,10 +85,12 @@ package
          _bCage = GLOBAL._bCage as CHAMPIONCAGE;
          page1Assets = [mcImage,tEvoStage,damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff,tEvoDesc,tHP,barHP,bHeal];
          page2Assets = [barDNA,barDNA_bg,barDNA_mask,mcCurrGuardian,mcNextGuardian,tNextFeed,tFeedsFrom,mcInstant,mcFeed1,mcFeed2,gFeedBG,bEvolve,bFeedTimer,tNextFeedTitle];
-         pagesArr = [page1Assets,page2Assets];
+         page3Assets = [p3_mcImage,p3_tTitle,p3_tRank,p3_tDescription,p3_gRankBG,p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,mcAbility1,mcAbility2,mcAbility3,p3_bTimeleft,p3_tTimeleft,p3_bHP,p3_tHP,p3_bLeaderboard,p3_bHeal];
+         pagesArr = [page1Assets,page2Assets,page3Assets];
          statsArr = [damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff];
          buffsArr = [damage_txt2,tDamage2,bDamage2,health_txt2,tHealth2,bHealth2,speed_txt2,tSpeed2,bSpeed2,buff_txt2,tBuff2,bBuff2,tBuffDesc,day1,day2,day3];
          feedIcons = [mcFeed1,mcFeed2];
+         kothStatsArr = [p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,mcAbility1,mcAbility2,mcAbility3];
          this.Setup(0);
          mcCurrGuardian.stop();
          mcNextGuardian.stop();
@@ -95,6 +117,16 @@ package
                   b2.SetupKey("btn_dailyfeed",false,0,0);
                }
                b2.addEventListener(MouseEvent.CLICK,this.SwitchClick(1));
+               if(_kothEnabled)
+               {
+                  b3.Setup("KOTH");
+                  b3.addEventListener(MouseEvent.CLICK,this.SwitchClick(2));
+               }
+               else
+               {
+                  b3.visible = false;
+                  b3.mouseEnabled = false;
+               }
                tEvoStage.mouseEnabled = false;
                tTitle.mouseEnabled = false;
                this.Switch(param1);
@@ -118,6 +150,14 @@ package
             this.totalFeeds = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"feedCount");
             this.currFeeds = CREATURES._guardian._feeds.Get();
          }
+         if(this._testKOTH)
+         {
+            this.koth = CREATURES._guardian;
+            this.kothType = CREATURES._guardian._type;
+            this.kothLevel = CREATURES._guardian._level.Get();
+            this.kothBonus = CREATURES._guardian._foodBonus.Get();
+            this.kothID = CREATURES._guardian._creatureID;
+         }
       }
       
       public function Switch(param1:int = 0) : *
@@ -128,6 +168,7 @@ package
          var _loc6_:* = false;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
+         _page = param1;
          this.UpdateVars();
          mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantClick);
          mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.EvolveClick);
@@ -148,8 +189,6 @@ package
                   }
                   _loc4_++;
                }
-               _page = param1;
-               window.gotoAndStop(param1 + 1);
             }
             else
             {
@@ -157,7 +196,7 @@ package
                while(_loc5_ < pagesArr[_loc2_].length)
                {
                   pagesArr[_loc2_][_loc5_].visible = false;
-                  if(pagesArr[_loc2_][_loc4_] is MovieClip)
+                  if(pagesArr[_loc2_][_loc5_] is MovieClip)
                   {
                      pagesArr[_loc2_][_loc5_].enabled = false;
                   }
@@ -187,6 +226,10 @@ package
             bHealth2["mcBuff" + _loc2_].width = 0;
             bSpeed2["mcBuff" + _loc2_].width = 0;
             bBuff2["mcBuff" + _loc2_].width = 0;
+            p3_bDamage["mcBuff" + _loc2_].width = 0;
+            p3_bHealth["mcBuff" + _loc2_].width = 0;
+            p3_bSpeed["mcBuff" + _loc2_].width = 0;
+            p3_bBuff["mcBuff" + _loc2_].width = 0;
             _loc2_++;
          }
          if(CREATURES._guardian)
@@ -206,15 +249,9 @@ package
                   bHeal.Enabled = true;
                   bHeal.addEventListener(MouseEvent.CLICK,this.HealClick);
                }
-               b1.Highlight = true;
-               b2.Highlight = false;
-               window.gotoAndStop(param1 + 1);
             }
             else if(param1 == 1)
             {
-               b1.Highlight = false;
-               b2.Highlight = true;
-               window.gotoAndStop(param1 + 1);
                this.UpdateDNA();
                this.UpdateStats();
                _loc6_ = CREATURES._guardian._feedTime.Get() < GLOBAL.Timestamp();
@@ -345,11 +382,23 @@ package
                }
             }
          }
+         if(param1 == 2)
+         {
+            this.UpdatePortrait();
+            this.UpdateStats();
+         }
+         b1.Highlight = param1 == 0;
+         b2.Highlight = param1 == 1;
+         b3.Highlight = param1 == 2;
+         window.gotoAndStop(param1 + 1);
       }
       
       private function UpdatePortrait() : *
       {
          var UpdatePortraitIcon:Function;
+         var UpdatePortraitKoth:Function;
+         var kothGuardType:int = 0;
+         var kothGuardLevel:int = 0;
          if(CREATURES._guardian)
          {
             UpdatePortraitIcon = function(param1:String, param2:BitmapData):*
@@ -364,6 +413,26 @@ package
                }
             }
             ImageCache.GetImageWithCallBack("monsters/G" + CREATURES._guardian._type + "_L" + CREATURES._guardian._level.Get() + "-250.png",UpdatePortraitIcon);
+         }
+         if(_page == 2 && _kothEnabled)
+         {
+            UpdatePortraitKoth = function(param1:String, param2:BitmapData):*
+            {
+               p3_mcImage.addChild(new Bitmap(param2));
+            };
+            kothGuardType = 2;
+            kothGuardLevel = 6;
+            if(p3_mcImage)
+            {
+               while(p3_mcImage.numChildren)
+               {
+                  p3_mcImage.removeChildAt(0);
+               }
+            }
+            if(!this._testKOTH)
+            {
+            }
+            ImageCache.GetImageWithCallBack("monsters/G" + kothGuardType + "_L" + kothGuardLevel + "-250.png",UpdatePortraitKoth);
          }
       }
       
@@ -469,6 +538,11 @@ package
          var _loc14_:int = 0;
          var _loc15_:int = 0;
          var _loc16_:Number = NaN;
+         var _loc17_:Number = NaN;
+         var _loc18_:Number = NaN;
+         var _loc19_:Number = NaN;
+         var _loc20_:Number = NaN;
+         var _loc21_:Number = NaN;
          this.UpdateVars();
          if(CREATURES._guardian)
          {
@@ -679,6 +753,122 @@ package
             }
             barHP.mcBar.width = 100 / this.guard._maxHealth * Math.max(1,this.guard._health.Get());
             bFeedTimer.mcBar.width = 100 / CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedTime") * (CREATURES._guardian._feedTime.Get() - GLOBAL.Timestamp());
+         }
+         if(this._testKOTH && _kothEnabled && _page == 2)
+         {
+            p3_damage_txt.htmlText = "<b>" + KEYS.Get("gcage_labelDamage") + "</b>";
+            p3_health_txt.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
+            p3_speed_txt.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
+            p3_buff_txt.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
+            _loc17_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
+            _loc18_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
+            _loc19_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
+            _loc20_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
+            if(this.foodBonus > 0)
+            {
+               _loc17_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusDamage");
+               _loc18_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusHealth");
+               _loc19_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusSpeed");
+               _loc20_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusBuffs") * 100;
+            }
+            _loc5_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
+            _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
+            _loc7_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
+            _loc8_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
+            _loc21_ = int(_loc19_ * 10) / 10;
+            p3_tDamage.htmlText = "" + _loc17_;
+            p3_tHealth.htmlText = "" + _loc18_;
+            p3_tSpeed.htmlText = "" + _loc21_;
+            p3_tBuff.htmlText = "" + int(_loc20_) + "%";
+            p3_tHP.htmlText = Math.floor(this.koth._health.Get()) + " / " + Math.floor(this.koth._maxHealth);
+            TweenLite.to(bDamage.mcBar,0.4,{
+               "width":100 / _maxDamage * _loc17_,
+               "ease":Circ.easeInOut,
+               "delay":0
+            });
+            if(this.kothLevel == _maxLevel && _useBonusIndicators)
+            {
+               _loc10_ = this.kothBonus;
+               while(_loc10_ <= 3)
+               {
+                  if(_loc10_ > 0)
+                  {
+                     TweenLite.to(p3_bDamage["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxDamage * (_loc5_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusDamage")) + 2,
+                        "ease":Circ.easeInOut,
+                        "delay":0
+                     });
+                     p3_bDamage["mcBuff" + _loc10_].gotoAndStop(_loc10_ + 1);
+                  }
+                  _loc10_++;
+               }
+            }
+            TweenLite.to(p3_bHealth.mcBar,0.4,{
+               "width":100 / _maxHealth * _loc18_,
+               "ease":Circ.easeInOut,
+               "delay":0.05
+            });
+            if(this.kothLevel == _maxLevel && _useBonusIndicators)
+            {
+               _loc10_ = this.kothBonus;
+               while(_loc10_ <= 3)
+               {
+                  if(_loc10_ > 0)
+                  {
+                     TweenLite.to(p3_bHealth["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxHealth * (_loc6_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusHealth")) + 2,
+                        "ease":Circ.easeInOut,
+                        "delay":0
+                     });
+                     p3_bHealth["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                  }
+                  _loc10_++;
+               }
+            }
+            TweenLite.to(p3_bSpeed.mcBar,0.4,{
+               "width":100 / _maxSpeed * _loc19_,
+               "ease":Circ.easeInOut,
+               "delay":0.1
+            });
+            if(this.kothLevel == _maxLevel && _useBonusIndicators)
+            {
+               _loc10_ = this.kothBonus;
+               while(_loc10_ <= 3)
+               {
+                  if(_loc10_ > 0)
+                  {
+                     TweenLite.to(p3_bSpeed["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxSpeed * (_loc7_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusSpeed")) + 2,
+                        "ease":Circ.easeInOut,
+                        "delay":0
+                     });
+                     p3_bSpeed["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                  }
+                  _loc10_++;
+               }
+            }
+            TweenLite.to(p3_bBuff.mcBar,0.4,{
+               "width":100 / _maxBuff * _loc20_,
+               "ease":Circ.easeInOut,
+               "delay":0.15
+            });
+            if(this.kothLevel == _maxLevel && _useBonusIndicators)
+            {
+               _loc10_ = this.kothBonus;
+               while(_loc10_ <= 3)
+               {
+                  if(_loc10_ > 0)
+                  {
+                     TweenLite.to(p3_bBuff["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxBuff * (_loc8_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusBuffs")) + 2,
+                        "ease":Circ.easeInOut,
+                        "delay":0
+                     });
+                     p3_bBuff["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                  }
+                  _loc10_++;
+               }
+            }
          }
       }
       

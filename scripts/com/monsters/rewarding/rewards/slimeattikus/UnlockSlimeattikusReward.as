@@ -8,7 +8,7 @@ package com.monsters.rewarding.rewards.slimeattikus
       
       public function UnlockSlimeattikusReward()
       {
-         super("unlockSlimeattikus","C17");
+         super("C17");
       }
    }
 }

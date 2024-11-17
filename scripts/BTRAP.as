@@ -26,6 +26,7 @@ package
          super();
          _fired = false;
          this._retarget = 0;
+         _range = 20;
       }
       
       override public function SetProps() : *
@@ -65,7 +66,7 @@ package
          var _loc3_:* = undefined;
          var _loc4_:* = undefined;
          var _loc5_:* = undefined;
-         this.creeps = MAP.CreepCellFind(_position,20,-1);
+         this.creeps = MAP.CreepCellFind(_position,_range,-1);
          this._hasTargets = false;
          this._targetCreeps = [];
          var _loc7_:int = 0;

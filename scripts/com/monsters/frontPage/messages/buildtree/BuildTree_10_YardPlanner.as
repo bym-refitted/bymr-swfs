@@ -12,6 +12,10 @@ package com.monsters.frontPage.messages.buildtree
       
       override public function get areRequirementsMet() : Boolean
       {
+         if(GLOBAL._flags.yp_version == 2)
+         {
+            return false;
+         }
          return GLOBAL._bTownhall._lvl.Get() >= 3 && BASE.hasNumBuildings(PLANNER.TYPE) <= 0;
       }
       

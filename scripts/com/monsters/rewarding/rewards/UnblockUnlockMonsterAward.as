@@ -2,14 +2,14 @@ package com.monsters.rewarding.rewards
 {
    public class UnblockUnlockMonsterAward extends UnblockMonsterAward
    {
-      public function UnblockUnlockMonsterAward(param1:String, param2:String)
+      public function UnblockUnlockMonsterAward(param1:String)
       {
-         super(param1,param2);
+         super(param1);
       }
       
-      override public function applyReward() : void
+      override protected function onApplication() : void
       {
-         super.applyReward();
+         super.onApplication();
          CREATURELOCKER._lockerData[_monsterID] = {"t":2};
       }
    }

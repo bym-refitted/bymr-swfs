@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1630")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1614")]
    public dynamic class creatureBarGuardian extends MovieClip
    {
       public var mcBuff1:MovieClip;

@@ -9,13 +9,13 @@ package com.monsters.frontPage.messages.underusedFeatures
       public function Underused01MonsterLocker()
       {
          super("idlelocker","btn_open");
-         body = KEYS.Get(_PREFIX + "idlelocker",{"v1":this.getNextUnlockableCreatureName()});
-         imageURL = _IMAGE_DIRECTORY + _PREFIX + "locker.jpg";
+         body = KEYS.Get(PREFIX + "idlelocker",{"v1":this.getNextUnlockableCreatureName()});
+         imageURL = _IMAGE_DIRECTORY + PREFIX + "locker.jpg";
       }
       
       override public function get areRequirementsMet() : Boolean
       {
-         body = KEYS.Get(_PREFIX + "idlelocker",{"v1":this.getNextUnlockableCreatureName()});
+         body = KEYS.Get(PREFIX + "idlelocker",{"v1":this.getNextUnlockableCreatureName()});
          return GLOBAL._bLocker && !CREATURELOCKER._unlocking && GLOBAL.Timestamp() - GLOBAL.StatGet("CM3") > 432000 && Boolean(this.getNextUnlockableCreatureName());
       }
       

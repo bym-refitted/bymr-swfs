@@ -167,7 +167,7 @@ package
             }
             PATHING.GetPath(_tmpPoint,new Rectangle(_loc12_.x,_loc12_.y,10,10),SetWaypoints,true);
          }
-         else if(_behaviour == "bounce")
+         else if(_behaviour == k_sBHVR_BOUNCE)
          {
             if(GLOBAL._render && _movement != "fly")
             {
@@ -198,15 +198,15 @@ package
                }
             }
          }
-         else if(_behaviour == "loot")
+         else if(_behaviour == k_sBHVR_LOOT)
          {
             node = MAP.CreepCellAdd(_tmpPoint,_id,this);
          }
-         else if(_behaviour == "defend")
+         else if(_behaviour == k_sBHVR_DEFEND)
          {
             this.ModeDefend();
          }
-         else if(_behaviour == "decoy")
+         else if(_behaviour == k_sBHVR_DECOY)
          {
             this.ModeDecoy();
          }
@@ -215,11 +215,11 @@ package
             LOGGER.Log("log","MONSTER Strength");
             GLOBAL.ErrorMessage("CREEP");
          }
-         if(_behaviour == "juice")
+         if(_behaviour === k_sBHVR_JUICE)
          {
             this.ModeJuice();
          }
-         if(_behaviour == "feed")
+         if(_behaviour === k_sBHVR_FEED)
          {
             this.ModeFeed();
          }
@@ -229,7 +229,7 @@ package
       
       public function ModeJuice() : void
       {
-         _behaviour = "juice";
+         _behaviour = k_sBHVR_JUICE;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -248,7 +248,7 @@ package
       
       public function ModeFeed() : void
       {
-         _behaviour = "feed";
+         _behaviour = k_sBHVR_FEED;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -373,7 +373,7 @@ package
       
       public function ModeHeal() : void
       {
-         _behaviour = "heal";
+         _behaviour = k_sBHVR_HEAL;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -383,7 +383,7 @@ package
       
       public function ModeDefend() : void
       {
-         _behaviour = "defend";
+         _behaviour = k_sBHVR_DEFEND;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -399,40 +399,42 @@ package
       
       public function ModeBunker() : void
       {
-         var _loc2_:String = null;
-         var _loc3_:int = 0;
-         var _loc4_:BFOUNDATION = null;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc2_:Number = NaN;
+         var _loc3_:Object = null;
+         var _loc4_:String = null;
+         var _loc5_:Object = null;
+         var _loc6_:BFOUNDATION = null;
+         var _loc7_:Number = NaN;
          var _loc8_:Number = NaN;
          var _loc9_:Number = NaN;
-         var _loc10_:int = 0;
+         var _loc10_:Number = NaN;
          var _loc11_:int = 0;
-         _behaviour = "bunker";
+         var _loc12_:int = 0;
+         _behaviour = k_sBHVR_BUNKER;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
          _doDefenseBurrow = false;
-         if(_homeBunker == null)
+         if(!_homeBunker)
          {
             if(CREATURELOCKER._creatures[_creatureID].fake)
             {
                _health.Set(0);
                return;
             }
-            for(_loc2_ in BASE._buildingsAll)
+            _loc2_ = 99999980000001;
+            _loc3_ = BASE._buildingsAll;
+            for(_loc4_ in _loc3_)
             {
-               _loc3_ = 9999999;
-               if(MONSTERBUNKER.isBunkerBuilding(BASE._buildingsAll[_loc2_]._type) && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
+               _loc5_ = _loc3_[_loc4_];
+               if(MONSTERBUNKER.isBunkerBuilding(_loc5_._type) && _loc5_._countdownBuild.Get() <= 0 && _loc5_._hp.Get() > 0)
                {
-                  _loc4_ = BASE._buildingsAll[_loc2_];
-                  _loc5_ = _loc4_._mc.x - _tmpPoint.x;
-                  _loc6_ = _loc4_._mc.y - _tmpPoint.y;
-                  _loc7_ = int(Math.sqrt(_loc5_ * _loc5_ + _loc6_ * _loc6_));
-                  if(_loc3_ > _loc7_)
+                  _loc6_ = _loc5_ as BFOUNDATION;
+                  _loc7_ = _loc6_._mc.x - _tmpPoint.x;
+                  _loc8_ = _loc6_._mc.y - _tmpPoint.y;
+                  if(_loc2_ > _loc7_ * _loc7_ + _loc8_ * _loc8_)
                   {
-                     _homeBunker = _loc4_;
+                     _homeBunker = _loc6_;
                   }
                }
             }
@@ -444,35 +446,35 @@ package
                _health.Set(0);
                return;
             }
-            _loc8_ = _tmpPoint.x - _homeBunker._position.x;
-            _loc9_ = _tmpPoint.y - _homeBunker._position.y;
-            _loc10_ = int(_homeBunker._footprint[0].width);
-            _loc11_ = int(_homeBunker._footprint[0].height);
-            if(_loc9_ <= 0)
+            _loc9_ = _tmpPoint.x - _homeBunker._position.x;
+            _loc10_ = _tmpPoint.y - _homeBunker._position.y;
+            _loc11_ = int(_homeBunker._footprint[0].width);
+            _loc12_ = int(_homeBunker._footprint[0].height);
+            if(_loc10_ <= 0)
             {
-               _loc9_ = _loc11_ / 4;
-               if(_loc8_ <= 0)
+               _loc10_ = _loc12_ / 4;
+               if(_loc9_ <= 0)
                {
-                  _loc8_ = _loc10_ / -3;
+                  _loc9_ = _loc11_ / -3;
                }
                else
                {
-                  _loc8_ = _loc10_ / 2;
+                  _loc9_ = _loc11_ / 2;
                }
             }
             else
             {
-               _loc9_ = _loc11_ / 2;
-               if(_loc8_ <= 0)
+               _loc10_ = _loc12_ / 2;
+               if(_loc9_ <= 0)
                {
-                  _loc8_ = _loc10_ / -4;
+                  _loc9_ = _loc11_ / -4;
                }
                else
                {
-                  _loc8_ = _loc10_ / 2;
+                  _loc9_ = _loc11_ / 2;
                }
             }
-            _targetCenter = GRID.FromISO(_homeBunker._position.x + _loc8_,_homeBunker._position.y + _loc9_);
+            _targetCenter = GRID.FromISO(_homeBunker._position.x + _loc9_,_homeBunker._position.y + _loc10_);
             _targetPosition = new Point(_homeBunker._mc.x,_homeBunker._mc.y);
             _jumpingUp = false;
             var _loc1_:Point = GRID.ToISO(_targetCenter.x,_targetCenter.y,0);
@@ -483,6 +485,7 @@ package
       
       public function ModeDecoy() : void
       {
+         var _loc1_:SiegeWeapon = null;
          var _loc2_:Decoy = null;
          var _loc3_:Rectangle = null;
          var _loc4_:Point = null;
@@ -493,7 +496,7 @@ package
          var _loc9_:* = undefined;
          var _loc10_:* = undefined;
          var _loc11_:* = undefined;
-         var _loc1_:SiegeWeapon = SiegeWeapons.activeWeapon;
+         _loc1_ = SiegeWeapons.activeWeapon;
          if(Boolean(_loc1_) && _loc1_ is Decoy)
          {
             _behaviour = "decoy";
@@ -1680,17 +1683,14 @@ package
                   {
                      ++_hits;
                   }
-                  if(_hits > 20 && _goeasy && !GLOBAL._aiDesignMode)
+                  if(_hits > 20 && _goeasy)
                   {
                      ModeRetreat();
                      return false;
                   }
                   if(!_goeasy && GLOBAL._mode == "build" && _hits > _hitLimit)
                   {
-                     if(!GLOBAL._aiDesignMode)
-                     {
-                        return true;
-                     }
+                     return true;
                   }
                   if(int(_creatureID.substr(1)) < 5)
                   {
@@ -1776,7 +1776,7 @@ package
          while(_loc3_ < _loc1_)
          {
             _loc4_ = "bounce";
-            if(_behaviour == "defend")
+            if(_behaviour == k_sBHVR_DEFEND)
             {
                _loc4_ = "defend";
             }
@@ -2139,7 +2139,7 @@ package
       {
          if(_atTarget)
          {
-            _behaviour = "pen";
+            _behaviour = k_sBHVR_PEN;
             if(_movement == "fly")
             {
                TweenLite.to(_graphicMC,1.2,{
@@ -2185,7 +2185,7 @@ package
          {
             this.FindDefenseTargets();
          }
-         if(_atTarget && _behaviour == "bunker")
+         if(_atTarget && _behaviour == k_sBHVR_BUNKER)
          {
             if(_homeBunker)
             {
@@ -2258,18 +2258,18 @@ package
                }
             }
          }
-         if(_movement == "fly" && _health.Get() > 0 && _behaviour != "pen")
+         if(_movement == "fly" && _health.Get() > 0 && _behaviour !== k_sBHVR_PEN)
          {
-            if(_behaviour != "juice" && _behaviour != "feed" || _altitude >= 60)
+            if(_behaviour !== k_sBHVR_JUICE && _behaviour !== k_sBHVR_FEED || _altitude >= 60)
             {
                _loc3_ = Math.sin(_frameNumber / 50) * 5;
                _altitude = 108 - _loc3_;
                _graphicMC.y = -_altitude - 36 + _loc3_;
             }
          }
-         if(_homeBunker && (_behaviour != "defend" && _behaviour != "bunker" && _behaviour != "juice" && _behaviour != "decoy"))
+         if(_homeBunker && (_behaviour !== k_sBHVR_DEFEND && _behaviour !== k_sBHVR_BUNKER && _behaviour !== k_sBHVR_JUICE && _behaviour !== k_sBHVR_DECOY))
          {
-            _behaviour = "defend";
+            _behaviour = k_sBHVR_DEFEND;
          }
          if(!_atTarget && _creatureID == "C9" && PoweredUp())
          {
@@ -2303,65 +2303,65 @@ package
          }
          switch(_behaviour)
          {
-            case "retreat":
-            case "juice":
-            case "feed":
+            case k_sBHVR_RETREAT:
+            case k_sBHVR_JUICE:
+            case k_sBHVR_FEED:
                if(this.TickBDeathRun())
                {
                   return true;
                }
                break;
-            case "heal":
+            case k_sBHVR_HEAL:
                if(this.TickBHeal())
                {
                   return true;
                }
                break;
-            case "attack":
-            case "loot":
+            case k_sBHVR_ATTACK:
+            case k_sBHVR_LOOT:
                if(this.TickBAttack())
                {
                   return true;
                }
                break;
-            case "wander":
+            case k_sBHVR_WANDER:
                if(_frameNumber > 8 * 60 && !_targetCenter)
                {
                   _targetPosition = new Point(Math.random() * 200,Math.random() * 150);
                }
                break;
-            case "defend":
+            case k_sBHVR_DEFEND:
                if(this.TickBDefend())
                {
                   return true;
                }
                break;
-            case "housing":
+            case k_sBHVR_HOUSING:
                if(this.TickBHousing())
                {
                   return true;
                }
                break;
-            case "bunker":
+            case k_sBHVR_BUNKER:
                if(this.TickBBunker())
                {
                   return true;
                }
                break;
-            case "pen":
+            case k_sBHVR_PEN:
                if(this.TickBPen())
                {
                   return true;
                }
                break;
-            case "decoy":
+            case k_sBHVR_DECOY:
                if(this.TickBDecoy())
                {
                   return true;
                }
                break;
          }
-         if((_behaviour == "attack" || _behaviour == "retreat" || _behaviour == "heal") && _frameNumber % 5 == 0)
+         if((_behaviour === k_sBHVR_ATTACK || _behaviour === k_sBHVR_RETREAT || _behaviour === k_sBHVR_HEAL) && _frameNumber % 5 == 0)
          {
             newNode = MAP.CreepCellMove(_tmpPoint,_id,this,node);
             if(newNode)
@@ -2439,7 +2439,7 @@ package
                _speed *= 2;
             }
          }
-         if(_creatureID == "C12" && _behaviour != "juice" && _behaviour != "housing" && _behaviour != "bunker" && _behaviour != "pen" && PoweredUp() && !_atTarget && (_targetCreep && this.CanShootCreep() || this.CanShootBuilding()))
+         if(_creatureID == "C12" && _behaviour != k_sBHVR_JUICE && _behaviour != k_sBHVR_HOUSING && _behaviour != k_sBHVR_BUNKER && _behaviour != k_sBHVR_PEN && PoweredUp() && !_atTarget && (_targetCreep && this.CanShootCreep() || this.CanShootBuilding()))
          {
             _atTarget = true;
             if(_targetCreep)
@@ -2630,12 +2630,12 @@ package
             {
                _targetPosition = _waypoints[0];
             }
-            if(_behaviour == "attack" && _targetCreep)
+            if(_behaviour == k_sBHVR_ATTACK && _targetCreep)
             {
                _xd = _targetCreep._tmpPoint.x - _tmpPoint.x;
                _yd = _targetCreep._tmpPoint.y - _tmpPoint.y;
             }
-            else if(_behaviour == "defend" || _behaviour == "heal")
+            else if(_behaviour == k_sBHVR_DEFEND || _behaviour == k_sBHVR_HEAL)
             {
                if(_attacking)
                {

@@ -714,7 +714,14 @@ package
          {
             _loc5_ += CREATURES.GetProperty(_loc6_,"cStorage",0,true) * this._selected[_loc6_].Get();
          }
-         _loc5_ += int(CREATURELOCKER._creatures[param1].props.cStorage);
+         if(CREATURELOCKER._creatures[param1].props.cStorage.length > 1)
+         {
+            _loc5_ += int(CREATURELOCKER._creatures[param1].props.cStorage[CREATURELOCKER._creatures[param1].level]);
+         }
+         else
+         {
+            _loc5_ += int(CREATURELOCKER._creatures[param1].props.cStorage);
+         }
          if(_loc4_ + _loc5_ > this._capacity)
          {
             return false;

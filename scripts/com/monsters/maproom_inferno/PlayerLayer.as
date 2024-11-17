@@ -265,7 +265,7 @@ package com.monsters.maproom_inferno
                   _loc3_ = false;
                   for each(_loc4_ in this.baseData)
                   {
-                     if(int(_loc4_.baseid.Get()) == _loc2_.baseid)
+                     if(_loc4_.baseid.Get() == _loc2_.baseid)
                      {
                         _loc3_ = true;
                      }
@@ -312,7 +312,7 @@ package com.monsters.maproom_inferno
                   _loc3_ = false;
                   for each(_loc4_ in this.baseData)
                   {
-                     if(int(_loc4_.baseid.Get()) == _loc2_.baseid)
+                     if(_loc4_.baseid.Get() == _loc2_.baseid)
                      {
                         _loc4_.Update(_loc2_);
                         _loc4_.online = _loc2_.saved >= GLOBAL.Timestamp() - 62;

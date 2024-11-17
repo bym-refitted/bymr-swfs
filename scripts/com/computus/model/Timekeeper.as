@@ -107,8 +107,8 @@ package com.computus.model
       
       private function onTimerEvent(param1:TimerEvent) : void
       {
-         var _loc2_:* = getTimer();
-         var _loc3_:* = _loc2_ - this.regulatorCache;
+         var _loc2_:int = getTimer();
+         var _loc3_:int = _loc2_ - this.regulatorCache;
          this.regulatorAcc += _loc3_;
          if(this.regulatorAcc > this.tickFrequency)
          {

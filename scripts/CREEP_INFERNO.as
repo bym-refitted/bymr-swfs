@@ -176,15 +176,15 @@ package
                }
             }
          }
-         else if(_behaviour == "loot")
+         else if(_behaviour === k_sBHVR_LOOT)
          {
             node = MAP.CreepCellAdd(_tmpPoint,_id,this);
          }
-         else if(_behaviour == "defend")
+         else if(_behaviour === k_sBHVR_DEFEND)
          {
             this.ModeDefend();
          }
-         else if(_behaviour == "decoy")
+         else if(_behaviour === k_sBHVR_DECOY)
          {
             this.ModeDecoy();
          }
@@ -351,7 +351,7 @@ package
       
       public function ModeHunt() : void
       {
-         _behaviour = "hunt";
+         _behaviour = k_sBHVR_HUNT;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -361,7 +361,7 @@ package
       
       public function ModeHeal() : void
       {
-         _behaviour = "heal";
+         _behaviour = k_sBHVR_HEAL;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
@@ -371,44 +371,50 @@ package
       
       public function ModeDefend() : void
       {
-         _behaviour = "defend";
+         _behaviour = k_sBHVR_DEFEND;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
+         if(CREATURELOCKER._creatures[_creatureID].fake)
+         {
+            this.FindDefenseTargets();
+         }
       }
       
       public function ModeBunker() : void
       {
          var _loc1_:Point = null;
-         var _loc2_:String = null;
-         var _loc3_:int = 0;
-         var _loc4_:BFOUNDATION = null;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc2_:Number = NaN;
+         var _loc3_:Object = null;
+         var _loc4_:String = null;
+         var _loc5_:Object = null;
+         var _loc6_:BFOUNDATION = null;
+         var _loc7_:Number = NaN;
          var _loc8_:Number = NaN;
          var _loc9_:Number = NaN;
-         var _loc10_:int = 0;
+         var _loc10_:Number = NaN;
          var _loc11_:int = 0;
-         _behaviour = "bunker";
+         var _loc12_:int = 0;
+         _behaviour = k_sBHVR_BUNKER;
          _hasTarget = false;
          _atTarget = false;
          _hasPath = false;
          _doDefenseBurrow = false;
-         if(_homeBunker == null)
+         if(!_homeBunker)
          {
-            for(_loc2_ in BASE._buildingsAll)
+            _loc2_ = 99999980000001;
+            _loc3_ = BASE._buildingsAll;
+            for(_loc4_ in _loc3_)
             {
-               _loc3_ = 9999999;
-               if(MONSTERBUNKER.isBunkerBuilding(BASE._buildingsAll[_loc2_]._type) && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
+               _loc5_ = _loc3_[_loc4_];
+               if(MONSTERBUNKER.isBunkerBuilding(_loc5_._type) && _loc5_._countdownBuild.Get() <= 0 && _loc5_._hp.Get() > 0)
                {
-                  _loc4_ = BASE._buildingsAll[_loc2_];
-                  _loc5_ = _loc4_._mc.x - _tmpPoint.x;
-                  _loc6_ = _loc4_._mc.y - _tmpPoint.y;
-                  _loc7_ = int(Math.sqrt(_loc5_ * _loc5_ + _loc6_ * _loc6_));
-                  if(_loc3_ > _loc7_)
+                  _loc6_ = _loc5_ as BFOUNDATION;
+                  _loc7_ = _loc6_._mc.x - _tmpPoint.x;
+                  _loc8_ = _loc6_._mc.y - _tmpPoint.y;
+                  if(_loc2_ > _loc7_ * _loc7_ + _loc8_ * _loc8_)
                   {
-                     _homeBunker = _loc4_;
+                     _homeBunker = _loc6_;
                   }
                }
             }
@@ -419,46 +425,46 @@ package
             {
                _targetCenter = GRID.FromISO(_homeBunker._mc.x,_homeBunker._mc.y);
                _targetPosition = GRID.FromISO(_homeBunker._mc.x,_homeBunker._mc.y);
-               _loc8_ = 100;
-               _loc9_ = 60;
+               _loc9_ = 100;
+               _loc10_ = 60;
             }
             else
             {
-               _loc8_ = _tmpPoint.x - _homeBunker._position.x;
-               _loc9_ = _tmpPoint.y - _homeBunker._position.y;
-               _loc10_ = int(_homeBunker._footprint[0].width);
-               _loc11_ = int(_homeBunker._footprint[0].height);
-               if(_loc9_ <= 0)
+               _loc9_ = _tmpPoint.x - _homeBunker._position.x;
+               _loc10_ = _tmpPoint.y - _homeBunker._position.y;
+               _loc11_ = int(_homeBunker._footprint[0].width);
+               _loc12_ = int(_homeBunker._footprint[0].height);
+               if(_loc10_ <= 0)
                {
-                  _loc9_ = _loc11_ / 4;
-                  if(_loc8_ <= 0)
+                  _loc10_ = _loc12_ / 4;
+                  if(_loc9_ <= 0)
                   {
-                     _loc8_ = _loc10_ / -3;
+                     _loc9_ = _loc11_ / -3;
                   }
                   else
                   {
-                     _loc8_ = _loc10_ / 2;
+                     _loc9_ = _loc11_ / 2;
                   }
                }
                else
                {
-                  _loc9_ = _loc11_ / 2;
-                  if(_loc8_ <= 0)
+                  _loc10_ = _loc12_ / 2;
+                  if(_loc9_ <= 0)
                   {
-                     _loc8_ = _loc10_ / -4;
+                     _loc9_ = _loc11_ / -4;
                   }
                   else
                   {
-                     _loc8_ = _loc10_ / 2;
+                     _loc9_ = _loc11_ / 2;
                   }
                }
-               _targetCenter = GRID.FromISO(_homeBunker._position.x + _loc8_,_homeBunker._position.y + _loc9_);
+               _targetCenter = GRID.FromISO(_homeBunker._position.x + _loc9_,_homeBunker._position.y + _loc10_);
                _targetPosition = new Point(_homeBunker._mc.x,_homeBunker._mc.y);
             }
             _jumpingUp = false;
             if(BASE.isInferno())
             {
-               _loc1_ = GRID.ToISO(_targetCenter.x + _loc8_,_targetCenter.y + _loc9_,0);
+               _loc1_ = GRID.ToISO(_targetCenter.x + _loc9_,_targetCenter.y + _loc10_,0);
             }
             else
             {
@@ -673,7 +679,7 @@ package
             _loc3_ = 1;
          }
          _targetCreeps = MAP.CreepCellFind(_tmpPoint,200,_loc3_);
-         if(_targetCreeps.length > 0)
+         if(_targetCreeps.length)
          {
             _targetCreeps.sortOn(["dist"],Array.NUMERIC);
             while(_targetCreeps.length > 0 && _targetCreeps[0].creep._behaviour == "retreat")
@@ -688,11 +694,11 @@ package
                }
             }
          }
-         if(_targetCreeps.length > 0)
+         if(_targetCreeps.length)
          {
             _targetCreep = _targetCreeps[0].creep;
             this.InterceptTarget();
-            _behaviour = "defend";
+            _behaviour = k_sBHVR_DEFEND;
          }
          else if(_targetCreep && _targetCreep._health.Get() > 0)
          {
@@ -700,7 +706,7 @@ package
             {
                this.InterceptTarget();
             }
-            _behaviour = "defend";
+            _behaviour = k_sBHVR_DEFEND;
          }
          else if(_homeBunker && _homeBunker._hp.Get() > 0)
          {
@@ -709,15 +715,15 @@ package
             {
                _atTarget = false;
                _attacking = false;
-               _behaviour = "defend";
+               _behaviour = k_sBHVR_DEFEND;
                this.InterceptTarget();
             }
-            else if(_behaviour != "bunker")
+            else if(_behaviour !== k_sBHVR_BUNKER)
             {
                this.ModeBunker();
             }
          }
-         else if(_behaviour != "bunker")
+         else if(_behaviour !== k_sBHVR_BUNKER)
          {
             this.ModeBunker();
          }
@@ -866,7 +872,7 @@ package
                }
                for each(creep in CREATURES._creatures)
                {
-                  if((creep._behaviour == "defend" || creep._behaviour == "bunker") && creep != _targetCreep && creep._movement != "fly")
+                  if((creep._behaviour == k_sBHVR_DEFEND || creep._behaviour == k_sBHVR_BUNKER) && creep != _targetCreep && creep._movement != "fly")
                   {
                      dist = GLOBAL.QuickDistance(creep._tmpPoint,_tmpPoint);
                      if(dist < 60)
@@ -875,7 +881,7 @@ package
                      }
                   }
                }
-               if(CREATURES._guardian._behaviour == "defend" && CREATURES._guardian != _targetCreep && CREATURES._guardian._movement != "fly")
+               if(CREATURES._guardian._behaviour == k_sBHVR_DEFEND && CREATURES._guardian != _targetCreep && CREATURES._guardian._movement != "fly")
                {
                   distGuard = GLOBAL.QuickDistance(creep._tmpPoint,_tmpPoint);
                   if(distGuard < 60)
@@ -1110,7 +1116,7 @@ package
          {
             if(!_targetCreep)
             {
-               if(_behaviour == "hunt" && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0) && _frameNumber % 150 == 0)
+               if(_behaviour === k_sBHVR_HUNT && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0) && _frameNumber % 150 == 0)
                {
                   FindTarget(_targetGroup);
                }
@@ -1205,13 +1211,13 @@ package
                         _targetCreep._targetCreep = this;
                         _targetCreep._hasTarget = true;
                         _targetCreep._atTarget = true;
-                        if(_targetCreep._behaviour != "defend")
+                        if(_targetCreep._behaviour !== k_sBHVR_DEFEND)
                         {
-                           _targetCreep._behaviour = "defend";
+                           _targetCreep._behaviour = k_sBHVR_DEFEND;
                         }
                      }
                   }
-                  if(_behaviour == "hunt")
+                  if(_behaviour === k_sBHVR_HUNT)
                   {
                      _targetCreep._venom.Add(_damage.Get() * 0.1 * 0.025 * _loc1_);
                   }
@@ -1281,7 +1287,7 @@ package
                   {
                      _homeBunker.RemoveCreature(_creatureID);
                      this._defenderRemoved = true;
-                     _behaviour = "pen";
+                     _behaviour = k_sBHVR_PEN;
                      return false;
                   }
                   --_homeBunker._monsters[_creatureID];
@@ -1541,18 +1547,18 @@ package
                }
             }
          }
-         if(_movement == "fly" && _health.Get() > 0 && _behaviour != "pen")
+         if(_movement === "fly" && _health.Get() > 0 && _behaviour !== k_sBHVR_PEN)
          {
-            if(_behaviour != "juice" && _behaviour != "feed" || _altitude >= 35)
+            if(_behaviour !== k_sBHVR_JUICE && _behaviour !== k_sBHVR_FEED || _altitude >= 35)
             {
                _loc3_ = Math.sin(_frameNumber / 50) * 5;
                _altitude = 40 - _loc3_;
                _graphicMC.y = -_altitude - 36 + _loc3_;
             }
          }
-         if(_homeBunker && (_behaviour != "defend" && _behaviour != "bunker" && _behaviour != "juice" && _behaviour != "pen" && _behaviour != "decoy"))
+         if(_homeBunker && (_behaviour !== k_sBHVR_DEFEND && _behaviour !== k_sBHVR_BUNKER && _behaviour !== k_sBHVR_JUICE && _behaviour !== k_sBHVR_PEN && _behaviour !== k_sBHVR_DECOY && _behaviour !== k_sBHVR_HOUSING))
          {
-            _behaviour = "defend";
+            _behaviour = k_sBHVR_DEFEND;
          }
          if((GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && _damage.Get() > int(CREATURES.GetProperty(_creatureID,"damage",0,_friendly)))
          {
@@ -1566,47 +1572,47 @@ package
          }
          switch(_behaviour)
          {
-            case "retreat":
-            case "juice":
-            case "feed":
+            case k_sBHVR_RETREAT:
+            case k_sBHVR_JUICE:
+            case k_sBHVR_FEED:
                if(this.TickBDeathRun())
                {
                   return true;
                }
                break;
-            case "heal":
+            case k_sBHVR_HEAL:
                if(this.TickBHeal())
                {
                   return true;
                }
                break;
-            case "attack":
-            case "hunt":
+            case k_sBHVR_ATTACK:
+            case k_sBHVR_HUNT:
                if(this.TickBAttack())
                {
                   return true;
                }
                break;
-            case "wander":
+            case k_sBHVR_WANDER:
                if(_frameNumber > 8 * 60 && !_targetCenter)
                {
                   _targetPosition = new Point(Math.random() * 200,Math.random() * 150);
                }
                break;
-            case "defend":
+            case k_sBHVR_DEFEND:
                if(this.TickBDefend())
                {
                   return true;
                }
                break;
-            case "housing":
+            case k_sBHVR_HOUSING:
                if(_health.Get() <= 0)
                {
                   return true;
                }
                if(_atTarget)
                {
-                  _behaviour = "pen";
+                  _behaviour = k_sBHVR_PEN;
                   if(_movement == "fly")
                   {
                      TweenLite.to(_graphicMC,1.2,{
@@ -1618,13 +1624,13 @@ package
                   _waypoints[0] = HOUSING.PointInHouse(_targetCenter);
                }
                break;
-            case "bunker":
+            case k_sBHVR_BUNKER:
                if(this.TickBBunker())
                {
                   return true;
                }
                break;
-            case "pen":
+            case k_sBHVR_PEN:
                if(_health.Get() <= 0)
                {
                   return true;
@@ -1636,7 +1642,7 @@ package
                }
                break;
          }
-         if((_behaviour == "attack" || _behaviour == "retreat" || _behaviour == "heal" || _behaviour == "hunt") && _frameNumber % 5 == 0)
+         if((_behaviour == k_sBHVR_ATTACK || _behaviour == k_sBHVR_RETREAT || _behaviour == k_sBHVR_HEAL || _behaviour == k_sBHVR_HUNT) && _frameNumber % 5 == 0)
          {
             newNode = MAP.CreepCellMove(_tmpPoint,_id,this,node);
             if(newNode)
@@ -1659,24 +1665,23 @@ package
       
       public function Move() : void
       {
-         var growled:Boolean = false;
          var targetDistance:Number = NaN;
          var building:BFOUNDATION = null;
-         growled = false;
+         var growled:Boolean = false;
          _speed = _maxSpeed * 0.5 * _speedMult;
-         if(_behaviour == "pen")
+         if(_behaviour == k_sBHVR_PEN)
          {
             _speed *= 0.5;
          }
-         if(_behaviour == "juice" || _behaviour == "housing" || _behaviour == "bunker")
+         if(_behaviour == k_sBHVR_JUICE || _behaviour == k_sBHVR_HOUSING || _behaviour == k_sBHVR_BUNKER)
          {
             _speed *= 1.5;
          }
-         if(_behaviour == "defend")
+         if(_behaviour == k_sBHVR_DEFEND)
          {
             _speed *= 1.5;
          }
-         if(_behaviour == "juice" && _movement == "fly" && _altitude < 25)
+         if(_behaviour == k_sBHVR_JUICE && _movement == "fly" && _altitude < 25)
          {
             _speed = 0;
          }
@@ -1695,7 +1700,7 @@ package
                _speed *= 2;
             }
          }
-         if(_creatureID == "IC7" && _behaviour != "juice" && _behaviour != "housing" && _behaviour != "bunker" && _behaviour != "pen" && !_atTarget && (_targetCreep && this.CanShootCreep() || this.CanShootBuilding()))
+         if(_creatureID == "IC7" && _behaviour != k_sBHVR_JUICE && _behaviour != k_sBHVR_HOUSING && _behaviour != k_sBHVR_BUNKER && _behaviour != k_sBHVR_PEN && !_atTarget && (_targetCreep && this.CanShootCreep() || this.CanShootBuilding()))
          {
             _atTarget = true;
             SOUNDS.Play("imonster" + int(1 + Math.random() * 4));
@@ -1754,7 +1759,7 @@ package
                         }
                      }
                   }
-                  else if(_behaviour == "defend")
+                  else if(_behaviour == k_sBHVR_DEFEND)
                   {
                      if(_targetCreep)
                      {
@@ -1787,7 +1792,7 @@ package
                   }
                   else
                   {
-                     if(_behaviour != "heal")
+                     if(_behaviour != k_sBHVR_HEAL)
                      {
                         if(_targetCreep)
                         {
@@ -1819,7 +1824,7 @@ package
                      }
                   }
                }
-               if(_behaviour == "defend")
+               if(_behaviour == k_sBHVR_DEFEND)
                {
                   if(_targetCreep && (GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this.DEFENSE_RANGE || this.CanShootCreep()))
                   {
@@ -1862,7 +1867,7 @@ package
                      }
                   }
                }
-               else if(_behaviour == "heal")
+               else if(_behaviour == k_sBHVR_HEAL)
                {
                   if(_targetCreep && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this.HEALING_RANGE)
                   {
@@ -1898,12 +1903,12 @@ package
             {
                _targetPosition = _waypoints[0];
             }
-            if(_behaviour == "attack" && _targetCreep)
+            if(_behaviour == k_sBHVR_ATTACK && _targetCreep)
             {
                _xd = _targetCreep._tmpPoint.x - _tmpPoint.x;
                _yd = _targetCreep._tmpPoint.y - _tmpPoint.y;
             }
-            else if(_behaviour == "defend" || _behaviour == "heal")
+            else if(_behaviour == k_sBHVR_DEFEND || _behaviour == k_sBHVR_HEAL)
             {
                if(_attacking)
                {
@@ -1985,9 +1990,9 @@ package
                _shadow.lock();
             }
             _loc4_ = 0;
-            if(_movement == "burrow" && (_behaviour == "attack" || _behaviour == "defend"))
+            if(_movement == "burrow" && (_behaviour === k_sBHVR_ATTACK || _behaviour === k_sBHVR_DEFEND))
             {
-               if(_speed > 0 && (_behaviour == "attack" || _doDefenseBurrow))
+               if(_speed > 0 && (_behaviour === k_sBHVR_ATTACK || _doDefenseBurrow))
                {
                   if(_phase != 1)
                   {

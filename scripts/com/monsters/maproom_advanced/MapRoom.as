@@ -143,7 +143,7 @@ package com.monsters.maproom_advanced
          var onTargetsFail:Function = null;
          var me:Contact = null;
          var system:Contact = null;
-         var r:* = undefined;
+         var r:URLLoaderApi = null;
          var e:MouseEvent = param1;
          onTargetsSuccess = function(param1:Object):void
          {
@@ -161,6 +161,10 @@ package com.monsters.maproom_advanced
          onTargetsFail = function(param1:IOErrorEvent):void
          {
          };
+         if(GLOBAL._mode === "build")
+         {
+            GLOBAL.m_mapRoomFunctional = true;
+         }
          if(WMATTACK._inProgress || Boolean(MONSTERBAITER._attacking))
          {
             return;
@@ -213,6 +217,10 @@ package com.monsters.maproom_advanced
       
       public static function ShowDelayed(param1:Boolean = false) : void
       {
+         if(GLOBAL._mode === "build")
+         {
+            GLOBAL.m_mapRoomFunctional = true;
+         }
          if(param1 || _reposition || (BASE._yardType || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
          {
             SOUNDS.Play("click1");

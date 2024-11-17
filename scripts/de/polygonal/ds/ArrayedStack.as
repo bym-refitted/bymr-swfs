@@ -96,7 +96,12 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
+         null;
+         null;
+         null;
          var _loc3_:Object = _a[param1];
+         null;
+         null;
          _a[param1] = _a[param2];
          _a[param2] = _loc3_;
       }
@@ -141,7 +146,6 @@ package de.polygonal.ds
       
       public function method_1(param1:int, param2:Object) : void
       {
-         null;
          _a[param1] = param2;
       }
       
@@ -289,6 +293,7 @@ package de.polygonal.ds
       
       public function method_2(param1:int) : Object
       {
+         null;
          return _a[param1];
       }
       

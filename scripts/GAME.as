@@ -6,6 +6,7 @@ package
    import com.monsters.radio.RADIO;
    import flash.display.*;
    import flash.events.Event;
+   import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    import flash.geom.Rectangle;
    import flash.system.Security;
@@ -89,13 +90,13 @@ package
                   _loc2_ = "http://bym-fb-inferno.dev.kixeye.com/";
                   break;
                case 6:
-                  _loc1_._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
-                  _loc1_._apiURL = "https://bym-fb-lbns.dc.kixeye.com/api/";
+                  _loc1_._baseURL = "http://bym-fb-lbns.dc.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-lbns.dc.kixeye.com/api/";
                   _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
-                  _loc1_._statsURL = "https://bym-fb-lbns.dc.kixeye.com/recordstats.php";
-                  _loc1_._mapURL = "https://bym-fb-lbns.dc.kixeye.com/worldmapv2/";
-                  _loc1_._allianceURL = "https://bym-fb-lbns.dc.kixeye.com/alliance/";
-                  _loc2_ = "https://bym-fb-lbns.dc.kixeye.com/";
+                  _loc1_._statsURL = "http://bym-fb-lbns.dc.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-lbns.dc.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-lbns.dc.kixeye.com/alliance/";
+                  _loc2_ = "http://bym-fb-lbns.dc.kixeye.com/";
                   break;
                case 8:
                   _loc1_._baseURL = "http://bym-fb-alex.dev.kixeye.com/base/";
@@ -162,6 +163,16 @@ package
             _loc1_._countryCode = "us";
             this.Data(_loc1_,false);
          }
+      }
+      
+      public static function disableWindowScroll(param1:Event = null) : void
+      {
+         GLOBAL.CallJS("cc.disableMouseWheel");
+      }
+      
+      public static function enableWindowScroll(param1:Event = null) : void
+      {
+         GLOBAL.CallJS("cc.enableMouseWheel");
       }
       
       public function Data(param1:Object, param2:Boolean = false) : void
@@ -321,6 +332,16 @@ package
                GLOBAL._SCREENINIT = new Rectangle(0,0,760,750);
             }
          }
+      }
+      
+      public function onStageRollOver(param1:MouseEvent = null) : void
+      {
+         GAME.disableWindowScroll();
+      }
+      
+      public function onStageRollOut(param1:MouseEvent = null) : void
+      {
+         GAME.enableWindowScroll();
       }
    }
 }

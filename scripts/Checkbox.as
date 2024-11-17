@@ -1,6 +1,7 @@
 package
 {
    import flash.display.MovieClip;
+   import flash.events.Event;
    import flash.events.MouseEvent;
    
    public class Checkbox extends CheckBox_CLIP
@@ -8,6 +9,8 @@ package
       private static const FRAME_SELECT:int = 2;
       
       private static const FRAME_DESELECT:int = 1;
+      
+      public static const CHECK_EVENT:String = "cb_checked";
       
       private var checked:Boolean = false;
       
@@ -60,6 +63,7 @@ package
          if(this._enabled)
          {
             this.Checked = !this.checked;
+            dispatchEvent(new Event(CHECK_EVENT));
          }
          this.Update();
       }
@@ -69,6 +73,7 @@ package
          if(this._enabled)
          {
             this.Checked = !this.checked;
+            dispatchEvent(new Event(CHECK_EVENT));
          }
       }
       
@@ -154,6 +159,7 @@ package
          {
             this.select();
          }
+         dispatchEvent(new Event(CHECK_EVENT));
       }
       
       public function fromInt(param1:int) : void

@@ -1,12 +1,13 @@
 package
 {
+   import com.monsters.interfaces.ILootable;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.events.Event;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   public class BUILDING1 extends BRESOURCE
+   public class BUILDING1 extends BRESOURCE implements ILootable
    {
       public var _field:BitmapData;
       

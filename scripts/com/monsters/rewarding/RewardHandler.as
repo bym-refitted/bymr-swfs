@@ -47,7 +47,7 @@ package com.monsters.rewarding
          }
       }
       
-      private function getRewardByID(param1:String) : Reward
+      public function getRewardByID(param1:String) : Reward
       {
          var _loc3_:Reward = null;
          var _loc2_:int = 0;
@@ -61,6 +61,16 @@ package com.monsters.rewarding
             _loc2_++;
          }
          return null;
+      }
+      
+      public function removeReward(param1:Reward) : void
+      {
+         var _loc2_:int = int(this.rewards.indexOf(param1));
+         if(_loc2_)
+         {
+            param1.removed();
+            this.rewards.splice(_loc2_,1);
+         }
       }
       
       public function initialize(param1:Object = null) : void

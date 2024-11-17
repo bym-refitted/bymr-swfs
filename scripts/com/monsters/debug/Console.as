@@ -63,6 +63,10 @@ package com.monsters.debug
          {
             param1 = Object(param1).toString();
          }
+         if(!GLOBAL._aiDesignMode)
+         {
+            return;
+         }
          var _loc4_:int = getTimer() / 1000;
          if(param2 && !ExternalInterface.available)
          {

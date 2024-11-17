@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2481")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2499")]
    public dynamic class PlayerBaseInferno_CLIP extends MovieClip
    {
       public var photoFrame_mc:MovieClip;

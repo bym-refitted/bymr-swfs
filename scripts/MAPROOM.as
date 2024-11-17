@@ -18,6 +18,8 @@ package
       
       private static var bridge_obj:Object;
       
+      public static const TYPE:uint = 11;
+      
       public static var _lastView:int = 0;
       
       public static var _lastSort:int = 3;

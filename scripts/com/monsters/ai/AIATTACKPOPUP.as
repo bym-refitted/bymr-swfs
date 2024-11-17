@@ -102,7 +102,6 @@ package com.monsters.ai
             ImageCache.GetImageWithCallBack("monsters/" + _loc3_[_loc8_] + "-medium.jpg",this.IconLoaded,true,1,"",[_loc7_[_loc8_].mcIcon]);
             _loc7_[_loc8_].tInfo.htmlText = "x" + _loc2_[_loc3_[_loc8_]];
             _loc7_[_loc8_].tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[_loc3_[_loc8_]].name) + "</b>";
-            _loc5_[_loc8_].gotoAndStop(_loc3_[_loc8_]);
             _loc5_[_loc8_].visible = false;
             _loc7_[_loc8_].mouseChildren = false;
             _loc7_[_loc8_].addEventListener(MouseEvent.MOUSE_OVER,this.showDescription);

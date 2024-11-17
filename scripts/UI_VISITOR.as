@@ -238,6 +238,25 @@ package
             mc.y = GLOBAL._SCREENHUD.y - (mc.mcBG.height + 10);
          }
       }
+      
+      public function checkMapRoomHealth() : void
+      {
+         var _loc2_:Object = null;
+         var _loc3_:BUILDING11 = null;
+         var _loc1_:Object = BASE._buildingsAll;
+         for each(_loc2_ in _loc1_)
+         {
+            _loc3_ = _loc2_ as BUILDING11;
+            if(_loc3_)
+            {
+               if(_loc3_._hp.Get() < _loc3_._hpMax.Get() / 2)
+               {
+                  mc.bReturn.SetupKey("btn_returnhome");
+               }
+               return;
+            }
+         }
+      }
    }
 }
 

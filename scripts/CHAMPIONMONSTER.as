@@ -52,8 +52,6 @@ package
       
       public var _buff:Number = 0;
       
-      public var _powerupLevel:SecNum = new SecNum(0);
-      
       public var _quaking:Boolean;
       
       public var _helpCreep:*;
@@ -751,7 +749,6 @@ package
          var _loc9_:Point = null;
          var _loc10_:Point = null;
          var _loc11_:int = 0;
-         var _loc12_:Array = null;
          var _loc13_:* = undefined;
          var _loc14_:int = 0;
          var _loc15_:Point = null;
@@ -762,7 +759,7 @@ package
          var _loc20_:* = undefined;
          var _loc21_:* = undefined;
          var _loc3_:int = getTimer();
-         _loc12_ = [];
+         var _loc12_:Array = [];
          _looking = true;
          _loc9_ = PATHING.FromISO(_tmpPoint);
          for each(_loc5_ in BASE._buildingsMain)
@@ -1788,7 +1785,7 @@ package
       {
       }
       
-      public function Export(param1:Boolean = true) : *
+      public function Export(param1:Boolean = true) : void
       {
          if(_behaviour == "juice" || _behaviour == "freeze")
          {

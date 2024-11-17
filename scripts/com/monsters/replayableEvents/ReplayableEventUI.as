@@ -71,6 +71,8 @@ package com.monsters.replayableEvents
             bAction.buttonMode = true;
             bAction.visible = true;
             bAction.enabled = true;
+            mcBG.width = 290;
+            bHelp.x = 272;
          }
          else
          {
@@ -78,6 +80,8 @@ package com.monsters.replayableEvents
             bActionTxt.visible = false;
             bAction.visible = false;
             bAction.enabled = false;
+            mcBG.width = 214;
+            bHelp.x = 200;
          }
          this.updateImage();
          this.Tick();

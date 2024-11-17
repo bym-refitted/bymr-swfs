@@ -1,6 +1,7 @@
 package com.monsters.debug
 {
    import com.cc.utils.SecNum;
+   import com.monsters.baseplanner.BaseTemplate;
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.FrontPageLibrary;
    import com.monsters.replayableEvents.ReplayableEvent;
@@ -36,8 +37,42 @@ package com.monsters.debug
          Console.registerCommand("setscore",setERSScore);
          Console.registerCommand("startevent",startERSEvent);
          Console.registerCommand("clearers",clearERSData);
+         Console.registerCommand("plannerZoom",plannerZoom);
+         Console.registerCommand("plannerTool",plannerTool);
+         Console.registerCommand("plannerRedraw",plannerRedraw);
+         Console.registerCommand("setwmi2level",setWMI2Level);
          Console.registerCommand("printJS",printJSCalls);
          Console.registerCommand("fullscreen",toggleFullScreen);
+      }
+      
+      private static function setWMI2Level(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         SPECIALEVENT.DEBUGOVERRIDEWAVE(_loc2_);
+         return null;
+      }
+      
+      private static function deleteTemplate(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         return null;
+      }
+      
+      private static function loadTemplateList(param1:*) : String
+      {
+         return "this method is broken";
+      }
+      
+      private static function saveCurrentBaseAsTemplate(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         var _loc3_:BaseTemplate = BASE.getTemplate();
+         return null;
+      }
+      
+      private static function applyBaseTemplate(param1:*) : String
+      {
+         return "this method is broken";
       }
       
       private static function clearERSData(param1:*) : String
@@ -67,12 +102,13 @@ package com.monsters.debug
       
       private static function setERSScore(param1:*) : String
       {
+         var _loc3_:* = 0;
          var _loc2_:ReplayableEvent = ReplayableEventHandler.activeEvent;
          if(!_loc2_)
          {
             return "There is no active event";
          }
-         var _loc3_:uint = _loc2_.score;
+         _loc3_ = _loc2_.score;
          _loc2_.score = param1 as uint;
          return _loc2_.name + " score was set from " + _loc3_ + " to " + param1;
       }
@@ -114,7 +150,7 @@ package com.monsters.debug
          if(CREATURES._guardian)
          {
             _loc2_ = CREATURES._guardian._feedTime.Get();
-            _loc3_ = GLOBAL.Timestamp() + uint(param1);
+            _loc3_ = uint(GLOBAL.Timestamp() + uint(param1));
             CREATURES._guardian._feedTime = new SecNum(_loc3_);
             return "Champion feed time set to " + GLOBAL.ToTime(_loc3_ - GLOBAL.Timestamp()) + " from " + GLOBAL.ToTime(_loc2_ - GLOBAL.Timestamp());
          }
@@ -288,6 +324,55 @@ package com.monsters.debug
          BASE._isProtected = 0;
          BASE.Save();
          return "CONSOLE: BASE._isProtected set to: " + Boolean(BASE._isProtected);
+      }
+      
+      public static function plannerZoom(param1:* = null) : String
+      {
+         if(PLANNER.basePlanner && PLANNER.basePlanner.popup && Boolean(PLANNER.basePlanner.popup.designView))
+         {
+            if(Boolean(PLANNER.basePlanner.popup.designView) && param1 > 0)
+            {
+               PLANNER.basePlanner.popup.designView.setZoom(param1);
+               return "PlannerDesignView Zoomed To: " + PLANNER.basePlanner.popup.designView.zoomValue;
+            }
+            return "enter a value noob.";
+         }
+         return "open yard planner 2 before you try anything else.";
+      }
+      
+      public static function plannerTool(param1:* = null) : String
+      {
+         if(PLANNER.basePlanner && PLANNER.basePlanner.popup && Boolean(PLANNER.basePlanner.popup.designView))
+         {
+            if(Boolean(PLANNER.basePlanner.popup.designView) && param1)
+            {
+               if(param1 == "selectmove" || param1 == "storebuilding")
+               {
+                  PLANNER.basePlanner.popup.designView.currentTool = param1;
+               }
+               else
+               {
+                  PLANNER.basePlanner.popup.designView.currentTool = "selectmove";
+               }
+               return "PlannerDesignView Tool Set To: " + PLANNER.basePlanner.popup.designView.currentTool;
+            }
+            return "enter a value noob.";
+         }
+         return "open yard planner 2 before you try anything else.";
+      }
+      
+      public static function plannerRedraw(param1:* = null) : String
+      {
+         if(PLANNER.basePlanner && PLANNER.basePlanner.popup && Boolean(PLANNER.basePlanner.popup.designView))
+         {
+            if(PLANNER.basePlanner.popup)
+            {
+               PLANNER.basePlanner.popup.redraw();
+               return "PlannerDesignView Redraw";
+            }
+            return "enter a value noob.";
+         }
+         return "open yard planner 2 before you try anything else.";
       }
    }
 }

@@ -179,7 +179,7 @@ package
          return GRID.ToISO(param1.x + (_loc2_.x + Math.random() * _loc2_.width),param1.y + (_loc2_.y + Math.random() * _loc2_.height),0);
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          if(_open)
          {
@@ -188,7 +188,7 @@ package
       
       public static function isBunkerBuilding(param1:int) : Boolean
       {
-         return param1 == 22 || param1 == 128;
+         return param1 === 22 || param1 === 128;
       }
    }
 }

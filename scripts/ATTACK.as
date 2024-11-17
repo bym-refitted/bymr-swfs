@@ -912,7 +912,7 @@ package
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:* = undefined;
+         var _loc5_:String = null;
          var _loc6_:BFOUNDATION = null;
          var _loc7_:BFOUNDATION = null;
          var _loc8_:popup_attackend = null;
@@ -985,6 +985,10 @@ package
             _loc8_ = new popup_attackend(_loc1_);
             _loc8_.mcFrame.Setup(false);
             POPUPS.Push(_loc8_);
+            if(Boolean(GLOBAL._advancedMap) && !GLOBAL.m_mapRoomFunctional)
+            {
+               GLOBAL.Message(KEYS.Get("map_msg_damaged"));
+            }
          }
          else if(GLOBAL._advancedMap)
          {

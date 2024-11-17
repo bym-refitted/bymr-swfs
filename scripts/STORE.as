@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
+   import com.monsters.utils.MovieClipUtils;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -2119,9 +2120,13 @@ package
             {
                _loc23_.mcIcon.gotoAndStop(_loc20_.substr(0,3));
             }
-            else
+            else if(MovieClipUtils.validateFrameLabel(_loc23_.mcIcon,_loc20_))
             {
                _loc23_.mcIcon.gotoAndStop(_loc20_);
+            }
+            else
+            {
+               _loc23_.mcIcon.gotoAndStop(0);
             }
             _items.addChild(_loc23_);
             _loc16_++;

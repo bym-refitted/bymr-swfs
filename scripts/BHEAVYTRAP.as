@@ -19,7 +19,7 @@ package
          var _loc5_:* = undefined;
          var _loc7_:String = null;
          var _loc8_:int = 0;
-         creeps = MAP.CreepCellFind(_position,20,-1);
+         creeps = MAP.CreepCellFind(_position,_range,-1);
          _hasTargets = false;
          _targetCreeps = [];
          for(_loc3_ in creeps)

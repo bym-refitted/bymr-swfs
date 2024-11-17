@@ -39,6 +39,16 @@ package
             "ease":Quad.easeOut
          });
       }
+      
+      public static function ScaleUpFromTopLeft(param1:DisplayObject) : *
+      {
+         param1.scaleX = 0.9;
+         param1.scaleY = 0.9;
+         TweenLite.to(param1,0.2,{
+            "transformAroundCenter":{"scale":1},
+            "ease":Quad.easeOut
+         });
+      }
    }
 }
 

@@ -329,7 +329,11 @@ package de.polygonal.ds
                   _loc2_._data[_loc9_] = _loc6_;
                   ++_loc2_._size;
                }
-               else if(int(_loc2_._data[_loc8_]) != _loc6_)
+               else if(int(_loc2_._data[_loc8_]) == _loc6_)
+               {
+                  false;
+               }
+               else
                {
                   _loc9_ = int(_loc2_._data[_loc8_ + 1]);
                   while(_loc9_ != -1)
@@ -529,7 +533,6 @@ package de.polygonal.ds
             _loc5_ = int(_loc6_.length);
          }
          null;
-         null;
          _loc7_ = 0;
          _loc8_ = 0;
          while(_loc8_ < _loc5_)
@@ -544,6 +547,7 @@ package de.polygonal.ds
          {
             _loc5_ = int(_loc6_.length);
          }
+         null;
          null;
          null;
          null;
@@ -694,6 +698,7 @@ package de.polygonal.ds
             _loc5_ = int(_loc4_.length);
          }
          null;
+         null;
          var _loc6_:* = 0;
          _loc7_ = 0;
          while(_loc7_ < _loc5_)
@@ -710,6 +715,7 @@ package de.polygonal.ds
          {
             _loc5_ = int(_loc9_.length);
          }
+         null;
          _loc6_ = 0;
          _loc7_ = 0;
          while(_loc7_ < _loc5_)

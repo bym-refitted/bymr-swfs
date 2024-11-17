@@ -2,6 +2,7 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.ai.WMBASE;
+   import com.monsters.interfaces.ILootable;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Vacuum;
    import flash.display.Bitmap;
@@ -16,7 +17,7 @@ package
    import gs.TweenLite;
    import gs.easing.Expo;
    
-   public class BUILDING14 extends BSTORAGE
+   public class BUILDING14 extends BSTORAGE implements ILootable
    {
       public static const END_URL:String = "siegeimages/anim1.bottom.png";
       
@@ -328,11 +329,12 @@ package
       
       public function ApplyVacuum(param1:int, param2:int) : void
       {
+         var _loc3_:Bitmap = null;
          var _loc6_:Bitmap = null;
          this._vacuum = new MovieClip();
          this._vacuumEndSource = new BitmapData(END_WIDTH,END_HEIGHT,true,0);
          this._vacuumPipeSource = new BitmapData(PIPE_WIDTH,PIPE_HEIGHT,true,0);
-         var _loc3_:Bitmap = new Bitmap(this._vacuumEndSource);
+         _loc3_ = new Bitmap(this._vacuumEndSource);
          this._vacuum.addChild(_loc3_);
          MAP._EFFECTSTOP.addChild(this._vacuum);
          this._vacuumSound = SOUNDS.Play("vacuumstart");

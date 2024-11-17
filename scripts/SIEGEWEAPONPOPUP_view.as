@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2001")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2017")]
    public dynamic class SIEGEWEAPONPOPUP_view extends MovieClip
    {
       public var _bFire:Button_CLIP;

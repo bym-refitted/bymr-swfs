@@ -34,6 +34,7 @@ package de.polygonal.ds
          {
             if(param2 != -1)
             {
+               null;
             }
          }
          maxSize = -1;
@@ -113,6 +114,8 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
+         null;
+         null;
          var _loc3_:LinkedStackNode = _head;
          if(param1 < param2)
          {
@@ -209,7 +212,6 @@ package de.polygonal.ds
       
       public function method_1(param1:int, param2:Object) : void
       {
-         null;
          var _loc3_:LinkedStackNode = _head;
          param1 = _top - param1;
          while(true)
@@ -436,6 +438,7 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
+         null;
          var _loc3_:LinkedStackNode = _head;
          if(param1 < param2)
          {

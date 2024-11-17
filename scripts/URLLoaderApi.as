@@ -10,6 +10,28 @@ package
    
    public class URLLoaderApi
    {
+      public static const k_sLOCAL_MODE_TRUNK:int = 1;
+      
+      public static const k_sLOCAL_MODE_KONG:int = 2;
+      
+      public static const k_sLOCAL_MODE_VIXTEST:int = 3;
+      
+      public static const k_sLOCAL_MODE_INF_TRUNK:int = 5;
+      
+      public static const k_sLOCAL_MODE_LIVE:int = 6;
+      
+      public static const k_sLOCAL_MODE_VIXLIVE:int = 7;
+      
+      public static const k_sLOCAL_MODE_ALEX:int = 8;
+      
+      public static const k_sLOCAL_MODE_NICK:int = 9;
+      
+      public static const k_sLOCAL_MODE_KONGDEV:int = 10;
+      
+      public static const k_sLOCAL_MODE_KONGSTAGE:int = 11;
+      
+      public static const k_sLOCAL_MODE_STAGE:int = 12;
+      
       public static var _data:String = "";
       
       public var _URL:String;
@@ -31,13 +53,13 @@ package
          super();
       }
       
-      private function getFbData() : *
+      private function getFbData() : Object
       {
          var _loc2_:* = undefined;
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = this.GetFBDataKevin();
+            _loc1_ = this.GetFBDataChrisP();
          }
          else
          {
@@ -317,6 +339,35 @@ package
             return JSON.decode("{\"signed_request\":\"g9fvHDs_Cg07S_nNhrzhrPFtNhn62uLPfOaNrJMlkhw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMzI5NjEyMDAsImlzc3VlZF9hdCI6MTMzMjk1NzE4Nywib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUxMWWFaQ0lNQXdOcUZyUVU1YkpaQ25qZVRaQndnVW5NNUpiczRMOTRsdWxlR0hoZWo5QzhWYTN1UElnbEJrVHNlejN2OVFJRTZkWkJjbEdPWkE4am5aQk5lUHJrYlhVS2ZqT3JJNjJMcSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTAwMDAxNjExMjUxNzUwIn0\",\"access_token\":\"AAADLTlQ61wcBALLYaZCIMAwNqFrQU5bJZCnjeTZBwgUnM5Jbs4L94luleGHhej9C8Va3uPIglBkTsez3v9QIE6dZBclGOZA8jnZBNePrkbXUKfjOrI62Lq\",\"PHPSESSID\":\"0dde8307f7713cf1ce88ec8964c9f834\",\"app_id\":\"223537281029895\",\"tpid\":\"WUyHdUMuScZHGttEUpO3SCvI444\"}");
          }
          return JSON.decode("{\"signed_request\":\"6yfYU6wuqFulS6FW694BuArS32UwOGkWKuLhYGOy5_U.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ1MjY0MDAsImlzc3VlZF9hdCI6MTMyNDUyMjM3Nywib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUJYc0RWODVKTlhhWU9qYXFSdFpBbWYzVVpBdmlheWplYkJwVlRITzlJMnhUeU0zNU9tQ0V4cGVkNkliM0FSc2FaQ2lISjBMajFZeGtTV0R2aVhSTjVVa01NdzB0OUlYYW5aQllaQVU1IiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMDI4ODU4NTY4In0\",\"access_token\":\"AAADLTlQ61wcBABXsDV85JNXaYOjaqRtZAmf3UZAviayjebBpVTHO9I2xTyM35OmCExped6Ib3ARsaZCiHJ0Lj1YxkSWDviXRN5UkMMw0t9IXanZBYZAU5\",\"PHPSESSID\":\"8a8435a597d612b038a36a80ca71d36a\",\"app_id\":\"223537281029895\",\"tpid\":false}");
+      }
+      
+      private function GetFBDataChrisP() : Object
+      {
+         switch(GLOBAL._localMode)
+         {
+            case k_sLOCAL_MODE_KONG:
+               return JSON.decode("{\"fb_kongregate_username\":\"AjaniG\",\"fb_kongregate_user_id\":\"7777613\",\"fb_kongregate_game_auth_token\":\"4ff238b68df32d4fa0966f1c9e3464a2e5deddd4e4c6be1e2c25643e31275a2e\",\"fb_kongregate_game_id\":\"113843\",\"fb_kongregate_host\":\"http://www.kongregate.com\",\"fb_kongregate_game_url\":\"http://www.kongregate.com/games/KIXEYE/backyard-monsters\",\"fb_kongregate_api_host\":\"http://api.kongregate.com\",\"fb_kongregate_channel_id\":\"1336166621895\",\"fb_kongregate_api_path\":\"http://chat.kongregate.com/flash/API_AS3_66228fdf9e966aad6697c29202db9417.swf\",\"fb_kongregate_ansible_path\":\"chat.kongregate.com/flash/ansible_6ab3bca73452cf4e6c03ae9437093bb3.swf\",\"fb_kongregate_preview\":\"false\",\"fb_kongregate\":\"true\",\"PHPSESSID\":\"a7134944c2c5e0172ca3cb8315dc2703\",\"app_id\":\"113843\",\"tpid\":false}");
+            case k_sLOCAL_MODE_VIXTEST:
+               return JSON.decode("{\"v_publisher\":\"vixtest-casualcollective\",\"v_country\":\"US\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"Will McBride\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"392-will-mcbride\",\"v_session_key\":\"93c8f1d06740816fcc417233a5d65264-1319060434\",\"v_expires\":\"1319060434\",\"PHPSESSID\":\"b352748332add54f4a34f59874d354bf\",\"app_id\":123,\"tpid\":false}");
+            case 4:
+               return JSON.decode("{\"v_publisher\":\"google\",\"v_country\":\"\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"kevin deng\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"116733954990138407696\",\"v_session_key\":\"6c213c3140a3b4f968deaf81eb2badce-1320259440\",\"v_expires\":\"1320259440\",\"PHPSESSID\":\"fb2bd52b290933a6a6cdbb13977b343e\",\"app_id\":123,\"tpid\":false}");
+            case k_sLOCAL_MODE_TRUNK:
+               return JSON.decode("{\"signed_request\":\"26ctUv1WnPVm0NbhD7jbubYWCNwYxuMzwEvs6kKM7Rg.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMzc2NDg0MDAsImlzc3VlZF9hdCI6MTMzNzY0NDI3OCwib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUU1cnNKQzZrRzU4Uk9IajBVczlNc1Z6U0RhRjVJU052Q3FzVEpwaVlnbTM0cnhhcUFKaVZNNVpDSktER0l2V0F3YnJyZjZiQ1NVY2p6VjhuV28yaTNFcXo1Z1pEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjUzNTA2NjAyMiJ9\",\"access_token\":\"AAADLTlQ61wcBAE5rsJC6kG58ROHj0Us9MsVzSDaF5ISNvCqsTJpiYgm34rxaqAJiVM5ZCJKDGIvWAwbrrf6bCSUcjzV8nWo2i3Eqz5gZDZD\",\"tpid\":\"FmUH87Qs0MIvU98ObfgUcNKIkDg\",\"PHPSESSID\":\"69737bee0fe02708c3550c8b69e867ff\",\"app_id\":\"223537281029895\"}");
+            case k_sLOCAL_MODE_INF_TRUNK:
+               return JSON.decode("{\"signed_request\":\"rz5q6vAkfz7qbL3l78SWaZEF6gmlUZDR-mnQOfW1dHU.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI3MTIwMDAsImlzc3VlZF9hdCI6MTMyMjcwNjUwMiwib2F1dGhfdG9rZW4iOiJBQUFCd3ZldWh6M01CQUIyejhEN01EbGt1WkJUTldtaVFUa3dkTGtpMjczYmo4aXgyWkM2WkJJNlF4S2dxT2RaQ0RZMGZIOEd5aGhjaE5EdHIwd0JwcnMwNW9jaFh0YWFhRFF2ZE94YldTVUxvUXJPQjNrdlgiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAABwveuhz3MBAB2z8D7MDlkuZBTNWmiQTkwdLki273bj8ix2ZC6ZBI6QxKgqOdZCDY0fH8GyhhchNDtr0wBprs05ochXtaaaDQvdOxbWSULoQrOB3kvX\",\"PHPSESSID\":\"7a8ee868877b9307330e0a6fd7dc3529\",\"app_id\":\"123961004380019\",\"tpid\":false}");
+            case k_sLOCAL_MODE_LIVE:
+               return JSON.decode("{\"signed_request\":\"msuzfrcgVlR5q-fLF3UbPDzVA9VjZIXeODNuIeDK5-E.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMzc3NDIwMDAsImlzc3VlZF9hdCI6MTMzNzczODMyOSwib2F1dGhfdG9rZW4iOiJBQUFBQVQ4bVNEcmdCQUUyRDVWbWd0ZFJYNmFtQzg3akpxZnBoQ2F0WkNoRkpQbEFaQ3o5YWJobm1ZY2xFWkMxUllyWkJWWkMybldFYlRIdVZMcnRZbU5JY0c2cUFZQk9ibnRqcUNxZzdReFFaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiI1MzUwNjYwMjIifQ\",\"access_token\":\"AAAAAT8mSDrgBAE2D5VmgtdRX6amC87jJqfphCatZChFJPlAZCz9abhnmYclEZC1RYrZBVZC2nWEbTHuVLrtYmNIcG6qAYBObntjqCqg7QxQZDZD\",\"PHPSESSID\":\"17b45592968c88f94a7e3c6a5065256f\",\"app_id\":\"342684208824\",\"tpid\":\"vDNePi4NZZvOCUIKht_JlQTnteQ\"}");
+            case k_sLOCAL_MODE_ALEX:
+               return JSON.decode("{\"signed_request\":\"ShxDHmcoeXD1-8Trm3w-rUPiiWWhyl4d4CQkNEVF6wo.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQwMTE2MDAsImlzc3VlZF9hdCI6MTMyNDAwNTM5Nywib2F1dGhfdG9rZW4iOiJBQUFETXhMNXpXdlVCQU9oeTVtY3dDZDJXVFpDM0JjMVpCbWxuZmZaQ3BIbVdLRFM4NHYzUGhLTUJUajdmTzZMb3NuSm4xQzh0MzhaQkpkU2JaQlRnNUxtM3dDSlRNQU5wTnNBNWZxTGFaQlpDaHB6azgyNUtUUDMiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAADMxL5zWvUBAOhy5mcwCd2WTZC3Bc1ZBmlnffZCpHmWKDS84v3PhKMBTj7fO6LosnJn1C8t38ZBJdSbZBTg5Lm3wCJTMANpNsA5fqLaZBZChpzk825KTP3\",\"PHPSESSID\":\"fc9e48d0b35a872db57d787e4127f780\",\"app_id\":\"225145380887285\",\"tpid\":false}");
+            case k_sLOCAL_MODE_NICK:
+               return JSON.decode("{\"signed_request\":\"AxnEnbAL7nbHkxEGv46S1IHY8U3lc9nTa1p87lCkJ4M.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ0MjIwMDAsImlzc3VlZF9hdCI6MTMyNDQxNzk3OCwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBQ2dMcUg4YXJubWh4VzVDVlpBM1lkVVh5YU1QbzNMYnhnWkFaQ0NJRFUzVzUyRTVQMmhMbmI0M3BlV3pDdGI5bURkZGsxdk9HaGh4dW1FZVlNbmlVZWVYejVFb3ZYa2EwNnQ4QVpBdCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTAwMDAyMjY5OTEzNDYzIn0\",\"access_token\":\"AAAB42FeHZBZBQBACgLqH8arnmhxW5CVZA3YdUXyaMPo3LbxgZAZCCIDU3W52E5P2hLnb43peWzCtb9mDddk1vOGhhxumEeYMniUeeXz5EovXka06t8AZAt\",\"PHPSESSID\":\"f6e0763b85c9f387a1916943d03e6325\",\"app_id\":\"132870576798692\",\"tpid\":false}");
+            case k_sLOCAL_MODE_KONGDEV:
+               return JSON.decode("{\"fb_kongregate_username\":\"shi503\",\"fb_kongregate_user_id\":\"2230387\",\"fb_kongregate_game_auth_token\":\"3b883ce6e1e54c5e83509af0a7e51cfbf9406b363224c5caa6a77ad245dae24e\",\"fb_kongregate_game_id\":\"90208\",\"fb_kongregate_host\":\"http://www.kongregate.com\",\"fb_kongregate_game_url\":\"http://www.kongregate.com/games/CasualCollective/bm-kong\",\"fb_kongregate_api_host\":\"http://api.kongregate.com\",\"fb_kongregate_channel_id\":\"1333137505542\",\"fb_kongregate_api_path\":\"http://chat.kongregate.com/flash/API_AS3_875a4cce8af804b49b3e68ab72c2d8ab.swf\",\"fb_kongregate_ansible_path\":\"chat.kongregate.com/flash/ansible_9f4034cf409c752878ce29f99984b38c.swf\",\"fb_kongregate_preview\":\"true\",\"fb_kongregate\":\"true\",\"apiurl\":\"http://bm-kg-web2.dev.casualcollective.com/api/\",\"baseurl\":\"http://bm-kg-web2.dev.casualcollective.com/api/bm/base/\",\"logurl\":null,\"cdnurl\":\"http://bm-kg-cdn.casualcollective.com/bmkg/\",\"gameurl\":\"http://bm-kg-cdn.casualcollective.com/bmkg/gamedev/\",\"statsurl\":\"http://bm-kg-web2.dev.casualcollective.com/recordstats.php\",\"currency\":\"Coins\",\"ccode\":\"us\",\"allianceurl\":\"http://bm-kg-web2.dev.casualcollective.com/alliance/\",\"languageversion\":\"764\",\"userid\":24681,\"jstimeout\":3,\"mapurl\":\"http://bm-kg-web2.dev.casualcollective.com/worldmapv2/\",\"infbaseurl\":\"http://bm-kg-web2.dev.casualcollective.com/api/bm/base/\"}");
+            case k_sLOCAL_MODE_KONGSTAGE:
+               return JSON.decode("{\"fb_kongregate_username\":\"maclogos\",\"fb_kongregate_user_id\":\"7471234\",\"fb_kongregate_game_auth_token\":\"44fffdc9538ca0e8d34bfd45d672d7036ab6c00cf5d16432cdef24ce1da7541a\",\"fb_kongregate_game_id\":\"141461\",\"fb_kongregate_host\":\"http://www.kongregate.com\",\"fb_kongregate_game_url\":\"http://www.kongregate.com/games/KIXEYE/bym-kong-stage\",\"fb_kongregate_api_host\":\"http://api.kongregate.com\",\"fb_kongregate_channel_id\":\"1334192857863\",\"fb_kongregate_api_path\":\"http://chat.kongregate.com/flash/API_AS3_66228fdf9e966aad6697c29202db9417.swf\",\"fb_kongregate_ansible_path\":\"chat.kongregate.com/flash/ansible_6ab3bca73452cf4e6c03ae9437093bb3.swf\",\"fb_kongregate_preview\":\"true\",\"fb_kongregate\":\"true\",\"PHPSESSID\":\"d655d939bcdb8e592f0c49cb0a1cd37b\",\"fb_app_id\":\"141461\",\"tpid\":false}");
+            default:
+               return JSON.decode("{\"signed_request\":\"yWCim4YqQIuicamciSe-UGLQM509bfK5QBGWow7hB2w.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMzc2NDg0MDAsImlzc3VlZF9hdCI6MTMzNzY0MjQ1Miwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUdIOHVYRWZKTnJDbmJZa0NsWkN5cFI3dVZwWHVWS2J4b1pBNDdCU2FDSHFqcGhIV2NyMmNSS1dsaHRoN0NaQkZmRWQ5dlNheEtTTENMVTVTY0N4NldGQjhuMWd3WkRaRCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiNTM1MDY2MDIyIn0\",\"access_token\":\"AAAAAc29fTNYBAGH8uXEfJNrCnbYkClZCypR7uVpXuVKbxoZA47BSaCHqjphHWcr2cRKWlhth7CZBFfEd9vSaxKSLCLU5ScCx6WFB8n1gwZDZD\",\"PHPSESSID\":\"387bfe58d49a786f215020bea956a426\",\"app_id\":\"495789755606\",\"tpid\":\"4AauFvBcUPcZ6zTN1458K_jS9-Y\"}");
+         }
       }
       
       private function getHash(param1:String, param2:int) : *

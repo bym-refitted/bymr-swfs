@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2054")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2070")]
    public dynamic class SiegeBuildingPopup_ListItem_CLIP extends MovieClip
    {
       public var star1:MovieClip;

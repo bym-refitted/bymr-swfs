@@ -2806,7 +2806,7 @@ package
       
       public function Export() : *
       {
-         var _loc1_:* = new Object();
+         var _loc1_:Object = new Object();
          var _loc2_:Point = GRID.FromISO(this._mc.x,this._mc.y);
          _loc1_.X = _loc2_.x;
          _loc1_.Y = _loc2_.y;
@@ -3565,17 +3565,16 @@ package
       
       public function moveTo(param1:int, param2:int) : void
       {
+         this.GridCost(false);
          this.x = param1;
          this.y = param2;
          this._mcBase.x = param1;
          this._mcBase.y = param2;
-         if(this._mcFootprint)
-         {
-            this._mcFootprint.x = param1;
-            this._mcFootprint.y = param2;
-         }
-         MAP.SortDepth(false,true);
-         this.Render("");
+         this._mcFootprint.x = param1;
+         this._mcFootprint.y = param2;
+         this.StartMove();
+         this.StopMove(null);
+         BASE.Save();
       }
       
       public function get name() : String

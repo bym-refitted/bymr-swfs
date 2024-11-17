@@ -277,7 +277,7 @@ package
       
       public static var _attackersDeltaResources:Object;
       
-      public static var _homeBaseID:int;
+      public static var _homeBaseID:Number;
       
       public static var lastTime:Number;
       
@@ -306,6 +306,8 @@ package
       public static var _version:SecNum = new SecNum(127);
       
       public static var _aiDesignMode:Boolean = false;
+      
+      public static const DOES_USE_SCROLL:Boolean = false;
       
       public static var _checkPromo:int = 1;
       
@@ -469,9 +471,15 @@ package
       
       public static var debugLogJSCalls:Boolean = false;
       
+      public static var m_mapRoomFunctional:Boolean = true;
+      
       public static var _showStreamlinedSpeedUps:Boolean = false;
       
+      public static var _magnification:Number = 1;
+      
       private static var _blockerList:Array = [];
+      
+      private static const _MAGNIFICATION_BOUNDS:Point = new Point(0.6,2.75);
       
       public function GLOBAL()
       {
@@ -787,11 +795,7 @@ package
             ThrowStackTrace("goFullScreen");
          }
          _zoomed = false;
-         MAP._GROUND.scaleY = 1;
-         MAP._GROUND.scaleX = 1;
-         MAP.Focus(0,0);
-         RefreshScreen();
-         UI_BOTTOM.Resize();
+         magnification = 1;
       }
       
       public static function Zoom(param1:MouseEvent = null) : *
@@ -839,7 +843,7 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var buildingsAll:Object = null;
          var b:BFOUNDATION = null;
@@ -1175,7 +1179,7 @@ package
          }
       }
       
-      public static function Timestamp() : *
+      public static function Timestamp() : int
       {
          return t;
       }
@@ -2107,6 +2111,35 @@ package
             _loc2_++;
          }
          return _loc2_;
+      }
+      
+      public static function get magnification() : Number
+      {
+         return _magnification;
+      }
+      
+      public static function set magnification(param1:Number) : void
+      {
+         if(param1 == _magnification)
+         {
+            return;
+         }
+         print("zoom" + param1);
+         param1 = Math.max(_MAGNIFICATION_BOUNDS.x,param1);
+         param1 = Math.min(_MAGNIFICATION_BOUNDS.y,param1);
+         TweenLite.to(GLOBAL,0.25,{
+            "_magnification":param1,
+            "onUpdate":onMagnificationUpdate
+         });
+      }
+      
+      private static function onMagnificationUpdate() : void
+      {
+         print(_magnification);
+         MAP._GROUND.scaleX = MAP._GROUND.scaleY = _magnification;
+         MAP.Focus(0,0);
+         RefreshScreen();
+         UI_BOTTOM.Resize();
       }
    }
 }

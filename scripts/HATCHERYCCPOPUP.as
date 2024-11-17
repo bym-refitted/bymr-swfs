@@ -83,8 +83,12 @@ package
          this._monsterSlots = [];
          _loc7_ = CREATURELOCKER.GetSortedCreatures(true);
          var _loc8_:int = !BASE.isInferno() ? CREATURELOCKER.maxCreatures("above") : CREATURELOCKER.maxCreatures("inferno");
+         if(!BASE.isInferno() && HATCHERYCC.doesShowInfernoCreeps)
+         {
+            _loc8_ = CREATURELOCKER.maxCreatures();
+         }
          var _loc9_:int = 0;
-         while(_loc9_ < _loc8_)
+         while(_loc9_ < _loc7_.length)
          {
             _loc1_ = _loc7_[_loc9_].id;
             if(CREATURELOCKER._creatures && CREATURELOCKER._creatures[_loc1_] && CREATURELOCKER._creatures[_loc1_].blocked == true)
@@ -127,7 +131,7 @@ package
          _loc9_ = 1;
          while(_loc9_ <= 5)
          {
-            this["hatchery" + _loc9_].gotoAndStop("blank");
+            this["hatchery" + _loc9_].gotoAndStop("idle");
             this["hatcheryRemove" + _loc9_].visible = false;
             this["hatchery" + _loc9_].addEventListener(MouseEvent.MOUSE_OVER,this.ShowRemove(this["hatcheryRemove" + _loc9_]));
             this["hatchery" + _loc9_].addEventListener(MouseEvent.MOUSE_OUT,this.HideRemove(this["hatcheryRemove" + _loc9_]));
@@ -313,7 +317,7 @@ package
       {
          var _loc4_:Array = null;
          this._tick += 1;
-         if(this._tick < 20 && this._tick != 1)
+         if(this._tick < HATCHERYCC.queueLimit && this._tick != 1)
          {
             return;
          }
@@ -327,7 +331,7 @@ package
             _loc4_ = GLOBAL._bHatcheryCC._monsterQueue;
             if(_loc4_.length > 0 && _loc4_[_loc4_.length - 1][0] == _loc2_)
             {
-               if(_loc4_[_loc4_.length - 1][1] < 20)
+               if(_loc4_[_loc4_.length - 1][1] < HATCHERYCC.queueLimit)
                {
                   ++_loc4_[_loc4_.length - 1][1];
                   this.Charge(_loc2_);
@@ -414,8 +418,9 @@ package
       
       private function Charge(param1:String) : *
       {
-         BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"));
-         ResourcePackages.Create(BASE.isInferno() ? 8 : 4,GLOBAL._bHatcheryCC,CREATURES.GetProperty(param1,"cResource"),true);
+         var _loc2_:Boolean = BASE.isInfernoCreep(param1);
+         BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"),false,_loc2_);
+         ResourcePackages.Create(_loc2_ ? 8 : 4,GLOBAL._bHatcheryCC,CREATURES.GetProperty(param1,"cResource"),true);
          BASE.Save();
       }
       
@@ -434,7 +439,7 @@ package
       private function QueueRemoveTick(param1:Event = null) : *
       {
          this._tick += 1;
-         if(this._tick < 20 && this._tick != 1)
+         if(this._tick < HATCHERYCC.queueLimit && this._tick != 1)
          {
             return;
          }

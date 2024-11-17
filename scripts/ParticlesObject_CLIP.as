@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2310")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2326")]
    public dynamic class ParticlesObject_CLIP extends MovieClip
    {
       public var mcDot:MovieClip;

@@ -10,7 +10,7 @@ package com.monsters.maproom_advanced
    
    public class PopupTakeover extends MapRoomPopup_takeover_CLIP
    {
-      public static const TAKEOVER_CAP:* = 20000000;
+      public static const TAKEOVER_CAP:* = 50000000;
       
       private var _resourceCost:SecNum;
       
@@ -44,7 +44,7 @@ package com.monsters.maproom_advanced
          if(GLOBAL._mapOutpost)
          {
             numPosts = int(GLOBAL._mapOutpost.length);
-            this._resourceCost.Set(Math.min(this._resourceCost.Get() * ((numPosts + 1) * 0.1875),TAKEOVER_CAP));
+            this._resourceCost.Set(Math.min(this._resourceCost.Get() * ((numPosts + 1) * 0.25),TAKEOVER_CAP));
          }
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))
          {

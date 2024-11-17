@@ -95,7 +95,7 @@ package gs
          }
          if(!_tlInitted)
          {
-            TweenPlugin.activate([TintPlugin,RemoveTintPlugin,FramePlugin,AutoAlphaPlugin,VisiblePlugin,VolumePlugin,EndArrayPlugin]);
+            TweenPlugin.activate([TintPlugin,RemoveTintPlugin,FramePlugin,AutoAlphaPlugin,VisiblePlugin,VolumePlugin,EndArrayPlugin,TransformAroundPointPlugin,TransformAroundCenterPlugin]);
             currentTime = getTimer();
             timingSprite.addEventListener(Event.ENTER_FRAME,updateAll,false,0,true);
             if(overwriteManager == null)

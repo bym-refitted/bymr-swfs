@@ -1,7 +1,6 @@
 package
 {
    import flash.geom.Point;
-   import flash.utils.getTimer;
    
    public class CREATURES
    {
@@ -114,23 +113,22 @@ package
       
       public static function Tick() : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:String = null;
-         var _loc1_:int = getTimer();
-         for(_loc3_ in _creatures)
+         var _loc1_:* = undefined;
+         var _loc2_:String = null;
+         for(_loc2_ in _creatures)
          {
-            _loc2_ = _creatures[_loc3_];
-            if(_loc2_.Tick(1))
+            _loc1_ = _creatures[_loc2_];
+            if(_loc1_.Tick(1))
             {
-               if(_loc2_._health.Get() <= 0)
+               if(_loc1_._health.Get() <= 0)
                {
                   SOUNDS.Play("splat" + (int(Math.random() * 3) + 1));
-                  EFFECTS.CreepSplat(_loc2_._creatureID,_loc2_._tmpPoint.x,_loc2_._tmpPoint.y);
+                  EFFECTS.CreepSplat(_loc1_._creatureID,_loc1_._tmpPoint.x,_loc1_._tmpPoint.y);
                }
-               _loc2_.Clear();
-               MAP._BUILDINGTOPS.removeChild(_loc2_);
+               _loc1_.Clear();
+               MAP._BUILDINGTOPS.removeChild(_loc1_);
                --_creatureCount;
-               delete _creatures[_loc3_];
+               delete _creatures[_loc2_];
             }
          }
          if(_creatureCount <= 0)

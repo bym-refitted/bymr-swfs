@@ -264,7 +264,7 @@ package
                   _loc6_ = Math.random() * _loc1_.length;
                   _loc7_ = _loc1_[_loc6_];
                   _loc8_ = GRID.FromISO(_loc7_.x,_loc7_.y);
-                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,"pen",PointInHouse(_loc8_),Math.random() * 360,_loc8_,_loc7_);
+                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,CreepBase.k_sBHVR_PEN,PointInHouse(_loc8_),Math.random() * 360,_loc8_,_loc7_);
                   _loc5_++;
                }
             }
@@ -277,7 +277,7 @@ package
          return GRID.ToISO(param1.x + (_loc2_.x + Math.random() * _loc2_.width),param1.y + (_loc2_.y + Math.random() * _loc2_.height),0);
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          if(_open)
          {

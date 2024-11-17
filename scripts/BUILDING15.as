@@ -25,18 +25,19 @@ package
       
       override public function StopMoveB() : *
       {
-         var _loc2_:* = undefined;
+         var _loc2_:Number = 0;
+         var _loc3_:* = undefined;
+         var _loc1_:uint = _creatures.length;
          super.StopMoveB();
-         var _loc1_:int = 0;
-         while(_loc1_ < _creatures.length)
+         while(_loc2_ < _loc1_)
          {
-            _loc2_ = _creatures[_loc1_];
-            if(_loc2_._behaviour != "juice")
+            _loc3_ = _creatures[_loc2_];
+            if(_loc3_._behaviour != CreepBase.k_sBHVR_JUICE)
             {
-               _loc2_._targetCenter = GRID.FromISO(_mc.x,_mc.y);
-               _loc2_.ModeHousing();
+               _loc3_._targetCenter = GRID.FromISO(_mc.x,_mc.y);
+               _loc3_.ModeHousing();
             }
-            _loc1_++;
+            _loc2_++;
          }
       }
       

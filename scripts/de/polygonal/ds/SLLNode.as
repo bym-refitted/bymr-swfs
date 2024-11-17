@@ -28,6 +28,8 @@ package de.polygonal.ds
          var _loc5_:* = null as Object;
          var _loc6_:* = null as Object;
          var _loc1_:SLL = _list;
+         null;
+         null;
          var _loc2_:SLLNode = next;
          if(this == _loc1_.head)
          {

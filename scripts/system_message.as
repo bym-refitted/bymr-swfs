@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1724")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1740")]
    public dynamic class system_message extends MovieClip
    {
       public function system_message()

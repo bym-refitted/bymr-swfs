@@ -1,9 +1,13 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.jac.mouse.MouseWheelEnabler;
    import com.monsters.ai.TRIBES;
    import com.monsters.ai.WMBASE;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.baseplanner.BaseTemplate;
+   import com.monsters.baseplanner.BaseTemplateNode;
+   import com.monsters.baseplanner.PlannerTemplate;
    import com.monsters.chat.Chat;
    import com.monsters.debug.Console;
    import com.monsters.display.BuildingOverlay;
@@ -13,6 +17,7 @@ package
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.frontPage.FrontPageHandler;
    import com.monsters.interfaces.IHandler;
+   import com.monsters.kingOfTheHill.KOTHHandler;
    import com.monsters.maproom_advanced.*;
    import com.monsters.pathing.PATHING;
    import com.monsters.radio.RADIO;
@@ -33,7 +38,7 @@ package
    
    public class BASE
    {
-      public static var _baseID:int;
+      public static var _baseID:Number;
       
       public static var _wmID:int;
       
@@ -259,7 +264,7 @@ package
       
       private static var _loadedSomething:Boolean = false;
       
-      public static const HANDLERS:Vector.<IHandler> = Vector.<IHandler>([RewardHandler.instance]);
+      public static const HANDLERS:Vector.<IHandler> = Vector.<IHandler>([RewardHandler.instance,new KOTHHandler()]);
       
       public function BASE()
       {
@@ -488,8 +493,8 @@ package
       {
          GLOBAL.Message("LoadBaseB vars:" + JSON.encode(_loadBase));
          GLOBAL._baseURL2 = _loadBase[0];
-         var _loc1_:int = int(_loadBase[1]);
-         var _loc2_:int = int(_loadBase[2]);
+         var _loc1_:Number = Number(_loadBase[1]);
+         var _loc2_:Number = Number(_loadBase[2]);
          var _loc3_:String = _loadBase[3];
          var _loc4_:int = int(_loadBase[4]);
          _loadBase = [];
@@ -497,9 +502,9 @@ package
          Load(GLOBAL._baseURL2,_loc1_,_loc2_,_loc4_);
       }
       
-      public static function Load(param1:String = null, param2:int = 0, param3:int = 0, param4:int = -1) : void
+      public static function Load(param1:String = null, param2:Number = 0, param3:Number = 0, param4:int = -1) : void
       {
-         var t:*;
+         var t:int;
          var tmpMode:String;
          var loadVars:Array;
          var midgameIncentive:int;
@@ -511,8 +516,8 @@ package
          var handleLoadSuccessful:Function = null;
          var handleLoadError:Function = null;
          var url:String = param1;
-         var userid:int = param2;
-         var baseid:int = param3;
+         var userid:Number = param2;
+         var baseid:Number = param3;
          var yardtype:int = param4;
          handleLoadSuccessful = function(param1:Object):void
          {
@@ -1618,7 +1623,7 @@ package
          var buildingobject:Object = null;
          var lm:int = 0;
          var tmpDO:DisplayObject = null;
-         var t:* = undefined;
+         var t:int = 0;
          var texture:String = null;
          var m:* = undefined;
          var count:int = 0;
@@ -2101,7 +2106,7 @@ package
          }
       }
       
-      public static function ProcessB(param1:Event) : *
+      public static function ProcessB(param1:Event) : void
       {
          var _loc2_:int = getTimer();
          while(getTimer() - _loc2_ < 10)
@@ -2253,12 +2258,12 @@ package
       public static function ProcessD() : *
       {
          var damageCount:int;
-         var j:int;
          var MoreInfo711:Function;
          var Action:Function;
          var BragA:Function;
          var BragB:Function;
          var building:BFOUNDATION = null;
+         var j:int = 0;
          var bb:int = 0;
          var helper:int = 0;
          var popupMCDamaged:popup_damaged = null;
@@ -2408,8 +2413,19 @@ package
             j++;
          }
          ReplayableEventHandler.initialize(loadObject["events"]);
+         j = 0;
+         while(j < HANDLERS.length)
+         {
+            handler = HANDLERS[j];
+            handler.initialize(loadObject[handler.name]);
+            j++;
+         }
          FrontPageHandler.setup(loadObject["frontpage"]);
          FrontPageHandler.showPopup();
+         if(GLOBAL.DOES_USE_SCROLL)
+         {
+            MouseWheelEnabler.init(MAP.stage);
+         }
          bb = 0;
          try
          {
@@ -2732,7 +2748,7 @@ package
          POPUPS.Next();
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var savedelay:int = 0;
          var pageInterval:int = 0;
@@ -2890,7 +2906,7 @@ package
          var hp:int = 0;
          var hpMax:int = 0;
          var finishTime:int = 0;
-         var i:* = undefined;
+         var i:String = null;
          var buildingString:String = null;
          var stats:Object = null;
          var r:Object = null;
@@ -4297,7 +4313,7 @@ package
             _loc23_ = 0;
             if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
-               _loc24_ = isInfernoBuilding(param1);
+               _loc24_ = BASE.isInfernoBuilding(param1);
                _loc25_ = _loc24_ ? BASE._iresources : BASE._resources;
                if(_loc17_ > _loc25_.r1.Get())
                {
@@ -4344,7 +4360,7 @@ package
          var _loc12_:String = null;
          var _loc13_:BFOUNDATION = null;
          var _loc14_:Array = null;
-         var _loc15_:* = undefined;
+         var _loc15_:int = 0;
          var _loc16_:int = 0;
          var _loc17_:Boolean = false;
          var _loc18_:Object = null;
@@ -4474,7 +4490,7 @@ package
                   if(!_loc4_)
                   {
                      _loc16_ = 0;
-                     _loc17_ = isInfernoBuilding(param1._type);
+                     _loc17_ = BASE.isInfernoBuilding(param1._type);
                      _loc18_ = _loc17_ ? BASE._iresources : BASE._resources;
                      if(_loc3_.r1 > _loc18_.r1.Get())
                      {
@@ -5406,11 +5422,11 @@ package
          }
       }
       
-      public static function CalcResources() : *
+      public static function CalcResources() : void
       {
          var capacity:Number = NaN;
          var rM:String = null;
-         var i:* = undefined;
+         var i:String = null;
          var building:BFOUNDATION = null;
          var bT:int = 0;
          var lvl:int = 0;
@@ -5444,18 +5460,28 @@ package
             {
                building = _buildingsAll[i];
                bT = building._type;
-               if(bT < 5)
+               if(bT >= 5)
                {
-                  lvl = building._lvl.Get();
-                  if(_yardType == OUTPOST && GLOBAL._currentCell)
+                  if(bT == 6 && building._lvl.Get() >= 1 && _yardType % 2 == MAIN_YARD)
                   {
-                     if(Boolean(building._countdownUpgrade) && building._countdownUpgrade.Get() > 0)
-                     {
-                        lvl++;
-                     }
+                     _resources.r1max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
+                     _resources.r2max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
+                     _resources.r3max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
+                     _resources.r4max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
                   }
-                  if(bT == 1)
+                  continue;
+               }
+               lvl = building._lvl.Get();
+               if(_yardType == OUTPOST && GLOBAL._currentCell)
+               {
+                  if(Boolean(building._countdownUpgrade) && building._countdownUpgrade.Get() > 0)
                   {
+                     lvl++;
+                  }
+               }
+               switch(bT)
+               {
+                  case 1:
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r1Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
@@ -5464,9 +5490,8 @@ package
                      {
                         _resources.r1Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
-                  }
-                  else if(bT == 2)
-                  {
+                     break;
+                  case 2:
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r2Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
@@ -5475,9 +5500,8 @@ package
                      {
                         _resources.r2Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
-                  }
-                  else if(bT == 3)
-                  {
+                     break;
+                  case 3:
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r3Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
@@ -5486,9 +5510,8 @@ package
                      {
                         _resources.r3Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
-                  }
-                  else if(bT == 4)
-                  {
+                     break;
+                  case 4:
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r4Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
@@ -5497,14 +5520,7 @@ package
                      {
                         _resources.r4Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
-                  }
-               }
-               else if(bT == 6 && building._lvl.Get() >= 1 && _yardType % 2 == MAIN_YARD)
-               {
-                  _resources.r1max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
-                  _resources.r2max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
-                  _resources.r3max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
-                  _resources.r4max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
+                     break;
                }
             }
             if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
@@ -5681,7 +5697,6 @@ package
          var _loc3_:SecNum = null;
          var _loc4_:Array = null;
          var _loc5_:SecNum = null;
-         var _loc6_:Number = NaN;
          if(GLOBAL._advancedMap)
          {
             _loc3_ = new SecNum(0);
@@ -5715,7 +5730,6 @@ package
                _loc3_.Add(_loc4_[3].Get());
             }
             --_autobankCounter;
-            _loc6_ = _GIP["r1"].Get() + _GIP["r2"].Get() + _GIP["r3"].Get() + _GIP["r4"].Get();
             BASE.PointsAdd(Math.ceil(_loc3_.Get() * 0.375));
             if(param1 > 10)
             {
@@ -5889,6 +5903,91 @@ package
                _loc2_.HideInfo();
             }
          }
+      }
+      
+      public static function applyTemplate(param1:BaseTemplate) : void
+      {
+         var _loc2_:int = 0;
+         var _loc3_:BaseTemplateNode = null;
+         var _loc4_:Point = null;
+         var _loc5_:BFOUNDATION = null;
+         _loc2_ = 0;
+         while(_loc2_ < param1.nodes.length)
+         {
+            _loc3_ = param1.nodes[_loc2_];
+            _loc4_ = GRID.ToISO(_loc3_.x,_loc3_.y,0);
+            _loc5_ = getBuildingFromNode(_loc3_);
+            if(_loc5_)
+            {
+               _loc5_.moveTo(_loc4_.x,_loc4_.y);
+            }
+            _loc2_++;
+         }
+      }
+      
+      private static function getBuildingFromNode(param1:BaseTemplateNode) : BFOUNDATION
+      {
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:int = 0;
+         var _loc5_:Object = null;
+         var _loc2_:Point = GRID.ToISO(param1.x,param1.y,0);
+         if(param1.id == PlannerTemplate._DECORATION_ID)
+         {
+            _loc4_ = int(param1.type);
+            _loc3_ = addBuildingC(_loc4_);
+            _loc5_ = {
+               "X":param1.x,
+               "Y":param1.y,
+               "t":_loc4_,
+               "id":BASE._buildingCount++
+            };
+            _loc3_.Setup(_loc5_);
+            param1.id = _loc3_._id;
+            _buildingsStored["b" + _loc4_].Set(_buildingsStored["b" + _loc4_].Get() - 1);
+         }
+         else
+         {
+            _loc3_ = getBuildingByID(param1.id);
+         }
+         return _loc3_;
+      }
+      
+      public static function getTemplate() : BaseTemplate
+      {
+         var _loc1_:BaseTemplate = null;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:Point = null;
+         _loc1_ = new BaseTemplate();
+         _loc1_.name = _baseName;
+         for each(_loc2_ in _buildingsAll)
+         {
+            if(!isBuildingIgnoredInYardPlanner(_loc2_))
+            {
+               _loc3_ = GRID.FromISO(_loc2_.x,_loc2_.y);
+               _loc1_.addNode(new BaseTemplateNode(_loc3_.x,_loc3_.y,_loc2_._id,_loc2_._type));
+            }
+         }
+         return _loc1_;
+      }
+      
+      public static function isBuildingIgnoredInYardPlanner(param1:BFOUNDATION) : Boolean
+      {
+         var _loc2_:* = 0;
+         _loc2_ = uint(param1._type);
+         return _loc2_ == 27 || _loc2_ == 127 || param1._class == "enemy";
+      }
+      
+      public static function getBuildingByID(param1:uint) : BFOUNDATION
+      {
+         var _loc2_:BFOUNDATION = null;
+         for each(_loc2_ in _buildingsAll)
+         {
+            if(_loc2_._id == param1)
+            {
+               return _loc2_;
+            }
+         }
+         return null;
       }
       
       public static function RebuildTH() : *
@@ -6079,6 +6178,11 @@ package
             }
          }
          return _loc3_;
+      }
+      
+      public static function isInfernoCreep(param1:String) : Boolean
+      {
+         return param1.substring(0) == "I";
       }
    }
 }

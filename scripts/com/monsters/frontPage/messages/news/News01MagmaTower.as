@@ -12,7 +12,7 @@ package com.monsters.frontPage.messages.news
             _loc1_ = "btn_buildnow";
          }
          super("3_14_0",_loc1_);
-         imageURL = _IMAGE_DIRECTORY + _PREFIX + "magmaabove.jpg";
+         imageURL = _IMAGE_DIRECTORY + PREFIX + "magmaabove.jpg";
       }
       
       override public function get areRequirementsMet() : Boolean

@@ -1,5 +1,6 @@
 package com.monsters.replayableEvents
 {
+   import com.monsters.debug.Console;
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.messages.Message;
    import com.monsters.ui.UI_BOTTOM;
@@ -30,7 +31,7 @@ package com.monsters.replayableEvents
       
       public static function get currentTime() : Number
       {
-         if(debugDate)
+         if(Boolean(debugDate) && GLOBAL._aiDesignMode)
          {
             return debugDate.time / 1000;
          }
@@ -51,6 +52,7 @@ package com.monsters.replayableEvents
          }
          if(activeEvent)
          {
+            assureAccurateStartDate();
             activeEvent.initialize();
             checkIfActiveEventIsFinished();
          }
@@ -68,6 +70,15 @@ package com.monsters.replayableEvents
             }
          }
          addUI();
+      }
+      
+      private static function assureAccurateStartDate() : void
+      {
+         var _loc1_:Number = activeEvent.originalStartDate;
+         if(Boolean(_loc1_) && activeEvent.startDate != _loc1_)
+         {
+            activeEvent.setStartDate(_loc1_);
+         }
       }
       
       private static function checkIfActiveEventIsFinished() : void
@@ -166,6 +177,10 @@ package com.monsters.replayableEvents
       {
          var _loc5_:Date = null;
          var _loc6_:Number = NaN;
+         if(Boolean(param1.originalStartDate) && param1.originalStartDate - currentTime <= _DURATION_UNTIL_EVENT_STARTS)
+         {
+            return param1.originalStartDate;
+         }
          var _loc3_:Number = currentTime;
          var _loc4_:int = 0;
          while(_loc4_ < 7)
@@ -188,7 +203,23 @@ package com.monsters.replayableEvents
       
       private static function canScheduleNewEvent() : Boolean
       {
-         return !activeEvent && !hasRecentlyParticipatedInAnEvent();
+         return !activeEvent && !hasRecentlyParticipatedInAnEvent() || Boolean(getQualifiedLiveEvent());
+      }
+      
+      private static function getQualifiedLiveEvent() : ReplayableEvent
+      {
+         var _loc2_:ReplayableEvent = null;
+         var _loc1_:int = 0;
+         while(_loc1_ < ReplayableEventLibrary.EVENTS.length)
+         {
+            _loc2_ = ReplayableEventLibrary.EVENTS[_loc1_];
+            if(Boolean(_loc2_.originalStartDate) && _loc2_.originalStartDate - currentTime <= _DURATION_UNTIL_EVENT_STARTS)
+            {
+               return _loc2_;
+            }
+            _loc1_++;
+         }
+         return null;
       }
       
       private static function hasQualifiedLiveEventSoonAfter(param1:Number) : Boolean
@@ -214,7 +245,7 @@ package com.monsters.replayableEvents
          while(_loc1_ < ReplayableEventLibrary.EVENTS.length)
          {
             _loc2_ = ReplayableEventLibrary.EVENTS[_loc1_];
-            if(Boolean(_loc2_.endDate) && currentTime - _loc2_.endDate <= _DURATION_BETWEEN_EVENTS)
+            if(Boolean(_loc2_.endDate) && currentTime - _loc2_.endDate <= 7 * 24 * 60 * 60)
             {
                return true;
             }
@@ -317,6 +348,7 @@ package com.monsters.replayableEvents
       {
          if(!activeEvent)
          {
+            Console.warning("You\'re trying to opt-in for an event that isnt currently running, something is fucked");
             return;
          }
          callServerMethod("emailoptin",[["eventid",activeEvent.id]]);

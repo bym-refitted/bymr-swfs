@@ -861,7 +861,7 @@ package
             _loc6_ = _loc12_.random() * 360 * 0.0174532925;
             _loc7_ = _loc12_.random() * param2 / 2;
             _loc8_ = param1.add(new Point(Math.cos(_loc6_) * _loc7_,Math.sin(_loc6_) * _loc7_));
-            _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc12_.random() * 360,_loc11_,false);
+            _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc12_.random() * 360,_loc11_,true);
             if(_rage)
             {
                _loc9_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);

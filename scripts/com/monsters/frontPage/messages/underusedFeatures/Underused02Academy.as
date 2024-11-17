@@ -7,7 +7,7 @@ package com.monsters.frontPage.messages.underusedFeatures
       public function Underused02Academy()
       {
          super("idleacademy","btn_open");
-         imageURL = _IMAGE_DIRECTORY + _PREFIX + "academy.jpg";
+         imageURL = _IMAGE_DIRECTORY + PREFIX + "academy.jpg";
       }
       
       override public function get areRequirementsMet() : Boolean

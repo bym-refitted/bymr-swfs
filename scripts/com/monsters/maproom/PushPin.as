@@ -54,14 +54,16 @@ package com.monsters.maproom
       
       public static function getRandomPinWithColor(param1:uint) : Sprite
       {
+         var _loc3_:Bitmap = null;
+         var _loc4_:BitmapData = null;
          if(!isSetup)
          {
             Setup();
          }
          var _loc2_:Sprite = new Sprite();
-         var _loc3_:Bitmap = new Bitmap(keys.shadow.data);
+         _loc3_ = new Bitmap(keys.shadow.data);
          _loc2_.addChild(_loc3_);
-         var _loc4_:BitmapData = new BitmapData(columnWidth,columnHeight,true);
+         _loc4_ = new BitmapData(columnWidth,columnHeight,true);
          var _loc5_:uint = Math.random() * 5;
          _loc3_.x = 3 + Math.random() * 3;
          _loc3_.y = 3 + Math.random() * 3;

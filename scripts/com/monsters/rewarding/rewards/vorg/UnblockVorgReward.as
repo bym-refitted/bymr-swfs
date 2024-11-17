@@ -8,7 +8,7 @@ package com.monsters.rewarding.rewards.vorg
       
       public function UnblockVorgReward()
       {
-         super("unblockVorg","C16");
+         super("C16");
       }
    }
 }

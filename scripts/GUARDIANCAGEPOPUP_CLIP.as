@@ -3,10 +3,16 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1653")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1669")]
    public dynamic class GUARDIANCAGEPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
+      
+      public var p3_abilities_txt:TextField;
+      
+      public var p3_bSpeed:creatureBarGuardian;
+      
+      public var p3_mcImage:MovieClip;
       
       public var bSpeed:creatureBarGuardian;
       
@@ -16,9 +22,15 @@ package
       
       public var day1:MovieClip;
       
+      public var p3_tTitle:TextField;
+      
+      public var p3_speed_txt:TextField;
+      
       public var barHP:MovieClip;
       
       public var day2:MovieClip;
+      
+      public var p3_damage_txt:TextField;
       
       public var buff_txt2:TextField;
       
@@ -26,13 +38,23 @@ package
       
       public var day3:MovieClip;
       
+      public var p3_tRank:TextField;
+      
       public var bBuff:creatureBarGuardian;
       
       public var tNextFeedTitle:TextField;
       
+      public var p3_buff_txt:TextField;
+      
+      public var p3_tDamage:TextField;
+      
+      public var p3_bHealth:creatureBarGuardian;
+      
       public var bDamage:creatureBarGuardian;
       
       public var bEvolve:Button_CLIP;
+      
+      public var p3_tSpeed:TextField;
       
       public var health_txt:TextField;
       
@@ -42,9 +64,15 @@ package
       
       public var mcNextGuardian:MovieClip;
       
+      public var p3_tTimeleft:TextField;
+      
+      public var p3_tHP:TextField;
+      
       public var b1:ButtonBrown_CLIP;
       
       public var mcInstant:MovieClip;
+      
+      public var p3_bTimeleft:creatureBarGuardian;
       
       public var b2:ButtonBrown_CLIP;
       
@@ -54,11 +82,17 @@ package
       
       public var tSpeed2:TextField;
       
+      public var b3:ButtonBrown_CLIP;
+      
       public var tHealth:TextField;
       
       public var bDamage2:creatureBarGuardian;
       
       public var mcFeed1:MapRoomPopupInfoMonster_CLIP;
+      
+      public var p3_gRankBG:MovieClip;
+      
+      public var p3_bDamage:creatureBarGuardian;
       
       public var tFeedsFrom:TextField;
       
@@ -66,11 +100,23 @@ package
       
       public var mcFeed2:MapRoomPopupInfoMonster_CLIP;
       
+      public var p3_bHeal:Button_CLIP;
+      
       public var bHeal:Button_CLIP;
       
       public var mcCurrGuardian:MovieClip;
       
+      public var p3_bLeaderboard:Button_CLIP;
+      
+      public var p3_health_txt:TextField;
+      
+      public var p3_tBuff:TextField;
+      
+      public var p3_bHP:MovieClip;
+      
       public var tEvoDesc:TextField;
+      
+      public var mcAbility1:MovieClip;
       
       public var tEvoStage:TextField;
       
@@ -79,6 +125,10 @@ package
       public var speed_txt2:TextField;
       
       public var bHealth2:creatureBarGuardian;
+      
+      public var p3_tDescription:TextField;
+      
+      public var mcAbility2:MovieClip;
       
       public var mcFrame:frame_CLIP;
       
@@ -89,6 +139,8 @@ package
       public var bFeedTimer:MovieClip;
       
       public var barDNA_mask:MovieClip;
+      
+      public var mcAbility3:MovieClip;
       
       public var window:MovieClip;
       
@@ -112,15 +164,13 @@ package
       
       public var barDNA_bg:GuardianCage_DNABar;
       
+      public var p3_tHealth:TextField;
+      
+      public var p3_bBuff:creatureBarGuardian;
+      
       public function GUARDIANCAGEPOPUP_CLIP()
       {
          super();
-         this.__setTab_bEvolve_GUARDIANCAGEPOPUP_use_0();
-      }
-      
-      internal function __setTab_bEvolve_GUARDIANCAGEPOPUP_use_0() : *
-      {
-         this.bEvolve.tabIndex = 0;
       }
    }
 }

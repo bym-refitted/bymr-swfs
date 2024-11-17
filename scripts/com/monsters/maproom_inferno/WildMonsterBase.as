@@ -167,8 +167,9 @@ package com.monsters.maproom_inferno
       
       private function onPortraitComplete(param1:String, param2:BitmapData) : void
       {
+         var _loc4_:int = 0;
          var _loc3_:int = placeholder.x;
-         var _loc4_:int = placeholder.y;
+         _loc4_ = placeholder.y;
          this.imageLoadState = 2;
          var _loc5_:Bitmap = new Bitmap(param2);
          _loc5_.height = 44;

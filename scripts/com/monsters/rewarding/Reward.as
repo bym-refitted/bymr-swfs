@@ -4,22 +4,31 @@ package com.monsters.rewarding
    
    public class Reward implements IExportable
    {
-      protected var _id:String;
+      internal var id:String;
       
       protected var _name:String;
       
       protected var _description:String;
       
-      protected var _value:*;
+      protected var _value:Number;
       
-      public function Reward(param1:String)
+      public function Reward()
       {
          super();
-         this._id = param1;
       }
       
-      public function applyReward() : void
+      internal function applyReward() : void
       {
+         this.onApplication();
+      }
+      
+      protected function onApplication() : void
+      {
+      }
+      
+      public function set value(param1:Number) : void
+      {
+         this._value = param1;
       }
       
       public function get value() : *
@@ -37,11 +46,6 @@ package com.monsters.rewarding
          return this._name;
       }
       
-      internal function get id() : String
-      {
-         return this._id;
-      }
-      
       public function exportData() : Object
       {
          var _loc1_:Object = {};
@@ -55,8 +59,12 @@ package com.monsters.rewarding
       
       public function importData(param1:Object) : void
       {
-         this._id = param1["id"];
+         this.id = param1["id"];
          this._value = param1["value"];
+      }
+      
+      public function removed() : void
+      {
       }
    }
 }
