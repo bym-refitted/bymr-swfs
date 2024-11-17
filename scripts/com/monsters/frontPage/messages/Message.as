@@ -88,6 +88,10 @@ package com.monsters.frontPage.messages
          this.onButtonClick();
       }
       
+      public function refresh() : void
+      {
+      }
+      
       protected function onButtonClick() : void
       {
       }

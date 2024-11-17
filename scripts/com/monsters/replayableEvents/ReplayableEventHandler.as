@@ -10,17 +10,17 @@ package com.monsters.replayableEvents
    
    public class ReplayableEventHandler
    {
-      public static var debugDate:Date;
-      
       public static var doesDebugClear:Boolean;
       
       public static var activeEvent:ReplayableEvent;
       
       private static var _graphic:IReplayableEventUI;
       
-      private static const _DURATION_UNTIL_EVENT_STARTS:Number = 7 * 24 * 60 * 60;
+      public static var debugDate:Date = new Date();
       
-      private static const _DURATION_UNTIL_EVENT_RESET:Number = 60 * 24 * 60 * 60;
+      public static const DURATION_UNTIL_EVENT_STARTS:Number = 7 * 24 * 60 * 60;
+      
+      private static const _DURATION_UNTIL_EVENT_RESET:Number = Number.MAX_VALUE;
       
       private static const _DURATION_BETWEEN_EVENTS:Number = 14 * 24 * 60 * 60;
       
@@ -54,7 +54,6 @@ package com.monsters.replayableEvents
          }
          if(activeEvent)
          {
-            assureAccurateDates();
             activeEvent.initialize();
             checkIfActiveEventIsFinished();
          }
@@ -72,16 +71,6 @@ package com.monsters.replayableEvents
             }
          }
          addUI();
-      }
-      
-      private static function assureAccurateDates() : void
-      {
-         var _loc1_:Number = activeEvent.originalStartDate;
-         if(_loc1_ && activeEvent.startDate != _loc1_ || activeEvent.endDate != activeEvent.startDate + activeEvent.duration)
-         {
-            activeEvent.setStartDate(_loc1_);
-            print("dates of the event are wrong, ressting them to:/nstart: " + new Date(activeEvent.startDate) + "/nend: " + new Date(activeEvent.endDate));
-         }
       }
       
       private static function checkIfActiveEventIsFinished() : void
@@ -180,6 +169,7 @@ package com.monsters.replayableEvents
          var _loc2_:Message = activeEvent.pressedHelpButton();
          if(_loc2_)
          {
+            _loc2_.refresh();
             _loc3_ = new FrontPageGraphic(_loc2_);
             POPUPS.Push(_loc3_);
          }
@@ -189,7 +179,7 @@ package com.monsters.replayableEvents
       {
          var _loc5_:Date = null;
          var _loc6_:Number = NaN;
-         if(Boolean(param1.originalStartDate) && param1.originalStartDate - currentTime <= _DURATION_UNTIL_EVENT_STARTS)
+         if(Boolean(param1.originalStartDate) && param1.originalStartDate - currentTime <= DURATION_UNTIL_EVENT_STARTS)
          {
             return param1.originalStartDate;
          }
@@ -203,7 +193,7 @@ package com.monsters.replayableEvents
             {
                _loc3_ = _loc5_.setHours(12,0,0,0) / 1000;
                _loc6_ = _loc3_ - currentTime;
-               if(!hasQualifiedLiveEventSoonAfter(_loc3_) && _loc6_ < _DURATION_UNTIL_EVENT_STARTS && _loc6_ > DURATION_REQUIRED_TO_CONFIRM_EVENT)
+               if(!hasQualifiedLiveEventSoonAfter(_loc3_) && _loc6_ < DURATION_UNTIL_EVENT_STARTS && _loc6_ > DURATION_REQUIRED_TO_CONFIRM_EVENT)
                {
                   return _loc3_;
                }
@@ -229,7 +219,7 @@ package com.monsters.replayableEvents
          while(_loc1_ < ReplayableEventLibrary.EVENTS.length)
          {
             _loc2_ = ReplayableEventLibrary.EVENTS[_loc1_];
-            if(Boolean(_loc2_.originalStartDate) && _loc2_.originalStartDate - currentTime <= _DURATION_UNTIL_EVENT_STARTS)
+            if(_loc2_.originalStartDate && currentTime < _loc2_.originalStartDate && _loc2_.originalStartDate - currentTime <= DURATION_UNTIL_EVENT_STARTS)
             {
                return _loc2_;
             }

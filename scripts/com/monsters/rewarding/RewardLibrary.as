@@ -6,6 +6,7 @@ package com.monsters.rewarding
    import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward1;
    import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward2;
    import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward3;
+   import com.monsters.replayableEvents.looting.wotc.rewards.KorathReward;
    import com.monsters.replayableEvents.monsterInvasion.hellRaisers.rewards.UnlockMagmaTowerInOutposts;
    import com.monsters.rewarding.rewards.slimeattikus.UnblockSlimeattikusReward;
    import com.monsters.rewarding.rewards.slimeattikus.UnlockSlimeattikusReward;
@@ -43,6 +44,7 @@ package com.monsters.rewarding
          addRewardType(SpurtzCannonReward1.ID,SpurtzCannonReward1);
          addRewardType(SpurtzCannonReward2.ID,SpurtzCannonReward2);
          addRewardType(SpurtzCannonReward3.ID,SpurtzCannonReward3);
+         addRewardType(KorathReward.k_REWARD_ID,KorathReward);
       }
       
       public static function addRewardType(param1:String, param2:Class) : void

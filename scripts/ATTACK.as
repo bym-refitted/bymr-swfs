@@ -529,7 +529,17 @@ package
                   _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc11_,"bucket"));
                   _loc12_ = "Level " + GLOBAL._playerGuardianData[_loc10_].l.Get() + " " + CHAMPIONCAGE._guardians["G" + GLOBAL._playerGuardianData[_loc10_].t].name;
                   _loc6_.push([1,_loc12_]);
-                  CREEPS._flungGuardian[_loc10_] = true;
+                  if(CREEPS._flungGuardian)
+                  {
+                     if(CREEPS._flungGuardian.length != GLOBAL._playerGuardianData.length)
+                     {
+                        CREEPS._flungGuardian = new Vector.<Boolean>(GLOBAL._playerGuardianData.length);
+                     }
+                     if(_loc10_ < CREEPS._flungGuardian.length)
+                     {
+                        CREEPS._flungGuardian[_loc10_] = true;
+                     }
+                  }
                }
                else
                {
@@ -574,7 +584,7 @@ package
          UI2.Update();
          if(BASE._saveOver != 1)
          {
-            BASE.Save();
+            BASE.Save(0,false,true);
          }
          RemoveDropZone();
       }

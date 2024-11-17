@@ -29,6 +29,8 @@ package com.monsters.effects
       
       public static var _state:int;
       
+      protected static var _launchedBomb:Boolean;
+      
       public static var _activeBombs:Object = {};
       
       public static var bombcounter:int = 0;
@@ -36,6 +38,11 @@ package com.monsters.effects
       public function ResourceBombs()
       {
          super();
+      }
+      
+      public static function get launchedBomb() : Boolean
+      {
+         return _launchedBomb;
       }
       
       public static function Data() : void
@@ -232,6 +239,7 @@ package com.monsters.effects
          var _loc1_:int = 0;
          var _loc2_:String = "tw0";
          _bombid = "tw0";
+         _launchedBomb = false;
          if(GLOBAL._mode == "attack")
          {
             for(_loc4_ in _bombs)
@@ -253,6 +261,7 @@ package com.monsters.effects
       public static function Clear() : void
       {
          _mc = null;
+         _launchedBomb = false;
       }
       
       public static function onAssetLoaded(param1:String, param2:BitmapData) : void
@@ -357,6 +366,7 @@ package com.monsters.effects
             SOUNDS.Play("puttybomb");
          }
          ++bombcounter;
+         _launchedBomb = true;
          if(_mc)
          {
             _mc.fired();
@@ -374,23 +384,26 @@ package com.monsters.effects
       public static function Tick() : void
       {
          var _loc1_:String = null;
-         var _loc3_:BFOUNDATION = null;
+         var _loc3_:ResourceBomb = null;
+         var _loc4_:BFOUNDATION = null;
          var _loc2_:int = 0;
          for(_loc1_ in _activeBombs)
          {
+            _loc3_ = _activeBombs[_loc1_];
             _loc2_++;
-            if(ResourceBomb(_activeBombs[_loc1_]).Tick())
+            if(_loc3_.Tick())
             {
-               _activeBombs[_loc1_].Freeze();
+               BASE.Save();
+               _loc3_.Freeze();
                delete _activeBombs[_loc1_];
                _loc2_--;
                if(_loc2_ == 0 && GLOBAL._mode == "build")
                {
-                  for each(_loc3_ in BASE._buildingsAll)
+                  for each(_loc4_ in BASE._buildingsAll)
                   {
-                     if(_loc3_._hp.Get() < _loc3_._hpMax.Get() && _loc3_._repairing == 0)
+                     if(_loc4_._hp.Get() < _loc4_._hpMax.Get() && _loc4_._repairing == 0)
                      {
-                        _loc3_.Repair();
+                        _loc4_.Repair();
                      }
                   }
                   MARKETING.Show("catapult");

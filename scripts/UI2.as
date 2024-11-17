@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.tests.ABTest;
    import com.monsters.chat.Chat;
    import com.monsters.ui.*;
    import flash.display.MovieClip;
@@ -329,7 +330,7 @@ package
                   }
                   if(_top.mcFullscreen.visible)
                   {
-                     _top.mcFullscreen.visible = false;
+                     _top.mcFullscreen.visible = ABTest.isInTestGroup("fst",128);
                   }
                   if(_top.mcBuffHolder.visible)
                   {

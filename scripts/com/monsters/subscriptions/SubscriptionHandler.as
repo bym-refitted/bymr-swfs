@@ -156,7 +156,6 @@ package com.monsters.subscriptions
          }
          if(FrontPageHandler.hasBeenSeenThisSession == false || FrontPageHandler.isVisible)
          {
-            FrontPageHandler.refresh();
             FrontPageHandler.showPopup(true);
          }
          else if(POPUPS.hasPopupsOpen())

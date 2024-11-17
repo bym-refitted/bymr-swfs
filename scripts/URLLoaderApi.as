@@ -105,7 +105,7 @@ package
       
       private function getSalt() : String
       {
-         return this.decodeSalt("XVV9YXVZVV2U3384W6VWYVZU31497399");
+         return this.decodeSalt("WWV20U6V73U94167ZV451447ZY3VY693");
       }
       
       private function decodeSalt(param1:String) : String

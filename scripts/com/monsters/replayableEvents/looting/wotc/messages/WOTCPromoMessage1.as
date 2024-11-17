@@ -1,8 +1,6 @@
 package com.monsters.replayableEvents.looting.wotc.messages
 {
-   import com.monsters.frontPage.messages.events.ReplayableEventPromoMessage;
-   
-   public class WOTCPromoMessage1 extends ReplayableEventPromoMessage
+   public class WOTCPromoMessage1 extends WOTCPromoMessage
    {
       public function WOTCPromoMessage1()
       {

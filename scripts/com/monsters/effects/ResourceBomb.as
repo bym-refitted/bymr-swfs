@@ -75,7 +75,7 @@ package com.monsters.effects
          this.damageSum = 0;
          this.resourceid = param3.resource;
          this.positionFromISO = PATHING.FromISO(this.position);
-         if(this.resourceid != 3)
+         if(this.resourceid != ResourceBombParticle.k_TYPE_PUTTY)
          {
             for each(_loc7_ in BASE._buildingsAll)
             {
@@ -150,12 +150,10 @@ package com.monsters.effects
          var _loc7_:Number = NaN;
          var _loc3_:int = int(this.targets.length);
          param1 = PATHING.FromISO(param1);
-         if(this.resourceid != 3)
+         if(this.resourceid !== ResourceBombParticle.k_TYPE_PUTTY)
          {
-            _loc2_ = 0;
-            while(_loc2_ < _loc3_)
+            for each(_loc5_ in this.targets)
             {
-               _loc5_ = this.targets[_loc2_];
                _loc6_ = _loc5_[0];
                _loc7_ = _loc5_[1] * 0.5 + 0.5;
                _loc4_ = _loc6_._type != 6 ? int(_loc7_ * this.dpp) : this.dpp;
@@ -179,9 +177,7 @@ package com.monsters.effects
                {
                   _loc4_ = 0;
                }
-               this.totalDamage += _loc4_;
-               _loc6_.Damage(_loc4_,this.position.x,this.position.y,1,false);
-               _loc2_++;
+               _loc6_.Damage(_loc4_,this.position.x,this.position.y,1,false,null,false);
             }
          }
          else

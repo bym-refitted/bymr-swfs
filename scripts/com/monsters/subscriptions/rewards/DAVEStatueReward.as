@@ -1,5 +1,6 @@
 package com.monsters.subscriptions.rewards
 {
+   import com.monsters.inventory.InventoryManager;
    import com.monsters.rewarding.Reward;
    
    public class DAVEStatueReward extends Reward
@@ -24,7 +25,7 @@ package com.monsters.subscriptions.rewards
       
       public static function doesStatueRewardExistsInInventory() : Boolean
       {
-         return BASE.BuildingStorageCount(DAVE_STATUE_TYPE_ID) > 0;
+         return InventoryManager.buildingStorageCount(DAVE_STATUE_TYPE_ID) > 0;
       }
       
       public static function findStatueRewardInWorld() : BFOUNDATION
@@ -53,7 +54,7 @@ package com.monsters.subscriptions.rewards
          var _loc2_:* = findStatueRewardInWorld() != null;
          if(!_loc1_ && !_loc2_)
          {
-            BASE.BuildingStorageAdd(DAVE_STATUE_TYPE_ID,1);
+            InventoryManager.buildingStorageAdd(DAVE_STATUE_TYPE_ID,1);
          }
       }
       
@@ -69,7 +70,7 @@ package com.monsters.subscriptions.rewards
                _loc1_.RecycleC();
             }
          }
-         BASE.BuildingStorageRemove(DAVE_STATUE_TYPE_ID);
+         InventoryManager.buildingStorageRemove(DAVE_STATUE_TYPE_ID);
       }
       
       override public function reset() : void

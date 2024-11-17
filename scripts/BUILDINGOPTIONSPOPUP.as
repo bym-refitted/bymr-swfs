@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.display.BuildingAssetContainer;
    import com.monsters.display.ImageCache;
+   import com.monsters.inventory.InventoryManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -92,7 +93,7 @@ package
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceBuild);
             mcResources.bAction.Highlight = true;
-            if(BASE.BuildingStorageCount(this._building._type) > 0)
+            if(InventoryManager.buildingStorageCount(this._building._type) > 0)
             {
                mcResources.bAction.SetupKey("btn_place");
             }
@@ -536,7 +537,7 @@ package
             }
             if(STORE._storeItems["BUILDING" + this._building._type])
             {
-               if(BASE.BuildingStorageCount(this._building._type) > 0)
+               if(InventoryManager.buildingStorageCount(this._building._type) > 0)
                {
                   if(BASE.addBuildingB(this._building._type))
                   {

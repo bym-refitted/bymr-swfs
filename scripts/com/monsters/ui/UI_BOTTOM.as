@@ -118,6 +118,10 @@ package com.monsters.ui
          {
             _nextwave.Resize();
          }
+         if(TUTORIAL._stage < TUTORIAL._endstage)
+         {
+            TUTORIAL.Resize();
+         }
       }
       
       public static function Clear() : void

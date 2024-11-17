@@ -801,7 +801,6 @@ package de.polygonal.ds
             _loc9_ = _a[_loc6_];
             _loc10_ = _a[_loc7_];
             _loc11_ = _a[_loc8_];
-            null;
             _loc13_ = int(_loc9_.compare(_loc11_));
             if(_loc13_ < 0 && int(_loc9_.compare(_loc10_)) < 0)
             {
@@ -819,7 +818,6 @@ package de.polygonal.ds
             _a[_loc12_] = _a[param1];
             while(_loc4_ < _loc5_)
             {
-               null;
                while(int(_loc14_.compare(_a[_loc5_])) < 0 && _loc4_ < _loc5_)
                {
                   _loc5_--;

@@ -15,7 +15,7 @@ package com.monsters.siege.weapons
       
       public static const DURABILITY:String = "siegeWeaponDurability";
       
-      public static const MAX_LEVEL:uint = 10;
+      public static const MAX_LEVEL:int = 10;
       
       private static const _IMAGE_FOLDER_URL:String = "siegebuttons/";
       
@@ -73,14 +73,14 @@ package com.monsters.siege.weapons
          return this.getProperty(SiegeWeapon.UPGRADE_COSTS).getValueForLevel(this.level + 1);
       }
       
-      public function get level() : uint
+      public function get level() : int
       {
-         return this._level.Get();
+         return Math.min(SiegeWeapon.MAX_LEVEL,this._level.Get());
       }
       
-      public function set level(param1:uint) : void
+      public function set level(param1:int) : void
       {
-         this._level.Set(param1);
+         this._level.Set(Math.min(SiegeWeapon.MAX_LEVEL,param1));
       }
       
       public function get quantity() : int
@@ -135,7 +135,7 @@ package com.monsters.siege.weapons
       public function exportVariables() : Object
       {
          return {
-            "level":this.level,
+            "level":Math.min(MAX_LEVEL,this.level),
             "quantity":this.quantity
          };
       }

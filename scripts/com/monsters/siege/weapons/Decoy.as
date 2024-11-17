@@ -189,7 +189,7 @@ package com.monsters.siege.weapons
       
       public function get damage() : int
       {
-         return getProperty(DAMAGE).getValueForLevel(level);
+         return Math.max(0,Math.min(23500,getProperty(DAMAGE).getValueForLevel(level)));
       }
       
       override public function onActivation(param1:Number, param2:Number) : void

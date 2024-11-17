@@ -25,6 +25,8 @@ package com.monsters.kingOfTheHill
    {
       private static var _instance:KOTHHandler;
       
+      private const k_CONSECUTIVE_WINS_TO_PERMAKRALLEN:int = 5;
+      
       private const _WARNING_DURATION:uint = 86400;
       
       private const _LAST_LOOT_SCORE_LABEL:String = "lastKOTHScore";
@@ -94,13 +96,19 @@ package com.monsters.kingOfTheHill
          {
             if(this._wins)
             {
-               _loc2_ = new KOTHRewardMessage(this._wins > 1);
+               if(!this.hasWonPermanantly)
+               {
+                  _loc2_ = new KOTHRewardMessage(this._wins > 1);
+               }
             }
             else
             {
                _loc2_ = new KOTHEndMessage(GLOBAL.StatGet(this._LAST_TIER_LABEL) >= 1);
             }
-            POPUPS.Push(new FrontPageGraphic(_loc2_));
+            if(_loc2_)
+            {
+               POPUPS.Push(new FrontPageGraphic(_loc2_));
+            }
          }
       }
       
@@ -141,7 +149,7 @@ package com.monsters.kingOfTheHill
       {
          if(this._timeToReset <= this._WARNING_DURATION)
          {
-            if(Boolean(this._tier) && this._totalLoot < this.minimumLootRequiredToUnlockKrallen())
+            if(this._tier && this._totalLoot < this.minimumLootRequiredToUnlockKrallen() && !this.hasWonPermanantly)
             {
                POPUPS.Push(new FrontPageGraphic(new KrallenAtRiskMessage()));
             }
@@ -321,7 +329,7 @@ package com.monsters.kingOfTheHill
       
       public function get hasWonPermanantly() : Boolean
       {
-         return this._wins >= 5;
+         return this._wins >= this.k_CONSECUTIVE_WINS_TO_PERMAKRALLEN;
       }
       
       public function get lootThresholds() : Vector.<uint>

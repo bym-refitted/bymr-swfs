@@ -135,7 +135,10 @@ package com.monsters.replayableEvents.attackDefend
       {
          super.importData(param1);
          this.yardsDestroyed = param1["_yardsDestroyed"];
-         ReplayableEventHandler.callServerMethod("geteventscore",[["eventid",_id]],this.serverScoreCallback);
+         if(_isActive)
+         {
+            ReplayableEventHandler.callServerMethod("geteventscore",[["eventid",_id]],this.serverScoreCallback);
+         }
       }
       
       override public function exportData() : Object

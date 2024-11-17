@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.inventory.InventoryManager;
    
    public class BTOTEM extends BDECORATION
    {
@@ -20,7 +21,7 @@ package
       {
          RemoveAllFromStorage(false,true);
          RemoveAllFromYard(false,true);
-         BASE.BuildingStorageAdd(BTOTEM_BUILDING_TYPE,1);
+         InventoryManager.buildingStorageAdd(BTOTEM_BUILDING_TYPE,1);
       }
       
       public static function TotemPlace() : void
@@ -137,7 +138,7 @@ package
             }
             if(!BASE._buildingsStored["b" + BTOTEM_BUILDING_TYPE])
             {
-               BASE.BuildingStorageAdd(BTOTEM_BUILDING_TYPE,_loc1_);
+               InventoryManager.buildingStorageAdd(BTOTEM_BUILDING_TYPE,_loc1_);
                GLOBAL.Message("It\'s come to our attention that the Wild Monsters have been stealing some players\' Totems. If yours seems to be missing, don\'t fret! Just check your storage and it should be ready for placement.");
             }
          }

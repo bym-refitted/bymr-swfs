@@ -211,6 +211,12 @@ package com.monsters.replayableEvents
       
       private function Hide() : void
       {
+         if(true)
+         {
+            bHelp.removeEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
+            bAction.removeEventListener(MouseEvent.CLICK,this.ShowEventPopup);
+            parent.removeChild(this);
+         }
       }
       
       private function Resize() : void

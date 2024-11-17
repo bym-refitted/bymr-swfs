@@ -29,29 +29,29 @@ package
          super();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
       {
-         var _loc8_:Number = NaN;
-         var _loc7_:int = param1;
+         var _loc9_:Number = NaN;
+         var _loc8_:int = param1;
          if(_fortification.Get() > 0)
          {
-            _loc7_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc7_ = _loc7_ / 100;
+            _loc8_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc8_ = _loc8_ / 100;
          }
          if(param5)
          {
-            _loc8_ = !!param6 ? param6.Get() * 0.01 : 1;
+            _loc9_ = !!param6 ? param6.Get() * 0.01 : 1;
             if(param4 == 3)
             {
-               this.Loot(_loc7_ * 3 * _loc8_);
+               this.Loot(_loc8_ * 3 * _loc9_);
             }
             else
             {
-               this.Loot(_loc7_ * 0.5 * _loc8_);
+               this.Loot(_loc8_ * 0.5 * _loc9_);
             }
          }
-         super.Damage(param1,param2,param3,param4,param5,param6);
-         return _loc7_;
+         super.Damage(param1,param2,param3,param4,param5,param6,param7);
+         return _loc8_;
       }
       
       override public function Loot(param1:int) : void

@@ -1,7 +1,12 @@
 package com.monsters.replayableEvents.monsterMadness
 {
    import com.cc.utils.SecNum;
+   import com.monsters.debug.Console;
+   import com.monsters.replayableEvents.looting.wotc.rewards.KorathReward;
    import com.monsters.replayableEvents.monsterMadness.popups.MonsterMadnessPopup;
+   import com.monsters.rewarding.Reward;
+   import com.monsters.rewarding.RewardHandler;
+   import com.monsters.rewarding.RewardLibrary;
    import flash.events.Event;
    
    public class MonsterMadness
@@ -43,10 +48,10 @@ package com.monsters.replayableEvents.monsterMadness
          _points = new SecNum(param1);
          stage = getStage();
          GLOBAL.StatSet(LAST_SCORE,param1);
-         updateKorathStats();
+         print("old monster madness score is " + param1);
       }
       
-      private static function updateKorathStats() : void
+      public static function updateKorathStats() : void
       {
          var _loc1_:Number = 0;
          if(points >= POINTS_GOAL3)
@@ -61,11 +66,30 @@ package com.monsters.replayableEvents.monsterMadness
          {
             _loc1_ = 1;
          }
-         CHAMPIONCAGE._guardians["G4"].props.powerLevel = _loc1_;
-         var _loc2_:Object = CHAMPIONCAGE.GetGuardianData(4);
-         if(_loc2_)
+         if(_loc1_ > 0)
          {
-            _loc2_.pl = new SecNum(_loc1_);
+            setKorathPowerLevel(_loc1_);
+         }
+      }
+      
+      public static function setKorathPowerLevel(param1:int) : void
+      {
+         var _loc2_:Reward = RewardHandler.instance.getRewardByID(KorathReward.k_REWARD_ID);
+         if(!_loc2_)
+         {
+            _loc2_ = RewardLibrary.getRewardByID(KorathReward.k_REWARD_ID);
+            if(!_loc2_)
+            {
+               Console.warning("reward handler isnt working, you cant apply rewards here");
+               return;
+            }
+            _loc2_.value = param1;
+            RewardHandler.instance.addAndApplyReward(_loc2_);
+         }
+         else if(param1 > _loc2_.value)
+         {
+            _loc2_.value = param1;
+            RewardHandler.instance.applyReward(_loc2_);
          }
       }
       

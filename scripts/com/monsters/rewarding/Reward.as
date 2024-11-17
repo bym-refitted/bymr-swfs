@@ -12,7 +12,7 @@ package com.monsters.rewarding
       
       protected var _description:String;
       
-      protected var _value:Number;
+      protected var _value:Number = 0;
       
       public function Reward()
       {
@@ -73,7 +73,10 @@ package com.monsters.rewarding
       public function importData(param1:Object) : void
       {
          this.id = param1["id"];
-         this._value = param1["value"];
+         if(param1["value"])
+         {
+            this._value = param1["value"];
+         }
       }
       
       public function removed() : void

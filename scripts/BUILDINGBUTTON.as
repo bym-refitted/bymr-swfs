@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.inventory.InventoryManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -68,7 +69,7 @@ package
          }
          else if(this._buildingProps.type == "decoration")
          {
-            _loc10_ = BASE.BuildingStorageCount(this._id);
+            _loc10_ = InventoryManager.buildingStorageCount(this._id);
             if(_loc10_ > 0)
             {
                tQuantity.htmlText = "<font color=\"#0000CC\"><b>" + KEYS.Get("bdg_numinstorage",{"v1":_loc10_}) + "</b></font>";

@@ -798,7 +798,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","LOGGER.Stat " + data);
+            LOGGER.Log("log","LOGGER.Stat " + data);
          }
       }
       

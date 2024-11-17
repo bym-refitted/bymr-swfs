@@ -265,6 +265,7 @@ class ProfilerContent extends Sprite
    
    public function ProfilerContent()
    {
+      var _loc1_:TextFormat = null;
       super();
       this.fps = new Shape();
       this.mb = new Shape();
@@ -275,7 +276,7 @@ class ProfilerContent extends Sprite
       this.fps.y = 45;
       this.mb.x = 65;
       this.mb.y = 90;
-      var _loc1_:TextFormat = new TextFormat("_sans",9,0xaaaaaa);
+      _loc1_ = new TextFormat("_sans",9,0xaaaaaa);
       this.infoTxtBx = new TextField();
       this.infoTxtBx.autoSize = TextFieldAutoSize.LEFT;
       this.infoTxtBx.defaultTextFormat = new TextFormat("_sans",11,0xcccccc);

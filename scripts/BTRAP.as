@@ -30,23 +30,22 @@ package
       
       override public function SetProps() : void
       {
-         var _loc1_:RasterData = null;
          super.SetProps();
          if(GLOBAL._mode != "build")
          {
             _mc.visible = false;
             _mcBase.visible = false;
-            if(BYMConfig.instance.RENDERER_ON)
-            {
-               for each(_loc1_ in _rasterData)
-               {
-                  if(_loc1_)
-                  {
-                     _loc1_.visible = false;
-                  }
-               }
-            }
          }
+      }
+      
+      override public function updateRasterData() : void
+      {
+         if(GLOBAL._mode !== "build")
+         {
+            _mc.visible = false;
+            _mcBase.visible = false;
+         }
+         super.updateRasterData();
       }
       
       override public function TickAttack() : void
@@ -163,13 +162,14 @@ package
          this._hasTargets = false;
          _mc.gotoAndStop(2);
          _mc.visible = true;
+         _mcBase.visible = true;
          if(BYMConfig.instance.RENDERER_ON)
          {
             for each(_loc10_ in _rasterData)
             {
                if(_loc10_)
                {
-                  _loc10_.visible = false;
+                  _loc10_.visible = true;
                }
             }
          }

@@ -1,5 +1,6 @@
 package com.monsters.display
 {
+   import com.monsters.configs.BYMConfig;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -65,6 +66,7 @@ package com.monsters.display
             }
          }
          _buildings[param1._id] = {
+            "container":new Sprite(),
             "bmdtext":new BitmapData(labelWidth,21,true,0xffffff),
             "bmdprogress":new BitmapData(51,6,true,0xffffff),
             "bmdhp":new BitmapData(51,6,true,0xffffff),
@@ -72,7 +74,7 @@ package com.monsters.display
             "indexprogress":-1,
             "indexhp":-1
          };
-         _loc3_ = new Sprite();
+         _loc3_ = _buildings[param1._id].container;
          _loc3_.mouseEnabled = false;
          _loc3_.mouseChildren = false;
          _loc2_ = _loc3_.addChild(new Bitmap(_buildings[param1._id].bmdtext));
@@ -84,7 +86,16 @@ package com.monsters.display
          _loc2_ = _loc3_.addChild(new Bitmap(_buildings[param1._id].bmdhp));
          _loc2_.x = -26 + _loc4_.x;
          _loc2_.y = -14 + _loc4_.y;
-         param1._mc.addChild(_loc3_);
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            param1._mc.addChild(_loc3_);
+         }
+         else
+         {
+            _loc3_.x = param1._mc.x;
+            _loc3_.y = param1._mc.y;
+            MAP._BUILDINGTOPS.addChild(_loc3_);
+         }
          Update(param1);
       }
       
@@ -93,8 +104,9 @@ package com.monsters.display
          var _loc5_:BitmapData = null;
          var _loc6_:int = 0;
          var _loc8_:Object = null;
-         var _loc9_:int = 0;
+         var _loc9_:Sprite = null;
          var _loc10_:int = 0;
+         var _loc11_:int = 0;
          var _loc3_:int = -1;
          var _loc4_:String = "";
          var _loc7_:int = getTimer();
@@ -105,6 +117,12 @@ package com.monsters.display
          _loc8_ = _buildings[param1._id];
          if(GLOBAL._render)
          {
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _loc9_ = _buildings[param1._id].container;
+               _loc9_.x = param1._mc.x;
+               _loc9_.y = param1._mc.y;
+            }
             if(param1._repairing)
             {
                _loc3_ = 49 / param1._hpMax.Get() * param1._hp.Get();
@@ -114,14 +132,14 @@ package com.monsters.display
             {
                if(param1._prefab)
                {
-                  _loc9_ = 0;
                   _loc10_ = 0;
-                  while(_loc10_ < param1._prefab)
+                  _loc11_ = 0;
+                  while(_loc11_ < param1._prefab)
                   {
-                     _loc9_ += GLOBAL._buildingProps[param1._type - 1].costs[_loc10_].time;
-                     _loc10_++;
+                     _loc10_ += GLOBAL._buildingProps[param1._type - 1].costs[_loc11_].time;
+                     _loc11_++;
                   }
-                  _loc6_ = _loc9_;
+                  _loc6_ = _loc10_;
                }
                else
                {

@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.configs.BYMConfig;
    import com.monsters.events.CreepEvent;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.champions.ChampionBase;
@@ -127,7 +128,10 @@ package
                   EFFECTS.CreepSplat(_loc1_._creatureID,_loc1_._tmpPoint.x,_loc1_._tmpPoint.y);
                }
                _loc1_.Clear();
-               MAP._BUILDINGTOPS.removeChild(_loc1_);
+               if(!BYMConfig.instance.RENDERER_ON)
+               {
+                  MAP._BUILDINGTOPS.removeChild(_loc1_);
+               }
                --_creatureCount;
                delete _creatures[_loc2_];
             }
@@ -149,11 +153,22 @@ package
          ++_creatureCount;
          if(BASE.isInferno() || param1.substr(0,1) == "I")
          {
-            _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP_INFERNO(param1,param3,param4,param5,param6,true,param7));
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP_INFERNO(param1,param3,param4,param5,param6,true,param7));
+            }
+            else
+            {
+               _loc8_ = new CREEP_INFERNO(param1,param3,param4,param5,param6,true,param7);
+            }
+         }
+         else if(!BYMConfig.instance.RENDERER_ON)
+         {
+            _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP(param1,param3,param4,param5,param6,true,param7));
          }
          else
          {
-            _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP(param1,param3,param4,param5,param6,true,param7));
+            _loc8_ = new CREEP(param1,param3,param4,param5,param6,true,param7);
          }
          _creatures[_creatureID] = _loc8_;
          if(GLOBAL._render)
@@ -173,14 +188,20 @@ package
          {
             _loc1_ = _creatures[_loc2_];
             _loc1_.Clear();
-            MAP._BUILDINGTOPS.removeChild(_loc1_);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.removeChild(_loc1_);
+            }
          }
          _creatures = {};
          _creatureCount = 0;
          _loc3_ = 0;
          while(_loc3_ < _guardianList.length)
          {
-            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc3_]);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.removeChild(_guardianList[_loc3_]);
+            }
             _guardianList[_loc3_] = null;
             _loc3_++;
          }
@@ -308,7 +329,10 @@ package
          }
          if(_loc2_ < _guardianList.length)
          {
-            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            }
             if(_guardianList[_loc2_] == _guardian)
             {
                _guardian = null;
@@ -326,7 +350,10 @@ package
          var _loc2_:int = 0;
          while(_loc2_ < _loc1_)
          {
-            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            }
             _loc2_++;
          }
          _guardianList.length = 0;

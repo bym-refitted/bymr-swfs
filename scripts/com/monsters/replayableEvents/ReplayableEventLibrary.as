@@ -18,7 +18,7 @@ package com.monsters.replayableEvents
       
       public static const WRATH_OF_THE_CHAMPION:WrathOfTheChampion = new WrathOfTheChampion();
       
-      public static const EVENTS:Vector.<ReplayableEvent> = Vector.<ReplayableEvent>([BATTLE_TOADS,MONSTER_BLITZKRIEG,BRUKKARG_EVENT,HELL_RAISERS,WRATH_OF_THE_CHAMPION]);
+      public static const EVENTS:Vector.<ReplayableEvent> = Vector.<ReplayableEvent>([BATTLE_TOADS,MONSTER_BLITZKRIEG,BRUKKARG_EVENT,WRATH_OF_THE_CHAMPION]);
       
       public function ReplayableEventLibrary()
       {

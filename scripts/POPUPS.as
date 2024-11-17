@@ -378,6 +378,7 @@ package
       
       public static function Timeout() : void
       {
+         var _loc1_:MovieClip = null;
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
@@ -389,7 +390,7 @@ package
          _mcBG.width = GLOBAL._SCREEN.width;
          _mcBG.height = GLOBAL._SCREEN.height;
          _mcBG.cacheAsBitmap = true;
-         var _loc1_:MovieClip = new popup_timeout();
+         _loc1_ = new popup_timeout();
          _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_timeout_title") + "</b>";
          _loc1_.tB.htmlText = KEYS.Get("pop_timeout_body");
          if(!GLOBAL._flags.kongregate)

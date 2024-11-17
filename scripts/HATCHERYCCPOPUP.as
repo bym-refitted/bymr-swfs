@@ -32,9 +32,9 @@ package
       public function HATCHERYCCPOPUP()
       {
          var _loc1_:String = null;
-         var _loc2_:int = 0;
          var _loc5_:int = 0;
          var _loc7_:Array = null;
+         var _loc9_:int = 0;
          var _loc10_:MovieClip = null;
          var _loc11_:MovieClip = null;
          var _loc12_:MovieClip = null;
@@ -77,7 +77,7 @@ package
          this._scrollSetContainer.addChild(this._scrollSet);
          addChild(this._scrollSetContainer);
          scroller.visible = false;
-         _loc2_ = 0;
+         var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:Point = new Point(10,14);
          _loc5_ = 5;
@@ -88,7 +88,7 @@ package
          {
             _loc8_ = CREATURELOCKER.maxCreatures();
          }
-         var _loc9_:int = 0;
+         _loc9_ = 0;
          while(_loc9_ < _loc7_.length)
          {
             _loc1_ = _loc7_[_loc9_].id;

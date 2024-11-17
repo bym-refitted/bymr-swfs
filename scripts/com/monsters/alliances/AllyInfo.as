@@ -325,8 +325,7 @@ package com.monsters.alliances
       
       public function IconRelationLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc4_:Bitmap = null;
-         _loc4_ = new Bitmap(param2);
+         var _loc4_:Bitmap = new Bitmap(param2);
          if(param3[0])
          {
             param3[0].addChild(_loc4_);

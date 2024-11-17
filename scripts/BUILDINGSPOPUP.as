@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.inventory.InventoryManager;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
@@ -147,7 +148,7 @@ package
          while(param2 < _loc7_.length)
          {
             _loc10_ = _loc7_[param2];
-            if(_loc10_.group == param1 && (_loc10_.subgroup == null || _loc10_.subgroup == BUILDINGS._menuB) && (!_loc10_.block || BASE.BuildingStorageCount(_loc10_.id)))
+            if(_loc10_.group == param1 && (_loc10_.subgroup == null || _loc10_.subgroup == BUILDINGS._menuB) && (!_loc10_.block || InventoryManager.buildingStorageCount(_loc10_.id)))
             {
                if(_loc8_ >= 10 * BUILDINGS._page && _loc8_ < 10 + 10 * BUILDINGS._page)
                {
@@ -211,7 +212,7 @@ package
          while(_loc3_ < param1.length)
          {
             _loc4_ = param1[_loc3_];
-            if(_loc4_.group == BUILDINGS._menuA && (_loc4_.subgroup == null || _loc4_.subgroup == BUILDINGS._menuB) && (!_loc4_.block || BASE.BuildingStorageCount(_loc4_.id)))
+            if(_loc4_.group == BUILDINGS._menuA && (_loc4_.subgroup == null || _loc4_.subgroup == BUILDINGS._menuB) && (!_loc4_.block || InventoryManager.buildingStorageCount(_loc4_.id)))
             {
                _loc2_ = GLOBAL._buildingProps[_loc4_.id - 1];
                if(_loc2_.type != "decoration")

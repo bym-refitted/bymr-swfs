@@ -3,11 +3,12 @@ package com.monsters.replayableEvents.looting.wotc
    import com.monsters.frontPage.messages.Message;
    import com.monsters.replayableEvents.*;
    import com.monsters.replayableEvents.looting.wotc.messages.*;
+   import com.monsters.replayableEvents.looting.wotc.quotas.WOTCQuota;
    import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
    
    public class WrathOfTheChampion extends ReplayableEvent
    {
-      public static const EVENT_PAGE_URL:String = "http://camelot.allakhazam.com/ability.html?cabil=109";
+      public static const EVENT_PAGE_URL:String = "http://www.kixeye.com/monster-madness";
       
       protected var m_lastKnownScore:Number;
       
@@ -17,17 +18,45 @@ package com.monsters.replayableEvents.looting.wotc
          _progress = -1;
          _priority = 400;
          _id = 6;
-         _buttonCopy = KEYS.Get("btn_openmap");
-         _titleImage = "events/wotc/wotc_title.png";
-         _imageURL = "events/wotc/wotc_reward.png";
          _messages = Vector.<Message>([new WOTCPromoMessage1(),new WOTCPromoMessage2(),new WOTCPromoMessage3(),new WOTCStartMessage(),new WOTCEndMessage()]);
-         _maxScore = MonsterMadness.POINTS_GOAL3;
          super();
-         var _loc1_:* = BASE.loadObject[MonsterMadness.SAVE_ID];
-         this.score = !!BASE.loadObject[MonsterMadness.SAVE_ID] ? Number(BASE.loadObject[MonsterMadness.SAVE_ID]) : 0;
-         _quotas.push(new ReplayableEventQuota(MonsterMadness.POINTS_GOAL1,null,null,new WOTCRewardMessage1()));
-         _quotas.push(new ReplayableEventQuota(MonsterMadness.POINTS_GOAL2,null,null,new WOTCRewardMessage2()));
-         _quotas.push(new ReplayableEventQuota(MonsterMadness.POINTS_GOAL3,null,null,new WOTCRewardMessage3()));
+         _maxScore = MonsterMadness.POINTS_GOAL3;
+         _originalStartDate = 1345143600;
+         _duration = _DEFAULT_EVENT_DURATION;
+         this.m_lastKnownScore = MonsterMadness.points;
+         getServerScore();
+         _quotas.push(new WOTCQuota(MonsterMadness.POINTS_GOAL1,"events/wotc/wotc_reward1.png",1,new WOTCRewardMessage1()));
+         _quotas.push(new WOTCQuota(MonsterMadness.POINTS_GOAL2,"events/wotc/wotc_reward2.png",2,new WOTCRewardMessage2()));
+         _quotas.push(new WOTCQuota(_maxScore,"events/wotc/wotc_reward3.png",3,new WOTCRewardMessage3()));
+      }
+      
+      override public function get imageURL() : String
+      {
+         return hasEventStarted ? "events/wotc/mm_timer.png" : "events/wotc/mm_magma_champ_art.png";
+      }
+      
+      override public function get titleImage() : String
+      {
+         return hasEventStarted ? "events/wotc/mm_logo_meter.png" : "events/wotc/mm_logo_timer.v2.png";
+      }
+      
+      override protected function onInitialize() : void
+      {
+         this.removeOwnedRewardQuotas();
+      }
+      
+      private function removeOwnedRewardQuotas() : void
+      {
+         var _loc1_:Number = this.m_lastKnownScore;
+         var _loc2_:int = int(_quotas.length - 1);
+         while(_loc2_ >= 0)
+         {
+            if(_loc1_ >= _quotas[_loc2_].quota)
+            {
+               _quotas.splice(_loc2_,1);
+            }
+            _loc2_--;
+         }
       }
       
       override public function createNewUI() : IReplayableEventUI
@@ -36,12 +65,17 @@ package com.monsters.replayableEvents.looting.wotc
          {
             return new MultiRewardReplayableEventUI();
          }
-         return new ReplayableEventUI();
+         return new ReplayableEventCountdown();
       }
       
       override public function getCurrentMessage() : Message
       {
-         var _loc1_:ReplayableEventQuota = getCurrentQuota();
+         return super.getCurrentMessage();
+      }
+      
+      override public function pressedHelpButton() : Message
+      {
+         var _loc1_:ReplayableEventQuota = getLatestMetQuota(_score);
          if(Boolean(_loc1_) && Boolean(_loc1_.message))
          {
             return _loc1_.message;
@@ -51,19 +85,18 @@ package com.monsters.replayableEvents.looting.wotc
       
       override public function get hasCompletedEvent() : Boolean
       {
-         return this.m_lastKnownScore >= MonsterMadness.POINTS_GOAL3;
+         return this.m_lastKnownScore >= _maxScore || _score >= _maxScore;
       }
       
-      override public function pressedActionButton() : void
+      override protected function setScoreFromServer(param1:Object) : void
       {
-         GLOBAL.ShowMap();
-      }
-      
-      override public function set score(param1:Number) : void
-      {
-         super.score = param1;
-         this.m_lastKnownScore = _score;
-         progress = this.m_lastKnownScore / MonsterMadness.POINTS_GOAL3;
+         super.setScoreFromServer(param1);
+         setMetQuotas();
+         if(this.hasCompletedEvent)
+         {
+            return;
+         }
+         progress = _score / _maxScore;
       }
       
       override public function doesQualify() : Boolean

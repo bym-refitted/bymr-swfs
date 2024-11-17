@@ -28,7 +28,6 @@ package
       
       public function HATCHERYPOPUP()
       {
-         var _loc1_:int = 0;
          var _loc5_:Array = null;
          var _loc7_:int = 0;
          var _loc8_:Boolean = false;
@@ -63,7 +62,7 @@ package
          this._scrollSetContainer.addChild(this._scrollSet);
          addChild(this._scrollSetContainer);
          scroller.visible = false;
-         _loc1_ = 0;
+         var _loc1_:int = 0;
          var _loc2_:int = 0;
          this._monsterSlots = [];
          _loc5_ = CREATURELOCKER.GetSortedCreatures(true);

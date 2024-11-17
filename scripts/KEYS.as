@@ -183,7 +183,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","KEYS.Get " + key);
+            LOGGER.Log("log","KEYS.Get " + key);
             tmp = "KEYS Error";
          }
          if(tmp.lastIndexOf("&") != -1)

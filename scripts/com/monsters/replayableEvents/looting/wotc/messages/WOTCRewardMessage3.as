@@ -11,7 +11,8 @@ package com.monsters.replayableEvents.looting.wotc.messages
       
       override protected function onButtonClick() : void
       {
-         GLOBAL.Brag("event6-reward","wotcreward3_streamtitle","wotcreward3_streamdesc","wotcreward3_stream.png");
+         GLOBAL.Brag("event6-reward","wotcreward3_streamtitle","wotcreward3_streambody","wotcreward3_stream.png");
+         POPUPS.Next();
       }
    }
 }

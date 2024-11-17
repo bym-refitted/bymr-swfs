@@ -12,6 +12,7 @@ package com.monsters.monsters.champions
    import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.events.MouseEvent;
    import flash.filters.GlowFilter;
    import flash.geom.Point;
@@ -22,6 +23,18 @@ package com.monsters.monsters.champions
    
    public class ChampionBase extends MonsterBase
    {
+      public static const k_CHAMPION_STATUS_NORMAL:int = 0;
+      
+      public static const k_CHAMPION_STATUS_FROZEN:int = 1;
+      
+      public static const k_CHAMPION_STATUS_JUICED:int = 2;
+      
+      public static const k_CHAMPION_STATUS_DESTROYED:int = 3;
+      
+      public static const k_CHAMPION_STATUS_REFUND:int = 4;
+      
+      public static const k_CHAMPION_STATUS_MIGRATED:int = 5;
+      
       public static const KORATH_POWER_NORMAL:int = 1;
       
       public static const KORATH_POWER_FIREBALL:int = 2;
@@ -216,14 +229,14 @@ package com.monsters.monsters.champions
          }
          else
          {
-            this._spriteID = _creatureID + "_" + this._level.Get();
+            this._spriteID = _creatureID + "_" + Math.min(this._level.Get(),CHAMPIONCAGE.GetGuardianProperties(_creatureID,"health").length);
          }
          SPRITES.SetupSprite(this._spriteID);
          if(_movement == "fly")
          {
             SPRITES.SetupSprite("bigshadow");
             _shadow = new BitmapData(52,50,true,0xffffff);
-            _shadowMC = addChild(new Bitmap(_shadow));
+            _shadowMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(_shadow) : addChild(new Bitmap(_shadow));
             _shadowMC.x = -21;
             _shadowMC.y = -26;
             _frameNumber = int(Math.random() * 1000);
@@ -244,6 +257,10 @@ package com.monsters.monsters.champions
          if(BYMConfig.instance.RENDERER_ON)
          {
             _rasterData = new RasterData(_graphicMC,_rasterPt,int.MAX_VALUE);
+            if(_movement === "fly")
+            {
+               _shadowData = new RasterData(_shadow,_shadowPt,MAP.DEPTH_SHADOW,null,true);
+            }
          }
          if(_movement == "fly")
          {
@@ -346,12 +363,16 @@ package com.monsters.monsters.champions
             }
             _loc1_++;
          }
-         BASE._guardianData.splice(_loc1_,1);
+         BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_JUICED;
+         BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_JUICED.toString();
          if(GLOBAL._mode == "build")
          {
             _loc1_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
-            GLOBAL._playerGuardianData[_loc1_] = null;
-            GLOBAL._playerGuardianData.splice(_loc1_,1);
+            if(_loc1_ != -1)
+            {
+               GLOBAL._playerGuardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_JUICED;
+               GLOBAL._playerGuardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_JUICED.toString();
+            }
          }
          CREATURES._guardian = null;
          BASE.Save();
@@ -800,7 +821,6 @@ package com.monsters.monsters.champions
          var _loc9_:Point = null;
          var _loc10_:Point = null;
          var _loc11_:int = 0;
-         var _loc12_:Array = null;
          var _loc13_:* = undefined;
          var _loc14_:int = 0;
          var _loc15_:Point = null;
@@ -811,7 +831,7 @@ package com.monsters.monsters.champions
          var _loc20_:Number = NaN;
          var _loc21_:Point = null;
          var _loc3_:int = getTimer();
-         _loc12_ = [];
+         var _loc12_:Array = [];
          _looking = true;
          _loc9_ = PATHING.FromISO(_tmpPoint);
          for each(_loc5_ in BASE._buildingsMain)
@@ -1032,7 +1052,7 @@ package com.monsters.monsters.champions
             SPRITES.SetupSprite(this._spriteID);
             _loc3_ = SPRITES.GetSpriteDescriptor(this._spriteID);
             _graphic = new BitmapData(_loc3_.width,_loc3_.height,true,0xffffff);
-            _graphicMC = addChild(new Bitmap(_graphic)) as Bitmap;
+            _graphicMC = !BYMConfig.instance.RENDERER_ON ? addChild(new Bitmap(_graphic)) as Bitmap : new Bitmap(_graphic);
             if(BYMConfig.instance.RENDERER_ON && Boolean(_rasterData))
             {
                _rasterData.data = _graphic;
@@ -1880,6 +1900,9 @@ package com.monsters.monsters.champions
       public function Export(param1:Boolean = true) : void
       {
          var _loc4_:int = 0;
+         var _loc5_:String = null;
+         var _loc6_:int = 0;
+         var _loc7_:Boolean = false;
          if(_behaviour == "juice" || _behaviour == "freeze")
          {
             return;
@@ -1887,7 +1910,7 @@ package com.monsters.monsters.champions
          var _loc2_:int = 0;
          var _loc3_:Boolean = false;
          _loc2_ = 0;
-         while(_loc2_ < CREATURES._guardianList.length)
+         while(Boolean(CREATURES._guardianList) && _loc2_ < CREATURES._guardianList.length)
          {
             if(CREATURES._guardianList[_loc2_] == this)
             {
@@ -1898,15 +1921,27 @@ package com.monsters.monsters.champions
          }
          if(param1 && _loc3_)
          {
-            _loc4_ = 0;
+            _loc6_ = int(BASE._guardianData.length);
+            _loc7_ = false;
             _loc2_ = 0;
             while(_loc2_ < BASE._guardianData.length)
             {
                if(BASE._guardianData[_loc2_].t == _creatureID.substr(1))
                {
+                  _loc7_ = true;
                   break;
                }
                _loc2_++;
+            }
+            if(!_loc7_)
+            {
+               _loc2_ = BASE._guardianData.push({}) - 1;
+            }
+            _loc4_ = int(BASE._guardianData[_loc2_].status);
+            _loc5_ = BASE._guardianData[_loc2_].log;
+            if(_loc5_ == null)
+            {
+               _loc5_ = _loc4_.toString();
             }
             BASE._guardianData[_loc2_] = {};
             BASE._guardianData[_loc2_].hp = new SecNum(_health.Get());
@@ -1917,13 +1952,21 @@ package com.monsters.monsters.champions
             BASE._guardianData[_loc2_].t = int(_creatureID.substr(1,1));
             BASE._guardianData[_loc2_].fb = new SecNum(this._foodBonus.Get());
             BASE._guardianData[_loc2_].pl = new SecNum(this._powerLevel.Get());
+            BASE._guardianData[_loc2_].status = _loc4_;
+            BASE._guardianData[_loc2_].log = _loc5_;
          }
          if(!param1 && GLOBAL._mode != "build" || param1 && _loc3_ && GLOBAL._mode == "build")
          {
             _loc2_ = GLOBAL.getPlayerGuardianIndex(int(_creatureID.substr(1)));
             if(_loc2_ < 0)
             {
-               _loc2_ = int(GLOBAL._playerGuardianData.length);
+               _loc2_ = GLOBAL._playerGuardianData.push({}) - 1;
+            }
+            _loc4_ = int(GLOBAL._playerGuardianData[_loc2_].status);
+            _loc5_ = GLOBAL._playerGuardianData[_loc2_].log;
+            if(_loc5_ == null)
+            {
+               _loc5_ = _loc4_.toString();
             }
             GLOBAL._playerGuardianData[_loc2_] = {};
             GLOBAL._playerGuardianData[_loc2_].hp = new SecNum(_health.Get());
@@ -1934,6 +1977,8 @@ package com.monsters.monsters.champions
             GLOBAL._playerGuardianData[_loc2_].t = int(_creatureID.substr(1,1));
             GLOBAL._playerGuardianData[_loc2_].fb = new SecNum(this._foodBonus.Get());
             GLOBAL._playerGuardianData[_loc2_].pl = new SecNum(this._powerLevel.Get());
+            GLOBAL._playerGuardianData[_loc2_].status = _loc4_;
+            GLOBAL._playerGuardianData[_loc2_].log = _loc5_;
          }
       }
       
@@ -2523,19 +2568,19 @@ package com.monsters.monsters.champions
       
       private function Quake(param1:int) : void
       {
-         var _loc3_:Array = null;
-         var _loc6_:BFOUNDATION = null;
+         var _loc7_:BFOUNDATION = null;
          var _loc2_:Point = new Point(_mc.x,_mc.y);
+         var _loc3_:Array = [];
          if(_behaviour == "attack")
          {
             _loc3_ = MAP.getDefendingCreepsInRange(this._range * 2.5,new Point(_mc.x,_mc.y));
-            for each(_loc6_ in BASE._buildingsAll)
+            for each(_loc7_ in BASE._buildingsAll)
             {
-               if(_loc6_._class != "cage" && _loc6_._class != "decoration")
+               if(_loc7_._class != "cage" && _loc7_._class != "decoration")
                {
-                  if(GLOBAL.QuickDistance(_loc2_,new Point(_loc6_.x,_loc6_.y)) < this._range * 2.5)
+                  if(GLOBAL.QuickDistance(_loc2_,new Point(_loc7_.x,_loc7_.y)) < this._range * 2.5)
                   {
-                     _loc3_.push(_loc6_);
+                     _loc3_.push(_loc7_);
                   }
                }
             }
@@ -2544,15 +2589,24 @@ package com.monsters.monsters.champions
          {
             _loc3_ = MAP.getAttackingCreepsInRange(this._range * 2.5,new Point(_mc.x,_mc.y));
          }
+         var _loc5_:int = int(_loc3_.length - 1);
+         while(_loc5_ >= 0)
+         {
+            if(_loc3_[_loc5_] is MonsterBase && MonsterBase(_loc3_[_loc5_])._altitude > 0)
+            {
+               _loc3_.splice(_loc5_,1);
+            }
+            _loc5_--;
+         }
          if(_loc3_)
          {
             MAP.DealLinearAEDamage(_loc2_,this._range * 2.5,_damage.Get(),_loc3_,this._range * 1.5);
          }
-         var _loc5_:G4QuakeGraphic = new G4QuakeGraphic(20,this._range * 2.5,BYMConfig.instance.RENDERER_ON ? new Point(_rasterPt.x,_rasterPt.y + _graphic.height * 0.6) : null);
-         _loc5_.graphic.y = _loc5_.graphic.y + 0;
+         var _loc6_:G4QuakeGraphic = new G4QuakeGraphic(20,this._range * 2.5,BYMConfig.instance.RENDERER_ON ? new Point(_rasterPt.x,_rasterPt.y + _graphic.height * 0.6) : null);
+         _loc6_.graphic.y = _loc6_.graphic.y + 0;
          if(!BYMConfig.instance.RENDERER_ON)
          {
-            _mc.addChildAt(_loc5_.graphic,getChildIndex(_graphicMC) - 1);
+            _mc.addChildAt(_loc6_.graphic,getChildIndex(_graphicMC) - 1);
          }
       }
    }

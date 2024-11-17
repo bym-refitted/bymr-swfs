@@ -159,6 +159,7 @@ package com.monsters.baseplanner.popups
       
       public function configPopupTemplate(param1:int = 0, param2:int = 0) : void
       {
+         var _loc3_:Point = null;
          var _loc6_:Checkbox = null;
          var _loc7_:Checkbox = null;
          var _loc8_:Checkbox = null;
@@ -189,7 +190,7 @@ package com.monsters.baseplanner.popups
          this.mcFrame.width = this._guideMC.guideBG.width;
          this.mcFrame.height = this._guideMC.guideBG.height;
          (this.mcFrame as frame).Setup(true,this.Hide);
-         var _loc3_:Point = new Point(this._PLANNER_LEFT_MARGIN,this._PLANNER_TOP_MARGIN);
+         _loc3_ = new Point(this._PLANNER_LEFT_MARGIN,this._PLANNER_TOP_MARGIN);
          if(!this.sideBar)
          {
             this.sideBar = new BasePlannerPopup_ExplorerContainer();
@@ -612,8 +613,9 @@ package com.monsters.baseplanner.popups
       
       public function zoomScrollerUpdate() : void
       {
+         var _loc3_:Number = 65;
          var _loc4_:Number = this.designView.zoomMax - this.designView.zoomMin;
-         var _loc5_:Number = 107 - 65 / _loc4_ * PlannerDesignView.zoomValue;
+         var _loc5_:Number = 107 - _loc3_ / _loc4_ * PlannerDesignView.zoomValue;
          this.zoomMenu.scrollbar.y = _loc5_;
       }
       

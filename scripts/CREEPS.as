@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.configs.BYMConfig;
    import com.monsters.events.CreepEvent;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.champions.ChampionBase;
@@ -107,7 +108,10 @@ package
                   }
                }
                _loc2_.Clear();
-               MAP._BUILDINGTOPS.removeChild(_loc2_);
+               if(!BYMConfig.instance.RENDERER_ON)
+               {
+                  MAP._BUILDINGTOPS.removeChild(_loc2_);
+               }
                --_creepCount;
                if(_loc2_._creatureID.substr(0,1) == "G" || (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && !_loc2_.isDisposable)
                {
@@ -142,11 +146,22 @@ package
          ++_creepCount;
          if(param1.substr(0,1) == "I")
          {
-            _loc9_ = param2.addChild(new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7));
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               _loc9_ = param2.addChild(new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7));
+            }
+            else
+            {
+               _loc9_ = new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7);
+            }
+         }
+         else if(!BYMConfig.instance.RENDERER_ON)
+         {
+            _loc9_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
          }
          else
          {
-            _loc9_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
+            _loc9_ = new CREEP(param1,param3,param4,param5,null,false,null,param6,param7);
          }
          _loc9_.isDisposable = param8;
          _creeps[_creepID] = _loc9_;
@@ -182,7 +197,10 @@ package
          if(_loc12_)
          {
             _creeps[_creepID] = _loc12_;
-            param2.addChild(_loc12_);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               param2.addChild(_loc12_);
+            }
          }
          return _loc12_;
       }
@@ -242,7 +260,10 @@ package
          {
             _loc1_ = _creeps[_loc2_];
             _loc1_.Clear();
-            MAP._BUILDINGTOPS.removeChild(_loc1_);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.removeChild(_loc1_);
+            }
          }
          _creeps = {};
          _creepCount = _flungCount = 0;

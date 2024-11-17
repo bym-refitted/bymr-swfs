@@ -20,6 +20,10 @@ package com.monsters.rendering
       
       monsters_render static const s_visibleData:Vector.<RasterData> = new Vector.<RasterData>();
       
+      monsters_render static const s_unsortedData:Vector.<RasterData> = new Vector.<RasterData>();
+      
+      monsters_render static const s_debugData:Vector.<RasterData> = new Vector.<RasterData>();
+      
       monsters_render const _id:uint = s_id++;
       
       monsters_render var _data:IBitmapDrawable;
@@ -38,9 +42,15 @@ package com.monsters.rendering
       
       monsters_render var _scaleY:int;
       
+      monsters_render var _alpha:uint;
+      
       monsters_render var _visible:Boolean;
       
-      public function RasterData(param1:IBitmapDrawable, param2:Point, param3:Number, param4:String = null)
+      monsters_render var _unSorted:Boolean;
+      
+      monsters_render var _cleared:Boolean;
+      
+      public function RasterData(param1:IBitmapDrawable, param2:Point, param3:Number, param4:String = null, param5:Boolean = false)
       {
          super();
          this.data = param1;
@@ -48,10 +58,20 @@ package com.monsters.rendering
          this.monsters_render::_depth = param3;
          this.monsters_render::_blendMode = param4;
          this.monsters_render::_scaleX = this.monsters_render::_scaleY = 100;
+         this.monsters_render::_alpha = 4278190080;
          this.monsters_render::_visible = true;
-         monsters_render::s_needsSort = true;
-         monsters_render::s_rasterData[monsters_render::s_rasterData.length] = this;
-         monsters_render::s_visibleData[monsters_render::s_visibleData.length] = this;
+         this.monsters_render::_unSorted = param5;
+         monsters_render::s_needsSort = this.monsters_render::_unSorted ? monsters_render::s_needsSort : true;
+         if(this.monsters_render::_unSorted)
+         {
+            monsters_render::s_rasterData[monsters_render::s_rasterData.length] = this;
+            monsters_render::s_unsortedData[monsters_render::s_unsortedData.length] = this;
+         }
+         else
+         {
+            monsters_render::s_rasterData[monsters_render::s_rasterData.length] = this;
+            monsters_render::s_visibleData[monsters_render::s_visibleData.length] = this;
+         }
       }
       
       public static function get rasterData() : Vector.<RasterData>
@@ -80,7 +100,7 @@ package com.monsters.rendering
          return _loc1_;
       }
       
-      public static function showDebug() : void
+      monsters_render static function showDebug() : void
       {
          var _loc1_:RasterData = null;
          var _loc2_:BitmapData = null;
@@ -92,10 +112,21 @@ package com.monsters.rendering
             {
                _loc3_ = new Shape();
                _loc3_.graphics.lineStyle(1,0xff0000);
+               _loc3_.graphics.beginFill(0x990000,0.4);
                _loc3_.graphics.drawRect(0,0,_loc2_.width,_loc2_.height);
-               new RasterData(_loc3_,_loc1_.monsters_render::_pt,_loc1_.monsters_render::_depth);
+               monsters_render::s_debugData[monsters_render::s_debugData.length] = new RasterData(_loc3_,_loc1_.monsters_render::_pt,_loc1_.monsters_render::_depth);
             }
          }
+      }
+      
+      monsters_render static function hideDebug() : void
+      {
+         var _loc1_:RasterData = null;
+         for each(_loc1_ in monsters_render::s_debugData)
+         {
+            _loc1_.clear(true);
+         }
+         monsters_render::s_debugData.length = 0;
       }
       
       public static function clear(param1:Boolean = false) : void
@@ -105,7 +136,7 @@ package com.monsters.rendering
          {
             _loc2_.clear(param1);
          }
-         monsters_render::s_visibleData.length = monsters_render::s_rasterData.length = 0;
+         monsters_render::s_unsortedData.length = monsters_render::s_visibleData.length = monsters_render::s_rasterData.length = monsters_render::s_debugData.length = 0;
       }
       
       public function get id() : uint
@@ -139,10 +170,23 @@ package com.monsters.rendering
          this.monsters_render::_pt = param1;
       }
       
+      public function get rect() : Rectangle
+      {
+         return this.monsters_render::_rect;
+      }
+      
+      public function get depth() : Number
+      {
+         return this.monsters_render::_depth;
+      }
+      
       public function set depth(param1:Number) : void
       {
-         this.monsters_render::_depth = param1;
-         monsters_render::s_needsSort = true;
+         if(this.monsters_render::_depth !== param1)
+         {
+            monsters_render::s_needsSort = true;
+            this.monsters_render::_depth = param1;
+         }
       }
       
       public function set blendMode(param1:String) : void
@@ -165,15 +209,36 @@ package com.monsters.rendering
          this.monsters_render::_scaleY = param1 * 100 >> 0;
       }
       
+      public function set alpha(param1:Number) : void
+      {
+         this.monsters_render::_alpha = Math.ceil(param1 * 255) << 24;
+      }
+      
       public function set visible(param1:Boolean) : void
       {
          if(!this.monsters_render::_visible && param1)
          {
-            monsters_render::s_visibleData[monsters_render::s_visibleData.length] = this;
+            if(this.monsters_render::_unSorted)
+            {
+               monsters_render::s_unsortedData[monsters_render::s_unsortedData.length] = this;
+            }
+            else
+            {
+               monsters_render::s_visibleData[monsters_render::s_visibleData.length] = this;
+            }
+            monsters_render::s_needsSort = true;
          }
          else if(this.monsters_render::_visible && !param1)
          {
-            monsters_render::s_visibleData.splice(monsters_render::s_visibleData.indexOf(this),1);
+            if(this.monsters_render::_unSorted)
+            {
+               monsters_render::s_unsortedData.splice(monsters_render::s_unsortedData.indexOf(this),1);
+            }
+            else
+            {
+               monsters_render::s_visibleData.splice(monsters_render::s_visibleData.indexOf(this),1);
+            }
+            monsters_render::s_needsSort = true;
          }
          this.monsters_render::_visible = param1;
       }
@@ -185,8 +250,22 @@ package com.monsters.rendering
       
       public function clear(param1:Boolean = false) : void
       {
+         if(this.monsters_render::_cleared)
+         {
+            return;
+         }
          monsters_render::s_rasterData.splice(monsters_render::s_rasterData.indexOf(this),1);
-         monsters_render::s_visibleData.splice(monsters_render::s_visibleData.indexOf(this),1);
+         if(this.monsters_render::_visible)
+         {
+            if(this.monsters_render::_unSorted)
+            {
+               monsters_render::s_unsortedData.splice(monsters_render::s_unsortedData.indexOf(this),1);
+            }
+            else
+            {
+               monsters_render::s_visibleData.splice(monsters_render::s_visibleData.indexOf(this),1);
+            }
+         }
          if(param1 && this.monsters_render::_data is BitmapData)
          {
             (this.monsters_render::_data as BitmapData).dispose();
@@ -195,6 +274,7 @@ package com.monsters.rendering
          this.monsters_render::_pt = null;
          this.monsters_render::_rect = null;
          this.monsters_render::_blendMode = null;
+         this.monsters_render::_cleared = true;
       }
    }
 }

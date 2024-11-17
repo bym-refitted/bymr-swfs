@@ -239,7 +239,8 @@ package com.monsters.mailbox
       
       private function onMsgFocusIn(param1:FocusEvent = null) : void
       {
-         var _loc2_:Object = this.editMode;
+         var _loc2_:Object = null;
+         _loc2_ = this.editMode;
          outline_mc.visible = _loc2_["smallOutlineVisible"];
          largeOutline_mc.visible = _loc2_["largeOutlineVisible"];
          msg_txt.height = _loc2_["textHeight"];

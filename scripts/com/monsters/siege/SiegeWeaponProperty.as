@@ -24,19 +24,19 @@ package com.monsters.siege
          return this._values;
       }
       
-      public function getDescription(param1:uint) : String
+      public function getDescription(param1:int) : String
       {
          return KEYS.Get(this.descriptionKey,{"v1":this.getValueForLevel(param1)});
       }
       
-      public function getValueForLevel(param1:uint) : *
+      public function getValueForLevel(param1:int) : *
       {
-         return this._values[Math.min(param1,SiegeWeapon.MAX_LEVEL) - 1];
+         return this._values[Math.max(0,Math.min(param1,SiegeWeapon.MAX_LEVEL)) - 1];
       }
       
-      public function getProgressForLevel(param1:uint) : Number
+      public function getProgressForLevel(param1:int) : Number
       {
-         return this._values[Math.min(param1,SiegeWeapon.MAX_LEVEL) - 1] / this._values[SiegeWeapon.MAX_LEVEL - 1];
+         return this._values[Math.max(0,Math.min(param1,SiegeWeapon.MAX_LEVEL)) - 1] / this._values[SiegeWeapon.MAX_LEVEL - 1];
       }
    }
 }

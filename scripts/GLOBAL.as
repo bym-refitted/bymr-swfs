@@ -692,6 +692,11 @@ package
          PLEASEWAIT.Hide();
       }
       
+      public static function get isFullScreen() : Boolean
+      {
+         return _ROOT.stage.displayState === StageDisplayState.FULL_SCREEN;
+      }
+      
       public static function goFullScreen(param1:MouseEvent = null) : void
       {
          if(_ROOT.stage.displayState == StageDisplayState.NORMAL)
@@ -792,17 +797,15 @@ package
             {
                ++_timePlayed;
                _loc1_ = BASE._buildingsAll;
-               _loc3_ = 0;
-               _loc4_ = 0;
                for each(_loc2_ in _loc1_)
                {
-                  if(_loc2_._class == "resource")
+                  if(_loc2_._class === "resource")
                   {
                      _loc3_ = _loc2_._stored.Get();
                      _loc4_ = _loc2_._countdownProduce.Get();
                   }
                   _loc2_.Tick(1);
-                  if(_loc2_._class == "resource")
+                  if(_loc2_._class === "resource")
                   {
                      if(_loc4_ > 1 && _loc3_ != _loc2_._stored.Get())
                      {
@@ -893,10 +896,6 @@ package
          var _loc8_:BFOUNDATION = null;
          if(!_halt)
          {
-            if(BYMConfig.instance.RENDERER_ON)
-            {
-               _ROOT.stage.invalidate();
-            }
             _loc2_ = getTimer();
             SOUNDS.Tick();
             if(_render)
@@ -952,7 +951,10 @@ package
                      {
                         if(Boolean(CREATURES._guardianList[_loc6_]) && CREATURES._guardianList[_loc6_].Tick(1))
                         {
-                           MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc6_]);
+                           if(!BYMConfig.instance.RENDERER_ON)
+                           {
+                              MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc6_]);
+                           }
                            CREATURES._guardianList[_loc6_].clearRasterData();
                            if(CREATURES._guardianList[_loc6_] == CREATURES._guardian)
                            {
@@ -969,6 +971,10 @@ package
                      PROJECTILES.Tick();
                      FIREBALLS.Tick();
                      _loc7_++;
+                  }
+                  if(BYMConfig.instance.RENDERER_ON)
+                  {
+                     _ROOT.stage.invalidate();
                   }
                }
                ++_frameNumber;
@@ -1720,6 +1726,11 @@ package
          if(Chat._chatInited && Chat._bymChat && !Chat._bymChat._open)
          {
             _SCREENHUDLEFT = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 30 - 0);
+         }
+         if(MAP._GROUND)
+         {
+            MAP.instance.resizeViewRect();
+            BFOUNDATION.updateAllRasterData();
          }
       }
       

@@ -96,7 +96,7 @@ package
       
       public static var _inited:Boolean = false;
       
-      public static var stage:Stage = GLOBAL._ROOT.stage;
+      public static const stage:Stage = GLOBAL._ROOT.stage;
       
       public static var _creepCells:Object = {};
       
@@ -171,7 +171,7 @@ package
             if(BYMConfig.instance.RENDERER_ON)
             {
                _EFFECTSBMP = new BitmapData(_canvas.width,_canvas.height,false,0);
-               _effectsRasterData = new RasterData(_EFFECTSBMP,new Point((_canvas.width - _EFFECTSBMP.width) * 0.5,(_canvas.height - _EFFECTSBMP.height) * 0.5),0);
+               _effectsRasterData = new RasterData(_EFFECTSBMP,new Point((_canvas.width - _EFFECTSBMP.width) * 0.5,(_canvas.height - _EFFECTSBMP.height) * 0.5),0,null,true);
             }
             else
             {
@@ -341,9 +341,16 @@ package
          {
             _GROUND.removeEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.removeEventListener(Event.ENTER_FRAME,Scroll);
-            while(_GROUND.numChildren > 0)
+            while(_GROUND.numChildren)
             {
                _GROUND.removeChildAt(0);
+            }
+         }
+         if(_BUILDINGTOPS)
+         {
+            while(_BUILDINGTOPS.numChildren)
+            {
+               _BUILDINGTOPS.removeChildAt(0);
             }
          }
          if(BYMConfig.instance.RENDERER_ON && GLOBAL._ROOT.hasEventListener(Event.RENDER))
@@ -353,6 +360,7 @@ package
          _BGTILES = null;
          _BUILDINGBASES = null;
          _BUILDINGFOOTPRINTS = null;
+         _BUILDINGTOPS = null;
          _RESOURCES = null;
          _BUILDINGINFO = null;
          _PROJECTILES = null;
@@ -496,6 +504,7 @@ package
             _loc4_ = GLOBAL._SCREEN.height;
             _GROUND.x = tx;
             _GROUND.y = ty;
+            _instance.resizeViewRect();
          }
       }
       
@@ -574,25 +583,28 @@ package
       
       public static function Scroll(param1:Event = null) : void
       {
-         var _loc13_:int = 0;
-         var _loc14_:MovieClip = null;
+         var _loc12_:int = 0;
+         var _loc13_:Object = null;
+         var _loc14_:MonsterBase = null;
          var _loc15_:Number = NaN;
          var _loc16_:Number = NaN;
+         var _loc17_:Number = NaN;
+         var _loc18_:Number = NaN;
          if(_following)
          {
+            _loc13_ = CREEPS._creeps;
             tx = 0;
             ty = 0;
-            _loc13_ = 0;
-            for each(_loc14_ in CREEPS._creeps)
+            for each(_loc14_ in _loc13_)
             {
-               if(_loc14_._behaviour == "attack" || _loc14_._behaviour == "loot")
+               if(_loc14_._behaviour === "attack" || _loc14_._behaviour === "loot")
                {
-                  _loc13_++;
+                  _loc12_++;
                   tx += _loc14_.x;
                   ty += _loc14_.y;
                }
             }
-            if(_loc13_ <= 0)
+            if(_loc12_ <= 0)
             {
                tx = _dragX;
                ty = _dragY;
@@ -602,28 +614,32 @@ package
                }
                return;
             }
-            tx /= _loc13_;
-            ty /= _loc13_;
-            tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth / 2;
-            ty = 0 - ty + GLOBAL.GetGameHeight() / 2;
+            tx /= _loc12_;
+            ty /= _loc12_;
+            tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth * 0.5;
+            ty = 0 - ty + GLOBAL._ROOT.stage.stageHeight * 0.5;
             _dragX = tx;
             _dragY = ty;
+            BFOUNDATION.updateAllRasterData();
          }
          else if(_dragging && UI2._scrollMap && !_autoScroll && _canScroll)
          {
-            tx = int(stage.mouseX - _dragX);
-            ty = int(stage.mouseY - _dragY);
-            _loc15_ = stage.mouseX - (_dragX + _startX);
-            _loc16_ = stage.mouseY - (_dragY + _startY);
-            _dragDistance = Math.abs(Math.sqrt(_loc15_ * _loc15_ + _loc16_ * _loc16_));
-            if(_dragDistance > 10)
+            _loc15_ = stage.mouseX;
+            _loc16_ = stage.mouseY;
+            tx = _loc15_ - _dragX >> 0;
+            ty = _loc16_ - _dragY >> 0;
+            _loc17_ = _loc15_ - (_dragX + _startX);
+            _loc18_ = _loc16_ - (_dragY + _startY);
+            _dragDistance = Math.abs(_loc17_ * _loc17_ + _loc18_ * _loc18_);
+            if(_dragDistance > 100)
             {
                _dragged = true;
             }
+            BFOUNDATION.updateAllRasterData();
          }
          var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
-         var _loc3_:int = GLOBAL.GetGameHeight();
-         var _loc10_:int = 2375 - _loc2_ / 2;
+         var _loc3_:int = GLOBAL._ROOT.stage.stageHeight;
+         var _loc10_:int = 2375 - (_loc2_ >> 1);
          if(GLOBAL._zoomed)
          {
             _loc10_ = (2375 - _loc2_ + 380) / 2;
@@ -632,7 +648,7 @@ package
          {
             tx = _loc10_;
          }
-         _loc10_ = -1615 + _loc2_ / 2;
+         _loc10_ = -1615 + (_loc2_ >> 1);
          if(GLOBAL._zoomed)
          {
             _loc10_ = (-1615 + _loc2_ + 380) / 2;
@@ -641,7 +657,7 @@ package
          {
             tx = _loc10_;
          }
-         _loc10_ = -650 + _loc3_ / 2;
+         _loc10_ = -650 + (_loc3_ >> 1);
          if(GLOBAL._zoomed)
          {
             _loc10_ = (-650 + _loc3_ + 335) / 2;
@@ -650,7 +666,7 @@ package
          {
             ty = _loc10_;
          }
-         _loc10_ = 1325 - _loc3_ / 2;
+         _loc10_ = 1325 - (_loc3_ >> 1);
          if(GLOBAL._zoomed)
          {
             _loc10_ = (1325 - _loc3_ + 335) / 2;
@@ -664,11 +680,11 @@ package
          targY = _GROUND.y;
          if(targX < tx)
          {
-            targX += int((tx - targX) / 2);
+            targX += tx - targX >> 1;
          }
          else if(targX > tx)
          {
-            targX -= int((targX - tx) / 2);
+            targX -= targX - tx >> 1;
          }
          if(Math.abs(targX - tx) <= 2)
          {
@@ -677,11 +693,11 @@ package
          }
          if(targY < ty - 1)
          {
-            targY += (ty - targY) / 2;
+            targY += ty - targY >> 1;
          }
          else
          {
-            targY -= (targY - ty) / 2;
+            targY -= targY - ty >> 1;
          }
          if(Math.abs(targY - ty) <= 2)
          {
@@ -690,14 +706,10 @@ package
          }
          if(!(d == 0 || _autoScroll))
          {
-            _GROUND.x = int(targX);
-            _GROUND.y = int(targY);
+            _GROUND.x = targX >> 0;
+            _GROUND.y = targY >> 0;
          }
-         var _loc12_:Rectangle = GLOBAL._SCREEN;
-         _viewRect.x = -(targX >> 0) + (MAP_WIDTH >> 1) + _loc12_.x;
-         _viewRect.y = -(targY >> 0) + (MAP_HEIGHT >> 1) + _loc12_.y;
-         _viewRect.width = _loc12_.width;
-         _viewRect.height = _loc12_.height;
+         _instance.resizeViewRect();
       }
       
       public static function CreepCellAdd(param1:Point, param2:String, param3:MovieClip) : String
@@ -900,16 +912,16 @@ package
          return _canvas;
       }
       
+      public function get canvasContainer() : Bitmap
+      {
+         return _canvasContainer;
+      }
+      
       public function get offset() : Point
       {
          this._point.x = _canvasContainer.x;
          this._point.y = _canvasContainer.y;
          return this._point;
-      }
-      
-      public function get canvasContainer() : Bitmap
-      {
-         return _canvasContainer;
       }
       
       public function get viewRect() : Rectangle
@@ -929,9 +941,18 @@ package
          }
       }
       
+      public function resizeViewRect() : void
+      {
+         var _loc1_:Rectangle = GLOBAL._SCREEN;
+         _viewRect.width = _loc1_.width * (1 / _GROUND.scaleX);
+         _viewRect.height = _loc1_.height * (1 / _GROUND.scaleY);
+         _viewRect.x = -(_GROUND.x * (1 / _GROUND.scaleX)) + (MAP_WIDTH >> 1) + _loc1_.x;
+         _viewRect.y = -(_GROUND.y * (1 / _GROUND.scaleY)) + (MAP_HEIGHT >> 1) + _loc1_.y;
+      }
+      
       private function render(param1:Event) : void
       {
-         this._renderer.render(RasterData.visibleData);
+         this._renderer.render();
       }
    }
 }

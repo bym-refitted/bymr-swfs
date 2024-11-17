@@ -89,7 +89,7 @@ package
             }
             this._guardCage.SpawnGuardian(1,0,0,param1,CHAMPIONCAGE.GetGuardianProperty(_loc2_,1,"health"),"",0,CHAMPIONCAGE._guardians[_loc2_].props.powerLevel);
             LOGGER.Stat([52,_loc2_,2]);
-            BASE.Save();
+            BASE.Save(0,false,true);
             this.Hide();
          }
       }

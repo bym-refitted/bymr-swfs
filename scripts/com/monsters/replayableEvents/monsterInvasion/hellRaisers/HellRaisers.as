@@ -23,6 +23,7 @@ package com.monsters.replayableEvents.monsterInvasion.hellRaisers
          _imageURL = "events/hellraisers/hellraisers_event.png";
          _messages = Vector.<Message>([new HellRaisersPromoMessage1(),new HellRaisersPromoMessage2(),new HellRaisersPromoMessage3(),new HellRaisersStartMessage(),new HellRaisersEndMessage()]);
          _wavesTotal = this._WAVES_TOTAL;
+         _maxScore = _wavesTotal;
          _rewardMessage = new HellRaisersRewardMessage();
          super(this._WAVES_TOTAL);
          _quotas.push(new HellRaisersQuota(15,"events/hellraisers/hellraisers_reward_1.png",null,1));
@@ -36,7 +37,7 @@ package com.monsters.replayableEvents.monsterInvasion.hellRaisers
       
       override public function doesQualify() : Boolean
       {
-         return false;
+         return GLOBAL._bTownhall._lvl.Get() >= 7;
       }
    }
 }

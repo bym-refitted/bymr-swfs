@@ -157,9 +157,9 @@ package
       
       public static function ToISO(param1:Number, param2:Number, param3:Number) : Point
       {
-         var _loc5_:Number = (param1 + param2) * 0.5 - param3;
-         var _loc6_:Number = param1 - param2;
-         return new Point(Math.floor(_loc6_),Math.floor(_loc5_));
+         var _loc4_:Number = (param1 + param2) * 0.5 - param3;
+         var _loc5_:Number = param1 - param2;
+         return new Point(Math.floor(_loc5_),Math.floor(_loc4_));
       }
       
       public static function FromISO(param1:Number, param2:Number) : Point

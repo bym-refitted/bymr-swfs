@@ -156,6 +156,10 @@ package com.monsters.monsters.creeps
          if(BYMConfig.instance.RENDERER_ON)
          {
             _rasterData = new RasterData(_graphic,_rasterPt,int.MAX_VALUE);
+            if(_movement === "fly")
+            {
+               _shadowData = new RasterData(_shadow,_shadowPt,MAP.DEPTH_SHADOW,null,true);
+            }
          }
          this.ApplyInfernoVenom();
          if(param2 == "housing")
@@ -383,6 +387,7 @@ package com.monsters.monsters.creeps
       {
          var _loc1_:Point = null;
          var _loc2_:Number = NaN;
+         var _loc3_:SiegeWeapon = null;
          var _loc4_:Decoy = null;
          var _loc5_:Rectangle = null;
          var _loc6_:Point = null;
@@ -393,7 +398,7 @@ package com.monsters.monsters.creeps
          var _loc11_:int = 0;
          var _loc12_:int = 0;
          var _loc13_:Point = null;
-         var _loc3_:SiegeWeapon = SiegeWeapons.activeWeapon;
+         _loc3_ = SiegeWeapons.activeWeapon;
          if(Boolean(_loc3_) && _loc3_ is Decoy)
          {
             _behaviour = "decoy";

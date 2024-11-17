@@ -263,6 +263,7 @@ package
       public function addKothTooltip(param1:MovieClip) : void
       {
          var _loc4_:MovieClip = null;
+         var _loc5_:bubblepopupDownBuff = null;
          var _loc2_:String = "";
          switch(param1)
          {
@@ -281,7 +282,7 @@ package
          {
             this.removeKothTooltip(_loc4_);
          }
-         var _loc5_:bubblepopupDownBuff = new bubblepopupDownBuff();
+         _loc5_ = new bubblepopupDownBuff();
          if(_loc4_ == p3_mcLootMark1)
          {
             this._kothToolTip1 = addChild(_loc5_);
@@ -1418,7 +1419,7 @@ package
             CREATURES._guardian.LevelSet(CREATURES._guardian._level.Get() + 1,_loc1_);
             BASE.Purchase("IEV",_loc1_,"cage");
             CHAMPIONCAGE.Hide();
-            BASE.Save();
+            BASE.Save(0,false,true);
          }
       }
       

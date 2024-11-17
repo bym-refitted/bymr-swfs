@@ -357,19 +357,19 @@ package
          super.Update(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
          {
             param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
          }
-         var _loc7_:int = param1;
+         var _loc8_:int = param1;
          if(_fortification.Get() > 0)
          {
-            _loc7_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc7_ = _loc7_ / 100;
+            _loc8_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc8_ = _loc8_ / 100;
          }
-         _hp.Add(-_loc7_);
+         _hp.Add(-_loc8_);
          if(_hp.Get() <= 0)
          {
             _hp.Set(0);
@@ -387,8 +387,11 @@ package
             }) + "</font>");
          }
          this.Update();
-         BASE.Save();
-         return _loc7_;
+         if(param7)
+         {
+            BASE.Save();
+         }
+         return _loc8_;
       }
       
       override public function Upgraded() : void

@@ -65,7 +65,7 @@ package
                   _loc4_ = int(ResizeParams[1].x);
                   _loc5_ = int(ResizeParams[1].y);
                   _loc6_ = ResizeParams[1].parent;
-                  while(_loc6_.parent)
+                  while(Boolean(_loc6_) && Boolean(_loc6_.parent))
                   {
                      _loc4_ += _loc6_.x;
                      _loc5_ += _loc6_.y;

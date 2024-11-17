@@ -257,7 +257,10 @@ package
       {
          if(_popupdo)
          {
-            GLOBAL._layerUI.removeChild(_popupdo);
+            if(_popupdo.parent == GLOBAL._layerUI)
+            {
+               GLOBAL._layerUI.removeChild(_popupdo);
+            }
             _popupdo = null;
          }
       }

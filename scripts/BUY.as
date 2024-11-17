@@ -2,6 +2,7 @@ package
 {
    import com.monsters.configs.BYMDevConfig;
    import com.monsters.display.ImageCache;
+   import com.monsters.inventory.InventoryManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -470,7 +471,7 @@ package
             {
                if(_loc3_ == "BIGGULP")
                {
-                  BASE.BuildingStorageAdd(2 * 60);
+                  InventoryManager.buildingStorageAdd(2 * 60);
                }
                else
                {

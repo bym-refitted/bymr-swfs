@@ -47,7 +47,7 @@ package
          }
          else
          {
-            _rasterData[_RASTERDATA_SHADOW] = _rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc2_,_rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,BlendMode.MULTIPLY);
+            _rasterData[_RASTERDATA_SHADOW] = _rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc2_,_rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,BlendMode.MULTIPLY,true);
          }
          _loc2_.gotoAndStop(this._mushroomFrame);
          _loc2_.mouseEnabled = false;
@@ -107,6 +107,7 @@ package
       
       override public function Render(param1:String = "") : void
       {
+         updateRasterData();
       }
       
       public function SoundGood() : void

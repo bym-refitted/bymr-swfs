@@ -75,6 +75,7 @@ package
       
       public static function Update() : void
       {
+         var _loc3_:int = 0;
          var _loc4_:BFOUNDATION = null;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
@@ -91,16 +92,15 @@ package
          var _loc17_:TextField = null;
          var _loc1_:Array = [];
          var _loc2_:Boolean = true;
-         var _loc3_:int = 0;
-         for each(_loc4_ in BASE._buildingsAll)
-         {
-            if(_loc4_._hp.Get() < _loc4_._hpMax.Get())
-            {
-               _loc3_ += 1;
-            }
-         }
          if(_mc)
          {
+            for each(_loc4_ in BASE._buildingsAll)
+            {
+               if(_loc4_._hp.Get() < _loc4_._hpMax.Get())
+               {
+                  _loc3_ += 1;
+               }
+            }
             if(GLOBAL._mode == "build")
             {
                if(_building._hp.Get() < _building._hpMax.Get())

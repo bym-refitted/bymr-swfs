@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol491")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol494")]
    public dynamic class STREAMLINESPEEDUP_CLIP extends MovieClip
    {
       public var mcBG:frame_CLIP;

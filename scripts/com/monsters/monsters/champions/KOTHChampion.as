@@ -19,7 +19,6 @@ package com.monsters.monsters.champions
       public function KOTHChampion(param1:String, param2:Point, param3:Number, param4:Point = null, param5:Boolean = false, param6:BFOUNDATION = null, param7:int = 1, param8:int = 0, param9:int = 0, param10:int = 1, param11:int = 20000, param12:int = 0, param13:int = 1)
       {
          var _loc14_:Array = null;
-         var _loc16_:* = 0;
          var _loc17_:Number = 0;
          var _loc18_:Class = null;
          param13 = Math.min(param13,MAX_POWERLEVEL);
@@ -27,7 +26,7 @@ package com.monsters.monsters.champions
          super(param1,param2,param3,param4,param5,param6,param7,param8,param9,param10,param11,0,param13);
          _loc14_ = CHAMPIONCAGE.GetGuardianProperties(_creatureID,"abilities");
          var _loc15_:Number = _powerLevel.Get();
-         _loc16_ = _loc14_.length;
+         var _loc16_:uint = _loc14_.length;
          this._lootMults = new Dictionary();
          this._lootMults[BRESOURCE] = new SecNum(2);
          this._lootMults[BSTORAGE] = new SecNum(3);

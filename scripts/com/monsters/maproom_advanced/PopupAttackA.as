@@ -5,6 +5,7 @@ package com.monsters.maproom_advanced
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
@@ -202,10 +203,11 @@ package com.monsters.maproom_advanced
          var _loc15_:int = 0;
          var _loc16_:int = 0;
          var _loc17_:int = 0;
-         var _loc18_:int = 0;
-         var _loc19_:String = null;
-         var _loc20_:MapRoomPopupInfoMonster = null;
+         var _loc18_:Object = null;
+         var _loc19_:int = 0;
+         var _loc20_:String = null;
          var _loc21_:MapRoomPopupInfoMonster = null;
+         var _loc22_:MapRoomPopupInfoMonster = null;
          var _loc1_:Number = 0;
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
@@ -284,9 +286,10 @@ package com.monsters.maproom_advanced
                _loc15_ = 0;
                while(_loc15_ < GLOBAL._playerGuardianData.length)
                {
-                  if(Boolean(GLOBAL._playerGuardianData[_loc15_]) && GLOBAL._playerGuardianData[_loc15_].hp.Get() > 0)
+                  if(GLOBAL._playerGuardianData[_loc15_] && GLOBAL._playerGuardianData[_loc15_].hp.Get() > 0 && GLOBAL._playerGuardianData[_loc15_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
                   {
                      this._monstersInRange = true;
+                     break;
                   }
                   _loc15_++;
                }
@@ -299,14 +302,15 @@ package com.monsters.maproom_advanced
             {
                _loc16_ = 0;
                _loc17_ = 0;
-               _loc18_ = 0;
-               while(_loc18_ < GLOBAL._playerGuardianData.length)
+               _loc19_ = 0;
+               while(_loc19_ < GLOBAL._playerGuardianData.length)
                {
-                  if(Boolean(GLOBAL._playerGuardianData[_loc18_]) && GLOBAL._playerGuardianData[_loc18_].hp.Get() > 0)
+                  _loc18_ = GLOBAL._playerGuardianData[_loc19_];
+                  if((_loc18_) && _loc18_.hp.Get() > 0 && _loc18_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
                   {
-                     _loc20_ = new MapRoomPopupInfoMonster();
-                     _loc20_.Setup(_loc16_ * 125,_loc17_ * 30,"G" + GLOBAL._playerGuardianData[_loc18_].t + "_L" + GLOBAL._playerGuardianData[_loc18_].l.Get(),1);
-                     mMonsters.addChild(_loc20_);
+                     _loc21_ = new MapRoomPopupInfoMonster();
+                     _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,"G" + GLOBAL._playerGuardianData[_loc19_].t + "_L" + GLOBAL._playerGuardianData[_loc19_].l.Get(),1);
+                     mMonsters.addChild(_loc21_);
                      _loc16_ += 1;
                      if(_loc16_ == 3)
                      {
@@ -314,14 +318,14 @@ package com.monsters.maproom_advanced
                         _loc17_ += 1;
                      }
                   }
-                  _loc18_++;
+                  _loc19_++;
                }
-               for(_loc19_ in this._attackMonsters)
+               for(_loc20_ in this._attackMonsters)
                {
-                  _loc21_ = new MapRoomPopupInfoMonster();
-                  _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,_loc19_,this._attackMonsters[_loc19_].Get());
+                  _loc22_ = new MapRoomPopupInfoMonster();
+                  _loc22_.Setup(_loc16_ * 125,_loc17_ * 30,_loc20_,this._attackMonsters[_loc20_].Get());
                   _loc16_ += 1;
-                  mMonsters.addChild(_loc21_);
+                  mMonsters.addChild(_loc22_);
                   if(_loc16_ == 3)
                   {
                      _loc16_ = 0;

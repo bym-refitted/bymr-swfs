@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2939")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2943")]
    public dynamic class frontpage_stonebtn extends MovieClip
    {
       public var mcBG:MovieClip;

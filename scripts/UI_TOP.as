@@ -3,6 +3,7 @@ package
    import com.monsters.dealspot.DealSpot;
    import com.monsters.kingOfTheHill.graphics.KOTHHUDGraphic;
    import com.monsters.maproom_inferno.views.DescentDebuffPopup;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
    import com.monsters.subscriptions.SubscriptionHandler;
@@ -65,12 +66,13 @@ package
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:String = null;
-         var _loc7_:SiegeWeapon = null;
-         var _loc8_:MovieClip = null;
-         var _loc9_:int = 0;
-         var _loc10_:MovieClip = null;
-         var _loc11_:String = null;
+         var _loc6_:int = 0;
+         var _loc7_:String = null;
+         var _loc8_:SiegeWeapon = null;
+         var _loc9_:MovieClip = null;
+         var _loc10_:int = 0;
+         var _loc11_:MovieClip = null;
+         var _loc12_:String = null;
          super();
          var _loc2_:String = GLOBAL._mode;
          switch(GLOBAL._mode)
@@ -202,109 +204,113 @@ package
             _loc3_ = 0;
             _loc4_ = 0;
             this._creatureButtons = [];
-            _loc5_ = 0;
-            while(_loc5_ < GLOBAL._playerGuardianData.length)
+            _loc6_ = 0;
+            while(_loc6_ < GLOBAL._playerGuardianData.length)
             {
-               if(Boolean(GLOBAL._playerGuardianData[_loc5_]) && GLOBAL._playerGuardianData[_loc5_].hp.Get() > 0)
+               if(Boolean(GLOBAL._playerGuardianData[_loc6_]) && GLOBAL._playerGuardianData[_loc6_].hp.Get() > 0)
                {
-                  if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
+                  _loc5_ = !!GLOBAL._playerGuardianData[_loc6_].status ? int(GLOBAL._playerGuardianData[_loc6_].status) : ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                  if(_loc5_ == ChampionBase.k_CHAMPION_STATUS_NORMAL)
                   {
-                     _loc8_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc5_].t,GLOBAL._playerGuardianData[_loc5_].l.Get(),_loc5_)) as CHAMPIONBUTTON;
-                     _loc8_.y = 25 + 60 * _loc3_;
-                     _loc8_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
-                     this._creatureButtons.push(_loc8_);
-                     _loc3_++;
-                     _loc4_++;
+                     if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
+                     {
+                        _loc9_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc6_].t,GLOBAL._playerGuardianData[_loc6_].l.Get(),_loc6_)) as CHAMPIONBUTTON;
+                        _loc9_.y = 25 + 60 * _loc3_;
+                        _loc9_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
+                        this._creatureButtons.push(_loc9_);
+                        _loc3_++;
+                        _loc4_++;
+                     }
                   }
                }
-               _loc5_++;
+               _loc6_++;
             }
-            for(_loc6_ in CREATURELOCKER._creatures)
+            for(_loc7_ in CREATURELOCKER._creatures)
             {
-               _loc9_ = int(_loc6_.substr(_loc6_.length - 1));
-               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[_loc6_] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[_loc6_])
+               _loc10_ = int(_loc7_.substr(_loc7_.length - 1));
+               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[_loc7_] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[_loc7_])
                {
-                  _loc11_ = _loc6_;
+                  _loc12_ = _loc7_;
                   if(GLOBAL._advancedMap)
                   {
-                     if(GLOBAL._attackerMapCreatures[_loc11_].Get() > 0)
+                     if(GLOBAL._attackerMapCreatures[_loc12_].Get() > 0)
                      {
-                        _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc11_)) as CREATUREBUTTON;
-                        _loc10_.y = 25 + _loc3_ * 60;
-                        _loc10_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
+                        _loc11_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc12_)) as CREATUREBUTTON;
+                        _loc11_.y = 25 + _loc3_ * 60;
+                        _loc11_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
                         if(_loc3_ > 7)
                         {
-                           _loc10_.x += 136;
+                           _loc11_.x += 136;
                            switch(_loc4_)
                            {
                               case 0:
-                                 _loc10_.y -= 480;
+                                 _loc11_.y -= 480;
                                  break;
                               case 1:
-                                 _loc10_.y -= 420;
+                                 _loc11_.y -= 420;
                                  break;
                               case 2:
-                                 _loc10_.y -= 360;
+                                 _loc11_.y -= 360;
                            }
                         }
                         if(_loc3_ > 17 - _loc4_)
                         {
-                           _loc10_.x += 136;
+                           _loc11_.x += 136;
                            switch(_loc4_)
                            {
                               case 0:
-                                 _loc10_.y -= 480;
+                                 _loc11_.y -= 480;
                                  break;
                               case 1:
-                                 _loc10_.y -= 420;
+                                 _loc11_.y -= 420;
                                  break;
                               case 2:
-                                 _loc10_.y -= 360;
+                                 _loc11_.y -= 360;
                            }
                         }
-                        this._creatureButtons.push(_loc10_);
+                        this._creatureButtons.push(_loc11_);
                         _loc3_++;
                      }
                   }
-                  else if(GLOBAL._attackerCreatures[_loc11_].Get() > 0)
+                  else if(GLOBAL._attackerCreatures[_loc12_].Get() > 0)
                   {
-                     _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc11_)) as CREATUREBUTTON;
-                     _loc10_.y = 25 + _loc3_ * 60;
+                     _loc11_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc12_)) as CREATUREBUTTON;
+                     _loc11_.y = 25 + _loc3_ * 60;
                      if(GLOBAL._advancedMap)
                      {
-                        _loc10_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
+                        _loc11_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
                      }
                      if(_loc3_ > 7)
                      {
-                        _loc10_.x += 136;
+                        _loc11_.x += 136;
                         switch(_loc4_)
                         {
                            case 0:
-                              _loc10_.y -= 480;
+                              _loc11_.y -= 480;
                               break;
                            case 1:
-                              _loc10_.y -= 420;
+                              _loc11_.y -= 420;
                               break;
                            case 2:
-                              _loc10_.y -= 360;
+                              _loc11_.y -= 360;
                         }
                      }
                      if(_loc3_ > 15 - _loc4_)
                      {
-                        _loc10_.x += 136;
+                        _loc11_.x += 136;
                         switch(_loc4_)
                         {
                            case 0:
-                              _loc10_.y -= 480;
+                              _loc11_.y -= 480;
                               break;
                            case 1:
-                              _loc10_.y -= 420;
+                              _loc11_.y -= 420;
                               break;
                            case 2:
-                              _loc10_.y -= 360;
+                              _loc11_.y -= 360;
                         }
                      }
-                     this._creatureButtons.push(_loc10_);
+                     this._creatureButtons.push(_loc11_);
                      _loc3_++;
                   }
                }
@@ -317,8 +323,8 @@ package
                this._catapult.y = 4;
                this._catapult.Setup();
             }
-            _loc7_ = SiegeWeapons.availableWeapon;
-            if(_loc7_ != null && !BASE.isInferno())
+            _loc8_ = SiegeWeapons.availableWeapon;
+            if(_loc8_ != null && !BASE.isInferno())
             {
                this._siegeweapon = new SIEGEWEAPONPOPUP();
                mc.addChild(this._siegeweapon);

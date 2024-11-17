@@ -40,7 +40,6 @@ package de.polygonal.ds
       
       public function prependTo(param1:DLLNode) : DLLNode
       {
-         null;
          next = param1;
          if(param1 != null)
          {
@@ -96,7 +95,6 @@ package de.polygonal.ds
       
       public function appendTo(param1:DLLNode) : DLLNode
       {
-         null;
          prev = param1;
          if(param1 != null)
          {

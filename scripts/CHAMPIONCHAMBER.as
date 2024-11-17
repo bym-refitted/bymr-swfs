@@ -1,10 +1,12 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
    import com.monsters.monsters.champions.ChampionBase;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   import flash.utils.Dictionary;
    import gs.easing.*;
    
    public class CHAMPIONCHAMBER extends BFOUNDATION
@@ -48,20 +50,22 @@ package
       
       public static function Show() : void
       {
+         var _loc2_:int = 0;
          var _loc1_:CHAMPIONCHAMBER = GLOBAL._bChamber as CHAMPIONCHAMBER;
          if(CREATURES._guardian == null && (_loc1_ && _loc1_._frozen.length == 0))
          {
             GLOBAL.Message(KEYS.Get("msg_chamber_nochamp"));
             return;
          }
-         var _loc2_:int = 0;
-         while(_loc2_ < BASE._guardianData.length)
+         var _loc3_:int = 0;
+         while(_loc3_ < BASE._guardianData.length)
          {
-            if(Boolean(BASE._guardianData[_loc2_]) && CREATURES._guardian == null)
+            _loc2_ = !!BASE._guardianData[_loc3_].status ? int(BASE._guardianData[_loc3_].status) : ChampionBase.k_CHAMPION_STATUS_NORMAL;
+            if(BASE._guardianData[_loc3_] && _loc2_ == ChampionBase.k_CHAMPION_STATUS_NORMAL && CREATURES._guardian == null)
             {
-               GLOBAL._bCage.SpawnGuardian(BASE._guardianData[_loc2_].l.Get(),BASE._guardianData[_loc2_].fd,BASE._guardianData[_loc2_].ft,BASE._guardianData[_loc2_].t,BASE._guardianData[_loc2_].hp.Get(),BASE._guardianData[_loc2_].nm,BASE._guardianData[_loc2_].fb.Get(),BASE._guardianData[_loc2_].pl.Get());
+               GLOBAL._bCage.SpawnGuardian(BASE._guardianData[_loc3_].l.Get(),BASE._guardianData[_loc3_].fd,BASE._guardianData[_loc3_].ft,BASE._guardianData[_loc3_].t,BASE._guardianData[_loc3_].hp.Get(),BASE._guardianData[_loc3_].nm,BASE._guardianData[_loc3_].fb.Get(),BASE._guardianData[_loc3_].pl.Get());
             }
-            _loc2_++;
+            _loc3_++;
          }
          if(!_open)
          {
@@ -145,13 +149,16 @@ package
             CREATURES._guardian.ModeFreeze();
             BASE._guardianData[_loc1_].ft -= GLOBAL.Timestamp();
             this._frozen.push(BASE._guardianData[_loc1_]);
-            BASE._guardianData[_loc1_] = null;
-            BASE._guardianData.splice(_loc1_,1);
+            BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+            BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
             if(GLOBAL._mode == "build")
             {
                _loc1_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
-               GLOBAL._playerGuardianData[_loc1_] = null;
-               GLOBAL._playerGuardianData.splice(_loc1_,1);
+               if(_loc1_ != -1)
+               {
+                  GLOBAL._playerGuardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                  GLOBAL._playerGuardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+               }
             }
             CREATURES._guardian = null;
             BASE.Save();
@@ -167,6 +174,7 @@ package
          var target:Point = null;
          var newFrozen:Array = null;
          var j:int = 0;
+         var obj:Object = null;
          var mc:popup_monster = null;
          var type:int = param1;
          if(_hp.Get() < _hpMax.Get())
@@ -189,7 +197,10 @@ package
                target = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
                CREATURES._guardian = new ChampionBase("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
                CREATURES._guardian.Export();
-               MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+               if(!BYMConfig.instance.RENDERER_ON)
+               {
+                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+               }
                CREATURES._guardian.ModeCage();
                newFrozen = [];
                j = 0;
@@ -200,6 +211,24 @@ package
                      newFrozen.push(this._frozen[j]);
                   }
                   j++;
+               }
+               for each(obj in BASE._guardianData)
+               {
+                  if(obj.t == type)
+                  {
+                     obj.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                     obj.log += "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                     break;
+                  }
+               }
+               for each(obj in GLOBAL._playerGuardianData)
+               {
+                  if(obj.t == type)
+                  {
+                     obj.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                     obj.log += "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                     break;
+                  }
                }
                this._frozen = newFrozen;
                if(GLOBAL._mode == "build")
@@ -233,143 +262,205 @@ package
       
       override public function Setup(param1:Object) : void
       {
-         var _loc2_:Array = null;
-         var _loc3_:int = 0;
-         var _loc4_:Object = null;
-         var _loc5_:Object = null;
+         var _loc2_:Object = null;
+         var _loc3_:Vector.<Object> = null;
+         var _loc4_:Array = null;
+         var _loc5_:Dictionary = null;
+         var _loc6_:Object = null;
+         var _loc7_:Object = null;
+         var _loc9_:int = 0;
          super.Setup(param1);
          if(param1.fz)
          {
-            _loc2_ = JSON.decode(param1.fz) as Array;
+            _loc4_ = JSON.decode(param1.fz) as Array;
             this._frozen = [];
-            _loc3_ = 0;
-            while(_loc3_ < _loc2_.length)
+            _loc5_ = new Dictionary();
+            _loc6_ = null;
+            _loc9_ = 0;
+            while(_loc9_ < _loc4_.length)
             {
-               _loc4_ = {};
-               _loc5_ = _loc2_[_loc3_];
-               if(_loc5_.nm)
+               _loc7_ = _loc4_[_loc9_];
+               for each(_loc2_ in BASE._guardianData)
                {
-                  _loc4_.nm = _loc5_.nm;
+                  if(_loc2_.t == _loc7_.t)
+                  {
+                     _loc6_ = _loc2_;
+                     break;
+                  }
                }
-               _loc4_.t = _loc5_.t;
-               if(_loc5_.ft)
+               if(_loc6_ == null)
                {
-                  _loc4_.ft = _loc5_.ft;
+                  _loc6_ = {};
+                  if(_loc7_.nm)
+                  {
+                     _loc6_.nm = _loc7_.nm;
+                  }
+                  _loc6_.t = _loc7_.t;
+                  if(_loc7_.ft)
+                  {
+                     _loc6_.ft = _loc7_.ft;
+                  }
+                  if(_loc7_.fd)
+                  {
+                     _loc6_.fd = _loc7_.fd;
+                  }
+                  else
+                  {
+                     _loc6_.fd = 0;
+                  }
+                  if(_loc7_.l)
+                  {
+                     _loc6_.l = new SecNum(_loc7_.l);
+                  }
+                  else
+                  {
+                     _loc6_.l = new SecNum(0);
+                  }
+                  if(_loc7_.hp)
+                  {
+                     _loc6_.hp = new SecNum(_loc7_.hp);
+                  }
+                  else
+                  {
+                     _loc6_.hp = new SecNum(0);
+                  }
+                  if(_loc7_.fb)
+                  {
+                     _loc6_.fb = new SecNum(_loc7_.fb);
+                  }
+                  else
+                  {
+                     _loc6_.fb = new SecNum(0);
+                  }
+                  if(_loc7_.pl)
+                  {
+                     _loc6_.pl = new SecNum(_loc7_.pl);
+                  }
+                  else
+                  {
+                     _loc6_.pl = new SecNum(0);
+                  }
+                  _loc6_.status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                  _loc6_.log = ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                  BASE._guardianData.push(_loc6_);
+                  if(GLOBAL.getPlayerGuardianIndex(_loc6_.t) == -1)
+                  {
+                     GLOBAL._playerGuardianData.push(_loc6_);
+                  }
                }
-               if(_loc5_.fd)
+               _loc5_[_loc6_.t] = true;
+               if(_loc6_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN)
                {
-                  _loc4_.fd = _loc5_.fd;
+                  this._frozen.push(_loc6_);
                }
-               else
+               _loc6_ = null;
+               _loc9_++;
+            }
+            for each(_loc2_ in BASE._guardianData)
+            {
+               if(_loc2_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN && !_loc5_[_loc2_.t])
                {
-                  _loc4_.fd = 0;
+                  this._frozen.push(_loc2_);
                }
-               if(_loc5_.l)
-               {
-                  _loc4_.l = new SecNum(_loc5_.l);
-               }
-               else
-               {
-                  _loc4_.l = new SecNum(0);
-               }
-               if(_loc5_.hp)
-               {
-                  _loc4_.hp = new SecNum(_loc5_.hp);
-               }
-               else
-               {
-                  _loc4_.hp = new SecNum(0);
-               }
-               if(_loc5_.fb)
-               {
-                  _loc4_.fb = new SecNum(_loc5_.fb);
-               }
-               else
-               {
-                  _loc4_.fb = new SecNum(0);
-               }
-               if(_loc5_.pl)
-               {
-                  _loc4_.pl = new SecNum(_loc5_.pl);
-               }
-               else
-               {
-                  _loc4_.pl = new SecNum(0);
-               }
-               this._frozen.push(_loc4_);
-               _loc3_++;
             }
          }
+         else
+         {
+            for each(_loc2_ in BASE._guardianData)
+            {
+               if(_loc2_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN)
+               {
+                  this._frozen.push(_loc2_);
+               }
+            }
+         }
+         _loc3_ = BASE._guardianData;
       }
       
       override public function Export() : Object
       {
          var _loc4_:Object = null;
+         var _loc6_:Object = null;
          var _loc1_:Object = super.Export();
-         var _loc2_:Array = [];
-         var _loc3_:int = 0;
-         while(_loc3_ < this._frozen.length)
+         var _loc2_:Boolean = false;
+         var _loc3_:Array = [];
+         var _loc5_:int = 0;
+         while(_loc5_ < this._frozen.length)
          {
-            _loc4_ = {};
-            if(this._frozen[_loc3_].nm)
+            for each(_loc4_ in BASE._guardianData)
             {
-               _loc4_.nm = this._frozen[_loc3_].nm;
-            }
-            if(this._frozen[_loc3_].t)
-            {
-               _loc4_.t = this._frozen[_loc3_].t;
-            }
-            if(this._frozen[_loc3_].hp)
-            {
-               _loc4_.hp = this._frozen[_loc3_].hp.Get();
-            }
-            else
-            {
-               _loc4_.hp = 0;
-            }
-            if(this._frozen[_loc3_].l)
-            {
-               _loc4_.l = this._frozen[_loc3_].l.Get();
-            }
-            if(this._frozen[_loc3_].ft)
-            {
-               _loc4_.ft = this._frozen[_loc3_].ft;
-            }
-            if(this._frozen[_loc3_].fd)
-            {
-               _loc4_.fd = this._frozen[_loc3_].fd;
-            }
-            else
-            {
-               _loc4_.fd = 0;
-            }
-            if(this._frozen[_loc3_].fb)
-            {
-               _loc4_.fb = this._frozen[_loc3_].fb.Get();
-            }
-            else
-            {
-               _loc4_.fb = 0;
-            }
-            if(this._frozen[_loc3_].pl)
-            {
-               if(this._frozen[_loc3_].pl is SecNum)
+               if(_loc4_.t == this._frozen[_loc5_].t)
                {
-                  _loc4_.pl = this._frozen[_loc3_].pl.Get();
+                  _loc2_ = true;
+                  break;
+               }
+            }
+            if(!_loc2_)
+            {
+               _loc4_ = null;
+            }
+            _loc6_ = {};
+            if(this._frozen[_loc5_].nm)
+            {
+               _loc6_.nm = this._frozen[_loc5_].nm;
+            }
+            if(this._frozen[_loc5_].t)
+            {
+               _loc6_.t = this._frozen[_loc5_].t;
+            }
+            if(this._frozen[_loc5_].hp)
+            {
+               _loc6_.hp = this._frozen[_loc5_].hp.Get();
+            }
+            else
+            {
+               _loc6_.hp = 0;
+            }
+            if(this._frozen[_loc5_].l)
+            {
+               _loc6_.l = this._frozen[_loc5_].l.Get();
+            }
+            if(this._frozen[_loc5_].ft)
+            {
+               _loc6_.ft = this._frozen[_loc5_].ft;
+            }
+            if(this._frozen[_loc5_].fd)
+            {
+               _loc6_.fd = this._frozen[_loc5_].fd;
+            }
+            else
+            {
+               _loc6_.fd = 0;
+            }
+            if(this._frozen[_loc5_].fb)
+            {
+               _loc6_.fb = this._frozen[_loc5_].fb.Get();
+            }
+            else
+            {
+               _loc6_.fb = 0;
+            }
+            if(this._frozen[_loc5_].pl)
+            {
+               if(this._frozen[_loc5_].pl is SecNum)
+               {
+                  _loc6_.pl = this._frozen[_loc5_].pl.Get();
                }
                else
                {
-                  _loc4_.pl = this._frozen[_loc3_].pl;
+                  _loc6_.pl = this._frozen[_loc5_].pl;
                }
             }
             else
             {
-               _loc4_.pl = 0;
+               _loc6_.pl = 0;
             }
-            _loc2_.push(_loc4_);
-            _loc3_++;
+            _loc6_.status = !!_loc4_ ? ChampionBase.k_CHAMPION_STATUS_MIGRATED : ChampionBase.k_CHAMPION_STATUS_FROZEN;
+            _loc6_.log = !!_loc4_ ? _loc4_.log : ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+            _loc3_.push(_loc6_);
+            _loc5_++;
          }
-         _loc1_.fz = JSON.encode(_loc2_);
+         _loc1_.fz = JSON.encode(_loc3_);
          return _loc1_;
       }
    }

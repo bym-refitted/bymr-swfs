@@ -2,6 +2,7 @@ package
 {
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.BlendMode;
    import flash.display.MovieClip;
    import flash.geom.Rectangle;
    
@@ -26,7 +27,7 @@ package
             _loc3_ = _mcBase.addChild(new Bitmap(param2)) as Bitmap;
             _loc3_.x = imageData.shadowX;
             _loc3_.y = imageData.shadowY;
-            _loc3_.blendMode = "multiply";
+            _loc3_.blendMode = BlendMode.MULTIPLY;
          }
          else if(param1 == imageData.topURL)
          {

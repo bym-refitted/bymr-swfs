@@ -193,8 +193,9 @@ package com.monsters.maproom_inferno
       
       private function onPortraitComplete(param1:Event) : void
       {
+         var _loc3_:int = 0;
          var _loc2_:int = placeholder.x;
-         var _loc3_:int = placeholder.y;
+         _loc3_ = placeholder.y;
          this.imageLoadState = 2;
          this.loader.height = 44;
          this.loader.width = 44;

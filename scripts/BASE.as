@@ -8,7 +8,6 @@ package
    import com.monsters.autobanking.AutoBankManager;
    import com.monsters.baseplanner.BaseTemplate;
    import com.monsters.baseplanner.BaseTemplateNode;
-   import com.monsters.baseplanner.PlannerTemplate;
    import com.monsters.chat.Chat;
    import com.monsters.configs.BYMConfig;
    import com.monsters.debug.Console;
@@ -19,7 +18,9 @@ package
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.frontPage.FrontPageHandler;
    import com.monsters.interfaces.IHandler;
+   import com.monsters.inventory.InventoryManager;
    import com.monsters.maproom_advanced.*;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.pathing.PATHING;
    import com.monsters.radio.RADIO;
    import com.monsters.rendering.RasterData;
@@ -35,6 +36,7 @@ package
    import flash.net.*;
    import flash.system.System;
    import flash.text.TextField;
+   import flash.utils.Dictionary;
    import flash.utils.getTimer;
    import gs.*;
    import gs.easing.*;
@@ -231,6 +233,8 @@ package
       
       public static var _takeoverPreviousOwnersName:String;
       
+      private static var s_processing:Boolean;
+      
       private static var _tmpPercent:Number;
       
       private static var _oldSiegeData:Object;
@@ -284,6 +288,24 @@ package
       public static function get firstBaseLoaded() : Boolean
       {
          return _firstBaseLoaded;
+      }
+      
+      public static function get processing() : Boolean
+      {
+         return s_processing;
+      }
+      
+      public static function get maproom() : BUILDING11
+      {
+         var _loc1_:BFOUNDATION = null;
+         for each(_loc1_ in _buildingsAll)
+         {
+            if(_loc1_ is BUILDING11)
+            {
+               return _loc1_ as BUILDING11;
+            }
+         }
+         return null;
       }
       
       public static function Setup() : void
@@ -660,6 +682,11 @@ package
          var id:String = null;
          var ooo:Object = null;
          var length:int = 0;
+         var existingGuardians:Dictionary = null;
+         var playerGuardianIndex:int = 0;
+         var guardianIndex:int = 0;
+         var addedGuardian:Boolean = false;
+         var unfrozenFound:Boolean = false;
          var j:int = 0;
          var st:String = null;
          var attacksArr:Array = null;
@@ -1211,127 +1238,184 @@ package
                   {
                      length = int(ooo.length);
                   }
+                  existingGuardians = new Dictionary();
+                  playerGuardianIndex = 0;
+                  guardianIndex = 0;
+                  addedGuardian = false;
+                  unfrozenFound = false;
                   j = 0;
                   while(j < length)
                   {
                      try
                      {
-                        if(ooo[j].t)
+                        if(Boolean(ooo[j].t) && !existingGuardians[ooo[j].t])
                         {
-                           _guardianData[j] = {};
+                           existingGuardians[ooo[j].t] = true;
+                           _guardianData[guardianIndex] = {};
+                           addedGuardian = true;
                            if(ooo[j].nm)
                            {
-                              _guardianData[j].nm = ooo[j].nm;
+                              _guardianData[guardianIndex].nm = ooo[j].nm;
                            }
-                           _guardianData[j].t = ooo[j].t;
+                           _guardianData[guardianIndex].t = ooo[j].t;
                            if(ooo[j].ft)
                            {
-                              _guardianData[j].ft = ooo[j].ft;
+                              _guardianData[guardianIndex].ft = ooo[j].ft;
                            }
                            if(ooo[j].fd)
                            {
-                              _guardianData[j].fd = ooo[j].fd;
+                              _guardianData[guardianIndex].fd = ooo[j].fd;
                            }
                            else
                            {
-                              _guardianData[j].fd = 0;
+                              _guardianData[guardianIndex].fd = 0;
                            }
                            if(ooo[j].l)
                            {
-                              _guardianData[j].l = new SecNum(ooo[j].l);
+                              _guardianData[guardianIndex].l = new SecNum(ooo[j].l);
                            }
                            else
                            {
-                              _guardianData[j].l = new SecNum(0);
+                              _guardianData[guardianIndex].l = new SecNum(0);
                            }
                            if(ooo[j].hp)
                            {
-                              _guardianData[j].hp = new SecNum(ooo[j].hp);
+                              _guardianData[guardianIndex].hp = new SecNum(ooo[j].hp);
                            }
                            else
                            {
-                              _guardianData[j].hp = new SecNum(0);
+                              _guardianData[guardianIndex].hp = new SecNum(0);
                            }
                            if(ooo[j].fb)
                            {
-                              _guardianData[j].fb = new SecNum(ooo[j].fb);
+                              _guardianData[guardianIndex].fb = new SecNum(ooo[j].fb);
                            }
                            else
                            {
-                              _guardianData[j].fb = new SecNum(0);
+                              _guardianData[guardianIndex].fb = new SecNum(0);
                            }
                            if(ooo[j].pl)
                            {
-                              _guardianData[j].pl = new SecNum(ooo[j].pl);
+                              _guardianData[guardianIndex].pl = new SecNum(ooo[j].pl);
                            }
                            else
                            {
-                              _guardianData[j].pl = new SecNum(0);
+                              _guardianData[guardianIndex].pl = new SecNum(0);
+                           }
+                           if(ooo[j].status)
+                           {
+                              _guardianData[guardianIndex].status = ooo[j].status;
+                           }
+                           else
+                           {
+                              _guardianData[guardianIndex].status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                           }
+                           if(ooo[j].log)
+                           {
+                              _guardianData[guardianIndex].log = ooo[j].log;
+                           }
+                           else
+                           {
+                              _guardianData[guardianIndex].log = String(_guardianData[guardianIndex].status).toString();
+                           }
+                           if(_guardianData[guardianIndex].t != 5)
+                           {
+                              if(unfrozenFound && _guardianData[guardianIndex].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                              {
+                                 _guardianData[guardianIndex].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                                 _guardianData[guardianIndex].log += ",1";
+                              }
+                              else if(!unfrozenFound && _guardianData[guardianIndex].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                              {
+                                 unfrozenFound = true;
+                              }
                            }
                         }
                      }
                      catch(e:Error)
                      {
                         st = JSON.decode(obj.champion) as String;
-                        _guardianData[j] = JSON.decode(st);
+                        _guardianData[guardianIndex] = JSON.decode(st);
                         Console.warning("what the fuck is going on" + st,true);
                      }
-                     if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && Boolean(_guardianData[j]))
+                     if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && addedGuardian && Boolean(_guardianData[guardianIndex]))
                      {
-                        GLOBAL._playerGuardianData[j] = {};
-                        if(_guardianData[j].nm)
+                        GLOBAL._playerGuardianData[playerGuardianIndex] = {};
+                        if(_guardianData[guardianIndex].nm)
                         {
-                           GLOBAL._playerGuardianData[j].nm = _guardianData[j].nm;
+                           GLOBAL._playerGuardianData[playerGuardianIndex].nm = _guardianData[guardianIndex].nm;
                         }
-                        if(_guardianData[j].t)
+                        if(_guardianData[guardianIndex].t)
                         {
-                           GLOBAL._playerGuardianData[j].t = _guardianData[j].t;
+                           GLOBAL._playerGuardianData[playerGuardianIndex].t = _guardianData[guardianIndex].t;
                         }
-                        if(_guardianData[j].ft)
+                        if(_guardianData[guardianIndex].ft)
                         {
-                           GLOBAL._playerGuardianData[j].ft = _guardianData[j].ft;
+                           GLOBAL._playerGuardianData[playerGuardianIndex].ft = _guardianData[guardianIndex].ft;
                         }
-                        if(_guardianData[j].fd)
+                        if(_guardianData[guardianIndex].fd)
                         {
-                           GLOBAL._playerGuardianData[j].fd = _guardianData[j].fd;
-                        }
-                        else
-                        {
-                           GLOBAL._playerGuardianData[j].fd = 0;
-                        }
-                        if(_guardianData[j].l)
-                        {
-                           GLOBAL._playerGuardianData[j].l = new SecNum(_guardianData[j].l.Get());
+                           GLOBAL._playerGuardianData[playerGuardianIndex].fd = _guardianData[guardianIndex].fd;
                         }
                         else
                         {
-                           GLOBAL._playerGuardianData[j].l = new SecNum(0);
+                           GLOBAL._playerGuardianData[playerGuardianIndex].fd = 0;
                         }
-                        if(_guardianData[j].hp)
+                        if(_guardianData[guardianIndex].l)
                         {
-                           GLOBAL._playerGuardianData[j].hp = new SecNum(_guardianData[j].hp.Get());
+                           GLOBAL._playerGuardianData[playerGuardianIndex].l = new SecNum(_guardianData[guardianIndex].l.Get());
                         }
                         else
                         {
-                           GLOBAL._playerGuardianData[j].hp = new SecNum(0);
+                           GLOBAL._playerGuardianData[playerGuardianIndex].l = new SecNum(0);
                         }
-                        if(_guardianData[j].fb)
+                        if(_guardianData[guardianIndex].hp)
                         {
-                           GLOBAL._playerGuardianData[j].fb = new SecNum(_guardianData[j].fb.Get());
+                           GLOBAL._playerGuardianData[playerGuardianIndex].hp = new SecNum(_guardianData[guardianIndex].hp.Get());
                         }
                         else
                         {
-                           GLOBAL._playerGuardianData[j].fb = new SecNum(0);
+                           GLOBAL._playerGuardianData[playerGuardianIndex].hp = new SecNum(0);
                         }
-                        if(_guardianData[j].pl)
+                        if(_guardianData[guardianIndex].fb)
                         {
-                           GLOBAL._playerGuardianData[j].pl = new SecNum(_guardianData[j].pl.Get());
+                           GLOBAL._playerGuardianData[playerGuardianIndex].fb = new SecNum(_guardianData[guardianIndex].fb.Get());
                         }
                         else
                         {
-                           GLOBAL._playerGuardianData[j].pl = new SecNum(0);
+                           GLOBAL._playerGuardianData[playerGuardianIndex].fb = new SecNum(0);
                         }
+                        if(_guardianData[guardianIndex].pl)
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].pl = new SecNum(_guardianData[guardianIndex].pl.Get());
+                        }
+                        else
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].pl = new SecNum(0);
+                        }
+                        if(_guardianData[guardianIndex].status)
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].status = _guardianData[guardianIndex].status;
+                        }
+                        else
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                        }
+                        if(_guardianData[guardianIndex].log)
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].log = _guardianData[guardianIndex].log;
+                        }
+                        else
+                        {
+                           GLOBAL._playerGuardianData[playerGuardianIndex].log = String(GLOBAL._playerGuardianData[playerGuardianIndex].status).toString();
+                        }
+                        playerGuardianIndex++;
                      }
+                     if(addedGuardian)
+                     {
+                        guardianIndex++;
+                     }
+                     addedGuardian = false;
                      j++;
                   }
                }
@@ -2237,6 +2321,7 @@ package
          var i:String = null;
          var popupMCDestroyed:PopupLostMainBase = null;
          var t:int = getTimer();
+         s_processing = true;
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
             ATTACK.Setup();
@@ -2350,9 +2435,10 @@ package
          {
             INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
          }
-         MonsterMadness.initialize();
          FrontPageHandler.initialize();
+         MonsterMadness.initialize();
          GLOBAL.player.initializeHandlers(loadObject);
+         MonsterMadness.updateKorathStats();
          FrontPageHandler.setup(loadObject["frontpage"]);
          FrontPageHandler.showPopup();
          if(GLOBAL.DOES_USE_SCROLL)
@@ -2591,6 +2677,8 @@ package
          }
          GLOBAL.CallJS("cc.injectFriendsSwf",null,false);
          BTOTEM.FindMissingTotem();
+         s_processing = false;
+         HideFootprints();
       }
       
       public static function ShowSiegeWeaponWhatsNew(param1:MovieClip, param2:String) : void
@@ -2785,6 +2873,8 @@ package
          var saveObject:Object;
          var j:int;
          var ir:Object;
+         var yard:int;
+         var activeChampion:Boolean;
          var saveOrder:Array;
          var length:int;
          var k:int;
@@ -2816,9 +2906,12 @@ package
          var harvester:BFOUNDATION = null;
          var level:int = 0;
          var value:int = 0;
+         var guardianEntries:Dictionary = null;
+         var guardDataIndex:int = 0;
          var guardObj:Array = null;
          var attackresources:Object = null;
          var lootreport:Object = null;
+         var attackingChampionTypes:Dictionary = null;
          var guardAttObj:Array = null;
          var i2:int = 0;
          var monsterUpdate:Object = null;
@@ -3298,70 +3391,101 @@ package
          {
             loadObjects.over = _saveOver;
          }
-         if(BASE._yardType != BASE.OUTPOST)
+         yard = BASE._yardType;
+         activeChampion = false;
+         if(BASE._yardType == BASE.MAIN_YARD && GLOBAL._mode == "build")
          {
+            guardianEntries = new Dictionary();
+            guardDataIndex = 0;
             guardObj = new Array(_guardianData.length);
             j = 0;
             while(j < _guardianData.length)
             {
-               if(_guardianData[j])
+               if(Boolean(_guardianData[j]) && !guardianEntries[_guardianData[j].t])
                {
-                  guardObj[j] = new Object();
+                  guardianEntries[_guardianData[j].t] = true;
+                  guardObj[guardDataIndex] = new Object();
                   if(_guardianData[j].nm)
                   {
-                     guardObj[j].nm = _guardianData[j].nm;
+                     guardObj[guardDataIndex].nm = _guardianData[j].nm;
                   }
                   if(_guardianData[j].t)
                   {
-                     guardObj[j].t = _guardianData[j].t;
+                     guardObj[guardDataIndex].t = _guardianData[j].t;
                   }
                   if(_guardianData[j].hp)
                   {
-                     guardObj[j].hp = _guardianData[j].hp.Get();
+                     guardObj[guardDataIndex].hp = _guardianData[j].hp.Get();
                   }
                   else
                   {
-                     guardObj[j].hp = 0;
+                     guardObj[guardDataIndex].hp = 0;
                   }
                   if(_guardianData[j].l)
                   {
-                     guardObj[j].l = _guardianData[j].l.Get();
+                     guardObj[guardDataIndex].l = _guardianData[j].l.Get();
                   }
                   if(_guardianData[j].ft)
                   {
-                     guardObj[j].ft = _guardianData[j].ft;
+                     guardObj[guardDataIndex].ft = _guardianData[j].ft;
                   }
                   if(_guardianData[j].fd)
                   {
-                     guardObj[j].fd = _guardianData[j].fd;
+                     guardObj[guardDataIndex].fd = _guardianData[j].fd;
                   }
                   else
                   {
-                     guardObj[j].fd = 0;
+                     guardObj[guardDataIndex].fd = 0;
                   }
                   if(_guardianData[j].fb)
                   {
-                     guardObj[j].fb = _guardianData[j].fb.Get();
+                     guardObj[guardDataIndex].fb = _guardianData[j].fb.Get();
                   }
                   else
                   {
-                     guardObj[j].fb = 0;
+                     guardObj[guardDataIndex].fb = 0;
                   }
                   if(_guardianData[j].pl)
                   {
                      if(_guardianData[j].pl is SecNum)
                      {
-                        guardObj[j].pl = _guardianData[j].pl.Get();
+                        guardObj[guardDataIndex].pl = _guardianData[j].pl.Get();
                      }
                      else
                      {
-                        guardObj[j].pl = _guardianData[j].pl;
+                        guardObj[guardDataIndex].pl = _guardianData[j].pl;
                      }
                   }
                   else
                   {
-                     guardObj[j].pl = 0;
+                     guardObj[guardDataIndex].pl = 0;
                   }
+                  if(_guardianData[j].status == ChampionBase.k_CHAMPION_STATUS_NORMAL && _guardianData[j].t != 5)
+                  {
+                     if(activeChampion)
+                     {
+                        _guardianData[j].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                        _guardianData[j].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                     }
+                     activeChampion = true;
+                  }
+                  if(_guardianData[j].status)
+                  {
+                     guardObj[guardDataIndex].status = _guardianData[j].status;
+                  }
+                  else
+                  {
+                     guardObj[guardDataIndex].status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                  }
+                  if(_guardianData[j].log)
+                  {
+                     guardObj[guardDataIndex].log = String(_guardianData[j].log).substr(0,255);
+                  }
+                  else
+                  {
+                     guardObj[guardDataIndex].log = String(guardObj[guardDataIndex].status).toString();
+                  }
+                  guardDataIndex++;
                }
                j++;
             }
@@ -3415,12 +3539,15 @@ package
                loadObjects.attackcreatures = JSON.encode(AttackerCreaturesExport());
             }
             loadObjects.attackloot = JSON.encode(attackresources);
+            attackingChampionTypes = new Dictionary();
             guardAttObj = new Array(GLOBAL._playerGuardianData.length);
+            activeChampion = false;
             i2 = 0;
             while(i2 < GLOBAL._playerGuardianData.length)
             {
-               if(Boolean(GLOBAL._playerGuardianData[i2]) && GLOBAL._playerGuardianData[i2].t > 0)
+               if(GLOBAL._playerGuardianData[i2] && GLOBAL._playerGuardianData[i2].t > 0 && !attackingChampionTypes[i2])
                {
+                  attackingChampionTypes[i2] = true;
                   guardAttObj[i2] = new Object();
                   if(GLOBAL._playerGuardianData[i2].nm)
                   {
@@ -3465,6 +3592,31 @@ package
                   else
                   {
                      guardAttObj[i2].pl = 0;
+                  }
+                  if(GLOBAL._playerGuardianData[i2].status == ChampionBase.k_CHAMPION_STATUS_NORMAL && GLOBAL._playerGuardianData[i2].t != 5)
+                  {
+                     if(activeChampion)
+                     {
+                        GLOBAL._playerGuardianData[i2].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                        GLOBAL._playerGuardianData[i2].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                     }
+                     activeChampion = true;
+                  }
+                  if(GLOBAL._playerGuardianData[i2].status)
+                  {
+                     guardAttObj[i2].status = GLOBAL._playerGuardianData[i2].status;
+                  }
+                  else
+                  {
+                     guardAttObj[i2].status = 0;
+                  }
+                  if(GLOBAL._playerGuardianData[i2].log)
+                  {
+                     guardAttObj[i2].log = GLOBAL._playerGuardianData[i2].log;
+                  }
+                  else
+                  {
+                     guardAttObj[i2].log = int(guardAttObj[i2].status).toString();
                   }
                }
                i2++;
@@ -3548,7 +3700,7 @@ package
                   }
                }
             }
-            if(MapRoom._homeCell && MapRoom._homeCell._protected && (guardianFlung() || SiegeWeapons.didActivatWeapon))
+            if(MapRoom._homeCell && MapRoom._homeCell._protected && (guardianFlung() || SiegeWeapons.didActivatWeapon || ResourceBombs.launchedBomb))
             {
                homeCellObject = {
                   "baseid":GLOBAL._homeBaseID,
@@ -3557,6 +3709,10 @@ package
                };
                MapRoom._homeCell._protected = 0;
                monsterUpdate.push(homeCellObject);
+            }
+            if(GLOBAL._attackerCellsInRange.length == 0 && GLOBAL._mode == GLOBAL.MODE_ATTACK)
+            {
+               LOGGER.Log("err","BASE.Save: No Cells in Range.");
             }
             loadObjects.monsterupdate = JSON.encode(monsterUpdate);
          }
@@ -3960,48 +4116,6 @@ package
          {
             new URLLoaderApi().load(GLOBAL._baseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
          }
-      }
-      
-      public static function BuildingStorageAdd(param1:int, param2:int = 0) : void
-      {
-         if(!_buildingsStored["b" + param1])
-         {
-            _buildingsStored["b" + param1] = new SecNum(0);
-         }
-         _buildingsStored["b" + param1].Add(1);
-         if(BTOTEM.IsTotem2(param1))
-         {
-            _buildingsStored["bl" + param1] = new SecNum(param2);
-         }
-      }
-      
-      public static function BuildingStorageRemove(param1:int) : int
-      {
-         var _loc2_:int = 0;
-         if(_buildingsStored["b" + param1])
-         {
-            if(_buildingsStored["b" + param1].Get() >= 1)
-            {
-               _buildingsStored["b" + param1].Add(-1);
-               _loc2_ = 1;
-               if(_buildingsStored["bl" + param1])
-               {
-                  _loc2_ = int(_buildingsStored["bl" + param1].Get());
-                  delete _buildingsStored["bl" + param1];
-               }
-               return _loc2_;
-            }
-         }
-         return 0;
-      }
-      
-      public static function BuildingStorageCount(param1:int) : int
-      {
-         if(_buildingsStored["b" + param1])
-         {
-            return _buildingsStored["b" + param1].Get();
-         }
-         return 0;
       }
       
       public static function CanBuild(param1:int, param2:Boolean = false) : Object
@@ -4594,7 +4708,7 @@ package
          {
             _loc3_ = QUEUE.CanDo().error == false;
          }
-         if(BuildingStorageCount(param1) > 0)
+         if(InventoryManager.buildingStorageCount(param1) > 0)
          {
             _loc3_ = true;
          }
@@ -4845,13 +4959,15 @@ package
       public static function HideFootprints() : void
       {
          var _loc1_:BFOUNDATION = null;
+         var _loc2_:Boolean = false;
+         _loc2_ = GLOBAL._mode !== "attack" && GLOBAL._mode !== "wmattack" && GLOBAL._mode !== "iattack";
          for each(_loc1_ in _buildingsAll)
          {
-            _loc1_.hideFootprint(true);
+            _loc1_.hideFootprint(_loc2_ || _loc1_._senderid == LOGIN._playerID);
          }
          for each(_loc1_ in _buildingsMushrooms)
          {
-            _loc1_.hideFootprint(true);
+            _loc1_.hideFootprint(_loc2_ || _loc1_._senderid == LOGIN._playerID);
          }
       }
       
@@ -5679,44 +5795,13 @@ package
          {
             _loc3_ = param1.nodes[_loc2_];
             _loc4_ = GRID.ToISO(_loc3_.x,_loc3_.y,0);
-            _loc5_ = getBuildingFromNode(_loc3_);
+            _loc5_ = InventoryManager.getBuildingFromNode(_loc3_);
             if(_loc5_)
             {
                _loc5_.moveTo(_loc4_.x,_loc4_.y);
             }
             _loc2_++;
          }
-      }
-      
-      private static function getBuildingFromNode(param1:BaseTemplateNode) : BFOUNDATION
-      {
-         var _loc3_:BFOUNDATION = null;
-         var _loc4_:int = 0;
-         var _loc5_:Object = null;
-         var _loc2_:Point = GRID.ToISO(param1.x,param1.y,0);
-         if(param1.id == PlannerTemplate._DECORATION_ID)
-         {
-            _loc4_ = int(param1.type);
-            _loc3_ = addBuildingC(_loc4_);
-            _loc5_ = {
-               "X":param1.x,
-               "Y":param1.y,
-               "t":_loc4_,
-               "id":BASE._buildingCount++
-            };
-            if(_buildingsStored["bl" + _loc4_])
-            {
-               _loc5_.l = _buildingsStored["bl" + _loc4_].Get();
-            }
-            _loc3_.Setup(_loc5_);
-            param1.id = _loc3_._id;
-            _buildingsStored["b" + _loc4_].Set(_buildingsStored["b" + _loc4_].Get() - 1);
-         }
-         else
-         {
-            _loc3_ = getBuildingByID(param1.id);
-         }
-         return _loc3_;
       }
       
       public static function getTemplate() : BaseTemplate

@@ -68,6 +68,8 @@ package
       
       private static var POINT_MAP:Point = new Point(706,474 + _isSmallSizeOffset);
       
+      private static var POINT_FULLSCREEN:Point = new Point(640,14 + _isSmallSizeOffset);
+      
       private static var _secondWorker:Boolean = true;
       
       private static var _freeSpeedup:Boolean = true;
@@ -283,7 +285,9 @@ package
                      break;
                   }
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_1",{"v1":LOGIN._playerName}),null,null,true,true);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_1b",{"v1":LOGIN._playerName}),new Point(GLOBAL._SCREEN.right - 100,POINT_FULLSCREEN.y),["mc",UI2._top.mcFullscreen,new Point(0,12)],true,true);
+               _mcBob.showTwoButtons("btn_nothanks","btn_fullscreen",clickedFullScreen);
+               _mcBob.addFullScreenButton(clickedFullScreen);
                break;
             case 3:
                MAP._canScroll = false;
@@ -1264,6 +1268,16 @@ package
          }
          _doBob = _container.addChild(_mcBob);
          _mcBob.Resize();
+      }
+      
+      private static function clickedFullScreen(param1:MouseEvent) : void
+      {
+         _mcBob.removeFullScreenButton();
+         if(!GLOBAL.isFullScreen)
+         {
+            GLOBAL.goFullScreen(param1);
+         }
+         TUTORIAL.Advance(param1);
       }
       
       private static function ConditionScroll() : void

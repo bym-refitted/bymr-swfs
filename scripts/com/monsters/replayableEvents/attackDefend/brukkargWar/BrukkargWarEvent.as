@@ -1,7 +1,6 @@
 package com.monsters.replayableEvents.attackDefend.brukkargWar
 {
    import com.monsters.ai.TRIBES;
-   import com.monsters.configs.BYMDevConfig;
    import com.monsters.frontPage.messages.Message;
    import com.monsters.frontPage.messages.events.brukkargWar.*;
    import com.monsters.replayableEvents.IReplayableEventUI;
@@ -15,9 +14,7 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar
    import com.monsters.replayableEvents.attackDefend.brukkargWar.quotas.SpurtzCannonQuota1;
    import com.monsters.replayableEvents.attackDefend.brukkargWar.quotas.SpurtzCannonQuota2;
    import com.monsters.replayableEvents.attackDefend.brukkargWar.quotas.SpurtzCannonQuota3;
-   import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward3;
    import com.monsters.replayableEvents.monsterInvasion.WaveObj;
-   import com.monsters.rewarding.RewardHandler;
    
    public class BrukkargWarEvent extends AttackDefend
    {
@@ -64,7 +61,7 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar
          super.score = param1;
          if(_score == 4025 && _intactBaseList && _intactBaseList.length < 5)
          {
-            ReplayableEventHandler.callServerMethod("copybase",[],this.copyBaseCallback);
+            ReplayableEventHandler.callServerMethod("copybase",[["eventid",5]],this.copyBaseCallback);
          }
       }
       
@@ -115,7 +112,7 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar
          super.setupNextWave();
          if(_score >= 4024)
          {
-            ReplayableEventHandler.callServerMethod("copybase",[],this.copyBaseCallback);
+            ReplayableEventHandler.callServerMethod("copybase",[["eventid",5]],this.copyBaseCallback);
          }
       }
       
@@ -140,7 +137,7 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar
       
       override public function doesQualify() : Boolean
       {
-         return BYMDevConfig.instance.BRUKKARG_WAR_ON && GLOBAL._bTownhall._lvl.Get() >= 8 && !RewardHandler.instance.getRewardByID(SpurtzCannonReward3.ID);
+         return false;
       }
       
       override protected function loadedBaseList(param1:Object) : void
@@ -148,7 +145,7 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar
          super.loadedBaseList(param1);
          if(_score == 4025 && _intactBaseList.length < 5)
          {
-            ReplayableEventHandler.callServerMethod("copybase",[],this.copyBaseCallback);
+            ReplayableEventHandler.callServerMethod("copybase",[["eventid",5]],this.copyBaseCallback);
          }
       }
    }

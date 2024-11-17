@@ -165,11 +165,10 @@ package com.monsters.maproom
       
       private function onPortraitComplete(param1:String, param2:BitmapData) : void
       {
-         var _loc5_:Bitmap = null;
          var _loc3_:int = placeholder.x;
          var _loc4_:int = placeholder.y;
          this.imageLoadState = 2;
-         _loc5_ = new Bitmap(param2);
+         var _loc5_:Bitmap = new Bitmap(param2);
          _loc5_.height = 44;
          _loc5_.width = 44;
          this.image.addChildAt(_loc5_,this.image.numChildren - 1);

@@ -94,7 +94,7 @@ package com.monsters.siege
          BASE.Charge(3,_loc2_.r3,false,true);
          BASE.Charge(4,_loc2_.r4,false,true);
          BASE.Save();
-         var _loc3_:int = int(SiegeWeapons.getWeapon(param1).level);
+         var _loc3_:int = SiegeWeapons.getWeapon(param1).level;
          if(_loc3_ == 0)
          {
             LOGGER.Stat([90,param1,_loc3_,"start"]);
@@ -120,7 +120,7 @@ package com.monsters.siege
          BASE.Fund(3,_loc2_.r3,false,null,true);
          BASE.Fund(4,_loc2_.r4,false,null,true);
          BASE.Save();
-         var _loc3_:int = int(SiegeWeapons.getWeapon(param1).level);
+         var _loc3_:int = SiegeWeapons.getWeapon(param1).level;
          if(_loc3_ == 0)
          {
             LOGGER.Stat([90,param1,_loc3_,"cancel"]);
@@ -141,7 +141,7 @@ package com.monsters.siege
          }
          delete unlockingWeapons[param1];
          BASE.Save();
-         var _loc2_:int = int(SiegeWeapons.getWeapon(param1).level);
+         var _loc2_:int = SiegeWeapons.getWeapon(param1).level;
          if(_loc2_ == 0)
          {
             LOGGER.Stat([90,param1,_loc2_,"finish"]);
@@ -157,7 +157,7 @@ package com.monsters.siege
          var _loc2_:Number = this.getInstantUpgradeCost(param1);
          this.CompleteUpgradingWeapon(param1);
          BASE.Purchase("IBSW",_loc2_,"building");
-         var _loc3_:int = int(SiegeWeapons.getWeapon(param1).level);
+         var _loc3_:int = SiegeWeapons.getWeapon(param1).level;
          if(_loc3_ == 0)
          {
             LOGGER.Stat([90,param1,_loc3_,"instant",_loc2_]);

@@ -291,7 +291,7 @@ package
       
       public static function getSalt() : String
       {
-         return decodeSalt("XVV9YXVZVV2U3384W6VWYVZU31497399");
+         return decodeSalt("WWV20U6V73U94167ZV451447ZY3VY693");
       }
       
       public static function decodeSalt(param1:String) : String

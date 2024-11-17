@@ -1,6 +1,8 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.inventory.InventoryManager;
    import com.monsters.monsters.champions.ChampionBase;
    import flash.display.MovieClip;
    import flash.events.IOErrorEvent;
@@ -108,9 +110,12 @@ package
          var length:int = 0;
          var i:int = 0;
          var monsterdata:Object = null;
+         var k:int = 0;
+         var numBuildings:int = 0;
          var refundType:int = 0;
          var refundLevel:int = 0;
          var refundFeeds:int = 0;
+         var refundAbility:int = 0;
          var refundBuff:int = 0;
          var refundID:String = null;
          var refundName:String = null;
@@ -138,12 +143,13 @@ package
                }
                BASE._guardianData[_loc1_].ft -= GLOBAL.Timestamp();
                (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.push(BASE._guardianData[_loc1_]);
-               BASE._guardianData.splice(_loc1_,1);
+               BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+               BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
                if(GLOBAL._mode == "build")
                {
                   _loc2_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
-                  GLOBAL._playerGuardianData[_loc2_] = null;
-                  GLOBAL._playerGuardianData.splice(_loc2_,1);
+                  GLOBAL._playerGuardianData[_loc2_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                  GLOBAL._playerGuardianData[_loc2_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
                }
                CREATURES._guardian = null;
             }
@@ -155,6 +161,7 @@ package
             var _loc5_:Point = null;
             var _loc6_:Array = null;
             var _loc7_:int = 0;
+            var _loc8_:Object = null;
             var _loc2_:int = 0;
             while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
             {
@@ -166,8 +173,20 @@ package
                   if(refundLevel > 0)
                   {
                      CREATURES._guardian = new ChampionBase("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
+                     for each(_loc8_ in BASE._guardianData)
+                     {
+                        if(_loc8_.t == (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t)
+                        {
+                           _loc8_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                           _loc8_.log += "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                           break;
+                        }
+                     }
                      CREATURES._guardian.Export();
-                     MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                     if(!BYMConfig.instance.RENDERER_ON)
+                     {
+                        MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                     }
                      CREATURES._guardian.ModeCage();
                   }
                   _loc6_ = [];
@@ -320,6 +339,16 @@ package
             BASE._credits.Add(-update.data[7]);
             BASE._hpCredits -= update.data[7];
          }
+         if(update.data[1] == "BS")
+         {
+            k = 0;
+            numBuildings = int(update.data[3]);
+            while(i < numBuildings)
+            {
+               InventoryManager.buildingStorageAdd(update.data[2]);
+               i++;
+            }
+         }
          if(update.data[1] == "CMR")
          {
             if(BASE.isInferno())
@@ -330,12 +359,13 @@ package
             refundType = int(update.data[2]);
             refundLevel = int(update.data[3]);
             refundFeeds = int(update.data[4]);
+            refundAbility = update.data.length > 5 ? int(update.data[5]) : 0;
             refundBuff = 0;
             refundID = "G" + refundType;
             refundName = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"name");
             refundHealth = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"health");
             refundFeedtime = GLOBAL.Timestamp();
-            if(CREATURES._guardian)
+            if(CREATURES._guardian && CREATURES._guardian.parent == MAP._BUILDINGTOPS && !BYMConfig.instance.RENDERER_ON)
             {
                MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
             }
@@ -364,7 +394,7 @@ package
             {
                if(refundLevel > 0)
                {
-                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff,0);
+                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff,refundAbility);
                }
                BASE.Save();
             }

@@ -11,6 +11,7 @@ package com.monsters.debug
    import com.monsters.kingOfTheHill.KOTHHandler;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.rendering.RasterData;
+   import com.monsters.rendering.Renderer;
    import com.monsters.replayableEvents.ReplayableEvent;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    import com.monsters.replayableEvents.ReplayableEventLibrary;
@@ -44,6 +45,7 @@ package com.monsters.debug
          Console.registerCommand("settime",setERSTime);
          Console.registerCommand("gettime",getERSTime);
          Console.registerCommand("setscore",setERSScore);
+         Console.registerCommand("getscore",getERSScore);
          Console.registerCommand("startevent",startERSEvent);
          Console.registerCommand("clearers",clearERSData);
          Console.registerCommand("setwmi2level",setWMI2Level);
@@ -72,6 +74,8 @@ package com.monsters.debug
          Console.registerCommand("showsubscriptiondata",showSubscriptionData);
          Console.registerCommand("toggleGoEasy",toggleGoEasy);
          Console.registerCommand("rendererdebug",showRendererDebug);
+         Console.registerCommand("numBuildings",showNumBuildings);
+         Console.registerCommand("version",showVersion);
          Console.registerCommand("printJS",printJSCalls);
          Console.registerCommand("fullscreen",toggleFullScreen);
          Console.registerCommand("ncpElligible",fbCNcpElligibility);
@@ -213,13 +217,17 @@ package com.monsters.debug
       
       private static function deleteChampions(param1:*) : String
       {
+         var _loc2_:int = 0;
          GLOBAL._playerGuardianData.length = 0;
          BASE._guardianData.length = 0;
-         var _loc2_:int = 0;
-         while(_loc2_ < CREATURES._guardianList.length)
+         if(!BYMConfig.instance.RENDERER_ON)
          {
-            MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc2_]);
-            _loc2_++;
+            _loc2_ = 0;
+            while(_loc2_ < CREATURES._guardianList.length)
+            {
+               MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc2_]);
+               _loc2_++;
+            }
          }
          CREATURES._guardianList.length = 0;
          CREEPS._guardianList.length = 0;
@@ -337,6 +345,16 @@ package com.monsters.debug
          var _loc3_:uint = _loc2_.score;
          _loc2_.score = param1 as uint;
          return _loc2_.name + " score was set from " + _loc3_ + " to " + param1;
+      }
+      
+      private static function getERSScore(param1:*) : String
+      {
+         var _loc2_:ReplayableEvent = ReplayableEventHandler.activeEvent;
+         if(!_loc2_)
+         {
+            return "There is no active event";
+         }
+         return "score for " + _loc2_.name + " is " + _loc2_.score;
       }
       
       private static function startERSEvent(param1:*) : String
@@ -736,8 +754,24 @@ package com.monsters.debug
          {
             return "Renderer disabled";
          }
-         RasterData.showDebug();
+         Renderer.debug = !Renderer.debug;
          return "RasterData:" + RasterData.rasterData.length + " | " + RasterData.visibleData.length + " | " + int(RasterData.totalMemory / 1024) + "Kb";
+      }
+      
+      public static function showNumBuildings(param1:* = null) : String
+      {
+         var _loc2_:int = 0;
+         var _loc3_:BFOUNDATION = null;
+         for each(_loc3_ in BASE._buildingsAll)
+         {
+            _loc2_++;
+         }
+         return "NumBuildings:" + _loc2_.toString();
+      }
+      
+      public static function showVersion(param1:* = null) : String
+      {
+         return "version:" + GLOBAL._version.Get() + " " + GLOBAL._softversion;
       }
    }
 }

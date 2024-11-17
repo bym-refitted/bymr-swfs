@@ -384,7 +384,7 @@ package com.monsters.monsters
             }
             this._rasterPt.x = x + this._graphicMC.x - _loc1_.x;
             this._rasterPt.y = y + this._graphicMC.y - _loc1_.y;
-            this._rasterData.depth = Math.max(MAP.DEPTH_SHADOW + 1,(y - _loc1_.y + _loc2_) * 1000 + x - _loc1_.x);
+            this._rasterData.depth = Math.max(MAP.DEPTH_SHADOW + 1,(y + this._altitude - _loc1_.y + _loc2_) * 1000 + x - _loc1_.x);
             if(Boolean(this._graphicMC.filters.length) && this._rasterData.data !== this._graphicMC)
             {
                this._rasterData.data = this._graphicMC;
@@ -699,6 +699,7 @@ package com.monsters.monsters
          var _loc9_:Point = null;
          var _loc10_:Point = null;
          var _loc11_:int = 0;
+         var _loc12_:Array = null;
          var _loc13_:* = undefined;
          var _loc14_:* = undefined;
          var _loc15_:Boolean = false;
@@ -711,7 +712,7 @@ package com.monsters.monsters
          var _loc22_:Number = NaN;
          var _loc23_:Point = null;
          var _loc3_:int = getTimer();
-         var _loc12_:Array = [];
+         _loc12_ = [];
          this._looking = true;
          if(this._behaviour == k_sBHVR_HUNT && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0))
          {

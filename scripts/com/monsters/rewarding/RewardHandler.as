@@ -146,7 +146,7 @@ package com.monsters.rewarding
          for(_loc2_ in param1)
          {
             _loc3_ = RewardLibrary.getRewardByID(_loc2_);
-            if(_loc3_)
+            if(Boolean(_loc3_) && Boolean(param1[_loc2_]))
             {
                _loc3_.importData(param1[_loc2_]);
                this.addReward(_loc3_);

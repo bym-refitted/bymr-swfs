@@ -1062,11 +1062,6 @@ package com.monsters.maproom_advanced
       
       public function Check() : Boolean
       {
-         var _loc3_:String = null;
-         var _loc4_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:int = 0;
          if(!this._updated)
          {
             return true;
@@ -1083,90 +1078,7 @@ package com.monsters.maproom_advanced
          {
             return true;
          }
-         var _loc1_:Boolean = true;
-         if(this._monsterData.space.Get() != this._hpMonsterData.space)
-         {
-            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") space " + this._monsterData.space.Get() + " " + this._hpMonsterData.space);
-            _loc1_ = false;
-         }
-         if(this._monsterData.overdrivepower.Get() != this._hpMonsterData.overdrivepower)
-         {
-            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") overdrive power " + this._monsterData.overdrivepower.Get() + " " + this._hpMonsterData.overdrivepower);
-            _loc1_ = false;
-         }
-         if(this._monsterData.overdrivetime.Get() != this._hpMonsterData.overdrivetime)
-         {
-            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") overdrive time " + this._monsterData.overdrivetime.Get() + " " + this._hpMonsterData.overdrivetime);
-            _loc1_ = false;
-         }
-         for(_loc3_ in this._hpMonsterData.housed)
-         {
-            if(Boolean(this._monsterData.housed[_loc3_]) && this._monsterData.housed[_loc3_].Get() != this._hpMonsterData.housed[_loc3_])
-            {
-               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") housed " + _loc3_ + " " + this._monsterData.housed[_loc3_] + " " + this._hpMonsterData.housed[_loc3_]);
-               _loc1_ = false;
-            }
-         }
-         _loc4_ = 0;
-         while(_loc4_ < this._monsterData.hcount)
-         {
-            if(this._monsterData.h[_loc4_].length != this._hpMonsterData.h[_loc4_].length)
-            {
-               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") hatchery array length mismatch " + this._monsterData.h[_loc4_].length + " " + this._hpMonsterData.h[_loc4_].length);
-               _loc1_ = false;
-            }
-            else if(this._monsterData.h[_loc4_].length >= 2)
-            {
-               if(this._monsterData.h[_loc4_][1].Get() != this._hpMonsterData.h[_loc4_][1])
-               {
-                  LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") num monsters producing (now) " + this._monsterData.h[_loc4_][1].Get() + " " + this._hpMonsterData.h[_loc4_][1]);
-                  _loc1_ = false;
-               }
-               if(this._monsterData.h[_loc4_].length > 2)
-               {
-                  if(this._monsterData.h[_loc4_][2].length != this._hpMonsterData.h[_loc4_][2].length)
-                  {
-                     _loc1_ = false;
-                  }
-                  _loc6_ = int(this._monsterData.h[_loc4_][2].length);
-                  _loc7_ = 0;
-                  while(_loc7_ < _loc6_)
-                  {
-                     if(this._monsterData.h[_loc4_][2][_loc7_][1].Get() != this._hpMonsterData.h[_loc4_][2][_loc7_][1])
-                     {
-                        LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") num monsters producing (now) " + this._monsterData.h[_loc4_][2][_loc7_][1].Get() + " " + this._hpMonsterData.h[_loc4_][2][_loc7_][1]);
-                        _loc1_ = false;
-                     }
-                     _loc7_++;
-                  }
-               }
-            }
-            if(this._monsterData.hstage[_loc4_].Get() != this._hpMonsterData.hstage[_loc4_])
-            {
-               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") production stage mismatch");
-            }
-            _loc4_++;
-         }
-         var _loc5_:int = int(this._monsterData.hcc.length);
-         if(_loc5_ != this._hpMonsterData.hcc.length)
-         {
-            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") HCC queue length mismatch " + _loc5_ + " " + this._hpMonsterData.hcc.length);
-            _loc1_ = false;
-         }
-         else
-         {
-            _loc8_ = 0;
-            while(_loc8_ < _loc5_)
-            {
-               if(this._monsterData.hcc[_loc8_][1].Get() != this._hpMonsterData.hcc[_loc8_][1])
-               {
-                  LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") HCC queue size " + this._monsterData.hcc[_loc8_][1].Get() + " " + this._hpMonsterData.hcc[_loc8_][1]);
-                  _loc1_ = false;
-               }
-               _loc8_++;
-            }
-         }
-         return _loc1_;
+         return true;
       }
       
       private function Indicate() : void

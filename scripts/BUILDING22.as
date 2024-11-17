@@ -486,7 +486,7 @@ package
          }
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
          {
@@ -510,7 +510,10 @@ package
             }) + "</font>");
          }
          this.Update();
-         BASE.Save();
+         if(param7)
+         {
+            BASE.Save();
+         }
          return param1;
       }
       

@@ -42,7 +42,7 @@ package
          bRetreat.addEventListener(MouseEvent.CLICK,this.Retreat);
          addEventListener(MouseEvent.ROLL_OVER,this.Over);
          addEventListener(MouseEvent.ROLL_OUT,this.Out);
-         if(CREEPS._flungGuardian)
+         if(Boolean(CREEPS._flungGuardian) && this._index < CREEPS._flungGuardian.length)
          {
             CREEPS._flungGuardian[this._index] = false;
          }
@@ -64,7 +64,7 @@ package
       
       public function Update() : void
       {
-         if(CREEPS._flungGuardian[this._index])
+         if(CREEPS._flungGuardian && this._index < CREEPS._flungGuardian.length && CREEPS._flungGuardian[this._index])
          {
             bSend.removeEventListener(MouseEvent.CLICK,this.Send);
             bSend.Enabled = false;

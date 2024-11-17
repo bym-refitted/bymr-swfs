@@ -212,11 +212,7 @@ package de.polygonal.ds
          if(_loc5_ != null)
          {
             _loc5_ = _map[_loc3_];
-            if(_loc5_ != null)
-            {
-               false;
-            }
-            else
+            if(_loc5_ == null)
             {
                _map[_loc3_] = _loc4_;
                ++_size;

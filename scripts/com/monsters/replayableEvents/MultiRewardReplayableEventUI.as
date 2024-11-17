@@ -5,9 +5,10 @@ package com.monsters.replayableEvents
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
+   import flash.display.Shape;
+   import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
-   import gs.TweenLite;
    
    public class MultiRewardReplayableEventUI extends MultiRewardEventsBar implements IReplayableEventUI
    {
@@ -15,7 +16,17 @@ package com.monsters.replayableEvents
       
       public static var CLICKED_INFO:String = "eventBarInfo";
       
+      public static const k_REWARD_COLOR:uint = 15924337;
+      
+      public static const k_PROGRESS_COLOR:uint = 8567294;
+      
       private var _event:ReplayableEvent;
+      
+      private var m_progressBarFill:Shape;
+      
+      private var m_rewardGraphics:Vector.<RewardGraphics> = new Vector.<RewardGraphics>();
+      
+      private var k_BUFFER:Number = 0.25;
       
       public function MultiRewardReplayableEventUI()
       {
@@ -29,19 +40,35 @@ package com.monsters.replayableEvents
       
       public function setup(param1:ReplayableEvent) : void
       {
+         var _loc2_:Number = 0;
+         var _loc3_:int = 0;
+         var _loc4_:Number = 0;
+         var _loc6_:Number = 0;
          var _loc7_:ReplayableEventQuota = null;
-         var _loc8_:EventRewardRibbon = null;
-         var _loc9_:DisplayObject = null;
-         var _loc10_:DisplayObject = null;
+         var _loc8_:int = 0;
+         var _loc9_:EventRewardRibbon = null;
+         var _loc10_:Number = NaN;
+         var _loc11_:Sprite = null;
          this._event = param1;
-         this.stop();
+         tScore.visible = false;
+         tScore.mouseEnabled = false;
          buttonHelp.addEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
          buttonHelp.buttonMode = true;
-         buttonAction.stop();
-         buttonAction.addEventListener(MouseEvent.CLICK,this.ShowEventPopup,false,0,true);
-         buttonAction.buttonMode = true;
-         buttonActionLabel.text = this._event.buttonCopy;
-         buttonActionLabel.mouseEnabled = false;
+         if(this._event.buttonCopy)
+         {
+            buttonAction.stop();
+            buttonAction.addEventListener(MouseEvent.CLICK,this.ShowEventPopup,false,0,true);
+            buttonAction.buttonMode = true;
+            buttonActionLabel.text = this._event.buttonCopy;
+            buttonActionLabel.mouseEnabled = false;
+         }
+         else
+         {
+            buttonActionLabel.visible = false;
+            buttonAction.visible = false;
+         }
+         progressBarOverlay.visible = true;
+         progressBarOverlay.mouseEnabled = false;
          if(this._event.imageURL)
          {
             ImageCache.GetImageWithCallBack(this._event.imageURL,this.onImageLoaded);
@@ -50,90 +77,55 @@ package com.monsters.replayableEvents
          {
             ImageCache.GetImageWithCallBack(this._event.titleImage,this.onLogoLoaded);
          }
-         var _loc2_:Number = 0;
-         var _loc4_:uint = this._event.rewards.length;
-         var _loc5_:* = 0;
-         while(_loc5_ < _loc4_)
+         _loc2_ = 0;
+         _loc4_ = 3;
+         _loc6_ = 0;
+         while(_loc6_ < _loc4_)
          {
-            _loc7_ = this._event.rewards[_loc5_];
+            this.getChildByName("reward" + _loc6_).visible = false;
+            _loc6_++;
+         }
+         var _loc5_:uint = this._event.rewards.length;
+         _loc6_ = 0;
+         while(_loc6_ < _loc5_)
+         {
+            _loc7_ = this._event.rewards[_loc6_];
             if(!(_loc7_.rewardID == null || _loc7_.rewardID == ""))
             {
-               _loc8_ = this.getChildByName("reward" + _loc2_) as EventRewardRibbon;
-               if(_loc8_ == null)
+               _loc8_ = _loc4_ - (_loc5_ - 1) + _loc2_;
+               _loc9_ = this.getChildByName("reward" + String(_loc8_ - 1)) as EventRewardRibbon;
+               if(_loc9_ == null)
                {
                   break;
                }
-               ImageCache.GetImageWithCallBack(_loc7_.imageURL,this.onRewardImageLoaded,true,4,"",[_loc8_]);
+               _loc9_.visible = true;
+               ImageCache.GetImageWithCallBack(_loc7_.imageURL,this.onRewardImageLoaded,true,4,"",[_loc9_]);
+               _loc10_ = this._event.rewards[_loc6_].quota / this._event.maxScore - (_loc2_ > 0 ? this._event.rewards[_loc6_ - 1].quota / this._event.maxScore : 0);
+               _loc11_ = new Sprite();
+               _loc11_.x = _loc3_ + 2;
+               _loc11_.y = 1;
+               _loc11_.graphics.beginFill(k_REWARD_COLOR);
+               _loc11_.graphics.drawRect(0,0,_loc10_ * progressBarFillMask.width,progressBarFillMask.height - 2);
+               this.progressBarFill.addChild(_loc11_);
+               _loc3_ += _loc11_.width;
+               this.m_rewardGraphics.push(new RewardGraphics(_loc11_,_loc9_));
                _loc2_++;
-               if(_loc2_ >= 3)
+               if(_loc2_ >= _loc4_)
                {
                   break;
                }
             }
-            _loc5_++;
+            _loc6_++;
          }
-         _loc5_ = _loc2_;
-         while(_loc5_ < 3)
-         {
-            this.getChildByName("reward" + _loc5_).visible = false;
-            _loc5_++;
-         }
-         _loc5_ = 0;
-         while(_loc5_ < 5)
-         {
-            _loc9_ = this.getChildByName("mouseOverActivationSection" + _loc5_);
-            _loc9_.alpha = 0.01;
-            _loc9_.addEventListener(MouseEvent.MOUSE_OVER,this.OnProgressBarSectionMouseOver,false,0,true);
-            _loc9_.addEventListener(MouseEvent.MOUSE_OUT,this.OnProgressBarSectionMouseOut,false,0,true);
-            _loc10_ = this.getChildByName("mouseOverSection" + _loc5_);
-            _loc10_.visible = false;
-            _loc5_++;
-         }
+         this.m_progressBarFill = new Shape();
+         this.m_progressBarFill.x += 2;
+         this.progressBarFill.addChild(this.m_progressBarFill);
+         addEventListener(Event.REMOVED_FROM_STAGE,this.removedFromStage);
       }
       
-      private function OnProgressBarSectionMouseOver(param1:MouseEvent) : void
+      private function removedFromStage(param1:Event) : void
       {
-         var _loc5_:EventRewardRibbon = null;
-         var _loc2_:String = param1.target.name.replace("Activation","");
-         var _loc3_:DisplayObject = this.getChildByName(_loc2_);
-         _loc3_.visible = true;
-         var _loc4_:int = int(param1.target.name.replace("mouseOverActivationSection","")) - 2;
-         if(_loc4_ >= 0)
-         {
-            _loc5_ = this.getChildByName("reward" + _loc4_) as EventRewardRibbon;
-            TweenLite.to(_loc5_.rewardImage0,0.25,{"y":-50});
-            TweenLite.to(_loc5_.rewardRibbon0,0.25,{
-               "y":-50,
-               "onComplete":this.BringRewardToFront,
-               "onCompleteParams":[_loc5_]
-            });
-         }
-      }
-      
-      private function OnProgressBarSectionMouseOut(param1:MouseEvent) : void
-      {
-         var _loc5_:EventRewardRibbon = null;
-         var _loc2_:String = param1.target.name.replace("Activation","");
-         var _loc3_:DisplayObject = this.getChildByName(_loc2_);
-         _loc3_.visible = false;
-         var _loc4_:int = int(param1.target.name.replace("mouseOverActivationSection","")) - 2;
-         if(_loc4_ >= 0)
-         {
-            _loc5_ = this.getChildByName("reward" + _loc4_) as EventRewardRibbon;
-            TweenLite.to(_loc5_.rewardImage0,0.25,{"y":0});
-            TweenLite.to(_loc5_.rewardRibbon0,0.25,{"y":0});
-            this.SendRewardToBack(_loc5_);
-         }
-      }
-      
-      private function BringRewardToFront(param1:DisplayObject) : void
-      {
-         this.setChildIndex(param1,this.getChildIndex(logoImage));
-      }
-      
-      private function SendRewardToBack(param1:DisplayObject) : void
-      {
-         this.setChildIndex(param1,this.getChildIndex(eventImage) + 1);
+         this.m_rewardGraphics = null;
       }
       
       public function update() : void
@@ -149,41 +141,45 @@ package com.monsters.replayableEvents
          }
          if(this._event.hasEventStarted)
          {
-            progressBarMask.width = this._event.progress > 0 ? this._event.progress * 360 : 0;
+            this.m_progressBarFill.graphics.clear();
+            this.m_progressBarFill.graphics.beginFill(k_PROGRESS_COLOR);
+            this.m_progressBarFill.graphics.drawRect(0,0,this._event.progress * progressBarFillMask.width,progressBarFillMask.height);
+            this.m_progressBarFill.graphics.endFill();
          }
-         buttonActionLabel.text = this._event.buttonCopy;
+         if(this._event.buttonCopy)
+         {
+            buttonActionLabel.text = this._event.buttonCopy;
+         }
+         tScore.htmlText = "<b>" + Math.max(this._event.score,0) + "/" + this._event.maxScore + "</b>";
          this.Resize();
       }
       
       private function Resize() : void
       {
-         GLOBAL.RefreshScreen();
-         x = int(GLOBAL._SCREEN.x + 30);
-         y = int(GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - height - 10);
+         x = int(GLOBAL._SCREEN.x);
+         y = int(GLOBAL._SCREEN.y + (GLOBAL._SCREEN.height - mcBackground.height));
          if(Chat._bymChat && Chat._bymChat.chatBox && Boolean(Chat._bymChat.chatBox.background))
          {
-            y = int(Chat._bymChat.y + Chat._bymChat.chatBox.y + Chat._bymChat.chatBox.background.y - 53);
+            y = int(Chat._bymChat.y + Chat._bymChat.chatBox.y + Chat._bymChat.chatBox.background.y - mcBackground.height);
          }
       }
       
       private function onImageLoaded(param1:String, param2:BitmapData) : void
       {
-         while(eventImage.numChildren)
-         {
-            eventImage.removeChildAt(0);
-         }
-         eventImage.addChild(new Bitmap(param2));
-         eventImage.visible = true;
+         var _loc3_:Bitmap = new Bitmap(param2);
+         var _loc4_:Sprite = new Sprite();
+         _loc4_.addChild(_loc3_);
+         _loc4_.mouseEnabled = false;
+         _loc4_.mouseChildren = false;
+         addChildAt(_loc4_,0);
+         _loc4_.y -= _loc4_.height + this.k_BUFFER;
       }
       
       private function onLogoLoaded(param1:String, param2:BitmapData) : void
       {
-         while(logoImage.numChildren)
-         {
-            logoImage.removeChildAt(0);
-         }
-         logoImage.addChild(new Bitmap(param2));
-         logoImage.visible = true;
+         var _loc3_:Bitmap = new Bitmap(param2);
+         addChild(_loc3_);
+         _loc3_.visible = true;
       }
       
       private function onRewardImageLoaded(param1:String, param2:BitmapData, param3:Array) : void
@@ -209,3 +205,70 @@ package com.monsters.replayableEvents
    }
 }
 
+import flash.display.DisplayObject;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import gs.TweenLite;
+
+class RewardGraphics
+{
+   public var ribbon:EventRewardRibbon;
+   
+   public var fill:Sprite;
+   
+   private var width:Number;
+   
+   private var height:Number;
+   
+   public function RewardGraphics(param1:Sprite, param2:EventRewardRibbon)
+   {
+      super();
+      this.width = param1.width;
+      this.height = param1.height;
+      this.ribbon = param2;
+      this.fill = param1;
+      this.fill.addEventListener(MouseEvent.MOUSE_OVER,this.OnProgressBarSectionMouseOver,false,0,true);
+      this.ribbon.addEventListener(MouseEvent.MOUSE_OVER,this.OnProgressBarSectionMouseOver,false,0,true);
+      this.fill.addEventListener(MouseEvent.MOUSE_OUT,this.OnProgressBarSectionMouseOut,false,0,true);
+      this.ribbon.addEventListener(MouseEvent.MOUSE_OUT,this.OnProgressBarSectionMouseOut,false,0,true);
+      this.OnProgressBarSectionMouseOut();
+      this.fill.buttonMode = true;
+      this.ribbon.buttonMode = true;
+   }
+   
+   protected function OnProgressBarSectionMouseOut(param1:Event = null) : void
+   {
+      TweenLite.to(this.ribbon.rewardImage0,0.25,{"y":0});
+      TweenLite.to(this.ribbon.rewardRibbon0,0.25,{"y":0});
+      this.SendRewardToBack(this.ribbon);
+      this.redraw(0);
+   }
+   
+   protected function OnProgressBarSectionMouseOver(param1:Event) : void
+   {
+      TweenLite.to(this.ribbon.rewardImage0,0.25,{"y":-50});
+      TweenLite.to(this.ribbon.rewardRibbon0,0.25,{
+         "y":-50,
+         "onComplete":this.BringRewardToFront,
+         "onCompleteParams":[this.ribbon]
+      });
+      this.redraw(1);
+   }
+   
+   private function redraw(param1:Number) : void
+   {
+      this.fill.graphics.clear();
+      this.fill.graphics.lineStyle(1,0xa8a8a8);
+      this.fill.graphics.beginFill(MultiRewardReplayableEventUI.k_REWARD_COLOR,param1);
+      this.fill.graphics.drawRect(0,0,this.width,this.height);
+   }
+   
+   private function BringRewardToFront(param1:DisplayObject) : void
+   {
+   }
+   
+   private function SendRewardToBack(param1:DisplayObject) : void
+   {
+   }
+}

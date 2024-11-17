@@ -26,6 +26,8 @@ package com.monsters.configs
       
       public static const k_sLOCAL_MODE_STAGE:int = 12;
       
+      public static const k_sMAX_FORTIFICATION_LEVEL:int = 4;
+      
       public function BYMConfig(param1:InstanceEnforcer)
       {
          super();

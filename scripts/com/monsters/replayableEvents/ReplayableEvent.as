@@ -3,6 +3,7 @@ package com.monsters.replayableEvents
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.FrontPageLibrary;
    import com.monsters.frontPage.messages.Message;
+   import flash.events.Event;
    import flash.events.EventDispatcher;
    
    public class ReplayableEvent extends EventDispatcher
@@ -127,6 +128,7 @@ package com.monsters.replayableEvents
       {
          var _loc2_:Message = null;
          this.score = 0;
+         this.setStartDate(0);
          var _loc1_:int = 0;
          while(_loc1_ < this._messages.length)
          {
@@ -135,7 +137,13 @@ package com.monsters.replayableEvents
             FrontPageLibrary.EVENTS.addMessage(_loc2_);
             _loc1_++;
          }
+         ReplayableEventHandler.callServerMethod("resetevent",[["eventid",this._id]],this.resetCallback);
          BASE.Save();
+      }
+      
+      protected function resetCallback(param1:Object) : void
+      {
+         dispatchEvent(new Event("reset"));
       }
       
       public function exportData() : Object
@@ -254,35 +262,47 @@ package com.monsters.replayableEvents
       
       public function set score(param1:Number) : void
       {
-         var _loc2_:ReplayableEventQuota = null;
          if(this._score >= 0 && param1 - this._score > 0)
          {
-            ReplayableEventHandler.callServerMethod("updatescore",[["eventid",this._id],["delta",param1 - this._score]],this.verifyScoreFromServer);
+            ReplayableEventHandler.callServerMethod("updatescore",[["eventid",this._id],["delta",param1 - this._score],["saveid",GLOBAL.Timestamp()]],this.verifyScoreFromServer);
          }
          this._score = param1;
+         this.setMetQuotas();
+      }
+      
+      protected function setMetQuotas() : void
+      {
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:ReplayableEventQuota = null;
          if(!this.m_mustBeInsideBase || this.m_mustBeInsideBase && GLOBAL.isAtHome() === true)
          {
-            _loc2_ = this.getCurrentQuota();
-            if(Boolean(_loc2_) && !_loc2_.hasBeenAwarded)
+            _loc1_ = int(this._quotas.length);
+            _loc2_ = 0;
+            while(_loc2_ < _loc1_)
             {
-               _loc2_.metQuota();
+               _loc3_ = this._quotas[_loc2_];
+               if(this._score >= _loc3_.quota)
+               {
+                  _loc3_.metQuota();
+               }
+               _loc2_++;
             }
          }
       }
       
-      protected function getCurrentQuota() : ReplayableEventQuota
+      protected function getLatestMetQuota(param1:Number) : ReplayableEventQuota
       {
          var _loc3_:ReplayableEventQuota = null;
-         var _loc1_:int = int(this._quotas.length);
-         var _loc2_:int = 0;
-         while(_loc2_ < _loc1_)
+         var _loc2_:int = int(this._quotas.length - 1);
+         while(_loc2_ >= 0)
          {
             _loc3_ = this._quotas[_loc2_];
-            if(this._score >= _loc3_.quota)
+            if(param1 >= _loc3_.quota)
             {
                return _loc3_;
             }
-            _loc2_++;
+            _loc2_--;
          }
          return null;
       }
@@ -296,13 +316,27 @@ package com.monsters.replayableEvents
          }
       }
       
+      protected function getServerScore() : void
+      {
+         ReplayableEventHandler.callServerMethod("geteventscore",[["eventid",this._id]],this.setScoreFromServer);
+      }
+      
+      protected function setScoreFromServer(param1:Object) : void
+      {
+         var _loc2_:Number = param1.score as Number;
+         if(Boolean(_loc2_) && !isNaN(_loc2_))
+         {
+            this._score = _loc2_;
+         }
+      }
+      
       private function completedEvent() : void
       {
          if(this.m_mustBeInsideBase && GLOBAL.isAtHome() != true)
          {
             return;
          }
-         if(!this._rewardMessage.hasBeenSeen)
+         if(Boolean(this._rewardMessage) && !this._rewardMessage.hasBeenSeen)
          {
             POPUPS.Push(new FrontPageGraphic(this._rewardMessage));
             this._rewardMessage.viewed();
@@ -365,9 +399,14 @@ package com.monsters.replayableEvents
          return this._quotas;
       }
       
-      public function getMaxScore() : Number
+      public function get maxScore() : Number
       {
          return this._maxScore;
+      }
+      
+      public function get isLive() : Boolean
+      {
+         return Boolean(this._originalStartDate) && (ReplayableEventHandler.currentTime >= this._originalStartDate - ReplayableEventHandler.DURATION_UNTIL_EVENT_STARTS && ReplayableEventHandler.currentTime <= this._originalStartDate + this._duration);
       }
    }
 }

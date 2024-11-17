@@ -86,9 +86,8 @@ package
       
       public static function SplatParticle(param1:Number, param2:Number, param3:Number, param4:Number, param5:Number) : void
       {
-         var _loc6_:ParticleSplat = null;
          var _loc7_:int = 0;
-         _loc6_ = MAP._EFFECTS.addChild(new ParticleSplat()) as ParticleSplat;
+         var _loc6_:ParticleSplat = MAP._EFFECTS.addChild(new ParticleSplat()) as ParticleSplat;
          _loc7_ = 1 + int(Math.random() * 5);
          _loc6_.gotoAndStop(_loc7_);
          _loc6_.x = param2;

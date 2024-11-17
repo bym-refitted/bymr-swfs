@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.monsters.champions.KOTHChampion;
@@ -311,19 +312,23 @@ package
       private static function hasBasicChampion() : Boolean
       {
          var _loc1_:int = 0;
-         while(_loc1_ < BASE._guardianData.length)
+         var _loc2_:int = 0;
+         while(_loc2_ < BASE._guardianData.length)
          {
-            if(_guardians["G" + BASE._guardianData[_loc1_].t].classType == CLASS_TYPE_BASIC)
+            _loc1_ = !!BASE._guardianData[_loc2_].status ? int(BASE._guardianData[_loc2_].status) : ChampionBase.k_CHAMPION_STATUS_NORMAL;
+            if(_loc1_ == ChampionBase.k_CHAMPION_STATUS_NORMAL && _guardians["G" + BASE._guardianData[_loc2_].t].classType == CLASS_TYPE_BASIC)
             {
                return true;
             }
-            _loc1_++;
+            _loc2_++;
          }
          return false;
       }
       
       public static function Show() : void
       {
+         var _loc1_:int = 0;
+         var _loc2_:Object = null;
          if(!_open)
          {
             _open = true;
@@ -336,7 +341,15 @@ package
             }
             else
             {
-               if(CREATURES._guardianList.length < BASE._guardianData.length)
+               _loc1_ = 0;
+               for each(_loc2_ in BASE._guardianData)
+               {
+                  if(_loc2_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                  {
+                     _loc1_++;
+                  }
+               }
+               if(CREATURES._guardianList.length < _loc1_)
                {
                   spawnAllGuardians();
                }
@@ -352,7 +365,7 @@ package
          var _loc1_:int = 0;
          while(_loc1_ < BASE._guardianData.length)
          {
-            if(Boolean(BASE._guardianData[_loc1_]) && Boolean(BASE._guardianData[_loc1_].t))
+            if(BASE._guardianData[_loc1_] && BASE._guardianData[_loc1_].t && BASE._guardianData[_loc1_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL && CREATURES._guardian == null)
             {
                GLOBAL._bCage.SpawnGuardian(BASE._guardianData[_loc1_].l.Get(),BASE._guardianData[_loc1_].fd,BASE._guardianData[_loc1_].ft,BASE._guardianData[_loc1_].t,BASE._guardianData[_loc1_].hp.Get(),BASE._guardianData[_loc1_].nm,BASE._guardianData[_loc1_].fb.Get(),BASE._guardianData[_loc1_].pl.Get());
             }
@@ -485,29 +498,31 @@ package
       public static function GetAllGuardianData() : Object
       {
          var _loc2_:int = 0;
-         var _loc3_:Array = null;
-         var _loc4_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:Array = null;
+         var _loc5_:int = 0;
          var _loc1_:Object = {};
          if(BASE._guardianData.length)
          {
-            _loc2_ = 0;
-            while(_loc2_ < BASE._guardianData.length)
+            _loc3_ = 0;
+            while(_loc3_ < BASE._guardianData.length)
             {
-               if(isBasicGuardian("G" + BASE._guardianData[_loc2_].t))
+               _loc2_ = !!BASE._guardianData[_loc3_].status ? int(BASE._guardianData[_loc3_].status) : ChampionBase.k_CHAMPION_STATUS_NORMAL;
+               if(_loc2_ == ChampionBase.k_CHAMPION_STATUS_NORMAL && isBasicGuardian("G" + BASE._guardianData[_loc3_].t))
                {
-                  _loc1_[BASE._guardianData[_loc2_].t] = BASE._guardianData[_loc2_];
+                  _loc1_[BASE._guardianData[_loc3_].t] = BASE._guardianData[_loc3_];
                }
-               _loc2_++;
+               _loc3_++;
             }
          }
          if(Boolean(GLOBAL._bChamber) && Boolean(CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen))
          {
-            _loc3_ = CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen;
-            _loc4_ = 0;
-            while(_loc4_ < _loc3_.length)
+            _loc4_ = CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen;
+            _loc5_ = 0;
+            while(_loc5_ < _loc4_.length)
             {
-               _loc1_[_loc3_[_loc4_].t] = _loc3_[_loc4_];
-               _loc4_++;
+               _loc1_[_loc4_[_loc5_].t] = _loc4_[_loc5_];
+               _loc5_++;
             }
          }
          return _loc1_;
@@ -589,18 +604,19 @@ package
       override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
-         var _loc2_:int = 0;
-         while(_loc2_ < BASE._guardianData.length)
+         var _loc2_:Vector.<Object> = BASE._guardianData;
+         var _loc3_:int = 0;
+         while(_loc3_ < BASE._guardianData.length)
          {
-            if(Boolean(BASE._guardianData[_loc2_]) && Boolean(BASE._guardianData[_loc2_].t))
+            if(_loc2_[_loc3_] && _loc2_[_loc3_].t && _loc2_[_loc3_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
             {
-               this.SpawnGuardian(BASE._guardianData[_loc2_].l.Get(),BASE._guardianData[_loc2_].fd,BASE._guardianData[_loc2_].ft,BASE._guardianData[_loc2_].t,BASE._guardianData[_loc2_].hp.Get(),BASE._guardianData[_loc2_].nm,BASE._guardianData[_loc2_].fb.Get(),BASE._guardianData[_loc2_].pl.Get());
-               if(CREATURES._guardian && isBasicGuardian("G" + CREATURES._guardian._type) && BASE._guardianData[_loc2_].l.Get() == 6)
+               this.SpawnGuardian(_loc2_[_loc3_].l.Get(),_loc2_[_loc3_].fd,_loc2_[_loc3_].ft,_loc2_[_loc3_].t,_loc2_[_loc3_].hp.Get(),_loc2_[_loc3_].nm,_loc2_[_loc3_].fb.Get(),_loc2_[_loc3_].pl.Get());
+               if(CREATURES._guardian && isBasicGuardian("G" + CREATURES._guardian._type) && _loc2_[_loc3_].l.Get() == 6)
                {
                   ACHIEVEMENTS.Check("upgrade_champ" + CREATURES._guardian._type,1);
                }
             }
-            _loc2_++;
+            _loc3_++;
          }
       }
       
@@ -626,39 +642,76 @@ package
       
       public function SpawnGuardian(param1:int, param2:int, param3:int = 0, param4:int = 1, param5:int = 1000000000, param6:String = "", param7:int = 0, param8:int = 0) : void
       {
-         var _loc11_:ChampionBase = null;
-         var _loc12_:Boolean = false;
+         var _loc11_:Object = null;
+         var _loc12_:ChampionBase = null;
+         var _loc13_:Boolean = false;
          var _loc9_:Point = GRID.FromISO(x - 20 + Math.random() * 40,y - 20 + Math.random() * 40);
          var _loc10_:Class = getGuardianSpawnClass(param4);
          if(param3 == 0)
          {
             param3 = GLOBAL.Timestamp() + GetGuardianProperty("G" + param4,param1,"feedTime");
          }
-         if(_guardians["G" + param4].classType == CLASS_TYPE_BASIC)
+         if(!CREATURES.getGuardian(param4))
          {
-            if(!CREATURES.getGuardian(param4))
+            if(_guardians["G" + param4].classType == CLASS_TYPE_BASIC)
             {
                CREATURES._guardian = new _loc10_("pen",PointInCage(_loc9_),0,_loc9_,true,this,param1,param2,param3,param4,param5,param7,param8);
+               for each(_loc11_ in BASE._guardianData)
+               {
+                  if(_loc11_.t == param4 && _loc11_.status != ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                  {
+                     _loc11_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                     _loc11_.log = _loc11_.log != undefined ? _loc11_.log + "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString() : ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                     break;
+                  }
+               }
+               if(GLOBAL._mode == "build")
+               {
+                  for each(_loc11_ in GLOBAL._playerGuardianData)
+                  {
+                     if(_loc11_.t == param4 && _loc11_.status != ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                     {
+                        _loc11_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                        _loc11_.log = _loc11_.log != undefined ? _loc11_.log + "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString() : ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                        break;
+                     }
+                  }
+               }
                CREATURES._guardian.Export();
                if(param6 != "")
                {
                   CREATURES._guardian._name = param6;
                }
-               MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
-            }
-         }
-         else
-         {
-            _loc11_ = new _loc10_("pen",PointInCage(_loc9_),0,_loc9_,true,this,param1,param2,param3,param4,param5,param7,param8);
-            _loc12_ = CREATURES.addGuardian(_loc11_);
-            if(_loc12_)
-            {
-               _loc11_.Export();
-               if(param6 != "")
+               if(!BYMConfig.instance.RENDERER_ON)
                {
-                  _loc11_._name = param6;
+                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
                }
-               MAP._BUILDINGTOPS.addChild(_loc11_);
+            }
+            else
+            {
+               _loc12_ = new _loc10_("pen",PointInCage(_loc9_),0,_loc9_,true,this,param1,param2,param3,param4,param5,param7,param8);
+               for each(_loc11_ in BASE._guardianData)
+               {
+                  if(_loc11_.t == param4)
+                  {
+                     _loc11_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                     _loc11_.log = _loc11_.log != undefined ? _loc11_.log + "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString() : ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                     break;
+                  }
+               }
+               _loc13_ = CREATURES.addGuardian(_loc12_);
+               if(_loc13_)
+               {
+                  _loc12_.Export();
+                  if(param6 != "")
+                  {
+                     _loc12_._name = param6;
+                  }
+                  if(!BYMConfig.instance.RENDERER_ON)
+                  {
+                     MAP._BUILDINGTOPS.addChild(_loc12_);
+                  }
+               }
             }
          }
          QUESTS.Check("hatch_champ" + param4,1);
@@ -955,32 +1008,34 @@ package
          return super.Export();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
       {
          return 0;
       }
       
-      public function RemoveGuardian(param1:uint) : void
+      public function RemoveGuardian(param1:uint, param2:int = 3) : void
       {
          CREATURES.removeGuardianType(param1);
-         var _loc2_:int = 0;
-         _loc2_ = GLOBAL.getPlayerGuardianIndex(param1);
-         if(_loc2_ >= 0)
+         var _loc3_:int = 0;
+         _loc3_ = GLOBAL.getPlayerGuardianIndex(param1);
+         if(_loc3_ >= 0)
          {
-            GLOBAL._playerGuardianData.splice(_loc2_,1);
+            GLOBAL._playerGuardianData[_loc3_].status = param2;
+            GLOBAL._playerGuardianData[_loc3_].log += "," + param2.toString();
          }
-         _loc2_ = 0;
-         while(_loc2_ < BASE._guardianData.length)
+         _loc3_ = 0;
+         while(_loc3_ < BASE._guardianData.length)
          {
-            if(BASE._guardianData[_loc2_].t == param1)
+            if(BASE._guardianData[_loc3_].t == param1)
             {
                break;
             }
-            _loc2_++;
+            _loc3_++;
          }
-         if(_loc2_ >= 0)
+         if(_loc3_ >= 0)
          {
-            BASE._guardianData.splice(_loc2_,1);
+            BASE._guardianData[_loc3_].status = param2;
+            BASE._guardianData[_loc3_].log += "," + param2.toString();
          }
       }
    }
