@@ -220,6 +220,7 @@ package com.monsters.maproom3
       
       public function GetClosestCell(param1:int, param2:int, param3:int) : MapRoom3Cell
       {
+         var _loc5_:Vector.<MapRoom3Cell> = null;
          var _loc6_:int = 0;
          var _loc9_:MapRoom3Cell = null;
          var _loc10_:MapRoom3Cell = null;
@@ -232,12 +233,8 @@ package com.monsters.maproom3
          {
             return null;
          }
-         var _loc5_:Vector.<MapRoom3Cell> = this.m_MapRoom3Data.GetHexCellsInRange(_loc4_,param3);
+         _loc5_ = this.m_MapRoom3Data.GetHexCellsInRange(_loc4_,param3);
          var _loc8_:int = int.MAX_VALUE;
-         if(_loc5_.length)
-         {
-            _loc10_ = _loc5_.pop();
-         }
          var _loc11_:int = int(_loc5_.length);
          _loc6_ = _loc11_ - 1;
          while(_loc6_ >= 0)

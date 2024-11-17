@@ -34,6 +34,10 @@ package com.monsters.maproom3
       
       private static const KEY_SCROLL_ACCELERATION:Number = 0.25;
       
+      private static const k_MAX_FILTER_TOTAL_SIZE:Number = 0xffffff;
+      
+      private static const k_MAX_FILTER_SIZE:Number = 0x1fff;
+      
       private var RANGE_GLOW_FILTER:GlowFilter = new GlowFilter(RANGE_GLOW_COLOUR,0.5,RANGE_GLOW_BLUR_X,RANGE_GLOW_BLUR_Y,RANGE_GLOW_BLUR_STRENGTH,1,true,true);
       
       private var MOUSEOVER_RANGE_GLOW_FILTER:GlowFilter = new GlowFilter(MOUSEOVER_RANGE_GLOW_COLOUR,0.5,RANGE_GLOW_BLUR_X,RANGE_GLOW_BLUR_Y,RANGE_GLOW_BLUR_STRENGTH,1,true,true);
@@ -616,6 +620,11 @@ package com.monsters.maproom3
             _loc15_ = null;
          }
          _loc18_.length = 0;
+         this.m_RangeGlowLayer.visible = true;
+         if(this.m_RangeGlowLayer.height >= k_MAX_FILTER_SIZE || this.m_RangeGlowLayer.width >= k_MAX_FILTER_SIZE || this.m_RangeGlowLayer.width * this.m_RangeGlowLayer.height >= k_MAX_FILTER_TOTAL_SIZE)
+         {
+            this.m_RangeGlowLayer.visible = false;
+         }
       }
       
       private function OnCellGraphicClicked(param1:MouseEvent) : void

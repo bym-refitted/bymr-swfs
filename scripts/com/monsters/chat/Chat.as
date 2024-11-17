@@ -128,7 +128,7 @@ package com.monsters.chat
          {
             return;
          }
-         if(!_bymChat._open)
+         if(_bymChat._open)
          {
             return;
          }

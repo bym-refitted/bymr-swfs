@@ -359,7 +359,7 @@ package
             {
                _loc2_ = new Point(_loc5_._mc.x,_loc5_._mc.y + _loc5_._footprint[0].height / 2);
                _loc3_ = Point.distance(_loc1_,_loc2_);
-               if(_loc5_ != this._targetBuilding && _loc3_ <= 100)
+               if(_loc5_ != this._targetBuilding && _loc3_ <= 100 && _loc5_.health > 0)
                {
                   _loc4_.push({
                      "building":_loc5_,

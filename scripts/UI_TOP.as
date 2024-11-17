@@ -1158,13 +1158,14 @@ package
          }
          if(GLOBAL._attackersFlinger)
          {
-            this._creatureButtonsMC._mc._txtContainer.tA.width = 56;
             if(MapRoomManager.instance.isInMapRoom3)
             {
+               this._creatureButtonsMC._mc._txtContainer.tA.width = 60;
                this._creatureButtonsMC._mc._txtContainer.tA.htmlText = (_loc4_ - _loc5_).toString() + "/" + _loc4_.toString();
             }
             else
             {
+               this._creatureButtonsMC._mc._txtContainer.tA.width = 56;
                this._creatureButtonsMC._mc._txtContainer.tA.htmlText = Math.min(100,int((1 - _loc5_ / _loc4_) * 100)).toString() + "%";
             }
          }

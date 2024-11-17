@@ -110,7 +110,7 @@ package com.monsters.maproom3
       private static function DrawProceduralRangeHexagon(param1:Graphics, param2:uint, param3:Number, param4:Number, param5:Number, param6:Number) : void
       {
          param1.lineStyle(0,0,0);
-         param1.beginFill(0xffffff,1);
+         param1.beginFill(param2,param3);
          param1.moveTo(-(param4 * 2) + param6,-param6);
          param1.lineTo(-param4 - param6,-param5 + param6);
          param1.curveTo(-param4,-param5,-param4 + 2 * param6,-param5);

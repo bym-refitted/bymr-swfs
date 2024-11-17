@@ -76,7 +76,7 @@ package com.monsters.maproom3.data
       
       private var m_AllianceId:int = 0;
       
-      private var m_BaseId:int = 0;
+      private var m_BaseId:Number = 0;
       
       private var m_UserId:int = 0;
       
@@ -105,7 +105,7 @@ package com.monsters.maproom3.data
          return this.m_AllianceId;
       }
       
-      public function get baseID() : int
+      public function get baseID() : Number
       {
          return this.m_BaseId;
       }
@@ -180,7 +180,7 @@ package com.monsters.maproom3.data
          this.m_Name = !!param1.hasOwnProperty("n") ? param1["n"] : "";
          this.m_FacebookId = !!param1.hasOwnProperty("fbid") ? param1["fbid"] : "";
          this.m_AllianceId = !!param1.hasOwnProperty("aid") ? int(param1["aid"]) : 0;
-         this.m_BaseId = !!param1.hasOwnProperty("bid") ? int(param1["bid"]) : 0;
+         this.m_BaseId = !!param1.hasOwnProperty("bid") ? Number(param1["bid"]) : 0;
          this.m_UserId = !!param1.hasOwnProperty("uid") ? int(param1["uid"]) : 0;
          this.m_CellDataBitField1 = 0;
          var _loc2_:int = !!param1.hasOwnProperty("l") ? int(param1["l"]) : 0;

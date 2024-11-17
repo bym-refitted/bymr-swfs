@@ -32,6 +32,7 @@ package
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.maproom_advanced.MapRoomCell;
    import com.monsters.maproom_advanced.PopupLostMainBase;
+   import com.monsters.maproom_manager.IMapRoomCell;
    import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.pathing.PATHING;
@@ -750,6 +751,7 @@ package
          var r:Object = null;
          var bd:Object = null;
          var i:String = null;
+         var mapRoom3Cell:IMapRoomCell = null;
          var ir:Object = null;
          var kx:int = 0;
          var ooo:Object = null;
@@ -950,9 +952,20 @@ package
                   }
                }
             }
-            else if(MapRoomManager.instance.isInMapRoom3 && Boolean(obj.homebase))
+            else if(MapRoomManager.instance.isInMapRoom3)
             {
-               GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
+               if(obj.homebase != null)
+               {
+                  GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
+               }
+               if(obj.mapcelldata != null)
+               {
+                  mapRoom3Cell = MapRoomManager.instance.FindCell(obj.mapcelldata.x,obj.mapcelldata.y);
+                  if(mapRoom3Cell != null && mapRoom3Cell != GLOBAL._currentCell)
+                  {
+                     GLOBAL._currentCell = mapRoom3Cell;
+                  }
+               }
             }
             GLOBAL._unreadMessages = obj.unreadmessages;
             r = obj.resources;
