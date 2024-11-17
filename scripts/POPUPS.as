@@ -554,8 +554,8 @@ package
          var mc:MovieClip = new popup_noworker();
          if(BASE._isOutpost)
          {
-            mc.tA.htmlText = "<b>Your Worker Is Busy</b>";
-            mc.tB.htmlText = "Speed-up the worker\'s task for " + QUEUE.GetFinishCost() + " Shiny.";
+            mc.tA.htmlText = KEYS.Get("worker_busy");
+            mc.tB.htmlText = KEYS.Get("worker_speedupoutpost",{"v1":QUEUE.GetFinishCost()});
             mc.bGet.SetupKey("btn_speedup");
             mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
             {
@@ -568,7 +568,7 @@ package
             mc.tA.htmlText = "<b>" + KEYS.Get("pop_hireanother_title") + "</b>";
             if(QUEUE.GetBuilding())
             {
-               mc.tB.htmlText = "Speed-up a worker\'s task for " + QUEUE.GetFinishCost() + " Shiny.";
+               mc.tB.htmlText = KEYS.Get("worker_speedup",{"v1":QUEUE.GetFinishCost()});
                mc.bGet.SetupKey("btn_speedup");
                mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
                {

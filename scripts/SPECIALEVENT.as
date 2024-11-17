@@ -847,8 +847,8 @@ package
          _loc2_.setUTCHours(20,0,0,0);
          _eventExtensionTime = Math.floor(_loc2_.getTime() / 1000);
          var _loc3_:Date = new Date();
-         _loc3_.setUTCFullYear(2011,10,17);
-         _loc3_.setUTCHours(4,45,0,0);
+         _loc3_.setUTCFullYear(2011,10,20);
+         _loc3_.setUTCHours(20,0,0,0);
          _eventEndTime = Math.floor(_loc3_.getTime() / 1000);
       }
       
@@ -1142,6 +1142,13 @@ package
       
       public static function ShowTShirtPopup(param1:String) : void
       {
+         var _loc2_:MovieClip = null;
+         if(!DEFENSEEVENTPOPUP.open && !_active)
+         {
+            _loc2_ = new DEFENSEEVENTPOPUP(5);
+            POPUPS.Push(_loc2_,null,null,null,null,false,param1);
+            GLOBAL.StatSet("lasttdpopup",6);
+         }
       }
       
       public static function ShowEventEndPopup() : void
@@ -1157,11 +1164,7 @@ package
       
       public static function EventActive() : Boolean
       {
-         if(BASE._isOutpost)
-         {
-            return false;
-         }
-         return SPECIALEVENT.invasionpop == 4 || SPECIALEVENT.invasionpop == 5;
+         return false;
       }
       
       public static function get invasionpop() : Number
@@ -1248,7 +1251,10 @@ package
          {
             case -1:
             case 0:
-               GLOBAL.StatSet("lasttdpopup",0);
+               if(GLOBAL.StatGet("lasttdpopup") != 0)
+               {
+                  GLOBAL.StatSet("lasttdpopup",0);
+               }
                break;
             case 1:
             case 2:

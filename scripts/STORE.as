@@ -795,14 +795,11 @@ package
          var _loc24_:MONSTERLAB = null;
          var _loc25_:String = null;
          var _loc26_:int = 0;
-         var _loc27_:int = 0;
-         var _loc28_:int = 0;
-         var _loc29_:int = 0;
+         var _loc27_:Boolean = false;
+         var _loc28_:Boolean = false;
+         var _loc29_:Boolean = false;
          var _loc30_:Boolean = false;
-         var _loc31_:Boolean = false;
-         var _loc32_:Boolean = false;
-         var _loc33_:Boolean = false;
-         var _loc34_:BFOUNDATION = null;
+         var _loc31_:BFOUNDATION = null;
          var _loc9_:String = param1;
          var _loc10_:Object = _storeItems[_loc9_];
          var _loc11_:Object = _storeData[_loc9_];
@@ -951,48 +948,37 @@ package
                }
             }
          }
-         else if(_loc9_.substr(0,3) == "BEW")
+         else if(_loc9_.substr(0,3) != "BEW")
          {
-            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+            if(_loc9_ != "BST")
             {
-               _loc26_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-               _loc27_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-               _loc28_ = _loc26_ + _loc27_;
-               _loc28_ = _loc28_ % 10;
-               if(_loc28_ < 2)
+               if(_loc9_ != "ENL")
                {
-                  _loc10_.c = [1000,1000,1000,1000];
-               }
-            }
-         }
-         else if(_loc9_ != "BST")
-         {
-            if(_loc9_ != "ENL")
-            {
-               if(_loc9_ != "BIP")
-               {
-                  if(_loc9_ != "MUSK")
+                  if(_loc9_ != "BIP")
                   {
-                     if(_loc9_ != "HOD")
+                     if(_loc9_ != "MUSK")
                      {
-                        if(_loc9_ != "HOD2")
+                        if(_loc9_ != "HOD")
                         {
-                           if(_loc9_ != "HOD3")
+                           if(_loc9_ != "HOD2")
                            {
-                              if(_loc9_ != "PRO1")
+                              if(_loc9_ != "HOD3")
                               {
-                                 if(_loc9_ != "PRO2")
+                                 if(_loc9_ != "PRO1")
                                  {
-                                    if(_loc9_ != "PRO3")
+                                    if(_loc9_ != "PRO2")
                                     {
-                                       if(_loc9_ != "TOD")
+                                       if(_loc9_ != "PRO3")
                                        {
-                                          if(_loc9_ != "MOD")
+                                          if(_loc9_ != "TOD")
                                           {
-                                             if(_loc9_ != "MDOD")
+                                             if(_loc9_ != "MOD")
                                              {
-                                                if(_loc9_ == "MSOD")
+                                                if(_loc9_ != "MDOD")
                                                 {
+                                                   if(_loc9_ == "MSOD")
+                                                   {
+                                                   }
                                                 }
                                              }
                                           }
@@ -1121,57 +1107,57 @@ package
          }
          if(_loc9_.substr(0,3) == "BLK")
          {
-            _loc29_ = GLOBAL._bTownhall._lvl.Get();
+            _loc26_ = GLOBAL._bTownhall._lvl.Get();
             if(BASE._isOutpost)
             {
-               _loc29_ = 7;
+               _loc26_ = 7;
             }
-            if(!BASE._isOutpost && _loc29_ < 3 && _loc9_.substr(3,1) == "2")
+            if(!BASE._isOutpost && _loc26_ < 3 && _loc9_.substr(3,1) == "2")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":3});
             }
-            else if(!BASE._isOutpost && _loc29_ < 4 && _loc9_.substr(3,1) == "3")
+            else if(!BASE._isOutpost && _loc26_ < 4 && _loc9_.substr(3,1) == "3")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":4});
             }
-            else if(!BASE._isOutpost && _loc29_ < 5 && _loc9_.substr(3,1) == "4")
+            else if(!BASE._isOutpost && _loc26_ < 5 && _loc9_.substr(3,1) == "4")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":5});
             }
-            else if(!BASE._isOutpost && _loc29_ < 6 && _loc9_.substr(3,1) == "5")
+            else if(!BASE._isOutpost && _loc26_ < 6 && _loc9_.substr(3,1) == "5")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":6});
             }
             else
             {
+               _loc27_ = false;
+               _loc28_ = false;
+               _loc29_ = false;
                _loc30_ = false;
-               _loc31_ = false;
-               _loc32_ = false;
-               _loc33_ = false;
-               for each(_loc34_ in BASE._buildingsWalls)
+               for each(_loc31_ in BASE._buildingsWalls)
                {
-                  if(_loc34_._lvl.Get() == 1 && _loc29_ >= 3)
+                  if(_loc31_._lvl.Get() == 1 && _loc26_ >= 3)
                   {
+                     _loc27_ = true;
+                     _loc28_ = true;
+                     _loc29_ = true;
                      _loc30_ = true;
-                     _loc31_ = true;
-                     _loc32_ = true;
-                     _loc33_ = true;
                      break;
                   }
-                  if(_loc34_._lvl.Get() == 2 && _loc29_ >= 4)
+                  if(_loc31_._lvl.Get() == 2 && _loc26_ >= 4)
                   {
-                     _loc31_ = true;
-                     _loc32_ = true;
-                     _loc33_ = true;
+                     _loc28_ = true;
+                     _loc29_ = true;
+                     _loc30_ = true;
                   }
-                  if(_loc34_._lvl.Get() == 3 && _loc29_ >= 5)
+                  if(_loc31_._lvl.Get() == 3 && _loc26_ >= 5)
                   {
-                     _loc32_ = true;
-                     _loc33_ = true;
+                     _loc29_ = true;
+                     _loc30_ = true;
                   }
-                  if(_loc34_._lvl.Get() == 4 && _loc29_ >= 6)
+                  if(_loc31_._lvl.Get() == 4 && _loc26_ >= 6)
                   {
-                     _loc33_ = true;
+                     _loc30_ = true;
                   }
                }
             }
@@ -1291,15 +1277,11 @@ package
          var _loc34_:MONSTERLAB = null;
          var _loc35_:String = null;
          var _loc36_:int = 0;
-         var _loc37_:int = 0;
-         var _loc38_:int = 0;
-         var _loc39_:int = 0;
-         var _loc40_:int = 0;
-         var _loc41_:Boolean = false;
-         var _loc42_:Boolean = false;
-         var _loc43_:Boolean = false;
-         var _loc44_:Boolean = false;
-         var _loc45_:BFOUNDATION = null;
+         var _loc37_:Boolean = false;
+         var _loc38_:Boolean = false;
+         var _loc39_:Boolean = false;
+         var _loc40_:Boolean = false;
+         var _loc41_:BFOUNDATION = null;
          if(param4)
          {
             SOUNDS.Play("click1");
@@ -1646,25 +1628,6 @@ package
             {
                _loc21_.t = KEYS.Get("str_code_bew_title2");
                _loc21_.d = KEYS.Get("str_code_bew_body2");
-               if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-               {
-                  _loc36_ = GLOBAL.GetABTestHash("tutorial");
-                  if(_loc36_ < 14)
-                  {
-                     _loc21_.c = [1000,1000,1000,1000];
-                  }
-               }
-               else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-               {
-                  _loc37_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-                  _loc38_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-                  _loc39_ = _loc37_ + _loc38_;
-                  _loc39_ = _loc39_ % 10;
-                  if(_loc39_ < 2)
-                  {
-                     _loc21_.c = [1000,1000,1000,1000];
-                  }
-               }
             }
             else if(_loc20_ == "BST")
             {
@@ -1850,72 +1813,72 @@ package
             }
             if(_loc20_.substr(0,3) == "BLK")
             {
-               _loc40_ = GLOBAL._bTownhall._lvl.Get();
+               _loc36_ = GLOBAL._bTownhall._lvl.Get();
                if(BASE._isOutpost)
                {
-                  _loc40_ = 7;
+                  _loc36_ = 7;
                }
-               if(!BASE._isOutpost && _loc40_ < 3 && _loc20_.substr(3,1) == "2")
+               if(!BASE._isOutpost && _loc36_ < 3 && _loc20_.substr(3,1) == "2")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":3});
                }
-               else if(!BASE._isOutpost && _loc40_ < 4 && _loc20_.substr(3,1) == "3")
+               else if(!BASE._isOutpost && _loc36_ < 4 && _loc20_.substr(3,1) == "3")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":4});
                }
-               else if(!BASE._isOutpost && _loc40_ < 5 && _loc20_.substr(3,1) == "4")
+               else if(!BASE._isOutpost && _loc36_ < 5 && _loc20_.substr(3,1) == "4")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":5});
                }
-               else if(!BASE._isOutpost && _loc40_ < 6 && _loc20_.substr(3,1) == "5")
+               else if(!BASE._isOutpost && _loc36_ < 6 && _loc20_.substr(3,1) == "5")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":6});
                }
                else
                {
-                  _loc41_ = false;
-                  _loc42_ = false;
-                  _loc43_ = false;
-                  _loc44_ = false;
-                  for each(_loc45_ in BASE._buildingsWalls)
+                  _loc37_ = false;
+                  _loc38_ = false;
+                  _loc39_ = false;
+                  _loc40_ = false;
+                  for each(_loc41_ in BASE._buildingsWalls)
                   {
-                     if(_loc45_._lvl.Get() == 1 && _loc40_ >= 3)
+                     if(_loc41_._lvl.Get() == 1 && _loc36_ >= 3)
                      {
-                        _loc41_ = true;
-                        _loc42_ = true;
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc37_ = true;
+                        _loc38_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                         break;
                      }
-                     if(_loc45_._lvl.Get() == 2 && _loc40_ >= 4)
+                     if(_loc41_._lvl.Get() == 2 && _loc36_ >= 4)
                      {
-                        _loc42_ = true;
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc38_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                      }
-                     if(_loc45_._lvl.Get() == 3 && _loc40_ >= 5)
+                     if(_loc41_._lvl.Get() == 3 && _loc36_ >= 5)
                      {
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                      }
-                     if(_loc45_._lvl.Get() == 4 && _loc40_ >= 6)
+                     if(_loc41_._lvl.Get() == 4 && _loc36_ >= 6)
                      {
-                        _loc44_ = true;
+                        _loc40_ = true;
                      }
                   }
-                  if(_loc20_.substr(3,1) == "2" && !_loc41_)
+                  if(_loc20_.substr(3,1) == "2" && !_loc37_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "3" && !_loc42_)
+                  if(_loc20_.substr(3,1) == "3" && !_loc38_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "4" && !_loc43_)
+                  if(_loc20_.substr(3,1) == "4" && !_loc39_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "5" && !_loc44_)
+                  if(_loc20_.substr(3,1) == "5" && !_loc40_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }

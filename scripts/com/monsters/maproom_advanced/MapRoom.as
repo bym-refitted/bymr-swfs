@@ -920,7 +920,6 @@ package com.monsters.maproom_advanced
                {
                   transferSuccessful = function(param1:Object):void
                   {
-                     var _loc2_:int = 0;
                      PLEASEWAIT.Hide();
                      if(param1.error == 0)
                      {
@@ -932,39 +931,34 @@ package com.monsters.maproom_advanced
                         {
                            GLOBAL.Message(KEYS.Get("newmap_tr_space",{"v1":_monstersTransferred}));
                         }
-                        _loc2_ = 1;
-                        while(_loc2_ < 5)
+                        for(dst in finalMonsters)
                         {
-                           for(dst in finalMonsters)
+                           if(targetCell._monsters[dst])
                            {
-                              if(targetCell._monsters[dst])
+                              targetCell._monsters[dst].Set(finalMonsters[dst]);
+                              targetCell._hpMonsters[dst] = finalMonsters[dst];
+                           }
+                           else
+                           {
+                              targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
+                              targetCell._hpMonsters[dst] = finalMonsters[dst];
+                           }
+                        }
+                        if(_monsterSource)
+                        {
+                           for(src in finalSrcMonsters)
+                           {
+                              if(finalSrcMonsters[src] > 0)
                               {
-                                 targetCell._monsters[dst].Set(finalMonsters[dst]);
-                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
+                                 _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
+                                 _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
                               }
                               else
                               {
-                                 targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
-                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
+                                 delete _monsterSource._monsters[src];
+                                 delete _monsterSource._hpMonsters[src];
                               }
                            }
-                           if(_monsterSource)
-                           {
-                              for(src in finalSrcMonsters)
-                              {
-                                 if(finalSrcMonsters[src] > 0)
-                                 {
-                                    _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
-                                    _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
-                                 }
-                                 else
-                                 {
-                                    delete _monsterSource._monsters[src];
-                                    delete _monsterSource._hpMonsters[src];
-                                 }
-                              }
-                           }
-                           _loc2_++;
                         }
                      }
                      else

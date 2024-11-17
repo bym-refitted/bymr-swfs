@@ -70,9 +70,9 @@ package com.monsters.maproom_advanced
       public function MapRoomPopup()
       {
          var h:*;
+         var r:Rectangle;
          var i:int;
          var w:* = undefined;
-         var r:Rectangle = null;
          this._sortArray = [];
          super();
          w = GLOBAL._ROOT.stage.stageWidth;

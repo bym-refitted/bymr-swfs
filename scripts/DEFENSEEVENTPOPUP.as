@@ -67,7 +67,7 @@ package
          }
          else if(popupnum == 5)
          {
-            ImageCache.GetImageWithCallBack("specialevent/tshirt.jpg",imageComplete);
+            ImageCache.GetImageWithCallBack("specialevent/tshirt_v2.png",imageComplete);
             mcText.htmlText = KEYS.Get("wmi_tshirt");
          }
          mcFrame.Setup(true);
@@ -92,7 +92,7 @@ package
       
       private function merchandiseDown(param1:MouseEvent) : void
       {
-         GLOBAL.gotoURL("http://www.zazzle.com/i_survived_wild_monster_invasion_t_shirt-235280147840199053",null,true,[63,1]);
+         GLOBAL.gotoURL("http://www.zazzle.com/ultimate_i_survived_wild_monster_invasion_t_shirt-235246313457240737",null,true,[63,1]);
          POPUPS.Next();
       }
       
