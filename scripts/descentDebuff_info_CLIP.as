@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2058")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2094")]
    public dynamic class descentDebuff_info_CLIP extends MovieClip
    {
       public var depthBar:MovieClip;

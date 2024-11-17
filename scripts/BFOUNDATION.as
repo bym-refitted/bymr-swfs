@@ -2851,11 +2851,8 @@ package
          var a:int;
          try
          {
-            if(Math.max(this._countdownUpgrade.Get(),0))
+            if(!Math.max(this._countdownUpgrade.Get(),0))
             {
-               LOGGER.Log("log","bdg up cnt > 0, probable hack");
-               GLOBAL.ErrorMessage("BFOUNDATION upgrade hack");
-               return;
             }
             this._countdownUpgrade.Set(0);
             this._lvl.Add(1);

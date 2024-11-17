@@ -527,7 +527,7 @@ package
                _advanceCondition = ConditionQuestCollectD1;
                break;
             case 44:
-               Add(8,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step12"),null,null,true,true);
+               Add(8,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step12"),new Point(_mcBob.mcButton.x,_mcBob.mcButton.y),["mc",_mcBob.mcButton,new Point(200,30),150],true,false);
                break;
             case 50:
                ImageCache.GetImageWithCallBack("buildingbuttons/15.jpg");
@@ -706,7 +706,23 @@ package
             case 80:
                if(!_secondWorker)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step25"),null,null,false,false,ConditionStoreOpen);
+                  MAP._canScroll = false;
+                  for each(_loc2_ in BASE._buildingsAll)
+                  {
+                     if(_loc2_._type == 5)
+                     {
+                        MAP.Focus(_loc2_.x,_loc2_.y);
+                        _loc1_.x = _loc2_.x + MAP._GROUND.x;
+                        _loc1_.y = _loc2_.y + MAP._GROUND.y + 20;
+                        break;
+                     }
+                  }
+                  if(GAME._isSmallSize)
+                  {
+                     Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step25"),_loc1_,["mc",_loc2_._mcHit,new Point(50,100),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
+                     break;
+                  }
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step25"),_loc1_,["mc",_loc2_._mcHit,new Point(0,30),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
                   break;
                }
                Advance();
@@ -887,7 +903,7 @@ package
                MapRoom3Tutorial.instance.advance();
                MAP.Focus(-200,0);
                MAP.FocusTo(200,0,5,0,0,false);
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_110"),null,null,true,true);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_110"),new Point(_mcBob.mcButton.x,_mcBob.mcButton.y),["mc",_mcBob.mcButton,new Point(200,30),150],true,true);
                break;
             case 111:
                if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
@@ -937,7 +953,7 @@ package
                break;
             case 115:
                _timer = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_115"),new Point(5 * 60,60),["mc",(UI2._top as UI_TOP).mc as MovieClip,new Point(350,62),-170],false,false,ConditionTimer5);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_115"),null,null,false,false,ConditionTimer5);
                break;
             case 116:
                _timer = 0;
@@ -1176,10 +1192,10 @@ package
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step59"),null,null,false,false,ConditionPlacedGooFactory,ConditionRewindNoNewBuildingG);
                break;
             case 3 * 60:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step60"),null,null,true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step60"),new Point(205,-5),["mc",_mcBob.mcButton,new Point(200,30),150],true,true);
                break;
             case 181:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step61"),null,null,true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step61"),new Point(205,-5),["mc",_mcBob.mcButton,new Point(200,30),150],true,true);
                break;
             case k_STAGE_DAMAGE_PROTECT:
                BASE._isProtected = GLOBAL.Timestamp() + 7 * 24 * 60 * 60;

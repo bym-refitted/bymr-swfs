@@ -3,7 +3,7 @@ package SWC_ALL_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1069")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol589")]
    public dynamic class PointsBar_882 extends MovieClip
    {
       public var tInfo:TextField;

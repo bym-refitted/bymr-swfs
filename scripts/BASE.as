@@ -6140,12 +6140,13 @@ package
             _loc2_ = new Point(-800,-40);
             _loc3_ = BASE.addBuildingC(14);
             ++BASE._buildingCount;
+            _loc4_ = CaluclateExpectedTownHallLevel();
             _loc3_.Setup({
                "t":14,
                "X":_loc2_.x,
                "Y":_loc2_.y,
                "id":BASE._buildingCount,
-               "l":1
+               "l":_loc4_
             });
             _loc2_ = GRID.ToISO(_loc2_.x,_loc2_.y,0);
             MAP.FocusTo(_loc2_.x,_loc2_.y,2);
@@ -6158,46 +6159,231 @@ package
          var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:Vector.<Object> = null;
-         var _loc5_:BFOUNDATION = null;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:BFOUNDATION = null;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:int = 0;
+         var _loc14_:int = 0;
+         var _loc15_:int = 0;
+         var _loc16_:int = 0;
+         var _loc17_:int = 0;
+         var _loc18_:int = 0;
+         var _loc19_:int = 0;
+         var _loc20_:int = 0;
+         var _loc21_:int = 0;
+         var _loc22_:int = 0;
+         var _loc24_:int = 0;
+         var _loc25_:int = 0;
+         var _loc26_:int = 0;
+         var _loc27_:int = 0;
+         var _loc28_:int = 0;
+         var _loc29_:Boolean = false;
+         var _loc30_:int = 0;
+         var _loc31_:int = 0;
+         var _loc32_:int = 0;
+         var _loc33_:int = 0;
+         var _loc34_:Vector.<Object> = null;
+         var _loc35_:BFOUNDATION = null;
          _loc1_ = 1;
-         _loc2_ = 0;
-         _loc3_ = 0;
-         _loc4_ = InstanceManager.getInstancesByClass(BTOWER);
-         for each(_loc5_ in _loc4_)
+         _loc6_ = 0;
+         _loc16_ = 0;
+         _loc28_ = 0;
+         _loc29_ = false;
+         _loc33_ = 0;
+         _loc34_ = InstanceManager.getInstancesByClass(BTOWER);
+         for each(_loc35_ in _loc34_)
          {
-            if(_loc5_._type == 20)
+            if(_loc35_._type == 20)
             {
                _loc3_++;
             }
-            if(_loc5_._type == 21)
+            if(_loc35_._type == 21)
             {
                _loc2_++;
             }
+            if(_loc35_._type == 129)
+            {
+               _loc5_++;
+            }
+            if(_loc35_._type == 130)
+            {
+               _loc4_++;
+            }
+            if(_loc35_._type == 132)
+            {
+               _loc6_++;
+            }
          }
-         if(QUESTS._global.brlvl >= 4 || QUESTS._global.b6lvl >= 2)
+         for each(_loc7_ in buildings)
          {
-            _loc1_ = 2;
+            if((_loc7_._type == 1 || _loc7_._type == 2 || _loc7_._type == 3 || _loc7_._type == 4) && _loc27_ < _loc7_._hpLvl)
+            {
+               _loc27_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 5)
+            {
+               _loc17_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 6 && _loc28_ < _loc7_._hpLvl)
+            {
+               _loc28_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 8)
+            {
+               _loc19_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 9)
+            {
+               _loc8_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 10)
+            {
+               _loc10_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 13 && _loc20_ < _loc7_._hpLvl)
+            {
+               _loc20_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 15 && _loc21_ < _loc7_._hpLvl)
+            {
+               _loc21_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 16)
+            {
+               _loc12_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 17 && _loc26_ < _loc7_._hpLvl)
+            {
+               _loc26_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 19)
+            {
+               _loc13_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 20 && _loc25_ < _loc7_._hpLvl)
+            {
+               _loc25_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 21 && _loc18_ < _loc7_._hpLvl)
+            {
+               _loc18_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 22)
+            {
+               _loc11_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 23)
+            {
+               _loc15_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 24)
+            {
+               _loc29_ = true;
+            }
+            else if(_loc7_._type == 25)
+            {
+               _loc14_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 26 && _loc24_ < _loc7_._hpLvl)
+            {
+               _loc24_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 51)
+            {
+               _loc9_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 115)
+            {
+               _loc16_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 116)
+            {
+               _loc22_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 128 && _loc30_ < _loc7_._hpLvl)
+            {
+               _loc30_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 129 && _loc32_ < _loc7_._hpLvl)
+            {
+               _loc32_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 130 && _loc31_ < _loc7_._hpLvl)
+            {
+               _loc31_ = _loc7_._hpLvl;
+            }
+            else if(_loc7_._type == 132 && _loc33_ < _loc7_._hpLvl)
+            {
+               _loc33_ = _loc7_._hpLvl;
+            }
          }
-         if(QUESTS._global.brlvl >= 6 || QUESTS._global.b6lvl >= 4 || QUESTS._global.b15lvl >= 2 || _loc3_ >= 4 || _loc2_ >= 4)
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
-            _loc1_ = 3;
+            if(QUESTS._global.brlvl >= 4 || QUESTS._global.b6lvl >= 2 || _loc8_ >= 2 || _loc29_ || _loc17_ >= 2 || _loc19_ > 0)
+            {
+               _loc1_ = 2;
+            }
+            if(QUESTS._global.brlvl >= 6 || QUESTS._global.b6lvl >= 4 || QUESTS._global.b15lvl >= 2 || _loc20_ >= 2 || _loc21_ >= 2 || _loc17_ >= 3 || _loc3_ >= 4 || _loc2_ >= 4 || _loc19_ > 0 || _loc12_ > 0 || _loc9_ > 0 || _loc10_ > 0 || _loc11_ > 0 || _loc19_ >= 2 || _loc21_ >= 2 || _loc24_ > 0 || _loc11_ > 0)
+            {
+               _loc1_ = 3;
+            }
+            if(QUESTS._global.brlvl >= 8 || QUESTS._global.b6lvl >= 7 || QUESTS._global.b15lvl >= 3 || QUESTS._global.b23lvl >= 1 || QUESTS._global.b25lvl >= 1 || _loc21_ >= 3 || _loc24_ >= 2 || _loc11_ >= 2 || QUESTS._global.b19lvl > 0 || _loc3_ >= 5 || _loc2_ >= 5 || _loc13_ > 0 || _loc14_ > 0 || _loc16_ > 0 || _loc15_ > 0 || _loc20_ >= 3 || _loc19_ >= 4 || _loc17_ >= 4 || _loc13_ >= 0)
+            {
+               _loc1_ = 4;
+            }
+            if(_loc19_ >= 4 || _loc17_ >= 5 || _loc21_ >= 4 || _loc13_ >= 4 || _loc24_ >= 3 || _loc11_ >= 3)
+            {
+               _loc1_ = 5;
+            }
+            if(_loc21_ >= 5 || _loc13_ >= 5 || _loc24_ >= 4)
+            {
+               _loc1_ = 6;
+            }
+            if((_loc21_ >= 7 || _loc13_ >= 6 || _loc24_ >= 5 || _loc18_ >= 7) && !BASE.isInfernoMainYardOrOutpost)
+            {
+               _loc1_ = 7;
+            }
+            if((_loc21_ >= 8 || _loc13_ >= 7) && !BASE.isInfernoMainYardOrOutpost)
+            {
+               _loc1_ = 8;
+            }
+            if((_loc21_ >= 9 || _loc11_ >= 4) && !BASE.isInfernoMainYardOrOutpost)
+            {
+               _loc1_ = 9;
+            }
+            if((_loc21_ >= 10 || _loc11_ >= 5) && !BASE.isInfernoMainYardOrOutpost)
+            {
+               _loc1_ = 10;
+            }
          }
-         if(QUESTS._global.brlvl >= 8 || QUESTS._global.b6lvl >= 7 || QUESTS._global.b15lvl >= 3 || QUESTS._global.b23lvl >= 1 || QUESTS._global.b25lvl >= 1 || QUESTS._global.b19lvl > 0 || _loc3_ >= 5 || _loc2_ >= 5)
+         else if(BASE.isInfernoMainYardOrOutpost)
          {
-            _loc1_ = 4;
-         }
-         if(QUESTS._global.brlvl == 10 || QUESTS._global.b6lvl >= 9 || QUESTS._global.b15lvl >= 4 || QUESTS._global.b23lvl >= 2 || QUESTS._global.b25lvl >= 2 || _loc3_ >= 6 || _loc2_ >= 6)
-         {
-            _loc1_ = 5;
-         }
-         if((QUESTS._global.b6lvl == 10 || QUESTS._global.b15lvl == 5 || QUESTS._global.b23lvl == 3 || QUESTS._global.b25lvl == 3) && !BASE.isInfernoMainYardOrOutpost)
-         {
-            _loc1_ = 9;
-         }
-         else
-         {
-            _loc1_ = 6;
+            if(_loc30_ >= 2 || _loc19_ >= 2 || _loc29_ || _loc18_ >= 2 || _loc31_ >= 2 || _loc26_ > 0 || _loc27_ >= 4 || _loc28_ >= 4 || _loc2_ >= 3 || _loc4_ >= 3)
+            {
+               _loc1_ = 2;
+            }
+            if(_loc30_ >= 3 || _loc19_ >= 3 || _loc24_ > 0 || _loc20_ >= 2 || _loc18_ >= 3 || _loc31_ >= 3 || _loc32_ > 0 || _loc33_ > 0 || _loc26_ >= 2 || _loc27_ >= 6 || _loc28_ >= 5)
+            {
+               _loc1_ = 3;
+            }
+            if(_loc30_ >= 4 || _loc19_ >= 4 || _loc24_ >= 2 || _loc20_ >= 3 || _loc18_ >= 4 || _loc31_ >= 4 || _loc32_ >= 2 || _loc33_ >= 2 || _loc26_ >= 3 || _loc27_ >= 8 || _loc28_ >= 7 || _loc2_ >= 4 || _loc4_ >= 4)
+            {
+               _loc1_ = 4;
+            }
+            if(_loc30_ >= 5 || _loc24_ >= 3 || _loc18_ >= 6 || _loc31_ >= 6 || _loc32_ >= 4 || _loc33_ >= 4 || _loc27_ >= 10 || _loc28_ >= 9 || _loc5_ >= 4)
+            {
+               _loc1_ = 5;
+            }
+            if(_loc30_ >= 6 || _loc24_ >= 4 || _loc18_ >= 7 || _loc31_ >= 7 || _loc32_ >= 6 || _loc33_ >= 4 || _loc28_ >= 10 || _loc2_ >= 6 || _loc4_ >= 6 || _loc5_ >= 4 || _loc6_ >= 3)
+            {
+               _loc1_ = 6;
+            }
          }
          return _loc1_;
       }

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2046")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2082")]
    public dynamic class icon_worker extends MovieClip
    {
       public var label_txt:TextField;

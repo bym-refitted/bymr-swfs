@@ -2,7 +2,7 @@ package SWC_ALL_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol968")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1165")]
    public dynamic class bubblepopupArrow_11 extends MovieClip
    {
       public function bubblepopupArrow_11()
