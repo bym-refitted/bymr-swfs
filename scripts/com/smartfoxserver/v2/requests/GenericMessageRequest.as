@@ -263,7 +263,7 @@ package com.smartfoxserver.v2.requests
             {
                if(_loc4_ is User)
                {
-                  _loc2_.class_1(_loc4_.id);
+                  _loc2_.method_2(_loc4_.id);
                }
                else
                {

@@ -42,7 +42,7 @@ package de.polygonal.ds
          return _a._size;
       }
       
-      public function class_1(param1:Object) : Boolean
+      public function method_2(param1:Object) : Boolean
       {
          var _loc3_:* = null as DA;
          var _loc5_:int = 0;
@@ -93,7 +93,7 @@ package de.polygonal.ds
                if(_loc4_.hasNext())
                {
                   _loc5_ = _loc4_.next();
-                  class_1(_loc5_);
+                  method_2(_loc5_);
                   continue;
                }
             }
@@ -106,7 +106,7 @@ package de.polygonal.ds
                if(_loc4_.hasNext())
                {
                   _loc5_ = _loc4_.next();
-                  class_1(param3(_loc5_));
+                  method_2(param3(_loc5_));
                   continue;
                }
             }
@@ -117,7 +117,7 @@ package de.polygonal.ds
             while(_loc4_.hasNext())
             {
                _loc5_ = _loc4_.next();
-               class_1(_loc5_.clone());
+               method_2(_loc5_.clone());
             }
          }
       }

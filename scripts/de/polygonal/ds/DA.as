@@ -181,7 +181,7 @@ package de.polygonal.ds
          }
       }
       
-      public function class_1(param1:int, param2:Object) : void
+      public function method_2(param1:int, param2:Object) : void
       {
          _a[param1] = param2;
          if(param1 >= _size)
@@ -574,7 +574,7 @@ package de.polygonal.ds
          return _a;
       }
       
-      public function method_2(param1:int) : Object
+      public function method_3(param1:int) : Object
       {
          return _a[param1];
       }

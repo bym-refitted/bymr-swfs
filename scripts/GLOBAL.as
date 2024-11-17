@@ -11919,7 +11919,7 @@ package
          }
          try
          {
-            _chatroomNumber = 1;
+            _chatroomNumber = 0;
             if(!_local)
             {
                _chatroomNumber = LOGIN._playerID % (_flags != null && Boolean(_flags.numchatrooms) ? _flags.numchatrooms : 5 * 60);
@@ -12010,6 +12010,8 @@ package
       
       public static function connectAndLogin() : void
       {
+         var firstName:String = null;
+         var lastName:String = null;
          var loginName:String = null;
          if(!_chatInited)
          {
@@ -12038,11 +12040,41 @@ package
             }
             try
             {
-               loginName = LOGIN._playerName.replace(/ /,"_") + LOGIN._playerLastName.substr(0,1).toUpperCase().replace(/ /,"_");
+               firstName = LOGIN._playerName;
+               if(firstName != null && firstName.length > 0)
+               {
+                  firstName = firstName.replace(/ /,"_");
+               }
+               else
+               {
+                  firstName = "Dr";
+               }
+               lastName = LOGIN._playerLastName;
+               if(lastName != null && lastName.length > 0)
+               {
+                  lastName = lastName.substr(0,1);
+                  if(lastName.length == 1)
+                  {
+                     lastName = lastName.toUpperCase();
+                     if(lastName != null && lastName.length == 1)
+                     {
+                        lastName = lastName.replace(/ /,"_");
+                     }
+                  }
+                  if(lastName == null || lastName.length != 1)
+                  {
+                     lastName = "X";
+                  }
+               }
+               if(lastName == null || lastName.length != 1)
+               {
+                  lastName = "X";
+               }
+               loginName = firstName + lastName;
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","GLOBAL.connectAndLogin #3: " + e.message + " | " + e.getStackTrace());
+               LOGGER.Log("err","GLOBAL.connectAndLogin #3: Name - \'" + LOGIN._playerName + "\' \'" + LOGIN._playerLastName + "\' | " + e.message + " | " + e.getStackTrace());
             }
             try
             {

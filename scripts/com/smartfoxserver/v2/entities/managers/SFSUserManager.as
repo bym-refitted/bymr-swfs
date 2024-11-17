@@ -45,12 +45,12 @@ package com.smartfoxserver.v2.entities.managers
       
       public function getUserByName(param1:String) : User
       {
-         return this._usersByName.method_2(param1) as User;
+         return this._usersByName.method_3(param1) as User;
       }
       
       public function getUserById(param1:int) : User
       {
-         return this._usersById.method_2(param1) as User;
+         return this._usersById.method_3(param1) as User;
       }
       
       public function addUser(param1:User) : void
@@ -64,8 +64,8 @@ package com.smartfoxserver.v2.entities.managers
       
       protected function _addUser(param1:User) : void
       {
-         this._usersByName.class_1(param1.name,param1);
-         this._usersById.class_1(param1.id,param1);
+         this._usersByName.method_2(param1.name,param1);
+         this._usersById.method_2(param1.id,param1);
       }
       
       public function removeUser(param1:User) : void
@@ -76,7 +76,7 @@ package com.smartfoxserver.v2.entities.managers
       
       public function removeUserById(param1:int) : void
       {
-         var _loc2_:User = this._usersById.method_2(param1) as User;
+         var _loc2_:User = this._usersById.method_3(param1) as User;
          if(_loc2_ != null)
          {
             this.removeUser(_loc2_);

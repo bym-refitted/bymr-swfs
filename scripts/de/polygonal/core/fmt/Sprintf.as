@@ -82,7 +82,7 @@ package de.polygonal.core.fmt
          }
       }
       
-      public static function method_2() : Sprintf
+      public static function method_3() : Sprintf
       {
          if(Sprintf._I == null)
          {
