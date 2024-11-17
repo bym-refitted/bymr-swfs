@@ -45,7 +45,7 @@ package
          {
             this.SwitchB(BUILDINGS._menuA,BUILDINGS._menuB,BUILDINGS._page);
          }
-         if(!BASE._isOutpost)
+         if(BASE._yardType == BASE.MAIN_YARD)
          {
             if(!GLOBAL._flags.radio)
             {
@@ -102,8 +102,8 @@ package
       
       public function SwitchB(param1:int, param2:int, param3:int) : *
       {
-         var _loc9_:Object = null;
-         var _loc10_:BUILDINGBUTTON = null;
+         var _loc10_:Object = null;
+         var _loc11_:BUILDINGBUTTON = null;
          BUILDINGS._menuA = param1;
          BUILDINGS._menuB = param2;
          BUILDINGS._page = param3;
@@ -128,7 +128,7 @@ package
          }
          this._thumbnailsMC = this.addChild(new MovieClip());
          this._thumbnailsMC.x = 60;
-         this._thumbnailsMC.y = 115;
+         this._thumbnailsMC.y = 140;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:Array = GLOBAL._buildingProps.concat();
@@ -137,15 +137,15 @@ package
          param2 = 0;
          while(param2 < _loc7_.length)
          {
-            _loc9_ = _loc7_[param2];
-            if(_loc9_.group == param1 && (_loc9_.subgroup == null || _loc9_.subgroup == BUILDINGS._menuB) && (!_loc9_.block || BASE.BuildingStorageCount(_loc9_.id)))
+            _loc10_ = _loc7_[param2];
+            if(_loc10_.group == param1 && (_loc10_.subgroup == null || _loc10_.subgroup == BUILDINGS._menuB) && (!_loc10_.block || BASE.BuildingStorageCount(_loc10_.id)))
             {
                if(_loc8_ >= 10 * BUILDINGS._page && _loc8_ < 10 + 10 * BUILDINGS._page)
                {
-                  _loc10_ = this._thumbnailsMC.addChild(new BUILDINGBUTTON());
-                  _loc10_.x = _loc5_ * 130;
-                  _loc10_.y = _loc6_ * 170;
-                  _loc10_.Setup(_loc9_.id);
+                  _loc11_ = this._thumbnailsMC.addChild(new BUILDINGBUTTON());
+                  _loc11_.x = _loc5_ * 130;
+                  _loc11_.y = _loc6_ * 170;
+                  _loc11_.Setup(_loc10_.id);
                   _loc5_++;
                   if(_loc5_ == 5)
                   {
@@ -161,9 +161,11 @@ package
             }
             param2++;
          }
+         var _loc9_:BUILDINGBUTTONSOON = new BUILDINGBUTTONSOON();
+         _loc9_.t.htmlText = KEYS.Get("building_coming_soon");
          if(_loc8_ == 0)
          {
-            this._thumbnailsMC.addChild(new BUILDINGBUTTONSOON());
+            this._thumbnailsMC.addChild(_loc9_);
          }
          this._pageCount = Math.ceil(_loc8_ / 10);
          if(BUILDINGS._page > 0)
@@ -186,6 +188,7 @@ package
       
       public function SubMenu(param1:Array) : *
       {
+         var _loc3_:int = 0;
          var _loc4_:Button = null;
          if(this._subButtonsMC)
          {
@@ -193,7 +196,7 @@ package
          }
          this._subButtonsMC = this.addChild(new MovieClip());
          var _loc2_:* = [];
-         var _loc3_:int = 0;
+         _loc3_ = 0;
          while(_loc3_ < param1.length)
          {
             _loc4_ = this._subButtonsMC.addChild(new Button_CLIP());
@@ -209,7 +212,7 @@ package
             _loc3_++;
          }
          this._subButtonsMC.x = 380 - this._subButtonsMC.width / 2;
-         this._subButtonsMC.y = 75;
+         this._subButtonsMC.y = 100;
       }
       
       public function ShowInfo(param1:int) : void

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol89")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol96")]
    public dynamic class popup_damagedbase_onvisit extends MovieClip
    {
       public var title_txt:TextField;
@@ -12,7 +12,7 @@ package
       
       public var body_txt:TextField;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var bAction:Button_CLIP;
       

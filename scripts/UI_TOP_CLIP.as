@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol993")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1138")]
    public dynamic class UI_TOP_CLIP extends MovieClip
    {
       public var mcZoom:buttonZoom_CLIP;

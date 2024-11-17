@@ -32,7 +32,12 @@ package
          {
             ti = getTimer();
             tileCount = 0;
-            if(texture == "rock")
+            if(texture == "lava")
+            {
+               g = {"g1":new inferno_lava(0,0)};
+               tileCount = 1;
+            }
+            else if(texture == "rock")
             {
                g = {
                   "g1":new isorock1(0,0),

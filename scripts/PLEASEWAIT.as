@@ -45,7 +45,7 @@ package
          super();
       }
       
-      public static function Show(param1:String = "Processing...") : *
+      public static function Show(param1:String) : *
       {
          if(!_mc)
          {
@@ -90,7 +90,7 @@ package
       {
          if(GLOBAL._giveTips && KEYS._setup && HasTips())
          {
-            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && !BASE._isOutpost && GLOBAL._whatsnewid == 1033)
+            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD && GLOBAL._whatsnewid == GLOBAL._lastWhatsNew)
             {
                if(GLOBAL.StatGet("tipno"))
                {

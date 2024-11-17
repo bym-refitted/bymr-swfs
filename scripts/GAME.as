@@ -6,6 +6,7 @@ package
    import flash.display.*;
    import flash.events.Event;
    import flash.external.ExternalInterface;
+   import flash.geom.Rectangle;
    import flash.system.Security;
    
    public class GAME extends Sprite
@@ -13,6 +14,10 @@ package
       public static var _instance:GAME;
       
       public static var _contained:Boolean;
+      
+      public static var _isSmallSize:Boolean = true;
+      
+      private var _checkScreenSize:Boolean = true;
       
       public function GAME()
       {
@@ -27,6 +32,7 @@ package
                case 1:
                   _loc1_._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-fb-trunk.dev.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
                   _loc1_._statsURL = "http://bym-fb-trunk.dev.kixeye.com/recordstats.php";
                   _loc1_._mapURL = "http://bym-fb-trunk.dev.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-fb-trunk.dev.kixeye.com/alliance/";
@@ -34,6 +40,7 @@ package
                case 2:
                   _loc1_._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
                   _loc1_._apiURL = "http://bm-kg-web2.dev.casualcollective.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
                   _loc1_._statsURL = "http://bm-kg-web2.dev.casualcollective.com/recordstats.php";
                   _loc1_._mapURL = "http://bm-kg-web2.dev.casualcollective.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bmstage.fb.casualcollective.com/alliance/";
@@ -42,13 +49,23 @@ package
                case 3:
                   _loc1_._baseURL = "http://bmdev.vx.casualcollective.com/base/";
                   _loc1_._apiURL = "http://bmdev.vx.casualcollective.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
                   _loc1_._statsURL = "http://bmdev.vx.casualcollective.com/recordstats.php";
                   _loc1_._mapURL = "http://bmdev.vx.casualcollective.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bmdev.vx.casualcollective.com/alliance/";
                   break;
+               case 7:
+                  _loc1_._baseURL = "http://bym-vx-web.stage.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-vx-web.stage.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
+                  _loc1_._statsURL = "http://bym-vx-web.stage.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-vx-web.stage.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-vx-web.stage.kixeye.com/alliance/";
+                  break;
                case 4:
                   _loc1_._baseURL = "http://bym-vx2-vip.sjc.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-vx2-vip.sjc.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
                   _loc1_._statsURL = "http://bym-vx2-vip.sjc.kixeye.com/recordstats.php";
                   _loc1_._mapURL = "http://bym-vx2-vip.sjc.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-vx2-vip.sjc.kixeye.com/alliance/";
@@ -56,13 +73,39 @@ package
                case 5:
                   _loc1_._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-fb-inferno.dev.kixeye.com/api/";
+                  _loc1_.infbaseurl = null;
                   _loc1_._statsURL = "http://bym-fb-inferno.dev.kixeye.com/recordstats.php";
                   _loc1_._mapURL = "http://bym-fb-inferno.dev.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-fb-inferno.dev.kixeye.com/alliance/";
                   break;
+               case 6:
+                  _loc1_._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
+                  _loc1_._apiURL = "https://bym-fb-lbns.dc.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
+                  _loc1_._statsURL = "https://bym-fb-lbns.dc.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "https://bym-fb-lbns.dc.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "https://bym-fb-lbns.dc.kixeye.com/alliance/";
+                  break;
+               case 8:
+                  _loc1_._baseURL = "http://bym-fb-alex.dev.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-alex.dev.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
+                  _loc1_._statsURL = "http://bym-fb-alex.dev.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-alex.dev.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-alex.dev.kixeye.com/alliance/";
+                  break;
+               case 9:
+                  _loc1_._baseURL = "http://bym-fb-nmoore.dev.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-nmoore.dev.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
+                  _loc1_._statsURL = "http://bym-fb-nmoore.dev.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-nmoore.dev.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-nmoore.dev.kixeye.com/alliance/";
+                  break;
                default:
                   _loc1_._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-fb-web1.stage.kixeye.com/api/";
+                  _loc1_.infbaseurl = _loc1_._apiURL + "bm/base/";
                   _loc1_._statsURL = "http://bym-fb-web1.stage.kixeye.com/recordstats.php";
                   _loc1_._mapURL = "http://bym-fb-web1.stage.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-fb-web1.stage.kixeye.com/alliance/";
@@ -84,6 +127,7 @@ package
          var contained:Boolean = param2;
          _contained = contained;
          GLOBAL._baseURL = obj._baseURL;
+         GLOBAL._infBaseURL = obj.infbaseurl;
          GLOBAL._apiURL = obj._apiURL;
          GLOBAL._gameURL = obj._gameURL;
          GLOBAL._storageURL = obj._storageURL;
@@ -127,7 +171,7 @@ package
                var _loc2_:Object = null;
                if(BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading)
                {
-                  BASE._isOutpost = 0;
+                  BASE._yardType = BASE.MAIN_YARD;
                   GLOBAL._currentCell = null;
                   _loc2_ = com.adobe.serialization.json.JSON.decode(param1);
                   if(_loc2_.viewleader)
@@ -200,6 +244,18 @@ package
             {
                GLOBAL.ShowMap();
             });
+         }
+         if(this._checkScreenSize)
+         {
+            GLOBAL._SCREENINIT = new Rectangle(0,0,stage.stageWidth,stage.stageHeight);
+            if(_isSmallSize)
+            {
+               GLOBAL._SCREENINIT = new Rectangle(0,0,760,670);
+            }
+            else
+            {
+               GLOBAL._SCREENINIT = new Rectangle(0,0,760,750);
+            }
          }
       }
    }

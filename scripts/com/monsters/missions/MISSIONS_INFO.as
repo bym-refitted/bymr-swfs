@@ -32,6 +32,7 @@ package com.monsters.missions
          var c:int = 0;
          var missionID:String = param1;
          super();
+         tReward.htmlText = "<b>" + KEYS.Get("popup_label_reward") + "</b>";
          this._missionObject = QUESTS._quests[missionID];
          this._missionID = missionID;
          this._missionKey = QUESTS._quests[missionID].id;

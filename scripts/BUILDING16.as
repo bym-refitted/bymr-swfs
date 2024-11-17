@@ -176,7 +176,7 @@ package
          var _loc8_:int = 0;
          if(!_canFunction)
          {
-            GLOBAL.Message("Your Hatchery Control Center is currently unable to function.");
+            GLOBAL.Message(KEYS.Get("building_hcc_cantfunction"));
             return;
          }
          if(BASE._credits.Get() >= this._finishCost.Get())
@@ -254,7 +254,7 @@ package
                building._monsterQueue = [];
             }
          }
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

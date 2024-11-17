@@ -11,8 +11,6 @@ package
    {
       public var _animMC:*;
       
-      public var _frameNumber:int;
-      
       public var _animBitmap:BitmapData;
       
       public var _shotsFired:int;
@@ -26,7 +24,7 @@ package
       public function BUILDING115()
       {
          super();
-         this._frameNumber = 0;
+         _frameNumber = 0;
          _type = 115;
          _top = -5;
          _footprint = [new Rectangle(0,0,70,70)];
@@ -47,7 +45,7 @@ package
          var _loc8_:int = 0;
          var _loc9_:int = 0;
          var _loc1_:int = int(this._targetArray[_lvl.Get() - 1]);
-         ++this._frameNumber;
+         ++_frameNumber;
          if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
          {
             if(this._fireStage == 1)
@@ -71,7 +69,7 @@ package
                {
                   this._fireStage = 1;
                }
-               else if(this._frameNumber % 4 == 0)
+               else if(_frameNumber % 4 == 0)
                {
                   _loc2_ = false;
                   _loc3_ = this._shotsFired % _targetCreeps.length;
@@ -145,22 +143,31 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
             }
             if(_loc1_.range < _loc2_.range)
             {
-               _upgradeDescription += "<b>Range:</b> Increases from " + _loc3_ + " to " + _loc4_ + "<br>";
+               _upgradeDescription += KEYS.Get("building_rangeincrease",{
+                  "v1":_loc3_,
+                  "v2":_loc4_
+               }) + "<br>";
             }
             if(_loc1_.damage < _loc2_.damage)
             {
-               _upgradeDescription += "<b>Damage per shot:</b> Increases from " + _loc1_.damage + " to " + _loc2_.damage + "<br>";
+               _upgradeDescription += KEYS.Get("building_dpsincrease",{
+                  "v1":_loc1_.damage,
+                  "v2":_loc2_.damage
+               }) + "<br>";
             }
             if(_lvl.Get() > 1)
             {
-               _upgradeDescription += "<b>Shots fired per salvo:</b> Increases from " + this._targetArray[_lvl.Get() - 1] + " to " + this._targetArray[_lvl.Get()] + "<br>";
+               _upgradeDescription += KEYS.Get("building_sfpsincrease",{
+                  "v1":this._targetArray[_lvl.Get() - 1],
+                  "v2":this._targetArray[_lvl.Get()]
+               }) + "<br>";
             }
          }
       }
@@ -180,7 +187,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function():*
             {

@@ -36,7 +36,7 @@ package com.monsters.ui
          {
             GLOBAL._layerUI.addChild(_mc);
          }
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST)
          {
             _mc.bKits.addEventListener(MouseEvent.CLICK,ShowStarterKits);
          }
@@ -84,7 +84,7 @@ package com.monsters.ui
          {
             _missions.Update();
          }
-         if(Boolean(GLOBAL._bStore) || Boolean(BASE._isOutpost))
+         if(Boolean(GLOBAL._bStore) || Boolean(BASE._yardType))
          {
             _mc.bStore.Enabled = true;
          }
@@ -92,7 +92,7 @@ package com.monsters.ui
          {
             _mc.bStore.Enabled = false;
          }
-         if(Boolean(GLOBAL._bMap) || Boolean(BASE._isOutpost))
+         if(Boolean(GLOBAL._bMap) || Boolean(BASE._yardType))
          {
             _mc.bMap.Enabled = true;
          }

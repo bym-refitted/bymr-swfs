@@ -3,6 +3,7 @@ package
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.filters.GlowFilter;
    import flash.geom.Point;
    
    public class FIREBALL
@@ -10,6 +11,8 @@ package
       public static const TYPE_FIREBALL:String = "fireball";
       
       public static const TYPE_MISSILE:String = "missile";
+      
+      public static const TYPE_MAGMA:String = "magma";
       
       private const DO_ROCKETS_ACCELERATE:Boolean = false;
       
@@ -97,9 +100,13 @@ package
          }
          this._type = param1;
          this._acceleration = 0.5;
-         if(this._type == TYPE_FIREBALL)
+         if(this._type == TYPE_FIREBALL || this._type == TYPE_MAGMA)
          {
             this._graphic = new FIREBALL_CLIP();
+            if(this._type == TYPE_MAGMA)
+            {
+               this._graphic.filters = [new GlowFilter(0xff9000,1,12,12,6,1,false,false)];
+            }
          }
          else if(this._type == TYPE_MISSILE)
          {

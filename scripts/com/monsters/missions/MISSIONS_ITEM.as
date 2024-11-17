@@ -21,6 +21,8 @@ package com.monsters.missions
       
       public var _isDisable:Boolean = false;
       
+      private var _skinTag:int;
+      
       public function MISSIONS_ITEM(param1:String)
       {
          var ImageLoaded:Function;

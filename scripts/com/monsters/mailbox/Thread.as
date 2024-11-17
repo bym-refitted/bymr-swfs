@@ -105,7 +105,7 @@ package com.monsters.mailbox
          this.shell.y = 106;
          addChild(this.shell);
          this.members = [].concat();
-         (mcFrame as frame2).Setup(true,MailBox.ShowInbox);
+         (mcFrame as frame).Setup(true,MailBox.ShowInbox);
          if(!param1.threadLoaded)
          {
             param1.addEventListener(Event.COMPLETE,this.threadLoadComplete);
@@ -120,6 +120,9 @@ package com.monsters.mailbox
          if(!param1.reported)
          {
             this._mc.reportBtn.addEventListener(MouseEvent.MOUSE_DOWN,this.reportThread);
+            this._mc.reportBtn.label_txt.htmlText = KEYS.Get("mail_ignoreplayer_btn");
+            this._mc.reportBtn.buttonMode = true;
+            this._mc.reportBtn.mouseChildren = false;
          }
          else
          {
@@ -197,6 +200,8 @@ package com.monsters.mailbox
          };
          SOUNDS.Play("click1");
          popup = new popup_report();
+         popup.tTitle.htmlText = KEYS.Get("report_title");
+         popup.tDesc.htmlText = KEYS.Get("report_desc");
          popup.Resize = function():void
          {
             popup.x = mcFrame.x + mcFrame.width * 0.5 + 100;
@@ -223,6 +228,7 @@ package com.monsters.mailbox
       {
          if(Boolean(stage) && stage.displayState == StageDisplayState.FULL_SCREEN)
          {
+            fsWarning.tBody.htmlText = KEYS.Get("fswarning");
             addChild(fsWarning);
             setChildIndex(fsWarning,this.numChildren - 1);
          }
@@ -412,7 +418,7 @@ package com.monsters.mailbox
             }
             else if(this.data.convo[0].userid == LOGIN._playerID)
             {
-               denyBtn.Setup("Revoke");
+               denyBtn.SetupKey("btn_revoke");
                denyBtn.addEventListener(MouseEvent.CLICK,this.migrateRevoke);
                addChild(denyBtn);
             }
@@ -610,7 +616,7 @@ package com.monsters.mailbox
       {
          if(ALLIANCES._myAlliance)
          {
-            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
+            GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
             return;
          }
          SOUNDS.Play("click1");

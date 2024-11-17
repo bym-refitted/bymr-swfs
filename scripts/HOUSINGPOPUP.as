@@ -12,7 +12,10 @@ package
       
       public function HOUSINGPOPUP()
       {
+         var _loc1_:int = 0;
          var _loc2_:String = null;
+         var _loc3_:int = 0;
+         var _loc4_:String = null;
          this._juiceList = {};
          super();
          if(GLOBAL._bJuicer)
@@ -32,21 +35,21 @@ package
             gotoAndStop(1);
          }
          this._juiceList = {};
-         var _loc1_:int = 1;
-         while(_loc1_ <= 15)
+         for(_loc2_ in CREATURELOCKER.GetAppropriateCreatures())
          {
-            _loc2_ = "C" + _loc1_;
-            ImageCache.GetImageWithCallBack("monsters/C" + _loc1_ + "-medium.jpg",this.IconLoaded,true,1,"",[this["m" + _loc1_].mcIcon]);
-            this["m" + _loc1_].tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[_loc2_].name) + "</b>";
+            _loc1_++;
+            _loc3_ = int(_loc2_.substring(_loc2_.indexOf("C") + 1));
+            _loc4_ = _loc2_;
+            ImageCache.GetImageWithCallBack("monsters/" + _loc4_ + "-medium.jpg",this.IconLoaded,true,1,"",[this["m" + _loc3_].mcIcon]);
+            this["m" + _loc3_].tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[_loc4_].name) + "</b>";
             if(GLOBAL._bJuicer)
             {
-               this["m" + _loc1_].addEventListener(MouseEvent.CLICK,this.JuicerAdd(_loc1_));
-               this["m" + _loc1_].buttonMode = true;
-               this["m" + _loc1_].mouseChildren = false;
+               this["m" + _loc3_].addEventListener(MouseEvent.CLICK,this.JuicerAdd(_loc3_));
+               this["m" + _loc3_].buttonMode = true;
+               this["m" + _loc3_].mouseChildren = false;
             }
-            _loc1_++;
          }
-         _loc1_ = 16;
+         _loc1_++;
          while(_loc1_ <= 21)
          {
             this["m" + _loc1_].visible = false;
@@ -82,10 +85,11 @@ package
          var _loc4_:int = 0;
          var _loc5_:Object = null;
          var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:* = undefined;
+         var _loc7_:String = null;
+         var _loc8_:int = 0;
          var _loc9_:* = undefined;
-         var _loc10_:Number = NaN;
+         var _loc10_:int = 0;
+         var _loc11_:Number = NaN;
          HOUSING.HousingSpace();
          _loc3_ = 0;
          for(_loc2_ in this._juiceList)
@@ -97,49 +101,48 @@ package
          mcStorage.mcBar.width = 535 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
          mcStorage.mcBarB.width = 1;
          tStorage.htmlText = "<b>" + GLOBAL.FormatNumber(HOUSING._housingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + " (" + _loc6_ + "%)</b>";
-         _loc7_ = 1;
-         while(_loc7_ <= 15)
+         for(_loc7_ in CREATURELOCKER.GetAppropriateCreatures())
          {
-            _loc1_ = "C" + _loc7_;
+            _loc8_ = int(_loc7_.substring(_loc7_.indexOf("C") + 1));
+            _loc1_ = _loc7_;
             if(!CREATURELOCKER._lockerData[_loc1_])
             {
-               this["m" + _loc7_].tInfo.htmlText = KEYS.Get("mh_item_locked");
-               this["m" + _loc7_].alpha = 0.5;
+               this["m" + _loc8_].tInfo.htmlText = KEYS.Get("mh_item_locked");
+               this["m" + _loc8_].alpha = 0.5;
             }
             else if(CREATURELOCKER._lockerData[_loc1_].t == 1)
             {
-               this["m" + _loc7_].tInfo.htmlText = KEYS.Get("mh_item_unlocking");
-               this["m" + _loc7_].alpha = 0.5;
+               this["m" + _loc8_].tInfo.htmlText = KEYS.Get("mh_item_unlocking");
+               this["m" + _loc8_].alpha = 0.5;
             }
             else
             {
-               this["m" + _loc7_].tInfo.htmlText = KEYS.Get("mh_item_0housed");
-               this["m" + _loc7_].alpha = 0.5;
+               this["m" + _loc8_].tInfo.htmlText = KEYS.Get("mh_item_0housed");
+               this["m" + _loc8_].alpha = 0.5;
             }
-            _loc7_++;
          }
          for(_loc2_ in HOUSING._creatures)
          {
-            _loc8_ = HOUSING._creatures[_loc2_].Get();
-            if(_loc8_ > 0)
+            _loc9_ = HOUSING._creatures[_loc2_].Get();
+            if(_loc9_ > 0)
             {
                _loc5_ = CREATURELOCKER._creatures[_loc2_];
-               _loc9_ = _loc2_.substr(1);
+               _loc10_ = int(_loc2_.substring(_loc2_.indexOf("C") + 1));
                if(Boolean(this._juiceList[_loc2_]) && this._juiceList[_loc2_] > 0)
                {
-                  this["m" + _loc9_].tInfo.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("mh_selectedforjuicing",{
+                  this["m" + _loc10_].tInfo.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("mh_selectedforjuicing",{
                      "v1":this._juiceList[_loc2_],
-                     "v2":GLOBAL.FormatNumber(_loc8_)
+                     "v2":GLOBAL.FormatNumber(_loc9_)
                   }) + "</font>";
                }
                else
                {
-                  this["m" + _loc9_].tInfo.htmlText = KEYS.Get("mh_item_cost",{
-                     "v1":GLOBAL.FormatNumber(_loc8_),
-                     "v2":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cStorage") * _loc8_)
+                  this["m" + _loc10_].tInfo.htmlText = KEYS.Get("mh_item_cost",{
+                     "v1":GLOBAL.FormatNumber(_loc9_),
+                     "v2":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cStorage") * _loc9_)
                   });
                }
-               this["m" + _loc9_].alpha = 1;
+               this["m" + _loc10_].alpha = 1;
             }
          }
          if(GLOBAL._bJuicer)
@@ -149,16 +152,16 @@ package
             for(_loc2_ in this._juiceList)
             {
                _loc3_ += this._juiceList[_loc2_];
-               _loc10_ = 0.6;
+               _loc11_ = 0.6;
                if(GLOBAL._bJuicer._lvl.Get() == 2)
                {
-                  _loc10_ = 0.8;
+                  _loc11_ = 0.8;
                }
                if(GLOBAL._bJuicer._lvl.Get() == 3)
                {
-                  _loc10_ = 1;
+                  _loc11_ = 1;
                }
-               _loc4_ += Math.ceil(CREATURES.GetProperty(_loc2_,"cResource") * _loc10_) * this._juiceList[_loc2_];
+               _loc4_ += Math.ceil(CREATURES.GetProperty(_loc2_,"cResource") * _loc11_) * this._juiceList[_loc2_];
             }
             if(_loc3_ > 0)
             {
@@ -233,15 +236,12 @@ package
       {
          var _loc2_:String = null;
          var _loc4_:BFOUNDATION = null;
-         var _loc5_:CREEP = null;
+         var _loc5_:* = undefined;
          var _loc7_:int = 0;
          var _loc6_:Array = [];
          for each(_loc4_ in BASE._buildingsAll)
          {
-            if(_loc4_._type == 15)
-            {
-               _loc6_.push(_loc4_);
-            }
+            _loc6_.push(_loc4_);
          }
          for(_loc2_ in this._juiceList)
          {

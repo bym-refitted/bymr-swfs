@@ -13,7 +13,9 @@ package
       
       public static var _mc:CREATURELOCKERPOPUP;
       
-      public static var _creatures:Object;
+      public static var _mainCreatures:Object;
+      
+      public static var _infernoCreatures:Object;
       
       public static var _page:int;
       
@@ -26,17 +28,27 @@ package
          super();
       }
       
+      public static function get _creatures() : Object
+      {
+         return _mainCreatures;
+      }
+      
+      public static function getFirstCreatureID() : String
+      {
+         return BASE.isInferno() ? "IC1" : "C1";
+      }
+      
       public static function Data(param1:Object) : void
       {
          var _loc2_:int = 0;
          _lockerData = param1;
-         _lockerData.C1 = {"t":2};
+         _lockerData[getFirstCreatureID()] = {"t":2};
          if(_lockerData.C100)
          {
             _lockerData.C12 = _lockerData.C100;
             delete _lockerData.C100;
          }
-         if(GLOBAL._mode == "build")
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
          {
             _loc2_ = 2;
             while(_loc2_ <= 15)
@@ -54,10 +66,11 @@ package
       public static function Setup() : *
       {
          _page = 1;
-         _popupCreatureID = "C1";
+         _popupCreatureID = getFirstCreatureID();
          _lockerData = {};
          _open = false;
-         _creatures = {
+         _infernoCreatures = INFERNOCREATURES.infernoCreatures;
+         _mainCreatures = {
             "C1":{
                "page":1,
                "order":1,
@@ -382,105 +395,154 @@ package
                }
             },
             "IC1":{
+               "page":1,
+               "order":1,
+               "resource":40 * 60,
+               "time":60 * 60,
+               "level":1,
                "name":"#m_spurtz#",
-               "blocked":true,
+               "description":"mi_Spurtz_desc",
+               "stream":["mi_Spurtz_stream","mi_Spurtz_streambody","quests/inferno_monster1.png"],
+               "trainingCosts":[[40 * 60,60 * 60],[80 * 60,2 * 60 * 60],[2 * 60 * 60,3 * 60 * 60],[160 * 60,4 * 60 * 60],[4 * 60 * 60,6 * 60 * 60]],
                "props":{
                   "speed":[1.2],
                   "health":[400,425,450,475,510,550],
                   "damage":[2 * 60,130,140,150,160,175],
                   "cTime":[15,10,8,7,6,5],
-                  "cResource":[2133,2397,2693,3026,3400,3820],
-                  "cStorage":[21,21,21,21,21,21],
+                  "cResource":[500,1000,2000,0xfa0,100 * 60,10000],
+                  "cStorage":[15],
                   "bucket":[20],
                   "targetGroup":[1]
                }
             },
             "IC2":{
+               "page":1,
+               "order":2,
+               "resource":80 * 60,
+               "time":4 * 60 * 60,
+               "level":1,
                "name":"#m_zagnoid#",
-               "blocked":true,
+               "description":"mi_Zagnoid_desc",
+               "stream":["mi_Zagnoid_stream","mi_Zagnoid_streambody","quests/inferno_monster2.png"],
+               "trainingCosts":[[80 * 60,4 * 60 * 60],[160 * 60,0x7080],[4 * 60 * 60,12 * 60 * 60],[320 * 60,16 * 60 * 60],[0x7080,24 * 60 * 60]],
                "props":{
-                  "speed":[0.9,0.9,0.9,0.9,0.9,0.9],
-                  "health":[25 * 60,1626,1763,1911,2071,2245],
-                  "damage":[80,83,86,89,92,95],
+                  "speed":[1.8],
+                  "health":[25 * 60,27 * 60,1760,1900,2150,2300],
+                  "damage":[80,85,90,95,100,110],
                   "cTime":[15,16,16,16,16,16],
-                  "cResource":[6400,7187,8072,9065,10180,11432],
-                  "cStorage":[45,45,45,45,45,45],
+                  "cResource":[2500,0xfa0,0x1f40,200 * 60,16000,20000],
+                  "cStorage":[15],
                   "bucket":[20],
                   "targetGroup":[4]
                }
             },
             "IC4":{
+               "page":2,
+               "order":1,
+               "resource":640 * 60,
+               "time":18 * 60 * 60,
+               "level":2,
                "name":"#m_valgos#",
-               "blocked":true,
+               "description":"mi_Valgos_desc",
+               "stream":["mi_Valgos_stream","mi_Valgos_streambody","quests/inferno_monster3.png"],
+               "trainingCosts":[[640 * 60,18 * 60 * 60],[76800,36 * 60 * 60],[32 * 60 * 60,54 * 60 * 60],[153600,3 * 24 * 60 * 60],[64 * 60 * 60,108 * 60 * 60]],
                "movement":"burrow",
                "pathing":"direct",
                "props":{
                   "speed":[2,2,2,2,2,2],
-                  "health":[715,732,750,768,786,805],
-                  "damage":[490,537,589,645,707,775],
+                  "health":[715,730,750,765,13 * 60,800],
+                  "damage":[490,530,580,645,700,775],
                   "cTime":[450,350,250,225,195,195],
-                  "cResource":[31142,34951,39226,44023,0xc0ff,55450],
-                  "cStorage":[75,75,75,75,75,75],
+                  "cResource":[31000,35000,650 * 60,44000,50000,55000],
+                  "cStorage":[30],
                   "bucket":[20],
                   "targetGroup":[2]
                }
             },
             "IC3":{
+               "page":2,
+               "order":2,
+               "resource":76800,
+               "time":18 * 60 * 60,
+               "level":2,
                "name":"#m_malphus#",
-               "blocked":true,
+               "description":"mi_Malphus_desc",
+               "stream":["mi_Malphus_stream","mi_Malphus_streambody","quests/inferno_monster4.png"],
+               "trainingCosts":[[76800,18 * 60 * 60],[153600,36 * 60 * 60],[64 * 60 * 60,54 * 60 * 60],[307200,3 * 24 * 60 * 60],[128 * 60 * 60,108 * 60 * 60]],
                "movement":"jump",
                "props":{
-                  "speed":[2,2.048,2.097152,2.147483648,2.199023255552,2.25179981368525],
-                  "health":[450,466,483,500,518,537],
-                  "damage":[100,106,112,119,126,134],
+                  "speed":[3.2],
+                  "health":[450,470,500,9 * 60,580,620],
+                  "damage":[100,105,110,2 * 60,130,140],
                   "cTime":[100,100,90,90,90,90],
-                  "cResource":[3429,3765,4135,4541,4986,5476],
-                  "cStorage":[30,30,30,30,30,30],
+                  "cResource":[50 * 60,3500,4100,80 * 60,5500,7000],
+                  "cStorage":[15],
                   "bucket":[20],
                   "targetGroup":[3]
                }
             },
             "IC5":{
+               "page":3,
+               "order":1,
+               "resource":614400,
+               "time":24 * 60 * 60,
+               "level":3,
                "name":"#m_balthazar#",
-               "blocked":true,
+               "description":"mi_Balthazar_desc",
+               "stream":["mi_Balthazar_stream","mi_Balthazar_streambody","quests/inferno_monster5.png"],
+               "trainingCosts":[[614400,24 * 60 * 60],[1228800,2 * 24 * 60 * 60],[512 * 60 * 60,3 * 24 * 60 * 60],[2457600,4 * 24 * 60 * 60],[3686400,6 * 24 * 60 * 60]],
                "movement":"fly",
                "pathing":"direct",
                "props":{
-                  "speed":[1.2,1.2,1.2,1.2,1.2,1.2],
-                  "health":[800,838,879,921,965,1011],
-                  "damage":[400,429,460,493,528,566],
+                  "speed":[4.5],
+                  "health":[800,14 * 60,880,920,965,1125],
+                  "damage":[400,430,460,490,520,560],
                   "cTime":[30 * 60,32 * 60,34 * 60,36 * 60,38 * 60,40 * 60],
-                  "cResource":[48762,54782,61545,69143,77679,87269],
-                  "cStorage":[54,54,54,54,54,54],
-                  "bucket":[20],
-                  "targetGroup":[5]
+                  "cResource":[800 * 60,15 * 60 * 60,61000,69000,77000,87000],
+                  "cStorage":[40],
+                  "bucket":[60],
+                  "targetGroup":[6]
                }
             },
             "IC6":{
+               "page":3,
+               "order":2,
+               "resource":1228800,
+               "time":24 * 60 * 60,
+               "level":3,
                "name":"#m_grokus#",
-               "blocked":true,
+               "description":"mi_Grokus_desc",
+               "stream":["mi_Grokus_stream","mi_Grokus_streambody","quests/inferno_monster6.png"],
+               "trainingCosts":[[1228800,24 * 60 * 60],[2457600,2 * 24 * 60 * 60],[3686400,3 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60]],
                "props":{
-                  "speed":[0.8,0.8096,0.8193152,0.8291469824,0.8390967461888,0.849165907143066],
-                  "health":[1600,1715,1839,1971,2113,2265],
-                  "damage":[390,404,419,434,449,465],
+                  "speed":[1.3,1.3,1.4,1.4,1.5,1.6],
+                  "health":[1600,1750,1900,35 * 60,2300,2500],
+                  "damage":[400,425,450,475,500,550],
                   "cTime":[100,100,100,100,90,90],
-                  "cResource":[67918,75430,83772,93036,103325,114752],
-                  "cStorage":[75,75,75,75,75,75],
-                  "bucket":[20],
+                  "cResource":[40000,750 * 60,55000,75000,100000,125000],
+                  "cStorage":[50],
+                  "bucket":[60],
                   "targetGroup":[3]
                }
             },
             "IC7":{
+               "page":3,
+               "order":3,
+               "resource":2457600,
+               "time":2 * 24 * 60 * 60,
+               "level":3,
                "name":"#m_sabnox#",
-               "blocked":true,
+               "description":"mi_Sabnox_desc",
+               "stream":["mi_Sabnox_stream","mi_Sabnox_streambody","quests/inferno_monster7.png"],
+               "trainingCosts":[[2457600,2 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60],[9830400,8 * 24 * 60 * 60],[14745600,12 * 24 * 60 * 60]],
                "props":{
                   "speed":[1.7,1.8,1.9,2,2.1,2.2],
                   "health":[920,16 * 60,1000,1050,1100,20 * 60],
                   "damage":[500,525,550,575,10 * 60,650],
                   "cTime":[1384,1384,1384,1384,1384,1384],
-                  "cResource":[51069,54813,58830,63142,67770,72737],
-                  "cStorage":[80,80,80,80,80,80],
-                  "bucket":[20],
+                  "cResource":[60 * 1000,70000,85000,110000,130000,150000],
+                  "cStorage":[80],
+                  "bucket":[90],
                   "targetGroup":[4]
                }
             },
@@ -491,20 +553,19 @@ package
                "time":3 * 24 * 60 * 60,
                "level":4,
                "name":"#m_king_wormzer#",
-               "blocked":true,
-               "description":"king_wormzer",
-               "stream":["mon_king_wormzerstream","mon_king_wormzerstreambody","quests/monster1.v2.png"],
+               "description":"mi_King_Wormzer_desc",
+               "stream":["mon_king_wormzerstream","mon_king_wormzerstreambody","quests/inferno_monster8.png"],
                "trainingCosts":[[4915200,3 * 24 * 60 * 60],[9830400,6 * 24 * 60 * 60],[14745600,9 * 24 * 60 * 60],[19660800,12 * 24 * 60 * 60],[29491200,18 * 24 * 60 * 60]],
                "movement":"burrow",
                "pathing":"direct",
                "props":{
-                  "speed":[2.5,2.57,2.64196,2.71593488,2.79198105664,2.87015652622592],
-                  "health":[2500,2650,2800,50 * 60,3200,3400],
-                  "damage":[15 * 60,965,1030,1100,1180,1275],
+                  "speed":[2.5,2.6,2.7,2.8,2.9,3],
+                  "health":[2500,2600,45 * 60,2900,3100,3400],
+                  "damage":[15 * 60,16 * 60,1030,1120,1220,1350],
                   "cTime":[1384,1384,1384,1384,1384,1384],
-                  "cResource":[408163,455078,507384,565703,630725,703220],
-                  "cStorage":[130,130,130,130,130,130],
-                  "bucket":[20],
+                  "cResource":[425000,476000,580000,700000,910000,1204000],
+                  "cStorage":[100],
+                  "bucket":[100],
                   "targetGroup":[1]
                }
             },
@@ -706,7 +767,7 @@ package
          }
          else
          {
-            GLOBAL.Message("You don\'t have a Monster Locker or it is not yet finished building.");
+            GLOBAL.Message(KEYS.Get("msg_nomonsterlocker"));
          }
       }
       
@@ -734,9 +795,9 @@ package
       public static function Check() : *
       {
          var tmpArray:Array = null;
-         var Push:Function = function(param1:int):*
+         var Push:Function = function(param1:String):*
          {
-            var _loc2_:Object = _creatures["C" + param1];
+            var _loc2_:Object = _creatures[param1];
             var _loc3_:Object = _loc2_.props;
             tmpArray.push([_loc2_.page,_loc2_.resource,_loc2_.time,_loc2_.level,_loc2_.trainingCosts,_loc3_.speed,_loc3_.health,_loc3_.damage,_loc3_.armor,_loc3_.accuracy,_loc3_.cTime,_loc3_.cResource,_loc3_.cStorage,_loc3_.bucket,_loc3_.size]);
          };
@@ -744,10 +805,31 @@ package
          var i:* = 1;
          while(i <= 15)
          {
-            Push(i);
+            Push("C" + i);
+            i++;
+         }
+         i = 1;
+         while(i <= 8)
+         {
+            Push("IC" + i);
             i++;
          }
          return MD5.hash(com.adobe.serialization.json.JSON.encode(tmpArray));
+      }
+      
+      public static function GetAppropriateCreatures() : Object
+      {
+         var _loc3_:String = null;
+         var _loc1_:Object = CREATURELOCKER._creatures;
+         var _loc2_:Object = {};
+         for(_loc3_ in _loc1_)
+         {
+            if(!(_loc3_.substr(0,1) == "C" && BASE.isInferno() || _loc3_.substr(0,1) == "I" && !BASE.isInferno() || _loc3_ == "C200"))
+            {
+               _loc2_[_loc3_] = _loc1_[_loc3_];
+            }
+         }
+         return _loc2_;
       }
    }
 }

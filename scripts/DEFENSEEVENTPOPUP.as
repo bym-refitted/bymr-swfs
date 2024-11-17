@@ -36,39 +36,13 @@ package
          {
             popupnum = Math.floor(Math.random() * 3) + 1;
          }
-         if(popupnum == 4)
+         rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup1"),false,0,0);
+         rsvpBtn.addEventListener(MouseEvent.CLICK,this.rsvpDown);
+         ImageCache.GetImageWithCallBack(SPECIALEVENT.BANNERIMAGE,bannerComplete);
+         if(popupnum > 0 && popupnum < 4)
          {
-            if(SPECIALEVENT.wave == 1)
-            {
-               rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup2"),false,0,0);
-               rsvpBtn.addEventListener(MouseEvent.CLICK,this.startDown);
-            }
-            else
-            {
-               rsvpBtn.visible = false;
-            }
-         }
-         else if(popupnum == 5)
-         {
-            rsvpBtn.Setup(KEYS.Get("str_zazzle"),false,0,0);
-            rsvpBtn.Highlight = true;
-            rsvpBtn.addEventListener(MouseEvent.CLICK,this.merchandiseDown);
-         }
-         else
-         {
-            rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup1"),false,0,0);
-            rsvpBtn.addEventListener(MouseEvent.CLICK,this.rsvpDown);
-         }
-         ImageCache.GetImageWithCallBack("specialevent/monsterinvasionbannerred.jpg",bannerComplete);
-         if(popupnum > 0 && popupnum < 5)
-         {
-            ImageCache.GetImageWithCallBack("specialevent/200x200_" + popupnum + ".jpg",imageComplete);
-            mcText.htmlText = KEYS.Get("wmi_popup" + popupnum);
-         }
-         else if(popupnum == 5)
-         {
-            ImageCache.GetImageWithCallBack("specialevent/tshirt_v2.png",imageComplete);
-            mcText.htmlText = KEYS.Get("wmi_tshirt");
+            ImageCache.GetImageWithCallBack("specialevent/wmi2_" + popupnum + ".jpg",imageComplete);
+            mcText.htmlText = KEYS.Get("wmi2_popup" + popupnum);
          }
          mcFrame.Setup(true);
          _open = true;
@@ -81,19 +55,13 @@ package
       
       public function rsvpDown(param1:MouseEvent) : void
       {
-         GLOBAL.gotoURL("http://www.facebook.com/event.php?eid=141841065917218",null,true,null);
-         POPUPS.Next();
+         this.Hide();
+         GLOBAL.gotoURL("https://www.facebook.com/events/211384668938961/",null,true,null);
       }
       
       public function startDown(param1:MouseEvent) : void
       {
          this.Hide();
-      }
-      
-      private function merchandiseDown(param1:MouseEvent) : void
-      {
-         GLOBAL.gotoURL("http://www.zazzle.com/ultimate_i_survived_wild_monster_invasion_t_shirt-235246313457240737",null,true,[63,1]);
-         POPUPS.Next();
       }
       
       public function Hide() : void

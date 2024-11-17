@@ -38,7 +38,7 @@ package
          };
          super();
          _wave = wave;
-         ImageCache.GetImageWithCallBack("specialevent/monsterinvasionbannerred.jpg",bannerComplete);
+         ImageCache.GetImageWithCallBack(SPECIALEVENT.BANNERIMAGE,bannerComplete);
          if(wave == -1)
          {
             ImageCache.GetImageWithCallBack(GetImageName(SPECIALEVENT.wave,false),imageComplete);
@@ -48,7 +48,7 @@ package
             ImageCache.GetImageWithCallBack(GetImageName(wave,true),imageComplete);
          }
          mcFrame.Setup(wave != 1);
-         if(isMajorWave(wave))
+         if(SPECIALEVENT.isMajorWave(wave))
          {
             mcTitle.htmlText = KEYS.Get("wmi_winwavetitle");
             mcText.htmlText = KEYS.Get("wmi_winwave" + wave);
@@ -67,7 +67,7 @@ package
             rBtn.Highlight = true;
             if(wave == 1)
             {
-               SPECIALEVENT.TotemReward();
+               BTOTEM.TotemReward();
                this.ButtonsVisible(false,false,true,false);
                rBtn.SetupKey("wmi_placetotembtn");
                rBtn.addEventListener(MouseEvent.CLICK,this.PlaceTotem);
@@ -85,13 +85,13 @@ package
          {
             if(surrendered)
             {
-               mcTitle.htmlText = KEYS.Get("wmi_surrendertitle");
-               mcText.htmlText = KEYS.Get("wmi_surrender");
+               mcTitle.htmlText = KEYS.Get("wmi2_surrendertitle");
+               mcText.htmlText = KEYS.Get("wmi2_surrender");
             }
             else
             {
                mcTitle.htmlText = KEYS.Get("wmi_losewavetitle");
-               mcText.htmlText = KEYS.Get("wmi_losewave");
+               mcText.htmlText = KEYS.Get("wmi2_losewave");
             }
             mcStats.htmlText = "";
             numDamagedBuildings = 0;
@@ -119,7 +119,7 @@ package
          else if(wave == SPECIALEVENT.EVENTEND)
          {
             mcTitle.htmlText = "";
-            mcText.htmlText = KEYS.Get("wmi_eventover");
+            mcText.htmlText = KEYS.Get("wmi2_eventover");
             mcStats.htmlText = "";
             this.ButtonsVisible(false,false,false,true);
             bragBtn.SetupKey("btn_brag");
@@ -179,46 +179,30 @@ package
          return _open;
       }
       
-      private static function isMajorWave(param1:int) : Boolean
-      {
-         switch(param1)
-         {
-            case 1:
-            case 10:
-            case 20:
-            case 30:
-            case 31:
-            case 32:
-               return true;
-            default:
-               return false;
-         }
-      }
-      
       private static function Brag(param1:MouseEvent) : void
       {
          switch(_wave)
          {
             case 1:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
                break;
             case 10:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
                break;
             case 20:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
                break;
             case 30:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
                break;
             case 31:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
                break;
             case 32:
-               GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
                break;
             case 33:
-               GLOBAL.CallJS("sendFeed",["wmi-eventover",KEYS.Get("wmi_eventoverstreamtitle"),KEYS.Get("wmi_eventoverstreamdesc",{"v1":GLOBAL.StatGet("wmi_wave")}),"wmi_aftermath.png"]);
+               GLOBAL.CallJS("sendFeed",["wmi2-eventover",KEYS.Get("wmi2_eventoverstreamtitle"),KEYS.Get("wmi2_eventoverstreamdesc",{"v1":SPECIALEVENT.GetStat("wmi_wave")}),"wmi2_aftermath.v2.png"]);
          }
          POPUPS.Next();
       }
@@ -230,42 +214,42 @@ package
             switch(param1)
             {
                case 1:
-                  return "popups/building-wmitotem1.png";
+                  return "popups/building-wmi2totem1.png";
                case 10:
-                  return "popups/building-wmitotem2.png";
+                  return "popups/building-wmi2totem2.png";
                case 20:
-                  return "popups/building-wmitotem3.png";
+                  return "popups/building-wmi2totem3.png";
                case 30:
-                  return "popups/building-wmitotem4.png";
+                  return "popups/building-wmi2totem4.png";
                case 31:
-                  return "popups/building-wmitotem5.png";
+                  return "popups/building-wmi2totem5.png";
                case 32:
-                  return "popups/building-wmitotem6.png";
+                  return "popups/building-wmi2totem6.png";
                case 33:
-                  return "popups/wmieventend.png";
+                  return "popups/wmi2eventend.jpg";
                default:
                   if(param1 < 10)
                   {
-                     return "specialevent/200x200_1.jpg";
+                     return "specialevent/wmi2_1.jpg";
                   }
                   if(param1 < 20)
                   {
-                     return "specialevent/200x200_2.jpg";
+                     return "specialevent/wmi2_2.jpg";
                   }
-                  return "specialevent/200x200_3.jpg";
+                  return "specialevent/wmi2_3.jpg";
             }
          }
          else
          {
             if(param1 < 10)
             {
-               return "specialevent/200x200_1.jpg";
+               return "specialevent/wmi2_1.jpg";
             }
             if(param1 < 20)
             {
-               return "specialevent/200x200_2.jpg";
+               return "specialevent/wmi2_2.jpg";
             }
-            return "specialevent/200x200_3.jpg";
+            return "specialevent/wmi2_3.jpg";
          }
       }
       
@@ -316,7 +300,7 @@ package
       
       private function PlaceTotem(param1:MouseEvent) : void
       {
-         SPECIALEVENT.TotemPlace();
+         BTOTEM.TotemPlace();
          this.Hide();
       }
    }

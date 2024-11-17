@@ -1,17 +1,11 @@
 package
 {
    import com.cc.utils.SecNum;
-   import com.monsters.display.BuildingAssetContainer;
-   import com.monsters.display.ImageCache;
-   import com.monsters.effects.fire.Fire;
-   import com.monsters.effects.smoke.Smoke;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
-   import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class MONSTERLAB extends BFOUNDATION
@@ -29,34 +23,6 @@ package
       public var _frameNumber:int;
       
       public var _animBitmap:BitmapData;
-      
-      public var anim2Container:BuildingAssetContainer;
-      
-      public var _anim2BMD:BitmapData;
-      
-      public var _anim2ContainerBMD:BitmapData;
-      
-      public var _anim2Rect:Rectangle;
-      
-      public var _anim2Frames:int = 0;
-      
-      public var _anim2Tick:int = 0;
-      
-      public var _anim2Loaded:Boolean = false;
-      
-      public var anim3Container:BuildingAssetContainer;
-      
-      public var _anim3BMD:BitmapData;
-      
-      public var _anim3ContainerBMD:BitmapData;
-      
-      public var _anim3Rect:Rectangle;
-      
-      public var _anim3Frames:int = 0;
-      
-      public var _anim3Tick:int = 0;
-      
-      public var _anim3Loaded:Boolean = false;
       
       public var _upgradeLevel:int = 0;
       
@@ -120,14 +86,6 @@ package
       override public function SetProps() : *
       {
          super.SetProps();
-         this.anim2Container = new BuildingAssetContainer();
-         this.anim2Container.mouseChildren = false;
-         this.anim2Container.mouseEnabled = false;
-         this.anim3Container = new BuildingAssetContainer();
-         this.anim3Container.mouseChildren = false;
-         this.anim3Container.mouseEnabled = false;
-         _mc.addChild(this.anim2Container);
-         _mc.addChild(this.anim3Container);
          _powerupProps = {
             "C3":{
                "name":"lab_boltname",
@@ -275,11 +233,11 @@ package
          {
             if((GLOBAL._mode == "build" || GLOBAL._mode == "help" || GLOBAL._mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
             {
-               this.AnimFrame(true);
+               AnimFrame(true);
             }
             else if(this._frameNumber % 10 == 0)
             {
-               this.AnimFrame(true);
+               AnimFrame(true);
             }
          }
          ++this._frameNumber;
@@ -291,7 +249,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bLab = this;
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function():*
             {
@@ -329,13 +287,6 @@ package
             GLOBAL._bAcademy = null;
             super.Recycle();
          }
-      }
-      
-      override public function Clean() : void
-      {
-         super.Clean();
-         this.anim2Container.Clear();
-         this.anim3Container.Clear();
       }
       
       public function Show() : *
@@ -543,287 +494,6 @@ package
             _upgrading = null;
          }
          BASE.Purchase("IPU",instantCost,"monsterlab");
-      }
-      
-      override public function Render(param1:String = "") : *
-      {
-         var ImageCallback:Function;
-         var imageDataA:Object = null;
-         var imageDataB:Object = null;
-         var imageLevel:int = 0;
-         var i:int = 0;
-         var loadImages:Array = null;
-         var state:String = param1;
-         if(_renderState == null || state != _renderState || _lvl.Get() != _renderLevel)
-         {
-            ImageCallback = function(param1:Array, param2:String):*
-            {
-               var _loc3_:Array = null;
-               var _loc4_:String = null;
-               var _loc5_:BitmapData = null;
-               var _loc6_:BuildingAssetContainer = null;
-               var _loc7_:DisplayObject = null;
-               if(param2 == _renderState)
-               {
-                  _mcBase.Clear();
-                  topContainer.Clear();
-                  animContainer.Clear();
-                  anim2Container.Clear();
-                  anim3Container.Clear();
-                  if(_lastLoadedState != null)
-                  {
-                     if(state == "destroyed" && _lastLoadedState == "damaged")
-                     {
-                        SOUNDS.Play(SOUNDS.DestroySoundIDForLevel(_lvl.Get()));
-                        Smoke.CreatePoof(new Point(x,y + _middle),_middle,1);
-                        Smoke.CreateStream(new Point(x,y + _middle));
-                     }
-                     if(state == "damaged" && _lastLoadedState == "")
-                     {
-                        SOUNDS.Play(SOUNDS.DamageSoundIDForLevel(_lvl.Get()));
-                        Smoke.CreatePoof(new Point(x,y + _middle),_middle,0.5);
-                     }
-                  }
-                  _lastLoadedState = state;
-                  _mc.removeEventListener(Event.ENTER_FRAME,TickFast);
-                  for each(_loc3_ in param1)
-                  {
-                     _loc4_ = _loc3_[0];
-                     _loc5_ = _loc3_[1];
-                     if(Boolean(imageDataB["shadow" + state]) && imageDataA.baseurl + imageDataB["shadow" + state][0] == _loc4_)
-                     {
-                        _loc6_ = _mcBase;
-                        _loc6_.Clear();
-                        _loc7_ = _loc6_.addChild(new Bitmap(_loc5_));
-                        _loc7_.blendMode = "multiply";
-                        _loc7_.x = imageDataB["shadow" + state][1].x;
-                        _loc7_.y = imageDataB["shadow" + state][1].y;
-                     }
-                     else if(Boolean(imageDataB["top" + state]) && imageDataA.baseurl + imageDataB["top" + state][0] == _loc4_)
-                     {
-                        _loc6_ = topContainer;
-                        _loc6_.Clear();
-                        _loc6_.addChild(new Bitmap(_loc5_));
-                        _loc6_.x = imageDataB["top" + state][1].x;
-                        _loc6_.y = imageDataB["top" + state][1].y;
-                        _mcHit.gotoAndStop("f" + imageLevel + state);
-                        if(state == "destroyed")
-                        {
-                           _mcHit.gotoAndStop("f" + state);
-                        }
-                        _mcHit.x = _loc6_.x;
-                        _mcHit.y = _loc6_.y;
-                     }
-                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == _loc4_)
-                     {
-                        _animBMD = _loc5_;
-                        _animLoaded = true;
-                        _loc6_ = animContainer;
-                        _loc6_.Clear();
-                        _animRect = imageDataB["anim" + state][1];
-                        _animFrames = imageDataB["anim" + state][2];
-                        _animTick = int(Math.random() * (_animFrames - 2));
-                        _animContainerBMD = new BitmapData(_animRect.width,_animRect.height,true,0xffffff);
-                        _loc6_.addChild(new Bitmap(_animContainerBMD));
-                        _loc6_.x = _animRect.x;
-                        _loc6_.y = _animRect.y;
-                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
-                        {
-                           AnimFrame(false);
-                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        }
-                        if(!imageDataB["top" + state])
-                        {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
-                           if(state == "destroyed")
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = _loc6_.x;
-                           _mcHit.y = _loc6_.y;
-                        }
-                     }
-                     else if(Boolean(imageDataB["anim2" + state]) && imageDataA.baseurl + imageDataB["anim2" + state][0] == _loc4_)
-                     {
-                        _anim2BMD = _loc5_;
-                        _anim2Loaded = true;
-                        _loc6_ = anim2Container;
-                        _loc6_.Clear();
-                        _anim2Rect = imageDataB["anim2" + state][1];
-                        _anim2Frames = imageDataB["anim2" + state][2];
-                        _anim2Tick = int(Math.random() * (_anim2Frames - 2));
-                        _anim2ContainerBMD = new BitmapData(_anim2Rect.width,_anim2Rect.height,true,0xffffff);
-                        _loc6_.addChild(new Bitmap(_anim2ContainerBMD));
-                        _loc6_.x = _anim2Rect.x;
-                        _loc6_.y = _anim2Rect.y;
-                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
-                        {
-                           AnimFrame(false);
-                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        }
-                        if(!imageDataB["top" + state])
-                        {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
-                           if(state == "destroyed")
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = _loc6_.x;
-                           _mcHit.y = _loc6_.y;
-                        }
-                     }
-                     else if(Boolean(imageDataB["anim3" + state]) && imageDataA.baseurl + imageDataB["anim3" + state][0] == _loc4_)
-                     {
-                        _anim3BMD = _loc5_;
-                        _anim3Loaded = true;
-                        _loc6_ = anim3Container;
-                        _loc6_.Clear();
-                        _anim3Rect = imageDataB["anim3" + state][1];
-                        _anim3Frames = imageDataB["anim3" + state][2];
-                        _anim3Tick = int(Math.random() * (_anim3Frames - 2));
-                        _anim3ContainerBMD = new BitmapData(_anim3Rect.width,_anim3Rect.height,true,0xffffff);
-                        _loc6_.addChild(new Bitmap(_anim3ContainerBMD));
-                        _loc6_.x = _anim3Rect.x;
-                        _loc6_.y = _anim3Rect.y;
-                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
-                        {
-                           AnimFrame(false);
-                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        }
-                        if(!imageDataB["top" + state])
-                        {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
-                           if(state == "destroyed")
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = _loc6_.x;
-                           _mcHit.y = _loc6_.y;
-                        }
-                     }
-                     else if(imageDataB.topdestroyedfire && _oldRenderState == "damaged" && !GLOBAL._catchup && imageDataA.baseurl + imageDataB.topdestroyedfire[0] == _loc4_)
-                     {
-                        Fire.Add(_mc,new Bitmap(_loc5_),new Point(imageDataB.topdestroyedfire[1].x,imageDataB.topdestroyedfire[1].y));
-                     }
-                  }
-               }
-            };
-            _renderLevel = _lvl.Get();
-            imageDataA = GLOBAL._buildingProps[_type - 1].imageData;
-            if(_lvl.Get() == 0)
-            {
-               imageDataB = imageDataA[1];
-               imageLevel = 1;
-            }
-            else if(imageDataA[_lvl.Get()])
-            {
-               imageDataB = imageDataA[_lvl.Get()];
-               imageLevel = _lvl.Get();
-            }
-            else
-            {
-               i = _lvl.Get() - 1;
-               while(i > 0)
-               {
-                  if(imageDataA[i])
-                  {
-                     imageDataB = imageDataA[i];
-                     imageLevel = i;
-                     break;
-                  }
-                  i--;
-               }
-            }
-            _oldRenderState = _renderState;
-            _renderState = state;
-            if(imageDataB)
-            {
-               loadImages = [];
-               if(!imageDataB["top" + state])
-               {
-                  state = "";
-               }
-               if(imageDataB["top" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["top" + state][0]);
-               }
-               if(imageDataB["shadow" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["shadow" + state][0]);
-               }
-               if(imageDataB["anim" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim" + state][0]);
-               }
-               if(imageDataB["anim2" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim2" + state][0]);
-               }
-               if(imageDataB["anim3" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim3" + state][0]);
-               }
-               _animLoaded = false;
-               if(state == "damaged" || state == "destroyed")
-               {
-                  this._anim2Loaded = true;
-                  this._anim3Loaded = true;
-               }
-               else
-               {
-                  this._anim2Loaded = false;
-                  this._anim3Loaded = false;
-               }
-               ImageCache.GetImageGroupWithCallBack("b" + _type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
-            }
-         }
-      }
-      
-      override public function AnimFrame(param1:Boolean = true) : *
-      {
-         var increment:Boolean = param1;
-         try
-         {
-            if(!GLOBAL._catchup && Boolean(_animBMD))
-            {
-               _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
-               if(increment)
-               {
-                  ++_animTick;
-                  if(_animTick >= _animFrames)
-                  {
-                     _animTick = 0;
-                  }
-               }
-            }
-            if(!GLOBAL._catchup && Boolean(this._anim2BMD))
-            {
-               this._anim2ContainerBMD.copyPixels(this._anim2BMD,new Rectangle(this._anim2Rect.width * this._anim2Tick,0,this._anim2Rect.width,this._anim2Rect.height),new Point(0,0));
-               if(increment)
-               {
-                  ++this._anim2Tick;
-                  if(this._anim2Tick >= this._anim2Frames)
-                  {
-                     this._anim2Tick = 0;
-                  }
-               }
-            }
-            if(!GLOBAL._catchup && Boolean(this._anim3BMD))
-            {
-               this._anim3ContainerBMD.copyPixels(this._anim3BMD,new Rectangle(this._anim3Rect.width * this._anim2Tick,0,this._anim3Rect.width,this._anim3Rect.height),new Point(0,0));
-               if(increment)
-               {
-                  ++this._anim3Tick;
-                  if(this._anim3Tick >= this._anim3Frames)
-                  {
-                     this._anim3Tick = 0;
-                  }
-               }
-            }
-         }
-         catch(e:Error)
-         {
-         }
       }
       
       override public function Setup(param1:Object) : *

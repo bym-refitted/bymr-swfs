@@ -3,12 +3,12 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol832")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol942")]
    public dynamic class BUILDINGOPTIONSPOPUP_CLIP extends MovieClip
    {
       public var mcCBBG:MovieClip;
       
-      public var mcBG:frame2_CLIP;
+      public var mcBG:frame_CLIP;
       
       public var mcInstant:MovieClip;
       

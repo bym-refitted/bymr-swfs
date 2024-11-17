@@ -1,10 +1,9 @@
 package
 {
    import flash.display.MovieClip;
-   import flash.display.SimpleButton;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1539")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1700")]
    public dynamic class Thread_CLIP extends MovieClip
    {
       public var outline_mc:MovieClip;
@@ -25,11 +24,11 @@ package
       
       public var largeOutline_mc:MovieClip;
       
-      public var reportBtn:SimpleButton;
+      public var reportBtn:MovieClip;
       
       public var viewBtn:Button_CLIP;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var acceptBtn:Button_CLIP;
       

@@ -105,6 +105,10 @@ package
             {
                return;
             }
+            if(INFERNO_EMERGENCE_EVENT.isAttackActive)
+            {
+               return;
+            }
             if(!this._clicked)
             {
                CUSTOMATTACKS._started = true;

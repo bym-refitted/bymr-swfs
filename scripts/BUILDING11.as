@@ -158,9 +158,9 @@ package
             GLOBAL.StatSet("mrp",n);
             GLOBAL._selectedBuilding = GLOBAL._bMap;
             popupMC = new popup_generic();
-            popupMC.tA.htmlText = "<b>Backyard Domination</b>";
-            popupMC.tB.htmlText = "Speed-up your Map Room upgrade and get a head start on building your backyard empire!";
-            popupMC.bAction.Setup("Speed-Up");
+            popupMC.tA.htmlText = KEYS.Get("popup_upgrademaproomtitle");
+            popupMC.tB.htmlText = KEYS.Get("popup_upgrademaproom");
+            popupMC.bAction.SetupKey("btn_speedup");
             popupMC.bAction.addEventListener(MouseEvent.CLICK,Speedup);
             popupMC.mcImage.x = -200;
             popupMC.mcImage.y = -95;
@@ -202,7 +202,7 @@ package
       {
          var _loc1_:Array = [["version",1]];
          new URLLoaderApi().load(GLOBAL._mapURL + "setmapversion",_loc1_,this.RecycleDSuccess,this.RecycleDFail);
-         PLEASEWAIT.Show();
+         PLEASEWAIT.Show(KEYS.Get("wait_processing"));
       }
       
       private function RecycleDSuccess(param1:Object) : *

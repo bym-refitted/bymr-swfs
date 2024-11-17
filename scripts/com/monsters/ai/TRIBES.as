@@ -4,6 +4,8 @@ package com.monsters.ai
    {
       public static var _tribes:Object;
       
+      public static var _infernotribes:Object;
+      
       private static var _assoc:Object;
       
       public static const L_IDS:Array = [1,2,3,4,5,6,7,8,9,10,41,42];
@@ -85,51 +87,99 @@ package com.monsters.ai
             "profilepic":"monsters/tribe_dreadnaut_50.v2.jpg",
             "streampostpic":"tribe-dreadnaut.v2.png"
          };
+         _infernotribes = {};
+         _infernotribes.d = {
+            "id":1,
+            "name":KEYS.Get("ai_descenttribe_name"),
+            "process":PROCESS7,
+            "type":WMATTACK.TYPE_NERD,
+            "taunt":KEYS.Get("ai_descenttribe_taunt"),
+            "splash":"popups/portrait_moloch.png",
+            "description":KEYS.Get("ai_descenttribe_description"),
+            "succ":KEYS.Get("ai_descenttribe_succ"),
+            "succ_stream":KEYS.Get("ai_descenttribe_succstream"),
+            "fail":KEYS.Get("ai_descenttribe_fail"),
+            "profilepic":"monsters/tribe_dreadnaut_50.v2.jpg",
+            "streampostpic":"tribe-dreadnaut.v2.png"
+         };
       }
       
-      public static function TribeForName(param1:int) : Object
+      public static function TribeForName(param1:int, param2:int = 0) : Object
       {
-         var _loc2_:Object = null;
-         for each(_loc2_ in _tribes)
+         var _loc4_:Object = null;
+         if(GLOBAL._loadmode != GLOBAL._mode)
          {
-            if(_loc2_.nid == param1)
+            return _infernotribes.d;
+         }
+         var _loc3_:Object = ChooseTribesTable(param2);
+         for each(_loc4_ in _loc3_)
+         {
+            if(_loc4_.nid == param1)
             {
-               return _loc2_;
+               return _loc4_;
             }
          }
          return null;
       }
       
-      public static function TribeForID(param1:int) : Object
+      public static function TribeForID(param1:int, param2:int = 0) : Object
       {
-         var _loc2_:Object = null;
-         for each(_loc2_ in _tribes)
+         var _loc4_:Object = null;
+         if(GLOBAL._loadmode != GLOBAL._mode)
          {
-            if(_loc2_.nid == param1)
+            return _infernotribes.d;
+         }
+         var _loc3_:Object = ChooseTribesTable(param2);
+         for each(_loc4_ in _loc3_)
+         {
+            if(_loc4_.nid == param1)
             {
-               return _loc2_;
+               return _loc4_;
             }
          }
          return null;
       }
       
-      public static function TribeForBaseID(param1:int) : Object
+      public static function TribeForBaseID(param1:int, param2:int = 0) : Object
       {
-         var _loc2_:String = null;
-         var _loc3_:int = 0;
-         for(_loc2_ in _assoc)
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         if(GLOBAL._loadmode != GLOBAL._mode)
          {
-            _loc3_ = 0;
-            while(_loc3_ < _assoc[_loc2_].length)
+            return _infernotribes.d;
+         }
+         for(_loc3_ in _assoc)
+         {
+            _loc4_ = 0;
+            while(_loc4_ < _assoc[_loc3_].length)
             {
-               if(param1 == _assoc[_loc2_][_loc3_])
+               if(param1 == _assoc[_loc3_][_loc4_])
                {
-                  return _tribes[_loc2_];
+                  return _tribes[_loc3_];
                }
-               _loc3_++;
+               _loc4_++;
             }
          }
          return null;
+      }
+      
+      public static function ChooseTribesTable(param1:int = 0) : Object
+      {
+         var _loc2_:int = param1;
+         if(_loc2_ <= 0)
+         {
+            _loc2_ = BASE.isInferno() ? 2 : 1;
+         }
+         switch(_loc2_)
+         {
+            case 0:
+            case 1:
+               return _tribes;
+            case 2:
+               return _infernotribes;
+            default:
+               return _tribes;
+         }
       }
    }
 }

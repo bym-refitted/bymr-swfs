@@ -40,7 +40,7 @@ package
       public static function Spawn(param1:int = 0) : *
       {
          var _loc4_:int = 0;
-         if(BASE._isOutpost)
+         if(BASE._yardType)
          {
             if(_workerCount > 0)
             {
@@ -57,7 +57,7 @@ package
             param1 = 1;
             if(STORE._storeData.BEW)
             {
-               if(BASE._isOutpost)
+               if(BASE._yardType)
                {
                   if(STORE._storeData.BEW.q > 0)
                   {
@@ -151,7 +151,7 @@ package
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:BFOUNDATION = null;
-         if(BASE._isOutpost)
+         if(BASE._yardType)
          {
             if(_stack[0].active)
             {

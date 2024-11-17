@@ -243,37 +243,19 @@ package
          {
             this._attackDelay /= 1 + this.PowerUpLevel() * 0.5;
          }
-         if(this._movement == "fly")
-         {
-            if(this._damage.Get() > 0)
-            {
-               this._attackDelay = 90;
-            }
-            else
-            {
-               this._attackDelay = 15;
-            }
-         }
          this._attacking = false;
          this._frameNumber = 0;
          SPRITES.SetupSprite(this._creatureID);
          if(this._movement == "fly")
          {
-            if(this._creatureID == "C14")
-            {
-               SPRITES.SetupSprite("shadow");
-            }
-            else
-            {
-               SPRITES.SetupSprite("bigshadow");
-            }
+            SPRITES.SetupSprite("shadow");
             this._shadow = new BitmapData(52,50,true,0xffffff);
             this._shadowMC = addChild(new Bitmap(this._shadow));
             this._shadowMC.x = -21;
             this._shadowMC.y = -16;
             this._frameNumber = int(Math.random() * 1000);
          }
-         this._graphic = new BitmapData(52,50,true,0xffffff);
+         this._graphic = new BitmapData(64,50,true,0xffffff);
          this._graphicMC = addChild(new Bitmap(this._graphic));
          this._graphicMC.x = -26;
          this._graphicMC.y = -36;
@@ -294,10 +276,17 @@ package
          {
             if(GLOBAL._render && this._movement != "fly")
             {
-               this._graphicMC.y -= 90;
-               TweenLite.to(this._graphicMC,0.6,{
-                  "y":this._graphicMC.y + 90,
+               EFFECTS.Dig(int(this._tmpPoint.x),int(this._tmpPoint.y));
+               TweenLite.to(this._graphicMC,0.4,{
+                  "y":this._graphicMC.y - 20,
+                  "ease":Sine.easeOut,
+                  "overwrite":false
+               });
+               TweenLite.to(this._graphicMC,0.4,{
+                  "y":this._graphicMC.y,
                   "ease":Bounce.easeOut,
+                  "overwrite":false,
+                  "delay":0.4,
                   "onComplete":this.ModeAttack
                });
             }
@@ -314,6 +303,10 @@ package
                if(this._targetGroup == 5)
                {
                   this.ModeHeal();
+               }
+               else if(this._targetGroup == 6)
+               {
+                  this.ModeHunt();
                }
                else
                {
@@ -506,10 +499,16 @@ package
          this._hasTarget = false;
          this._atTarget = false;
          this._hasPath = false;
-         if(this._creatureID == "C9" && this.PoweredUp())
-         {
-            this._invisibleTime = GLOBAL.Timestamp() + 5 * this.PowerUpLevel();
-         }
+         this.node = MAP.CreepCellAdd(this._tmpPoint,this._id,this);
+         this.FindTarget(this._targetGroup,true);
+      }
+      
+      public function ModeHunt() : void
+      {
+         this._behaviour = "hunt";
+         this._hasTarget = false;
+         this._atTarget = false;
+         this._hasPath = false;
          this.node = MAP.CreepCellAdd(this._tmpPoint,this._id,this);
          this.FindTarget(this._targetGroup,true);
       }
@@ -554,7 +553,7 @@ package
             for(_loc2_ in BASE._buildingsAll)
             {
                _loc3_ = 9999999;
-               if(BASE._buildingsAll[_loc2_]._type == 22 && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
+               if(MONSTERBUNKER.isBunkerBuilding(BASE._buildingsAll[_loc2_]._type) && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
                {
                   _loc4_ = BASE._buildingsAll[_loc2_];
                   _loc5_ = _loc4_._mc.x - this._tmpPoint.x;
@@ -743,6 +742,48 @@ package
          }
       }
       
+      public function FindHuntingTargets() : void
+      {
+         var _loc3_:* = undefined;
+         var _loc1_:int = 0;
+         var _loc2_:Array = [];
+         for each(_loc3_ in CREATURES._creatures)
+         {
+            if(!(_loc3_._behaviour != "defend" && BASE._yardType < BASE.INFERNO_YARD))
+            {
+               _loc2_.push({
+                  "creep":_loc3_,
+                  "dist":GLOBAL.QuickDistance(_loc3_._tmpPoint,this._tmpPoint)
+               });
+               _loc1_++;
+               if(_loc1_ >= 10)
+               {
+                  break;
+               }
+            }
+         }
+         if(Boolean(CREATURES._guardian) && CREATURES._guardian._health.Get() > 0)
+         {
+            _loc2_.push({
+               "creep":CREATURES._guardian,
+               "dist":GLOBAL.QuickDistance(CREATURES._guardian._tmpPoint,this._tmpPoint)
+            });
+         }
+         if(_loc2_.length > 0)
+         {
+            _loc2_.sortOn("dist",Array.NUMERIC);
+            while(_loc2_.length > 0 && _loc2_[0].creep._health.Get() <= 0)
+            {
+               _loc2_.splice(0,1);
+            }
+         }
+         if(_loc2_.length > 0)
+         {
+            this._targetCreep = _loc2_[0].creep;
+            this._waypoints = [this._targetCreep._tmpPoint];
+         }
+      }
+      
       public function FindDefenseTargets() : void
       {
          var _loc3_:int = 0;
@@ -801,17 +842,31 @@ package
          var _loc10_:Point = null;
          var _loc11_:int = 0;
          var _loc13_:* = undefined;
-         var _loc14_:int = 0;
-         var _loc15_:Point = null;
+         var _loc14_:* = undefined;
+         var _loc15_:Boolean = false;
          var _loc16_:int = 0;
-         var _loc17_:int = 0;
+         var _loc17_:Point = null;
          var _loc18_:int = 0;
-         var _loc19_:Number = NaN;
-         var _loc20_:* = undefined;
-         var _loc21_:* = undefined;
+         var _loc19_:int = 0;
+         var _loc20_:int = 0;
+         var _loc21_:Number = NaN;
+         var _loc22_:* = undefined;
+         var _loc23_:* = undefined;
          var _loc3_:int = getTimer();
          var _loc12_:Array = [];
          this._looking = true;
+         if(this._behaviour == "hunt" && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0))
+         {
+            this.FindHuntingTargets();
+            if(this._targetCreep)
+            {
+               this._hasTarget = true;
+               this._hasPath = true;
+               this._waypoints = [this._targetCreep._tmpPoint];
+               this._targetPosition = this._targetCreep._tmpPoint;
+               this._targetCenter = this._targetCreep._tmpPoint;
+            }
+         }
          _loc9_ = PATHING.FromISO(this._tmpPoint);
          if(param1 == 2)
          {
@@ -847,7 +902,7 @@ package
          {
             for each(_loc5_ in BASE._buildingsTowers)
             {
-               if(_loc5_._type == 22)
+               if(MONSTERBUNKER.isBunkerBuilding(_loc5_._type))
                {
                   _loc13_ = _loc5_;
                   if(_loc13_._hp.Get() > 0 && (_loc13_._used > 0 || _loc13_._monstersDispatchedTotal > 0))
@@ -873,6 +928,40 @@ package
                }
             }
          }
+         else if(this._targetGroup == 6)
+         {
+            for each(_loc14_ in BASE._buildingsBunkers)
+            {
+               if(_loc14_._hp.Get() > 0)
+               {
+                  _loc15_ = false;
+                  if(_loc14_._type == 22)
+                  {
+                     if(_loc14_._used > 0 || _loc14_._monstersDispatchedTotal > 0)
+                     {
+                        _loc15_ = true;
+                     }
+                  }
+                  if(_loc14_._type == 128)
+                  {
+                     if(HOUSING._housingUsed.Get() > 0)
+                     {
+                        _loc15_ = true;
+                     }
+                  }
+                  if(_loc15_)
+                  {
+                     _loc10_ = GRID.FromISO(_loc14_._mc.x,_loc14_._mc.y + _loc14_._middle);
+                     _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc14_._middle;
+                     _loc12_.push({
+                        "building":_loc14_,
+                        "distance":_loc11_,
+                        "expand":false
+                     });
+                  }
+               }
+            }
+         }
          if(_loc12_.length == 0 || param1 == 1)
          {
             for each(_loc5_ in BASE._buildingsMain)
@@ -890,67 +979,71 @@ package
                }
             }
          }
-         if(_loc12_.length == 0)
+         if(_loc12_.length == 0 && !this._targetCreep)
          {
             this.ModeRetreat();
          }
          else
          {
             _loc12_.sortOn("distance",Array.NUMERIC);
-            _loc14_ = 0;
+            _loc16_ = 0;
             if(this._movement == "burrow")
             {
                this._hasTarget = true;
                this._hasPath = true;
-               _loc15_ = GRID.FromISO(_loc12_[_loc14_].building._mc.x,_loc12_[_loc14_].building._mc.y);
-               _loc16_ = int(Math.random() * 4);
-               _loc17_ = int(_loc12_[_loc14_].building._footprint[0].height);
-               _loc18_ = int(_loc12_[_loc14_].building._footprint[0].width);
-               if(_loc16_ == 0)
+               _loc17_ = GRID.FromISO(_loc12_[_loc16_].building._mc.x,_loc12_[_loc16_].building._mc.y);
+               _loc18_ = int(Math.random() * 4);
+               _loc19_ = int(_loc12_[_loc16_].building._footprint[0].height);
+               _loc20_ = int(_loc12_[_loc16_].building._footprint[0].width);
+               if(_loc18_ == 0)
                {
-                  _loc15_.x += Math.random() * _loc17_;
-                  _loc15_.y += _loc18_;
+                  _loc17_.x += Math.random() * _loc19_;
+                  _loc17_.y += _loc20_;
                }
-               else if(_loc16_ == 1)
+               else if(_loc18_ == 1)
                {
-                  _loc15_.x += _loc17_;
-                  _loc15_.y += _loc18_;
+                  _loc17_.x += _loc19_;
+                  _loc17_.y += _loc20_;
                }
-               else if(_loc16_ == 2)
+               else if(_loc18_ == 2)
                {
-                  _loc15_.x += _loc17_ - Math.random() * _loc17_ / 2;
-                  _loc15_.y -= _loc18_ / 4;
+                  _loc17_.x += _loc19_ - Math.random() * _loc19_ / 2;
+                  _loc17_.y -= _loc20_ / 4;
                }
-               else if(_loc16_ == 3)
+               else if(_loc18_ == 3)
                {
-                  _loc15_.x -= _loc17_ / 4;
-                  _loc15_.y += _loc18_ - Math.random() * _loc18_ / 2;
+                  _loc17_.x -= _loc19_ / 4;
+                  _loc17_.y += _loc20_ - Math.random() * _loc20_ / 2;
                }
-               this._waypoints = [GRID.ToISO(_loc15_.x,_loc15_.y,0)];
+               this._waypoints = [GRID.ToISO(_loc17_.x,_loc17_.y,0)];
                this._targetPosition = this._waypoints[0];
-               this._targetBuilding = _loc12_[_loc14_].building;
+               this._targetBuilding = _loc12_[_loc16_].building;
             }
-            else if(this._movement == "fly")
+            else if(this._movement == "fly" || this._movement == "fly_low")
             {
                this._hasTarget = true;
                this._hasPath = true;
-               this._targetBuilding = _loc12_[_loc14_].building;
+               this._targetBuilding = _loc12_[_loc16_].building;
                this._targetCenter = this._targetBuilding._position;
-               if(GLOBAL.QuickDistance(this._tmpPoint,this._targetCenter) < 170)
+               if(!this._targetCreep)
                {
-                  this._atTarget = true;
-                  this._hasPath = true;
-                  this._targetPosition = this._targetCenter;
-               }
-               else
-               {
-                  _loc19_ = Math.atan2(this._tmpPoint.y - this._targetCenter.y,this._tmpPoint.x - this._targetCenter.x) * 57.2957795;
-                  _loc19_ = _loc19_ + (Math.random() * 40 - 20);
-                  _loc19_ = _loc19_ / (180 / Math.PI);
-                  _loc20_ = 2 * 60 + Math.random() * 10;
-                  _loc21_ = new Point(this._targetCenter.x + Math.cos(_loc19_) * _loc20_ * 1.7,this._targetCenter.y + Math.sin(_loc19_) * _loc20_);
-                  this._waypoints = [_loc21_];
-                  this._targetPosition = this._waypoints[0];
+                  if(GLOBAL.QuickDistance(this._tmpPoint,this._targetCenter) < 50)
+                  {
+                     this._atTarget = true;
+                     this._hasPath = true;
+                     this._targetPosition = this._targetCenter;
+                  }
+                  else
+                  {
+                     this._movement = "fly";
+                     _loc21_ = Math.atan2(this._tmpPoint.y - this._targetCenter.y,this._tmpPoint.x - this._targetCenter.x) * 57.2957795;
+                     _loc21_ = _loc21_ + (Math.random() * 40 - 20);
+                     _loc21_ = _loc21_ / (180 / Math.PI);
+                     _loc22_ = 30 + Math.random() * 10;
+                     _loc23_ = new Point(this._targetCenter.x + Math.cos(_loc21_) * _loc22_,this._targetCenter.y + Math.sin(_loc21_) * _loc22_);
+                     this._waypoints = [_loc23_];
+                     this._targetPosition = this._waypoints[0];
+                  }
                }
             }
             else if(GLOBAL._catchup)
@@ -959,14 +1052,14 @@ package
             }
             else
             {
-               _loc14_ = 0;
-               while(_loc14_ < 2)
+               _loc16_ = 0;
+               while(_loc16_ < 2)
                {
-                  if(_loc12_.length > _loc14_)
+                  if(_loc12_.length > _loc16_)
                   {
-                     this.WaypointTo(new Point(_loc12_[_loc14_].building._mc.x,_loc12_[_loc14_].building._mc.y),_loc12_[_loc14_].building);
+                     this.WaypointTo(new Point(_loc12_[_loc16_].building._mc.x,_loc12_[_loc16_].building._mc.y),_loc12_[_loc16_].building);
                   }
-                  _loc14_++;
+                  _loc16_++;
                }
             }
          }
@@ -1099,8 +1192,12 @@ package
          {
             return false;
          }
+         if(this._targetCreep._targetCreep == this)
+         {
+            return true;
+         }
          var _loc1_:Number = GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint);
-         if(_loc1_ > 110)
+         if(_loc1_ > 110 && this._targetCreep._targetCreep != this)
          {
             return false;
          }
@@ -1447,7 +1544,7 @@ package
          if(this._health.Get() <= 0)
          {
             MAP.CreepCellDelete(this._id,this.node);
-            if(this._movement == "fly")
+            if(this._movement == "fly" || this._movement == "fly_low")
             {
                if(!this._dying)
                {
@@ -1471,7 +1568,11 @@ package
          {
             if(!this._targetCreep)
             {
-               if(this._targetBuilding == null || this._targetBuilding._hp.Get() <= 0 || this._targetGroup == 3 && this._targetBuilding._looted)
+               if(this._behaviour == "hunt" && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0) && this._frameNumber % 150 == 0)
+               {
+                  this.FindTarget(this._targetGroup);
+               }
+               else if(this._targetBuilding == null || this._targetBuilding._hp.Get() <= 0 || this._targetGroup == 3 && this._targetBuilding._looted)
                {
                   this._hasTarget = false;
                   this._attacking = false;
@@ -1495,6 +1596,10 @@ package
                {
                   this._atTarget = true;
                }
+               else if(this._targetCreep)
+               {
+                  this._waypoints = [this._targetCreep._tmpPoint];
+               }
             }
          }
          if(!this._looking && this._frameNumber % (GLOBAL._catchup ? 5 * 60 : 150) == 0 && !this._attacking)
@@ -1504,12 +1609,23 @@ package
          if(this._atTarget)
          {
             this._attacking = true;
+            if(this._movement == "fly")
+            {
+               this._movement = "fly_low";
+            }
             if(this.attackCooldown <= 0)
             {
                this.attackCooldown += int(this._attackDelay / this._speedMult);
                if(this._targetCreep)
                {
-                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * _loc1_ * this._targetCreep._damageMult,this._mc.visible);
+                  if(this._behaviour == "hunt")
+                  {
+                     _loc1_ *= 3;
+                  }
+                  if(this._creatureID != "IC7")
+                  {
+                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5 - (this._movement == "fly" || this._movement == "fly_low" ? this._altitude : 0),this._damage.Get() * _loc1_ * this._targetCreep._damageMult,this._mc.visible);
+                  }
                }
                else
                {
@@ -1521,18 +1637,46 @@ package
                   {
                      _loc1_ *= 2;
                   }
-                  if(this._targetBuilding._fortification.Get() > 0)
+                  if(this._creatureID != "IC7")
                   {
-                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * _loc1_ * (100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100,this._mc.visible);
-                  }
-                  else
-                  {
-                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * _loc1_,this._mc.visible);
+                     if(this._targetBuilding._fortification.Get() > 0)
+                     {
+                        ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5 - (this._movement == "fly" || this._movement == "fly_low" ? this._altitude : 0),this._damage.Get() * _loc1_ * (100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100,this._mc.visible);
+                     }
+                     else
+                     {
+                        ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5 - (this._movement == "fly" || this._movement == "fly_low" ? this._altitude : 0),this._damage.Get() * _loc1_,this._mc.visible);
+                     }
                   }
                }
                if(this._targetCreep)
                {
-                  this._targetCreep._health.Add(-(this._damage.Get() * this._targetCreep._damageMult));
+                  if(this._creatureID == "IC7")
+                  {
+                     FIREBALLS.Spawn2(this._tmpPoint,this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * _loc1_);
+                  }
+                  else
+                  {
+                     this._targetCreep._health.Add(-(this._damage.Get() * this._targetCreep._damageMult));
+                     if(!this._targetCreep._targetCreep || !this._targetCreep._atTarget)
+                     {
+                        this._targetCreep._targetCreep = this;
+                        this._targetCreep._hasTarget = true;
+                        this._targetCreep._atTarget = true;
+                        if(this._targetCreep._behaviour != "defend")
+                        {
+                           this._targetCreep._behaviour = "defend";
+                        }
+                     }
+                  }
+                  if(this._behaviour == "hunt")
+                  {
+                     this._targetCreep._venom.Add(this._damage.Get() * 0.1 * 0.025 * _loc1_);
+                  }
+               }
+               else if(this._creatureID == "IC7")
+               {
+                  FIREBALLS.Spawn(this._tmpPoint,this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * _loc1_);
                }
                else
                {
@@ -1563,19 +1707,27 @@ package
          else
          {
             this._attacking = false;
+            if(this._movement == "fly_low")
+            {
+               this._movement = "fly";
+            }
          }
          return false;
       }
       
       public function TickBDefend() : Boolean
       {
-         var aggros:Array = null;
-         var l:int = 0;
-         var i:int = 0;
-         var tmpDefDamage:Number = 1;
+         var _loc2_:Array = null;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc1_:Number = 1;
          if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
-            tmpDefDamage *= 1.25;
+            _loc1_ *= 1.25;
+         }
+         if(this._creatureID == "IC5")
+         {
+            _loc1_ *= 3;
          }
          if(this._health.Get() <= 0)
          {
@@ -1584,22 +1736,10 @@ package
             {
                if(Boolean(this._homeBunker._monsters) && !this._defenderRemoved)
                {
-                  --this._homeBunker._monsters[this._creatureID];
-                  if(this._homeBunker._monsters[this._creatureID] < 0)
-                  {
-                     this._homeBunker._monsters[this._creatureID] = 0;
-                  }
-                  --this._homeBunker._monstersDispatched[this._creatureID];
-                  if(this._homeBunker._monstersDispatched[this._creatureID] < 0)
-                  {
-                     this._homeBunker._monstersDispatched[this._creatureID] = 0;
-                  }
-                  --this._homeBunker._monstersDispatchedTotal;
-                  if(this._homeBunker._monstersDispatchedTotal < 0)
-                  {
-                     this._homeBunker._monstersDispatchedTotal = 0;
-                  }
+                  this._homeBunker.RemoveCreature(this._creatureID);
                   this._defenderRemoved = true;
+                  this._behaviour = "pen";
+                  return false;
                }
             }
             return true;
@@ -1630,19 +1770,6 @@ package
                this._hasPath = false;
                this.FindDefenseTargets();
             }
-            else if(this._creatureID == "C5" && this.PoweredUp() && GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE * 2 && !this._jumpingUp)
-            {
-               this._jumpingUp = true;
-               TweenLite.to(this._graphicMC,0.4,{
-                  "y":this._graphicMC.y - (40 + 20 * (this.PowerUpLevel() - 1)),
-                  "ease":Sine.easeOut,
-                  "overwrite":false,
-                  "onComplete":function():*
-                  {
-                     _health.Set(0);
-                  }
-               });
-            }
          }
          if(this._atTarget)
          {
@@ -1669,15 +1796,22 @@ package
             if(this.attackCooldown <= 0)
             {
                this.attackCooldown += int(this._attackDelay / this._speedMult);
-               ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpDefDamage * this._targetCreep._damageMult,this._mc.visible);
-               this._targetCreep._health.Add(-(this._damage.Get() * tmpDefDamage * this._targetCreep._damageMult));
+               if(this._creatureID == "IC7")
+               {
+                  FIREBALLS.Spawn2(this._tmpPoint,this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * _loc1_);
+               }
+               else
+               {
+                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5 - (this._movement == "fly" ? this._altitude : 0),this._damage.Get() * _loc1_ * this._targetCreep._damageMult,this._mc.visible);
+                  this._targetCreep._health.Add(-(this._damage.Get() * _loc1_ * this._targetCreep._damageMult));
+               }
                if(!this._explode)
                {
                   if(!this._targetCreep._explode && !this._targetCreep._targetCreep && this._targetCreep._behaviour != "heal")
                   {
                      this._waypoints = [];
                      this._targetCreep._targetCreep = this;
-                     if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                     if(Boolean(this._targetCreep.CanShootCreep()) || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50)
                      {
                         this._targetCreep._atTarget = true;
                      }
@@ -1693,18 +1827,18 @@ package
                   }
                   if(this._invisibleTime == 0)
                   {
-                     aggros = MAP.CreepCellFind(this._tmpPoint,50);
-                     l = int(aggros.length);
-                     i = 0;
-                     while(i < 5 && i < l)
+                     _loc2_ = MAP.CreepCellFind(this._tmpPoint,50);
+                     _loc3_ = int(_loc2_.length);
+                     _loc4_ = 0;
+                     while(_loc4_ < 5 && _loc4_ < _loc3_)
                      {
-                        if(!aggros[i].creep._explode)
+                        if(!_loc2_[_loc4_].creep._explode)
                         {
-                           aggros[i].creep._targetCreep = this;
-                           aggros[i].creep._atTarget = true;
-                           aggros[i].creep._hasTarget = true;
+                           _loc2_[_loc4_].creep._targetCreep = this;
+                           _loc2_[_loc4_].creep._atTarget = true;
+                           _loc2_[_loc4_].creep._hasTarget = true;
                         }
-                        i++;
+                        _loc4_++;
                      }
                   }
                }
@@ -1775,7 +1909,8 @@ package
                {
                }
             }
-            return true;
+            this._homeBunker = null;
+            this._behaviour = "pen";
          }
          return false;
       }
@@ -1848,6 +1983,7 @@ package
                }
                break;
             case "attack":
+            case "hunt":
                if(this.TickBAttack())
                {
                   return true;
@@ -1902,7 +2038,7 @@ package
                }
                break;
          }
-         if((this._behaviour == "attack" || this._behaviour == "retreat" || this._behaviour == "heal") && this._frameNumber % 5 == 0)
+         if((this._behaviour == "attack" || this._behaviour == "retreat" || this._behaviour == "heal" || this._behaviour == "hunt") && this._frameNumber % 5 == 0)
          {
             this.newNode = MAP.CreepCellMove(this._tmpPoint,this._id,this,this.node);
             if(this.newNode)
@@ -1977,7 +2113,7 @@ package
                            if(building._hp.Get() > 0)
                            {
                               TweenLite.to(this._graphicMC,0.4,{
-                                 "y":this._graphicMC.y - 40,
+                                 "y":this._graphicMC.y - 60,
                                  "ease":Sine.easeOut,
                                  "overwrite":false,
                                  "onComplete":function():*
@@ -2011,7 +2147,7 @@ package
                            this._waypoints = [];
                            this._atTarget = true;
                            this._targetCreep._targetCreep = this;
-                           if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                           if(Boolean(this._targetCreep.CanShootCreep()) || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50)
                            {
                               this._targetCreep._atTarget = true;
                            }
@@ -2050,7 +2186,7 @@ package
                      if(!this._targetCreep._explode)
                      {
                         this._targetCreep._targetCreep = this;
-                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                        if(Boolean(this._targetCreep.CanShootCreep()) || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50)
                         {
                            this._targetCreep._atTarget = true;
                         }
@@ -2236,6 +2372,10 @@ package
                {
                   alpha = 1;
                }
+            }
+            if(this._movement == "fly" || this._movement == "fly_low")
+            {
+               SPRITES.GetSprite(this._shadow,"shadow","shadow",0);
             }
             this._lastFrame = SPRITES.GetSprite(this._graphic,this._creatureID,"walking",mcMarker.rotation,this._frameNumber,this._lastFrame);
             this._lastRotation = int(mcMarker.rotation / 12);

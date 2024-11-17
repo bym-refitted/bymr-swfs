@@ -14,6 +14,8 @@ package
       
       public static const TYPE_MISSILE:String = "missile";
       
+      public static const TYPE_MAGMA:String = "magma";
+      
       public static var _type:String = FIREBALL.TYPE_FIREBALL;
       
       public static var _pool:Array = [];
@@ -32,7 +34,7 @@ package
          }
          _type = param8;
          var _loc9_:FIREBALL = PoolGet();
-         if(param8 == TYPE_FIREBALL)
+         if(param8 == TYPE_FIREBALL || param8 == TYPE_MAGMA)
          {
             if(param5 > 0)
             {
@@ -128,6 +130,7 @@ package
          var fireball:FIREBALL = _fireballs[id];
          try
          {
+            fireball._graphic.filters = [];
             MAP._FIREBALLS.removeChild(fireball._graphic);
          }
          catch(e:Error)

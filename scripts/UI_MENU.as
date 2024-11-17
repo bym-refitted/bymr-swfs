@@ -37,7 +37,7 @@ package
          this.bQuests = new StoneButton();
          this.bStore = new StoneButton();
          this.bMap = new StoneButton();
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST)
          {
             this.bKits = new StoneButton();
          }
@@ -58,7 +58,7 @@ package
                addChild(bQuests);
                addChild(bStore);
                addChild(bMap);
-               if(BASE._isOutpost)
+               if(BASE._yardType == BASE.OUTPOST)
                {
                   addChild(bKits);
                }
@@ -71,13 +71,20 @@ package
             bQuests.SetupKey("ui_topquests",12);
             bStore.SetupKey("ui_topstore",12);
             bMap.SetupKey("ui_topmap",12);
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST)
             {
-               bKits.Setup("Kits",12);
+               bKits.SetupKey("btn_kits",12);
             }
-            ImageCache.GetImageWithCallBack("ui/wood1.png",cbf2);
+            if(GLOBAL.InfernoMode)
+            {
+               ImageCache.GetImageWithCallBack("ui/stonemenu1.png",cbf2);
+            }
+            else
+            {
+               ImageCache.GetImageWithCallBack("ui/wood1.png",cbf2);
+            }
          };
-         ImageCache.GetImageGroupWithCallBack("bottom_ui",["ui/wood1.png","ui/stone1.png","ui/stone2.png","ui/stone3.png"],cbf1,true,1);
+         ImageCache.GetImageGroupWithCallBack("bottom_ui",["ui/wood1.png","ui/stone1.png","ui/stone2.png","ui/stone3.png","ui/lava1.png","ui/lava2.png","ui/lava3.png","ui/stonemenu1.png"],cbf1,true,1);
       }
       
       public function sortAll() : void
@@ -86,7 +93,7 @@ package
          var _loc2_:StoneButton = null;
          var _loc3_:StoneButton = null;
          var _loc4_:Number = NaN;
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST)
          {
             _loc1_ = [this.bKits,this.bBuild,this.bQuests,this.bStore,this.bMap];
          }

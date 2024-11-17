@@ -15,6 +15,18 @@ package
       
       public static const RESOURCE_GOO:uint = 4;
       
+      public static const RESOURCE_BONE:uint = 5;
+      
+      public static const RESOURCE_COAL:uint = 6;
+      
+      public static const RESOURCE_SULPHER:uint = 7;
+      
+      public static const RESOURCE_MAGMA:uint = 8;
+      
+      private static const _RESOURCE_BONUS:Number = 1.5;
+      
+      private static const _RESOURCE_ALLIANCE_BONUS:Number = 1.15;
+      
       public function BRESOURCE()
       {
          super();
@@ -22,7 +34,7 @@ package
       
       public static function AdjustProduction(param1:MapRoomCell, param2:int) : int
       {
-         if(GLOBAL._advancedMap && BASE._isOutpost && param1 && param1._height && param1._height >= 100)
+         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST && param1 && param1._height && param1._height >= 100)
          {
             return Math.max(int(param2 * GLOBAL._averageAltitude.Get() / param1._height),1);
          }
@@ -178,7 +190,7 @@ package
          var _loc10_:* = undefined;
          super.Description();
          var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);
          }
@@ -188,7 +200,7 @@ package
             {
                _loc5_ = _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / _hpMax.Get() * _hp.Get()));
                _loc6_ = _buildingProps.produce[_lvl.Get() - 1] / _loc5_ * 60 * 60;
-               if(BASE._isOutpost)
+               if(BASE._yardType == BASE.OUTPOST)
                {
                   _loc6_ = AdjustProduction(GLOBAL._currentCell,_loc6_);
                }
@@ -226,7 +238,7 @@ package
             {
                _loc2_ = _buildingProps.capacity[_lvl.Get() - 1] - _stored.Get();
                _loc3_ = 60 / _buildingProps.cycleTime[_lvl.Get() - 1] * _buildingProps.produce[_lvl.Get() - 1];
-               if(BASE._isOutpost)
+               if(BASE._yardType == BASE.OUTPOST)
                {
                   _loc3_ = AdjustProduction(GLOBAL._currentCell,_loc3_);
                }
@@ -243,7 +255,7 @@ package
             _loc9_ = _buildingProps.produce[_lvl.Get()] / _buildingProps.cycleTime[_lvl.Get()] * 60 * 60;
             _loc10_ = _loc4_;
             _loc2_ = int(_buildingProps.capacity[_lvl.Get()]);
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST)
             {
                _loc3_ = 60 / _buildingProps.cycleTime[_lvl.Get()] * AdjustProduction(GLOBAL._currentCell,_buildingProps.produce[_lvl.Get()]);
             }
@@ -387,6 +399,18 @@ package
          }
       }
       
+      private function ApplyTerrainBonus(param1:int) : int
+      {
+         var _loc3_:Number = NaN;
+         var _loc2_:* = "r" + _type + "bonus";
+         if(BASE._yardType == BASE.INFERNO_YARD && BASE._resources[_loc2_] == 1)
+         {
+            _loc3_ = _RESOURCE_BONUS;
+            param1 *= _loc3_;
+         }
+         return param1;
+      }
+      
       public function Produce() : *
       {
          var value:int = 0;
@@ -413,7 +437,7 @@ package
             if(_producing)
             {
                value = int(_buildingProps.produce[_lvl.Get() - 1]);
-               if(Boolean(GLOBAL._advancedMap) && Boolean(BASE._isOutpost))
+               if(Boolean(GLOBAL._advancedMap) && BASE._yardType == BASE.OUTPOST)
                {
                   value = AdjustProduction(GLOBAL._currentCell,value);
                }
@@ -421,6 +445,7 @@ package
                {
                   value *= GLOBAL._harvesterOverdrivePower.Get();
                }
+               value = this.ApplyTerrainBonus(value);
                _stored.Set(Math.min(_stored.Get() + value,_buildingProps.capacity[_lvl.Get() - 1]));
                if(_stored.Get() >= _buildingProps.capacity[_lvl.Get() - 1])
                {

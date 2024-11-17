@@ -54,7 +54,11 @@ package com.monsters.mailbox.model
       
       public function toString() : String
       {
-         return "USER: " + this.lastname + ", " + this.firstname + " id: " + this.userid;
+         return KEYS.Get("contact_tostring",{
+            "v1":this.lastname,
+            "v2":this.firstname,
+            "v3":this.userid
+         });
       }
    }
 }

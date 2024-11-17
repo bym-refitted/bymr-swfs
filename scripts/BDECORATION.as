@@ -32,10 +32,7 @@ package
       override public function Place(param1:MouseEvent = null) : *
       {
          super.Place(param1);
-         if(!BTOTEM.IsTotem(_type))
-         {
-            Constructed();
-         }
+         Constructed();
       }
       
       override public function TickFast(param1:Event = null) : *

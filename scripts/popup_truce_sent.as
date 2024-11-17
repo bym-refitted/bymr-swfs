@@ -1,8 +1,9 @@
 package
 {
    import flash.display.MovieClip;
+   import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1100")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1216")]
    public dynamic class popup_truce_sent extends MovieClip
    {
       public var mcIcon1:MovieClip;
@@ -11,7 +12,9 @@ package
       
       public var mcIcon3:MovieClip;
       
-      public var mcFrame:frame2_CLIP;
+      public var tTitle:TextField;
+      
+      public var mcFrame:frame_CLIP;
       
       public var bShare:Button_CLIP;
       

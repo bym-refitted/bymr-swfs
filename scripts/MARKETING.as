@@ -45,6 +45,10 @@ package
          {
             return false;
          }
+         if(BASE.isInferno())
+         {
+            return false;
+         }
          try
          {
             loop7:
@@ -102,7 +106,18 @@ package
                         if(!CREATURELOCKER._lockerData["C" + i])
                         {
                            pTitle = KEYS.Get("mkting_unlock_title");
-                           pBody = KEYS.Get("mkting_unlock_body",{"v1":KEYS.Get(CREATURELOCKER._creatures["C" + i].name)});
+                           if(BASE.isInferno())
+                           {
+                              if(i > 8)
+                              {
+                                 i = 8;
+                              }
+                              pBody = KEYS.Get("mkting_unlock_body",{"v1":KEYS.Get(CREATURELOCKER._creatures["IC" + i].name)});
+                           }
+                           else
+                           {
+                              pBody = KEYS.Get("mkting_unlock_body",{"v1":KEYS.Get(CREATURELOCKER._creatures["C" + i].name)});
+                           }
                            pImage = "monster" + i + ".v2.png";
                            pImagePosition = new Point(-270,-65);
                            pButton = KEYS.Get("mkting_unlock_btn");

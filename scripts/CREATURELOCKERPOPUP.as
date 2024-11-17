@@ -11,6 +11,12 @@ package
    
    public class CREATURELOCKERPOPUP extends CREATURELOCKERPOPUP_CLIP
    {
+      private static const _CREATURES_PER_PAGE:int = 4;
+      
+      private var _minPages:int = 1;
+      
+      private var _maxPages:int = 4;
+      
       public var _mcList:*;
       
       public var _mcCreep:*;
@@ -27,12 +33,21 @@ package
       
       public function CREATURELOCKERPOPUP()
       {
+         var _loc1_:int = 0;
+         var _loc2_:* = undefined;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
          super();
          bPrevious.SetupKey("btn_previous");
          bPrevious.addEventListener(MouseEvent.CLICK,this.PagePrevious);
          bNext.SetupKey("btn_next");
          bNext.addEventListener(MouseEvent.CLICK,this.PageNext);
          bInstant.addEventListener(MouseEvent.CLICK,this.InstantUnlock);
+         for(_loc2_ in CREATURELOCKER._creatures)
+         {
+            _loc1_++;
+         }
+         this._maxPages = 4;
          this.List();
          if(CREATURELOCKER._unlocking != null)
          {
@@ -41,6 +56,8 @@ package
          }
          else
          {
+            _loc3_ = CREATURELOCKER._popupCreatureID;
+            _loc4_ = CREATURELOCKER._page;
             CREATURELOCKER._page = CREATURELOCKER._creatures[CREATURELOCKER._popupCreatureID].page;
             this.ShowB(CREATURELOCKER._popupCreatureID);
          }
@@ -56,7 +73,7 @@ package
       
       public function PagePrevious(param1:MouseEvent) : *
       {
-         if(CREATURELOCKER._page > 1)
+         if(CREATURELOCKER._page > this._minPages)
          {
             --CREATURELOCKER._page;
          }
@@ -65,11 +82,22 @@ package
       
       public function PageNext(param1:MouseEvent) : *
       {
-         if(CREATURELOCKER._page < 4)
+         if(CREATURELOCKER._page < this._maxPages)
          {
             ++CREATURELOCKER._page;
          }
          this.List();
+      }
+      
+      private function disableButton(param1:MovieClip) : void
+      {
+         param1.Enabled = false;
+         param1.Highlight = false;
+      }
+      
+      private function enableButton(param1:MovieClip) : void
+      {
+         param1.Enabled = true;
       }
       
       public function List() : *
@@ -79,24 +107,24 @@ package
          var _loc5_:Object = null;
          var _loc6_:* = undefined;
          var _loc7_:* = undefined;
-         if(CREATURELOCKER._page > 1)
+         if(CREATURELOCKER._page > this._minPages)
          {
-            bPrevious.enabled = true;
+            this.enableButton(bPrevious);
          }
          else
          {
-            bPrevious.enabled = false;
+            this.disableButton(bPrevious);
          }
-         if(CREATURELOCKER._page < 4)
+         if(CREATURELOCKER._page < this._maxPages)
          {
-            bNext.enabled = true;
+            this.enableButton(bNext);
          }
          else
          {
-            bNext.enabled = false;
+            this.disableButton(bNext);
          }
          this._tempCreatureList = [];
-         for(_loc1_ in CREATURELOCKER._creatures)
+         for(_loc1_ in CREATURELOCKER.GetAppropriateCreatures())
          {
             _loc4_ = CREATURELOCKER._creatures[_loc1_];
             if(!_loc4_.blocked && _loc4_.page == CREATURELOCKER._page)
@@ -186,7 +214,7 @@ package
       {
          var data:Object;
          var str:String;
-         var maxSpeed:int;
+         var maxSpeed:Number;
          var maxHealth:int;
          var maxDamage:int;
          var maxTime:int;
@@ -207,7 +235,7 @@ package
          this._creatureID = creatureID;
          if(!creatureID)
          {
-            this._creatureID = "C1";
+            creatureID = CREATURELOCKER.getFirstCreatureID();
          }
          CREATURELOCKER._popupCreatureID = this._creatureID;
          this.List();
@@ -251,7 +279,7 @@ package
          maxTime = 0;
          maxResource = 0;
          maxStorage = 0;
-         for(c in CREATURELOCKER._creatures)
+         for(c in CREATURELOCKER.GetAppropriateCreatures())
          {
             if(CREATURES.GetProperty(c,"speed") > maxSpeed)
             {
@@ -355,7 +383,7 @@ package
             timeCost = STORE.GetTimeCost(time);
             resourcesCost = Math.ceil(Math.pow(Math.sqrt(putty / 2),0.75));
             this._instantUnlockCost = timeCost + resourcesCost;
-            bInstant.Setup("Unlock Instantly for " + this._instantUnlockCost + " Shiny");
+            bInstant.Setup(KEYS.Get("btn_unlockinstantly",{"v1":this._instantUnlockCost}));
             bInstant.visible = true;
             bInstant.Enabled = true;
             bInstant.Highlight = true;
@@ -399,8 +427,8 @@ package
       public function InstantUnlock(param1:MouseEvent) : *
       {
          var creature:Object;
-         var img:String;
          var StreamPost:Function;
+         var img:String = null;
          var mc:popup_monster = null;
          var _body:String = null;
          var e:MouseEvent = param1;
@@ -420,7 +448,14 @@ package
             delete CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e;
          }
          creature = CREATURELOCKER._creatures[this._creatureID];
-         img = "quests/monster" + this._creatureID.substr(1) + ".v2.png";
+         if(!BASE.isInferno)
+         {
+            img = "quests/monster" + this._creatureID.substr(1) + ".v2.png";
+         }
+         else
+         {
+            img = "quests/monsterinferno" + this._creatureID.substr(2) + ".png";
+         }
          if(creature.stream.length > 1)
          {
             img = creature.stream[2];
@@ -428,7 +463,10 @@ package
          CREATURELOCKER._lockerData[this._creatureID] = {"t":2};
          ACADEMY._upgrades[this._creatureID] = {"level":1};
          GLOBAL._playerCreatureUpgrades[this._creatureID] = {"level":1};
-         LOGGER.Stat([46,int(this._creatureID.substr(1))]);
+         if(!BASE.isInferno)
+         {
+            LOGGER.Stat([46,int(this._creatureID.substr(1))]);
+         }
          if(GLOBAL._mode == "build")
          {
             StreamPost = function(param1:String, param2:String, param3:String):*

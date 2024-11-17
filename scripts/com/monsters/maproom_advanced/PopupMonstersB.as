@@ -31,6 +31,7 @@ package com.monsters.maproom_advanced
          var _loc4_:int = 0;
          var _loc5_:String = null;
          var _loc6_:MapRoomPopupInfoMonster = null;
+         tDesc.htmlText = KEYS.Get("popup_desc_monstertransferb");
          if(this._mcMonsters)
          {
             while(this._mcMonsters.numChildren > 0)

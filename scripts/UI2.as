@@ -107,7 +107,7 @@ package
          }
          try
          {
-            if(GLOBAL._mode != "build")
+            if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
             {
                _visitor = GLOBAL._layerUI.addChild(new UI_VISITOR());
             }
@@ -432,10 +432,11 @@ package
       {
          var _loc1_:Number = NaN;
          var _loc2_:MovieClip = null;
-         var _loc3_:Number = NaN;
+         var _loc3_:Boolean = false;
          var _loc4_:Number = NaN;
          var _loc5_:Number = NaN;
          var _loc6_:Number = NaN;
+         var _loc7_:Number = NaN;
          if(!GLOBAL._catchup)
          {
             if(_top)
@@ -474,13 +475,13 @@ package
                }
                else
                {
-                  if(BASE._isProtected - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
+                  if(BASE._isProtected - GLOBAL.Timestamp() > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
                   {
                      if(!_top.mcProtected.visible)
                      {
                         _top.mcProtected.visible = true;
                      }
-                     if(BASE._isProtected - GLOBAL.Timestamp() > 86400)
+                     if(BASE._isProtected - GLOBAL.Timestamp() > 24 * 60 * 60)
                      {
                         _top.mcProtected.tCountdown.htmlText = GLOBAL.ToTime(BASE._isProtected - GLOBAL.Timestamp(),true,false);
                      }
@@ -493,13 +494,13 @@ package
                   {
                      _top.mcProtected.visible = false;
                   }
-                  if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
+                  if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
                   {
                      if(!_top.mcReinforcements.visible)
                      {
                         _top.mcReinforcements.visible = true;
                      }
-                     if(BASE._isReinforcements - GLOBAL.Timestamp() > 86400)
+                     if(BASE._isReinforcements - GLOBAL.Timestamp() > 24 * 60 * 60)
                      {
                         _top.mcReinforcements.tCountdown.htmlText = GLOBAL.ToTime(BASE._isReinforcements - GLOBAL.Timestamp(),true,false);
                      }
@@ -512,90 +513,65 @@ package
                   {
                      _top.mcReinforcements.visible = false;
                   }
-                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 || SPECIALEVENT.wave > SPECIALEVENT.numWaves || SPECIALEVENT.invasionpop == 4 && SPECIALEVENT.wave > SPECIALEVENT.BONUSWAVE)
+                  _loc3_ = true;
+                  if(SPECIALEVENT.GetTimeUntilEnd() < 0)
                   {
-                     if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
-                     {
-                        _top.mcSpecialEvent.visible = false;
-                     }
-                     if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
-                     {
-                        UI_BOTTOM._nextwave.visible = false;
-                     }
-                     if(SPECIALEVENT.GetTimeUntilEnd() < 0 && SPECIALEVENT.GetTimeUntilEnd() > -86400 && GLOBAL.StatGet("wmi_end") == 0)
+                     _loc3_ = true;
+                     if(SPECIALEVENT.GetTimeUntilEnd() > -86400 && SPECIALEVENT.GetStat("wmi_end") == 0)
                      {
                         SPECIALEVENT.ShowEventEndPopup();
                      }
                   }
-                  else if(SPECIALEVENT.EventActive() && GLOBAL._mode == "build" && (!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate))
+                  else if(SPECIALEVENT.GetTimeUntilStart() > 604800)
                   {
-                     if(!_top.mcSpecialEvent.visible)
-                     {
-                        _top.mcSpecialEvent.visible = true;
-                     }
-                     if(UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible && UI_NEXTWAVE.ShouldDisplay())
-                     {
-                        UI_BOTTOM._nextwave.visible = true;
-                     }
-                     _loc3_ = SPECIALEVENT.GetTimeUntilExtension();
-                     if(_loc3_ < 0 || SPECIALEVENT.invasionpop == 5)
-                     {
-                        _loc3_ = SPECIALEVENT.GetTimeUntilEnd();
-                        if(_loc3_ > 0)
-                        {
-                           if(SPECIALEVENT.invasionpop == 4)
-                           {
-                              if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
-                              {
-                                 _top.mcSpecialEvent.visible = false;
-                              }
-                              if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
-                              {
-                                 UI_BOTTOM._nextwave.visible = false;
-                              }
-                           }
-                        }
-                     }
-                     if(_loc3_ > 24 * 60 * 60)
-                     {
-                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc3_,true,false);
-                     }
-                     else
-                     {
-                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc3_,true);
-                     }
+                     _loc3_ = true;
                   }
-                  else if(GLOBAL._mode == "build" && !BASE._isOutpost && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+                  else if(BASE._yardType != BASE.MAIN_YARD || GLOBAL._flags.viximo || Boolean(GLOBAL._flags.kongregate) || SPECIALEVENT.wave > SPECIALEVENT.numWaves)
                   {
-                     if(!_top.mcSpecialEvent.visible)
+                     _loc3_ = true;
+                  }
+                  else if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+                  {
+                     if(SPECIALEVENT.EventActive())
                      {
-                        _top.mcSpecialEvent.visible = true;
-                     }
-                     if(UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible && UI_NEXTWAVE.ShouldDisplay())
-                     {
-                        UI_BOTTOM._nextwave.visible = true;
-                     }
-                     _loc4_ = SPECIALEVENT.GetTimeUntilStart();
-                     _loc5_ = Math.ceil(_loc4_ / 86400);
-                     if(_loc5_ > 1)
-                     {
-                        _top.mcSpecialEvent.tCountdown.htmlText = _loc5_ + " " + KEYS.Get("global_days");
-                     }
-                     else
-                     {
-                        _loc6_ = Math.ceil(_loc4_ / 3600);
-                        if(_loc6_ > 1)
+                        _loc4_ = SPECIALEVENT.GetTimeUntilEnd();
+                        if(_loc4_ > 24 * 60 * 60)
                         {
-                           _top.mcSpecialEvent.tCountdown.htmlText = _loc6_ + " " + KEYS.Get("global_hours");
+                           _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc4_,true,false);
                         }
                         else
                         {
-                           _top.mcSpecialEvent.tCountdown.htmlText = "&lt; 1 " + KEYS.Get("global_hour");
+                           _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc4_,true);
+                        }
+                     }
+                     else
+                     {
+                        _loc5_ = SPECIALEVENT.GetTimeUntilStart();
+                        _loc6_ = Math.ceil(_loc5_ / 86400);
+                        if(_loc6_ > 1)
+                        {
+                           _top.mcSpecialEvent.tCountdown.htmlText = _loc6_ + " " + KEYS.Get("global_days");
+                        }
+                        else
+                        {
+                           _loc7_ = Math.ceil(_loc5_ / 3600);
+                           if(_loc7_ > 1)
+                           {
+                              _top.mcSpecialEvent.tCountdown.htmlText = _loc7_ + " " + KEYS.Get("global_hours");
+                           }
+                           else
+                           {
+                              _top.mcSpecialEvent.tCountdown.htmlText = "&lt; 1 " + KEYS.Get("global_hour");
+                           }
                         }
                      }
                   }
                   else
                   {
+                     _loc3_ = true;
+                  }
+                  if(_loc3_)
+                  {
                      if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
                      {
                         _top.mcSpecialEvent.visible = false;
@@ -603,6 +579,17 @@ package
                      if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
                      {
                         UI_BOTTOM._nextwave.visible = false;
+                     }
+                  }
+                  else
+                  {
+                     if(!_top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = true;
+                     }
+                     if(UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible && UI_NEXTWAVE.ShouldDisplay())
+                     {
+                        UI_BOTTOM._nextwave.visible = true;
                      }
                   }
                   if(!_top.mcSave.visible)
@@ -630,7 +617,7 @@ package
                      GLOBAL._bymChat.toggleVisibleB();
                   }
                }
-               if(GLOBAL._mode != "build" || !GLOBAL._flags.saveicon)
+               if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild" || !GLOBAL._flags.saveicon)
                {
                   _top.mcSave.visible = false;
                }
@@ -650,7 +637,7 @@ package
                _top.mcMusic.y = 3;
                _top.mcBuffHolder.y = 6;
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
                UI_BOTTOM.Update();
                UI_BOTTOM.Resize();

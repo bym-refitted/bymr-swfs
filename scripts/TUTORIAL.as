@@ -36,6 +36,8 @@ package
       
       public static var _arrowRotation:int = 0;
       
+      public static var _isSmallSizeOffset:int = 0;
+      
       private static const ARROW_STORE_BUY_1:Point = new Point(215,200);
       
       private static const ARROW_STORE_BUY_2:Point = new Point(225,200);
@@ -62,11 +64,11 @@ package
       
       private static var BOBBOTTOMLEFTHIGH:Point = new Point(10,560);
       
-      private static var POINT_QUEST:Point = new Point(583,481);
+      private static var POINT_QUEST:Point = new Point(583,481 + _isSmallSizeOffset);
       
-      private static var POINT_BUILDINGS:Point = new Point(496,483);
+      private static var POINT_BUILDINGS:Point = new Point(496,483 + _isSmallSizeOffset);
       
-      private static var POINT_MAP:Point = new Point(706,474);
+      private static var POINT_MAP:Point = new Point(706,474 + _isSmallSizeOffset);
       
       private static var _secondWorker:Boolean = true;
       
@@ -79,76 +81,30 @@ package
       
       public static function Setup() : *
       {
-         var _loc1_:int = 0;
-         var _loc2_:int = 0;
-         var _loc3_:int = 0;
-         var _loc4_:int = 0;
          _container = GLOBAL._layerMessages;
          _doBob = null;
          _doArrow = null;
          _mcBob = new TUTORIALPOPUPMC();
          _mcArrow = new TUTORIALARROWMC();
          _currentStage = 0;
-         if(_secondWorker)
+         _isSmallSizeOffset = GAME._isSmallSize ? -80 : 0;
+         if(GAME._isSmallSize)
          {
-            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-            {
-               _loc1_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-               _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-               _loc3_ = _loc1_ + _loc2_;
-               _loc3_ %= 10;
-               if(_loc3_ < 2)
-               {
-                  _secondWorker = false;
-               }
-            }
-            if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-            {
-               _loc4_ = GLOBAL.GetABTestHash("tutorial");
-               if(_loc4_ < 14)
-               {
-                  _secondWorker = false;
-               }
-            }
+            BOBBOTTOMLEFTLOW = new Point(10,560 + _isSmallSizeOffset);
+            BOBBOTTOMLEFTHIGH = new Point(10,560 + _isSmallSizeOffset);
          }
       }
       
       public static function Process() : *
       {
-         var _loc1_:int = 0;
+         var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
-         var _loc3_:int = 0;
-         var _loc4_:int = 0;
-         var _loc5_:BFOUNDATION = null;
-         var _loc6_:int = 0;
          if(GLOBAL._flags.showProgressBar == 0)
          {
-            if(BASE._isOutpost)
+            if(BASE._yardType)
             {
                _stage = _endstage;
                UI_WORKERS.Show();
-            }
-         }
-         if(_secondWorker)
-         {
-            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-            {
-               _loc1_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-               _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-               _loc3_ = _loc1_ + _loc2_;
-               _loc3_ %= 10;
-               if(_loc3_ < 2)
-               {
-                  _secondWorker = false;
-               }
-            }
-            if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-            {
-               _loc4_ = GLOBAL.GetABTestHash("tutorial");
-               if(_loc4_ < 14)
-               {
-                  _secondWorker = false;
-               }
             }
          }
          if(_stage < 200)
@@ -190,14 +146,14 @@ package
                {
                   if(GLOBAL._bHousing)
                   {
-                     _loc5_ = GLOBAL._bHousing;
+                     _loc1_ = GLOBAL._bHousing;
                      if(CREATURES._creatureCount < 50)
                      {
-                        _loc6_ = 50;
-                        while(_loc6_ > CREATURES._creatureCount)
+                        _loc2_ = 50;
+                        while(_loc2_ > CREATURES._creatureCount)
                         {
-                           HOUSING.HousingStore("C1",new Point(_loc5_.x,_loc5_.y + 80),false);
-                           _loc6_--;
+                           HOUSING.HousingStore("C1",new Point(_loc1_.x,_loc1_.y + 80),false);
+                           _loc2_--;
                         }
                      }
                   }
@@ -472,7 +428,7 @@ package
                if(BUILDINGS._open)
                {
                   _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b3 as MovieClip;
-                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_32"),new Point(445,52),["mc",_loc4_,new Point(60,22)],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_32"),new Point(445,52),["mc",_loc4_,new Point(60,2)],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
                   break;
                }
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_32"),new Point(445,52),["percent",new Point(445,52)],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
@@ -481,7 +437,7 @@ package
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_33"),new Point(166,242),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(2 * 60,230)],false,false,ConditionBuildingsSniper,ConditionRewindBuildingsClosed);
                break;
             case 34:
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_34"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_34"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
                break;
             case 35:
                MAP._canScroll = true;
@@ -503,7 +459,7 @@ package
                   _loc1_.x = _loc2_.x + MAP._GROUND.x;
                   _loc1_.y = _loc2_.y + MAP._GROUND.y + 20;
                }
-               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_36"),_loc1_,["mc",_loc2_._mc,new Point(0,20)],false,false,ConditionStoreOpen,ConditionConstructed21);
+               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_36"),_loc1_,["mc",_loc2_._mc,new Point(0,0)],false,false,ConditionStoreOpen,ConditionConstructed21);
                break;
             case 37:
                if(_freeSpeedup)
@@ -566,7 +522,7 @@ package
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_52"),ARROW_BUILDINGS_HOUSING,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(500,4 * 60)],false,false,ConditionBuildingsHousing,ConditionRewindBuildingsClosedB);
                break;
             case 53:
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_53"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_53"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
                break;
             case 54:
                SPRITES.SetupSprite("C1");
@@ -588,7 +544,7 @@ package
                   Advance();
                   break;
                }
-               if(!GLOBAL._selectedBuilding._type == 15)
+               if(!HOUSING.isHousingBuilding(GLOBAL._selectedBuilding._type))
                {
                   Rewind();
                   break;
@@ -677,7 +633,7 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_67"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(235,394)],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_67"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(235,304)],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
                _arrowRotation = _mcArrow.rotation;
                _mcArrow.rotation = 200;
                break;
@@ -688,7 +644,7 @@ package
                   break;
                }
                _mcArrow.rotation = _arrowRotation;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_68"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_68"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
                break;
             case 69:
                if(QUESTS._global.b5lvl > 0)
@@ -750,7 +706,12 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_92"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,304)],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
+               if(GAME._isSmallSize)
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_92"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,340)],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
+                  break;
+               }
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_92"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,330)],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
                break;
             case 93:
                if(QUESTS._global.b11lvl > 0)
@@ -758,7 +719,7 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_93"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_93"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
                break;
             case 94:
                if(QUESTS._global.b11lvl > 0)
@@ -815,7 +776,12 @@ package
                      break;
                   }
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_97"),_loc1_,["mc",_loc2_._mc,new Point(0,20)],false,false,ConditionStoreOpen,ConditionConstructed11);
+               if(GAME._isSmallSize)
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_97"),_loc1_,["mc",_loc2_._mc,new Point(0,-5)],false,false,ConditionStoreOpen,ConditionConstructed11);
+                  break;
+               }
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_97"),_loc1_,["mc",_loc2_._mc,new Point(0,30)],false,false,ConditionStoreOpen,ConditionConstructed11);
                break;
             case 98:
                MAP._canScroll = true;
@@ -958,7 +924,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_143"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect13);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_143"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect13);
                break;
             case 144:
                if(QUESTS._global.b13lvl > 0)
@@ -1005,6 +971,11 @@ package
                      break;
                   }
                }
+               if(GAME._isSmallSize)
+               {
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mc,new Point(0,0)],false,false,ConditionHatcheryOpen);
+                  break;
+               }
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mc,new Point(0,30)],false,false,ConditionHatcheryOpen);
                break;
             case 151:
@@ -1045,7 +1016,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_162"),new Point(353,256),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(340,4 * 60)],false,false,ConditionBuildingsPutty,ConditionRewindBuildingsClosedF);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_162"),new Point(363,256),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(6 * 60,4 * 60)],false,false,ConditionBuildingsPutty,ConditionRewindBuildingsClosedF);
                break;
             case 163:
                if(QUESTS._global.b3lvl > 0)
@@ -1053,7 +1024,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_163"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_163"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
                break;
             case 164:
                if(QUESTS._global.b3lvl > 0)
@@ -1095,7 +1066,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_173"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_173"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
                break;
             case 174:
                if(QUESTS._global.b4lvl > 0)
@@ -1117,13 +1088,6 @@ package
                Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_190"),new Point(740,70),["mc",UI2._top.mcProtected,new Point(5,20)],true,true);
                break;
             case 191:
-               if(GLOBAL.GetABTestHash("havearrived") <= 1)
-               {
-                  Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_reinforce"),new Point(740,70),["mc",UI2._top.mcReinforcements,new Point(5,20)],true,true);
-                  BASE._isReinforcements = GLOBAL.Timestamp() + 86400;
-                  GLOBAL.StatSet("reinforcements",BASE._isReinforcements);
-                  break;
-               }
                Advance();
                break;
             case 192:
@@ -1251,6 +1215,7 @@ package
             _doArrow = _container.addChild(_mcArrow);
          }
          _doBob = _container.addChild(_mcBob);
+         _mcBob.Resize();
       }
       
       private static function ConditionScroll() : *
@@ -1459,7 +1424,7 @@ package
       
       private static function ConditionBuildingsHousing() : *
       {
-         if(BUILDINGS._open && BUILDINGS._buildingID == 15)
+         if(BUILDINGS._open && HOUSING.isHousingBuilding(BUILDINGS._buildingID))
          {
             Advance();
          }

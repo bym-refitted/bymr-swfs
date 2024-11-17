@@ -57,7 +57,7 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = "Upgrade to increase the size of the bucket to fling in larger groups of monsters.";
+         _upgradeDescription = KEYS.Get("building_flinger_upgrade_desc");
       }
       
       override public function Update(param1:Boolean = false) : *
@@ -76,7 +76,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

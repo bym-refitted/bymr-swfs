@@ -17,8 +17,11 @@ package
       
       public function HATCHERYPOPUP()
       {
-         var _loc2_:MovieClip = null;
+         var _loc2_:String = null;
+         var _loc3_:int = 0;
+         var _loc4_:MovieClip = null;
          super();
+         title_txt.htmlText = KEYS.Get("hat_title");
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
          bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
@@ -28,22 +31,29 @@ package
          bFinish.addEventListener(MouseEvent.CLICK,this.FinishNow);
          bFinish.buttonMode = true;
          var _loc1_:int = 1;
-         while(_loc1_ <= 15)
+         for(_loc2_ in CREATURELOCKER.GetAppropriateCreatures())
          {
-            _loc2_ = this["monster" + _loc1_];
-            _loc2_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc1_));
-            ImageCache.GetImageWithCallBack("monsters/C" + _loc1_ + "-medium.jpg",this.IconLoaded,true,1,"",[this["monster" + _loc1_]]);
-            if(Boolean(CREATURELOCKER._lockerData["C" + _loc1_]) && CREATURELOCKER._lockerData["C" + _loc1_].t == 2)
+            _loc3_ = int(_loc2_.substring(_loc2_.indexOf("C") + 1));
+            _loc4_ = this["monster" + _loc3_];
+            _loc4_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc3_));
+            ImageCache.GetImageWithCallBack("monsters/" + _loc2_ + "-medium.jpg",this.IconLoaded,true,1,"",[this["monster" + _loc3_]]);
+            if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
             {
-               _loc2_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc1_));
-               _loc2_.alpha = 1;
-               _loc2_.buttonMode = true;
+               _loc4_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc3_));
+               _loc4_.alpha = 1;
+               _loc4_.buttonMode = true;
             }
             else
             {
-               _loc2_.alpha = 0.5;
-               _loc2_.buttonMode = false;
+               _loc4_.alpha = 0.5;
+               _loc4_.buttonMode = false;
             }
+            _loc1_++;
+         }
+         while(_loc1_ < 16)
+         {
+            _loc4_ = this["monster" + _loc1_];
+            _loc4_.visible = false;
             _loc1_++;
          }
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
@@ -59,6 +69,7 @@ package
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
+         param3[0].mcImage.removeChildAt(0);
          param3[0].mcImage.addChild(_loc4_);
          param3[0].mcImage.visible = true;
       }
@@ -76,10 +87,10 @@ package
       {
          var _loc10_:String = null;
          var _loc11_:int = 0;
-         var _loc2_:String = "C" + param1;
+         var _loc2_:String = BASE.isInferno() ? "IC" + param1 : "C" + param1;
          var _loc3_:* = CREATURELOCKER._creatures[_loc2_];
-         ImageCache.GetImageWithCallBack("monsters/C" + param1 + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
-         var _loc4_:int = 0;
+         ImageCache.GetImageWithCallBack("monsters/" + _loc2_ + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
+         var _loc4_:Number = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
@@ -161,7 +172,7 @@ package
          {
             _loc12_ = int(ACADEMY._upgrades[_loc2_].level);
          }
-         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("acad_status_level",{"v1":_loc12_}) + " " + KEYS.Get(_loc3_.name) + "</b><br>" + KEYS.Get(_loc3_.description);
+         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("hatcherypopup_level",{"v1":_loc12_}) + " " + KEYS.Get(_loc3_.name) + "</b><br>" + KEYS.Get(_loc3_.description);
          if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
          {
             mcMonsterInfo.mcLocked.visible = false;
@@ -191,11 +202,19 @@ package
          {
             var _loc4_:* = undefined;
             var _loc5_:* = undefined;
-            var _loc2_:* = "C" + n;
+            var _loc2_:* = BASE.isInferno() ? "I" : "";
+            _loc2_ += "C" + n;
             var _loc3_:* = 1 + _hatchery._lvl.Get();
             if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true))
             {
-               GLOBAL.Message("Not Enough Goo.");
+               if(BASE.isInferno())
+               {
+                  GLOBAL.Message("Not enough Magma.");
+               }
+               else
+               {
+                  GLOBAL.Message(KEYS.Get("hat_notenoughgoo"));
+               }
                return;
             }
             if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
@@ -535,11 +554,17 @@ package
                GLOBAL.Array2String(_loc2_);
                if(this._hatchery._finishAll)
                {
-                  GLOBAL.Message("Do you want to finish your queue of " + GLOBAL.Array2String(_loc2_) + " now for " + this._hatchery._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
+                  GLOBAL.Message(KEYS.Get("msg_finishqueue",{
+                     "v1":GLOBAL.Array2String(_loc2_),
+                     "v2":this._hatchery._finishCost.Get()
+                  }),KEYS.Get("str_finishnow"),this.DoFinish);
                }
                else
                {
-                  GLOBAL.Message("You have room in your Housing for " + GLOBAL.Array2String(_loc2_) + ", do you want to finish them now for " + this._hatchery._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
+                  GLOBAL.Message(KEYS.Get("msg_fillhousing",{
+                     "v1":GLOBAL.Array2String(_loc2_),
+                     "v2":this._hatchery._finishCost.Get()
+                  }),KEYS.Get("str_finishnow"),this.DoFinish);
                }
             }
             else
@@ -549,7 +574,7 @@ package
          }
          else if(this._hatchery._finishCost.Get() <= 0)
          {
-            GLOBAL.Message("There is no room in Housing for any of the monsters currently in production.");
+            GLOBAL.Message(KEYS.Get("msg_housingfull"));
          }
       }
       

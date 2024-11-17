@@ -215,6 +215,7 @@ package
          };
          mc = new popup_truce();
          mc.tA.htmlText = "<b>" + KEYS.Get("map_trucerequest") + " " + name + ".</b>";
+         mc.tB.htmlText = KEYS.Get("map_trucerequest_desc");
          mc.bSend.SetupKey("map_trucereq_btn");
          mc.bSend.addEventListener(MouseEvent.CLICK,Truce);
          mc.bMessage.htmlText = "";
@@ -257,6 +258,7 @@ package
          mc.bShare.SetupKey("btn_share");
          mc.bShare.addEventListener(MouseEvent.CLICK,Share);
          mc.bShare.Highlight = true;
+         mc.tTitle.htmlText = KEYS.Get("popup_desc_truceaccept");
          i = 1;
          while(i < 4)
          {
@@ -279,7 +281,7 @@ package
          var message:String = param2;
          Share = function(param1:MouseEvent = null):*
          {
-            GLOBAL.CallJS("sendFeed",["Truce"," I\'ve proposed a truce to " + name + " in Backyard Monsters.","If accepted, we\'ll finally see an end to all the needless bloodshed.","truceaccept" + imgNumber + ".png",0]);
+            GLOBAL.CallJS("sendFeed",["Truce",KEYS.Get("map_truceproposed_streamtitle",{"v1":name}),KEYS.Get("map_truceproposed_streambody"),"truceaccept" + imgNumber + ".png",0]);
             POPUPS.Next();
          };
          var Switch:Function = function(param1:int):*
@@ -305,6 +307,7 @@ package
          mc.bShare.SetupKey("btn_share");
          mc.bShare.addEventListener(MouseEvent.CLICK,Share);
          mc.bShare.Highlight = true;
+         mc.tTitle.htmlText = KEYS.Get("popup_desc_trucesent");
          i = 1;
          while(i < 4)
          {
@@ -327,7 +330,7 @@ package
          var message:String = param2;
          Share = function(param1:MouseEvent = null):*
          {
-            GLOBAL.CallJS("sendFeed",["Truce"," I\'ve rejected a truce with " + name + " in Backyard Monsters.","All the needless bloodshed will continue as previously planned.","taunt" + imgNumber + ".png",0]);
+            GLOBAL.CallJS("sendFeed",["Truce",KEYS.Get("map_trucerejected_streamtitle",{"v1":name}),KEYS.Get("map_trucerejected_streambody"),"taunt" + imgNumber + ".png",0]);
             POPUPS.Next();
          };
          var Switch:Function = function(param1:int):*
@@ -353,6 +356,7 @@ package
          mc.bShare.SetupKey("btn_share");
          mc.bShare.addEventListener(MouseEvent.CLICK,Share);
          mc.bShare.Highlight = true;
+         mc.tTitle.htmlText = KEYS.Get("popup_desc_trucesent");
          i = 1;
          while(i < 4)
          {

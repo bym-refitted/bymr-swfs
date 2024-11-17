@@ -53,6 +53,10 @@ package com.monsters.maproom_advanced
       {
          super();
          this.Center();
+         this.tNameLabel.htmlText = "<b>" + KEYS.Get("popup_label_name") + "</b>";
+         this.tLocationLabel.htmlText = "<b>" + KEYS.Get("popup_label_location") + "</b>";
+         this.tHeightLabel.htmlText = "<b>" + KEYS.Get("popup_label_height") + "</b>";
+         this.tYardHasLabel.htmlText = "<b>" + KEYS.Get("popup_label_thisyardhas") + "</b>";
          this.bAttack.SetupKey("map_attack_btn");
          this.bAttack.Highlight = true;
          this.bAttack.Enabled = true;
@@ -92,7 +96,7 @@ package com.monsters.maproom_advanced
          {
             ShowTruce();
          });
-         this.bAlliance.Setup("Invite to Alliance");
+         this.bAlliance.SetupKey("btn_invitetoalliance");
          this.bAlliance.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
          this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
@@ -122,7 +126,7 @@ package com.monsters.maproom_advanced
          _minTakeoverCost = new SecNum(2000000);
          _takeoverCoeff1 = new SecNum(5000000);
          _takeoverCoeff2 = new SecNum(20000000);
-         (mcFrame as frame2).Setup();
+         (mcFrame as frame).Setup();
       }
       
       public function Hide(param1:MouseEvent = null) : *
@@ -176,13 +180,13 @@ package com.monsters.maproom_advanced
          }
          if(this._cell._destroyed && !this._cell._protected && (this._cell._locked == 0 || this._cell._locked == LOGIN._playerID) && MapRoom._flingerInRange)
          {
-            this.bAttack.Setup("Take Over");
+            this.bAttack.SetupKey("btn_takeover");
             this.bAttack.Enabled = true;
             this.bAttack.Highlight = true;
          }
          else
          {
-            this.bAttack.Setup("Attack");
+            this.bAttack.SetupKey("map_attack_btn");
             if(this._cell._protected || this._cell._locked != 0 && this._cell._locked != LOGIN._playerID || !MapRoom._flingerInRange)
             {
                this.bAttack.Highlight = false;
@@ -261,7 +265,7 @@ package com.monsters.maproom_advanced
                   this.bAlliance.visible = false;
                }
             }
-            tName.htmlText = "<b>" + this._cell._name + "\'s Yard</b>";
+            tName.htmlText = "<b>" + KEYS.Get("map_yardowner",{"v1":this._cell._name}) + "</b>";
             if(this._cell._alliance)
             {
                tName.htmlText += "<br>" + this._cell._alliance.name;
@@ -294,11 +298,11 @@ package com.monsters.maproom_advanced
             this.bAlliance.visible = false;
             if(!this._cell._destroyed)
             {
-               tName.htmlText = "<b>" + this._cell._name + " Tribe</b>";
+               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + "</b>";
             }
             else
             {
-               tName.htmlText = "<b>" + this._cell._name + " Tribe (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
             if(this._cell._level)
@@ -640,7 +644,7 @@ package com.monsters.maproom_advanced
          }
          else if(this._cell._friend)
          {
-            GLOBAL.Message("Really?!  You want to attack " + this._cell._name + "? We thought you were friends.",KEYS.Get("map_attack_btn"),this.DoAttack);
+            GLOBAL.Message(KEYS.Get("map_msg_attackfriend",{"v1":this._cell._name}),KEYS.Get("map_attack_btn"),this.DoAttack);
          }
          else
          {
@@ -676,19 +680,19 @@ package com.monsters.maproom_advanced
                GLOBAL._attackerCellsInRange = [];
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
-               BASE._isOutpost = 1;
+               BASE._yardType = BASE.OUTPOST;
                GLOBAL.BlockerRemove();
                BASE.LoadBase(null,null,_cell._baseID,"build");
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
             else
             {
-               GLOBAL.Message("There was a problem taking over this yard. " + param1.error);
+               GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.error);
             }
          };
          takeoverError = function(param1:IOErrorEvent):*
          {
-            GLOBAL.Message("There was a problem taking over this yard:" + param1.text);
+            GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.text);
          };
          var takeoverVars:Array = [["baseid",this._cell._baseID],["resources",com.adobe.serialization.json.JSON.encode({
             "r1":_takeoverCost.Get(),
@@ -737,12 +741,12 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE._isOutpost = 0;
+            BASE._yardType = BASE.MAIN_YARD;
             BASE.LoadBase(null,null,this._cell._baseID,"wmview");
          }
          else
          {
-            BASE._isOutpost = this._cell._base == 3 ? 1 : 0;
+            BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
             if(this._cell._friend)
             {
                BASE.LoadBase(null,null,this._cell._baseID,"help");
@@ -863,7 +867,7 @@ package com.monsters.maproom_advanced
          }
          else if(param1.currentTarget.name == "bAlliance")
          {
-            _loc2_ = "Invite to Alliance";
+            _loc2_ = KEYS.Get("btn_invitetoalliance");
             _loc3_ = bAlliance.x - 5;
             _loc4_ = bAlliance.y + bAttack.height / 2 - 0;
          }

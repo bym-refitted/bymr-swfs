@@ -83,6 +83,36 @@ package
       
       public var _animFrames:int = 0;
       
+      public var anim2Container:BuildingAssetContainer;
+      
+      public var _anim2BMD:BitmapData;
+      
+      public var _anim2ContainerBMD:BitmapData;
+      
+      public var _anim2Rect:Rectangle;
+      
+      public var _anim2Frames:int = 0;
+      
+      public var _anim2Tick:int = 0;
+      
+      public var _anim2Loaded:Boolean = false;
+      
+      public var anim3Container:BuildingAssetContainer;
+      
+      public var _anim3BMD:BitmapData;
+      
+      public var _anim3ContainerBMD:BitmapData;
+      
+      public var _anim3Rect:Rectangle;
+      
+      public var _anim3Frames:int = 0;
+      
+      public var _anim3Tick:int = 0;
+      
+      public var _anim3Loaded:Boolean = false;
+      
+      public var _animRandomStart:Boolean = true;
+      
       public var _countdownBuild:SecNum;
       
       public var _countdownUpgrade:SecNum;
@@ -275,7 +305,7 @@ package
          this._repairing = 0;
          this._mouseOffset = new Point(0,0);
          this._oldY = 0;
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
          {
             this._blockRecycle = true;
          }
@@ -431,6 +461,14 @@ package
             GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  end");
             return;
          }
+         this.anim2Container = new BuildingAssetContainer();
+         this.anim2Container.mouseChildren = false;
+         this.anim2Container.mouseEnabled = false;
+         this.anim3Container = new BuildingAssetContainer();
+         this.anim3Container.mouseChildren = false;
+         this.anim3Container.mouseEnabled = false;
+         this._mc.addChild(this.anim2Container);
+         this._mc.addChild(this.anim3Container);
       }
       
       public function Bank() : *
@@ -442,46 +480,71 @@ package
          var _loc1_:* = undefined;
          var _loc2_:int = 0;
          var _loc3_:Object = null;
-         this._buildingTitle = "<b>" + this._buildingProps.name + "</b>";
-         if(this._buildingProps.costs.length > 1)
+         if(this._buildingProps.names != null && this._buildingProps.names.length >= this._lvl.Get())
          {
-            this._buildingTitle += " Level " + this._lvl.Get();
+            this._buildingTitle = "<b>" + this._buildingProps.names[this._lvl.Get() - 1] + "</b>";
+         }
+         else
+         {
+            this._buildingTitle = "<b>" + this._buildingProps.name + "</b>";
+            if(this._buildingProps.costs.length > 1)
+            {
+               this._buildingTitle += " " + KEYS.Get("bdg_level",{"v1":this._lvl.Get()});
+            }
          }
          if(this._hp.Get() < this._hpMax.Get())
          {
             if(this._countdownUpgrade.Get() > 0)
             {
-               this._repairDescription = "<font color=\"#FF0000\"><b>Upgrade on hold until building is repaired.</b></font>";
+               this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("repaironhold_upgrade") + "</b></font>";
             }
             else if(this._countdownFortify.Get() > 0)
             {
-               this._repairDescription = "<font color=\"#FF0000\"><b>Fortify on hold until building is repaired.</b></font>";
+               this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("repaironhold_fortify") + "</b></font>";
             }
             else
             {
                _loc1_ = 100 - Math.ceil(100 / this._hpMax.Get() * this._hp.Get());
-               this._specialDescription = "<font color=\"#FF0000\"><b>Building " + _loc1_ + "% damaged!</b></font>";
+               this._specialDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_percentdamaged",{"v1":_loc1_}) + "</b></font>";
             }
          }
          else
          {
-            this._specialDescription = this._buildingProps.description;
+            if(this._buildingProps.descriptions != null && this._buildingProps.descriptions.length >= this._lvl.Get())
+            {
+               this._specialDescription = this._buildingProps.descriptions[this._lvl.Get() - 1];
+            }
+            else
+            {
+               this._specialDescription = this._buildingProps.description;
+            }
             if(!(this._type == 24 || this._type == 25 || this._type == 26))
             {
                if(this._type == 20 || this._type == 21)
                {
-                  this._buildingStats = "Range: " + this._range + "<br>Damage: " + this._damage + " (" + int(this._damage * (40 / this._rate)) + " DPS)<br>Splash: " + this._splash + "<br>Rate of Fire: " + int(40 / this._rate * 10) / 10;
+                  this._buildingStats = KEYS.Get("building_stats_dps",{
+                     "v1":this._range,
+                     "v2":this._damage,
+                     "v3":int(this._damage * (40 / this._rate)),
+                     "v4":this._splash,
+                     "v5":int(40 / this._rate * 10) / 10
+                  });
                   if(this._type == 20)
                   {
-                     this._buildingDescription = "Short range and slow firing but great at taking out groups of monsters with its explosive shells";
+                     this._buildingDescription = KEYS.Get("building_cannon_desc");
                   }
                   if(this._type == 21)
                   {
-                     this._buildingDescription = "Long range and quick firing, great for picking off monsters from a great distance.";
+                     this._buildingDescription = KEYS.Get("building_sniper_desc");
                   }
                   if(this._lvl.Get() < this._buildingProps.costs.length)
                   {
-                     this._upgradeDescription = "Range: " + this._buildingProps.stats[this._lvl.Get()].range + " Damage: " + this._buildingProps.stats[this._lvl.Get()].damage + " Splash: " + this._buildingProps.stats[this._lvl.Get()].splash + " Rate of fire: " + int(40 / this._buildingProps.stats[this._lvl.Get()].rate * 10) / 10;
+                     this._upgradeDescription = KEYS.Get("building_stats",{
+                        "v1":this._buildingProps.stats[this._lvl.Get()].range,
+                        "v2":this._buildingProps.stats[this._lvl.Get()].damage,
+                        "v3":this._buildingProps.stats[this._lvl.Get()].splash,
+                        "v4":int(40 / this._buildingProps.stats[this._lvl.Get()].rate * 10) / 10
+                     });
                   }
                }
             }
@@ -500,23 +563,26 @@ package
             }
             _loc2_ = Math.min(60 * 60,_loc2_);
             _loc2_ = Math.ceil(this._hpMax.Get() / _loc2_);
-            this._repairDescription = "<font color=\"#FF0000\"><b>Building Damaged in an attack</b></font><br>Repair in progress, " + Math.floor(100 / this._hpMax.Get() * this._hp.Get()) + "% complete<br>" + GLOBAL.ToTime(int((this._hpMax.Get() - this._hp.Get()) / _loc2_)) + " remaining.";
+            this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_damagedinattack") + "</b></font><br>" + KEYS.Get("building_repairinprogress",{
+               "v1":Math.floor(100 / this._hpMax.Get() * this._hp.Get()),
+               "v2":GLOBAL.ToTime(int((this._hpMax.Get() - this._hp.Get()) / _loc2_))
+            });
          }
          else
          {
-            this._repairDescription = "<font color=\"#FF0000\"><b>Building Damaged in an attack</b></font><br>Repair this building, it does not cost resources.";
+            this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_damagedinattack") + "</b></font><br>" + KEYS.Get("building_repairfree");
             if(this._countdownBuild.Get() > 0)
             {
-               this._repairDescription += "<br>Another attack could destroy it completely!";
+               this._repairDescription += "<br>" + KEYS.Get("building_attackdestroy");
             }
             if(this._countdownUpgrade.Get() > 0)
             {
-               this._repairDescription += "<br>Another attack could set back the upgrade!";
+               this._repairDescription += "<br>" + KEYS.Get("building_attacksetback");
             }
          }
          if(this._lvl.Get() >= this._buildingProps.costs.length)
          {
-            this._upgradeDescription = "Fully Upgraded";
+            this._upgradeDescription = KEYS.Get("bdg_fullyupgraded");
             this._upgradeCosts = "";
          }
          else
@@ -560,6 +626,16 @@ package
          }
       }
       
+      public function RenderClear() : void
+      {
+         this._renderState = null;
+         this._mcBase.Clear();
+         this.topContainer.Clear();
+         this.animContainer.Clear();
+         this.anim2Container.Clear();
+         this.anim3Container.Clear();
+      }
+      
       public function Render(param1:String = "") : *
       {
          var ImageCallback:Function;
@@ -591,6 +667,8 @@ package
                   _mcBase.Clear();
                   topContainer.Clear();
                   animContainer.Clear();
+                  anim2Container.Clear();
+                  anim3Container.Clear();
                   if(_lastLoadedState != null)
                   {
                      if(state == "destroyed" && _lastLoadedState == "damaged")
@@ -669,7 +747,14 @@ package
                         container.Clear();
                         _animRect = imageDataB["anim" + state][1];
                         _animFrames = imageDataB["anim" + state][2];
-                        _animTick = int(Math.random() * (_animFrames - 2));
+                        if(_animRandomStart)
+                        {
+                           _animTick = int(Math.random() * (_animFrames - 2));
+                        }
+                        else
+                        {
+                           _animTick = 0;
+                        }
                         if(_type == 9 || _type == 19 || _type == 25 || _type == 54)
                         {
                            _animTick = 0;
@@ -697,6 +782,78 @@ package
                            _mcHit.y = container.y;
                         }
                      }
+                     else if(Boolean(imageDataB["anim2" + state]) && imageDataA.baseurl + imageDataB["anim2" + state][0] == key)
+                     {
+                        _anim2BMD = bmd;
+                        _anim2Loaded = true;
+                        container = anim2Container;
+                        container.Clear();
+                        _anim2Rect = imageDataB["anim2" + state][1];
+                        _anim2Frames = imageDataB["anim2" + state][2];
+                        if(_animRandomStart)
+                        {
+                           _anim2Tick = int(Math.random() * (_anim2Frames - 2));
+                        }
+                        else
+                        {
+                           _anim2Tick = 0;
+                        }
+                        _anim2ContainerBMD = new BitmapData(_anim2Rect.width,_anim2Rect.height,true,0xffffff);
+                        container.addChild(new Bitmap(_anim2ContainerBMD));
+                        container.x = _anim2Rect.x;
+                        container.y = _anim2Rect.y;
+                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
+                        {
+                           AnimFrame(false);
+                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
+                        }
+                        if(!imageDataB["top" + state])
+                        {
+                           _mcHit.gotoAndStop("f" + imageLevel + state);
+                           if(state == "destroyed")
+                           {
+                              _mcHit.gotoAndStop("f" + state);
+                           }
+                           _mcHit.x = container.x;
+                           _mcHit.y = container.y;
+                        }
+                     }
+                     else if(Boolean(imageDataB["anim3" + state]) && imageDataA.baseurl + imageDataB["anim3" + state][0] == key)
+                     {
+                        _anim3BMD = bmd;
+                        _anim3Loaded = true;
+                        container = anim3Container;
+                        container.Clear();
+                        _anim3Rect = imageDataB["anim3" + state][1];
+                        _anim3Frames = imageDataB["anim3" + state][2];
+                        if(_animRandomStart)
+                        {
+                           _anim3Tick = int(Math.random() * (_anim3Frames - 2));
+                        }
+                        else
+                        {
+                           _anim3Tick = 0;
+                        }
+                        _anim3ContainerBMD = new BitmapData(_anim3Rect.width,_anim3Rect.height,true,0xffffff);
+                        container.addChild(new Bitmap(_anim3ContainerBMD));
+                        container.x = _anim3Rect.x;
+                        container.y = _anim3Rect.y;
+                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
+                        {
+                           AnimFrame(false);
+                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
+                        }
+                        if(!imageDataB["top" + state])
+                        {
+                           _mcHit.gotoAndStop("f" + imageLevel + state);
+                           if(state == "destroyed")
+                           {
+                              _mcHit.gotoAndStop("f" + state);
+                           }
+                           _mcHit.x = container.x;
+                           _mcHit.y = container.y;
+                        }
+                     }
                      else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == key)
                      {
                         _animBMD = bmd;
@@ -705,7 +862,14 @@ package
                         container.Clear();
                         _animRect = imageDataB["anim" + state][1];
                         _animFrames = imageDataB["anim" + state][2];
-                        _animTick = int(Math.random() * (_animFrames - 2));
+                        if(_animRandomStart)
+                        {
+                           _animTick = int(Math.random() * (_animFrames - 2));
+                        }
+                        else
+                        {
+                           _animTick = 0;
+                        }
                         if(_type == 9 || _type == 19 || _type == 25 || _type == 54)
                         {
                            _animTick = 0;
@@ -739,6 +903,7 @@ package
                      }
                   }
                }
+               AnimFrame();
             };
             this._renderLevel = this._lvl.Get();
             imageDataA = GLOBAL._buildingProps[this._type - 1].imageData;
@@ -787,12 +952,35 @@ package
                {
                   loadImages.push(imageDataA.baseurl + imageDataB["anim" + state][0]);
                }
+               if(imageDataB["anim2" + state])
+               {
+                  loadImages.push(imageDataA.baseurl + imageDataB["anim2" + state][0]);
+               }
+               if(imageDataB["anim3" + state])
+               {
+                  loadImages.push(imageDataA.baseurl + imageDataB["anim3" + state][0]);
+               }
                this._animLoaded = false;
+               if(state == "damaged" || state == "destroyed")
+               {
+                  this._anim2Loaded = true;
+                  this._anim3Loaded = true;
+               }
+               else
+               {
+                  this._anim2Loaded = false;
+                  this._anim3Loaded = false;
+               }
                ImageCache.GetImageGroupWithCallBack("b" + this._type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
             }
          }
          if(this._fortification.Get() != this._renderFortLevel)
          {
+            if(this._fortification.Get() > 4)
+            {
+               LOGGER.Log("err","Illegal fortification level " + this._fortification.Get());
+               throw new Error("ILLEGAL FORTIFICATION LEVEL " + this._fortification.Get());
+            }
             this._renderFortLevel = this._fortification.Get();
             fortImageDataA = GLOBAL._buildingProps[this._type - 1].fortImgData;
             if(fortImageDataA[this._fortification.Get()])
@@ -964,6 +1152,30 @@ package
                   }
                }
             }
+            if(!GLOBAL._catchup && Boolean(this._anim2BMD))
+            {
+               this._anim2ContainerBMD.copyPixels(this._anim2BMD,new Rectangle(this._anim2Rect.width * this._anim2Tick,0,this._anim2Rect.width,this._anim2Rect.height),new Point(0,0));
+               if(increment)
+               {
+                  ++this._anim2Tick;
+                  if(this._anim2Tick >= this._anim2Frames)
+                  {
+                     this._anim2Tick = 0;
+                  }
+               }
+            }
+            if(!GLOBAL._catchup && Boolean(this._anim3BMD))
+            {
+               this._anim3ContainerBMD.copyPixels(this._anim3BMD,new Rectangle(this._anim3Rect.width * this._anim2Tick,0,this._anim3Rect.width,this._anim3Rect.height),new Point(0,0));
+               if(increment)
+               {
+                  ++this._anim3Tick;
+                  if(this._anim3Tick >= this._anim3Frames)
+                  {
+                     this._anim3Tick = 0;
+                  }
+               }
+            }
          }
          catch(e:Error)
          {
@@ -972,7 +1184,7 @@ package
       
       public function Instructions() : *
       {
-         this._buildingInstructions += "<b>Place the building on the map by clicking</b>, you can drag around the map with the building selected, <b>press ESC to cancel building</b>.";
+         this._buildingInstructions += KEYS.Get("building_instructions");
       }
       
       public function FollowMouse() : *
@@ -1032,7 +1244,7 @@ package
          var BragBiggulp:Function;
          var BragTotem:Function;
          var tmpBuildTime:int = 0;
-         var fromStorage:Boolean = false;
+         var fromStorage:int = 0;
          var mc:MovieClip = null;
          var totemImgUrl:String = null;
          var e:MouseEvent = param1;
@@ -1080,6 +1292,8 @@ package
                   this._hp.Set(this._buildingProps.hp[0]);
                   this._hpMax.Set(this._hp.Get());
                   this.PlaceB();
+                  this._mc.removeChild(this._mcHit);
+                  this._mc.addChild(this._mcHit);
                   this.Tick();
                   this.Update();
                   this.Description();
@@ -1119,7 +1333,11 @@ package
                      {
                         LOGGER.Stat([82,SPECIALEVENT.wave]);
                      }
-                     if(GLOBAL._mode == "build" && !BASE._isOutpost)
+                     if(BTOTEM.IsTotem2(this._type))
+                     {
+                        LOGGER.Stat([86,SPECIALEVENT.wave]);
+                     }
+                     if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
                      {
                         BragBiggulp = function():*
                         {
@@ -1131,6 +1349,7 @@ package
                            var totemType:int = param1;
                            return function(param1:MouseEvent = null):*
                            {
+                              loop0:
                               switch(totemType)
                               {
                                  case 121:
@@ -1150,19 +1369,44 @@ package
                                     break;
                                  case 126:
                                     GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
+                                    break;
+                                 case 131:
+                                    switch(_lvl.Get())
+                                    {
+                                       case 1:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
+                                          break loop0;
+                                       case 2:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
+                                          break loop0;
+                                       case 3:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
+                                          break loop0;
+                                       case 4:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
+                                          break loop0;
+                                       case 5:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
+                                          break loop0;
+                                       case 6:
+                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
+                                    }
                               }
                               POPUPS.Next();
                            };
                         };
-                        if(this._type == 2 * 60)
+                        if(BASE.is711Valid())
                         {
-                           mc = new popup_biggulp();
-                           mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
-                           mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
-                           mc.bPost.SetupKey("btn_brag");
-                           mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
-                           mc.bPost.Highlight = true;
-                           POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                           if(this._type == 2 * 60)
+                           {
+                              mc = new popup_biggulp();
+                              mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
+                              mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
+                              mc.bPost.SetupKey("btn_brag");
+                              mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
+                              mc.bPost.Highlight = true;
+                              POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                           }
                         }
                         if(BTOTEM.IsTotem(this._type))
                         {
@@ -1198,6 +1442,40 @@ package
                            }
                            POPUPS.Push(mc,null,null,null,totemImgUrl);
                         }
+                        else if(BTOTEM.IsTotem2(this._type))
+                        {
+                           mc = new popup_biggulp();
+                           mc.tA.htmlText = "<b>" + KEYS.Get("wmi2_totemwon") + "</b>";
+                           mc.tB.htmlText = "";
+                           mc.bPost.SetupKey("btn_brag");
+                           mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                           mc.bPost.Highlight = true;
+                           totemImgUrl = "";
+                           switch(this._lvl.Get())
+                           {
+                              case 1:
+                                 totemImgUrl = "building-wmi2totem1.png";
+                                 break;
+                              case 2:
+                                 totemImgUrl = "building-wmi2totem2.png";
+                                 break;
+                              case 3:
+                                 totemImgUrl = "building-wmi2totem3.png";
+                                 break;
+                              case 4:
+                                 totemImgUrl = "building-wmi2totem4.png";
+                                 break;
+                              case 5:
+                                 totemImgUrl = "building-wmi2totem5.png";
+                                 break;
+                              case 6:
+                                 totemImgUrl = "building-wmi2totem6.png";
+                                 break;
+                              default:
+                                 totemImgUrl = "building-wmi2totem6.png";
+                           }
+                           POPUPS.Push(mc,null,null,null,totemImgUrl);
+                        }
                      }
                   }
                   if(BASE._pendingPurchase.length == 0)
@@ -1209,11 +1487,6 @@ package
                }
                else
                {
-                  if(BTOTEM.IsTotem(this._type))
-                  {
-                     BASE.BuildingStorageAdd(this._type);
-                     GLOBAL._bTotem = null;
-                  }
                   this.Cancel();
                }
             }
@@ -1284,6 +1557,10 @@ package
             {
                BASE._buildingsTowers["b" + this._id] = this;
                BASE._buildingsMain["b" + this._id] = this;
+               if(MONSTERBUNKER.isBunkerBuilding(this._type))
+               {
+                  BASE._buildingsBunkers["b" + this._id] = this;
+               }
             }
             else if(this._class == "gift" || this._class == "taunt")
             {
@@ -1591,10 +1868,10 @@ package
                LOGGER.Stat([64,this._type,this._fortification.Get() + 1]);
                this._helpList = [];
                this.Update();
-               if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25) || this._type == 115)
+               if(GLOBAL._mode == "build" && this._class == "tower")
                {
                   GLOBAL._selectedBuilding = this;
-                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during fortification.<br><br>Move other buildings nearby to help protect them or simply speed up the fortification.","Speed Up",STORE.SpeedUp,["SP4"]);
+                  GLOBAL.Message(KEYS.Get("msg_inactivefortify"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
                }
             }
             else if(GLOBAL._mode == "build")
@@ -1712,7 +1989,7 @@ package
                      };
                      GLOBAL._promptedInvite = true;
                      popupMC = new popup_helpme();
-                     popupMC.tB.htmlText = KEYS.Get("pop_helpme");
+                     popupMC.tB.text = KEYS.Get("pop_helpme");
                      popupMC.bAction.SetupKey("btn_invitefriends");
                      popupMC.bAction.addEventListener(MouseEvent.CLICK,GetFriends);
                      POPUPS.Push(popupMC);
@@ -1729,10 +2006,10 @@ package
                LOGGER.Stat([7,this._type,this._lvl.Get() + 1]);
                this._helpList = [];
                this.Update();
-               if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25 || this._type == 115))
+               if(GLOBAL._mode == "build" && this._class == "tower")
                {
                   GLOBAL._selectedBuilding = this;
-                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during upgrades.<br><br>Move other buildings nearby to help protect them or simply speed up the upgrade.","Speed Up",STORE.SpeedUp,["SP4"]);
+                  GLOBAL.Message(KEYS.Get("msg_inactiveupgrade"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
                }
             }
             else if(GLOBAL._mode == "build")
@@ -1893,6 +2170,30 @@ package
          LOGGER.Stat([8,this._type,this._lvl.Get()]);
       }
       
+      public function Downgrade_TOTEM_DEBUG() : *
+      {
+         if(this._type != BTOTEM.BTOTEM_BUILDING_TYPE)
+         {
+            return;
+         }
+         if(this._lvl.Get() <= 1)
+         {
+            return;
+         }
+         try
+         {
+            this._countdownUpgrade.Set(0);
+            this._lvl.Add(-1);
+            --this._hpLvl;
+            this._hpMax.Set(this._buildingProps.hp[this._lvl.Get() - 1]);
+            this._hp.Set(this._hpMax.Get());
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","Foundation.Downgrade_TOTEM_DEBUG: " + e.message + " | " + e.getStackTrace());
+         }
+      }
+      
       public function Fortified() : *
       {
          var c:Object;
@@ -1953,13 +2254,13 @@ package
          }
          else if(GLOBAL._mode == "build")
          {
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
             {
-               GLOBAL.Message("You cannot Recycle buildings in Outposts.");
+               GLOBAL.Message(KEYS.Get("msg_recycleoutpostbuilding"));
             }
             else
             {
-               GLOBAL.Message("You cannot Recycle this building at this time.");
+               GLOBAL.Message(KEYS.Get("msg_recycleunavailable"));
             }
          }
       }
@@ -2030,7 +2331,7 @@ package
          BASE.BuildingDeselect();
          if(this._class == "decoration")
          {
-            BASE.BuildingStorageAdd(this._type);
+            BASE.BuildingStorageAdd(this._type,this._lvl.Get());
          }
          this.Clean();
          BASE.Save();
@@ -2391,13 +2692,13 @@ package
       
       public function Constructed() : *
       {
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
          {
             this._blockRecycle = true;
          }
          this._countdownBuild.Set(0);
          this._constructed = true;
-         if(!this._prefab)
+         if(!this._prefab && !BTOTEM.IsTotem2(this._type))
          {
             this._lvl.Set(1);
             this._hpLvl = 1;
@@ -2758,6 +3059,8 @@ package
          this.animContainer.Clear();
          this._fortFrontContainer.Clear();
          this._fortBackContainer.Clear();
+         this.anim2Container.Clear();
+         this.anim3Container.Clear();
       }
       
       public function CatchupAdd() : void
@@ -2772,21 +3075,22 @@ package
       
       private function GetHitMC() : MovieClip
       {
+         var _loc1_:Boolean = BASE.isInferno();
          if(this._type == 1)
          {
-            return new building1hit();
+            return _loc1_ ? new boneCrusherHit() : new building1hit();
          }
          if(this._type == 2)
          {
-            return new building2hit();
+            return _loc1_ ? new coalProducerHit() : new building2hit();
          }
          if(this._type == 3)
          {
-            return new building3hit();
+            return _loc1_ ? new sulpherProducerHit() : new building3hit();
          }
          if(this._type == 4)
          {
-            return new building4hit();
+            return _loc1_ ? new magmaProducerHit() : new building4hit();
          }
          if(this._type == 5)
          {
@@ -2794,7 +3098,7 @@ package
          }
          if(this._type == 6)
          {
-            return new building6hit();
+            return _loc1_ ? new siloHit() : new building6hit();
          }
          if(this._type == 7)
          {
@@ -2802,7 +3106,7 @@ package
          }
          if(this._type == 8)
          {
-            return new building8hit();
+            return _loc1_ ? new monsterLockerHit() : new building8hit();
          }
          if(this._type == 9)
          {
@@ -2822,11 +3126,11 @@ package
          }
          if(this._type == 13)
          {
-            return new building13hit();
+            return _loc1_ ? new hatcheryHit() : new building13hit();
          }
          if(this._type == 14)
          {
-            return new building14hit();
+            return _loc1_ ? new townHallHit() : new building14hit();
          }
          if(this._type == 15)
          {
@@ -2838,7 +3142,7 @@ package
          }
          if(this._type == 17)
          {
-            return new building17hit();
+            return _loc1_ ? new wallHit() : new building17hit();
          }
          if(this._type == 18)
          {
@@ -2850,11 +3154,11 @@ package
          }
          if(this._type == 20)
          {
-            return new building20hit();
+            return _loc1_ ? new cannonTowerHit() : new building20hit();
          }
          if(this._type == 21)
          {
-            return new building21hit();
+            return _loc1_ ? new sniperTowerHit() : new building21hit();
          }
          if(this._type == 22)
          {
@@ -3091,6 +3395,30 @@ package
          if(this._type == 126)
          {
             return new building126hit();
+         }
+         if(this._type == 127)
+         {
+            return new infernoPortalHit();
+         }
+         if(this._type == 128)
+         {
+            return new housingBunkerHit();
+         }
+         if(this._type == 129)
+         {
+            return new quakeTowerHit();
+         }
+         if(this._type == 130)
+         {
+            return new cannonTowerHit();
+         }
+         if(this._type == 131)
+         {
+            return new building131hit();
+         }
+         if(this._type == 132)
+         {
+            return new magmaTowerHit();
          }
          return new building1hit();
       }

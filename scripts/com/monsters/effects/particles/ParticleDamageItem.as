@@ -63,6 +63,14 @@ package com.monsters.effects.particles
                return "FF00FF";
             case BRESOURCE.RESOURCE_GOO:
                return "00FF00";
+            case BRESOURCE.RESOURCE_COAL:
+               return "3F3B36";
+            case BRESOURCE.RESOURCE_BONE:
+               return "F0E6C5";
+            case BRESOURCE.RESOURCE_SULPHER:
+               return "EEED71";
+            case BRESOURCE.RESOURCE_MAGMA:
+               return "D95300";
             default:
                return "FFFF00";
          }

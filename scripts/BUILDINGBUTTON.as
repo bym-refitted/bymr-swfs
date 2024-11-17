@@ -20,6 +20,7 @@ package
       public function Setup(param1:int, param2:Boolean = true) : *
       {
          var _loc6_:String = null;
+         var _loc7_:* = null;
          var _loc8_:* = undefined;
          var _loc9_:int = 0;
          this._id = param1;
@@ -33,6 +34,7 @@ package
          tName.htmlText = "<b>" + KEYS.Get(this._buildingProps.name) + "</b>";
          mcSale.visible = this._buildingProps.sale == 1;
          mcSale.t.htmlText = "<b>" + KEYS.Get("ui_building_sale") + "</b>";
+         mcNew.t.htmlText = "<b>" + KEYS.Get("str_new_caps") + "</b>";
          var _loc3_:int = 0;
          if(GLOBAL._bTownhall)
          {
@@ -57,7 +59,7 @@ package
             }
             else
             {
-               tQuantity.htmlText = "<font color=\"#333333\"><b>" + STORE._storeItems["BUILDING" + this._id].c[0] + " shiny</b></font>";
+               tQuantity.htmlText = "<font color=\"#333333\"><b>" + STORE._storeItems["BUILDING" + this._id].c[0] + " " + KEYS.Get("#r_shiny#") + "</b></font>";
             }
          }
          else if(_loc5_ >= _loc4_)
@@ -68,7 +70,18 @@ package
          {
             tQuantity.htmlText = "<b>" + _loc5_ + " / " + _loc4_ + "</b>";
          }
-         var _loc7_:* = "buildingbuttons/" + this._id + ".jpg";
+         if(Boolean(this._buildingProps.buildingbuttons) && Boolean(BASE._buildingsStored["bl" + this._id]) && this._buildingProps.buildingbuttons.length >= BASE._buildingsStored["bl" + this._id].Get())
+         {
+            _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._id].Get() - 1] + ".jpg";
+         }
+         else if(Boolean(this._buildingProps.buildingbuttons) && this._buildingProps.buildingbuttons.length > 0)
+         {
+            _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[0] + ".jpg";
+         }
+         else
+         {
+            _loc7_ = "buildingbuttons/" + this._id + ".jpg";
+         }
          mcNew.visible = false;
          if(GLOBAL._newThings && Boolean(this._buildingProps.isNew))
          {

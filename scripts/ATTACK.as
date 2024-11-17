@@ -282,7 +282,7 @@ package
                   _attackLog.x = 0;
                   _attackLog.y = 0;
                };
-               (_attackLog.mcFrame as frame2).Setup(false);
+               (_attackLog.mcFrame as frame).Setup(false);
                _attackLog.title_txt.htmlText = "<b>" + KEYS.Get("attack_log_title") + "</b>";
                GLOBAL._layerMessages.addChild(_attackLog);
                if(shouldShowTaunt && !ATTACK._taunted && MAPROOM._visitingFriend)
@@ -292,7 +292,7 @@ package
                   _attackLog.bAction.Highlight = true;
                   if(GLOBAL._advancedMap)
                   {
-                     _attackLog.b2.Setup("Next");
+                     _attackLog.b2.Setup(KEYS.Get("btn_next"));
                   }
                   else
                   {
@@ -306,7 +306,7 @@ package
                   _attackLog.bAction.Highlight = false;
                   if(GLOBAL._advancedMap)
                   {
-                     _attackLog.bAction.Setup("Next");
+                     _attackLog.bAction.Setup(KEYS.Get("btn_next"));
                   }
                   else
                   {
@@ -385,6 +385,7 @@ package
          {
          }
          taunt = new popup_taunt_friend();
+         taunt.tTitle.htmlText = KEYS.Get("popup_title_tauntfriend");
          taunt.Resize = function():void
          {
             taunt.x = 0;
@@ -394,7 +395,7 @@ package
          GLOBAL._layerMessages.addChild(taunt);
          taunt.bShare.addEventListener(MouseEvent.CLICK,onShare);
          taunt.bShare.Highlight = true;
-         (taunt.mcFrame as frame2).Setup(true,onClose);
+         (taunt.mcFrame as frame).Setup(true,onClose);
          i = 1;
          while(i < 4)
          {
@@ -501,7 +502,7 @@ package
          var _loc10_:int = 0;
          var _loc11_:String = null;
          var _loc12_:int = 0;
-         var _loc13_:CREEP = null;
+         var _loc13_:* = undefined;
          var _loc6_:Array = [];
          for(_loc8_ in _flingerBucket)
          {
@@ -724,6 +725,10 @@ package
          _hpDeltaLoot.dirty = true;
          if(GLOBAL._render && Boolean(param6))
          {
+            if(BASE.isInferno())
+            {
+               param1 += 4;
+            }
             new ParticleLoot(param6,param2,param1);
             ParticleText.Create(new Point(param3,param4),param2,param1);
          }
@@ -840,7 +845,7 @@ package
             }
             _sentOver = true;
          }
-         if(GLOBAL._mode == "attack")
+         if(GLOBAL._mode == "attack" || GLOBAL._mode == "iattack")
          {
             if(Boolean(CREEPS._guardian) && CREEPS._guardian._health.Get() > 0)
             {
@@ -855,11 +860,15 @@ package
          {
             _loc1_.ModeRetreat();
          }
-         if(GLOBAL._mode == "attack")
+         if(GLOBAL._mode == "attack" || GLOBAL._mode == "iattack")
          {
             _logOpen = false;
             ShowLog();
             _shownFinal = false;
+         }
+         else if(MAPROOM_DESCENT.DescentLevel)
+         {
+            ShowComplete();
          }
          else
          {
@@ -867,6 +876,11 @@ package
          }
          var _loc2_:int = _loot.r1.Get() + _loot.r2.Get() + _loot.r3.Get() + _loot.r4.Get();
          LOGGER.KongStat([3,_loc2_]);
+      }
+      
+      public static function ShowComplete() : void
+      {
+         EndB();
       }
       
       public static function EndB() : *
@@ -895,7 +909,7 @@ package
                }
             }
             _loc2_ = 100 - 100 / _loc4_ * _loc3_;
-            if((BASE._isOutpost || GLOBAL._mode == "wmattack") && _loc2_ >= 90)
+            if((BASE._yardType == BASE.OUTPOST || GLOBAL._mode == "wmattack") && _loc2_ >= 90)
             {
                _loc1_ = true;
                if(GLOBAL._mode == "wmattack")
@@ -903,12 +917,20 @@ package
                   WMBASE._destroyed = true;
                }
             }
+            else if((BASE._yardType == BASE.INFERNO_YARD || GLOBAL._mode == "iwmattack") && _loc2_ >= 90)
+            {
+               _loc1_ = true;
+               if(GLOBAL._mode == "iwmattack")
+               {
+                  WMBASE._destroyed = true;
+               }
+            }
          }
-         else if(GLOBAL._mode == "wmattack")
+         else if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack")
          {
             for each(_loc7_ in BASE._buildingsMain)
             {
-               if(_loc7_._hp.Get() == 0 && _loc7_._repairing == 0 && _loc7_._type == 14 && GLOBAL._mode == "wmattack")
+               if(_loc7_._hp.Get() == 0 && _loc7_._repairing == 0 && _loc7_._type == 14 && (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
                {
                   if(TRIBES.TribeForBaseID(BASE._wmID).id == 2)
                   {
@@ -918,9 +940,13 @@ package
                   break;
                }
             }
+            if(INFERNO_DESCENT_POPUPS.isInDescent())
+            {
+               INFERNO_DESCENT_POPUPS.ShowPostAttackPopup(MAPROOM_DESCENT._descentLvl,!_loc1_);
+            }
          }
          SOUNDS.PlayMusic("musicbuild");
-         if(Boolean(GLOBAL._advancedMap) && Boolean(BASE._isOutpost) || GLOBAL._mode == "wmattack")
+         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST || (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
          {
             _loc8_ = new popup_attackend(_loc1_);
             _loc8_.mcFrame.Setup(false);
@@ -930,24 +956,32 @@ package
          {
             GLOBAL.ShowMap();
          }
-         else
+         else if(GLOBAL._loadmode == GLOBAL._mode)
          {
             BASE.LoadBase(null,null,0,"build");
+         }
+         else if(GLOBAL._inInferno <= 0)
+         {
+            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+         }
+         else
+         {
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
          }
       }
       
       public static function WellDefended(param1:Boolean = true, param2:String = "") : *
       {
-         var popupMC:popup_defense;
-         var tribe:Object = null;
          var Post:Function = null;
+         var popupMC:popup_defense = null;
+         var tribe:Object = null;
          var wildMonsters:Boolean = param1;
          var attackersName:String = param2;
          Post = function():*
          {
             if(wildMonsters)
             {
-               GLOBAL.CallJS("sendFeed",["defense-wild",KEYS.Get("ai_gooddefense_streamtitle",{"v1":tribe.name}),KEYS.Get("ai_gooddefense"),tribe.streampostpic]);
+               GLOBAL.CallJS("sendFeed",["defense-wild",KEYS.Get("ai_gooddefense_streamtitle",{"v1":tribe.name}),KEYS.Get("ai_gooddefense",{"v1":tribe.name}),tribe.streampostpic]);
             }
             else
             {
@@ -958,6 +992,11 @@ package
          if(SPECIALEVENT.active)
          {
             SPECIALEVENT.EndRound(true);
+            return;
+         }
+         if(INFERNO_EMERGENCE_EVENT.isAttackActive)
+         {
+            INFERNO_EMERGENCE_POPUPS.ShowStagePassed(INFERNOPORTAL.building._lvl.Get());
             return;
          }
          popupMC = new popup_defense();
@@ -985,11 +1024,17 @@ package
       
       public static function PoorDefense() : *
       {
-         var RepairAll:Function;
          var mc:* = undefined;
+         var RepairAll:Function = null;
+         var RepairNow:Function = null;
          if(SPECIALEVENT.active)
          {
             SPECIALEVENT.EndRound(false);
+            return;
+         }
+         if(INFERNO_EMERGENCE_EVENT.isAttackActive)
+         {
+            INFERNO_EMERGENCE_POPUPS.ShowStagePassed(INFERNOPORTAL.building._lvl.Get());
             return;
          }
          if(TUTORIAL._stage > 40)
@@ -997,6 +1042,8 @@ package
             RepairAll = function(param1:MouseEvent = null):*
             {
                var _loc2_:BFOUNDATION = null;
+               mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+               mc.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
                for each(_loc2_ in BASE._buildingsAll)
                {
                   if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
@@ -1007,14 +1054,31 @@ package
                SOUNDS.Play("repair1",0.25);
                POPUPS.Next();
             };
+            RepairNow = function(param1:MouseEvent = null):*
+            {
+               var _loc2_:BFOUNDATION = null;
+               mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+               mc.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
+               for each(_loc2_ in BASE._buildingsAll)
+               {
+                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                  {
+                     _loc2_.Repair();
+                  }
+               }
+               STORE.ShowB(3,1,["FIX"],true);
+               POPUPS.Next();
+            };
             mc = new popup_damaged_ai();
-            (mc.mcFrame as frame2).Setup(false);
+            (mc.mcFrame as frame).Setup(false);
             mc.tA.htmlText = "<b>" + KEYS.Get("ai_poordefense_ta") + "</b>";
             mc.tB.htmlText = "<b>" + KEYS.Get("ai_poordefense_tb") + "</b>";
             mc.tC.htmlText = KEYS.Get("ai_poordefense_tc");
             mc.bAction.SetupKey("ai_repairdamage_btn");
-            mc.bAction.Highlight = true;
             mc.bAction.addEventListener(MouseEvent.CLICK,RepairAll);
+            mc.bAction2.SetupKey("pop_damaged_repairnow_btn");
+            mc.bAction2.addEventListener(MouseEvent.CLICK,RepairNow);
+            mc.bAction2.Highlight = true;
             POPUPS.Push(mc,null,null,"shotgun","military.png");
          }
       }

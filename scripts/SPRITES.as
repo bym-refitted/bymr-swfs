@@ -17,13 +17,26 @@ package
       public static function Setup() : *
       {
          _sprites = {};
-         _sprites.worker = {
-            "key":"monsters/worker.png",
-            "sprite":null,
-            "width":27,
-            "height":27,
-            "middle":new Point(9,19)
-         };
+         if(!BASE.isInferno())
+         {
+            _sprites.worker = {
+               "key":"monsters/worker.png",
+               "sprite":null,
+               "width":27,
+               "height":27,
+               "middle":new Point(9,19)
+            };
+         }
+         else
+         {
+            _sprites.worker = {
+               "key":"monsters/inferno_worker.png",
+               "sprite":null,
+               "width":64,
+               "height":55,
+               "middle":new Point(32,36)
+            };
+         }
          _sprites.C1 = {
             "key":"monsters/sprite.1.v1.png",
             "sprite":null,
@@ -141,7 +154,7 @@ package
             "sprite":null,
             "width":64.4,
             "height":46,
-            "middle":new Point(32,23)
+            "middle":new Point(26,28)
          };
          _sprites.IC3 = {
             "key":"monsters/malphus.png",
@@ -153,8 +166,8 @@ package
          _sprites.IC4 = {
             "key":"monsters/valgos.png",
             "sprite":null,
-            "width":26,
-            "height":23,
+            "width":55,
+            "height":32,
             "middle":new Point(11,15)
          };
          _sprites.IC5 = {
@@ -162,10 +175,10 @@ package
             "sprite":null,
             "width":56,
             "height":37,
-            "middle":new Point(28,18.5)
+            "middle":new Point(33,18.5)
          };
          _sprites.IC6 = {
-            "key":"monsters/grokus.png",
+            "key":"monsters/grokus.v2.png",
             "sprite":null,
             "width":57,
             "height":39,
@@ -179,11 +192,11 @@ package
             "middle":new Point(21,17)
          };
          _sprites.IC8 = {
-            "key":"monsters/13.png",
+            "key":"monsters/wormzer.png",
             "sprite":null,
-            "width":40,
-            "height":26,
-            "middle":new Point(19,17)
+            "width":58,
+            "height":42,
+            "middle":new Point(29,21)
          };
          _sprites.G1_1 = {
             "key":"monsters/ape_1.png",

@@ -583,6 +583,30 @@ package
                      name = "totem_placed";
                      val = int(data[1]);
                   }
+                  else if(data[0] == 83)
+                  {
+                     st1 = "WMI2";
+                     st2 = "attempted";
+                     name = data[1];
+                  }
+                  else if(data[0] == 84)
+                  {
+                     st1 = "WMI2";
+                     st2 = "success";
+                     name = data[1];
+                  }
+                  else if(data[0] == 85)
+                  {
+                     st1 = "WMI2";
+                     st2 = "failed";
+                     name = data[1];
+                  }
+                  else if(data[0] == 86)
+                  {
+                     st1 = "WMI2";
+                     st2 = "totem_placed";
+                     name = data[1];
+                  }
                }
             }
             if(st1)
@@ -591,9 +615,13 @@ package
                if(st1)
                {
                   o.st1 = st1.toLowerCase().replace(" ","_");
-                  if(BASE._isOutpost)
+                  if(BASE._yardType == BASE.OUTPOST)
                   {
                      o.st1 = "outpost-" + o.st1;
+                  }
+                  if(BASE._yardType == BASE.INFERNO_YARD)
+                  {
+                     o.st1 = "inferno-" + o.st1;
                   }
                }
                if(st2)

@@ -44,7 +44,7 @@ package
                {
                   this.tMessage.htmlText = KEYS.Get("popup_attackended_failedWMYard");
                }
-               else if(BASE._isOutpost)
+               else if(BASE._yardType == BASE.OUTPOST)
                {
                   this.tMessage.htmlText = KEYS.Get("popup_attackended_failedOutpost");
                }
@@ -91,15 +91,24 @@ package
          if(GLOBAL._advancedMap)
          {
             MapRoom._showEnemyWait = true;
-            if(this._success && Boolean(GLOBAL._currentCell))
+            if(this._success && GLOBAL._currentCell)
             {
                GLOBAL._currentCell._destroyed = 1;
             }
             MapRoom.Show();
          }
-         else
+         else if(GLOBAL._loadmode == GLOBAL._mode)
          {
             BASE.LoadBase(null,null,0,"build");
+         }
+         else if(MAPROOM_DESCENT._inDescent)
+         {
+            MAPROOM_DESCENT.ExitDescent();
+            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+         }
+         else
+         {
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
          }
          POPUPS.Next();
       }

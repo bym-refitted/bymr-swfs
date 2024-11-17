@@ -11,8 +11,8 @@ package
       {
          super();
          _type = 14;
-         _footprint = [new Rectangle(0,0,130,130)];
-         _gridCost = [[new Rectangle(0,0,130,130),10],[new Rectangle(10,10,110,110),200]];
+         _footprint = BASE.isInferno() ? [new Rectangle(0,0,160,160)] : [new Rectangle(0,0,130,130)];
+         _gridCost = BASE.isInferno() ? [[new Rectangle(0,0,160,160),10],[new Rectangle(10,10,140,140),200]] : [[new Rectangle(0,0,130,130),10],[new Rectangle(10,10,110,110),200]];
          _spoutPoint = new Point(1,-67);
          _spoutHeight = 135;
          SetProps();
@@ -49,17 +49,38 @@ package
       
       override public function Recycle() : *
       {
-         GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         if(!GLOBAL._aiDesignMode)
+         {
+            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         }
+         else
+         {
+            super.Recycle();
+         }
       }
       
       override public function RecycleB(param1:MouseEvent = null) : *
       {
-         GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         if(!GLOBAL._aiDesignMode)
+         {
+            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         }
+         else
+         {
+            super.RecycleB(param1);
+         }
       }
       
       override public function RecycleC() : *
       {
-         GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         if(!GLOBAL._aiDesignMode)
+         {
+            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
+         }
+         else
+         {
+            super.RecycleC();
+         }
       }
       
       override public function Destroyed(param1:Boolean = true) : *

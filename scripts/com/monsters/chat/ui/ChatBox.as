@@ -49,6 +49,10 @@ package com.monsters.chat.ui
       
       private var _chatMessages:MovieClip;
       
+      private var _skinnedElements:Array = [];
+      
+      private var _skinTag:int = 1;
+      
       private var fmt_nameOffset:TextFormat;
       
       private var _enabled:Boolean = true;
@@ -159,7 +163,7 @@ package com.monsters.chat.ui
          this._scrollbar.AutoHideEnabled = false;
          this._scrollbar.visible = false;
          this._sendBtn = new Button_CLIP();
-         this._sendBtn.Setup("Say");
+         this._sendBtn.SetupKey("btn_say");
          this._sendBtn.x = 383;
          this._sendBtn.y = 8;
          this._sendBtn.width = 40;
@@ -178,6 +182,7 @@ package com.monsters.chat.ui
          this._chatHistory = [];
          this._originProps.screenWidth = this.background.mcScreen.width;
          this._originProps.screenHeight = this.background.mcScreen.height;
+         this._skinnedElements = [this.background.border,this.background.header,this.background.mcScreen.canvas,this.inputbar.inputWoodBg,this.inputbar.inputTxtBG.canvas];
       }
       
       public static function PopupShow(param1:int, param2:int, param3:String, param4:MovieClip) : void
@@ -240,18 +245,18 @@ package com.monsters.chat.ui
          this.background.arrowUp.mouseChildren = false;
          this.background.arrowUp.buttonMode = true;
          this.background.arrowUp.useHandCursor = true;
-         this.background.arrowUp.gotoAndStop(1);
+         this.background.arrowUp.gotoAndStop("on" + this._skinTag);
          this.background.arrowDown.mouseChildren = false;
          this.background.arrowDown.buttonMode = true;
          this.background.arrowDown.useHandCursor = true;
-         this.background.arrowDown.gotoAndStop(1);
+         this.background.arrowDown.gotoAndStop("on" + this._skinTag);
          this.background.arrowDown.enabled = false;
          this.background.arrowDown.visible = false;
          this.background.mcToggle.addEventListener(MouseEvent.CLICK,this.OnChatDisableClick);
          this.background.mcToggle.mouseChildren = false;
          this.background.mcToggle.buttonMode = true;
          this.background.mcToggle.useHandCursor = true;
-         this.background.mcToggle.gotoAndStop(this._enabled ? 2 : 1);
+         this.background.mcToggle.gotoAndStop(this._enabled ? "close" + this._skinTag : "on" + this._skinTag);
          this.input.addEventListener(FocusEvent.FOCUS_IN,this.onInputFocus);
          this.input.maxChars = 100;
          this.ClearAlert();
@@ -328,8 +333,8 @@ package com.monsters.chat.ui
                _loc4_ = this._closeProps;
             }
             this._maximized = false;
-            this.background.arrowUp.gotoAndStop(1);
-            this.background.arrowDown.gotoAndStop(1);
+            this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+            this.background.arrowDown.gotoAndStop("on" + this._skinTag);
             this.background.arrowUp.buttonMode = true;
             this.background.arrowDown.buttonMode = false;
          }
@@ -341,8 +346,8 @@ package com.monsters.chat.ui
             }
             _loc4_ = this._openProps;
             this._maximized = false;
-            this.background.arrowUp.gotoAndStop(1);
-            this.background.arrowDown.gotoAndStop(1);
+            this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+            this.background.arrowDown.gotoAndStop("on" + this._skinTag);
             this.background.arrowUp.buttonMode = true;
             this.background.arrowDown.buttonMode = true;
          }
@@ -354,8 +359,8 @@ package com.monsters.chat.ui
                GLOBAL._bymChat._open = false;
                _loc4_ = this._closeProps;
                this._maximized = false;
-               this.background.arrowUp.gotoAndStop(1);
-               this.background.arrowDown.gotoAndStop(2);
+               this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+               this.background.arrowDown.gotoAndStop("off" + this._skinTag);
                this.background.arrowUp.buttonMode = true;
                this.background.arrowDown.buttonMode = false;
                GLOBAL.StatSet("chatmin",1);
@@ -364,8 +369,8 @@ package com.monsters.chat.ui
             {
                _loc4_ = this._maxProps;
                this._maximized = true;
-               this.background.arrowUp.gotoAndStop(1);
-               this.background.arrowDown.gotoAndStop(1);
+               this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+               this.background.arrowDown.gotoAndStop("on" + this._skinTag);
                this.background.arrowUp.buttonMode = true;
                this.background.arrowDown.buttonMode = false;
                GLOBAL.StatSet("chatmin",0);
@@ -380,8 +385,8 @@ package com.monsters.chat.ui
             GLOBAL._bymChat._open = true;
             _loc4_ = this._openProps;
             this._maximized = false;
-            this.background.arrowUp.gotoAndStop(1);
-            this.background.arrowDown.gotoAndStop(1);
+            this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+            this.background.arrowDown.gotoAndStop("on" + this._skinTag);
             this.background.arrowUp.buttonMode = true;
             this.background.arrowDown.buttonMode = true;
             GLOBAL.StatSet("chatmin",0);
@@ -626,6 +631,25 @@ package com.monsters.chat.ui
          this.ResizeMessages();
       }
       
+      public function Skin() : void
+      {
+         var _loc1_:int = 1;
+         if(GLOBAL.InfernoMode)
+         {
+            _loc1_ = 2;
+         }
+         this._skinTag = _loc1_;
+         var _loc2_:int = 0;
+         while(_loc2_ < this._skinnedElements.length)
+         {
+            this._skinnedElements[_loc2_].gotoAndStop(_loc1_);
+            _loc2_++;
+         }
+         this.background.mcToggle.gotoAndStop(this._enabled ? "on" + this._skinTag : "close" + this._skinTag);
+         this.background.arrowUp.gotoAndStop("on" + this._skinTag);
+         this.background.arrowDown.gotoAndStop("on" + this._skinTag);
+      }
+      
       override public function update() : void
       {
          super.update();
@@ -641,15 +665,16 @@ package com.monsters.chat.ui
             this.background.arrowUp.visible = TUTORIAL._completed;
             this.background.mcToggle.visible = TUTORIAL._completed;
          }
+         this.Skin();
          this.UpdateChatStatus();
       }
       
       public function UpdateChatStatus() : void
       {
-         this.background.mcToggle.gotoAndStop(this._enabled ? 2 : 1);
+         this.background.mcToggle.gotoAndStop(this._enabled ? "close" + this._skinTag : "on" + this._skinTag);
          if(GLOBAL._bymChat.isLoggingOut)
          {
-            this.background.mcToggle.gotoAndStop(3);
+            this.background.mcToggle.gotoAndStop("wait" + this._skinTag);
          }
       }
       

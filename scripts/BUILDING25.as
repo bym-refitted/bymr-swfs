@@ -13,8 +13,6 @@ package
       
       public var _fieldBMP:Bitmap;
       
-      public var _frameNumber:int;
-      
       public var _animBitmap:BitmapData;
       
       public var _fireStage:int;
@@ -27,7 +25,7 @@ package
       {
          super();
          _type = 25;
-         this._frameNumber = 0;
+         _frameNumber = 0;
          _animTick = 0;
          _top = -30;
          this._fireStage = 0;
@@ -52,22 +50,31 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
             }
             if(_loc1_.range < _loc2_.range)
             {
-               _upgradeDescription += "<b>Range:</b> Increases from " + _loc3_ + " to " + _loc4_ + "<br>";
+               _upgradeDescription += KEYS.Get("building_rangeincrease",{
+                  "v1":_loc3_,
+                  "v2":_loc4_
+               }) + "<br>";
             }
             if(_loc1_.damage < _loc2_.damage)
             {
-               _upgradeDescription += "<b>Damage per shot:</b> Increases from " + _loc1_.damage + " to " + _loc2_.damage + "<br>";
+               _upgradeDescription += KEYS.Get("building_dpsincrease",{
+                  "v1":_loc1_.damage,
+                  "v2":_loc2_.damage
+               }) + "<br>";
             }
             if(_loc1_.rate < _loc2_.rate)
             {
-               _upgradeDescription += "<b>Shots fired per charge:</b> Increases from " + _loc1_.rate + " to " + _loc2_.rate + "<br>";
+               _upgradeDescription += KEYS.Get("building_sfpcincrease",{
+                  "v1":_loc1_.rate,
+                  "v2":_loc2_.rate
+               }) + "<br>";
             }
          }
       }
@@ -103,10 +110,10 @@ package
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
          super.TickFast(param1);
-         ++this._frameNumber;
-         if(this._frameNumber == 40)
+         ++_frameNumber;
+         if(_frameNumber == 40)
          {
-            this._frameNumber = 4;
+            _frameNumber = 4;
          }
          if(!GLOBAL._catchup)
          {
@@ -132,7 +139,7 @@ package
                   {
                      _animTick = 32;
                   }
-                  if(this._frameNumber % 4 == 0)
+                  if(_frameNumber % 4 == 0)
                   {
                      if(_hasTargets)
                      {
@@ -175,7 +182,7 @@ package
             }
             else if(this._fireStage == 3)
             {
-               if(this._frameNumber % 2 == 0)
+               if(_frameNumber % 2 == 0)
                {
                   ++_animTick;
                   if(_animTick == 55)

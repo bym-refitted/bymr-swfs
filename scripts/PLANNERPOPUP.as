@@ -73,7 +73,7 @@ package
          bRanges.SetupKey("planner_showranges_btn");
          bRanges.addEventListener(MouseEvent.CLICK,this.ToggleRanges);
          bExpand.SetupKey("planner_expand_btn");
-         if(!BASE._isOutpost)
+         if(BASE._yardType % 2 == BASE.MAIN_YARD)
          {
             bExpand.addEventListener(MouseEvent.CLICK,STORE.Show(1,1,["ENL"]));
             bExpand.visible = true;

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1183")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1342")]
    public dynamic class GUARDIANCHAMBERPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
@@ -36,7 +36,7 @@ package
       
       public var tHealth:TextField;
       
-      public var frame:frame2_CLIP;
+      public var frame:frame_CLIP;
       
       public var tEvoDesc:TextField;
       

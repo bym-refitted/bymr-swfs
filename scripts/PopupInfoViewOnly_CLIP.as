@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1931")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2106")]
    public dynamic class PopupInfoViewOnly_CLIP extends MovieClip
    {
       public var mcArrow:MovieClip;
@@ -14,13 +14,17 @@ package
       
       public var tHeight:TextField;
       
+      public var tLabel1:TextField;
+      
+      public var tLabel2:TextField;
+      
       public var txtButtonInfo:TextField;
       
       public var tBonus:TextField;
       
       public var tLocation:TextField;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var mcProfilePic:MovieClip;
       

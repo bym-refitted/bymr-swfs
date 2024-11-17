@@ -3,10 +3,12 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1615")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1774")]
    public dynamic class HATCHERYCCPOPUP_CLIP extends MovieClip
    {
       public var mcRemove6:buttonClose_CLIP;
+      
+      public var tHousingLabel:TextField;
       
       public var monsterLevel7:MovieClip;
       
@@ -127,6 +129,8 @@ package
       public var mcRemove3:buttonClose_CLIP;
       
       public var hatcheryRemove2:buttonClose_CLIP;
+      
+      public var tGooLabel:TextField;
       
       public var tProgress4:TextField;
       

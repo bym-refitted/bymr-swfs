@@ -29,32 +29,8 @@ package
       {
          super();
          this._doStreamPost = false;
-         if(this._doStreamPost && !BASE._isOutpost)
-         {
-            this.streampost_cb = new Checkbox();
-            if(GLOBAL.StatGet("post_bu"))
-            {
-               this.streampost_cb.Checked = true;
-            }
-            else
-            {
-               this.streampost_cb.Checked = false;
-            }
-            addChild(this.streampost_cb);
-            this.streampost_cb.addEventListener(MouseEvent.ROLL_OVER,this.onPostRollOver);
-            this.streampost_cb.addEventListener(MouseEvent.ROLL_OUT,this.onPostRollOut);
-            mcInfoCB.mcText.htmlText = "Ask friends to help speed-up this " + param1 + ".";
-            mcCBBG.tCheckbox.htmlText = "<b>Get Help</b>";
-            mcCBBG.y = mcResources.y + (mcResources.height + 2);
-            this.streampost_cb.x = 220;
-            this.streampost_cb.y = mcResources.y + (mcResources.height + 2);
-            mcInfoCB.y = this.streampost_cb.y - this.streampost_cb.height;
-         }
-         else
-         {
-            mcCBBG.visible = false;
-            mcInfoCB.visible = false;
-         }
+         mcCBBG.visible = false;
+         mcInfoCB.visible = false;
          if(param1 == "build")
          {
             this._building = new BFOUNDATION();
@@ -62,8 +38,8 @@ package
             if(!STORE._storeItems["BUILDING" + this._building._type])
             {
                mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantBuild);
-               mcInstant.bAction.Setup("Use " + this._building.InstantBuildCost() + " Shiny");
-               mcInstant.tDescription.htmlText = "Keep your resources and build instantly!";
+               mcInstant.bAction.Setup(KEYS.Get("buildoptions_shiny",{"v1":this._building.InstantBuildCost()}));
+               mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_buildinstant");
                mcInstant.gCoin.mouseEnabled = false;
             }
          }
@@ -71,16 +47,16 @@ package
          {
             this._building = BUILDINGOPTIONS._building;
             mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantFortify);
-            mcInstant.bAction.Setup("Use " + this._building.InstantFortifyCost() + " Shiny");
-            mcInstant.tDescription.htmlText = "Keep your resources and fortify instantly!";
+            mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._building.InstantFortifyCost()}));
+            mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_fortifyinstant");
             mcInstant.gCoin.mouseEnabled = false;
          }
          else
          {
             this._building = BUILDINGOPTIONS._building;
             mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantUpgrade);
-            mcInstant.bAction.Setup("Use " + this._building.InstantUpgradeCost() + " Shiny");
-            mcInstant.tDescription.htmlText = "Keep your resources and upgrade instantly!";
+            mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._building.InstantUpgradeCost()}));
+            mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_upgradeinstant");
             mcInstant.gCoin.mouseEnabled = false;
          }
          this.toggleCheckbox(false);
@@ -102,7 +78,8 @@ package
          var _loc9_:* = undefined;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
-         var _loc12_:MovieClip = null;
+         var _loc12_:int = 0;
+         var _loc13_:MovieClip = null;
          var _loc2_:* = "";
          var _loc3_:Object = {};
          var _loc4_:* = "";
@@ -163,7 +140,32 @@ package
                }
                _loc4_ += "</font><br>";
             }
-            _loc2_ = "<b>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].name) + "</b><br>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].description);
+            if(Boolean(GLOBAL._buildingProps[this._building._type - 1].names) && GLOBAL._buildingProps[this._building._type - 1].names.length > 1)
+            {
+               _loc10_ = this._building._lvl.Get();
+               if(_loc10_ < 1)
+               {
+                  _loc10_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
+               }
+               _loc2_ = "<b>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].names[_loc10_ - 1]) + "</b><br>";
+            }
+            else
+            {
+               _loc2_ = "<b>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].name) + "</b><br>";
+            }
+            if(Boolean(GLOBAL._buildingProps[this._building._type - 1].descriptions) && GLOBAL._buildingProps[this._building._type - 1].descriptions.length > 1)
+            {
+               _loc10_ = this._building._lvl.Get();
+               if(_loc10_ < 1)
+               {
+                  _loc10_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
+               }
+               _loc2_ += KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].descriptions[_loc10_ - 1]);
+            }
+            else
+            {
+               _loc2_ += KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].description);
+            }
             if(_loc4_ != "")
             {
                _loc2_ += "<br><br>" + KEYS.Get("bdg_upgraderequirements",{"v1":_loc4_});
@@ -174,7 +176,7 @@ package
          else if(param1 == "upgrade")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceUpgrade);
-            mcResources.bAction.Setup("Use Resources");
+            mcResources.bAction.Setup(KEYS.Get("buildoptions_resources"));
             if(this._building._lvl.Get() < this._building._buildingProps.costs.length)
             {
                if(this._building._type != 14)
@@ -246,7 +248,7 @@ package
          else if(param1 == "fortify")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceFortify);
-            mcResources.bAction.Setup("Use Resources");
+            mcResources.bAction.Setup(KEYS.Get("buildoptions_resources"));
             if(Boolean(this._building._buildingProps.can_fortify) && this._building._fortification.Get() < this._building._buildingProps.fortify_costs.length)
             {
                for each(_loc6_ in this._building._buildingProps.fortify_costs[this._building._fortification.Get()].re)
@@ -312,12 +314,20 @@ package
          else if(param1 == "more")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionRecycle);
-            mcResources.bAction.Setup("Recycle");
+            mcResources.bAction.SetupKey("btn_recycle");
             if(this._building._buildingProps.costs.length == 1)
             {
                _loc2_ = KEYS.Get("bdg_morenolevel",{
                   "v1":KEYS.Get(this._building._buildingProps.name),
                   "v2":KEYS.Get(this._building._buildingProps.description),
+                  "v3":this._building._recycleDescription
+               });
+            }
+            else if(this._building._buildingProps.names && this._building._buildingProps.names.length > 1 && Boolean(this._building._buildingProps.descriptions) && this._building._buildingProps.descriptions.length > 1)
+            {
+               _loc2_ = KEYS.Get("bdg_morenolevel",{
+                  "v1":KEYS.Get(this._building._buildingProps.names[this._building._lvl.Get() - 1]),
+                  "v2":KEYS.Get(this._building._buildingProps.descriptions[this._building._lvl.Get() - 1]),
                   "v3":this._building._recycleDescription
                });
             }
@@ -349,37 +359,37 @@ package
          var _loc5_:int = 0;
          if(_loc3_)
          {
-            _loc10_ = int(_loc3_.time);
-            _loc11_ = 1;
-            while(_loc11_ < 5)
+            _loc11_ = int(_loc3_.time);
+            _loc12_ = 1;
+            while(_loc12_ < 5)
             {
-               _loc12_ = this.mcResources["mcR" + _loc11_];
-               _loc12_.gotoAndStop(_loc11_);
-               _loc12_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc11_ - 1]) + "</b>";
-               _loc12_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc11_] > GLOBAL._resources["r" + _loc11_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc11_]) + "</font></b>";
-               if(Boolean(_loc3_["r" + _loc11_]) && _loc3_["r" + _loc11_] > 0)
+               _loc13_ = this.mcResources["mcR" + _loc12_];
+               _loc13_.gotoAndStop(_loc12_);
+               _loc13_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc12_ - 1]) + "</b>";
+               _loc13_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc12_] > GLOBAL._resources["r" + _loc12_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc12_]) + "</font></b>";
+               if(Boolean(_loc3_["r" + _loc12_]) && _loc3_["r" + _loc12_] > 0)
                {
-                  _loc12_.alpha = 1;
+                  _loc13_.alpha = 1;
                }
                else
                {
-                  _loc12_.alpha = 0.25;
+                  _loc13_.alpha = 0.25;
                }
-               _loc11_++;
+               _loc12_++;
             }
-            _loc12_ = this.mcResources.mcTime;
-            _loc12_.gotoAndStop(6);
+            _loc13_ = this.mcResources.mcTime;
+            _loc13_.gotoAndStop(6);
             if(TUTORIAL._stage >= 200 && _loc3_.time > 0)
             {
-               _loc12_.visible = true;
-               _loc12_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[5]) + "</b>";
-               _loc12_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc10_,true,false) + "</b>";
+               _loc13_.visible = true;
+               _loc13_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[5]) + "</b>";
+               _loc13_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc11_,true,false) + "</b>";
             }
             else
             {
-               _loc12_.visible = false;
+               _loc13_.visible = false;
             }
-            if(this._doStreamPost && !BASE._isOutpost)
+            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
             {
                if(_loc3_.time > 10 * 60)
                {
@@ -425,7 +435,7 @@ package
             mcResources.y = mcBG.y + _loc5_ - 63;
             mcInstant.y = mcBG.y + _loc5_ - 100;
          }
-         if(this._doStreamPost && !BASE._isOutpost)
+         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
          {
             mcCBBG.y = mcResources.y + (mcResources.height + 2);
             this.streampost_cb.y = mcResources.y + (mcResources.height + 2);
@@ -460,7 +470,7 @@ package
          }
          else
          {
-            if(this._doStreamPost && !BASE._isOutpost)
+            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
             {
                if(this.streampost_cb.Checked)
                {
@@ -509,11 +519,14 @@ package
                _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
                if(_loc2_)
                {
-                  GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to build this.</b>");
+                  GLOBAL.Message(KEYS.Get("buildoptions_err_moresilos"));
                }
                else
                {
-                  GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to build.</b><br><br>Get the resources and start building for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources",this.TopoffBuild);
+                  GLOBAL.Message(KEYS.Get("buildoptions_err_moreresources",{
+                     "v1":GLOBAL.FormatNumber(_loc3_),
+                     "v2":GLOBAL.FormatNumber(_loc4_)
+                  }),KEYS.Get("btn_getresources"),this.TopoffBuild);
                }
             }
             else if(BASE.addBuildingB(this._building._type))
@@ -559,16 +572,19 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to upgrade this.</b>");
+               GLOBAL.Message(KEYS.Get("buildoptions_err_moresilosupgrade"));
             }
             else
             {
-               GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to upgrade.</b><br><br>Get the resources and start upgrading for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources And Start",this.TopoffUpgrade);
+               GLOBAL.Message(KEYS.Get("buildoptions_err_moreresourcesupgrade",{
+                  "v1":GLOBAL.FormatNumber(_loc3_),
+                  "v2":GLOBAL.FormatNumber(_loc4_)
+               }),KEYS.Get("btn_getresources"),this.TopoffUpgrade);
             }
          }
          else
          {
-            if(this._doStreamPost && !BASE._isOutpost)
+            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
             {
                if(this.streampost_cb.Checked)
                {
@@ -622,11 +638,14 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to fortify this.</b>");
+               GLOBAL.Message(KEYS.Get("buildoptions_err_moresilosfortify"));
             }
             else
             {
-               GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to fortify.</b><br><br>Get the resources and start fortifying for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources And Start",this.TopoffFortify);
+               GLOBAL.Message(KEYS.Get("buildoptions_err_moreresourcesfortify",{
+                  "v1":GLOBAL.FormatNumber(_loc3_),
+                  "v2":GLOBAL.FormatNumber(_loc4_)
+               }),KEYS.Get("btn_getresources"),this.TopoffFortify);
             }
          }
          else if(this._building.Fortify())
@@ -749,7 +768,7 @@ package
                   }
                   _loc6_++;
                }
-               if(this._doStreamPost && !BASE._isOutpost)
+               if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
                {
                   if(this.streampost_cb.Checked)
                   {
@@ -881,6 +900,7 @@ package
          var upgradeImgLen:int = 0;
          var i:int = 0;
          var j:int = 0;
+         var _buildingProps:Object = null;
          var str:String = param1;
          if(str == "fortify")
          {
@@ -973,14 +993,30 @@ package
                imageContainer.Clear();
                imageContainer.addChild(new Bitmap(param2));
             };
-            img = "buildingbuttons/" + this._building._type + ".jpg";
+            _buildingProps = GLOBAL._buildingProps[this._building._type - 1];
+            if(Boolean(_buildingProps.buildingbuttons) && Boolean(BASE._buildingsStored["bl" + this._building._type]) && _buildingProps.buildingbuttons.length >= BASE._buildingsStored["bl" + this._building._type].Get())
+            {
+               img = "buildingbuttons/" + _buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._building._type].Get() - 1] + ".jpg";
+            }
+            else if(Boolean(_buildingProps.buildingbuttons) && _buildingProps.buildingbuttons.length >= this._building._lvl.Get())
+            {
+               img = "buildingbuttons/" + _buildingProps.buildingbuttons[this._building._lvl.Get() - 1] + ".jpg";
+            }
+            else if(Boolean(_buildingProps.buildingbuttons) && _buildingProps.buildingbuttons.length > 0)
+            {
+               img = "buildingbuttons/" + _buildingProps.buildingbuttons[0] + ".jpg";
+            }
+            else
+            {
+               img = "buildingbuttons/" + this._building._type + ".jpg";
+            }
             ImageCache.GetImageWithCallBack(img,DefaultImageLoaded);
          }
       }
       
       private function onPostRollOver(param1:MouseEvent) : *
       {
-         if(this._doStreamPost && !BASE._isOutpost)
+         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
          {
             mcInfoCB.visible = true;
          }
@@ -988,7 +1024,7 @@ package
       
       private function onPostRollOut(param1:MouseEvent) : *
       {
-         if(this._doStreamPost && !BASE._isOutpost)
+         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
          {
             mcInfoCB.visible = false;
          }
@@ -996,7 +1032,7 @@ package
       
       public function toggleCheckbox(param1:Boolean = false) : void
       {
-         if(this._doStreamPost && !BASE._isOutpost)
+         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
          {
             mcInfoCB.visible = false;
             mcCBBG.visible = param1;

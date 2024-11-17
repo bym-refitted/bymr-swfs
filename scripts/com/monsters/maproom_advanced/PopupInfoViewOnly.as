@@ -32,7 +32,7 @@ package com.monsters.maproom_advanced
          {
             View();
          });
-         (mcFrame as frame2).Setup();
+         (mcFrame as frame).Setup();
       }
       
       public function Hide(param1:MouseEvent = null) : *
@@ -57,36 +57,38 @@ package com.monsters.maproom_advanced
          var _loc5_:* = null;
          var _loc6_:* = null;
          this._cell = param1;
+         tLabel1.htmlText = "<b>" + KEYS.Get("popup_label_namelocheight") + "</b>";
+         tLabel2.htmlText = "<b>" + KEYS.Get("popup_label_thisyardhas") + "</b>";
          if(this._cell._base == 3)
          {
             if(this._cell._baseID == MapRoom._inviteBaseID)
             {
-               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + " (Target)</b>";
+               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + " (" + KEYS.Get("map_target") + ")</b>";
             }
             else if(!this._cell._destroyed)
             {
-               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + "</b>";
+               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + "</b>";
             }
             else
             {
-               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
          }
          else if(this._cell._base == 2)
          {
-            tName.htmlText = "<b>" + this._cell._name + "\'s Yard</b>";
+            tName.htmlText = "<b>" + KEYS.Get("map_yardowner",{"v1":this._cell._name}) + "</b>";
             this.ProfilePic();
          }
          else if(this._cell._base == 1)
          {
             if(!this._cell._destroyed)
             {
-               tName.htmlText = "<b>" + this._cell._name + " Tribe</b>";
+               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + "</b>";
             }
             else
             {
-               tName.htmlText = "<b>" + this._cell._name + " Tribe (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
          }
@@ -216,12 +218,12 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE._isOutpost = 0;
+            BASE._yardType = BASE.MAIN_YARD;
             BASE.LoadBase(null,null,this._cell._baseID,"wmview");
          }
          else
          {
-            BASE._isOutpost = this._cell._base == 3 ? 1 : 0;
+            BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
             BASE.LoadBase(null,null,this._cell._baseID,"view");
          }
       }

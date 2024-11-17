@@ -30,12 +30,19 @@ package
             mcImage.height = 200;
          };
          super();
-         ImageCache.GetImageWithCallBack("specialevent/monsterinvasionbannerred.jpg",bannerComplete);
-         ImageCache.GetImageWithCallBack("specialevent/extension.png",imageComplete);
+         ImageCache.GetImageWithCallBack(SPECIALEVENT.BANNERIMAGE,bannerComplete);
+         ImageCache.GetImageWithCallBack("specialevent/wmi2_4-v2.png",imageComplete);
          mcFrame.Setup(true);
-         closeBtn.Setup(KEYS.Get("btn_close"),false,0,0);
-         closeBtn.addEventListener(MouseEvent.CLICK,this.CloseButtonClicked);
-         mcText.htmlText = KEYS.Get("wmi_extension");
+         if(SPECIALEVENT.wave == 1)
+         {
+            closeBtn.Setup(KEYS.Get("wmi_buttonpopup2"),false,0,0);
+            closeBtn.addEventListener(MouseEvent.CLICK,this.CloseButtonClicked);
+         }
+         else
+         {
+            closeBtn.visible = false;
+         }
+         mcText.htmlText = KEYS.Get("wmi2_popup4");
          _open = true;
       }
       

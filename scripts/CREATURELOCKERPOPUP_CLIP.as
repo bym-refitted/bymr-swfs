@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1096")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1275")]
    public dynamic class CREATURELOCKERPOPUP_CLIP extends MovieClip
    {
       public var bNext:Button_CLIP;
@@ -54,7 +54,7 @@ package
       
       public var mcImage:MovieClip;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var goo_txt:TextField;
       

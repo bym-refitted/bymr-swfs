@@ -14,8 +14,6 @@ package
    {
       public var _animMC:*;
       
-      public var _frameNumber:int;
-      
       public var _animBitmap:BitmapData;
       
       private var _gunballs:Array = [];
@@ -33,7 +31,7 @@ package
       public function BUILDING118()
       {
          super();
-         this._frameNumber = 0;
+         _frameNumber = 0;
          _type = 118;
          _top = 15;
          _footprint = [new Rectangle(0,0,70,70)];
@@ -71,7 +69,7 @@ package
             _loc6_ /= 12;
             _animTick = int(_loc6_);
             this.AnimFrame();
-            ++this._frameNumber;
+            ++_frameNumber;
          }
       }
       
@@ -264,7 +262,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

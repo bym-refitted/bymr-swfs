@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1449")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1608")]
    public dynamic class GUARDIANCAGEPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
@@ -80,7 +80,7 @@ package
       
       public var bHealth2:MovieClip;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var tHP:TextField;
       

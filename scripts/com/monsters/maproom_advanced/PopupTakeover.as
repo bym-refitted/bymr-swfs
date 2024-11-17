@@ -76,30 +76,30 @@ package com.monsters.maproom_advanced
          {
             if(this._cell._height > GLOBAL._averageAltitude.Get())
             {
-               bonusStr = "This yard has a " + bonusTower + "% range bonus for towers.";
+               bonusStr = KEYS.Get("bonus_towerrange",{"v1":bonusTower});
             }
             else
             {
-               bonusStr = "This yard has a " + bonusResource + "% resource production bonus.";
+               bonusStr = KEYS.Get("bonus_resourceproduction",{"v1":bonusResource});
             }
          }
          if(this._cell._base == 1)
          {
-            this.tTitle.htmlText = "<b>Take over this Wild Monster Yard</b>";
+            this.tTitle.htmlText = "<b>" + KEYS.Get("takeover_wildmonsteryard") + "</b>";
          }
          else
          {
-            this.tTitle.htmlText = "<b>Take Over " + this._cell._name + "\'s Outpost</b>";
+            this.tTitle.htmlText = "<b>" + KEYS.Get("takeover_outpost",{"v1":this._cell._name}) + "</b>";
          }
-         this.tDescription.htmlText = "<b>Expand your empire! " + (!!bonusStr ? bonusStr : "") + "</b>";
+         this.tDescription.htmlText = "<b>" + KEYS.Get("takeover_expand") + (!!bonusStr ? " " + bonusStr : "") + "</b>";
          this.mcResources.mcTime.visible = false;
-         this.mcResources.bAction.Setup("Use Resources");
+         this.mcResources.bAction.SetupKey("btn_useresources");
          this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
             TakeOverConfirm(false);
          });
-         this.mcInstant.bAction.Setup("Use " + this._shinyCost.Get() + " Shiny");
-         this.mcInstant.tDescription.htmlText = "Keep your resources and takeover instantly!";
+         this.mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._shinyCost.Get()}));
+         this.mcInstant.tDescription.htmlText = KEYS.Get("takeover_instant");
          this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
             TakeOverConfirm(true);
@@ -141,20 +141,20 @@ package com.monsters.maproom_advanced
                GLOBAL._attackerCellsInRange = [];
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
-               BASE._isOutpost = 1;
+               BASE._yardType = BASE.OUTPOST;
                BASE.LoadBase(null,null,_cell._baseID,"build");
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
             else
             {
-               GLOBAL.Message("There was a problem taking over this yard. " + param1.error);
+               GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.error);
             }
             Hide();
          };
          takeoverError = function(param1:IOErrorEvent):*
          {
             Hide();
-            GLOBAL.Message("There was a problem taking over this yard:" + param1.text);
+            GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.text);
          };
          if(useShiny)
          {

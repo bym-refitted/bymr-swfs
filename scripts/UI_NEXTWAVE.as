@@ -19,7 +19,7 @@ package
          {
             return false;
          }
-         if(BASE._isOutpost)
+         if(BASE._yardType != BASE.MAIN_YARD)
          {
             return false;
          }
@@ -27,7 +27,7 @@ package
          {
             return false;
          }
-         if(SPECIALEVENT.GetTimeUntilEnd() < 0)
+         if(!SPECIALEVENT.EventActive())
          {
             return false;
          }
@@ -71,7 +71,7 @@ package
       public function WaveShow(param1:MouseEvent) : void
       {
          var _loc7_:bubblepopupDownBuff = null;
-         if(SPECIALEVENT.wave >= SPECIALEVENT.BONUSWAVE)
+         if(SPECIALEVENT.wave >= SPECIALEVENT.EVENTEND)
          {
             return;
          }
@@ -88,12 +88,6 @@ package
             _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
             _loc7_.x = 20;
             _loc7_.y = -20;
-            if(SPECIALEVENT.wave == 25)
-            {
-               _loc7_.mcBG.height += 55;
-               _loc7_.mcArrow.y += 55;
-               _loc7_.y -= 45;
-            }
             _loc7_.mcArrow.x = 30;
          }
          else

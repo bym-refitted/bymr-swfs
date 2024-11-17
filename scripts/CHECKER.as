@@ -7,6 +7,8 @@ package
    {
       private static var displayed:Boolean;
       
+      private static var checkedAllYards:Boolean = false;
+      
       public function CHECKER()
       {
          super();
@@ -14,57 +16,83 @@ package
       
       public static function Check() : *
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:Number = NaN;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         if(!BASE._isOutpost)
+         var _loc4_:* = undefined;
+         var _loc5_:* = undefined;
+         var _loc6_:Number = NaN;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc1_:Array = ["e62d46a32543629641c35d4358f4865f","280d2443b3ac8d0f0ab08b7c796b0dfc","17442f0d163d87e0581f9218f0cbd62e"];
+         if(GLOBAL._local && !checkedAllYards)
          {
-            if(GLOBAL.Check() != "793ea934506b9c8ed367f5e53edfa52a")
+            checkedAllYards = true;
+            GLOBAL._buildingProps = GLOBAL._yardProps;
+            if(GLOBAL.Check() != _loc1_[0])
             {
-               if(GLOBAL.Check() == "7e7e8c0038240f52b4c59ef887821d0a")
-               {
-                  LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch " + GLOBAL.Check());
-               }
-               else
-               {
-                  LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
-                  GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
-               }
+               GLOBAL.ErrorMessage("Fix the main yard checker, it\'s wrong",GLOBAL.ERROR_ORANGE_BOX_ONLY);
+            }
+            GLOBAL._buildingProps = GLOBAL._outpostProps;
+            if(GLOBAL.Check() != _loc1_[1])
+            {
+               GLOBAL.ErrorMessage("Fix the outpost checker, it\'s wrong",GLOBAL.ERROR_ORANGE_BOX_ONLY);
+            }
+            GLOBAL._buildingProps = INFERNOYARDPROPS._infernoYardProps;
+            if(GLOBAL.Check() != _loc1_[2])
+            {
+               GLOBAL.ErrorMessage("Fix the inferno yard checker, it\'s wrong",GLOBAL.ERROR_ORANGE_BOX_ONLY);
+            }
+            switch(BASE._yardType)
+            {
+               case BASE.INFERNO_YARD:
+                  GLOBAL._buildingProps = INFERNOYARDPROPS._infernoYardProps;
+                  break;
+               case BASE.OUTPOST:
+                  GLOBAL._buildingProps = GLOBAL._outpostProps;
+                  break;
+               case BASE.MAIN_YARD:
+               default:
+                  GLOBAL._buildingProps = GLOBAL._yardProps;
             }
          }
-         else if(GLOBAL.Check() != "7e7e8c0038240f52b4c59ef887821d0a")
+         var _loc2_:String = GLOBAL.Check();
+         if(_loc2_ != _loc1_[BASE._yardType])
          {
-            if(GLOBAL.Check() == "793ea934506b9c8ed367f5e53edfa52a")
+            if(_loc2_ != _loc1_[0] && _loc2_ != _loc1_[1] && _loc2_ != _loc1_[2] && _loc2_ != _loc1_[3])
             {
-               LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch " + GLOBAL.Check());
+               LOGGER.Log("hak","CHECKER.buildingprops " + BASE._yardType + " " + _loc2_);
+               GLOBAL.ErrorMessage("CHECKER.buildingprops " + BASE._yardType);
             }
             else
             {
-               LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
-               GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
+               LOGGER.Log("err","CHECKER.buildingprops yard mismatch " + BASE._yardType + " " + _loc2_);
             }
          }
          if(!GLOBAL._flags.kongregate && !GLOBAL._flags.viximo)
          {
-            if(QUESTS.CheckB() != "c0cf095e090535eb44828f8b28687400")
+            if(BASE._yardType >= BASE.INFERNO_YARD)
             {
-               LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
-               GLOBAL.ErrorMessage("CHECKER.Quests");
+               if(QUESTS.CheckB() != "bdc7a255333b53d12418cb60883fa547")
+               {
+                  LOGGER.Log("err","CHECKER.Quests FB " + QUESTS.CheckB());
+                  GLOBAL.ErrorMessage("CHECKER.Quests FB");
+               }
+            }
+            else if(QUESTS.CheckB() != "c0cf095e090535eb44828f8b28687400")
+            {
+               LOGGER.Log("err","CHECKER.Quests FB " + QUESTS.CheckB());
+               GLOBAL.ErrorMessage("CHECKER.Quests FB");
             }
          }
          else if(QUESTS.CheckB() != "828e0e95c8b19c4586d0a820ea2bc162")
          {
-            LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
-            GLOBAL.ErrorMessage("CHECKER.Quests");
+            LOGGER.Log("err","CHECKER.Quests K/V " + QUESTS.CheckB());
+            GLOBAL.ErrorMessage("CHECKER.Quests K/V");
          }
          if(CHAMPIONCAGE.Check() != "99fa0737508999fe1bb4cce06cac4e2e")
          {
             LOGGER.Log("hak","CHECKER.Guardian " + CHAMPIONCAGE.Check());
             GLOBAL.ErrorMessage("CHECKER.GUARDIANCAGE");
          }
-         if(CREATURELOCKER.Check() != "4f23177e5caa74b4abd2ef4af7fd4107")
+         if(CREATURELOCKER.Check() != "3598a0066c04d0a2650a1e34e6dd1dae")
          {
             LOGGER.Log("hak","CHECKER.Creatures " + CREATURELOCKER.Check());
             GLOBAL.ErrorMessage("CHECKER.CREATURES");
@@ -182,69 +210,69 @@ package
                MapRoom._mc.Check();
             }
          }
-         var _loc1_:Boolean = false;
-         for(_loc2_ in BASE._buildingsAll)
+         var _loc3_:Boolean = false;
+         for(_loc4_ in BASE._buildingsAll)
          {
-            _loc3_ = BASE._buildingsAll[_loc2_];
-            if(Boolean(_loc3_._hpLvl) && _loc3_._hpLvl != _loc3_._lvl.Get())
+            _loc5_ = BASE._buildingsAll[_loc4_];
+            if(Boolean(_loc5_._hpLvl) && _loc5_._hpLvl != _loc5_._lvl.Get())
             {
                LOGGER.Log("log","CHECKER.building-level");
                GLOBAL.ErrorMessage("CHECKER.building-level");
             }
-            if(!_loc1_ && !GLOBAL._catchup && _loc3_._class == "resource")
+            if(!_loc3_ && !GLOBAL._catchup && _loc5_._class == "resource")
             {
-               _loc4_ = Number(_loc3_._stored.Get());
-               _loc5_ = int(_loc3_._countdownProduce.Get());
-               _loc3_._stored.Set(0);
-               _loc3_._countdownProduce.Set(10);
-               _loc3_.Tick();
-               if(_loc3_._stored.Get() != 0)
+               _loc6_ = Number(_loc5_._stored.Get());
+               _loc7_ = int(_loc5_._countdownProduce.Get());
+               _loc5_._stored.Set(0);
+               _loc5_._countdownProduce.Set(10);
+               _loc5_.Tick();
+               if(_loc5_._stored.Get() != 0)
                {
                   LOGGER.Log("hak","CHECKER.building-tick 1");
                   GLOBAL.ErrorMessage("CHECKER.building-tick 1");
                }
-               _loc6_ = int(_loc3_._buildingProps.produce[_loc3_._lvl.Get() - 1]);
-               if(Boolean(GLOBAL._advancedMap) && Boolean(BASE._isOutpost))
+               _loc8_ = int(_loc5_._buildingProps.produce[_loc5_._lvl.Get() - 1]);
+               if(Boolean(GLOBAL._advancedMap) && BASE._yardType == BASE.OUTPOST)
                {
-                  _loc6_ = BRESOURCE.AdjustProduction(GLOBAL._currentCell,_loc6_);
+                  _loc8_ = BRESOURCE.AdjustProduction(GLOBAL._currentCell,_loc8_);
                }
                if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
                {
-                  _loc6_ *= GLOBAL._harvesterOverdrivePower.Get();
+                  _loc8_ *= GLOBAL._harvesterOverdrivePower.Get();
                }
-               _loc3_._stored.Set(0);
-               _loc3_._countdownProduce.Set(1);
-               _loc3_.Tick();
-               if(_loc3_._stored.Get() > _loc6_)
+               _loc5_._stored.Set(0);
+               _loc5_._countdownProduce.Set(1);
+               _loc5_.Tick();
+               if(_loc5_._stored.Get() > _loc8_)
                {
-                  if(_loc3_._stored.Get() / 2 > _loc6_)
+                  if(_loc5_._stored.Get() / 2 > _loc8_)
                   {
-                     LOGGER.Log("err","CHECKER.building-tick 2 expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
+                     LOGGER.Log("err","CHECKER.building-tick 2 expected: " + _loc8_ + " actual: " + _loc5_._stored.Get());
                      GLOBAL.ErrorMessage("CHECKER.building-tick 2");
                   }
                   else
                   {
-                     LOGGER.Log("err","CHECKER.building-tick 2 LOW ERROR expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
+                     LOGGER.Log("err","CHECKER.building-tick 2 LOW ERROR expected: " + _loc8_ + " actual: " + _loc5_._stored.Get());
                   }
                }
-               if(_loc3_._countdownProduce.Get() <= 0)
+               if(_loc5_._countdownProduce.Get() <= 0)
                {
                   LOGGER.Log("hak","CHECKER.building-tick 3");
                   GLOBAL.ErrorMessage("CHECKER.building-tick 3");
                }
-               _loc1_ = true;
-               _loc3_._stored.Set(_loc4_);
-               _loc3_._countdownProduce.Set(_loc5_);
+               _loc3_ = true;
+               _loc5_._stored.Set(_loc6_);
+               _loc5_._countdownProduce.Set(_loc7_);
             }
          }
-         _loc2_ = 1;
-         while(_loc2_ < 5)
+         _loc4_ = 1;
+         while(_loc4_ < 5)
          {
-            if(Boolean(ATTACK["_hpLoot" + _loc2_]) && ATTACK["_hpLoot" + _loc2_] != ATTACK._loot["r" + _loc2_].Get())
+            if(Boolean(ATTACK["_hpLoot" + _loc4_]) && ATTACK["_hpLoot" + _loc4_] != ATTACK._loot["r" + _loc4_].Get())
             {
-               LOGGER.Log("log","CHECKER.loot" + _loc2_ + ": " + ATTACK["_hpLoot" + _loc2_] + " instead of " + ATTACK._loot["r" + _loc2_].Get());
+               LOGGER.Log("log","CHECKER.loot" + _loc4_ + ": " + ATTACK["_hpLoot" + _loc4_] + " instead of " + ATTACK._loot["r" + _loc4_].Get());
             }
-            _loc2_++;
+            _loc4_++;
          }
       }
    }

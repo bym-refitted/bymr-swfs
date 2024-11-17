@@ -143,12 +143,23 @@ package
          }
       }
       
-      public static function Spawn(param1:String, param2:*, param3:String, param4:Point, param5:Number, param6:Point = null, param7:BFOUNDATION = null) : CREEP
+      public static function Spawn(param1:String, param2:*, param3:String, param4:Point, param5:Number, param6:Point = null, param7:BFOUNDATION = null) : *
       {
-         var _loc8_:CREEP = null;
+         var _loc8_:* = undefined;
+         if(!CREATURELOCKER._creatures[param1])
+         {
+            return null;
+         }
          ++_creatureID;
          ++_creatureCount;
-         _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP(param1,param3,param4,param5,param6,true,param7));
+         if(BASE.isInferno() || param1.substr(0,1) == "I")
+         {
+            _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP_INFERNO(param1,param3,param4,param5,param6,true,param7));
+         }
+         else
+         {
+            _loc8_ = MAP._BUILDINGTOPS.addChild(new CREEP(param1,param3,param4,param5,param6,true,param7));
+         }
          _creatures[_creatureID] = _loc8_;
          if(GLOBAL._render)
          {

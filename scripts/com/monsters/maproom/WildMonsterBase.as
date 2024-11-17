@@ -62,6 +62,7 @@ package com.monsters.maproom
       {
          super();
          this.popUp = new MapBasePopup();
+         this.popUp.title_txt.htmlText = "<b>" + KEYS.Get("map_options") + "</b>";
          this.popUp.x = 21;
          this.popUp.y = 40;
          this.addChild(this.popUp);
@@ -164,9 +165,8 @@ package com.monsters.maproom
       
       private function onPortraitComplete(param1:String, param2:BitmapData) : void
       {
-         var _loc4_:int = 0;
          var _loc3_:int = placeholder.x;
-         _loc4_ = placeholder.y;
+         var _loc4_:int = placeholder.y;
          this.imageLoadState = 2;
          var _loc5_:Bitmap = new Bitmap(param2);
          _loc5_.height = 44;

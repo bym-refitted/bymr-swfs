@@ -14,6 +14,7 @@ package com.monsters.maproom_advanced
    import flash.events.*;
    import flash.geom.Point;
    import flash.utils.getTimer;
+   import flash.xml.XMLDocument;
    
    public class MapRoom
    {
@@ -123,6 +124,7 @@ package com.monsters.maproom_advanced
             _migrateThread = param5;
          }
          _bubbleSelectTarget = new bubble_selecttarget();
+         _bubbleSelectTarget.tDesc.htmlText = "<b>" + KEYS.Get("bubble_selecttarget_desc") + "</b>";
          _bubbleSelectTarget.bCancel.SetupKey("btn_cancel");
          _bubbleSelectTarget.bCancel.addEventListener(MouseEvent.CLICK,TransferCancel);
          _bubbleSelectTarget.x = 270;
@@ -167,14 +169,14 @@ package com.monsters.maproom_advanced
             GLOBAL.Message(KEYS.Get("map_msg_disabled"));
             return;
          }
-         if((BASE._isOutpost || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
+         if((BASE._yardType || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
          {
             PLEASEWAIT.Show(KEYS.Get("newmap_opening"));
             if(_open)
             {
                Hide();
             }
-            GLOBAL._showMapWaiting = true;
+            GLOBAL._showMapWaiting = 1;
          }
          else
          {
@@ -210,7 +212,7 @@ package com.monsters.maproom_advanced
       
       public static function ShowDelayed(param1:Boolean = false) : void
       {
-         if(param1 || _reposition || (BASE._isOutpost || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
+         if(param1 || _reposition || (BASE._yardType || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
          {
             SOUNDS.Play("click1");
             _open = true;
@@ -329,7 +331,7 @@ package com.monsters.maproom_advanced
       {
          if(ALLIANCES._myAlliance)
          {
-            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
+            GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
             return;
          }
          _popupRelocateMe = new PopupRelocateMe();
@@ -349,7 +351,7 @@ package com.monsters.maproom_advanced
          var useShiny:Boolean = param1;
          if(ALLIANCES._myAlliance)
          {
-            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
+            GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
             return;
          }
          if(Boolean(_migrateThread) && _inviteBaseID != 0)
@@ -390,7 +392,7 @@ package com.monsters.maproom_advanced
                      ClearCells();
                      Setup(GLOBAL._mapHome);
                      _reposition = true;
-                     GLOBAL._showMapWaiting = true;
+                     GLOBAL._showMapWaiting = 1;
                   }
                }
                else
@@ -425,7 +427,7 @@ package com.monsters.maproom_advanced
             {
                if(GLOBAL._resources.r1.Get() < RESOURCECOST.Get() || GLOBAL._resources.r2.Get() < RESOURCECOST.Get() || GLOBAL._resources.r3.Get() < RESOURCECOST.Get() || GLOBAL._resources.r4.Get() < RESOURCECOST.Get())
                {
-                  GLOBAL.Message("You don’t have enough resources to relocate.");
+                  GLOBAL.Message(KEYS.Get("map_rel_res"));
                   return;
                }
                loadvars.push(["resources",com.adobe.serialization.json.JSON.encode({
@@ -475,7 +477,7 @@ package com.monsters.maproom_advanced
                      Hide();
                      ClearCells();
                      Setup(GLOBAL._mapHome);
-                     BASE._isOutpost = 0;
+                     BASE._yardType = BASE.MAIN_YARD;
                      BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build");
                   }
                   else
@@ -631,6 +633,16 @@ package com.monsters.maproom_advanced
       
       public static function AddBookmark(param1:String, param2:Boolean = true) : Object
       {
+         param1 = param1.replace(/\<.*?>/g,"");
+         var _loc4_:XMLDocument = new XMLDocument(param1);
+         if((_loc4_) && _loc4_.firstChild && Boolean(_loc4_.firstChild.nodeValue))
+         {
+            param1 = _loc4_.firstChild.nodeValue;
+         }
+         else
+         {
+            param1 = KEYS.Get("str_blank");
+         }
          if(param1.length == 0)
          {
             return {
@@ -659,24 +671,24 @@ package com.monsters.maproom_advanced
                "message":KEYS.Get("newmap_bm_full")
             };
          }
-         var _loc4_:int = int(_bookmarks.length);
-         var _loc5_:int = 0;
-         while(_loc5_ < _loc4_)
+         var _loc5_:int = int(_bookmarks.length);
+         var _loc6_:int = 0;
+         while(_loc6_ < _loc5_)
          {
-            if(_bookmarks[_loc5_].location.x == _currentPosition.x && _bookmarks[_loc5_].location.y == _currentPosition.y)
+            if(_bookmarks[_loc6_].location.x == _currentPosition.x && _bookmarks[_loc6_].location.y == _currentPosition.y)
             {
                return {
                   "hide":true,
                   "message":KEYS.Get("newmap_bm_done")
                };
             }
-            _loc5_++;
+            _loc6_++;
          }
          if(param2)
          {
-            BookmarkDataSet("mbm" + _loc4_,_currentPosition.x * 10000 + _currentPosition.y,false);
-            BookmarkDataSetStr("mbmn" + _loc4_,param1,false);
-            BookmarkDataSet("mbms",_loc4_ + 1);
+            BookmarkDataSet("mbm" + _loc5_,_currentPosition.x * 10000 + _currentPosition.y,false);
+            BookmarkDataSetStr("mbmn" + _loc5_,param1,false);
+            BookmarkDataSet("mbms",_loc5_ + 1);
          }
          _bookmarks.push({
             "name":param1,
@@ -914,13 +926,12 @@ package com.monsters.maproom_advanced
          {
             if(targetCell._mine)
             {
-               PLEASEWAIT.Show();
+               PLEASEWAIT.Show(KEYS.Get("wait_processing"));
                _mc.HideMonstersB();
                if(targetCell._monsters && _monsterSource && targetCell._monsterData.space.Get() > 0)
                {
                   transferSuccessful = function(param1:Object):void
                   {
-                     var _loc2_:int = 0;
                      PLEASEWAIT.Hide();
                      if(param1.error == 0)
                      {
@@ -932,51 +943,46 @@ package com.monsters.maproom_advanced
                         {
                            GLOBAL.Message(KEYS.Get("newmap_tr_space",{"v1":_monstersTransferred}));
                         }
-                        _loc2_ = 1;
-                        while(_loc2_ < 5)
+                        for(dst in finalMonsters)
                         {
-                           for(dst in finalMonsters)
+                           if(targetCell._monsters[dst])
                            {
-                              if(targetCell._monsters[dst])
+                              targetCell._monsters[dst].Set(finalMonsters[dst]);
+                              targetCell._hpMonsters[dst] = finalMonsters[dst];
+                           }
+                           else
+                           {
+                              targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
+                              targetCell._hpMonsters[dst] = finalMonsters[dst];
+                           }
+                        }
+                        if(_monsterSource)
+                        {
+                           for(src in finalSrcMonsters)
+                           {
+                              if(finalSrcMonsters[src] > 0)
                               {
-                                 targetCell._monsters[dst].Set(finalMonsters[dst]);
-                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
+                                 _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
+                                 _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
                               }
                               else
                               {
-                                 targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
-                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
+                                 delete _monsterSource._monsters[src];
+                                 delete _monsterSource._hpMonsters[src];
                               }
                            }
-                           if(_monsterSource)
-                           {
-                              for(src in finalSrcMonsters)
-                              {
-                                 if(finalSrcMonsters[src] > 0)
-                                 {
-                                    _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
-                                    _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
-                                 }
-                                 else
-                                 {
-                                    delete _monsterSource._monsters[src];
-                                    delete _monsterSource._hpMonsters[src];
-                                 }
-                              }
-                           }
-                           _loc2_++;
                         }
                      }
                      else
                      {
-                        GLOBAL.Message("There was a problem with the transfer: " + param1.error);
+                        GLOBAL.Message(KEYS.Get("msg_err_transfer") + param1.error);
                      }
                      _monsterTransfer = {};
                   };
                   transferError = function(param1:IOErrorEvent):void
                   {
                      PLEASEWAIT.Hide();
-                     GLOBAL.Message("There was a problem with the transfer:" + param1.text);
+                     GLOBAL.Message(KEYS.Get("msg_err_transfer") + param1.text);
                      _monsterTransfer = {};
                   };
                   actualTransfer = {};

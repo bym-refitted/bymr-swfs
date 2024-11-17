@@ -11,7 +11,6 @@ package
    import com.monsters.effects.particles.ParticleText;
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.maproom_advanced.MapRoom;
-   import com.monsters.maproom_advanced.MapRoomCell;
    import com.monsters.maproom_advanced.PopupLostMainBase;
    import com.monsters.pathing.PATHING;
    import com.monsters.radio.RADIO;
@@ -88,6 +87,8 @@ package
       
       public static var _loading:Boolean;
       
+      public static var _infernoSaveLoad:Boolean;
+      
       public static var _lastProcessed:int;
       
       public static var _lastProcessedB:int;
@@ -109,6 +110,10 @@ package
       public static var _buildingsWalls:Object;
       
       public static var _buildingsTowers:Object;
+      
+      public static var _buildingsBunkers:Object;
+      
+      public static var _buildingsHousing:Array;
       
       public static var _buildingsMain:Object;
       
@@ -208,9 +213,17 @@ package
       
       public static var _allianceArmamentTime:SecNum = new SecNum(0);
       
-      public static var _loadedOutpost:int = 0;
+      public static var _loadedYardType:int = 0;
       
-      public static var _isOutpost:int = 0;
+      public static const MAIN_YARD:int = 0;
+      
+      public static const OUTPOST:int = 1;
+      
+      public static const INFERNO_YARD:int = 2;
+      
+      public static const INFERNO_OUTPOST:int = 3;
+      
+      public static var _yardType:int = INFERNO_YARD;
       
       public static var _userDigits:Array = [];
       
@@ -234,6 +247,8 @@ package
       
       public static function Setup() : *
       {
+         _buildingsHousing = [];
+         _buildingsBunkers = {};
          _pendingPurchase = [];
          _buildingCount = 0;
          _processing = false;
@@ -252,6 +267,7 @@ package
          _saveErrors = 0;
          _pageErrors = 0;
          _lastSaved = 0;
+         _infernoSaveLoad = false;
          _isProtected = 0;
          _isReinforcements = 0;
          _isSanctuary = 0;
@@ -329,7 +345,6 @@ package
          GLOBAL._bLocker = null;
          GLOBAL._bMap = null;
          GLOBAL._bStore = null;
-         GLOBAL._bTotem = null;
          UI2.Hide("warning");
          UI2.Hide("scareAway");
          WMATTACK._inProgress = false;
@@ -369,38 +384,45 @@ package
          };
       }
       
-      public static function LoadBase(param1:String = null, param2:int = 0, param3:int = 0, param4:String = "build", param5:Boolean = false) : *
+      public static function LoadBase(param1:String = null, param2:int = 0, param3:int = 0, param4:String = "build", param5:Boolean = false, param6:int = -1) : *
       {
          if(Boolean(GLOBAL._advancedMap) && MapRoom._open)
          {
             MapRoom.Hide();
          }
-         if(!GLOBAL._advancedMap && param4 == "attack" && GLOBAL._mode != "build")
+         if(!GLOBAL._advancedMap && (param4 == "attack" || param4 == "iattack") && (GLOBAL._mode != "build" && GLOBAL._mode != "ibuild"))
          {
             return;
+         }
+         if(MAPROOM_DESCENT._inDescent && (param6 == MAIN_YARD || param6 == OUTPOST))
+         {
+            MAPROOM_DESCENT.ExitDescent();
          }
          if(!_loading)
          {
             GLOBAL._reloadonerror = param5;
             if(param3 == 0 && param2 == 0)
             {
-               param4 = "build";
+               if(param4 != "ibuild")
+               {
+                  param4 = "build";
+               }
             }
-            if((param4 == "attack" || param4 == "wmattack") && (!GLOBAL._advancedMap && (!GLOBAL._bFlinger || !GLOBAL._bFlinger._canFunction)))
+            if((param4 == "attack" || param4 == "wmattack") && (!GLOBAL._advancedMap && (!GLOBAL._bFlinger || !GLOBAL._bFlinger._canFunction) && !isInferno()))
             {
                LOGGER.Log("err","Impossible fling");
                GLOBAL.ErrorMessage("BASE.LoadBase impossible fling");
                return false;
             }
-            _loadBase = [param1,param2,param3,param4];
-            if(!GLOBAL._advancedMap && (param4 == "attack" || param4 == "wmattack"))
+            _loadBase = [param1,param2,param3,param4,param6];
+            if(!GLOBAL._advancedMap && (param4 == "attack" || param4 == "wmattack" || param4 == "iattack" || param4 == "iwmattack"))
             {
                PLEASEWAIT.Show(KEYS.Get("msg_preparing"));
                BASE.Save(0,false,true);
             }
             else if(!_saving)
             {
-               if(param4 == "attack" || param4 == "wmattack")
+               if(param4 == "attack" || param4 == "wmattack" || param4 == "iattack" || param4 == "iwmattack")
                {
                }
                LoadBaseB();
@@ -415,12 +437,13 @@ package
          var _loc1_:int = int(_loadBase[1]);
          var _loc2_:int = int(_loadBase[2]);
          var _loc3_:String = _loadBase[3];
+         var _loc4_:int = int(_loadBase[4]);
          _loadBase = [];
          GLOBAL.Setup(_loc3_);
-         Load(GLOBAL._baseURL2,_loc1_,_loc2_);
+         Load(GLOBAL._baseURL2,_loc1_,_loc2_,_loc4_);
       }
       
-      public static function Load(param1:String = null, param2:int = 0, param3:int = 0) : *
+      public static function Load(param1:String = null, param2:int = 0, param3:int = 0, param4:int = -1) : *
       {
          var t:*;
          var tmpMode:String;
@@ -436,6 +459,7 @@ package
          var url:String = param1;
          var userid:int = param2;
          var baseid:int = param3;
+         var yardtype:int = param4;
          handleLoadSuccessful = function(param1:Object):*
          {
             var TauntB:Function;
@@ -469,7 +493,7 @@ package
                   ExternalInterface.call("cc.recordStats","baseend");
                   _loadedSomething = true;
                }
-               if(GLOBAL._mode == "build")
+               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
                   GLOBAL._openBase = null;
                }
@@ -514,7 +538,7 @@ package
                if(GLOBAL._mode == "build")
                {
                   _loadedFriendlyBaseID = obj.baseid;
-                  _loadedOutpost = _isOutpost;
+                  _loadedYardType = _yardType;
                }
                _loadedFBID = obj.fbid;
                _userID = obj.userid;
@@ -526,7 +550,7 @@ package
                   _userDigits.push(int(idstr.charAt(ix)));
                   ix++;
                }
-               if(GLOBAL._mode == "build" && !_isOutpost)
+               if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD && !isInferno())
                {
                   if(obj.alliancedata)
                   {
@@ -559,7 +583,14 @@ package
                }
                if(obj.usemap)
                {
-                  GLOBAL._advancedMap = obj.usemap;
+                  if(isInferno())
+                  {
+                     GLOBAL._advancedMap = 0;
+                  }
+                  else
+                  {
+                     GLOBAL._advancedMap = obj.usemap;
+                  }
                }
                if(GLOBAL._advancedMap)
                {
@@ -612,6 +643,10 @@ package
                _resources.r2 = new SecNum(int(r.r2));
                _resources.r3 = new SecNum(int(r.r3));
                _resources.r4 = new SecNum(int(r.r4));
+               _resources.r1bonus = r.r1bonus;
+               _resources.r2bonus = r.r2bonus;
+               _resources.r3bonus = r.r3bonus;
+               _resources.r4bonus = r.r4bonus;
                if(Boolean(obj.updates) && obj.updates.length > 0)
                {
                   UPDATES.Process(obj.updates);
@@ -637,7 +672,7 @@ package
                {
                   if(bd.t == 14)
                   {
-                     if(Boolean(_isOutpost) && (GLOBAL._currentCell && GLOBAL._currentCell._base == 3))
+                     if(_yardType % 2 == OUTPOST && (GLOBAL._currentCell && GLOBAL._currentCell._base == 3))
                      {
                         LOGGER.Log("err","Base ID " + _loadedBaseID + " outpost w TH bdg");
                         GLOBAL.ErrorMessage("BASE.Process outpost w TH");
@@ -646,7 +681,7 @@ package
                   }
                   if(bd.t == 112)
                   {
-                     if(!_isOutpost && (GLOBAL._currentCell && GLOBAL._currentCell._base != 3))
+                     if(_yardType % 2 == MAIN_YARD && (GLOBAL._currentCell && GLOBAL._currentCell._base != 3))
                      {
                         LOGGER.Log("err","Base ID " + _loadedBaseID + " yard w OP bdg");
                         GLOBAL.ErrorMessage("BASE.Process yard w outpost");
@@ -723,8 +758,12 @@ package
                {
                   _wmID = obj.wmid;
                }
+               if(GLOBAL._otherStats && GLOBAL._otherStats.descentLvl && GLOBAL._mode == "build")
+               {
+                  GLOBAL._inInferno = obj.stats.other.descentLvl > MAPROOM_DESCENT._descentLvlMax ? 1 : 0;
+               }
                ACADEMY.Data(obj.academy);
-               if(GLOBAL._mode == "build" && !_isOutpost)
+               if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD)
                {
                   GLOBAL._playerCreatureUpgrades = com.adobe.serialization.json.JSON.decode("{\"C1\":{\"level\":1},\"C2\":{\"level\":1}}");
                   for(id in ACADEMY._upgrades)
@@ -749,9 +788,13 @@ package
                TRIBES.Setup();
                WMBASE.Data(obj.wmstatus);
                WMATTACK.Setup(obj.aiattacks);
-               if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview")
+               if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" || GLOBAL._mode == "iwmattack")
                {
                   WMBASE.Setup();
+                  if(INFERNO_DESCENT_POPUPS.isInDescent())
+                  {
+                     INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
+                  }
                }
                TUTORIAL.Setup();
                if(GLOBAL._mode == "build")
@@ -764,7 +807,6 @@ package
                STORE.Data(obj.storeitems,obj.storedata,obj.inventory);
                CREATURELOCKER.Data(obj.lockerdata);
                QUESTS.Data(obj.quests);
-               MAPROOM.Setup();
                MONSTERBAITER.Setup(obj.monsterbaiter);
                if(obj.chatenabled != null)
                {
@@ -856,7 +898,7 @@ package
                         st = com.adobe.serialization.json.JSON.decode(obj.champion);
                         _guardianData = com.adobe.serialization.json.JSON.decode(st);
                      }
-                     if(GLOBAL._mode == "build" && !_isOutpost && Boolean(_guardianData))
+                     if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && Boolean(_guardianData))
                      {
                         GLOBAL._playerGuardianData = {};
                         if(_guardianData.nm)
@@ -916,7 +958,7 @@ package
                      var fbid:int = param2;
                      return function(param1:MouseEvent):*
                      {
-                        GLOBAL.CallJS("sendFeed",["tauntB","YOU attacked my yard!?! Remember, revenge is a dish best served cold...","Taunted!","taunt" + n + ".png",fbid]);
+                        GLOBAL.CallJS("sendFeed",["tauntB",KEYS.Get("js_attackedmyyard"),KEYS.Get("js_tauned"),"taunt" + n + ".png",fbid]);
                         POPUPS.Next();
                      };
                   };
@@ -1014,8 +1056,11 @@ package
                      POPUPS.Push(popupMC);
                   }
                }
-               _ownerName = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).name : obj.name;
-               _ownerPic = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).profilepic : obj.pic_square;
+               if(GLOBAL._mode == GLOBAL._loadmode)
+               {
+                  _ownerName = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).name : obj.name;
+                  _ownerPic = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).profilepic : obj.pic_square;
+               }
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
                {
                   if(obj.promotiontimer)
@@ -1139,6 +1184,38 @@ package
                      }
                      GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
                      break;
+                  case 6:
+                     if(GLOBAL._baseURL == "https://bym-fb-lbns.dc.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
+                     break;
+                  case 7:
+                     if(GLOBAL._baseURL = "http://bym-vx-web.stage.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-vx-web.stage.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-vx-web.stage.kixeye.com/base/";
+                     break;
+                  case 8:
+                     if(GLOBAL._baseURL == "http://bym-fb-alex.dev.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-fb-alex.dev.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-fb-alex.dev.kixeye.com/base/";
+                     break;
+                  case 9:
+                     if(GLOBAL._baseURL == "http://bym-fb-nmoore.dev.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-fb-nmoore.dev.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-fb-nmoore.dev.kixeye.com/base/";
+                     break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
                      {
@@ -1174,6 +1251,10 @@ package
          _loading = true;
          _baseID = baseid;
          _baseLevel = 0;
+         if(yardtype >= MAIN_YARD)
+         {
+            _yardType = yardtype;
+         }
          _saveOver = 0;
          _returnHome = false;
          _saveProtect = 0;
@@ -1206,7 +1287,7 @@ package
          _mushroomList = [];
          _lastSpawnedMushroom = 0;
          _size = 400;
-         tmpMode = GLOBAL._mode;
+         tmpMode = GLOBAL._loadmode;
          if(GLOBAL._advancedMap)
          {
             if(tmpMode == "wmattack")
@@ -1267,6 +1348,10 @@ package
          {
             new URLLoaderApi().load(url + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
+         else if(isInferno() && GLOBAL._localMode != 5)
+         {
+            new URLLoaderApi().load(GLOBAL._infBaseURL + "load",loadVars,handleLoadSuccessful,handleLoadError);
+         }
          else
          {
             new URLLoaderApi().load(GLOBAL._baseURL + "load",loadVars,handleLoadSuccessful,handleLoadError);
@@ -1289,9 +1374,6 @@ package
          var length1:int = 0;
          var length2:int = 0;
          var ijx:int = 0;
-         var lastDigit:int = 0;
-         var secondDigit:int = 0;
-         var sum:int = 0;
          var thl:int = 0;
          var tmpcount:int = 0;
          var hp:int = 0;
@@ -1338,7 +1420,11 @@ package
             PATHING.Setup();
             t = getTimer();
             texture = "grass";
-            if(Boolean(GLOBAL._currentCell) && (_isOutpost || GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview"))
+            if(_yardType >= INFERNO_YARD)
+            {
+               texture = "lava";
+            }
+            if(GLOBAL._currentCell && (_yardType % 2 == OUTPOST || GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview"))
             {
                texture = GLOBAL._currentCell._terrain;
             }
@@ -1414,10 +1500,6 @@ package
                            ijx++;
                         }
                      }
-                     if(BTOTEM.IsTotem(o.t))
-                     {
-                        o.t = SPECIALEVENT.TotemQualified(o.t);
-                     }
                      if(b)
                      {
                         b.Setup(o);
@@ -1438,13 +1520,13 @@ package
          catch(e:Error)
          {
             GLOBAL.ErrorMessage("BASE.Build C: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _isOutpost + " BObj " + com.adobe.serialization.json.JSON.encode(buildingobject));
+            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _yardType + " BObj " + com.adobe.serialization.json.JSON.encode(buildingobject));
          }
          try
          {
             if(count == 0)
             {
-               if(_isOutpost)
+               if(_yardType % 2 == OUTPOST && !BASE.isInferno())
                {
                   b = addBuildingC(112);
                   b.Setup({
@@ -1454,6 +1536,50 @@ package
                      "t":112,
                      "l":1
                   });
+               }
+               else if(BASE.isInferno())
+               {
+                  b = addBuildingC(14);
+                  b.Setup({
+                     "X":-70,
+                     "Y":0,
+                     "id":count++,
+                     "t":14,
+                     "l":1
+                  });
+                  b = addBuildingC(1);
+                  b.Setup({
+                     "X":60,
+                     "Y":0,
+                     "id":count++,
+                     "t":1,
+                     "l":1
+                  });
+                  b = addBuildingC(2);
+                  b.Setup({
+                     "X":60,
+                     "Y":70,
+                     "id":count++,
+                     "t":2,
+                     "l":1
+                  });
+                  b = addBuildingC(6);
+                  b.Setup({
+                     "X":130,
+                     "Y":0,
+                     "id":count++,
+                     "t":6,
+                     "l":3
+                  });
+                  b = addBuildingC(6);
+                  b.Setup({
+                     "X":130,
+                     "Y":80,
+                     "id":count++,
+                     "t":6,
+                     "l":3
+                  });
+                  _basePoints = 0;
                }
                else
                {
@@ -1483,38 +1609,6 @@ package
                      "t":2,
                      "l":1
                   });
-                  if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-                  {
-                     if(GLOBAL.GetABTestHash("tutorial") < 14)
-                     {
-                        b = addBuildingC(3);
-                        b.Setup({
-                           "X":60,
-                           "Y":140,
-                           "id":count++,
-                           "t":3,
-                           "l":1
-                        });
-                     }
-                  }
-                  else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-                  {
-                     lastDigit = int(LOGIN._digits[LOGIN._digits.length - 1]);
-                     secondDigit = int(LOGIN._digits[LOGIN._digits.length - 2]);
-                     sum = lastDigit + secondDigit;
-                     sum %= 10;
-                     if(sum < 2)
-                     {
-                        b = addBuildingC(3);
-                        b.Setup({
-                           "X":60,
-                           "Y":140,
-                           "id":count++,
-                           "t":3,
-                           "l":1
-                        });
-                     }
-                  }
                   b = addBuildingC(12);
                   b.Setup({
                      "X":60,
@@ -1537,7 +1631,7 @@ package
                   SOUNDS.TutorialStopMusic();
                }
             }
-            else if(!_isOutpost && !hasTownHall)
+            else if(_yardType == MAIN_YARD && !hasTownHall)
             {
                LOGGER.Log("err","Town Hall Missing");
             }
@@ -1819,7 +1913,7 @@ package
             }
             try
             {
-               if(!_isOutpost)
+               if(_yardType == MAIN_YARD)
                {
                   CREATURELOCKER.Tick();
                   ACADEMY.Tick();
@@ -1891,7 +1985,7 @@ package
             {
                EFFECTS.Tick();
                UPDATES.Check();
-               if(!_isOutpost)
+               if(_yardType == MAIN_YARD)
                {
                   MONSTERBAITER.Tick();
                }
@@ -1954,7 +2048,6 @@ package
          var WhatsNewAction50:Function;
          var popupWhatsNewDisplayed:Function;
          var MoreInfo711:Function;
-         var RepairAll:Function;
          var Action:Function;
          var BragA:Function;
          var BragB:Function;
@@ -1971,6 +2064,8 @@ package
          var fbPromoPopup:MovieClip = null;
          var helper:int = 0;
          var popupMCDamaged:popup_damaged = null;
+         var RepairAll:Function = null;
+         var RepairNow:Function = null;
          var promptSPost:Boolean = false;
          var b:* = undefined;
          var popupMCdamaged:MovieClip = null;
@@ -2000,7 +2095,7 @@ package
                }
             }
             EFFECTS.Process(_catchupTime);
-            if(!_isOutpost)
+            if(_yardType == MAIN_YARD)
             {
                CREATURELOCKER.Tick();
             }
@@ -2020,7 +2115,6 @@ package
             HOUSING.Cull();
             HOUSING.Populate();
             SOUNDS.Setup();
-            BTOTEM.CleanupStorage();
             GLOBAL._render = true;
             GLOBAL._catchup = false;
          }
@@ -2035,7 +2129,7 @@ package
             helpedCount = 0;
             if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
             {
-               if(!GLOBAL._displayedWhatsNew && !BASE._isOutpost && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+               if(!GLOBAL._displayedWhatsNew && BASE._yardType == MAIN_YARD && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
                {
                   GLOBAL._displayedWhatsNew = true;
                   display = false;
@@ -2048,10 +2142,12 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew41();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew41_body");
                      newWhatsnewid = 1041;
                      if(GLOBAL._bCage)
                      {
-                        popupWhatsNew.bAction.Setup("Feed Now");
+                        popupWhatsNew.bAction.SetupKey("btn_feednow");
                         popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction41);
                      }
                      else
@@ -2068,8 +2164,10 @@ package
                         STORE.ShowB(5,1,null);
                      };
                      popupWhatsNew = new popup_whatsnew42();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew42_body");
                      newWhatsnewid = 1042;
-                     popupWhatsNew.bAction.Setup("View Merchandise");
+                     popupWhatsNew.bAction.SetupKey("btn_viewmerchandise");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction42);
                      display = true;
                   }
@@ -2082,10 +2180,12 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew43();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew43_body");
                      newWhatsnewid = 1043;
                      if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() > 4)
                      {
-                        popupWhatsNew.bAction.Setup("Build Now");
+                        popupWhatsNew.bAction.SetupKey("btn_buildnow");
                         popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction43);
                      }
                      else
@@ -2102,8 +2202,10 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew44();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew44_body");
                      newWhatsnewid = 1044;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction44);
                      display = true;
                   }
@@ -2115,14 +2217,18 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew45();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew45_body");
                      newWhatsnewid = 1045;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction45);
                      display = true;
                   }
                   else if(GLOBAL._whatsnewid < 1046 && Boolean(GLOBAL._advancedMap))
                   {
                      popupWhatsNew = new popup_whatsnew46();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew46_body");
                      newWhatsnewid = 1046;
                      display = true;
                   }
@@ -2136,9 +2242,11 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew47();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew47_body");
                      newWhatsnewid = 1047;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction47);
                   }
                   else if(GLOBAL._whatsnewid < 1048)
@@ -2150,9 +2258,11 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew48();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew48_body");
                      newWhatsnewid = 1048;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Upgrade Now");
+                     popupWhatsNew.bAction.SetupKey("btn_upgradenow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction48);
                   }
                   else if(GLOBAL._whatsnewid < 1049 && Boolean(GLOBAL._advancedMap))
@@ -2163,9 +2273,11 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew49();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew49_body");
                      newWhatsnewid = 1049;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.SetupKey("btn_openmap");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction49);
                   }
                   else if(GLOBAL._whatsnewid < 1050)
@@ -2178,9 +2290,11 @@ package
                         POPUPS.Next();
                      };
                      popupWhatsNew = new popup_whatsnew49();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew49_body");
                      newWhatsnewid = 1050;
                      display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction50);
                   }
                   if(display)
@@ -2195,56 +2309,59 @@ package
                   }
                }
             }
-            if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+            INFERNO_EMERGENCE_EVENT.Initialize();
+            if(is711Valid())
             {
-               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && !GLOBAL._displayedPromoNew)
+               if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
                {
-                  hasBigGulp = Boolean(_buildingsStored["b120"]);
-                  if(!hasBigGulp)
+                  if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && !GLOBAL._displayedPromoNew && !_showingWhatsNew)
                   {
-                     for each(building in _buildingsAll)
+                     hasBigGulp = Boolean(_buildingsStored["b120"]);
+                     if(!hasBigGulp)
                      {
-                        if(building._type == 2 * 60)
+                        for each(building in _buildingsAll)
                         {
-                           hasBigGulp = true;
-                           break;
+                           if(building._type == 2 * 60)
+                           {
+                              hasBigGulp = true;
+                              break;
+                           }
                         }
                      }
-                  }
-                  if(!hasBigGulp)
-                  {
-                     fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
-                     if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
+                     if(!hasBigGulp)
                      {
-                        MoreInfo711 = function(param1:MouseEvent):void
+                        fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
+                        if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
                         {
-                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
-                           POPUPS.Next();
-                        };
-                        if(GLOBAL._displayedPromoNew)
-                        {
-                           return;
+                           if(GLOBAL._countryCode == "us")
+                           {
+                              MoreInfo711 = function(param1:MouseEvent):void
+                              {
+                                 GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
+                                 POPUPS.Next();
+                              };
+                              fbPromoPopup = new FBPROMO_711_CLIP();
+                              fbPromoPopup.bAction3.buttonMode = true;
+                              fbPromoPopup.bAction3.useHandCursor = true;
+                              fbPromoPopup.bAction3.mouseChildren = false;
+                              fbPromoPopup.bAction3.txt.htmlText = KEYS.Get("btn_goldenbiggulp");
+                              fbPromoPopup.bAction3.bg.visible = false;
+                              fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                              fbPromoPopup.bAction4.buttonMode = true;
+                              fbPromoPopup.bAction4.useHandCursor = true;
+                              fbPromoPopup.bAction4.mouseChildren = false;
+                              fbPromoPopup.bAction4.txt.htmlText = KEYS.Get("btn_hatcheryoverdrives");
+                              fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                              fbPromoPopup.bAction4.bg.visible = false;
+                              fbPromoPopup.bInfo.useHandCursor = true;
+                              fbPromoPopup.bInfo.buttonMode = true;
+                              fbPromoPopup.bInfo.mouseChildren = false;
+                              fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                              POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false);
+                              GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                              GLOBAL._displayedPromoNew = true;
+                           }
                         }
-                        fbPromoPopup = new FBPROMO_711_CLIP();
-                        fbPromoPopup.bAction3.buttonMode = true;
-                        fbPromoPopup.bAction3.useHandCursor = true;
-                        fbPromoPopup.bAction3.mouseChildren = false;
-                        fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
-                        fbPromoPopup.bAction3.bg.visible = false;
-                        fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.buttonMode = true;
-                        fbPromoPopup.bAction4.useHandCursor = true;
-                        fbPromoPopup.bAction4.mouseChildren = false;
-                        fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
-                        fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.bg.visible = false;
-                        fbPromoPopup.bInfo.useHandCursor = true;
-                        fbPromoPopup.bInfo.buttonMode = true;
-                        fbPromoPopup.bInfo.mouseChildren = false;
-                        fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
-                        GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
-                        GLOBAL._displayedPromoNew = true;
                      }
                   }
                }
@@ -2274,6 +2391,8 @@ package
                RepairAll = function(param1:MouseEvent = null):*
                {
                   var _loc2_:* = undefined;
+                  popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+                  popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
                   for each(_loc2_ in _buildingsAll)
                   {
                      if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
@@ -2284,13 +2403,30 @@ package
                   SOUNDS.Play("repair1",0.25);
                   POPUPS.Next();
                };
+               RepairNow = function(param1:MouseEvent = null):*
+               {
+                  var _loc2_:BFOUNDATION = null;
+                  popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+                  popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
+                  for each(_loc2_ in BASE._buildingsAll)
+                  {
+                     if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                     {
+                        _loc2_.Repair();
+                     }
+                  }
+                  STORE.ShowB(3,1,["FIX"],true);
+                  POPUPS.Next();
+               };
                popupMCDamaged = new popup_damaged();
-               (popupMCDamaged.mcFrame as frame2).Setup(false);
+               (popupMCDamaged.mcFrame as frame).Setup(false);
                popupMCDamaged.title.htmlText = "<b>" + KEYS.Get("pop_damaged_title") + "</b>";
                popupMCDamaged.tA.htmlText = KEYS.Get("pop_damaged",{"v1":damageCount});
                popupMCDamaged.bAction.SetupKey("pop_damaged_repairall_btn");
                popupMCDamaged.bAction.addEventListener(MouseEvent.CLICK,RepairAll);
-               popupMCDamaged.bAction.Highlight = true;
+               popupMCDamaged.bAction2.SetupKey("pop_damaged_repairnow_btn");
+               popupMCDamaged.bAction2.addEventListener(MouseEvent.CLICK,RepairNow);
+               popupMCDamaged.bAction2.Highlight = true;
                POPUPS.Push(popupMCDamaged,null,null,null,"duct-tape.png");
                if(damageCount > 30)
                {
@@ -2315,17 +2451,14 @@ package
                   GLOBAL.Message(KEYS.Get("base_nohelpneeded"));
                }
             }
-            if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+            if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
             {
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._countryCode != "ph")
                {
-                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 && GLOBAL.StatGet("lasttdpopup") < 6)
-                  {
-                     SPECIALEVENT.ShowTShirtPopup("wait");
-                  }
                   SPECIALEVENT.FlagChanged();
                }
             }
+            SPECIALEVENT._whatsNewComplete = true;
          }
          catch(e:Error)
          {
@@ -2451,28 +2584,28 @@ package
             {
                BragA = function():*
                {
-                  GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered a " + _takeoverPreviousOwnersName + " base!","In war, there are no unwounded monsters.","build-outpost.png"]);
+                  GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("conqueredbase",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("newmap_destroyed3"),"build-outpost.png"]);
                   POPUPS.Next();
                };
                ACHIEVEMENTS.Check("wmoutpost",1);
-               POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed a " + _takeoverPreviousOwnersName + " base. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragA);
+               POPUPS.DisplayGeneric(KEYS.Get("venividivici"),KEYS.Get("destroyedbase_takeover",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("btn_brag"),"building-outpost.png",BragA);
             }
             else if(_takeoverFirstOpen == 2)
             {
                BragB = function():*
                {
-                  GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered " + _takeoverPreviousOwnersName + "\'s Outpost!","Veni, Vidi, Vici!","build-outpost.png"]);
+                  GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("conqueredoutpost",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("venividivici"),"build-outpost.png"]);
                   POPUPS.Next();
                };
                ++ACHIEVEMENTS._stats.playeroutpost;
                ACHIEVEMENTS.Check();
-               POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed " + _takeoverPreviousOwnersName + "\'s Outpost. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragB);
+               POPUPS.DisplayGeneric(KEYS.Get("venividivici"),KEYS.Get("destroyedoutpost_takeover",{"v1":_takeoverPreviousOwnersName}),KEYS.Get("btn_brag"),"building-outpost.png",BragB);
             }
          }
          _takeoverFirstOpen = 0;
          if(GLOBAL._mode == "build")
          {
-            if(_isOutpost)
+            if(_yardType % 2 == OUTPOST)
             {
                if(_buildingCount == 1)
                {
@@ -2495,7 +2628,7 @@ package
                }
                if(!ALLIANCES._myAlliance)
                {
-                  if(GLOBAL._mode == "build" && !GLOBAL._empireDestroyedShown && GLOBAL._advancedMap && !BASE._isOutpost && !WMATTACK._inProgress && (GLOBAL._mapOutpost.length == 0 || GLOBAL._empireDestroyed == 1) && hp < hpMax * 0.1)
+                  if(GLOBAL._mode == "build" && !GLOBAL._empireDestroyedShown && GLOBAL._advancedMap && _yardType == MAIN_YARD && !WMATTACK._inProgress && (GLOBAL._mapOutpost.length == 0 || GLOBAL._empireDestroyed == 1) && hp < hpMax * 0.1)
                   {
                      GLOBAL._empireDestroyedShown = true;
                      popupMCDestroyed = new PopupLostMainBase();
@@ -2508,6 +2641,13 @@ package
          try
          {
             GLOBAL.CallJS("cc.injectFriendsSwf",null,false);
+         }
+         catch(e:Error)
+         {
+         }
+         try
+         {
+            BTOTEM.FindMissingTotem();
          }
          catch(e:Error)
          {
@@ -2562,7 +2702,16 @@ package
             }
             if(_lastPaged >= pageInterval && !_paging && !_saving && GLOBAL.Timestamp() - _lastSaved >= pageInterval)
             {
-               Page();
+               if(SPECIALEVENT.active)
+               {
+                  _blockSave = false;
+                  Save(0,false,true);
+                  _lastSaved = GLOBAL.Timestamp();
+               }
+               else
+               {
+                  Page();
+               }
             }
             ++_lastPaged;
             if(GLOBAL._extraHousing < GLOBAL.Timestamp() && HOUSING._housingUsed.Get() > HOUSING._housingCapacity.Get())
@@ -2577,6 +2726,7 @@ package
          {
             LOGGER.Log("err","Base.Tick: " + e.message + " | " + e.getStackTrace());
          }
+         ShakeB();
       }
       
       public static function Purchase(param1:String, param2:int, param3:String, param4:Boolean = false) : *
@@ -2600,7 +2750,7 @@ package
          BASE.Save();
       }
       
-      public static function Save(param1:int = 0, param2:Boolean = false, param3:Boolean = false) : void
+      public static function Save(param1:int = 0, param2:Boolean = false, param3:Boolean = false, param4:Boolean = false) : void
       {
          if(Boolean(UI2._top) && Boolean(UI2._top.mcSave))
          {
@@ -2619,6 +2769,10 @@ package
          if(param3 || _pendingPurchase.length > 0)
          {
             SaveB();
+         }
+         if(isInferno() || param4 || GLOBAL._loadmode != GLOBAL._mode)
+         {
+            _infernoSaveLoad = true;
          }
       }
       
@@ -2664,7 +2818,7 @@ package
          var monsterUpdate:Array = null;
          var loot:Object = null;
          var cellContainer:Object = null;
-         var cell:MapRoomCell = null;
+         var cell:* = undefined;
          var creatureID:String = null;
          var cellObject:Object = null;
          var homeCellObject:* = undefined;
@@ -2676,13 +2830,20 @@ package
             {
                GLOBAL.CleanAttackersDeltaResources();
                CleanDeltaResources();
-               if(GLOBAL._mode != "build")
+               if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
                {
                   ATTACK.CleanLoot();
                }
                if(_returnHome && param1.over == 1)
                {
-                  LoadBase(null,0,0,"build");
+                  if(isInferno())
+                  {
+                     LoadBase(null,0,0,"ibuild");
+                  }
+                  else
+                  {
+                     LoadBase(null,0,0,"build");
+                  }
                   return;
                }
                _saveErrors = 0;
@@ -2702,7 +2863,7 @@ package
                         {
                            _resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
                            _hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
-                           if(GLOBAL._mode == "build")
+                           if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                            {
                               GLOBAL._resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
                               GLOBAL._hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
@@ -2711,7 +2872,7 @@ package
                         _loc2_++;
                      }
                   }
-                  if(GLOBAL._mode != "build")
+                  if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
                   {
                      ATTACK.CleanLoot();
                      GLOBAL.CleanAttackersDeltaResources();
@@ -2762,7 +2923,7 @@ package
          {
             return;
          }
-         if(_blockSave || GLOBAL._mode == "view" || GLOBAL._mode == "help" || GLOBAL._mode == "wmview" || _loading)
+         if(_blockSave || GLOBAL._mode == "view" || GLOBAL._mode == "help" || GLOBAL._mode == "wmview" || _loading || GLOBAL._mode == "iview" || GLOBAL._mode == "ihelp" || GLOBAL._mode == "iwmview")
          {
             _saveCounterB = _saveCounterA;
             return false;
@@ -2817,7 +2978,7 @@ package
                {
                   if(building._class != "wall")
                   {
-                     if(GLOBAL._mode == "build")
+                     if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                      {
                         hp += building._hpMax.Get();
                      }
@@ -2826,11 +2987,6 @@ package
                         hp += building._hp.Get();
                      }
                      hpMax += building._hpMax.Get();
-                  }
-                  if(BTOTEM.IsTotem(building._type))
-                  {
-                     GLOBAL._bTotem.Tick();
-                     building._type = SPECIALEVENT.TotemQualified(building._type);
                   }
                   tmpExport = building.Export();
                   if(tmpExport)
@@ -3053,10 +3209,10 @@ package
                loadObjects.champion = com.adobe.serialization.json.JSON.encode(null);
             }
             t = getTimer();
-            if(GLOBAL._mode != "build")
+            if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
             {
                _saveProtect = 0;
-               if(!BASE._isOutpost)
+               if(BASE._yardType % 2 == MAIN_YARD)
                {
                   if(hp < hpMax * 0.5)
                   {
@@ -3135,7 +3291,7 @@ package
                }
                t = getTimer();
             }
-            if(GLOBAL._advancedMap)
+            if(Boolean(GLOBAL._advancedMap) && GLOBAL._loadmode == GLOBAL._mode)
             {
                monsterUpdate = [];
                loot = {
@@ -3147,7 +3303,7 @@ package
                for each(cellContainer in GLOBAL._attackerCellsInRange)
                {
                   cell = cellContainer["cell"];
-                  if(cell && cell._mine && Boolean(cell._resources))
+                  if(cell && Boolean(cell._mine) && Boolean(cell._resources))
                   {
                      if(Boolean(cell._flinger) && cell._flinger.Get() >= cellContainer["range"])
                      {
@@ -3262,11 +3418,18 @@ package
                _pendingPurchase = [];
             }
             loadObjects.timeplayed = int(GLOBAL._timePlayed);
-            if(GLOBAL._mode == "wmattack")
+            if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack")
             {
                if(GLOBAL._advancedMap == 0)
                {
-                  loadObjects.type = "wm";
+                  if(GLOBAL._loadmode == "iwmattack" || BASE.isInferno() && GLOBAL._mode == "wmattack")
+                  {
+                     loadObjects.type = "iwm";
+                  }
+                  else
+                  {
+                     loadObjects.type = "wm";
+                  }
                   loadObjects.destroyed = WMBASE._destroyed ? 1 : 0;
                }
                else if(_percentDamaged >= 90)
@@ -3278,7 +3441,7 @@ package
                   loadObjects.destroyed = 0;
                }
             }
-            else if(Boolean(_isOutpost) && GLOBAL._mode != "build")
+            else if(_yardType % 2 == OUTPOST && GLOBAL._mode != "build")
             {
                if(_percentDamaged >= 90)
                {
@@ -3288,6 +3451,10 @@ package
                {
                   loadObjects.destroyed = 0;
                }
+            }
+            else if(isInferno() || GLOBAL._loadmode != GLOBAL._mode)
+            {
+               loadObjects.type = "inferno";
             }
             loadObjects.damage = _percentDamaged;
             if(_pendingPromo)
@@ -3326,7 +3493,14 @@ package
             _lastSaved = GLOBAL.Timestamp();
             return;
          }
-         new URLLoaderApi().load(GLOBAL._baseURL + "save",loadVars,handleLoadSuccessful,handleLoadError);
+         if((isInferno() || _infernoSaveLoad && loadObjects.type == "inferno") && GLOBAL._localMode != 5)
+         {
+            new URLLoaderApi().load(GLOBAL._infBaseURL + "save",loadVars,handleLoadSuccessful,handleLoadError);
+         }
+         else
+         {
+            new URLLoaderApi().load(GLOBAL._baseURL + "save",loadVars,handleLoadSuccessful,handleLoadError);
+         }
       }
       
       public static function AttackerCreaturesExport() : *
@@ -3361,7 +3535,7 @@ package
                _isFan = int(param1.fan);
                _isBookmarked = int(param1.bookmarked);
                _installsGenerated = int(param1.installsgenerated);
-               if(GLOBAL._mode == "build" && param1.resources && _saveCounterA == _saveCounterB)
+               if((GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && param1.resources && _saveCounterA == _saveCounterB)
                {
                   if(param1.resources.r1 != _resources.r1.Get() || param1.resources.r2 != _resources.r2.Get() || param1.resources.r3 != _resources.r3.Get() || param1.resources.r4 != _resources.r4.Get())
                   {
@@ -3395,7 +3569,7 @@ package
                {
                   UPDATES.Process(param1.updates);
                }
-               if(GLOBAL._mode == "build" && !_isOutpost)
+               if(GLOBAL._mode == "build" && _yardType == MAIN_YARD)
                {
                   if(param1.alliancedata)
                   {
@@ -3449,62 +3623,59 @@ package
          {
             tmpMode = "view";
          }
+         if(isInferno())
+         {
+            if(tmpMode.substr(0,1) != "i")
+            {
+               tmpMode.substring();
+            }
+            else
+            {
+               tmpMode = "i" + tmpMode;
+            }
+         }
          _paging = true;
-         new URLLoaderApi().load(GLOBAL._baseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
+         if(isInferno() && GLOBAL._localMode != 5)
+         {
+            new URLLoaderApi().load(GLOBAL._infBaseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
+         }
+         else
+         {
+            new URLLoaderApi().load(GLOBAL._baseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
+         }
       }
       
-      public static function BuildingStorageAdd(param1:int) : *
+      public static function BuildingStorageAdd(param1:int, param2:int = 0) : *
       {
-         if(BTOTEM.IsTotem(param1))
-         {
-            param1 = SPECIALEVENT.TotemQualified(param1);
-         }
          if(!_buildingsStored["b" + param1])
          {
             _buildingsStored["b" + param1] = new SecNum(0);
          }
          _buildingsStored["b" + param1].Add(1);
+         if(BTOTEM.IsTotem2(param1))
+         {
+            _buildingsStored["bl" + param1] = new SecNum(param2);
+         }
       }
       
-      public static function BuildingStorageRemove(param1:int) : Boolean
+      public static function BuildingStorageRemove(param1:int) : int
       {
+         var _loc2_:int = 0;
          if(_buildingsStored["b" + param1])
          {
-            if(BTOTEM.IsTotem(param1))
-            {
-               if(_buildingsStored["b121"])
-               {
-                  delete _buildingsStored["b121"];
-               }
-               if(_buildingsStored["b122"])
-               {
-                  delete _buildingsStored["b122"];
-               }
-               if(_buildingsStored["b123"])
-               {
-                  delete _buildingsStored["b123"];
-               }
-               if(_buildingsStored["b124"])
-               {
-                  delete _buildingsStored["b124"];
-               }
-               if(_buildingsStored["b125"])
-               {
-                  delete _buildingsStored["b125"];
-               }
-               if(_buildingsStored["b126"])
-               {
-                  delete _buildingsStored["b126"];
-               }
-               return true;
-            }
             if(_buildingsStored["b" + param1].Get() >= 1)
             {
                _buildingsStored["b" + param1].Add(-1);
-               return true;
+               _loc2_ = 1;
+               if(_buildingsStored["bl" + param1])
+               {
+                  _loc2_ = int(_buildingsStored["bl" + param1].Get());
+                  delete _buildingsStored["bl" + param1];
+               }
+               return _loc2_;
             }
          }
-         return false;
+         return 0;
       }
       
       public static function BuildingStorageCount(param1:int) : int
@@ -3659,7 +3830,7 @@ package
             _loc19_ = int(_loc3_.costs[0].r4);
             _loc20_ = 0;
             _loc22_ = 0;
-            if(GLOBAL._mode == "build")
+            if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
                if(_loc16_ > BASE._resources.r1.Get())
                {
@@ -4014,6 +4185,12 @@ package
          };
       }
       
+      public static function is711Valid() : *
+      {
+         var _loc1_:Date = new Date();
+         return _loc1_.getUTCFullYear() == 2011;
+      }
+      
       public static function addBuilding(param1:MouseEvent) : *
       {
          var _loc2_:* = param1.target.name.split("b")[1];
@@ -4022,78 +4199,72 @@ package
       
       public static function addBuildingB(param1:int, param2:Boolean = false) : *
       {
-         var queueAble:Boolean;
-         var e:Object = null;
-         var n:int = param1;
-         var instantBuild:Boolean = param2;
+         var _loc4_:Object = null;
          BuildingDeselect();
-         queueAble = GLOBAL._buildingProps[n - 1].costs[0].time == 0;
-         if(!queueAble)
+         var _loc3_:* = GLOBAL._buildingProps[param1 - 1].costs[0].time == 0;
+         if(!_loc3_)
          {
-            queueAble = QUEUE.CanDo().error == false;
+            _loc3_ = QUEUE.CanDo().error == false;
          }
-         if(BuildingStorageCount(n) > 0)
+         if(BuildingStorageCount(param1) > 0)
          {
-            queueAble = true;
+            _loc3_ = true;
          }
-         if(queueAble)
+         if(_loc3_)
          {
-            e = CanBuild(n,instantBuild);
-            if(!e.error)
+            _loc4_ = CanBuild(param1,param2);
+            if(!_loc4_.error)
             {
                BASE.BuildingDeselect();
                ShowFootprints();
-               GLOBAL._newBuilding = addBuildingC(n);
+               GLOBAL._newBuilding = addBuildingC(param1);
                if(GLOBAL._newBuilding)
                {
                   GLOBAL._newBuilding.FollowMouse();
                }
                else
                {
-                  if(BTOTEM.IsTotem(n))
-                  {
-                     try
-                     {
-                        throw new Error("whatever");
-                     }
-                     catch(e:Error)
-                     {
-                     }
-                     BASE.BuildingStorageAdd(n);
-                  }
                   BuildingDeselect();
                }
                return GLOBAL._newBuilding;
             }
-            GLOBAL.Message(e.errorMessage);
+            GLOBAL.Message(_loc4_.errorMessage);
          }
          else
          {
-            POPUPS.DisplayWorker(0,n);
+            POPUPS.DisplayWorker(0,param1);
          }
          return false;
+      }
+      
+      private static function ConvertToInfernoBuilding(param1:int) : int
+      {
+         switch(param1)
+         {
+            case 15:
+               param1 = 128;
+               break;
+            case 23:
+               param1 = 129;
+               break;
+            case 25:
+               param1 = 132;
+         }
+         return param1;
       }
       
       public static function addBuildingC(param1:int) : BFOUNDATION
       {
          var _loc2_:BFOUNDATION = null;
+         if(GLOBAL._local && GLOBAL._localMode == 5 && isInferno() && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+         {
+            param1 = ConvertToInfernoBuilding(param1);
+         }
          if(GLOBAL._buildingProps[param1 - 1].type == "decoration")
          {
-            if(BTOTEM.IsTotem(param1))
+            if(BTOTEM.IsTotem2(param1))
             {
-               if(GLOBAL._bTotem == null && GLOBAL.StatGet("wmi_wave") > 0)
-               {
-                  _loc2_ = new BTOTEM(param1);
-               }
-               else
-               {
-                  if(!GLOBAL._bTotem)
-                  {
-                  }
-                  if(GLOBAL.StatGet("wmi_wave") <= 0)
-                  {
-                  }
-               }
+               _loc2_ = new BTOTEM(param1);
             }
             else
             {
@@ -4248,6 +4419,26 @@ package
          {
             _loc2_ = new CHAMPIONCHAMBER();
          }
+         else if(param1 == 128)
+         {
+            _loc2_ = new HOUSINGBUNKER();
+         }
+         else if(param1 == 127)
+         {
+            _loc2_ = new INFERNOPORTAL();
+         }
+         else if(param1 == 129)
+         {
+            _loc2_ = new INFERNOQUAKETOWER();
+         }
+         else if(param1 == 130)
+         {
+            _loc2_ = new INFERNO_CANNON_TOWER();
+         }
+         else if(param1 == 132)
+         {
+            _loc2_ = new INFERNO_MAGMA_TOWER();
+         }
          return _loc2_;
       }
       
@@ -4289,7 +4480,7 @@ package
       public static function BuildingSelect(param1:BFOUNDATION, param2:Boolean = false) : *
       {
          BuildingDeselect();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
          {
             if(UI2._showBottom || TUTORIAL._stage == 3 || TUTORIAL._stage == 4 || TUTORIAL._stage == 20 || TUTORIAL._stage == 21 || TUTORIAL._stage == 23)
             {
@@ -4305,7 +4496,7 @@ package
                }
             }
          }
-         else if(GLOBAL._mode == "help" || LOGIN._playerID == param1._senderid)
+         else if(GLOBAL._mode == "help" || GLOBAL._mode == "ihelp" || LOGIN._playerID == param1._senderid)
          {
             GLOBAL._selectedBuilding = param1;
             GLOBAL._selectedBuilding._mcFootprint.visible = true;
@@ -4367,15 +4558,15 @@ package
          if(param3)
          {
          }
-         var _loc4_:Object = GLOBAL._mode == "build" ? _resources : GLOBAL._attackersResources;
-         var _loc5_:Object = GLOBAL._mode == "build" ? _hpResources : GLOBAL._hpAttackersResources;
+         var _loc4_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _resources : GLOBAL._attackersResources;
+         var _loc5_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
          if(param2 <= _loc4_["r" + param1].Get())
          {
             if(!param3)
             {
                _loc4_["r" + param1].Add(-param2);
                _loc5_["r" + param1] -= param2;
-               if(GLOBAL._mode == "build")
+               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
                   if(_deltaResources["r" + param1])
                   {
@@ -4404,7 +4595,7 @@ package
                   }
                   GLOBAL._attackersDeltaResources.dirty = true;
                }
-               if(GLOBAL._mode == "build")
+               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
                }
                CalcResources();
@@ -4440,7 +4631,7 @@ package
                      _deltaResources[_loc5_] = new SecNum(int(param2));
                      _hpDeltaResources[_loc5_] = int(param2);
                   }
-                  if(GLOBAL._mode == "build")
+                  if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
                      GLOBAL._resources[_loc5_].Add(int(param2));
                      GLOBAL._hpResources[_loc5_] += int(param2);
@@ -4464,7 +4655,7 @@ package
                      _deltaResources[_loc5_] = new SecNum(int(_loc7_));
                      _hpDeltaResources[_loc5_] = int(_loc7_);
                   }
-                  if(GLOBAL._mode == "build")
+                  if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
                      GLOBAL._resources[_loc5_].Add(int(_loc7_));
                      GLOBAL._hpResources[_loc5_] += int(_loc7_);
@@ -4474,7 +4665,7 @@ package
                }
                _bankedValue += _loc7_;
                _bankedTime = GLOBAL.Timestamp();
-               if(GLOBAL._mode == "build")
+               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
                   UI2._top.mc["mcR" + param1].x = -15;
                   TweenLite.to(UI2._top.mc["mcR" + param1],0.6,{
@@ -4483,7 +4674,7 @@ package
                   });
                }
             }
-            else if(GLOBAL._mode == "build")
+            else if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
                UI2._top.OverchargeShow(param1);
             }
@@ -4496,7 +4687,7 @@ package
                }
                param4.Update();
             }
-            if(_loc7_ > 0 && GLOBAL._mode == "build")
+            if(_loc7_ > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
             {
                Save();
             }
@@ -4557,9 +4748,10 @@ package
       
       public static function CountBuildings() : *
       {
+         var _loc1_:int = 0;
          var _loc2_:String = null;
          _buildingCounts = {};
-         var _loc1_:int = 0;
+         _loc1_ = 0;
          while(_loc1_ < GLOBAL._buildingProps.length)
          {
             _buildingCounts["b" + (_loc1_ + 1)] = 0;
@@ -4581,17 +4773,18 @@ package
          }
          if(GLOBAL._advancedMap)
          {
-            if(!_isOutpost && !GLOBAL._bMap._canFunction)
+            if(_yardType == MAIN_YARD && !GLOBAL._bMap._canFunction)
             {
                GLOBAL.Message(KEYS.Get("map_msg_damaged"));
                return;
             }
             if(Boolean(GLOBAL._mapOutpostIDs) && GLOBAL._mapOutpostIDs.length > 0)
             {
-               if(GLOBAL._mode == "build")
+               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
-                  if(!_isOutpost)
+                  if(_yardType == MAIN_YARD || _yardType == INFERNO_YARD)
                   {
+                     _yardType = isInferno() ? INFERNO_OUTPOST : OUTPOST;
                      _currentCellLoc = GLOBAL._mapOutpost[0];
                      GLOBAL._currentCell = null;
                      _needCurrentCell = true;
@@ -4608,6 +4801,7 @@ package
                         {
                            if(_loc3_ < GLOBAL._mapOutpostIDs.length - 1)
                            {
+                              _yardType = isInferno() ? INFERNO_OUTPOST : OUTPOST;
                               _currentCellLoc = GLOBAL._mapOutpost[_loc3_ + 1];
                               GLOBAL._currentCell = null;
                               _needCurrentCell = true;
@@ -4615,7 +4809,7 @@ package
                               PLEASEWAIT.Show(KEYS.Get("process_outpost"));
                               break;
                            }
-                           _isOutpost = 0;
+                           _yardType = isInferno() ? INFERNO_YARD : MAIN_YARD;
                            _needCurrentCell = false;
                            GLOBAL._currentCell = null;
                            LoadBase(null,null,GLOBAL._homeBaseID,"build");
@@ -4640,7 +4834,7 @@ package
          var j:int = 0;
          try
          {
-            if(_isOutpost)
+            if(_yardType % 2 == OUTPOST)
             {
                if(GLOBAL._mode != "build")
                {
@@ -4670,7 +4864,7 @@ package
                {
                   if(bT == 1)
                   {
-                     if(Boolean(_isOutpost) && Boolean(GLOBAL._currentCell))
+                     if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r1Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
                      }
@@ -4681,7 +4875,7 @@ package
                   }
                   else if(bT == 2)
                   {
-                     if(Boolean(_isOutpost) && Boolean(GLOBAL._currentCell))
+                     if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r2Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
                      }
@@ -4692,7 +4886,7 @@ package
                   }
                   else if(bT == 3)
                   {
-                     if(Boolean(_isOutpost) && Boolean(GLOBAL._currentCell))
+                     if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r3Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
                      }
@@ -4703,7 +4897,7 @@ package
                   }
                   else if(bT == 4)
                   {
-                     if(Boolean(_isOutpost) && Boolean(GLOBAL._currentCell))
+                     if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
                         _resources.r4Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
                      }
@@ -4713,7 +4907,7 @@ package
                      }
                   }
                }
-               else if(bT == 6 && building._lvl.Get() >= 1 && !_isOutpost)
+               else if(bT == 6 && building._lvl.Get() >= 1 && _yardType % 2 == MAIN_YARD)
                {
                   _resources.r1max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
                   _resources.r2max += GLOBAL._buildingProps[bT - 1].capacity[building._lvl.Get() - 1];
@@ -4728,14 +4922,14 @@ package
                _resources.r3Rate *= GLOBAL._harvesterOverdrivePower.Get();
                _resources.r4Rate *= GLOBAL._harvesterOverdrivePower.Get();
             }
-            if(!_isOutpost)
+            if(_yardType % 2 == MAIN_YARD)
             {
                n = 1;
                while(n < 5)
                {
                   _resources["r" + n + "max"] *= GLOBAL._upgradePacking;
                   _resources["r" + n + "max"] = Math.ceil(_resources["r" + n + "max"]);
-                  if(GLOBAL._mode == "build" && !_isOutpost)
+                  if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD)
                   {
                      GLOBAL._yardResources["r" + n + "max"] = _resources["r" + n + "max"];
                   }
@@ -4747,7 +4941,7 @@ package
                j = 1;
                while(j < 5)
                {
-                  if(GLOBAL._advancedMap)
+                  if(Boolean(GLOBAL._advancedMap) || _yardType == INFERNO_YARD)
                   {
                      GLOBAL._resources["r" + j + "max"] = GLOBAL._yardResources["r" + j + "max"] + GLOBAL._mapOutpost.length * GLOBAL._outpostCapacity.Get();
                      _resources["r" + j + "max"] = GLOBAL._resources["r" + j + "max"];
@@ -4769,11 +4963,12 @@ package
       
       public static function CalcBaseValue() : uint
       {
+         var baseValue:uint = 0;
          var i:* = undefined;
          var building:* = undefined;
          var buildingLvl:* = undefined;
          var costs:* = undefined;
-         var baseValue:uint = 0;
+         baseValue = 0;
          for(i in _buildingsAll)
          {
             try
@@ -4796,7 +4991,7 @@ package
             }
          }
          baseValue = Math.ceil(baseValue / 10);
-         if(baseValue > _baseValue && !_isOutpost)
+         if(baseValue > _baseValue && _yardType == MAIN_YARD)
          {
             _baseValue = baseValue;
          }
@@ -4997,7 +5192,7 @@ package
          var _loc1_:int = 0;
          var _loc2_:Point = null;
          var _loc3_:BFOUNDATION = null;
-         if(_isOutpost)
+         if(_yardType)
          {
             return;
          }
@@ -5035,7 +5230,7 @@ package
                });
                _loc2_ = GRID.ToISO(_loc2_.x,_loc2_.y,0);
                MAP.FocusTo(_loc2_.x,_loc2_.y,2);
-               GLOBAL.Message("<b>We found your missing Town Hall!</b><br><br>It\'s polished it up and ready to move back into your Yard. Don\'t leave it out in the cold, it will be prone to Attack!");
+               GLOBAL.Message(KEYS.Get("msg_rebuildTH"));
             }
          }
       }
@@ -5081,6 +5276,24 @@ package
             _loc1_ = 6;
          }
          return _loc1_;
+      }
+      
+      public static function isInferno() : Boolean
+      {
+         return BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
+      }
+      
+      public static function ModeInferno(param1:Boolean = false) : String
+      {
+         var _loc2_:String = null;
+         var _loc3_:Boolean = false;
+         _loc2_ = GLOBAL._mode;
+         _loc3_ = BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
+         if(param1 || _loc3_)
+         {
+            _loc2_ = "i" + GLOBAL._mode;
+         }
+         return _loc2_;
       }
    }
 }

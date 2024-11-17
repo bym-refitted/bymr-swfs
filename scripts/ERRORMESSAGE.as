@@ -56,7 +56,7 @@ package
                LOGGER.Log("err","HALT " + _message + " | " + e.getStackTrace());
             }
             this._mc = GLOBAL._ROOT.addChild(new popup_error());
-            (this._mc.mcFrame as frame2).Setup(false);
+            (this._mc.mcFrame as frame).Setup(false);
             if(KEYS._setup)
             {
                this._mc.tA.htmlText = "<b>" + KEYS.Get("pop_oops_title") + "</b>";

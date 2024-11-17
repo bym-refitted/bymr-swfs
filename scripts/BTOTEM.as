@@ -1,152 +1,214 @@
 package
 {
    import com.cc.utils.SecNum;
-   import flash.events.MouseEvent;
    
    public class BTOTEM extends BDECORATION
    {
+      public static const BTOTEM_BUILDING_TYPE:int = 131;
+      
       public function BTOTEM(param1:int)
       {
          super(param1);
+         if(Boolean(BASE._buildingsStored["b" + _type]) && Boolean(BASE._buildingsStored["bl" + _type]))
+         {
+            _lvl = new SecNum(BASE._buildingsStored["bl" + _type].Get());
+            _hpLvl = _lvl.Get();
+         }
       }
       
-      private static function RemoveAllFromStorage() : void
+      public static function TotemReward() : void
       {
-         var _loc1_:Number = 121;
-         while(_loc1_ <= 126)
+         RemoveAllFromStorage(false,true);
+         RemoveAllFromYard(false,true);
+         BASE.BuildingStorageAdd(BTOTEM_BUILDING_TYPE,1);
+      }
+      
+      public static function TotemPlace() : void
+      {
+         BUILDINGS._buildingID = BTOTEM_BUILDING_TYPE;
+         BUILDINGS.Show();
+         BUILDINGS._mc.SwitchB(4,4,0);
+      }
+      
+      public static function UpgradeTotem() : void
+      {
+         var _loc1_:BFOUNDATION = null;
+         for each(_loc1_ in BASE._buildingsAll)
          {
-            if(BASE._buildingsStored["b" + _loc1_])
+            if(_loc1_._type == BTOTEM_BUILDING_TYPE)
             {
-               delete BASE._buildingsStored["b" + _loc1_];
+               _loc1_.Upgraded();
             }
-            _loc1_++;
+         }
+         if(BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE])
+         {
+            BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE].Add(1);
          }
       }
       
-      public static function CleanupStorage() : void
+      public static function DowngradeTotem() : void
       {
-         var _loc1_:int = 0;
-         if(GLOBAL._bTotem)
+         var _loc1_:BFOUNDATION = null;
+         for each(_loc1_ in BASE._buildingsAll)
          {
-            RemoveAllFromStorage();
-         }
-         else
-         {
-            RemoveAllFromStorage();
-            if(GLOBAL.StatGet("wmi_wave") > 0)
+            if(_loc1_._type == BTOTEM_BUILDING_TYPE)
             {
-               _loc1_ = SPECIALEVENT.TotemQualified(121);
-               BASE._buildingsStored["b" + _loc1_] = new SecNum(1);
+               _loc1_.Downgrade_TOTEM_DEBUG();
+            }
+         }
+         if(BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE])
+         {
+            BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE].Add(-1);
+         }
+      }
+      
+      private static function RemoveAllFromStorage(param1:Boolean = false, param2:Boolean = false) : void
+      {
+         var _loc3_:Number = NaN;
+         if(param1)
+         {
+            _loc3_ = 121;
+            while(_loc3_ <= 126)
+            {
+               if(BASE._buildingsStored["b" + _loc3_])
+               {
+                  delete BASE._buildingsStored["b" + _loc3_];
+               }
+               if(BASE._buildingsStored["bl" + _loc3_])
+               {
+                  delete BASE._buildingsStored["bl" + _loc3_];
+               }
+               _loc3_++;
+            }
+         }
+         if(param2)
+         {
+            if(BASE._buildingsStored["b" + BTOTEM_BUILDING_TYPE])
+            {
+               delete BASE._buildingsStored["b" + BTOTEM_BUILDING_TYPE];
+            }
+            if(BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE])
+            {
+               delete BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE];
             }
          }
       }
       
-      public static function IsTotem(param1:int) : Boolean
+      private static function RemoveAllFromYard(param1:Boolean = false, param2:Boolean = false) : void
       {
-         return param1 >= 121 && param1 <= 126;
+         var _loc3_:BFOUNDATION = null;
+         for each(_loc3_ in BASE._buildingsAll)
+         {
+            if(param1)
+            {
+               if(_loc3_._type >= 121 && _loc3_._type <= 126)
+               {
+                  _loc3_.GridCost(false);
+                  _loc3_.Clean();
+               }
+            }
+            if(param2)
+            {
+               if(_loc3_._type == BTOTEM_BUILDING_TYPE)
+               {
+                  _loc3_.GridCost(false);
+                  _loc3_.Clean();
+               }
+            }
+         }
+      }
+      
+      public static function FindMissingTotem() : void
+      {
+         var _loc2_:BFOUNDATION = null;
+         if(GLOBAL._mode != "build")
+         {
+            return;
+         }
+         var _loc1_:int = EarnedTotemLevel();
+         if(_loc1_ > 0 && BASE._yardType == BASE.MAIN_YARD)
+         {
+            for each(_loc2_ in BASE._buildingsAll)
+            {
+               if(IsTotem2(_loc2_._type))
+               {
+                  return;
+               }
+            }
+            if(!BASE._buildingsStored["b" + BTOTEM_BUILDING_TYPE])
+            {
+               BASE.BuildingStorageAdd(BTOTEM_BUILDING_TYPE,_loc1_);
+               GLOBAL.Message("It\'s come to our attention that the Wild Monsters have been stealing some players\' Totems. If yours seems to be missing, don\'t fret! Just check your storage and it should be ready for placement.");
+            }
+         }
+      }
+      
+      private static function EarnedTotemLevel() : int
+      {
+         switch(SPECIALEVENT.wave)
+         {
+            case 1:
+               return 0;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+               return 1;
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+               return 2;
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+               return 3;
+            case 31:
+               return 4;
+            case 32:
+               return 5;
+            default:
+               return 6;
+         }
+      }
+      
+      public static function IsTotem(param1:int, param2:Boolean = true) : Boolean
+      {
+         return param1 >= 121 && param1 <= 126 || !param2 && param1 == BTOTEM_BUILDING_TYPE;
+      }
+      
+      public static function IsTotem2(param1:int) : Boolean
+      {
+         return param1 == BTOTEM_BUILDING_TYPE;
       }
       
       override public function Tick() : *
       {
-         var earnedType:Number = SPECIALEVENT.TotemQualified(_type);
-         var shouldChange:Boolean = earnedType != _type ? true : false;
-         if(shouldChange)
-         {
-            _type = earnedType;
-            _renderState = null;
-            if(GLOBAL._bTotem)
-            {
-               GLOBAL._bTotem._renderState = null;
-            }
-            Update(true);
-            try
-            {
-               _buildingProps = GLOBAL._buildingProps[_type - 1];
-               Description();
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BTOTEM.SetProps:  buildingprops | " + e.message + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BTOTEM.SetProps buildingprops");
-               return;
-            }
-         }
          super.Tick();
-      }
-      
-      override public function Place(param1:MouseEvent = null) : *
-      {
-         if(GLOBAL._bTotem)
+         var _loc1_:int = EarnedTotemLevel();
+         if(_lvl.Get() != _loc1_)
          {
-            Cancel();
-            return;
+            _lvl.Set(_loc1_);
+            _hpLvl = _loc1_;
          }
-         super.Place(param1);
-      }
-      
-      override public function PlaceB() : *
-      {
-         if(GLOBAL._bTotem)
-         {
-            Cancel();
-            return;
-         }
-         super.PlaceB();
-         GLOBAL._bTotem = this;
-         RemoveAllFromStorage();
-      }
-      
-      override public function Constructed() : *
-      {
-         GLOBAL._bTotem = this;
-         super.Constructed();
-         RemoveAllFromStorage();
-      }
-      
-      override public function RecycleC() : *
-      {
-         GridCost(false);
-         try
-         {
-            MAP._BUILDINGBASES.removeChild(_mcBase);
-         }
-         catch(e:Error)
-         {
-         }
-         try
-         {
-            MAP._BUILDINGFOOTPRINTS.removeChild(_mcFootprint);
-         }
-         catch(e:Error)
-         {
-         }
-         try
-         {
-            MAP._BUILDINGTOPS.removeChild(_mc);
-         }
-         catch(e:Error)
-         {
-         }
-         GRID.Clear();
-         MAP.SortDepth();
-         QUEUE.Remove("building" + _id,false,this);
-         BASE.BuildingDeselect();
-         RemoveAllFromStorage();
-         if(GLOBAL.StatGet("wmi_wave") > 0)
-         {
-            BASE.BuildingStorageAdd(_type);
-         }
-         GLOBAL._bTotem = null;
-         Clean();
-         BASE.Save();
-         return true;
-      }
-      
-      override public function Setup(param1:Object) : *
-      {
-         super.Setup(param1);
-         GLOBAL._bTotem = this;
-         RemoveAllFromStorage();
       }
    }
 }

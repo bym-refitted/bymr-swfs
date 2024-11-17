@@ -31,9 +31,9 @@ package com.monsters.maproom_advanced
          x = 455;
          y = 250;
          this._mc = this;
-         this.bCancel.Setup("Cancel");
+         this.bCancel.SetupKey("btn_cancel");
          this.bCancel.addEventListener(MouseEvent.CLICK,this.Hide);
-         this.bTransfer.Setup("Transfer");
+         this.bTransfer.SetupKey("btn_transfer");
          this.bTransfer.addEventListener(MouseEvent.CLICK,this.Transfer);
       }
       
@@ -51,6 +51,7 @@ package com.monsters.maproom_advanced
          this._transferMonsters = {};
          this._monstersLeft = {};
          this._transferBars = [];
+         tDesc.htmlText = KEYS.Get("popup_desc_monstertransfera");
          if(param2)
          {
             for(_loc3_ in MapRoom._monsterTransfer)

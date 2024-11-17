@@ -149,13 +149,17 @@ package
          var _loc16_:Object = null;
          var _loc17_:int = 0;
          var _loc18_:String = null;
-         if(BASE._isOutpost)
+         if(BASE._yardType == BASE.OUTPOST)
          {
             _grouping = [[["BST","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","TOD","EXH"]]];
          }
-         else
+         else if(BASE._yardType == BASE.MAIN_YARD)
          {
             _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP","MUSK"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
+         }
+         else
+         {
+            _grouping = [[["ENL","BLK2","BLK3"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP"]],[["SP1","SP2","SP3","SP4","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","EXH","TOD"]]];
          }
          var _loc1_:int = 1;
          while(_loc1_ <= 4)
@@ -400,6 +404,10 @@ package
          }
          _storeItems.HOD.d = "Speed up all harvester production for 12 hours.";
          _storeItems.HOD.t = "Harvester Overdrive";
+         _storeItems.POD.d = KEYS.Get("store_pod_desc");
+         _storeItems.POD.t = KEYS.Get("store_pod_title");
+         _storeItems.EXH.d = KEYS.Get("store_exh_desc");
+         _storeItems.EXH.t = KEYS.Get("store_exh_title");
       }
       
       public static function AddInventory(param1:String) : *
@@ -484,10 +492,10 @@ package
       {
          if(GLOBAL._mode == "build")
          {
-            if(Boolean(GLOBAL._bStore) || Boolean(BASE._isOutpost))
+            if(Boolean(GLOBAL._bStore) || Boolean(BASE._yardType))
             {
                SOUNDS.Play("click1");
-               if(BASE._isOutpost || GLOBAL._bStore._canFunction || param4)
+               if(BASE._yardType || GLOBAL._bStore._canFunction || param4)
                {
                   if(!_open)
                   {
@@ -530,8 +538,15 @@ package
                   _mc.b3.addEventListener(MouseEvent.CLICK,SwitchClick(3,0,true));
                   _mc.b4.SetupKey("str_protection",false,0,0,"#ECBF88");
                   _mc.b4.addEventListener(MouseEvent.CLICK,SwitchClick(4,0,true));
-                  _mc.b5.SetupKey("str_zazzle",false,0,0,"#ECBF88");
-                  _mc.b5.addEventListener(MouseEvent.CLICK,SwitchClick(5,0,true));
+                  if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+                  {
+                     _mc.b5.SetupKey("str_zazzle",false,0,0,"#ECBF88");
+                     _mc.b5.addEventListener(MouseEvent.CLICK,SwitchClick(5,0,true));
+                  }
+                  else
+                  {
+                     _mc.b5.visible = false;
+                  }
                   Switch(param1,param2,_customPage);
                }
                else
@@ -592,7 +607,7 @@ package
                      _streamline.mcInstant.gArrow.visible = true;
                      _streamline.mcStoreIcon.visible = true;
                      _streamline.mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("streamspd_upgrade") + "</b>";
-                     _streamline.mcInstant.bAction.Setup("Use " + _streamline_cost + " Shiny");
+                     _streamline.mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_streamline_cost}));
                   }
                }
                else if(_loc2_._type == 8)
@@ -731,7 +746,7 @@ package
                }
                else
                {
-                  _streamline.mcInstant.bAction.Setup("Use " + _streamline_cost + " Shiny");
+                  _streamline.mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_streamline_cost}));
                }
                _streamline.mcInstant.bAction.addEventListener(MouseEvent.CLICK,StreamlineBuy);
                _streamline.mcInstant.gCoin.mouseEnabled = false;
@@ -795,14 +810,11 @@ package
          var _loc24_:MONSTERLAB = null;
          var _loc25_:String = null;
          var _loc26_:int = 0;
-         var _loc27_:int = 0;
-         var _loc28_:int = 0;
-         var _loc29_:int = 0;
+         var _loc27_:Boolean = false;
+         var _loc28_:Boolean = false;
+         var _loc29_:Boolean = false;
          var _loc30_:Boolean = false;
-         var _loc31_:Boolean = false;
-         var _loc32_:Boolean = false;
-         var _loc33_:Boolean = false;
-         var _loc34_:BFOUNDATION = null;
+         var _loc31_:BFOUNDATION = null;
          var _loc9_:String = param1;
          var _loc10_:Object = _storeItems[_loc9_];
          var _loc11_:Object = _storeData[_loc9_];
@@ -951,48 +963,37 @@ package
                }
             }
          }
-         else if(_loc9_.substr(0,3) == "BEW")
+         else if(_loc9_.substr(0,3) != "BEW")
          {
-            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+            if(_loc9_ != "BST")
             {
-               _loc26_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-               _loc27_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-               _loc28_ = _loc26_ + _loc27_;
-               _loc28_ = _loc28_ % 10;
-               if(_loc28_ < 2)
+               if(_loc9_ != "ENL")
                {
-                  _loc10_.c = [1000,1000,1000,1000];
-               }
-            }
-         }
-         else if(_loc9_ != "BST")
-         {
-            if(_loc9_ != "ENL")
-            {
-               if(_loc9_ != "BIP")
-               {
-                  if(_loc9_ != "MUSK")
+                  if(_loc9_ != "BIP")
                   {
-                     if(_loc9_ != "HOD")
+                     if(_loc9_ != "MUSK")
                      {
-                        if(_loc9_ != "HOD2")
+                        if(_loc9_ != "HOD")
                         {
-                           if(_loc9_ != "HOD3")
+                           if(_loc9_ != "HOD2")
                            {
-                              if(_loc9_ != "PRO1")
+                              if(_loc9_ != "HOD3")
                               {
-                                 if(_loc9_ != "PRO2")
+                                 if(_loc9_ != "PRO1")
                                  {
-                                    if(_loc9_ != "PRO3")
+                                    if(_loc9_ != "PRO2")
                                     {
-                                       if(_loc9_ != "TOD")
+                                       if(_loc9_ != "PRO3")
                                        {
-                                          if(_loc9_ != "MOD")
+                                          if(_loc9_ != "TOD")
                                           {
-                                             if(_loc9_ != "MDOD")
+                                             if(_loc9_ != "MOD")
                                              {
-                                                if(_loc9_ == "MSOD")
+                                                if(_loc9_ != "MDOD")
                                                 {
+                                                   if(_loc9_ == "MSOD")
+                                                   {
+                                                   }
                                                 }
                                              }
                                           }
@@ -1121,57 +1122,57 @@ package
          }
          if(_loc9_.substr(0,3) == "BLK")
          {
-            _loc29_ = GLOBAL._bTownhall._lvl.Get();
-            if(BASE._isOutpost)
+            _loc26_ = GLOBAL._bTownhall._lvl.Get();
+            if(BASE._yardType)
             {
-               _loc29_ = 7;
+               _loc26_ = 7;
             }
-            if(!BASE._isOutpost && _loc29_ < 3 && _loc9_.substr(3,1) == "2")
+            if(!BASE._yardType && _loc26_ < 3 && _loc9_.substr(3,1) == "2")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":3});
             }
-            else if(!BASE._isOutpost && _loc29_ < 4 && _loc9_.substr(3,1) == "3")
+            else if(!BASE._yardType && _loc26_ < 4 && _loc9_.substr(3,1) == "3")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":4});
             }
-            else if(!BASE._isOutpost && _loc29_ < 5 && _loc9_.substr(3,1) == "4")
+            else if(!BASE._yardType && _loc26_ < 5 && _loc9_.substr(3,1) == "4")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":5});
             }
-            else if(!BASE._isOutpost && _loc29_ < 6 && _loc9_.substr(3,1) == "5")
+            else if(!BASE._yardType && _loc26_ < 6 && _loc9_.substr(3,1) == "5")
             {
                _loc20_ = KEYS.Get("upgradeth",{"v1":6});
             }
             else
             {
+               _loc27_ = false;
+               _loc28_ = false;
+               _loc29_ = false;
                _loc30_ = false;
-               _loc31_ = false;
-               _loc32_ = false;
-               _loc33_ = false;
-               for each(_loc34_ in BASE._buildingsWalls)
+               for each(_loc31_ in BASE._buildingsWalls)
                {
-                  if(_loc34_._lvl.Get() == 1 && _loc29_ >= 3)
+                  if(_loc31_._lvl.Get() == 1 && _loc26_ >= 3)
                   {
+                     _loc27_ = true;
+                     _loc28_ = true;
+                     _loc29_ = true;
                      _loc30_ = true;
-                     _loc31_ = true;
-                     _loc32_ = true;
-                     _loc33_ = true;
                      break;
                   }
-                  if(_loc34_._lvl.Get() == 2 && _loc29_ >= 4)
+                  if(_loc31_._lvl.Get() == 2 && _loc26_ >= 4)
                   {
-                     _loc31_ = true;
-                     _loc32_ = true;
-                     _loc33_ = true;
+                     _loc28_ = true;
+                     _loc29_ = true;
+                     _loc30_ = true;
                   }
-                  if(_loc34_._lvl.Get() == 3 && _loc29_ >= 5)
+                  if(_loc31_._lvl.Get() == 3 && _loc26_ >= 5)
                   {
-                     _loc32_ = true;
-                     _loc33_ = true;
+                     _loc29_ = true;
+                     _loc30_ = true;
                   }
-                  if(_loc34_._lvl.Get() == 4 && _loc29_ >= 6)
+                  if(_loc31_._lvl.Get() == 4 && _loc26_ >= 6)
                   {
-                     _loc33_ = true;
+                     _loc30_ = true;
                   }
                }
             }
@@ -1291,15 +1292,11 @@ package
          var _loc34_:MONSTERLAB = null;
          var _loc35_:String = null;
          var _loc36_:int = 0;
-         var _loc37_:int = 0;
-         var _loc38_:int = 0;
-         var _loc39_:int = 0;
-         var _loc40_:int = 0;
-         var _loc41_:Boolean = false;
-         var _loc42_:Boolean = false;
-         var _loc43_:Boolean = false;
-         var _loc44_:Boolean = false;
-         var _loc45_:BFOUNDATION = null;
+         var _loc37_:Boolean = false;
+         var _loc38_:Boolean = false;
+         var _loc39_:Boolean = false;
+         var _loc40_:Boolean = false;
+         var _loc41_:BFOUNDATION = null;
          if(param4)
          {
             SOUNDS.Play("click1");
@@ -1452,22 +1449,22 @@ package
                   }
                   if(_loc24_ > 0)
                   {
-                     _loc26_ = "build";
-                     _loc27_ = "building";
+                     _loc26_ = KEYS.Get("str_build");
+                     _loc27_ = KEYS.Get("str_building");
                      if(_loc28_._countdownUpgrade.Get() > 0)
                      {
-                        _loc26_ = "upgrade";
-                        _loc27_ = "upgrading";
+                        _loc26_ = KEYS.Get("str_upgrade");
+                        _loc27_ = KEYS.Get("str_upgrading");
                      }
                      if(_loc28_._countdownFortify.Get() > 0)
                      {
-                        _loc26_ = "fortify";
-                        _loc27_ = "fortifying";
+                        _loc26_ = KEYS.Get("str_fortify");
+                        _loc27_ = KEYS.Get("str_fortifying");
                      }
                      if(_loc28_._repairing)
                      {
-                        _loc26_ = "repair";
-                        _loc27_ = "repairing";
+                        _loc26_ = KEYS.Get("str_repair");
+                        _loc27_ = KEYS.Get("str_repairing");
                      }
                      if(_loc20_ == "SP1")
                      {
@@ -1646,25 +1643,6 @@ package
             {
                _loc21_.t = KEYS.Get("str_code_bew_title2");
                _loc21_.d = KEYS.Get("str_code_bew_body2");
-               if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
-               {
-                  _loc36_ = GLOBAL.GetABTestHash("tutorial");
-                  if(_loc36_ < 14)
-                  {
-                     _loc21_.c = [1000,1000,1000,1000];
-                  }
-               }
-               else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
-               {
-                  _loc37_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-                  _loc38_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-                  _loc39_ = _loc37_ + _loc38_;
-                  _loc39_ = _loc39_ % 10;
-                  if(_loc39_ < 2)
-                  {
-                     _loc21_.c = [1000,1000,1000,1000];
-                  }
-               }
             }
             else if(_loc20_ == "BST")
             {
@@ -1749,7 +1727,7 @@ package
             _loc8_ = "<b>" + _loc21_.t + "</b><br>" + _loc21_.d;
             if(_loc20_ == "BIP" && _storeData.BIP && _storeData.BIP.q < 10)
             {
-               _loc8_ += " (Total increase of " + (_storeData.BIP.q + 1) * 10 + "%)";
+               _loc8_ += " " + KEYS.Get("store_total%increase",{"v1":(_storeData.BIP.q + 1) * 10});
             }
             _loc32_ = "";
             if(_loc20_.substr(0,2) == "BR" && _loc21_.c[0] == 0)
@@ -1850,72 +1828,72 @@ package
             }
             if(_loc20_.substr(0,3) == "BLK")
             {
-               _loc40_ = GLOBAL._bTownhall._lvl.Get();
-               if(BASE._isOutpost)
+               _loc36_ = GLOBAL._bTownhall._lvl.Get();
+               if(BASE._yardType)
                {
-                  _loc40_ = 7;
+                  _loc36_ = 7;
                }
-               if(!BASE._isOutpost && _loc40_ < 3 && _loc20_.substr(3,1) == "2")
+               if(!BASE._yardType && _loc36_ < 3 && _loc20_.substr(3,1) == "2")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":3});
                }
-               else if(!BASE._isOutpost && _loc40_ < 4 && _loc20_.substr(3,1) == "3")
+               else if(!BASE._yardType && _loc36_ < 4 && _loc20_.substr(3,1) == "3")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":4});
                }
-               else if(!BASE._isOutpost && _loc40_ < 5 && _loc20_.substr(3,1) == "4")
+               else if(!BASE._yardType && _loc36_ < 5 && _loc20_.substr(3,1) == "4")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":5});
                }
-               else if(!BASE._isOutpost && _loc40_ < 6 && _loc20_.substr(3,1) == "5")
+               else if(!BASE._yardType && _loc36_ < 6 && _loc20_.substr(3,1) == "5")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":6});
                }
                else
                {
-                  _loc41_ = false;
-                  _loc42_ = false;
-                  _loc43_ = false;
-                  _loc44_ = false;
-                  for each(_loc45_ in BASE._buildingsWalls)
+                  _loc37_ = false;
+                  _loc38_ = false;
+                  _loc39_ = false;
+                  _loc40_ = false;
+                  for each(_loc41_ in BASE._buildingsWalls)
                   {
-                     if(_loc45_._lvl.Get() == 1 && _loc40_ >= 3)
+                     if(_loc41_._lvl.Get() == 1 && _loc36_ >= 3)
                      {
-                        _loc41_ = true;
-                        _loc42_ = true;
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc37_ = true;
+                        _loc38_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                         break;
                      }
-                     if(_loc45_._lvl.Get() == 2 && _loc40_ >= 4)
+                     if(_loc41_._lvl.Get() == 2 && _loc36_ >= 4)
                      {
-                        _loc42_ = true;
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc38_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                      }
-                     if(_loc45_._lvl.Get() == 3 && _loc40_ >= 5)
+                     if(_loc41_._lvl.Get() == 3 && _loc36_ >= 5)
                      {
-                        _loc43_ = true;
-                        _loc44_ = true;
+                        _loc39_ = true;
+                        _loc40_ = true;
                      }
-                     if(_loc45_._lvl.Get() == 4 && _loc40_ >= 6)
+                     if(_loc41_._lvl.Get() == 4 && _loc36_ >= 6)
                      {
-                        _loc44_ = true;
+                        _loc40_ = true;
                      }
                   }
-                  if(_loc20_.substr(3,1) == "2" && !_loc41_)
+                  if(_loc20_.substr(3,1) == "2" && !_loc37_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "3" && !_loc42_)
+                  if(_loc20_.substr(3,1) == "3" && !_loc38_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "4" && !_loc43_)
+                  if(_loc20_.substr(3,1) == "4" && !_loc39_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "5" && !_loc44_)
+                  if(_loc20_.substr(3,1) == "5" && !_loc40_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
@@ -1972,14 +1950,14 @@ package
                   if(Boolean(_storeInventory[_loc31_]) && _storeInventory[_loc31_].Get() > 0)
                   {
                      _loc9_ = "<font color=\"#0000ff\"><b>" + _storeInventory[_loc31_].Get() + "</b></font>";
-                     _loc10_ = "<font color=\"#0000CC\">You have " + _storeInventory[_loc31_].Get() + " in your inventory.</font>";
+                     _loc10_ = "<font color=\"#0000CC\">" + KEYS.Get("store_inyourinventory",{"v1":_storeInventory[_loc31_].Get()}) + "</font>";
                   }
                   else
                   {
                      _loc9_ = "<font color=\"#CC0000\">" + KEYS.Get("str_prob_soldout") + "</font>";
                      if(_loc21_.du > 0)
                      {
-                        _loc10_ = "<font color=\"#CC0000\">Re-buy in " + GLOBAL.ToTime(_storeData[_loc20_].e - GLOBAL.Timestamp(),true) + "</font>";
+                        _loc10_ = "<font color=\"#CC0000\">" + KEYS.Get("store_rebuy",{"v1":GLOBAL.ToTime(_storeData[_loc20_].e - GLOBAL.Timestamp(),true)}) + "</font>";
                      }
                      else if(_loc6_ == 0)
                      {
@@ -2008,7 +1986,7 @@ package
                   {
                      _loc23_.bBuy.Highlight = true;
                      _loc9_ = "<font color=\"#0000ff\"><b>" + _storeInventory[_loc31_].Get() + "</b></font>";
-                     _loc10_ = "<font color=\"#0000CC\">You have " + _storeInventory[_loc31_].Get() + " in your inventory.</font>";
+                     _loc10_ = "<font color=\"#0000CC\">" + KEYS.Get("store_inyourinventory",{"v1":_storeInventory[_loc31_].Get()}) + "</font>";
                   }
                   else
                   {
@@ -2260,19 +2238,19 @@ package
             _loc10_ = _loc4_;
             if(_loc12_ == 2)
             {
-               GLOBAL.Message("<b>All your walls have been upgraded to Stone!</b>");
+               GLOBAL.Message("<b>" + KEYS.Get("msg_wallsstone") + "</b>");
             }
             else if(_loc12_ == 3)
             {
-               GLOBAL.Message("<b>All your walls have been upgraded to Metal!</b>");
+               GLOBAL.Message("<b>" + KEYS.Get("msg_wallsmetal") + "</b>");
             }
             else if(_loc12_ == 4)
             {
-               GLOBAL.Message("<b>All your walls have been upgraded to Gold!</b>");
+               GLOBAL.Message("<b>" + KEYS.Get("msg_wallsgold") + "</b>");
             }
             else if(_loc12_ == 5)
             {
-               GLOBAL.Message("<b>All your walls have been upgraded to Black Diamond!</b>");
+               GLOBAL.Message("<b>" + KEYS.Get("msg_wallsblackdiamond") + "</b>");
             }
          }
          if(param1.substr(0,2) == "BR")
@@ -2627,6 +2605,10 @@ package
          {
             GLOBAL._mapWidth = 1000;
             GLOBAL._mapHeight = 800;
+            if(GLOBAL._aiDesignMode && BASE.isInferno())
+            {
+               STORE._storeData.ENL = {"q":5};
+            }
             if(_storeData.ENL)
             {
                enl = 0;
@@ -2707,7 +2689,7 @@ package
             if(_storeData.MOD)
             {
                GLOBAL._monsterOverdrive.Set(_storeData.MOD.e);
-               if(GLOBAL._mode == "build" && !BASE._isOutpost)
+               if(GLOBAL._mode == "build" && !BASE._yardType)
                {
                   GLOBAL._playerMonsterOverdrive.Set(_storeData.MOD.e);
                }
@@ -2728,7 +2710,7 @@ package
             if(_storeData.MDOD)
             {
                GLOBAL._monsterDefenseOverdrive.Set(_storeData.MDOD.e);
-               if(GLOBAL._mode == "build" && !BASE._isOutpost)
+               if(GLOBAL._mode == "build" && !BASE._yardType)
                {
                   GLOBAL._playerMonsterDefenseOverdrive.Set(_storeData.MDOD.e);
                }
@@ -2749,7 +2731,7 @@ package
             if(_storeData.MSOD)
             {
                GLOBAL._monsterSpeedOverdrive.Set(_storeData.MSOD.e);
-               if(GLOBAL._mode == "build" && !BASE._isOutpost)
+               if(GLOBAL._mode == "build" && !BASE._yardType)
                {
                   GLOBAL._playerMonsterSpeedOverdrive.Set(_storeData.MSOD.e);
                }

@@ -96,7 +96,7 @@ package
          y = GLOBAL._SCREEN.y + this.posY;
          var _loc1_:int = x;
          var _loc2_:int = y;
-         var _loc3_:* = parent;
+         var _loc3_:* = mcBlocker.parent;
          if(_loc3_ && Boolean(_loc3_.parent))
          {
             while(_loc3_.parent)
@@ -110,8 +110,8 @@ package
                _loc3_ = _loc3_.parent;
             }
          }
-         mcBlocker.x = GLOBAL._SCREEN.x - _loc1_;
-         mcBlocker.y = GLOBAL._SCREEN.y - _loc2_;
+         mcBlocker.x = GLOBAL._SCREEN.x - _loc1_ + this.posX;
+         mcBlocker.y = GLOBAL._SCREEN.y - _loc2_ + this.posY;
          mcBlocker.width = GLOBAL._SCREEN.width;
          mcBlocker.height = GLOBAL._SCREEN.height;
       }

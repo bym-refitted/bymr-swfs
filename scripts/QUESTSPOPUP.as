@@ -244,6 +244,7 @@ package
          this._infoMC = this.addChild(new QUESTINFO());
          this._infoMC.x = 8;
          this._infoMC.y = -195;
+         this._infoMC.tReward.htmlText = "<b>" + KEYS.Get("popup_label_reward") + "</b>";
          QUESTS._displayedInstructions = true;
          i = 0;
          while(i < QUESTS._quests.length)

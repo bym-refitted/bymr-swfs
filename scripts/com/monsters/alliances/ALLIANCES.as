@@ -124,13 +124,13 @@ package com.monsters.alliances
          r.load(GLOBAL._allianceURL + "getalliances",alliancevars,EventCallbackEx(onAllianceInfoSuccessEx,[targetcell,force]),onAllianceInfoFail);
       }
       
-      public static function SetCellAlliance(param1:MapRoomCell, param2:Boolean = false) : AllyInfo
+      public static function SetCellAlliance(param1:*, param2:Boolean = false) : AllyInfo
       {
          var _loc3_:AllyInfo = null;
          var _loc4_:int = 0;
          if(Boolean(param1._allianceID) && param1._allianceID != 0)
          {
-            _loc4_ = param1._allianceID;
+            _loc4_ = int(param1._allianceID);
             if(_alliances[_loc4_])
             {
                _loc3_ = _alliances[_loc4_];
@@ -183,42 +183,42 @@ package com.monsters.alliances
          }
       }
       
-      public static function AllianceInvite(param1:MapRoomCell) : void
+      public static function AllianceInvite(param1:*) : void
       {
          var r:*;
          var alliancevars:Array;
          var onAllianceInviteSuccess:Function = null;
          var onAllianceInviteFail:Function = null;
-         var _cell:MapRoomCell = param1;
+         var _cell:* = param1;
          onAllianceInviteSuccess = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.response == "success")
             {
-               GLOBAL.Message("An invitation to join your alliance has been sent! ");
+               GLOBAL.Message(KEYS.Get("msg_allianceinvitesent"));
                return;
             }
             if(param1.error)
             {
-               GLOBAL.Message("There was an error in processing your invitation. \nError - " + param1.error + ": " + param1.error_code);
+               GLOBAL.Message(KEYS.Get("msg_err_processinginvite_long") + " - " + param1.error + ": " + param1.error_code);
             }
             else
             {
-               GLOBAL.Message("There was an error in processing your invitation.");
+               GLOBAL.Message(KEYS.Get("msg_err_processinginvite_short"));
             }
          };
          onAllianceInviteFail = function(param1:IOErrorEvent):void
          {
-            GLOBAL.Message("There was an error in sending your invitation.");
+            GLOBAL.Message(KEYS.Get("msg_err_sendinginvite"));
          };
          if(_cell._base < 2)
          {
-            GLOBAL.Message("You cannot send an invitation to",_cell._name);
+            GLOBAL.Message(KEYS.Get("msg_cannotinvite",{"v1":_cell._name}));
             return;
          }
          if(!_myAlliance)
          {
-            GLOBAL.Message("You are not in an alliance. ");
+            GLOBAL.Message(KEYS.Get("msg_notinalliance"));
             return;
          }
          r = new URLLoaderApi();

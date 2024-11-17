@@ -131,8 +131,8 @@ package
             var _loc4_:int = 0;
             var _loc5_:Point = null;
             var _loc6_:Array = null;
-            var _loc7_:Array = null;
-            var _loc8_:int = 0;
+            var _loc7_:int = 0;
+            var _loc8_:Array = null;
             var _loc2_:int = 0;
             while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
             {
@@ -141,22 +141,25 @@ package
                   _loc3_ = new Point(GLOBAL._bChamber.x,GLOBAL._bChamber.y + 80);
                   _loc4_ = int((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get());
                   _loc5_ = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
-                  CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
-                  CREATURES._guardian.Export();
-                  _loc6_ = ["Gorgo","Drull","Fomor"];
-                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
-                  CREATURES._guardian.ModeCage();
-                  _loc7_ = [];
-                  _loc8_ = 0;
-                  while(_loc8_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
+                  if(refundLevel > 0)
                   {
-                     if(_loc2_ != _loc8_)
-                     {
-                        _loc7_.push((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc8_]);
-                     }
-                     _loc8_++;
+                     CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
+                     CREATURES._guardian.Export();
+                     _loc8_ = ["Gorgo","Drull","Fomor"];
+                     MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                     CREATURES._guardian.ModeCage();
                   }
-                  (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen = _loc7_;
+                  _loc6_ = [];
+                  _loc7_ = 0;
+                  while(_loc7_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
+                  {
+                     if(_loc2_ != _loc7_)
+                     {
+                        _loc6_.push((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc7_]);
+                     }
+                     _loc7_++;
+                  }
+                  (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen = _loc6_;
                   break;
                }
                _loc2_++;
@@ -290,6 +293,11 @@ package
          }
          if(update.data[1] == "CMR")
          {
+            if(BASE.isInferno())
+            {
+               LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",BASE._yardType);
+               return;
+            }
             champArr = com.adobe.serialization.json.JSON.decode(update.data);
             refundType = int(update.data[2]);
             refundLevel = int(update.data[3]);
@@ -301,7 +309,11 @@ package
             refundFeedtime = GLOBAL.Timestamp();
             if(CREATURES._guardian)
             {
-               CREATURES._guardian.Tick();
+               MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
+            }
+            if(Boolean(CREATURES._guardian) && CREATURES._guardian._creatureID == refundID)
+            {
+               CREATURES._guardian.Clear();
             }
             else if(GLOBAL._bChamber)
             {
@@ -316,11 +328,19 @@ package
             }
             if(CREATURES._guardian)
             {
+               CREATURES._guardian._health.Set(-10);
                CREATURES._guardian.Tick();
                CREATURES._guardian.Clear();
+               BASE._guardianData = null;
             }
-            GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
-            BASE.Save();
+            if(GLOBAL._bCage)
+            {
+               if(refundLevel > 0)
+               {
+                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
+               }
+               BASE.Save();
+            }
          }
       }
       
@@ -424,7 +444,7 @@ package
             }
             _loc8_.bPost.y = _loc8_.tB.height - 15;
             _loc8_.mcFrame.height = _loc8_.bPost.y + 110;
-            (_loc8_.mcFrame as frame2).Setup();
+            (_loc8_.mcFrame as frame).Setup();
             POPUPS.Push(_loc8_,null,null,"","build.png");
             _catchupList = [];
          }

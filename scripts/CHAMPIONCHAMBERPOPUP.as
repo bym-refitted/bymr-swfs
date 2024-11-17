@@ -28,6 +28,7 @@ package
          this._guardChamber = GLOBAL._bChamber as CHAMPIONCHAMBER;
          this._statsArr = [damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff,tEvoStage,tEvoDesc];
          this._activeSlots = 0;
+         tTitle.htmlText = KEYS.Get("chamber_title");
          this.InitInteractions();
          this.SetupSlots();
          this.SelectGuard();
@@ -42,7 +43,7 @@ package
       
       public function FreezeGuard(param1:MouseEvent = null) : *
       {
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             this._guardChamber.FreezeGuardian();
             this.Hide();
@@ -54,7 +55,7 @@ package
          var targetChamp:Number = param1;
          return function(param1:MouseEvent = null):*
          {
-            if(GLOBAL._mode == "build" && !BASE._isOutpost)
+            if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
             {
                _guardChamber.ThawGuardian(targetChamp);
                Hide();
@@ -353,7 +354,7 @@ package
             guardName = CHAMPIONCAGE._guardians["G" + guardType].name;
             guardData = CHAMPIONCAGE._guardians["G" + guardType];
          }
-         description = "<b>" + guardName + "</b><br>" + "Level " + guardLevel;
+         description = "<b>" + guardName + "</b><br>" + KEYS.Get("chamber_level",{"v1":guardLevel});
          mcSlot.tName.htmlText = description;
          if(guardImage)
          {
@@ -384,13 +385,13 @@ package
          if(froze)
          {
             this["bFreeze" + guardType].removeEventListener(MouseEvent.CLICK,this.FreezeGuard);
-            this["bFreeze" + guardType].Setup("Thaw " + guardName,false,0,0);
+            this["bFreeze" + guardType].Setup(KEYS.Get("btn_thawname",{"v1":guardName}),false,0,0);
             this["bFreeze" + guardType].addEventListener(MouseEvent.CLICK,this.ThawGuard(Number(guardType)));
          }
          else
          {
             this["bFreeze" + guardType].removeEventListener(MouseEvent.CLICK,this.ThawGuard(Number(guardType)));
-            this["bFreeze" + guardType].Setup("Freeze " + guardName,false,0,0);
+            this["bFreeze" + guardType].Setup(KEYS.Get("btn_freezename",{"v1":guardName}),false,0,0);
             this["bFreeze" + guardType].addEventListener(MouseEvent.CLICK,this.FreezeGuard);
          }
       }
@@ -500,7 +501,7 @@ package
             apeDesc = KEYS.Get("mon_gorgodesc");
             dragDesc = KEYS.Get("mon_drulldesc");
             flyDesc = KEYS.Get("mon_fomordesc");
-            tEvoStage.htmlText = "<b>" + CHAMPIONCAGE._guardians["G" + guardType].name + "</b>" + " Level " + guardLevel;
+            tEvoStage.htmlText = "<b>" + CHAMPIONCAGE._guardians["G" + guardType].name + "</b> " + KEYS.Get("chamber_level",{"v1":guardLevel});
             switch(guardType)
             {
                case 1:

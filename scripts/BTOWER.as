@@ -1,6 +1,6 @@
 package
 {
-   import com.monsters.maproom_advanced.MapRoomCell;
+   import com.monsters.pathing.PATHING;
    import flash.display.MovieClip;
    import flash.events.*;
    import flash.geom.Point;
@@ -12,6 +12,8 @@ package
       internal var maxDist:int;
       
       internal var minDist:int;
+      
+      public var _frameNumber:int;
       
       public var _hasTargets:Boolean;
       
@@ -36,9 +38,9 @@ package
          this._retarget = 0;
       }
       
-      public static function AdjustTowerRange(param1:MapRoomCell, param2:int) : int
+      public static function AdjustTowerRange(param1:*, param2:int) : int
       {
-         if(GLOBAL._advancedMap && BASE._isOutpost && param1 && param1._height && param1._height >= 100)
+         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST && param1 && Boolean(param1._height) && param1._height >= 100)
          {
             return int(param1._height * param2 / GLOBAL._averageAltitude.Get());
          }
@@ -50,7 +52,7 @@ package
          var _loc1_:int = 0;
          if(_lvl.Get() > 0)
          {
-            if(Boolean(GLOBAL._advancedMap) && (BASE._isOutpost || GLOBAL._mode == "wmattack"))
+            if(Boolean(GLOBAL._advancedMap) && (BASE._yardType == BASE.OUTPOST || GLOBAL._mode == "wmattack"))
             {
                _loc1_ = int(GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].range);
                super._range = _loc1_;
@@ -67,6 +69,10 @@ package
             super._rate = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].rate;
             super._splash = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].splash;
             super._speed = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].speed;
+         }
+         else if(_lvl.Get() > GLOBAL._buildingProps[_type - 1].stats.length)
+         {
+            throw new Error("ILLEGAL TOWER LEVEL Type: " + _type + " Level: " + _lvl.Get());
          }
          this._fireTick = super._rate;
       }
@@ -93,7 +99,7 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._isOutpost)
+            if(BASE._yardType == BASE.OUTPOST)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
@@ -366,6 +372,34 @@ package
          GLOBAL._bTower = null;
          --GLOBAL._bTowerCount;
          super.Cancel();
+      }
+      
+      protected function Rotate() : *
+      {
+         var _loc1_:* = undefined;
+         var _loc2_:Point = null;
+         var _loc3_:Point = null;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         if(this._hasTargets)
+         {
+            _loc1_ = this._targetCreeps[0].creep;
+            _loc2_ = PATHING.FromISO(_loc1_._tmpPoint);
+            _loc3_ = PATHING.FromISO(new Point(_mc.x,_mc.y));
+            _loc3_ = _loc3_.add(new Point(35,35));
+            _loc4_ = _loc2_.x - _loc3_.x;
+            _loc5_ = _loc2_.y - _loc3_.y;
+            _loc6_ = Math.atan2(_loc5_,_loc4_) * 57.2957795;
+            if(_loc6_ < 0)
+            {
+               _loc6_ = 6 * 60 + _loc6_;
+            }
+            _loc6_ /= 12;
+            _animTick = int(_loc6_);
+            AnimFrame();
+            ++this._frameNumber;
+         }
       }
       
       override public function Setup(param1:Object) : *

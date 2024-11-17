@@ -25,6 +25,10 @@ package
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
          _spoutPoint = new Point(-1,-31);
          _spoutHeight = 65;
+         if(BASE.isInferno())
+         {
+            _animRandomStart = false;
+         }
          SetProps();
       }
       

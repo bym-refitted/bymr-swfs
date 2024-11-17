@@ -58,10 +58,12 @@ package
          });
          _recycleDescription = "<b>" + KEYS.Get("bdg_housing_recycledesc") + "</b><br>" + _recycleCosts;
          HOUSING.HousingSpace();
-         if(!BASE._isOutpost)
+         if(BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD)
          {
             _blockRecycle = false;
          }
+         var _loc1_:int = HOUSING._housingSpace.Get();
+         var _loc2_:int = int(_buildingProps.capacity[_lvl.Get() - 1]);
          if(HOUSING._housingSpace.Get() - _buildingProps.capacity[_lvl.Get() - 1] < 0)
          {
             _recycleDescription = "<font color=\"#CC0000\">" + KEYS.Get("bdg_housing_recyclewarning") + "</font>";
@@ -71,9 +73,8 @@ package
       
       override public function Constructed() : *
       {
-         GLOBAL._bHousing = this;
          super.Constructed();
-         HOUSING.HousingSpace();
+         HOUSING.AddHouse(this);
       }
       
       override public function Upgraded() : *
@@ -82,7 +83,7 @@ package
          var mc:MovieClip = null;
          super.Upgraded();
          HOUSING.HousingSpace();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {
@@ -108,6 +109,7 @@ package
       {
          super.RecycleC();
          HOUSING.HousingSpace();
+         HOUSING.RemoveHouse(this);
       }
       
       override public function Destroyed(param1:Boolean = true) : *
@@ -120,6 +122,7 @@ package
             _loc2_++;
          }
          HOUSING.Cull();
+         HOUSING.RemoveHouse(this);
       }
       
       override public function Setup(param1:Object) : *
@@ -131,7 +134,7 @@ package
          }
          if(_countdownBuild.Get() == 0)
          {
-            GLOBAL._bHousing = this;
+            HOUSING.AddHouse(this);
          }
       }
    }

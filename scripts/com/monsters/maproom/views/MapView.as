@@ -113,7 +113,7 @@ package com.monsters.maproom.views
          this.hardBounds = new Rectangle(mask_mc.x,mask_mc.y,-1760 + mask_mc.width + mask_mc.x,-1760 + mask_mc.height + mask_mc.y);
          this.shell = new Sprite();
          addChild(this.shell);
-         this.map_mc = new map_bg();
+         this.map_mc = new map_bg_inferno();
          i = 1;
          while(i < this.map_mc.numChildren)
          {

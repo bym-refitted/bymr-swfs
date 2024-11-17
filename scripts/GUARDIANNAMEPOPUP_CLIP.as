@@ -3,12 +3,12 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1455")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1614")]
    public dynamic class GUARDIANNAMEPOPUP_CLIP extends MovieClip
    {
       public var mcGuard:MovieClip;
       
-      public var mcBG:frame2_CLIP;
+      public var mcBG:frame_CLIP;
       
       public var tInput:TextField;
       

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1330")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1489")]
    public dynamic class GUARDIANSELECTPOPUP_CLIP extends MovieClip
    {
       public var bAction2:Button_CLIP;
@@ -22,7 +22,7 @@ package
       
       public var tGuard2_desc:TextField;
       
-      public var frame:frame2_CLIP;
+      public var frame:frame_CLIP;
       
       public var tGuard3_desc:TextField;
       

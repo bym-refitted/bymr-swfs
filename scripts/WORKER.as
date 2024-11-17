@@ -94,7 +94,14 @@ package
          this._speed = 0;
          this._size = 10;
          this._frameNumber = int(Math.random() * 200);
-         this._graphic = new BitmapData(52,50,true,0xffffff);
+         if(!BASE.isInferno())
+         {
+            this._graphic = new BitmapData(52,50,true,0xffffff);
+         }
+         else
+         {
+            this._graphic = new BitmapData(64,55,true,0xffffff);
+         }
          SPRITES.SetupSprite("worker");
          this._graphicMC = addChild(new Bitmap(this._graphic));
          this._graphicMC.x = -26;

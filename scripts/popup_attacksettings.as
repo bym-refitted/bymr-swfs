@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1192")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1351")]
    public dynamic class popup_attacksettings extends MovieClip
    {
       public var title_txt:TextField;
@@ -12,7 +12,7 @@ package
       
       public var mcImage:MovieClip;
       
-      public var mcFrame:frame2_CLIP;
+      public var mcFrame:frame_CLIP;
       
       public var bSame:Button_CLIP;
       

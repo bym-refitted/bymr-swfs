@@ -58,15 +58,14 @@ package
          }
       }
       
-      public static function BunkerStore(param1:String, param2:BUILDING22, param3:Boolean = false) : *
+      public static function BunkerStore(param1:String, param2:*, param3:Boolean = false) : *
       {
          var _loc6_:CREEP = null;
          var _loc7_:Array = null;
-         var _loc8_:String = null;
-         var _loc9_:BFOUNDATION = null;
+         var _loc8_:BFOUNDATION = null;
+         var _loc9_:* = undefined;
          var _loc10_:* = undefined;
          var _loc11_:* = undefined;
-         var _loc12_:* = undefined;
          if(param1 == "C100")
          {
             param1 = "C12";
@@ -92,22 +91,24 @@ package
                if(_loc5_)
                {
                   _loc6_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"juice",new Point(param2.x,param2.y),0);
-                  _loc6_.ModeJuice();
+                  if(_loc6_)
+                  {
+                     _loc6_.ModeJuice();
+                  }
                }
                else
                {
                   _loc7_ = [];
-                  for(_loc8_ in BASE._buildingsAll)
+                  for each(_loc8_ in BASE._buildingsHousing)
                   {
-                     if(BASE._buildingsAll[_loc8_]._type == 15 && BASE._buildingsAll[_loc8_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc8_]._hp.Get() > 0)
+                     if(_loc8_._countdownBuild.Get() <= 0 && _loc8_._hp.Get() > 0)
                      {
-                        _loc9_ = BASE._buildingsAll[_loc8_];
-                        _loc10_ = _loc9_._mc.x - param2.x;
-                        _loc11_ = _loc9_._mc.y - param2.y;
-                        _loc12_ = int(Math.sqrt(_loc10_ * _loc10_ + _loc11_ * _loc11_));
+                        _loc9_ = _loc8_._mc.x - param2.x;
+                        _loc10_ = _loc8_._mc.y - param2.y;
+                        _loc11_ = int(Math.sqrt(_loc9_ * _loc9_ + _loc10_ * _loc10_));
                         _loc7_.push({
-                           "mc":BASE._buildingsAll[_loc8_],
-                           "dist":_loc12_
+                           "mc":_loc8_,
+                           "dist":_loc11_
                         });
                      }
                   }
@@ -116,8 +117,8 @@ package
                      return false;
                   }
                   _loc7_.sortOn(["dist"],Array.NUMERIC);
-                  _loc9_ = _loc7_[0].mc;
-                  CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunkering",new Point(param2._mc.x,param2._mc.y),0,GRID.FromISO(_loc9_._mc.x,_loc9_._mc.y),_loc9_);
+                  _loc8_ = _loc7_[0].mc;
+                  CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunkering",new Point(param2._mc.x,param2._mc.y),0,GRID.FromISO(_loc8_._mc.x,_loc8_._mc.y),_loc8_);
                }
             }
          }
@@ -141,9 +142,9 @@ package
          var _loc7_:* = undefined;
          var _loc8_:Point = null;
          var _loc1_:Array = [];
-         for each(_loc2_ in BASE._buildingsAll)
+         for each(_loc2_ in BASE._buildingsHousing)
          {
-            if(_loc2_._type == 15 && _loc2_._hp.Get() > 0)
+            if(_loc2_._hp.Get() > 0)
             {
                _loc1_.push(_loc2_);
             }
@@ -182,6 +183,11 @@ package
          {
             _mc.Update();
          }
+      }
+      
+      public static function isBunkerBuilding(param1:int) : Boolean
+      {
+         return param1 == 22 || param1 == 128;
       }
    }
 }

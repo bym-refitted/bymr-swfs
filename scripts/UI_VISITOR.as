@@ -14,21 +14,21 @@ package
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
             mc.mcBG.width = 100;
-            mc.bReturn.Setup("End Attack");
+            mc.bReturn.SetupKey("btn_endattack");
             mc.bAttack.visible = false;
          }
          else if(GLOBAL._advancedMap)
          {
-            mc.bReturn.Setup("Open Map");
+            mc.bReturn.SetupKey("btn_openmap");
             if(GLOBAL._mode != "help" && !MapRoom._viewOnly && GLOBAL._currentCell && MapRoom._flingerInRange)
             {
                if(GLOBAL._currentCell._destroyed)
                {
-                  mc.bAttack.Setup("Take Over");
+                  mc.bAttack.SetupKey("newmap_take_btn");
                }
                else
                {
-                  mc.bAttack.Setup("Attack");
+                  mc.bAttack.SetupKey("map_attack_btn");
                }
                mc.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
                mc.bAttack.visible = true;
@@ -84,7 +84,7 @@ package
          BUILDINGS.Show();
       }
       
-      public function Return(param1:MouseEvent) : *
+      public function Return(param1:MouseEvent) : void
       {
          if(GLOBAL._newBuilding)
          {
@@ -94,14 +94,25 @@ package
          {
             ATTACK.End();
          }
-         else if(GLOBAL._advancedMap)
+         else if(Boolean(GLOBAL._advancedMap) && GLOBAL._loadmode == GLOBAL._mode)
          {
             MapRoom.Setup(GLOBAL._mapHome,MapRoom._worldID,MapRoom._inviteBaseID,MapRoom._viewOnly);
             MapRoom.Show();
          }
+         else if(BASE.isInferno())
+         {
+            if(GLOBAL._inInferno <= 0)
+            {
+               BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            }
+            else
+            {
+               BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+            }
+         }
          else
          {
-            BASE.LoadBase(null,null,0,"build");
+            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
          }
       }
       
@@ -114,11 +125,11 @@ package
          {
             if(GLOBAL._currentCell._online)
             {
-               GLOBAL.Message("You cannot attack this yard right now as the owner is working on it. Wait for them to leave.");
+               GLOBAL.Message(KEYS.Get("msg_cantattackoccupied"));
             }
             else
             {
-               GLOBAL.Message("You cannot attack this yard right now as it is under attack! Wait for the attack to end.");
+               GLOBAL.Message(KEYS.Get("msg_cantattackbeingattacked"));
             }
          }
          else if(GLOBAL._currentCell)

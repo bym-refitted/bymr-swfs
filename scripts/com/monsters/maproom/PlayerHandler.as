@@ -35,11 +35,11 @@ package com.monsters.maproom
             if(this.data.saved.Get() >= MapRoom.BRIDGE.GLOBAL.Timestamp() - 62)
             {
                _loc2_ = false;
-               _loc4_ = "<font color = \'#01BA01\'>Playing Now";
+               _loc4_ = "<font color = \'#01BA01\'>" + KEYS.Get("player_online");
             }
             else
             {
-               _loc4_ = "<font color = \'#666666\'>Offline";
+               _loc4_ = "<font color = \'#666666\'>" + KEYS.Get("player_offline");
             }
             if(this.data.friend.Get() == 1)
             {

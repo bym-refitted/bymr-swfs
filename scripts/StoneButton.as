@@ -27,6 +27,24 @@ package
          "height":36
       }];
       
+      public static var _bgKeysInferno:Array = [{
+         "key":"ui/lava1.png",
+         "width":81,
+         "height":37
+      },{
+         "key":"ui/lava2.png",
+         "width":61,
+         "height":37
+      },{
+         "key":"ui/lava3.png",
+         "width":53,
+         "height":37
+      },{
+         "key":"ui/lava4.png",
+         "width":55,
+         "height":37
+      }];
+      
       public var _enabled:Boolean = true;
       
       public var _bmd:BitmapData;
@@ -133,6 +151,7 @@ package
       {
          var tgt:int;
          var tgtDiff:int;
+         var imgArray:Array;
          var i:int;
          var tx:BitmapData = null;
          var cbf:Function = null;
@@ -183,10 +202,15 @@ package
          tgt = 0;
          tgtDiff = -1;
          this._tgtWidth = tx.width + 2 * this.margin;
-         i = 0;
-         while(i < _bgKeys.length)
+         imgArray = _bgKeys;
+         if(GLOBAL.InfernoMode)
          {
-            nd = this._tgtWidth - _bgKeys[i].width;
+            imgArray = _bgKeysInferno;
+         }
+         i = 0;
+         while(i < imgArray.length)
+         {
+            nd = this._tgtWidth - imgArray[i].width;
             if(nd < 0)
             {
                nd *= -1;
@@ -198,7 +222,7 @@ package
             }
             i++;
          }
-         ImageCache.GetImageWithCallBack(_bgKeys[tgt].key,cbf);
+         ImageCache.GetImageWithCallBack(imgArray[tgt].key,cbf);
       }
    }
 }

@@ -57,6 +57,8 @@ package
          "splat4":"sound_splat4",
          "splat5":"sound_splat5",
          "snipe1":"sound_snipe1",
+         "magma":"sound_magma_attack",
+         "quake":"sound_quake_attack",
          "railgun1":"sound_railgun1",
          "splash1":"sound_splash1",
          "juice":"sound_juice",

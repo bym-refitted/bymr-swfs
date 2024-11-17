@@ -602,8 +602,8 @@ package com.monsters.maproom_advanced
          }
          if(MapRoom._viewOnly && this._baseID == MapRoom._inviteBaseID)
          {
-            mc.mcPrompt.bYes.Setup("Yes");
-            mc.mcPrompt.bNo.Setup("No");
+            mc.mcPrompt.bYes.SetupKey("btn_yes");
+            mc.mcPrompt.bNo.SetupKey("btn_no");
             mc.mcPrompt.bYes.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
             {
                MapRoom.PreAcceptInvitation(MapRoom._mc as MovieClip);

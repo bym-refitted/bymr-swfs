@@ -11,8 +11,8 @@ package
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
+   import com.monsters.inferno.InfernoMap;
    import com.monsters.maproom_advanced.MapRoom;
-   import com.monsters.maproom_advanced.MapRoomCell;
    import com.monsters.pathing.PATHING;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.DisplayObject;
@@ -93,6 +93,8 @@ package
       
       public static var _baseURL2:String;
       
+      public static var _infBaseURL:String;
+      
       public static var _apiURL:String;
       
       public static var _gameURL:String;
@@ -142,6 +144,8 @@ package
       public static var _running:*;
       
       public static var _mode:String;
+      
+      public static var _loadmode:String;
       
       public static var _mapWidth:int;
       
@@ -207,8 +211,6 @@ package
       
       public static var _bCage:CHAMPIONCAGE;
       
-      public static var _bTotem:BTOTEM;
-      
       public static var _bTower:*;
       
       public static var _bTowerCount:int;
@@ -247,6 +249,10 @@ package
       
       public static var _outpostProps:Array;
       
+      public static var _infernoYardProps:Array;
+      
+      public static var _infernoOutpostProps:Array;
+      
       public static var _fps:int;
       
       public static var _mapHome:Point;
@@ -267,7 +273,7 @@ package
       
       public static var _attackersCatapult:int;
       
-      public static var _currentCell:MapRoomCell;
+      public static var _currentCell:*;
       
       public static var _savedAttackersDeltaResources:Object;
       
@@ -301,7 +307,7 @@ package
       
       public static var _localMode:int = 0;
       
-      public static var _version:SecNum = new SecNum(2 * 60);
+      public static var _version:SecNum = new SecNum(122);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -321,7 +327,7 @@ package
       
       public static var _fluidWidthEnabled:Boolean = true;
       
-      public static var _SCREENINIT:Rectangle = new Rectangle(0,0,760,750);
+      public static var _SCREENINIT:Rectangle = new Rectangle(0,0,760,670);
       
       public static var _countryCode:String = "us";
       
@@ -413,7 +419,7 @@ package
       
       public static var _attackerMapResourcesStart:Object = {};
       
-      public static var _showMapWaiting:* = false;
+      public static var _showMapWaiting:int = 0;
       
       public static var _resources:Object = {};
       
@@ -445,6 +451,8 @@ package
       
       public static var _whatsnewid:int = 0;
       
+      public static var _lastWhatsNew:int = 1048;
+      
       public static var _afktimer:SecNum = new SecNum(0);
       
       public static var _oldMousePoint:Point = new Point(0,0);
@@ -454,6 +462,8 @@ package
       public static var _baseLoads:int = 0;
       
       public static var _fbPromoTimer:Number = 604800;
+      
+      public static var _inInferno:int = 0;
       
       public static const ERROR_OOPS_ONLY:int = 0;
       
@@ -6668,6 +6678,214 @@ package
             "quantity":[0],
             "hp":[100],
             "repairTime":[1]
+         },{
+            "id":127,
+            "group":999,
+            "order":0,
+            "type":"enemy",
+            "name":"#b_infernoentrance#",
+            "size":100,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"trojanhorse_desc",
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            }],
+            "imageData":{
+               "baseurl":"buildings/iportal/",
+               "1":{
+                  "top":["top.1.png",new Point(-85,-5)],
+                  "shadow":["shadow.1.jpg",new Point(-43,47)]
+               },
+               "2":{
+                  "top":["top.2.png",new Point(-105,-29)],
+                  "shadow":["shadow.2.jpg",new Point(-87,52)]
+               },
+               "3":{
+                  "top":["top.3.png",new Point(-136,-64)],
+                  "shadow":["shadow.3.jpg",new Point(-110,47)]
+               },
+               "4":{
+                  "top":["top.4.png",new Point(-140,-114)],
+                  "shadow":["shadow.4.jpg",new Point(-140,11)]
+               },
+               "5":{
+                  "top":["top.5.png",new Point(-160,-172)],
+                  "shadow":["shadow.5.jpg",new Point(-169,0)]
+               }
+            },
+            "quantity":[1,1,1,1,1],
+            "damage":[1,1,1,1,1],
+            "hp":[1,1,1,1,1],
+            "repairTime":[1,1,1,1,1]
+         },{
+            "id":128,
+            "group":2,
+            "order":6,
+            "type":"tower",
+            "name":"#b_housingbunker#",
+            "size":200,
+            "attackgroup":2,
+            "tutstage":50,
+            "sale":0,
+            "description":"housing_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":129,
+            "group":3,
+            "order":2,
+            "type":"tower",
+            "name":"#b_quaketower#",
+            "size":64,
+            "attackgroup":1,
+            "tutstage":200,
+            "sale":0,
+            "description":"cannontower_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":130,
+            "group":3,
+            "order":2,
+            "type":"tower",
+            "name":"#b_icannontower#",
+            "size":64,
+            "attackgroup":1,
+            "tutstage":200,
+            "sale":0,
+            "description":"icannontower_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":131,
+            "group":4,
+            "subgroup":4,
+            "order":8,
+            "type":"decoration",
+            "name":"bdg_wmi2totem",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmi2totem_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "names":["bdg_wmi2totem1","bdg_wmi2totem2","bdg_wmi2totem3","bdg_wmi2totem4","bdg_wmi2totem5","bdg_wmi2totem6"],
+            "descriptions":["bdg_wmi2totem1_desc","bdg_wmi2totem2_desc","bdg_wmi2totem3_desc","bdg_wmi2totem4_desc","bdg_wmi2totem5_desc","bdg_wmi2totem6_desc"],
+            "buildingbuttons":["131.bb1","131.bb2","131.bb3","131.bb4","131.bb5","131.bb6"],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem2/",
+               "1":{
+                  "top":["top1.png",new Point(-31,-25)],
+                  "shadow":["shadow1.jpg",new Point(-55,-20)]
+               },
+               "2":{
+                  "top":["top2.png",new Point(-31,-60)],
+                  "shadow":["shadow2.jpg",new Point(-64,-44)]
+               },
+               "3":{
+                  "top":["top3.png",new Point(-31,-86)],
+                  "shadow":["shadow3.jpg",new Point(-66,-61)]
+               },
+               "4":{
+                  "top":["top4.png",new Point(-31,-122)],
+                  "shadow":["shadow4.jpg",new Point(-66,-83)]
+               },
+               "5":{
+                  "top":["top5.png",new Point(-31,-122)],
+                  "shadow":["shadow4.jpg",new Point(-66,-83)]
+               },
+               "6":{
+                  "top":["top6.png",new Point(-31,-128)],
+                  "shadow":["shadow4.jpg",new Point(-66,-83)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100,100,100,100,100,100],
+            "repairTime":[1,1,1,1,1,1,1]
          }];
          _outpostProps = [{
             "id":1,
@@ -7535,7 +7753,7 @@ package
                   "shadow":["shadow.2.jpg",new Point(-31,32)],
                   "topdamaged":["top.2.damaged.png",new Point(-78,-92)],
                   "shadowdamaged":["shadow.2.damaged.jpg",new Point(-48,36)],
-                  "topdestroyed":["top.2.destroyed.png",new Point(-58,0)],
+                  "topdestroyed":["top.1.destroyed.png",new Point(-58,0)],
                   "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-58,32)]
                },
                "2":{
@@ -7544,7 +7762,7 @@ package
                   "shadow":["shadow.3.jpg",new Point(-48,26)],
                   "topdamaged":["top.3.damaged.png",new Point(-53,-113)],
                   "shadowdamaged":["shadow.3.damaged.jpg",new Point(-45,32)],
-                  "topdestroyed":["top.3.destroyed.png",new Point(-58,0)],
+                  "topdestroyed":["top.1.destroyed.png",new Point(-58,0)],
                   "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-58,32)]
                },
                "3":{
@@ -7553,7 +7771,7 @@ package
                   "shadow":["shadow.4.jpg",new Point(-44,25)],
                   "topdamaged":["top.4.damaged.png",new Point(-60,-117)],
                   "shadowdamaged":["shadow.4.damaged.jpg",new Point(-52,23)],
-                  "topdestroyed":["top.4.destroyed.png",new Point(-58,0)],
+                  "topdestroyed":["top.1.destroyed.png",new Point(-58,0)],
                   "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-58,32)]
                }
             },
@@ -12157,7 +12375,7 @@ package
             "id":121,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":13,
             "type":"decoration",
             "name":"bdg_wmitotem1",
             "size":40,
@@ -12166,12 +12384,30 @@ package
             "sale":0,
             "description":"bdg_wmitotem1_desc",
             "block":true,
-            "quantity":[0]
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          },{
             "id":122,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":14,
             "type":"decoration",
             "name":"bdg_wmitotem2",
             "size":40,
@@ -12180,12 +12416,30 @@ package
             "sale":0,
             "description":"bdg_wmitotem2_desc",
             "block":true,
-            "quantity":[0]
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          },{
             "id":123,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":15,
             "type":"decoration",
             "name":"bdg_wmitotem3",
             "size":40,
@@ -12194,12 +12448,30 @@ package
             "sale":0,
             "description":"bdg_wmitotem3_desc",
             "block":true,
-            "quantity":[0]
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          },{
             "id":124,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":16,
             "type":"decoration",
             "name":"bdg_wmitotem4",
             "size":40,
@@ -12208,12 +12480,30 @@ package
             "sale":0,
             "description":"bdg_wmitotem4_desc",
             "block":true,
-            "quantity":[0]
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          },{
             "id":125,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":17,
             "type":"decoration",
             "name":"bdg_wmitotem5",
             "size":40,
@@ -12222,12 +12512,30 @@ package
             "sale":0,
             "description":"bdg_wmitotem5_desc",
             "block":true,
-            "quantity":[0]
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          },{
             "id":126,
             "group":4,
             "subgroup":4,
-            "order":7,
+            "order":18,
             "type":"decoration",
             "name":"bdg_wmitotem6",
             "size":40,
@@ -12236,15 +12544,142 @@ package
             "sale":0,
             "description":"bdg_wmitotem6_desc",
             "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/statue-soccer/",
+               "1":{
+                  "top":["top.png",new Point(-23,-36)],
+                  "shadow":["shadow.jpg",new Point(-15,12)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":127,
+            "group":999,
+            "order":0,
+            "type":"enemy",
+            "name":"#b_trojanhorse#",
+            "size":100,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"trojanhorse_desc",
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            },{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":5,
+               "re":[[14,1,1]]
+            }],
+            "imageData":{
+               "baseurl":"inferno/buildings/trojanhorse/",
+               "1":{
+                  "anim":["anim.1.png",new Rectangle(-92,-23,39,31),2],
+                  "top":["top.1.png",new Point(-91,-65)],
+                  "shadow":["shadow.1.jpg",new Point(-72,11)]
+               }
+            },
+            "quantity":[1,1,1,1],
+            "damage":[1,1,1,1],
+            "hp":[1,1,1,1],
+            "repairTime":[1,1,1,1]
+         },{
+            "id":128,
+            "group":2,
+            "order":6,
+            "type":"tower",
+            "name":"#b_housingbunker#",
+            "size":200,
+            "attackgroup":2,
+            "tutstage":50,
+            "sale":0,
+            "description":"housing_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":129,
+            "group":3,
+            "order":2,
+            "type":"tower",
+            "name":"#b_quaketower#",
+            "size":64,
+            "attackgroup":1,
+            "tutstage":200,
+            "sale":0,
+            "description":"cannontower_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":130,
+            "group":3,
+            "order":2,
+            "type":"tower",
+            "name":"#b_icannontower#",
+            "size":64,
+            "attackgroup":1,
+            "tutstage":200,
+            "sale":0,
+            "description":"icannontower_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":131,
+            "group":4,
+            "subgroup":4,
+            "order":19,
+            "type":"decoration",
+            "name":"bdg_wmi2totem",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmi2totem_desc",
+            "block":true,
             "quantity":[0]
          }];
-         if(BASE._isOutpost)
+         switch(BASE._yardType)
          {
-            _buildingProps = _outpostProps;
-         }
-         else
-         {
-            _buildingProps = _yardProps;
+            case BASE.INFERNO_YARD:
+               _buildingProps = INFERNOYARDPROPS._infernoYardProps;
+               break;
+            case BASE.OUTPOST:
+               _buildingProps = _outpostProps;
+               break;
+            case BASE.MAIN_YARD:
+            default:
+               _buildingProps = _yardProps;
          }
          if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
          {
@@ -12255,8 +12690,37 @@ package
       
       public static function Setup(param1:String = "build") : *
       {
-         var _loc2_:String = null;
-         _mode = param1;
+         var _loc3_:String = null;
+         _loadmode = param1;
+         var _loc2_:String = param1;
+         if(_loc2_ == "build" || _loc2_ == "view" || _loc2_ == "attack" || _loc2_ == "help" || _loc2_ == "wmview" || _loc2_ == "wmattack")
+         {
+            _mode = param1;
+         }
+         else if(param1 == "ibuild" || param1 == "iview" || param1 == "iattack" || param1 == "ihelp" || param1 == "iwmview" || param1 == "iwmattack")
+         {
+            switch(param1)
+            {
+               case "ibuild":
+                  _loc2_ = "build";
+                  break;
+               case "iview":
+                  _loc2_ = "view";
+                  break;
+               case "iattack":
+                  _loc2_ = "attack";
+                  break;
+               case "ihelp":
+                  _loc2_ = "help";
+                  break;
+               case "iwmview":
+                  _loc2_ = "wmview";
+                  break;
+               case "iwmattack":
+                  _loc2_ = "wmattack";
+            }
+            _mode = _loc2_;
+         }
          _fps = 40;
          _FPSframecount = 0;
          _FPSarray = [];
@@ -12309,23 +12773,30 @@ package
             {
                _attackersCatapult = GLOBAL._bCatapult._lvl.Get();
             }
+            if(BASE.isInferno() && GLOBAL._bHousing != null)
+            {
+               _attackersFlinger = GLOBAL._bHousing._lvl.Get();
+            }
             ATTACK._countdown = 300;
             if(Boolean(GLOBAL._advancedMap) && Boolean(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL")))
             {
                ATTACK._countdown = 420;
             }
-            if(Boolean(_advancedMap) && (_mode == "attack" || _mode == "wmattack"))
+            if(_mode == _loadmode)
             {
-               _attackerMapCreaturesStart = {};
-               for(_loc2_ in _attackerMapCreatures)
+               if(Boolean(_advancedMap) && (_mode == "attack" || _mode == "wmattack"))
                {
-                  _attackerMapCreaturesStart[_loc2_] = new SecNum(_attackerMapCreatures[_loc2_].Get());
+                  _attackerMapCreaturesStart = {};
+                  for(_loc3_ in _attackerMapCreatures)
+                  {
+                     _attackerMapCreaturesStart[_loc3_] = new SecNum(_attackerMapCreatures[_loc3_].Get());
+                  }
+                  _attackersCatapult = _attackerMapResources.catapult.Get();
+                  _attackersFlinger = !!POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE") ? int(_attackerMapResources.flinger.Get() - 2) : int(_attackerMapResources.flinger.Get());
                }
-               _attackersCatapult = _attackerMapResources.catapult.Get();
-               _attackersFlinger = !!POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE") ? int(_attackerMapResources.flinger.Get() - 2) : int(_attackerMapResources.flinger.Get());
             }
          }
-         if(_mode == "help")
+         if(_mode == "help" || _mode == "ihelp")
          {
             _myMapRoom = 0;
             if(_bMap)
@@ -12335,22 +12806,59 @@ package
          }
          switch(_mode)
          {
+            case "iattack":
+            case "iwmattack":
+               if(BASE.isInferno())
+               {
+                  SOUNDS.PlayMusic("musicattack");
+                  break;
+               }
+               SOUNDS.PlayMusic("musicattack");
+               break;
+            case "ibuild":
+            case "ihelp":
+            case "iview":
+               if(BASE.isInferno())
+               {
+                  SOUNDS.PlayMusic("musicbuild");
+                  break;
+               }
+               SOUNDS.PlayMusic("musicbuild");
+               break;
             case "attack":
             case "wmattack":
+               if(BASE.isInferno())
+               {
+                  SOUNDS.PlayMusic("musicattack");
+                  break;
+               }
                SOUNDS.PlayMusic("musicattack");
                break;
             case "build":
             case "help":
             case "view":
             default:
+               if(BASE.isInferno())
+               {
+                  SOUNDS.PlayMusic("musicbuild");
+                  break;
+               }
                SOUNDS.PlayMusic("musicbuild");
+               break;
          }
          _degtorad = 0.0174532925;
          _radtodeg = 57.2957795;
          _render = false;
          _creepCount = 0;
          _timePlayed = 0;
-         _resourceNames = ["#r_twigs#","#r_pebbles#","#r_putty#","#r_goo#","#r_shiny#","#r_time#"];
+         if(_loadmode == _mode)
+         {
+            _resourceNames = ["#r_twigs#","#r_pebbles#","#r_putty#","#r_goo#","#r_shiny#","#r_time#"];
+         }
+         else
+         {
+            _resourceNames = ["#r_bone#","#r_coal#","#r_sulfur#","#r_magma#","#r_shiny#","#r_time#"];
+         }
          _creatureParts = [{
             "part":"torso",
             "costs":[0,7200,14400,21600],
@@ -12390,7 +12898,7 @@ package
       
       public static function WaitShow(param1:String = "") : *
       {
-         PLEASEWAIT.Show();
+         PLEASEWAIT.Show(KEYS.Get("wait_processing"));
       }
       
       public static function WaitHide() : *
@@ -12456,16 +12964,7 @@ package
          var b:BFOUNDATION = null;
          var tmpStored:int = 0;
          var tmpCountdown:int = 0;
-         var reinforcetimer:int = 0;
-         var _popup:MovieClip = null;
-         var _props:Object = null;
-         var tmpISO:Point = null;
-         var d:* = undefined;
-         var i:int = 0;
-         var j:int = 0;
-         var n:String = null;
-         var c:* = undefined;
-         var tmpMonster:* = undefined;
+         var whichmap:int = 0;
          if(!_halt && !GLOBAL._catchup)
          {
             t += 1;
@@ -12587,104 +13086,26 @@ package
                {
                   LOGGER.Log("err","Global.Tick I: " + e.message + " | " + e.getStackTrace());
                }
-               try
-               {
-                  if(GetABTestHash("havearrived") <= 1)
-                  {
-                     reinforcetimer = GLOBAL.StatGet("reinforcements");
-                     if(reinforcetimer > 0)
-                     {
-                        BASE._isReinforcements = reinforcetimer;
-                        if(GLOBAL.Timestamp() > reinforcetimer)
-                        {
-                           _popup = new REINFORCEMENTS_CLIP();
-                           _props = {
-                              "tTitleX":-150,
-                              "tTitleY":-130,
-                              "tTitleW":5 * 60,
-                              "tTitleH":55,
-                              "tDescX":-250,
-                              "tDescY":85,
-                              "tDescW":495,
-                              "tDescH":55,
-                              "bActionX":-75,
-                              "bActionY":50,
-                              "bActionW":150,
-                              "bActionH":30,
-                              "bAction2X":-75,
-                              "bAction2Y":50,
-                              "bAction2W":150,
-                              "bAction2H":30,
-                              "mcFrameX":-170,
-                              "mcFrameY":-130,
-                              "mcFrameW":340,
-                              "mcFrameH":220,
-                              "tTitleText":KEYS.Get("reinforce_arrived_title"),
-                              "tDescText1":KEYS.Get("reinforce_arrived_desc"),
-                              "bActionText":KEYS.Get("reinforce_arrived_close")
-                           };
-                           _popup.tTitle.htmlText = _props.tTitleText;
-                           _popup.tDesc.htmlText = _props.tDescText1;
-                           (_popup.mcFrame as frame2).Setup();
-                           POPUPS.Push(_popup,null,null,null,null,false,"wait");
-                           BASE.BuildingDeselect();
-                           if(HOUSING._housingSpace.Get() < 3 * 60)
-                           {
-                              for(n in HOUSING._creatures)
-                              {
-                                 if(HOUSING._creatures[n].Get() > 0)
-                                 {
-                                    delete HOUSING._creatures[n];
-                                 }
-                              }
-                              for(c in CREATURES._creatures)
-                              {
-                                 tmpMonster = CREATURES._creatures[c];
-                                 tmpMonster.Clear();
-                                 MAP._BUILDINGTOPS.removeChild(tmpMonster);
-                                 --CREATURES._creatureCount;
-                                 delete CREATURES._creatures[c];
-                              }
-                              HOUSING.HousingSpace();
-                           }
-                           tmpISO = GRID.ToISO(-600,0,0);
-                           d = Point.distance(new Point(GLOBAL._bHousing.x,GLOBAL._bHousing.y),tmpISO);
-                           i = 0;
-                           while(i < 3)
-                           {
-                              HOUSING.HousingStore("C10",new Point(tmpISO.x - 200 + Math.random() * 400,tmpISO.y - 100 + Math.random() * 200),false);
-                              i++;
-                           }
-                           j = 0;
-                           while(j < 2)
-                           {
-                              HOUSING.HousingStore("C9",new Point(tmpISO.x - 200 + Math.random() * 400,tmpISO.y - 100 + Math.random() * 200),false);
-                              j++;
-                           }
-                           MAP.Focus(tmpISO.x,tmpISO.y);
-                           MAP.FocusTo(GLOBAL._bHousing.x,GLOBAL._bHousing.y,int(d / 120),0,0,false);
-                           GLOBAL.StatSet("reinforcements",0);
-                        }
-                     }
-                  }
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick reinforcements: " + e.message + " | " + e.getStackTrace());
-               }
             }
          }
          if(_showMapWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
          {
-            _showMapWaiting = false;
+            whichmap = _showMapWaiting;
+            _showMapWaiting = 0;
             PLEASEWAIT.Hide();
-            MapRoom.ShowDelayed();
+            if(whichmap == 2)
+            {
+               InfernoMap.ShowDelayed();
+            }
+            else
+            {
+               MapRoom.ShowDelayed();
+            }
          }
-         if(BASE._needCurrentCell && Boolean(GLOBAL._currentCell))
+         if(BASE._needCurrentCell && GLOBAL._currentCell)
          {
             PLEASEWAIT.Hide();
             BASE._needCurrentCell = false;
-            BASE._isOutpost = GLOBAL._currentCell._base == 3 ? 1 : 0;
             BASE.LoadBase(null,null,GLOBAL._currentCell._baseID,"build");
          }
       }
@@ -12835,7 +13256,13 @@ package
       
       public static function ShowMap(param1:MouseEvent = null) : *
       {
-         if(GLOBAL._advancedMap)
+         if(BASE._yardType >= BASE.INFERNO_YARD)
+         {
+            BASE._needCurrentCell = false;
+            MAPROOM_INFERNO.Setup();
+            MAPROOM_INFERNO.Show();
+         }
+         else if(GLOBAL._advancedMap)
          {
             BASE._needCurrentCell = false;
             MapRoom.Setup(_mapHome,MapRoom._worldID,MapRoom._inviteBaseID,MapRoom._viewOnly);
@@ -12843,6 +13270,7 @@ package
          }
          else
          {
+            MAPROOM.Setup();
             MAPROOM.Show();
          }
       }
@@ -13382,13 +13810,6 @@ package
          {
             _flags.plinko = 0;
          }
-         if(Boolean(_flags.split2) && _flags.splituserid2 < LOGIN._playerID)
-         {
-            if(GetABTestHash("speedup") >= 13)
-            {
-               _showStreamlinedSpeedUps = true;
-            }
-         }
          _flags.showProgressBar = 0;
       }
       
@@ -13618,7 +14039,8 @@ package
       {
          var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
          var _loc2_:* = GLOBAL.GetGameHeight();
-         _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - (_SCREENINIT.height + 0)) / 2,_loc1_,_loc2_);
+         var _loc4_:int = UI2._wildMonsterBar != null ? 40 : 0;
+         _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - (_SCREENINIT.height + _loc4_)) / 2,_loc1_,_loc2_);
          _SCREENCENTER = new Point(_SCREEN.x + _SCREEN.width / 2,_SCREEN.y + _SCREEN.height / 2);
          if(Boolean(GLOBAL._flags) && (Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate)))
          {
@@ -13626,7 +14048,7 @@ package
          }
          else
          {
-            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 208);
+            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 118);
          }
          if(UI_BOTTOM && UI_BOTTOM._missions && !UI_BOTTOM._missions._open)
          {
@@ -13867,6 +14289,31 @@ package
             default:
                return int(_loc4_);
          }
+      }
+      
+      public static function get InfernoMode() : Boolean
+      {
+         var _loc1_:Boolean = false;
+         switch(_loadmode)
+         {
+            case "ibuild":
+            case "iattack":
+            case "iview":
+            case "ihelp":
+            case "iwmattack":
+            case "iwmview":
+               _loc1_ = true;
+               break;
+            case "build":
+            case "attack":
+            case "view":
+            case "help":
+            case "wmattack":
+            case "wmview":
+            default:
+               _loc1_ = false;
+         }
+         return _loc1_;
       }
    }
 }

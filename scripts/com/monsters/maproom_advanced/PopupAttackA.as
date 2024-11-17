@@ -48,6 +48,8 @@ package com.monsters.maproom_advanced
          this.bCancel.SetupKey("btn_cancel");
          this.bCancel.addEventListener(MouseEvent.CLICK,this.Hide);
          this.bCancel.buttonMode = true;
+         tCatapult.htmlText = "<b>" + KEYS.Get("newmap_catapultrange") + "</b>";
+         tMonsters.htmlText = "<b>" + KEYS.Get("newmap_monstersrange") + "</b>";
       }
       
       public function Hide(param1:MouseEvent = null) : *
@@ -122,12 +124,12 @@ package com.monsters.maproom_advanced
             GLOBAL._currentCell = this._cell;
             if(this._cell._base == 1)
             {
-               BASE._isOutpost = 0;
+               BASE._yardType = BASE.MAIN_YARD;
                BASE.LoadBase(null,null,this._cell._baseID,"wmattack");
             }
             else
             {
-               BASE._isOutpost = this._cell._base == 3 ? 1 : 0;
+               BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
                BASE.LoadBase(null,null,this._cell._baseID,"attack");
             }
          }

@@ -46,7 +46,7 @@ package com.monsters.mailbox
       {
          var _loc2_:MovieClip = null;
          super();
-         (mcFrame as frame2).Setup(true,MailBox.Hide);
+         (mcFrame as frame).Setup(true,MailBox.Hide);
          newBtn.SetupKey("btn_compose");
          newBtn.addEventListener(MouseEvent.CLICK,this.onNewDown);
          this._sorters = new Sprite();

@@ -33,7 +33,7 @@ package com.monsters.mailbox
       public function Message(param1:String = "all")
       {
          super();
-         (mcFrame as frame2).Setup(true,this.closeDown);
+         (mcFrame as frame).Setup(true,this.closeDown);
          this.picker = new FriendPicker(param1);
          this.picker.x = 238;
          this.picker.y = 65;
@@ -92,6 +92,7 @@ package com.monsters.mailbox
       {
          if(Boolean(stage) && stage.displayState == StageDisplayState.FULL_SCREEN)
          {
+            fsWarning.tBody.htmlText = KEYS.Get("fswarning");
             addChild(fsWarning);
          }
          else if(this.contains(fsWarning))
@@ -230,7 +231,7 @@ package com.monsters.mailbox
       {
          if(this.requestType == "migraterequest")
          {
-            status_txt.htmlText = "Invitation already pending";
+            status_txt.htmlText = KEYS.Get("mailbox_invitepending");
          }
          else
          {

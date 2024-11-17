@@ -80,7 +80,7 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = "Increases the Musk capacity and regeneration rate, letting you attract bigger groups of Wild Monsters.";
+         _upgradeDescription = KEYS.Get("building_baiter_upgrade_desc");
       }
       
       override public function Update(param1:Boolean = false) : *
@@ -94,7 +94,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bBaiter = this;
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

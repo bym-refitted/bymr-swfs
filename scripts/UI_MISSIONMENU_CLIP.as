@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1660")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1831")]
    public dynamic class UI_MISSIONMENU_CLIP extends MovieClip
    {
       public var footer:MovieClip;

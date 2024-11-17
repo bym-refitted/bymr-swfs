@@ -10,10 +10,10 @@ package com.monsters.maproom_advanced
       public function PopupMoveYard()
       {
          super();
-         this.bMoveRes.Setup("Move With Resources");
+         this.bMoveRes.SetupKey("btn_movewithresources");
          this.bMoveRes.addEventListener(MouseEvent.CLICK,this.MoveYardResources);
          this.bMoveRes.buttonMode = true;
-         this.bMoveShiny.Setup("Move With 800 Shiny");
+         this.bMoveShiny.SetupKey("btn_movewithshiny");
          this.bMoveShiny.addEventListener(MouseEvent.CLICK,this.MoveYardShiny);
          this.bMoveRes.buttonMode = true;
       }
@@ -21,6 +21,8 @@ package com.monsters.maproom_advanced
       public function Setup(param1:MapRoomCell) : *
       {
          this._cell = param1;
+         tTitle.htmlText = "<b>" + KEYS.Get("popup_title_moveyard") + "</b>";
+         tDesc.htmlText = KEYS.Get("popup_desc_moveyard");
       }
       
       public function MoveYardResources(param1:MouseEvent) : *

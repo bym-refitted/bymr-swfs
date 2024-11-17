@@ -12,7 +12,7 @@ package
    {
       public var _juiceList:Object;
       
-      private var _bunker:BUILDING22 = null;
+      private var _bunker:* = null;
       
       private var _capacity:int = 0;
       
@@ -509,12 +509,9 @@ package
          var _loc5_:CREEP = null;
          var _loc6_:CREEP = null;
          var _loc2_:Array = [];
-         for each(_loc3_ in BASE._buildingsAll)
+         for each(_loc3_ in BASE._buildingsHousing)
          {
-            if(_loc3_._type == 15)
-            {
-               _loc2_.push(_loc3_);
-            }
+            _loc2_.push(_loc3_);
          }
          _loc4_ = int(CREATURELOCKER._creatures[param1].props.cStorage);
          if(Boolean(HOUSING._creatures[param1]) && _loc4_ <= this._bunker._capacity - this._bunker._used)
@@ -533,28 +530,31 @@ package
                _loc3_ = _loc2_[int(Math.random() * _loc2_.length)];
                _loc5_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunker",new Point(_loc3_.x,_loc3_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
             }
-            _loc5_._homeBunker = this._bunker;
-            _loc5_.ModeBunker();
-            HOUSING._creatures[param1].Add(-1);
-            if(Boolean(this._bunker._monsters[param1]) && this._bunker._monsters[param1] > 0)
+            if(_loc5_)
             {
-               this._bunker._monsters[param1] += 1;
-               this._bunker._used += int(_loc4_);
-               if(this._bunker._monstersDispatched[param1])
+               _loc5_._homeBunker = this._bunker;
+               _loc5_.ModeBunker();
+               HOUSING._creatures[param1].Add(-1);
+               if(Boolean(this._bunker._monsters[param1]) && this._bunker._monsters[param1] > 0)
                {
-                  this._bunker._monstersDispatched[param1] += 1;
+                  this._bunker._monsters[param1] += 1;
+                  this._bunker._used += int(_loc4_);
+                  if(this._bunker._monstersDispatched[param1])
+                  {
+                     this._bunker._monstersDispatched[param1] += 1;
+                  }
+                  else
+                  {
+                     this._bunker._monstersDispatched[param1] = 1;
+                  }
                }
                else
                {
+                  this._bunker._monsters[param1] = 1;
                   this._bunker._monstersDispatched[param1] = 1;
                }
+               ++this._bunker._monstersDispatchedTotal;
             }
-            else
-            {
-               this._bunker._monsters[param1] = 1;
-               this._bunker._monstersDispatched[param1] = 1;
-            }
-            ++this._bunker._monstersDispatchedTotal;
             this.Update();
             HOUSING.HousingSpace();
          }
@@ -629,7 +629,7 @@ package
       {
          this._guidePage += 1;
          var _loc2_:String = KEYS.Get("bunker_tut_" + this._guidePage);
-         if(_loc2_)
+         if(this._guidePage <= 3)
          {
             this.gotoAndStop(2);
             txtGuide.htmlText = _loc2_;

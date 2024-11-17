@@ -18,8 +18,6 @@ package
       
       public var _fieldBMP:Bitmap;
       
-      public var _frameNumber:int;
-      
       public var _animBitmap:BitmapData;
       
       public var _blend:int;
@@ -32,7 +30,7 @@ package
       {
          super();
          _type = 23;
-         this._frameNumber = 0;
+         _frameNumber = 0;
          _footprint = [new Rectangle(0,0,70,70)];
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
          _spoutPoint = new Point(0,0);
@@ -74,7 +72,7 @@ package
             {
                _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
             }
-            ++this._frameNumber;
+            ++_frameNumber;
          }
          catch(e:Error)
          {
@@ -86,7 +84,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

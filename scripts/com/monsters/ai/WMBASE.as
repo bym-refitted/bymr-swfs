@@ -14,6 +14,8 @@ package com.monsters.ai
       
       public static var _bases:Array;
       
+      public static var _descentBases:Array;
+      
       public static var _startTime:Number;
       
       private static var repairing:Boolean;
@@ -33,6 +35,8 @@ package com.monsters.ai
       private static var juiceQ:int = 3;
       
       private static var tick:Number = 0;
+      
+      private static var _descentMode:Boolean = false;
       
       public function WMBASE()
       {
@@ -63,6 +67,10 @@ package com.monsters.ai
             GLOBAL._mapHeight = Math.ceil(GLOBAL._mapHeight / 20) * 20;
             _loc2_++;
          }
+         if(BASE.isInferno() && BASE._wmID || GLOBAL._loadmode != GLOBAL._mode)
+         {
+            return;
+         }
          if(TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice")
          {
             GLOBAL._hatcheryOverdrivePower = new SecNum(10);
@@ -73,6 +81,7 @@ package com.monsters.ai
       {
          var _loc2_:Array = null;
          var _loc3_:Object = null;
+         _descentMode = false;
          if(GLOBAL._mode == "build" && Boolean(param1))
          {
             _bases = [];
@@ -90,14 +99,54 @@ package com.monsters.ai
          }
       }
       
+      public static function DescentData(param1:Array) : void
+      {
+         var _loc2_:Boolean = false;
+         var _loc3_:int = 0;
+         var _loc4_:Array = null;
+         var _loc5_:Object = null;
+         _descentMode = true;
+         if(GLOBAL._mode == "build" && Boolean(param1))
+         {
+            _loc2_ = true;
+            _loc3_ = 0;
+            _descentBases = [];
+            for each(_loc4_ in param1)
+            {
+               _loc5_ = {};
+               _loc5_.baseid = _loc4_[0];
+               _loc5_.tribe = MAPROOM_DESCENT._descentTribe;
+               _loc5_.level = _loc4_[1];
+               _loc5_.destroyed = _loc4_[2];
+               _descentBases.push(_loc5_);
+               if(_loc5_.destroyed == 0)
+               {
+                  _loc2_ = false;
+                  _loc3_++;
+               }
+            }
+            _descentBases.sortOn("level",Array.NUMERIC);
+            if(_loc3_ == MAPROOM_DESCENT._descentLvlMax)
+            {
+               _loc3_++;
+            }
+            GLOBAL.StatSet("descentLvl",_loc3_);
+            if(_loc3_ >= MAPROOM_DESCENT._descentLvlMax)
+            {
+               INFERNOPORTAL.EnterPortal(true);
+            }
+         }
+      }
+      
       public static function AttackerForType(param1:int) : Object
       {
-         var _loc2_:Object = null;
-         for each(_loc2_ in _bases)
+         var _loc3_:Object = null;
+         var _loc2_:Array = ChooseBase();
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_.tribe.type == param1)
+            if(_loc3_.tribe.type == param1)
             {
-               return _loc2_.tribe;
+               return _loc3_.tribe;
             }
          }
          return {};
@@ -149,6 +198,10 @@ package com.monsters.ai
          {
             _loc1_.destroyed = 0;
          }
+         for each(_loc1_ in _descentBases)
+         {
+            _loc1_.destroyed = 0;
+         }
       }
       
       public static function JuiceOne() : void
@@ -188,22 +241,43 @@ package com.monsters.ai
       
       public static function CheckQuests() : void
       {
-         var _loc1_:String = null;
-         var _loc2_:int = 0;
-         for(_loc1_ in _bases)
+         var _loc2_:String = null;
+         var _loc3_:int = 0;
+         var _loc1_:Array = ChooseBase();
+         for(_loc2_ in _loc1_)
          {
-            if(_bases[_loc1_].destroyed == 1)
+            if(_loc1_[_loc2_].destroyed == 1)
             {
-               _loc2_ = 0;
-               _loc2_ = int(_bases[_loc1_].tribe.id);
-               QUESTS.Check("destroy_tribe" + _loc2_,1);
+               if(GLOBAL._mode == "build")
+               {
+                  _loc3_ = 0;
+                  _loc3_ = int(_loc1_[_loc2_].tribe.id);
+                  QUESTS.Check("destroy_tribe" + _loc3_,1);
+               }
             }
          }
       }
       
+      public static function CheckDescentProgress() : int
+      {
+         var _loc2_:String = null;
+         var _loc1_:int = 1;
+         if(_descentBases)
+         {
+            for(_loc2_ in _descentBases)
+            {
+               if(_descentBases[_loc2_].destroyed == 1)
+               {
+                  _loc1_++;
+               }
+            }
+         }
+         return _loc1_;
+      }
+      
       public static function Export() : Object
       {
-         return _bases;
+         return ChooseBase();
       }
       
       public static function TownHallDestroyed() : void
@@ -212,7 +286,7 @@ package com.monsters.ai
          var shareDown:Function;
          if(GLOBAL._advancedMap)
          {
-            GLOBAL.Message("Yard Destroyed! You can now take it over and build an outpost","Show Map",ShowMapAgain);
+            GLOBAL.Message(KEYS.Get("msg_yarddestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
             MapRoom._mc.ShowInfoEnemy(GLOBAL._currentCell);
          }
          else
@@ -246,7 +320,7 @@ package com.monsters.ai
             _destroyed = true;
             if(GLOBAL._advancedMap)
             {
-               _mc.b1.Setup("Open Map");
+               _mc.b1.SetupKey("btn_openmap");
             }
             else
             {
@@ -259,12 +333,13 @@ package com.monsters.ai
       
       private static function BaseForID(param1:int) : Object
       {
-         var _loc2_:Object = null;
-         for each(_loc2_ in _bases)
+         var _loc3_:Object = null;
+         var _loc2_:Array = ChooseBase();
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_.baseid == param1)
+            if(_loc3_.baseid == param1)
             {
-               return _loc2_;
+               return _loc3_;
             }
          }
          return {};
@@ -303,7 +378,7 @@ package com.monsters.ai
          var base:Object = null;
          if(GLOBAL._advancedMap)
          {
-            GLOBAL.Message("Yard not destroyed","Show Map",ShowMapAgain);
+            GLOBAL.Message(KEYS.Get("msg_notdestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
          }
          else
          {
@@ -320,8 +395,7 @@ package com.monsters.ai
             {
                onImage = function(param1:String, param2:BitmapData):void
                {
-                  var _loc3_:Bitmap = null;
-                  _loc3_ = new Bitmap(param2);
+                  var _loc3_:Bitmap = new Bitmap(param2);
                   _loc3_.x = 155;
                   _loc3_.y = 196;
                   if(Boolean(_mc) && Boolean(_mc.parent))
@@ -334,7 +408,7 @@ package com.monsters.ai
             }
             if(GLOBAL._advancedMap)
             {
-               _mc.b1.Setup("Open Map");
+               _mc.b1.SetupKey("btn_openmap");
             }
             else
             {
@@ -349,6 +423,24 @@ package com.monsters.ai
       public static function ShowMapAgain() : void
       {
          ATTACK.EndB();
+      }
+      
+      private static function ChooseBase() : Array
+      {
+         var _loc1_:Array = null;
+         if(_descentMode)
+         {
+            _loc1_ = _descentBases;
+         }
+         else if(GLOBAL._mode == "build")
+         {
+            _loc1_ = _bases;
+         }
+         else
+         {
+            _loc1_ = _bases;
+         }
+         return _loc1_;
       }
    }
 }

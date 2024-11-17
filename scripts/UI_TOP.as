@@ -31,17 +31,46 @@ package
       
       public function UI_TOP()
       {
+         var framename:String;
          var InfoShow:Function;
          var InfoHide:Function;
          var i:int = 0;
          var count:int = 0;
-         var c:int = 0;
+         var s:String = null;
          var gb:MovieClip = null;
+         var creatureID:int = 0;
          var creature:String = null;
          var cb:MovieClip = null;
          super();
-         gotoAndStop(GLOBAL._mode);
-         if(GLOBAL._mode == "build")
+         framename = GLOBAL._mode;
+         switch(GLOBAL._mode)
+         {
+            case "build":
+            case "ibuild":
+               framename = "build";
+               break;
+            case "attack":
+            case "iattack":
+               framename = "attack";
+               break;
+            case "wmattack":
+            case "iwmattack":
+               framename = "wmattack";
+               break;
+            case "view":
+            case "iview":
+               framename = "view";
+               break;
+            case "help":
+            case "ihelp":
+               framename = "help";
+               break;
+            case "wmview":
+            case "iwmview":
+               framename = "wmview";
+         }
+         gotoAndStop(GLOBAL._loadmode);
+         if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
          {
             InfoShow = function(param1:MouseEvent):*
             {
@@ -105,6 +134,7 @@ package
             mc.bAlert.addEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
             this._buttonIcons = [];
             this._buttonIcons = [mc.bInvite,mc.bGift,mc.bInbox,mc.bAlert];
+            mc.bEarn.bAction.tLabel.htmlText = KEYS.Get("btn_earn");
             if(GLOBAL._flags.showFBCEarn == 1)
             {
                mc.bEarn.buttonMode = true;
@@ -119,6 +149,7 @@ package
                mc.bEarn.mouseEnabled = false;
                mc.bEarn.visible = false;
             }
+            mc.bDailyDeal.tLabel.htmlText = KEYS.Get("btn_dailydeal");
             if(GLOBAL._flags.showFBCDaily == 1)
             {
                mc.bDailyDeal.buttonMode = true;
@@ -138,10 +169,10 @@ package
                mc.bDailyDeal.visible = false;
             }
          }
-         else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         else if(GLOBAL._loadmode == "attack" || GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "iattack" || GLOBAL._loadmode == "iwmattack")
          {
             this._creatureButtonsMC = mc.addChild(new flingerLevel());
-            this._creatureButtonsMC.tA.htmlText = KEYS.Get("attack_flingerbar");
+            this._creatureButtonsMC.tA.htmlText = BASE.isInferno() ? KEYS.Get("monster_limit") : KEYS.Get("attack_flingerbar");
             this._creatureButtonsMC.y = 84;
             count = 0;
             this._creatureButtons = [];
@@ -152,12 +183,12 @@ package
                this._creatureButtons.push(gb);
                count++;
             }
-            c = 15;
-            while(c >= 1)
+            for(s in CREATURELOCKER._creatures)
             {
-               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures["C" + c] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures["C" + c])
+               creatureID = int(s.substr(s.length - 1));
+               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[s] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[s])
                {
-                  creature = "C" + c;
+                  creature = s;
                   if(GLOBAL._advancedMap)
                   {
                      if(GLOBAL._attackerMapCreatures[creature].Get() > 0)
@@ -200,9 +231,8 @@ package
                      count++;
                   }
                }
-               c--;
             }
-            if(GLOBAL._attackersCatapult > 0)
+            if(GLOBAL._attackersCatapult > 0 && !BASE.isInferno())
             {
                this._catapult = new CATAPULTPOPUP();
                mc.addChild(this._catapult);
@@ -233,22 +263,22 @@ package
          var onImageLoad:Function;
          var LoadImageError:Function;
          var loader:Loader = null;
-         if(GLOBAL._mode != "build")
+         if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
          {
             if(BASE._ownerName)
             {
                if(BASE._ownerName.toLowerCase().charAt(BASE._ownerName.length - 1) == "s")
                {
-                  mc.mcPoints.tName.htmlText = BASE._ownerName.toUpperCase() + "\' YARD";
+                  mc.mcPoints.tName.htmlText = KEYS.Get("uitop_yardownershort",{"v1":BASE._ownerName.toUpperCase()});
                }
                else
                {
-                  mc.mcPoints.tName.htmlText = BASE._ownerName.toUpperCase() + "\'S YARD";
+                  mc.mcPoints.tName.htmlText = KEYS.Get("uitop_yardownerlong",{"v1":BASE._ownerName.toUpperCase()});
                }
             }
             else
             {
-               mc.mcPoints.tName.htmlText = "BACKYARD MONSTERS";
+               mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonsters");
             }
             try
             {
@@ -267,7 +297,7 @@ package
                loader = new Loader();
                loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
                loader.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
-               if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview")
+               if(GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "wmview" || GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iwmview")
                {
                   loader.load(new URLRequest(GLOBAL._storageURL + BASE._ownerPic));
                }
@@ -283,6 +313,10 @@ package
             catch(e:Error)
             {
             }
+         }
+         else
+         {
+            mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonsters");
          }
       }
       
@@ -400,7 +434,7 @@ package
          var _loc8_:String = null;
          if(!GLOBAL._catchup)
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
             {
                _loc1_ = 1;
                while(_loc1_ < 6)
@@ -541,7 +575,7 @@ package
                   this.DisplayBuffs();
                }
             }
-            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            else if(GLOBAL._loadmode == "attack" || GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "iattack" || GLOBAL._loadmode == "iwmattack")
             {
                _loc1_ = 1;
                while(_loc1_ < 5)
@@ -861,7 +895,7 @@ package
          var newLevel:Boolean = param6;
          try
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL._loadmode == "build")
             {
                mc.mcPoints.mcLevel.text = level.toString();
                p = 200 / (pointsMax - pointsMin) * (points - pointsMin);

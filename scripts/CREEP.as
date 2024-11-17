@@ -95,7 +95,7 @@ package
       
       public var _targetBuilding:BFOUNDATION;
       
-      public var _homeBunker:BUILDING22;
+      public var _homeBunker:*;
       
       public var _targetCreeps:Array;
       
@@ -571,7 +571,7 @@ package
             for(_loc2_ in BASE._buildingsAll)
             {
                _loc3_ = 9999999;
-               if(BASE._buildingsAll[_loc2_]._type == 22 && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
+               if(MONSTERBUNKER.isBunkerBuilding(BASE._buildingsAll[_loc2_]._type) && BASE._buildingsAll[_loc2_]._countdownBuild.Get() <= 0 && BASE._buildingsAll[_loc2_]._hp.Get() > 0)
                {
                   _loc4_ = BASE._buildingsAll[_loc2_];
                   _loc5_ = _loc4_._mc.x - this._tmpPoint.x;
@@ -579,7 +579,7 @@ package
                   _loc7_ = int(Math.sqrt(_loc5_ * _loc5_ + _loc6_ * _loc6_));
                   if(_loc3_ > _loc7_)
                   {
-                     this._homeBunker = _loc4_ as BUILDING22;
+                     this._homeBunker = _loc4_;
                   }
                }
             }
@@ -804,7 +804,7 @@ package
             }
             this._behaviour = "defend";
          }
-         else if(Boolean(this._homeBunker) && this._homeBunker._hp.Get() > 0)
+         else if(this._homeBunker && this._homeBunker._hp.Get() > 0)
          {
             this._targetCreep = this._homeBunker.GetTarget(_loc3_);
             if(this._targetCreep)
@@ -831,7 +831,7 @@ package
          var _loc9_:Point = null;
          var _loc10_:Point = null;
          var _loc11_:int = 0;
-         var _loc13_:BUILDING22 = null;
+         var _loc13_:* = undefined;
          var _loc14_:int = 0;
          var _loc15_:Point = null;
          var _loc16_:int = 0;
@@ -878,9 +878,9 @@ package
          {
             for each(_loc5_ in BASE._buildingsTowers)
             {
-               if(_loc5_._type == 22)
+               if(MONSTERBUNKER.isBunkerBuilding(_loc5_._type))
                {
-                  _loc13_ = _loc5_ as BUILDING22;
+                  _loc13_ = _loc5_;
                   if(_loc13_._hp.Get() > 0 && (_loc13_._used > 0 || _loc13_._monstersDispatchedTotal > 0))
                   {
                      _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
@@ -1597,7 +1597,7 @@ package
                this._graphicMC.y = -this._altitude - 36 + altdiff;
             }
          }
-         if(Boolean(this._homeBunker) && (this._behaviour != "defend" && this._behaviour != "bunker" && this._behaviour != "juice"))
+         if(this._homeBunker && (this._behaviour != "defend" && this._behaviour != "bunker" && this._behaviour != "juice"))
          {
             this._behaviour = "defend";
          }
@@ -2531,15 +2531,21 @@ package
             {
                if(this._homeBunker)
                {
-                  --this._homeBunker._monstersDispatched[this._creatureID];
-                  if(this._homeBunker._monstersDispatched[this._creatureID] < 0)
+                  try
                   {
-                     this._homeBunker._monstersDispatched[this._creatureID] = 0;
+                     --this._homeBunker._monstersDispatched[this._creatureID];
+                     if(this._homeBunker._monstersDispatched[this._creatureID] < 0)
+                     {
+                        this._homeBunker._monstersDispatched[this._creatureID] = 0;
+                     }
+                     --this._homeBunker._monstersDispatchedTotal;
+                     if(this._homeBunker._monstersDispatchedTotal < 0)
+                     {
+                        this._homeBunker._monstersDispatchedTotal = 0;
+                     }
                   }
-                  --this._homeBunker._monstersDispatchedTotal;
-                  if(this._homeBunker._monstersDispatchedTotal < 0)
+                  catch(error:Error)
                   {
-                     this._homeBunker._monstersDispatchedTotal = 0;
                   }
                }
                return true;

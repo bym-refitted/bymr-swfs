@@ -11,7 +11,7 @@ package com.monsters.display
    {
       public static const BROWN:int = 0;
       
-      public static const GREEN:int = 1;
+      public static const GREY:int = 1;
       
       private static const NUM_COLORS:int = 2;
       
@@ -46,7 +46,7 @@ package com.monsters.display
          super();
       }
       
-      public function Init(param1:Sprite, param2:MovieClip, param3:int = 0, param4:Number = 0, param5:Number = 315, param6:Number = 30) : void
+      public function Init(param1:Sprite, param2:MovieClip, param3:int = 0, param4:Number = 0, param5:Number = 128, param6:Number = 30) : void
       {
          var _loc7_:Number = NaN;
          this._Container = param1;
@@ -55,6 +55,7 @@ package com.monsters.display
          this._ScrollBarHeight = param5;
          this._MinScrollerHeight = param6;
          this._OffsetY = param4;
+         param3 = GLOBAL.InfernoMode ? 1 : 0;
          if(param3 < 0 || param3 >= NUM_COLORS)
          {
             return;
@@ -64,7 +65,7 @@ package com.monsters.display
             case BROWN:
                this.mcScroller.gotoAndStop(1);
                break;
-            case GREEN:
+            case GREY:
                this.mcScroller.gotoAndStop(2);
          }
          this.mcScroller.y = this._Margin;
@@ -98,6 +99,19 @@ package com.monsters.display
             this.ResizeScrollBar();
          }
          this._ContainerHeight = this._Container.height;
+         var _loc1_:* = GLOBAL.InfernoMode ? 1 : 0;
+         if(_loc1_ < 0 || _loc1_ >= NUM_COLORS)
+         {
+            return;
+         }
+         switch(_loc1_)
+         {
+            case BROWN:
+               this.mcScroller.gotoAndStop(1);
+               break;
+            case GREY:
+               this.mcScroller.gotoAndStop(2);
+         }
       }
       
       private function ResizeScroller() : void

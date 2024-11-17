@@ -211,7 +211,7 @@ package
          var _loc7_:Number = NaN;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
-         var _loc10_:CREEP = null;
+         var _loc10_:* = undefined;
          var _loc11_:Array = null;
          var _loc12_:String = null;
          var _loc13_:Boolean = false;
@@ -302,7 +302,11 @@ package
                      }
                   }
                   this._logged = true;
-                  ATTACK.Log("b" + _id,"<font color=\"#FF0000\">A level " + _lvl.Get() + " " + KEYS.Get(_buildingProps.name) + " unleashed " + GLOBAL.Array2String(_loc11_) + "!</font>");
+                  ATTACK.Log("b" + _id,"<font color=\"#FF0000\">" + KEYS.Get("attacklog_unleashed",{
+                     "v1":_lvl.Get(),
+                     "v2":KEYS.Get(_buildingProps.name),
+                     "v3":GLOBAL.Array2String(_loc11_)
+                  }) + "</font>");
                }
                if(this._targetFlyers.length > 0 && (_loc4_ == "C12" || _loc4_ == "C5"))
                {
@@ -341,18 +345,21 @@ package
                   }
                }
                _loc10_ = CREATURES.Spawn(_loc4_,MAP._BUILDINGTOPS,"defend",_position.add(new Point(_loc6_,_loc7_)),Math.random() * 360);
-               _loc10_._targetCreep = _loc5_;
-               _loc10_._homeBunker = this;
-               _loc10_._hasTarget = true;
-               if(_loc10_._pathing = "direct")
+               if(_loc10_)
                {
-                  _loc10_.alpha = 0;
-                  _loc10_._phase = 1;
+                  _loc10_._targetCreep = _loc5_;
+                  _loc10_._homeBunker = this;
+                  _loc10_._hasTarget = true;
+                  if(_loc10_._pathing = "direct")
+                  {
+                     _loc10_.alpha = 0;
+                     _loc10_._phase = 1;
+                  }
+                  _loc10_.WaypointTo(_loc10_._targetCreep._tmpPoint);
+                  _loc10_._targetPosition = _loc10_._targetCreep._tmpPoint;
+                  ++this._monstersDispatched[_loc4_];
+                  ++this._monstersDispatchedTotal;
                }
-               _loc10_.WaypointTo(_loc10_._targetCreep._tmpPoint);
-               _loc10_._targetPosition = _loc10_._targetCreep._tmpPoint;
-               ++this._monstersDispatched[_loc4_];
-               ++this._monstersDispatchedTotal;
             }
          }
       }
@@ -432,7 +439,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {
@@ -570,6 +577,25 @@ package
          {
             this._capacity = GLOBAL._buildingProps[21].capacity[_lvl.Get() - 1];
             super._range = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].range;
+         }
+      }
+      
+      public function RemoveCreature(param1:String) : void
+      {
+         --this._monsters[param1];
+         if(this._monsters[param1] < 0)
+         {
+            this._monsters[param1] = 0;
+         }
+         --this._monstersDispatched[param1];
+         if(this._monstersDispatched[param1] < 0)
+         {
+            this._monstersDispatched[param1] = 0;
+         }
+         --this._monstersDispatchedTotal;
+         if(this._monstersDispatchedTotal < 0)
+         {
+            this._monstersDispatchedTotal = 0;
          }
       }
       

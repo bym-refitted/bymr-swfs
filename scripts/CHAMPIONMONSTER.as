@@ -750,7 +750,7 @@ package
          var _loc8_:Point = null;
          var _loc9_:Point = null;
          var _loc10_:int = 0;
-         var _loc12_:BUILDING22 = null;
+         var _loc12_:* = undefined;
          var _loc13_:int = 0;
          var _loc14_:Point = null;
          var _loc15_:int = 0;
@@ -777,9 +777,9 @@ package
          }
          for each(_loc4_ in BASE._buildingsTowers)
          {
-            if(_loc4_._type == 22)
+            if(MONSTERBUNKER.isBunkerBuilding(_loc4_._type))
             {
-               _loc12_ = _loc4_ as BUILDING22;
+               _loc12_ = _loc4_;
                if(_loc12_._hp.Get() > 0 && (_loc12_._used > 0 || _loc12_._monstersDispatchedTotal > 0))
                {
                   _loc9_ = GRID.FromISO(_loc4_._mc.x,_loc4_._mc.y + _loc4_._middle);
@@ -1154,7 +1154,11 @@ package
          var _loc5_:Point = null;
          if(this._health.Get() <= 0)
          {
-            ATTACK.Log(this._creatureID,BASE._ownerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " was critically injured and fled the battle.");
+            ATTACK.Log(this._creatureID,KEYS.Get("attacklog_champ_injured",{
+               "v1":BASE._ownerName,
+               "v2":this._level.Get(),
+               "v3":CHAMPIONCAGE._guardians[this._creatureID].name
+            }));
             this._venom.Set(0);
             this.ModeRetreat();
             if(GLOBAL._mode == "attack")
@@ -1204,12 +1208,12 @@ package
          {
             this._attacking = true;
             this._intercepting = false;
-            if(this._movement != "fly" || this._targetCreep._creatureID == "C14" || this._targetCreep._creatureID == "C12" && this._targetCreep.PoweredUp() || this._targetCreep._creatureID == "G3")
+            if(this._movement != "fly" || this._targetCreep._creatureID == "C14" || this._targetCreep._creatureID == "C12" && this._targetCreep.PoweredUp() || this._targetCreep._creatureID == "G3" || this._targetCreep._creatureID == "IC7" || this._targetCreep._creatureID == "IC5")
             {
                if(this._targetCreep._behaviour != "heal")
                {
                   this._targetCreep._targetCreep = this;
-                  if(this._targetCreep._creatureID == "C14" || this._targetCreep._creatureID == "C12" && this._targetCreep.PoweredUp() || this._targetCreep._creatureID == "G3" || (GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._creatureID.substr(0,1) == "G") && this._movement != "fly")
+                  if(this._targetCreep._creatureID == "C14" || this._targetCreep._creatureID == "IC7" || this._targetCreep._creatureID == "C12" && this._targetCreep.PoweredUp() || this._targetCreep._creatureID == "G3" || (GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._creatureID.substr(0,1) == "G") && this._movement != "fly")
                   {
                      this._targetCreep._atTarget = true;
                   }
@@ -1390,7 +1394,7 @@ package
                   CHAMPIONCAGE.Hide();
                   if(!GLOBAL._catchup)
                   {
-                     GLOBAL.Message("Your Champion is starving and his evolution has stalled!  Now you must start feeding him over in order to get him to evolve!");
+                     GLOBAL.Message(KEYS.Get("msg_champion_starving"));
                   }
                   this._feeds.Add(-1);
                   if(this._feeds.Get() < 0)
@@ -1409,7 +1413,7 @@ package
                   CHAMPIONCAGE.Hide();
                   if(!GLOBAL._catchup)
                   {
-                     GLOBAL.Message("Your Champion is hungry!  You must feed him within " + GLOBAL.ToTime(this._feedTime.Get() - GLOBAL.Timestamp() + _starveTimer) + " or his evolution will stall!");
+                     GLOBAL.Message(KEYS.Get("msg_champion_hungry",{"v1":GLOBAL.ToTime(this._feedTime.Get() - GLOBAL.Timestamp() + _starveTimer)}));
                   }
                   this._warned = true;
                }
@@ -1481,7 +1485,11 @@ package
          {
             MAP.CreepCellDelete(this._id,this.node);
             this.ModeRetreat();
-            ATTACK.Log(this._creatureID,LOGIN._playerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " retreated.");
+            ATTACK.Log(this._creatureID,KEYS.Get("attacklog_champ_retreated",{
+               "v1":LOGIN._playerName,
+               "v2":this._level.Get(),
+               "v3":CHAMPIONCAGE._guardians[this._creatureID].name
+            }));
             if(GLOBAL._mode == "attack")
             {
                LOGGER.Stat([54,this._creatureID,1,this._level.Get()]);
@@ -1765,7 +1773,7 @@ package
             _loc1_ = this.GetHealCost();
             if(_loc1_ > 0)
             {
-               GLOBAL.Message("Heal your Champion for " + _loc1_ + " Shiny?","Heal",this.HealB);
+               GLOBAL.Message(KEYS.Get("msg_healchampion",{"v1":_loc1_}),KEYS.Get("str_heal"),this.HealB);
             }
          }
       }

@@ -45,7 +45,7 @@ package
          if(GLOBAL._mode == "build")
          {
             _maxWorkers = 5;
-            if(BASE._isOutpost)
+            if(BASE._yardType)
             {
                _maxWorkers = 1;
             }

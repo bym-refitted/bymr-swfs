@@ -41,16 +41,23 @@ package
          _mc = MAP._BUILDINGINFO.addChild(new buildingInfo());
          _mc.tName.autoSize = TextFieldAutoSize.CENTER;
          var _loc2_:* = "<b>" + KEYS.Get(_props.name) + "</b>";
-         if(_building._lvl.Get() > 0 && GLOBAL._buildingProps[param1._type - 1].costs && GLOBAL._buildingProps[param1._type - 1].costs.length > 1)
+         if(_building._lvl.Get() > 0 && _props.costs && _props.costs.length > 1)
          {
-            _loc2_ += "<br><b>" + KEYS.Get("bdg_infopop_levelnum",{"v1":param1._lvl.Get()}) + "</b>";
+            if(Boolean(_props.names) && _props.names.length > 1)
+            {
+               _loc2_ = "<b>" + KEYS.Get(_props.names[param1._lvl.Get() - 1]) + "</b>";
+            }
+            else
+            {
+               _loc2_ += "<br><b>" + KEYS.Get("bdg_infopop_levelnum",{"v1":param1._lvl.Get()}) + "</b>";
+            }
             if(_building._fortification.Get() > 0)
             {
-               _loc2_ += "<br><b>Fortified Level " + _building._fortification.Get() + "</b>";
+               _loc2_ += "<br><b>" + KEYS.Get("bdg_fortified_level",{"v1":_building._fortification.Get()}) + "</b>";
             }
             if(_building._class == "tower" && _building._type != 22 && GLOBAL._towerOverdrive && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp() && _building._countdownBuild.Get() == 0 && _building._countdownUpgrade.Get() == 0)
             {
-               _loc2_ += "<font color=\"#0000ff\"> <br><b>(25% Boost)</b></font>";
+               _loc2_ += "<font color=\"#0000ff\"> <br><b>" + KEYS.Get("bdg_25%boost") + "</b></font>";
             }
          }
          _mc.tName.htmlText = _loc2_;
@@ -198,7 +205,7 @@ package
                            _loc1_.push(["btn_speedup",30,true]);
                         }
                      }
-                     else if(_props.id == 15)
+                     else if(HOUSING.isHousingBuilding(_props.id))
                      {
                         _loc1_.push(["btn_viewhousing",30,true]);
                      }
@@ -300,6 +307,10 @@ package
                _mc.x = int(_clickPoint.x) - 60;
                _mc.y = int(_clickPoint.y) - _loc5_ - 15;
             }
+            if(_building == INFERNOPORTAL.building && INFERNOPORTAL.isAboveMaxLevel())
+            {
+               _loc1_ = [[BASE.isInferno() ? INFERNOPORTAL.EXIT_BUTTON : INFERNOPORTAL.ENTER_BUTTON,30,true]];
+            }
             if(_buttonsMC)
             {
                _mc.removeChild(_buttonsMC);
@@ -396,7 +407,7 @@ package
                {
                   _loc13_ = _building._buildingProps.capacity[_building._lvl.Get() - 1] - _building._stored.Get();
                   _loc14_ = 60 / _building._buildingProps.cycleTime[_building._lvl.Get() - 1] * _building._buildingProps.produce[_building._lvl.Get() - 1];
-                  if(BASE._isOutpost)
+                  if(BASE._yardType == BASE.OUTPOST)
                   {
                      _loc14_ = BRESOURCE.AdjustProduction(GLOBAL._currentCell,_loc14_);
                   }
@@ -458,7 +469,10 @@ package
          if(_mc)
          {
             _mc.removeEventListener(Event.ENTER_FRAME,Tick);
-            MAP._BUILDINGINFO.removeChild(_mc);
+            if(MAP._BUILDINGINFO)
+            {
+               MAP._BUILDINGINFO.removeChild(_mc);
+            }
             _mc = null;
             _buttonsMC = null;
             if(!STORE._open && !HATCHERY._open && !HATCHERYCC._open && !CREATURELOCKER._open && !ACADEMY._open && !MONSTERBUNKER._open && !STORE._streamline)
@@ -572,6 +586,10 @@ package
          if(param1.target.labelKey == "btn_openchamber")
          {
             CHAMPIONCHAMBER.Show();
+         }
+         if(param1.target.labelKey == INFERNOPORTAL.ENTER_BUTTON || param1.target.labelKey == INFERNOPORTAL.EXIT_BUTTON)
+         {
+            INFERNOPORTAL.EnterPortal();
          }
          if(param1.target.labelKey == "btn_move")
          {

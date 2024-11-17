@@ -31,9 +31,9 @@ package
          this._description.Setup(158,26,KEYS.Get(CHAMPIONCAGE._guardians[this._creatureID].description),5);
          addChild(this._description);
          this._description.visible = false;
-         bSend.Setup("Send");
+         bSend.SetupKey("btn_send");
          bSend.addEventListener(MouseEvent.CLICK,this.Send);
-         bRetreat.Setup("Retreat");
+         bRetreat.SetupKey("btn_retreat");
          bRetreat.addEventListener(MouseEvent.CLICK,this.Retreat);
          addEventListener(MouseEvent.ROLL_OVER,this.Over);
          addEventListener(MouseEvent.ROLL_OUT,this.Out);
@@ -67,14 +67,14 @@ package
          if(!this._sent)
          {
             ATTACK.BucketAdd(this._creatureID);
-            bSend.Setup("Hold");
+            bSend.SetupKey("btn_hold");
             ATTACK.BucketUpdate();
             this._sent = true;
          }
          else
          {
             ATTACK.BucketRemove(this._creatureID);
-            bSend.Setup("Send");
+            bSend.SetupKey("btn_send");
             ATTACK.BucketUpdate();
             this._sent = false;
          }

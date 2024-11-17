@@ -56,6 +56,20 @@ package
       
       public static var _kamikaze:Array = ["C5"];
       
+      public static var _infernoMonsterKeys:Array = ["IC1","IC2","IC3","IC4","IC5","IC6","IC7","IC8"];
+      
+      public static var _infernoLooters:Array = ["IC3","IC6"];
+      
+      public static var _infernoDps:Array = ["IC1","IC4","IC6","IC7","IC8"];
+      
+      public static var _infernoTanks:Array = ["IC2","IC7"];
+      
+      public static var _infernoAnything:Array = ["IC1","IC8"];
+      
+      public static var _infernoFodder:Array = ["IC1","IC1","IC1","IC2","IC3"];
+      
+      public static var _infernoKamikaze:Array = ["IC4"];
+      
       public static var _sessionsBetweenAttacks:int = 4;
       
       public static var _minAdvanceWarningTime:int = 30;
@@ -272,7 +286,7 @@ package
                         baseIsRepairing = true;
                      }
                   }
-                  if(Boolean(BASE._isOutpost) && count < 10)
+                  if(Boolean(BASE._yardType) && count < 10)
                   {
                      baseIsRepairing = true;
                   }
@@ -280,7 +294,7 @@ package
                t += 1;
                if(_queued != null && !_inProgress)
                {
-                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
+                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !BASE.isInferno())
                   {
                      try
                      {
@@ -291,7 +305,7 @@ package
                         LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
                      }
                   }
-                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
+                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !BASE.isInferno())
                   {
                      try
                      {
@@ -346,7 +360,7 @@ package
                }
                else if(!_inProgress)
                {
-                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
+                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !BASE.isInferno())
                   {
                      _processing = true;
                      try
@@ -372,7 +386,7 @@ package
                         a = 0;
                         for each(creep in CREEPS._creeps)
                         {
-                           if(creep._behaviour == "attack" || creep._behaviour == "bounce" || creep._behaviour == "loot" || creep._behaviour == "heal" || creep._behaviour == "buff")
+                           if(creep._behaviour == "attack" || creep._behaviour == "bounce" || creep._behaviour == "loot" || creep._behaviour == "heal" || creep._behaviour == "buff" || creep._behaviour == "hunt")
                            {
                               a++;
                            }
@@ -479,7 +493,7 @@ package
          asp.bMore.addEventListener(MouseEvent.CLICK,onMoreDown);
          asp.bLess.addEventListener(MouseEvent.CLICK,onLessDown);
          asp.bSame.addEventListener(MouseEvent.CLICK,onSameDown);
-         (asp.mcFrame as frame2).Setup(true,closeDown);
+         (asp.mcFrame as frame).Setup(true,closeDown);
          asp.taunt_txt.htmlText = "<b>" + TRIBES.TribeForBaseID(_attackersBaseID).taunt + "</b>";
          ImageCache.GetImageWithCallBack(TRIBES.TribeForBaseID(_attackersBaseID).splash,onImage);
          POPUPS.Push(asp);
@@ -510,6 +524,10 @@ package
             case 4:
                _type = WMATTACK.TYPE_NERD;
                _loc2_ = PROCESS7;
+               break;
+            case INFERNO_EMERGENCE_PROCESS.TYPE:
+               _type = WMATTACK.TYPE_TOWERS;
+               _loc2_ = INFERNO_EMERGENCE_PROCESS;
          }
          _attackersBaseID = 1;
          processor = new _loc2_();
@@ -602,7 +620,7 @@ package
             "warned":0,
             "t":_attackersBaseID
          };
-         if(_loc3_ > _trojanThreshold && !_history["s1"] && !BASE._isOutpost)
+         if(_loc3_ > _trojanThreshold && !_history["s1"] && !BASE._yardType)
          {
             _trojan = true;
             _history["s1"] = [1,GLOBAL.Timestamp(),0];
@@ -636,7 +654,7 @@ package
          var _loc13_:int = 0;
          var _loc15_:Array = null;
          var _loc16_:Array = null;
-         var _loc17_:CREEP = null;
+         var _loc17_:* = undefined;
          if(_history)
          {
             if(_history["s1"] && _history["s1"][0] == 1 && _history["s1"][2] == 0)
@@ -667,9 +685,21 @@ package
             _loc13_ += 1;
          }
          _loc13_ = 0;
+         while(_loc13_ < _infernoLooters.length)
+         {
+            _loc12_[_looters[_loc13_]] = param1[_infernoLooters[_loc13_]];
+            _loc13_++;
+         }
+         _loc13_ = 0;
          while(_loc13_ < _dps.length)
          {
             _loc11_[_dps[_loc13_]] = param1[_dps[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoDps.length)
+         {
+            _loc11_[_infernoDps[_loc13_]] = param1[_infernoDps[_loc13_]];
             _loc13_ += 1;
          }
          _loc13_ = 0;
@@ -679,9 +709,21 @@ package
             _loc13_ += 1;
          }
          _loc13_ = 0;
+         while(_loc13_ < _infernoTanks.length)
+         {
+            _loc10_[_infernoTanks[_loc13_]] = param1[_infernoTanks[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
          while(_loc13_ < _kamikaze.length)
          {
             _loc11_[_kamikaze[_loc13_]] = param1[_kamikaze[_loc13_]];
+            _loc13_ += 1;
+         }
+         _loc13_ = 0;
+         while(_loc13_ < _infernoKamikaze.length)
+         {
+            _loc11_[_infernoKamikaze[_loc13_]] = param1[_infernoKamikaze[_loc13_]];
             _loc13_ += 1;
          }
          var _loc14_:Number = param2;

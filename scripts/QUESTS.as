@@ -12,7 +12,7 @@ package
       
       public static var _questGroups:Array;
       
-      public static var _quests:Array;
+      public static var _mainQuests:Array;
       
       public static var _completed:Object;
       
@@ -22,6 +22,8 @@ package
       
       public static var _open:Boolean;
       
+      public static var _infernoQuests:Array;
+      
       public function QUESTS()
       {
          super();
@@ -29,7 +31,6 @@ package
       
       public static function Setup() : *
       {
-         var _loc2_:Object = null;
          _displayedInstructions = false;
          _global = {
             "blvl":0,
@@ -105,7 +106,21 @@ package
             "id":4,
             "name":"q_evil"
          }];
-         _quests = [{
+         if(!BASE.isInferno())
+         {
+            setupMainQuests();
+         }
+         else
+         {
+            setupInfernoQuests();
+         }
+         _completed = {};
+      }
+      
+      public static function setupMainQuests() : void
+      {
+         var _loc2_:Object = null;
+         _mainQuests = [{
             "order":1,
             "block":true,
             "list":false,
@@ -1351,7 +1366,11 @@ package
             "prereq":"UC11",
             "rules":{"UNLOCK":"C13"}
          });
-         _completed = {};
+      }
+      
+      public static function setupInfernoQuests() : void
+      {
+         _infernoQuests = INFERNO_QUESTS._infernoQuests;
       }
       
       public static function Data(param1:Object) : *
@@ -1465,6 +1484,11 @@ package
          return null;
       }
       
+      public static function get _quests() : Array
+      {
+         return BASE.isInferno() ? _infernoQuests : _mainQuests;
+      }
+      
       public static function QuestPopup(param1:String, param2:String, param3:String, param4:String, param5:String) : *
       {
          var _loc6_:* = new popup_quest();
@@ -1560,11 +1584,11 @@ package
                {
                   if(HOUSING._housingSpace.Get() < storage)
                   {
-                     GLOBAL.Message("You do not have enough space in Housing for any of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
+                     GLOBAL.Message(KEYS.Get("msg_quest_housing"),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
                      return false;
                   }
                   quantity = HOUSING._housingSpace.Get() / storage;
-                  GLOBAL.Message("You only have enough space in Housing for " + quantity + " of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
+                  GLOBAL.Message(KEYS.Get("msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
                   return false;
                }
             }
@@ -1669,7 +1693,7 @@ package
                   popupMC.mcImage.y = popupMC.tA.y + popupMC.tA.height + 20;
                }
                popupMC.mcBG.height = h;
-               (popupMC.mcBG as frame2).Setup();
+               (popupMC.mcBG as frame).Setup();
                popupMC.bAction.y = popupMC.mcBG.y + h - 45;
                POPUPS.Push(popupMC,null,null,null,q.questimage);
             }
@@ -1788,7 +1812,7 @@ package
                   popupMC.mcImage.y = popupMC.tA.y + popupMC.tA.height + 20;
                }
                popupMC.mcBG.height = h;
-               (popupMC.mcBG as frame2).Setup();
+               (popupMC.mcBG as frame).Setup();
                popupMC.bAction.y = popupMC.mcBG.y + h - 45;
                POPUPS.Push(popupMC,null,null,null,q.questimage);
             }
@@ -1835,29 +1859,26 @@ package
       
       public static function CheckB() : *
       {
-         var tmpArray:Array = null;
-         var Push:Function = function(param1:int):*
+         var _loc3_:Object = null;
+         var _loc4_:int = 0;
+         var _loc1_:Array = [];
+         var _loc2_:* = 0;
+         while(_loc2_ < _quests.length)
          {
-            var _loc2_:Object = _quests[param1];
-            tmpArray.push([_loc2_.reward,_loc2_.id,_loc2_.group]);
-            var _loc3_:int = 1;
-            while(_loc3_ <= 21)
+            _loc3_ = _quests[_loc2_];
+            _loc1_.push([_loc3_.reward,_loc3_.id,_loc3_.group]);
+            _loc4_ = 1;
+            while(_loc4_ <= 21)
             {
-               if(_loc2_.rules["b" + _loc3_ + "lvl"])
+               if(_loc3_.rules["b" + _loc4_ + "lvl"])
                {
-                  tmpArray.push(_loc2_.rules["b" + _loc3_ + "lvl"]);
+                  _loc1_.push(_loc3_.rules["b" + _loc4_ + "lvl"]);
                }
-               _loc3_++;
+               _loc4_++;
             }
-         };
-         tmpArray = [];
-         var i:* = 0;
-         while(i < _quests.length)
-         {
-            Push(i);
-            i++;
+            _loc2_++;
          }
-         return MD5.hash(com.adobe.serialization.json.JSON.encode(tmpArray));
+         return MD5.hash(com.adobe.serialization.json.JSON.encode(_loc1_));
       }
       
       public static function Completed() : *

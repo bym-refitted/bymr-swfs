@@ -1,6 +1,5 @@
 package
 {
-   import com.monsters.pathing.PATHING;
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -9,16 +8,14 @@ package
    {
       public var _animMC:*;
       
-      public var _frameNumber:int;
-      
       public var _animBitmap:BitmapData;
       
       public function BUILDING21()
       {
          super();
-         this._frameNumber = 0;
+         _frameNumber = 0;
          _type = 21;
-         _top = -30;
+         _top = BASE.isInferno() ? -60 : -30;
          _footprint = [new Rectangle(0,0,70,70)];
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
          SetProps();
@@ -27,31 +24,8 @@ package
       
       override public function TickAttack() : *
       {
-         var _loc1_:* = undefined;
-         var _loc2_:Point = null;
-         var _loc3_:Point = null;
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
          super.TickAttack();
-         if(_hasTargets)
-         {
-            _loc1_ = _targetCreeps[0].creep;
-            _loc2_ = PATHING.FromISO(_loc1_._tmpPoint);
-            _loc3_ = PATHING.FromISO(new Point(_mc.x,_mc.y));
-            _loc3_ = _loc3_.add(new Point(35,35));
-            _loc4_ = _loc2_.x - _loc3_.x;
-            _loc5_ = _loc2_.y - _loc3_.y;
-            _loc6_ = Math.atan2(_loc5_,_loc4_) * 57.2957795;
-            if(_loc6_ < 0)
-            {
-               _loc6_ = 6 * 60 + _loc6_;
-            }
-            _loc6_ /= 12;
-            _animTick = int(_loc6_);
-            this.AnimFrame();
-            ++this._frameNumber;
-         }
+         Rotate();
       }
       
       override public function AnimFrame(param1:Boolean = true) : *

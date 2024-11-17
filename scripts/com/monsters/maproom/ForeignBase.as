@@ -62,6 +62,7 @@ package com.monsters.maproom
       {
          super();
          this.popUp = new MapBasePopup();
+         this.popUp.title_txt.htmlText = "<b>" + KEYS.Get("map_options") + "</b>";
          this.popUp.x = 21;
          this.popUp.y = 40;
          this.addChild(this.popUp);

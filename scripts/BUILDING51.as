@@ -71,7 +71,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bCatapult = this;
-         if(GLOBAL._mode == "build" && !BASE._isOutpost)
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {

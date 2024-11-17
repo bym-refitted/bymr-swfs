@@ -38,14 +38,14 @@ package
          super();
       }
       
-      public static function Login() : *
+      public static function Login() : void
       {
          var handleLoadSuccessful:Function;
          var handleLoadError:Function;
-         PLEASEWAIT.Show("Logging In...");
+         PLEASEWAIT.Show("Logging in...");
          if(GLOBAL._local)
          {
-            handleLoadSuccessful = function(param1:Object):*
+            handleLoadSuccessful = function(param1:Object):void
             {
                if(param1.error == 0)
                {
@@ -65,7 +65,7 @@ package
          }
          else
          {
-            ExternalInterface.addCallback("loginsuccessful",function(param1:String):*
+            ExternalInterface.addCallback("loginsuccessful",function(param1:String):void
             {
                var _loc2_:Object = com.adobe.serialization.json.JSON.decode(param1);
                GLOBAL.WaitHide();
@@ -90,7 +90,7 @@ package
          }
       }
       
-      public static function Process(param1:Object) : *
+      public static function Process(param1:Object) : void
       {
          if(param1.version != GLOBAL._version.Get())
          {
@@ -176,9 +176,17 @@ package
       {
          var _loc1_:int = 0;
          GLOBAL.Setup();
+         if(GLOBAL._localMode == 5)
+         {
+            BASE._yardType = BASE.INFERNO_YARD;
+         }
+         else
+         {
+            BASE._yardType = BASE.MAIN_YARD;
+         }
          if(GLOBAL._openBase && GLOBAL._openBase.url && (Boolean(GLOBAL._openBase.userid) || Boolean(GLOBAL._openBase.baseid)) && GLOBAL._openBase.userid != LOGIN._playerID)
          {
-            BASE._isOutpost = 0;
+            BASE._yardType = BASE.MAIN_YARD;
             if(!GLOBAL._openBase.userid)
             {
                GLOBAL._openBase.userid = 0;
