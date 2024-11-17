@@ -238,6 +238,27 @@ package
          super.Upgraded();
       }
       
+      override public function Destroyed(param1:Boolean = true) : *
+      {
+         var loot:Boolean = param1;
+         super.Destroyed(loot);
+         while(this._gunballs.length > 0)
+         {
+            try
+            {
+               MAP._PROJECTILES.removeChild(this._gunballs[0]);
+               MAP._PROJECTILES.removeChild(this._trail[0]);
+            }
+            catch(e:Error)
+            {
+            }
+            this._gunballs.shift();
+            this._trail.shift();
+         }
+         this._spawnCount = 0;
+         this._fireCount = 0;
+      }
+      
       override public function Constructed() : *
       {
          var Brag:Function;
@@ -247,7 +268,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_railgunbuilt_streamtitle"),KEYS.Get("pop_railgunbuilt_streambody"),"build_railgun.png"]);
+               GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_railgunbuilt_streamtitle"),KEYS.Get("pop_rbuilt_streambody"),"build_railgun.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

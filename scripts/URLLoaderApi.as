@@ -148,7 +148,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt(class_1.method_1(-179,836));
+         return this.decodeSalt(class_1.method_1(-56,-340));
       }
       
       private function decodeSalt(param1:String) : String

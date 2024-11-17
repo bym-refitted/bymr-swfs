@@ -294,7 +294,7 @@ package
       
       public static var _checkPromo:int = 1;
       
-      public static var _giveTips:int = 1;
+      public static var _giveTips:int = 0;
       
       public static var _shinyShroomCount:int = 0;
       
