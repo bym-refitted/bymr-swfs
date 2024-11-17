@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2101")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2065")]
    public dynamic class CREATUREBUTTON_CLIP extends MovieClip
    {
       public var _creatureImage:MovieClip;

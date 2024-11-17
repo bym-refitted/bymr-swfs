@@ -115,7 +115,7 @@ package
          var _loc2_:Number = NaN;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         if(param1)
+         if(param1 && !_destroyed)
          {
             _loc2_ = _LOOT_PCT_BASE;
             if(_type == 14)

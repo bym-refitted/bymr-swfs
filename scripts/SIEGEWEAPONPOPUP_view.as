@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2123")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2087")]
    public dynamic class SIEGEWEAPONPOPUP_view extends MovieClip
    {
       public var _bFire:Button_CLIP;

@@ -47,7 +47,7 @@ package com.monsters.configs
       
       public function get RENDERER_ON() : Boolean
       {
-         return true;
+         return false;
       }
       
       public function get OPTIMIZED_SHADOWS() : Boolean

@@ -3,7 +3,7 @@ package SWC_ALL_fla
    import flash.display.MovieClip;
    import flash.events.Event;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1188")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol991")]
    public dynamic class loading_207 extends MovieClip
    {
       public function loading_207()

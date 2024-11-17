@@ -3,7 +3,7 @@ package SWC_ALL_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol716")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1215")]
    public dynamic class WMBInfoButton_895 extends MovieClip
    {
       public var tA:TextField;

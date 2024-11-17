@@ -2,7 +2,7 @@ package SWC_ALL_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2071")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2035")]
    public dynamic class workerIcon_Inferno_797 extends MovieClip
    {
       public function workerIcon_Inferno_797()
