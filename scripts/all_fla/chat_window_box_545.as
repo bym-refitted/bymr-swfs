@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol142")]
-   public dynamic class MapRoomCell_Hit_291 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1628")]
+   public dynamic class chat_window_box_545 extends MovieClip
    {
-      public function MapRoomCell_Hit_291()
+      public function chat_window_box_545()
       {
          super();
          addFrameScript(0,this.frame1);

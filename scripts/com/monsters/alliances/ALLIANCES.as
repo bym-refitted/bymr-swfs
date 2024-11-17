@@ -40,9 +40,9 @@ package com.monsters.alliances
          _alliances = new Object();
          if(param1 > 0)
          {
-            _allianceID = param1;
             if(GLOBAL._mode == "build")
             {
+               _allianceID = param1;
                ACHIEVEMENTS.Check("alliance",1,true);
             }
          }
@@ -128,7 +128,7 @@ package com.monsters.alliances
       {
          var _loc3_:AllyInfo = null;
          var _loc4_:int = 0;
-         if(param1._allianceID)
+         if(Boolean(param1._allianceID) && param1._allianceID != 0)
          {
             _loc4_ = param1._allianceID;
             if(_alliances[_loc4_])

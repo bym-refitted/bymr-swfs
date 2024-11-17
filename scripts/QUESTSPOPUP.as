@@ -363,6 +363,10 @@ package
                }
                _loc2_++;
             }
+            if(QUESTS._mc)
+            {
+               QUESTS.Hide();
+            }
          };
       }
       

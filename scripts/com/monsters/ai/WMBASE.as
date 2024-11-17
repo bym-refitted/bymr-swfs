@@ -228,7 +228,7 @@ package com.monsters.ai
             shareDown = function(param1:MouseEvent = null):void
             {
                var _loc2_:Object = TRIBES.TribeForBaseID(BASE._wmID);
-               GLOBAL.CallJS("sendFeed",["aibaseDestroyed",_loc2_.succ_stream,"",_loc2_.streampostpic]);
+               GLOBAL.CallJS("sendFeed",["aibaseDestroyed",_loc2_.succ_stream,_loc2_.succ,_loc2_.streampostpic]);
             };
             _mc = new popup_aibase_success() as MovieClip;
             _mc.Resize = function():void

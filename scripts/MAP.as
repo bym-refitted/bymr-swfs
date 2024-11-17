@@ -182,14 +182,7 @@ package
             _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
-            if(GLOBAL._local)
-            {
-               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownLocal);
-            }
-            else
-            {
-               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
-            }
+            GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
             GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
             _EDGE = null;
          }
@@ -316,6 +309,8 @@ package
       
       public static function KeyDownLocal(param1:KeyboardEvent) : *
       {
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
          if(param1.shiftKey)
          {
             if(keyunlock == 0 && param1.keyCode == 38)
@@ -338,6 +333,19 @@ package
             {
                keyunlock = 0;
             }
+         }
+         if(GLOBAL._bymChat.chatInputHasFocus())
+         {
+            return;
+         }
+         if(!GLOBAL._local)
+         {
+            return;
+         }
+         if(GLOBAL._local)
+         {
+            _loc2_ = 0;
+            _loc3_ = 0;
          }
       }
       

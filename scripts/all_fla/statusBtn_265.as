@@ -2,12 +2,12 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1800")]
-   public dynamic class lastSeenBtn_263 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1827")]
+   public dynamic class statusBtn_265 extends MovieClip
    {
       public var sorter_mc:MovieClip;
       
-      public function lastSeenBtn_263()
+      public function statusBtn_265()
       {
          super();
          addFrameScript(0,this.frame1,1,this.frame2);

@@ -3,12 +3,12 @@ package all_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1022")]
-   public dynamic class WMBInfoButton_624 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1844")]
+   public dynamic class MonsterLabItem_Star_495 extends MovieClip
    {
-      public var tA:TextField;
+      public var tLevel:TextField;
       
-      public function WMBInfoButton_624()
+      public function MonsterLabItem_Star_495()
       {
          super();
          addFrameScript(0,this.frame1);

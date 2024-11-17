@@ -287,6 +287,8 @@ package
       
       public static var _displayedWhatsNew:Boolean;
       
+      public static var _displayedPromoNew:Boolean;
+      
       public static var _credits:SecNum;
       
       public static var _local:Boolean = false;
@@ -444,6 +446,8 @@ package
       public static var _otherStats:Object = {};
       
       public static var _baseLoads:int = 0;
+      
+      public static var _fbPromoTimer:Number = 432000;
       
       public static const ERROR_OOPS_ONLY:int = 0;
       
@@ -6434,6 +6438,38 @@ package
             "quantity":[0,0,0,0,1,1,1,1,1,1],
             "hp":[16000],
             "repairTime":[60 * 60]
+         },{
+            "id":2 * 60,
+            "group":4,
+            "subgroup":4,
+            "order":1,
+            "type":"decoration",
+            "name":"bdg_biggulp",
+            "size":70,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_biggulp_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":150,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/biggulp/",
+               "1":{
+                  "top":["top.png",new Point(-27,-36)],
+                  "shadow":["shadow.jpg",new Point(-35,16)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
          }];
          _outpostProps = [{
             "id":1,
@@ -8195,7 +8231,7 @@ package
             "tutstage":200,
             "sale":0,
             "description":"monsterbunker_desc",
-            "stats":[{"range":5 * 60},{"range":350},{"range":400}],
+            "stats":[{"range":5 * 60},{"range":350},{"range":400},{"range":450}],
             "costs":[{
                "r1":250000,
                "r2":187500,
@@ -8214,6 +8250,13 @@ package
                "r1":2000000,
                "r2":2000000,
                "r3":1000000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1],[15,1,1]]
+            },{
+               "r1":50 * 60 * 1000,
+               "r2":50 * 60 * 1000,
+               "r3":25 * 60 * 1000,
                "r4":0,
                "time":24 * 60 * 60,
                "re":[[112,1,1],[15,1,1]]
@@ -8238,9 +8281,9 @@ package
                "1":{"img":"22.png"}
             },
             "quantity":[0,2],
-            "capacity":[380,450,9 * 60],
-            "hp":[10000,24500,52000],
-            "repairTime":[2 * 60,4 * 60,8 * 60]
+            "capacity":[380,450,9 * 60,11 * 60],
+            "hp":[10000,24500,52000,130000],
+            "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60]
          },{
             "id":23,
             "group":3,
@@ -8280,6 +8323,12 @@ package
                "rate":80,
                "speed":0,
                "splash":40
+            },{
+               "range":172,
+               "damage":4 * 60,
+               "rate":80,
+               "speed":0,
+               "splash":40
             }],
             "costs":[{
                "r1":500000,
@@ -8315,6 +8364,13 @@ package
                "r3":1600000,
                "r4":0,
                "time":108 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":16000000,
+               "r2":8000000,
+               "r3":3200000,
+               "r4":0,
+               "time":428800,
                "re":[[112,1,1]]
             }],
             "can_fortify":true,
@@ -8389,8 +8445,8 @@ package
                }
             },
             "quantity":[0,2],
-            "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400],
-            "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
+            "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400,60200],
+            "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
          },{
             "id":24,
             "group":3,
@@ -8470,6 +8526,12 @@ package
                "rate":25,
                "speed":10,
                "splash":0
+            },{
+               "range":6 * 60,
+               "damage":200,
+               "rate":25,
+               "speed":10,
+               "splash":0
             }],
             "costs":[{
                "r1":187500,
@@ -8505,6 +8567,13 @@ package
                "r3":2000000,
                "r4":0,
                "time":6 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":22000000,
+               "r2":250 * 60 * 1000,
+               "r3":50 * 60 * 1000,
+               "r4":0,
+               "time":718400,
                "re":[[112,1,1]]
             }],
             "can_fortify":true,
@@ -8579,8 +8648,8 @@ package
                }
             },
             "quantity":[0,2],
-            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
-            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
+            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000,20 * 60 * 60],
+            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60,350 * 60]
          },{
             "id":26,
             "group":2,
@@ -11526,6 +11595,12 @@ package
                "rate":60,
                "speed":36,
                "splash":200
+            },{
+               "range":400,
+               "damage":350,
+               "rate":60,
+               "speed":40,
+               "splash":205
             }],
             "costs":[{
                "r1":215000,
@@ -11561,6 +11636,13 @@ package
                "r3":2000000,
                "r4":0,
                "time":6 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":27000000,
+               "r2":22000000,
+               "r3":2750000,
+               "r4":0,
+               "time":718400,
                "re":[[112,1,1]]
             }],
             "can_fortify":true,
@@ -11631,8 +11713,8 @@ package
                }
             },
             "quantity":[0,2],
-            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
-            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
+            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000,75000],
+            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60,224 * 60]
          },{
             "id":116,
             "group":2,
@@ -11722,6 +11804,12 @@ package
                "rate":160,
                "speed":20,
                "splash":0
+            },{
+               "range":375,
+               "damage":20000,
+               "rate":160,
+               "speed":20,
+               "splash":0
             }],
             "costs":[{
                "r1":1600000,
@@ -11757,6 +11845,13 @@ package
                "r3":13436928,
                "r4":0,
                "time":6 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":21796160,
+               "r2":30117392,
+               "r3":20136928,
+               "r4":0,
+               "time":718400,
                "re":[[112,1,1]]
             }],
             "can_fortify":true,
@@ -11831,8 +11926,8 @@ package
                }
             },
             "quantity":[0,1],
-            "hp":[294 * 60,34400,750 * 60,58000,75500],
-            "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000]
+            "hp":[294 * 60,34400,750 * 60,58000,75500,220 * 60],
+            "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000,9200]
          },{
             "id":119,
             "group":3,
@@ -11846,6 +11941,20 @@ package
             "description":"championchamber_desc",
             "block":true,
             "quantity":[0]
+         },{
+            "id":2 * 60,
+            "group":4,
+            "subgroup":4,
+            "order":1,
+            "type":"decoration",
+            "name":"bdg_biggulp",
+            "size":70,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_biggulp_desc",
+            "block":true,
+            "quantity":[0]
          }];
          if(BASE._isOutpost)
          {
@@ -11854,6 +11963,11 @@ package
          else
          {
             _buildingProps = _yardProps;
+         }
+         if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+         {
+            _yardProps[112].block = true;
+            _outpostProps[112].block = true;
          }
       }
       
@@ -12060,6 +12174,16 @@ package
          var b:BFOUNDATION = null;
          var tmpStored:int = 0;
          var tmpCountdown:int = 0;
+         var reinforcetimer:int = 0;
+         var _popup:MovieClip = null;
+         var _props:Object = null;
+         var tmpISO:Point = null;
+         var d:* = undefined;
+         var i:int = 0;
+         var j:int = 0;
+         var n:String = null;
+         var c:* = undefined;
+         var tmpMonster:* = undefined;
          if(!_halt && !GLOBAL._catchup)
          {
             t += 1;
@@ -12180,6 +12304,91 @@ package
                catch(e:Error)
                {
                   LOGGER.Log("err","Global.Tick I: " + e.message + " | " + e.getStackTrace());
+               }
+               try
+               {
+                  if(GetABTestHash("havearrived") <= 1)
+                  {
+                     reinforcetimer = GLOBAL.StatGet("reinforcements");
+                     if(reinforcetimer > 0)
+                     {
+                        BASE._isReinforcements = reinforcetimer;
+                        if(GLOBAL.Timestamp() > reinforcetimer)
+                        {
+                           _popup = new REINFORCEMENTS_CLIP();
+                           _props = {
+                              "tTitleX":-150,
+                              "tTitleY":-130,
+                              "tTitleW":5 * 60,
+                              "tTitleH":55,
+                              "tDescX":-250,
+                              "tDescY":85,
+                              "tDescW":495,
+                              "tDescH":55,
+                              "bActionX":-75,
+                              "bActionY":50,
+                              "bActionW":150,
+                              "bActionH":30,
+                              "bAction2X":-75,
+                              "bAction2Y":50,
+                              "bAction2W":150,
+                              "bAction2H":30,
+                              "mcFrameX":-170,
+                              "mcFrameY":-130,
+                              "mcFrameW":340,
+                              "mcFrameH":220,
+                              "tTitleText":KEYS.Get("reinforce_arrived_title"),
+                              "tDescText1":KEYS.Get("reinforce_arrived_desc"),
+                              "bActionText":KEYS.Get("reinforce_arrived_close")
+                           };
+                           _popup.tTitle.htmlText = _props.tTitleText;
+                           _popup.tDesc.htmlText = _props.tDescText1;
+                           (_popup.mcFrame as frame2).Setup();
+                           POPUPS.Push(_popup,null,null,null,null,false,"wait");
+                           BASE.BuildingDeselect();
+                           if(HOUSING._housingSpace.Get() < 3 * 60)
+                           {
+                              for(n in HOUSING._creatures)
+                              {
+                                 if(HOUSING._creatures[n].Get() > 0)
+                                 {
+                                    delete HOUSING._creatures[n];
+                                 }
+                              }
+                              for(c in CREATURES._creatures)
+                              {
+                                 tmpMonster = CREATURES._creatures[c];
+                                 tmpMonster.Clear();
+                                 MAP._BUILDINGTOPS.removeChild(tmpMonster);
+                                 --CREATURES._creatureCount;
+                                 delete CREATURES._creatures[c];
+                              }
+                              HOUSING.HousingSpace();
+                           }
+                           tmpISO = GRID.ToISO(-600,0,0);
+                           d = Point.distance(new Point(GLOBAL._bHousing.x,GLOBAL._bHousing.y),tmpISO);
+                           i = 0;
+                           while(i < 3)
+                           {
+                              HOUSING.HousingStore("C10",new Point(tmpISO.x - 200 + Math.random() * 400,tmpISO.y - 100 + Math.random() * 200),false);
+                              i++;
+                           }
+                           j = 0;
+                           while(j < 2)
+                           {
+                              HOUSING.HousingStore("C9",new Point(tmpISO.x - 200 + Math.random() * 400,tmpISO.y - 100 + Math.random() * 200),false);
+                              j++;
+                           }
+                           MAP.Focus(tmpISO.x,tmpISO.y);
+                           MAP.FocusTo(GLOBAL._bHousing.x,GLOBAL._bHousing.y,int(d / 120),0,0,false);
+                           GLOBAL.StatSet("reinforcements",0);
+                        }
+                     }
+                  }
+               }
+               catch(e:Error)
+               {
+                  LOGGER.Log("err","Global.Tick reinforcements: " + e.message + " | " + e.getStackTrace());
                }
             }
          }
@@ -13129,7 +13338,14 @@ package
          var _loc2_:* = GLOBAL.GetGameHeight();
          _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - (_SCREENINIT.height + 0)) / 2,_loc1_,_loc2_);
          _SCREENCENTER = new Point(_SCREEN.x + _SCREEN.width / 2,_SCREEN.y + _SCREEN.height / 2);
-         _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 208);
+         if(Boolean(GLOBAL._flags) && (Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate)))
+         {
+            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 0);
+         }
+         else
+         {
+            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 208);
+         }
          if(UI_BOTTOM && UI_BOTTOM._missions && !UI_BOTTOM._missions._open)
          {
             _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 30 - 0);

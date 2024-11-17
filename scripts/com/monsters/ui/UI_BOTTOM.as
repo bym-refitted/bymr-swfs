@@ -17,7 +17,7 @@ package com.monsters.ui
       public static function Setup() : *
       {
          _mc = new UI_MENU();
-         if(!_missions)
+         if(!_missions && !GLOBAL._flags.viximo)
          {
             _missions = new UI_MISSIONMENU();
          }
@@ -26,8 +26,14 @@ package com.monsters.ui
          _mc.bQuests.addEventListener(MouseEvent.CLICK,QUESTS.Show);
          _mc.bStore.addEventListener(MouseEvent.CLICK,STORE.Show(1,1));
          _mc.bMap.addEventListener(MouseEvent.CLICK,GLOBAL.ShowMap);
-         GLOBAL._layerUI.addChild(_missions);
-         GLOBAL._layerUI.addChild(_mc);
+         if(_missions)
+         {
+            GLOBAL._layerUI.addChild(_missions);
+         }
+         if(_mc)
+         {
+            GLOBAL._layerUI.addChild(_mc);
+         }
          if(BASE._isOutpost)
          {
             _mc.bKits.addEventListener(MouseEvent.CLICK,ShowStarterKits);
@@ -54,7 +60,14 @@ package com.monsters.ui
                _loc1_ += 1;
             }
          }
-         if(_loc1_ <= 0)
+         if(_loc1_ > 0)
+         {
+            if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+            {
+               _mc.bQuests.Alert = "<b>" + _loc1_ + "</b>";
+            }
+         }
+         else
          {
             _mc.bQuests.Alert = "";
          }
@@ -103,8 +116,14 @@ package com.monsters.ui
       
       public static function Show() : *
       {
-         _mc.visible = true;
-         _missions.visible = true;
+         if(_mc)
+         {
+            _mc.visible = true;
+         }
+         if(_missions)
+         {
+            _missions.visible = true;
+         }
          if(GLOBAL.flagsShouldChatDisplay())
          {
             if(GLOBAL._bymChat)
@@ -116,8 +135,11 @@ package com.monsters.ui
       
       public static function Hide() : *
       {
-         _mc.bQuests.Alert = "";
-         _mc.visible = false;
+         if(_mc)
+         {
+            _mc.bQuests.Alert = "";
+            _mc.visible = false;
+         }
          if(!GLOBAL.flagsShouldChatDisplay())
          {
             if(GLOBAL._bymChat)

@@ -6,7 +6,7 @@ package
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
-   import com.monsters.effects.particles.ParticleDamage;
+   import com.monsters.effects.particles.ParticleText;
    import flash.display.*;
    import flash.events.*;
    import flash.geom.*;
@@ -682,7 +682,7 @@ package
          UI2.Update();
       }
       
-      public static function Loot(param1:int, param2:int, param3:int, param4:int, param5:int = 10) : int
+      public static function Loot(param1:int, param2:int, param3:int, param4:int, param5:int = 10, param6:BFOUNDATION = null) : int
       {
          _loot["r" + param1].Add(param2);
          switch(param1)
@@ -699,32 +699,33 @@ package
             case 4:
                _hpLoot4 += param2;
          }
-         var _loc6_:int = param2;
+         var _loc7_:int = param2;
          if(GLOBAL._resources["r" + param1].Get() + param2 > GLOBAL._resources["r" + param1 + "max"])
          {
-            _loc6_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
-            if(_loc6_ < 0)
+            _loc7_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
+            if(_loc7_ < 0)
             {
-               _loc6_ = 0;
+               _loc7_ = 0;
             }
          }
-         GLOBAL._resources["r" + param1].Add(_loc6_);
-         GLOBAL._hpResources["r" + param1] += _loc6_;
+         GLOBAL._resources["r" + param1].Add(_loc7_);
+         GLOBAL._hpResources["r" + param1] += _loc7_;
          if(_deltaLoot["r" + param1])
          {
-            _deltaLoot["r" + param1].Add(_loc6_);
-            _hpDeltaLoot["r" + param1] += _loc6_;
+            _deltaLoot["r" + param1].Add(_loc7_);
+            _hpDeltaLoot["r" + param1] += _loc7_;
          }
          else
          {
-            _deltaLoot["r" + param1] = new SecNum(_loc6_);
-            _hpDeltaLoot["r" + param1] = _loc6_;
+            _deltaLoot["r" + param1] = new SecNum(_loc7_);
+            _hpDeltaLoot["r" + param1] = _loc7_;
          }
          _deltaLoot.dirty = true;
          _hpDeltaLoot.dirty = true;
-         if(GLOBAL._render)
+         if(GLOBAL._render && Boolean(param6))
          {
-            new ParticleLoot(param3,param4,param2,param1,param5);
+            new ParticleLoot(param6,param2,param1);
+            ParticleText.Create(new Point(param3,param4),param2,param1);
          }
          return param2;
       }
@@ -776,9 +777,18 @@ package
       
       public static function Damage(param1:Number, param2:Number, param3:int, param4:Boolean = true, param5:Boolean = false) : void
       {
+         var _loc6_:uint = ParticleText.TYPE_DAMAGE;
+         if(param5)
+         {
+            _loc6_ = ParticleText.TYPE_THORN;
+         }
+         else if(param3 < 0)
+         {
+            _loc6_ = ParticleText.TYPE_HEAL;
+         }
          if(param4)
          {
-            ParticleDamage.Create(new Point(param1,param2),param3,param5);
+            ParticleText.Create(new Point(param1,param2),param3,_loc6_);
          }
       }
       
@@ -800,9 +810,28 @@ package
          GLOBAL.Message(KEYS.Get("attack_msg_attackover"));
       }
       
+      private static function BucketClear() : void
+      {
+         var _loc1_:String = null;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         for(_loc1_ in _flingerBucket)
+         {
+            _loc2_ = int(_flingerBucket[_loc1_].Get());
+            _loc3_ = 0;
+            while(_loc3_ <= _loc2_)
+            {
+               BucketRemove(_loc1_);
+               _loc3_++;
+            }
+         }
+         BucketUpdate();
+      }
+      
       public static function End() : void
       {
          var _loc1_:* = undefined;
+         BucketClear();
          if(!_sentOver)
          {
             if(BASE._saveOver != 1)
@@ -917,7 +946,7 @@ package
          {
             if(wildMonsters)
             {
-               GLOBAL.CallJS("sendFeed",["defense-wild",KEYS.Get("ai_gooddefense_streamtitle",{"v1":tribe.name}),"",tribe.streampostpic]);
+               GLOBAL.CallJS("sendFeed",["defense-wild",KEYS.Get("ai_gooddefense_streamtitle",{"v1":tribe.name}),KEYS.Get("ai_gooddefense"),tribe.streampostpic]);
             }
             else
             {

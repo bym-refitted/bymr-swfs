@@ -35,8 +35,7 @@ package com.monsters.maproom_advanced
             mcImage.addChild(new Bitmap(param2));
          };
          this._cell = cell;
-         x = GLOBAL._SCREENCENTER.x + 75;
-         y = GLOBAL._SCREENCENTER.y - 10;
+         this.Center();
          ImageCache.GetImageWithCallBack("popups/outpost-takeover.png",ImageLoaded,true,1);
          this._costGap = 0;
          this._resourceCost = new SecNum(2000000);
@@ -113,12 +112,6 @@ package com.monsters.maproom_advanced
          this.parent.removeChild(this);
       }
       
-      public function Resize() : void
-      {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
-      }
-      
       public function TakeOverConfirm(param1:Boolean) : *
       {
          var mapIndex:int;
@@ -193,6 +186,11 @@ package com.monsters.maproom_advanced
          r4 = this._resourceCost.Get();
          PLEASEWAIT.Show(KEYS.Get("plsw_taking"));
          new URLLoaderApi().load(GLOBAL._mapURL + "takeovercell",takeoverVars,takeoverSuccessful,takeoverError);
+      }
+      
+      public function Center() : void
+      {
+         POPUPSETTINGS.AlignToCenter(this);
       }
    }
 }

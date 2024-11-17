@@ -75,7 +75,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-cat",KEYS.Get("pop_catapultbuilt_streamtitle"),"","build-catapult.png"]);
+               GLOBAL.CallJS("sendFeed",["build-cat",KEYS.Get("pop_catapultbuilt_streamtitle"),KEYS.Get("pop_catapultbuilt_streambody"),"build-catapult.png"]);
                POPUPS.Next();
             };
             this.LoadEffects();
@@ -98,7 +98,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["upgrade-cat-" + _lvl.Get(),KEYS.Get("pop_catapultupgraded" + _lvl.Get() + "_streamtitle"),"","upgrade-catapult.png"]);
+               GLOBAL.CallJS("sendFeed",["upgrade-cat-" + _lvl.Get(),KEYS.Get("pop_catapultupgraded" + _lvl.Get() + "_streamtitle"),KEYS.Get("pop_catapultupgraded" + _lvl.Get() + "_streambody"),"upgrade-catapult.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

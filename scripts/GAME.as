@@ -39,6 +39,13 @@ package
                   _loc1_._allianceURL = "http://bmstage.fb.casualcollective.com/alliance/";
                   _loc1_.fb_kongregate_api_path = "http://chat.kongregate.com/flash/API_AS3_46ebaf5ef297ce57605ca0a769f70b7d.swf";
                   break;
+               case 3:
+                  _loc1_._baseURL = "http://bmdev.vx.casualcollective.com/base/";
+                  _loc1_._apiURL = "http://bmdev.vx.casualcollective.com/api/";
+                  _loc1_._statsURL = "http://bmdev.vx.casualcollective.com/recordstats.php";
+                  _loc1_._mapURL = "http://bmdev.vx.casualcollective.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bmdev.vx.casualcollective.com/alliance/";
+                  break;
                default:
                   _loc1_._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-fb-web1.stage.kixeye.com/api/";

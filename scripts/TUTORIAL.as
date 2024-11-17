@@ -102,7 +102,7 @@ package
                   _secondWorker = false;
                }
             }
-            if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+            if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
             {
                _loc4_ = GLOBAL.GetABTestHash("tutorial");
                if(_loc4_ < 14)
@@ -142,7 +142,7 @@ package
                   _secondWorker = false;
                }
             }
-            if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+            if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
             {
                _loc4_ = GLOBAL.GetABTestHash("tutorial");
                if(_loc4_ < 14)
@@ -454,6 +454,11 @@ package
                }
                BASE.BuildingDeselect();
                MAP._canScroll = false;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_26"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectU1);
+                  break;
+               }
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_26"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectU1);
                break;
             case 27:
@@ -510,6 +515,11 @@ package
                break;
             case 38:
                MAP._canScroll = true;
+               if(Boolean(GLOBAL._flags.kongregate) || Boolean(GLOBAL._flags.viximo))
+               {
+                  Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
+                  break;
+               }
                Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
                break;
             case 39:
@@ -531,6 +541,11 @@ package
                break;
             case 42:
                BUILDINGS._buildingID = 0;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
+                  break;
+               }
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
                break;
             case 43:
@@ -597,6 +612,11 @@ package
                }
                MAP.Focus(_loc5_.x,_loc5_.y);
                MAP.FocusTo(GLOBAL._bHousing.x,GLOBAL._bHousing.y,int(_loc6_ / 120),0,0,false);
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
+                  break;
+               }
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
                break;
             case 58:
@@ -814,6 +834,11 @@ package
                break;
             case 99:
                MAP._canScroll = true;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_99"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectBunch);
+                  break;
+               }
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_99"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectBunch);
                break;
             case 100:
@@ -889,6 +914,11 @@ package
             case 131:
                QUESTS.Check("destroy_tribe1",1);
                MAP._canScroll = false;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_131"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectWM1);
+                  break;
+               }
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_131"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectWM1);
                break;
             case 132:
@@ -1087,9 +1117,24 @@ package
                Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_190"),new Point(740,70),["mc",UI2._top.mcProtected,new Point(5,20)],true,true);
                break;
             case 191:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],true,true);
+               if(GLOBAL.GetABTestHash("havearrived") <= 1)
+               {
+                  Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_reinforce"),new Point(740,70),["mc",UI2._top.mcReinforcements,new Point(5,20)],true,true);
+                  BASE._isReinforcements = GLOBAL.Timestamp() + 86400;
+                  GLOBAL.StatSet("reinforcements",BASE._isReinforcements);
+                  break;
+               }
+               Advance();
                break;
             case 192:
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],true,true);
+                  break;
+               }
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],true,true);
+               break;
+            case 193:
                UI_WORKERS.Show();
                BASE.Save();
                Advance();

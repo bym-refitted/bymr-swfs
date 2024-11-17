@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1403")]
-   public dynamic class GuardianCagePopup_HPBarBar_233 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1232")]
+   public dynamic class creatureBarAdv_Fill_505 extends MovieClip
    {
-      public function GuardianCagePopup_HPBarBar_233()
+      public function creatureBarAdv_Fill_505()
       {
          super();
          addFrameScript(0,this.frame1);

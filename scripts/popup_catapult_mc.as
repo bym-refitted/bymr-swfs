@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1244")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1269")]
    public dynamic class popup_catapult_mc extends MovieClip
    {
       public var pb2:CATAPULTITEM_view;

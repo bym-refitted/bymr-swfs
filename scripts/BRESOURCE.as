@@ -7,6 +7,14 @@ package
    
    public class BRESOURCE extends BFOUNDATION
    {
+      public static const RESOURCE_TWIGS:uint = 1;
+      
+      public static const RESOURCE_PEBBLES:uint = 2;
+      
+      public static const RESOURCE_PUTTY:uint = 3;
+      
+      public static const RESOURCE_GOO:uint = 4;
+      
       public function BRESOURCE()
       {
          super();
@@ -76,7 +84,7 @@ package
          if(_loc2_ > 0)
          {
             _stored.Add(int(-_loc2_));
-            ATTACK.Loot(_type,_loc2_,_mc.x,_mc.y);
+            ATTACK.Loot(_type,_loc2_,_mc.x,_mc.y,0,this);
          }
          if(_stored.Get() <= 0)
          {
@@ -119,22 +127,26 @@ package
             Brag = function(param1:MouseEvent):*
             {
                var _loc2_:String = "upgrade-twigsnapper.png";
+               var _loc3_:String = KEYS.Get("#r_twigs#");
                if(_type == 2)
                {
                   _loc2_ = "upgrade-pebbleshiner.png";
+                  _loc3_ = KEYS.Get("#r_pebbles#");
                }
                if(_type == 3)
                {
                   _loc2_ = "upgrade-puttysquisher.png";
+                  _loc3_ = KEYS.Get("#r_puttys#");
                }
                if(_type == 4)
                {
                   _loc2_ = "upgrade-goofactory.png";
+                  _loc3_ = KEYS.Get("#r_goos#");
                }
                GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("pop_rupgraded_streamtitle",{
                   "v1":_lvl.Get(),
                   "v2":KEYS.Get(_buildingProps.name)
-               }),"",_loc2_]);
+               }),KEYS.Get("pop_rupgraded_streambody"),_loc2_]);
                POPUPS.Next();
             };
             mc = new popup_building();
@@ -155,7 +167,6 @@ package
       
       override public function Description() : *
       {
-         var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
@@ -166,7 +177,7 @@ package
          var _loc9_:int = 0;
          var _loc10_:* = undefined;
          super.Description();
-         _loc1_ = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
+         var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
          if(BASE._isOutpost)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);

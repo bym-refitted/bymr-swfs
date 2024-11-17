@@ -356,7 +356,7 @@ package
                _loc12_ = this.mcResources["mcR" + _loc11_];
                _loc12_.gotoAndStop(_loc11_);
                _loc12_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc11_ - 1]) + "</b>";
-               _loc12_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc11_] > GLOBAL._resources["r" + _loc11_].Get() && (param1 == "upgrade" || param1 == "build") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc11_]) + "</font></b>";
+               _loc12_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc11_] > GLOBAL._resources["r" + _loc11_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc11_]) + "</font></b>";
                if(Boolean(_loc3_["r" + _loc11_]) && _loc3_["r" + _loc11_] > 0)
                {
                   _loc12_.alpha = 1;

@@ -218,7 +218,14 @@ package
       {
          GLOBAL.RefreshScreen();
          mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - mc.mcBG.width - 10;
-         mc.y = GLOBAL._SCREENHUD.y - (mc.height + 10);
+         if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+         {
+            mc.y = GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - (mc.height + 10);
+         }
+         else
+         {
+            mc.y = GLOBAL._SCREENHUD.y - (mc.height + 10);
+         }
       }
    }
 }

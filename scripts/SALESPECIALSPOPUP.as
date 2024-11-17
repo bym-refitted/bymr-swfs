@@ -52,6 +52,10 @@ package
          "bActionY":50,
          "bActionW":150,
          "bActionH":30,
+         "bAction2X":-75,
+         "bAction2Y":50,
+         "bAction2W":150,
+         "bAction2H":30,
          "mcIconsX":0,
          "mcIconsY":0,
          "mcIconsW":0,
@@ -80,6 +84,10 @@ package
          "bActionY":110,
          "bActionW":150,
          "bActionH":30,
+         "bAction2X":-75,
+         "bAction2Y":50,
+         "bAction2W":150,
+         "bAction2H":30,
          "mcIconsX":-190,
          "mcIconsY":-25,
          "mcIconsW":0,
@@ -108,6 +116,10 @@ package
          "bActionY":110,
          "bActionW":150,
          "bActionH":30,
+         "bAction2X":-75,
+         "bAction2Y":50,
+         "bAction2W":150,
+         "bAction2H":30,
          "mcIconsX":-190,
          "mcIconsY":-55,
          "mcIconsW":0,
@@ -136,6 +148,10 @@ package
          "bActionY":30,
          "bActionW":150,
          "bActionH":30,
+         "bAction2X":-75,
+         "bAction2Y":50,
+         "bAction2W":150,
+         "bAction2H":30,
          "mcIconsX":0,
          "mcIconsY":0,
          "mcIconsW":0,
@@ -164,6 +180,10 @@ package
          "bActionY":30,
          "bActionW":150,
          "bActionH":30,
+         "bAction2X":-75,
+         "bAction2Y":50,
+         "bAction2W":150,
+         "bAction2H":30,
          "mcIconsX":0,
          "mcIconsY":0,
          "mcIconsW":0,
@@ -177,6 +197,72 @@ package
          "tDescText2":" remaining<br><br>",
          "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
          "bActionText":"Buy Shiny"
+      };
+      
+      private var _sevenElevenBigGulpProps:Object = {
+         "tTitleX":-105,
+         "tTitleY":108,
+         "tTitleW":90,
+         "tTitleH":35,
+         "tDescX":-150,
+         "tDescY":-70,
+         "tDescW":5 * 60,
+         "tDescH":100,
+         "bActionX":-110,
+         "bActionY":105,
+         "bActionW":100,
+         "bActionH":45,
+         "bAction2X":25,
+         "bAction2Y":105,
+         "bAction2W":100,
+         "bAction2H":45,
+         "mcIconsX":0,
+         "mcIconsY":0,
+         "mcIconsW":0,
+         "mcIconsH":0,
+         "mcFrameX":-180,
+         "mcFrameY":-175,
+         "mcFrameW":6 * 60,
+         "mcFrameH":350,
+         "tTitleText":"Here\'s a Golden Big Gulp!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
+         "bActionText":"Golden Big Gulp",
+         "bActionText2":"Hatchery Overdrives"
+      };
+      
+      private var _sevenElevenBigGulpTutorialProps:Object = {
+         "tTitleX":-50,
+         "tTitleY":108,
+         "tTitleW":90,
+         "tTitleH":35,
+         "tDescX":-150,
+         "tDescY":-70,
+         "tDescW":5 * 60,
+         "tDescH":100,
+         "bActionX":-50,
+         "bActionY":105,
+         "bActionW":100,
+         "bActionH":45,
+         "bAction2X":25,
+         "bAction2Y":105,
+         "bAction2W":100,
+         "bAction2H":45,
+         "mcIconsX":0,
+         "mcIconsY":0,
+         "mcIconsW":0,
+         "mcIconsH":0,
+         "mcFrameX":-180,
+         "mcFrameY":-175,
+         "mcFrameW":6 * 60,
+         "mcFrameH":350,
+         "tTitleText":"Here\'s a Golden Big Gulp!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
+         "bActionText":"Golden Big Gulp",
+         "bActionText2":"Hatchery Overdrives"
       };
       
       public function SALESPECIALSPOPUP(param1:String = "text")
@@ -245,20 +331,44 @@ package
             _open = true;
             _page = param1;
             _popup = new SALESPECIALSPOPUP(param1);
-            CheckPromoTimer();
-            POPUPS.Push(_popup,BUY.logPromoShown,[param1],null,null,false,"wait");
+            if(param1 == "biggulp")
+            {
+               POPUPS.Push(_popup,BUY.logFB711PromoShown,[param1],null,null,false,"wait");
+            }
+            else
+            {
+               CheckPromoTimer();
+               POPUPS.Push(_popup,BUY.logPromoShown,[param1],null,null,false,"wait");
+            }
             TweenLite.to(_do,0.2,{
                "scaleX":1,
                "scaleY":1,
                "ease":Quad.easeOut
             });
-            if(!_saleEnd && param1 != "giftconfirm")
+            if(!_saleEnd && param1 != "giftconfirm" && param1 != "biggulp")
             {
                SALESPECIALSPOPUP.StartSale();
             }
             _popup.Switch(_page);
             _popup.addEventListener(Event.ENTER_FRAME,SALESPECIALSPOPUP.Tick);
-            _popup.bAction.addEventListener(MouseEvent.CLICK,SALESPECIALSPOPUP.OnActionClick);
+            if(_page == "biggulp")
+            {
+               _popup.gotoAndStop("redeem");
+               _popup.bAction3.buttonMode = true;
+               _popup.bAction3.useHandCursor = true;
+               _popup.bAction3.mouseChildren = false;
+               _popup.bAction3.addEventListener(MouseEvent.CLICK,SALESPECIALSPOPUP.OnActionClick);
+               _popup.bAction4.buttonMode = true;
+               _popup.bAction4.useHandCursor = true;
+               _popup.bAction4.mouseChildren = false;
+               _popup.bAction4.addEventListener(MouseEvent.CLICK,SALESPECIALSPOPUP.OnActionClick);
+            }
+            else
+            {
+               _popup.gotoAndStop(1);
+               _popup.bAction.addEventListener(MouseEvent.CLICK,SALESPECIALSPOPUP.OnActionClick);
+               _popup.bAction2.addEventListener(MouseEvent.CLICK,SALESPECIALSPOPUP.OnActionClick);
+            }
          }
       }
       
@@ -319,6 +429,35 @@ package
             POPUPS.Next();
             STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
          }
+         else if(_page == "biggulp")
+         {
+            if(param1.currentTarget == _popup.bAction4)
+            {
+               if(TUTORIAL._stage < 200)
+               {
+                  POPUPS.Next();
+               }
+               else
+               {
+                  POPUPS.Next();
+                  STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+               }
+            }
+            else if(param1.currentTarget == _popup.bAction3)
+            {
+               if(TUTORIAL._stage < 200)
+               {
+                  POPUPS.Next();
+               }
+               else
+               {
+                  BUILDINGS._buildingID = 2 * 60;
+                  BUILDINGS.Show();
+                  BUILDINGS._mc.SwitchB(4,4,0);
+                  POPUPS.Next();
+               }
+            }
+         }
          else
          {
             BUY.MidGameOffers(_page);
@@ -332,7 +471,22 @@ package
             SOUNDS.Play("close");
             _open = false;
             _popup.removeEventListener(Event.ENTER_FRAME,SALESPECIALSPOPUP.Tick);
-            _popup.bAction.removeEventListener(MouseEvent.CLICK,OnActionClick);
+            if(_popup.bAction)
+            {
+               _popup.bAction.removeEventListener(MouseEvent.CLICK,OnActionClick);
+            }
+            if(_popup.bAction2)
+            {
+               _popup.bAction2.removeEventListener(MouseEvent.CLICK,OnActionClick);
+            }
+            if(_popup.bAction3)
+            {
+               _popup.bAction3.removeEventListener(MouseEvent.CLICK,OnActionClick);
+            }
+            if(_popup.bAction4)
+            {
+               _popup.bAction4.removeEventListener(MouseEvent.CLICK,OnActionClick);
+            }
             POPUPS.Next();
          }
       }
@@ -344,6 +498,7 @@ package
          var _loc4_:MovieClip = null;
          var _loc5_:int = 0;
          var _loc6_:store_icon_CLIP = null;
+         this.gotoAndStop(1);
          switch(param1)
          {
             case "text":
@@ -360,26 +515,95 @@ package
                break;
             case "shinybonus":
                _props = this._shinyBonusProps;
+               break;
+            case "biggulp":
+               this.gotoAndStop("redeem");
+               if(TUTORIAL._stage < 200)
+               {
+                  _props = this._sevenElevenBigGulpTutorialProps;
+                  break;
+               }
+               _props = this._sevenElevenBigGulpProps;
+               break;
          }
-         this.tTitle.x = _props.tTitleX;
-         this.tTitle.y = _props.tTitleY;
-         this.tTitle.width = _props.tTitleW;
-         this.tTitle.height = _props.tTitleH;
-         this.tTitle.htmlText = _props.tTitleText;
-         this.tDesc.x = _props.tDescX;
-         this.tDesc.y = _props.tDescY;
-         this.tDesc.width = _props.tDescW;
-         this.tDesc.height = _props.tDescH;
-         this.bAction.x = _props.bActionX;
-         this.bAction.y = _props.bActionY;
-         this.bAction.width = _props.bActionW;
-         this.bAction.height = _props.bActionH;
-         this.bAction.Setup(_props.bActionText);
+         if(param1 == "biggulp")
+         {
+            this.gotoAndStop("redeem");
+            if(this.bAction)
+            {
+               this.bAction.visible = false;
+            }
+            if(this.bAction2)
+            {
+               this.bAction2.visible = false;
+            }
+            this.bAction3.x = _props.bActionX;
+            this.bAction3.y = _props.bActionY;
+            this.bAction3.width = _props.bActionW;
+            this.bAction3.height = _props.bActionH;
+            this.bAction3.txt.htmlText = _props.bActionText;
+            this.bAction3.visible = true;
+            this.bAction4.x = _props.bAction2X;
+            this.bAction4.y = _props.bAction2Y;
+            this.bAction4.width = _props.bAction2W;
+            this.bAction4.height = _props.bAction2H;
+            this.bAction4.txt.htmlText = _props.bActionText2;
+            if(TUTORIAL._stage < 200)
+            {
+               if(this.bAction3)
+               {
+                  this.bAction3.visible = true;
+                  this.bAction3.txt.htmlText = "Continue<br>Tutorial";
+               }
+               if(this.bAction4)
+               {
+                  this.bAction4.visible = false;
+               }
+            }
+            else
+            {
+               if(this.bAction3)
+               {
+                  this.bAction3.visible = true;
+               }
+               if(this.bAction4)
+               {
+                  this.bAction4.visible = true;
+               }
+            }
+         }
+         else
+         {
+            this.tTitle.x = _props.tTitleX;
+            this.tTitle.y = _props.tTitleY;
+            this.tTitle.width = _props.tTitleW;
+            this.tTitle.height = _props.tTitleH;
+            this.tTitle.htmlText = _props.tTitleText;
+            this.tDesc.x = _props.tDescX;
+            this.tDesc.y = _props.tDescY;
+            this.tDesc.width = _props.tDescW;
+            this.tDesc.height = _props.tDescH;
+            this.tDesc.htmlText = _props.tTitleText;
+            this.bAction.x = _props.bActionX;
+            this.bAction.y = _props.bActionY;
+            this.bAction.width = _props.bActionW;
+            this.bAction.height = _props.bActionH;
+            this.bAction.Setup(_props.bActionText);
+            this.bAction.visible = true;
+            this.bAction2.x = _props.bAction2X;
+            this.bAction2.y = _props.bAction2Y;
+            this.bAction2.width = _props.bAction2W;
+            this.bAction2.height = _props.bAction2H;
+            this.bAction2.Setup(_props.bActionText2);
+         }
+         if(_page != "biggulp")
+         {
+            this.bAction2.visible = false;
+         }
          this.mcFrame.x = _props.mcFrameX;
          this.mcFrame.y = _props.mcFrameY;
          this.mcFrame.width = _props.mcFrameW;
          this.mcFrame.height = _props.mcFrameH;
-         (this.mcFrame as frame2).Setup();
          if(_page == "gift" || _page == "giftconfirm")
          {
             if(Boolean(_iconsDO) && Boolean(_iconsDO.parent))
@@ -409,20 +633,24 @@ package
       
       public function Update(param1:String = "text") : void
       {
+         var _loc2_:String = null;
          var _loc3_:String = null;
          var _loc4_:Number = NaN;
-         var _loc2_:String = "";
-         _loc4_ = _saleEnd - GLOBAL.Timestamp();
-         _loc3_ = GLOBAL.ToTime(_loc4_);
-         _loc2_ += _props.tDescText1;
-         if(_page != "giftconfirm")
+         if(_page != "biggulp")
          {
-            _loc2_ += "<b>" + _loc3_ + "</b>";
+            _loc2_ = "";
+            _loc4_ = _saleEnd - GLOBAL.Timestamp();
+            _loc3_ = GLOBAL.ToTime(_loc4_);
+            _loc2_ += _props.tDescText1;
+            if(_page != "giftconfirm")
+            {
+               _loc2_ += "<b>" + _loc3_ + "</b>";
+            }
+            _loc2_ += _props.tDescText2;
+            _loc2_ += _props.tDescText3;
+            this.tDesc.htmlText = _loc2_;
+            this.tDesc.autoSize = TextFieldAutoSize.CENTER;
          }
-         _loc2_ += _props.tDescText2;
-         _loc2_ += _props.tDescText3;
-         this.tDesc.htmlText = _loc2_;
-         this.tDesc.autoSize = TextFieldAutoSize.CENTER;
       }
       
       public function Hide(param1:MouseEvent = null) : *

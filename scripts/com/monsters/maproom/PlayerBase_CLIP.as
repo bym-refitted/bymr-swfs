@@ -3,7 +3,7 @@ package com.monsters.maproom
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2040")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2063")]
    public dynamic class PlayerBase_CLIP extends MovieClip
    {
       public var photoFrame_mc:MovieClip;

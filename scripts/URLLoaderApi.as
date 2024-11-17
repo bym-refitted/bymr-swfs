@@ -118,13 +118,18 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            if(GLOBAL._localMode > 0)
+            if(GLOBAL._localMode == 3)
             {
-               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"4OUhOsA-EbJ8t7TF0UH-hIY-SsWK1vyPvrySjrF_uBE.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTcyNDM2MDAsImlzc3VlZF9hdCI6MTMxNzIzNjg1NCwib2F1dGhfdG9rZW4iOiIyMjM1MzcyODEwMjk4OTV8Mi5BUUNNWnpTUkNRdWI1WUNvLjM2MDAuMTMxNzI0MzYwMC4xLTExMjI4MjAxNTN8ZTZtN2o1eHpXb1Zqd3poZUJBNzgwOXZUcUkwIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMTIyODIwMTUzIn0\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"223537281029895\",\"tpid\":false}");
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"v_publisher\":\"vixtest-casualcollective\",\"v_country\":\"US\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"kevin deng\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"395-kevin-deng\",\"v_session_key\":\"dd1120854697b097e005522fd10ec09b-1319063670\",\"v_expires\":\"1319063670\",\"PHPSESSID\":\"174610b6c9aa3d427bd88386caedb31e\",\"app_id\":123,\"tpid\":false}");
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"v_publisher\":\"vixtest-casualcollective\",\"v_country\":\"US\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"Will McBride\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"392-will-mcbride\",\"v_session_key\":\"93c8f1d06740816fcc417233a5d65264-1319060434\",\"v_expires\":\"1319060434\",\"PHPSESSID\":\"b352748332add54f4a34f59874d354bf\",\"app_id\":123,\"tpid\":false}");
+            }
+            else if(GLOBAL._localMode == 1)
+            {
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"JZg0pcCHPnc_YUyaRxFTGUBQvndXbzHIdFoOCK5mFio.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjAxMDkyMDAsImlzc3VlZF9hdCI6MTMyMDEwNDY1OCwib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUNDWkJpWUVGZWpPTEhTM3ZqcldYYjczdG1LcWNpYWROaDNtQVN1ZlF4c0loZ240a3NkSHJRS3BIaGh5bE9HbHg2NkhIR0huS2RwaFZESEl0RmY1c1BWUndKNWRuYW1xQ3paQjQ1IiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMDAwMDIyNjk5MTM0NjMifQ\",\"access_token\":\"AAADLTlQ61wcBACCZBiYEFejOLHS3vjrWXb73tmKqciadNh3mASufQxsIhgn4ksdHrQKpHhhylOGlx66HHGHnKdphVDHItFf5sPVRwJ5dnamqCzZB45\",\"PHPSESSID\":\"213b7e3472769b2a6c92317228ef61bf\",\"app_id\":\"223537281029895\",\"tpid\":false}");
             }
             else
             {
-               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"PYag8sMNkcUZkNrYQV3CuuUFPQfI6KQNsf-w1NW2QbA.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTc0MzQ0MDAsImlzc3VlZF9hdCI6MTMxNzQyODIxMiwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUNZTElNUkpveVl2T0ROSU5UWUFZQ2JEV205ckJWam1aQmhGTG94djBBMUVNaElYbmhrQWRJQm9wUWZLeW1aQ3A5WkNsYWdhc3BUSXJPdXdaQWhaQUdVdVpDVFRaQ1pDcW10WkJrR25CZ2pkUSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTEyMjgyMDE1MyJ9\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"495789755606\",\"tpid\":false}");
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"GyOsEwaSrKz-UWLr0fDUafuD7IMVVp5P9uOM2RK68h8.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTcwNzA4MDAsImlzc3VlZF9hdCI6MTMxNzA2NDQyOCwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUhWT0ZTeHdzWkNtbzh1a0JwRnl1ZDVsZmxmM096VUNBbjNHUHpSckZDWkNaQ204dTU2RVAyR1pDVU4wRVQzbVY3OTJBY0tuWkF3anlUclRyNm01alZXeUduRE5KMXhlNHh5ZXlTeUVoIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMDAwMDIyNjk5MTM0NjMifQ\",\"PHPSESSID\":\"213b7e3472769b2a6c92317228ef61bf\",\"app_id\":\"495789755606\",\"tpid\":false}");
             }
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
@@ -135,7 +140,7 @@ package
          }
          for(_loc2_ in _loc1_)
          {
-            if(_loc2_.substr(0,3) != "fb_" && _loc2_ != "fbid" && _loc2_ != "session" && _loc2_ != "signed_request")
+            if(_loc2_.substr(0,3) != "fb_" && _loc2_ != "fbid" && _loc2_ != "session" && _loc2_ != "signed_request" && _loc2_.substr(0,2) != "v_")
             {
                delete _loc1_[_loc2_];
             }

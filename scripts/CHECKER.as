@@ -21,40 +21,40 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "849247ffc3d39b2af3796e45723fb263")
+            if(GLOBAL.Check() != "8f3d1b49db904b1dd9e02485cfe683c9")
             {
-               if(GLOBAL.Check() == "a0c2c3ab8a06277b5ceab9234c31a8b8")
+               if(GLOBAL.Check() == "d52863a3eba3926cb9eb9582df91b144")
                {
-                  LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch" + GLOBAL.Check());
+                  LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch " + GLOBAL.Check());
                }
                else
                {
-                  LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
+                  LOGGER.Log("err","CHECKER.buildingprops YARD " + GLOBAL.Check());
                   GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
                }
             }
          }
-         else if(GLOBAL.Check() != "a0c2c3ab8a06277b5ceab9234c31a8b8")
+         else if(GLOBAL.Check() != "d52863a3eba3926cb9eb9582df91b144")
          {
-            if(GLOBAL.Check() == "849247ffc3d39b2af3796e45723fb263")
+            if(GLOBAL.Check() == "8f3d1b49db904b1dd9e02485cfe683c9")
             {
-               LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch" + GLOBAL.Check());
+               LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch " + GLOBAL.Check());
             }
             else
             {
-               LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
+               LOGGER.Log("err","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
                GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
             }
          }
-         if(!GLOBAL._flags.kongregate)
+         if(!GLOBAL._flags.kongregate && !GLOBAL._flags.viximo)
          {
-            if(QUESTS.CheckB() != "065b9a8dece00efdc321a38c2bc27548")
+            if(QUESTS.CheckB() != "c0cf095e090535eb44828f8b28687400")
             {
                LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
                GLOBAL.ErrorMessage("CHECKER.Quests");
             }
          }
-         else if(QUESTS.CheckB() != "16b36df879a2b30f96c83ce7bd7ecfcd")
+         else if(QUESTS.CheckB() != "828e0e95c8b19c4586d0a820ea2bc162")
          {
             LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
             GLOBAL.ErrorMessage("CHECKER.Quests");
@@ -163,7 +163,7 @@ package
             }
             GLOBAL.ErrorMessage("CHECKER global3");
          }
-         if(GLOBAL._resources.r4.Get() != GLOBAL._hpResources.r4)
+         if(GLOBAL._resources.r4.Get() != GLOBAL._hpResources.r4 && GLOBAL._resources.r4.Get() && Boolean(GLOBAL._hpResources.r4))
          {
             if(GLOBAL._hpResources)
             {

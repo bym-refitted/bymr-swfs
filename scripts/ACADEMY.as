@@ -1,7 +1,6 @@
 package
 {
    import com.cc.utils.SecNum;
-   import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
    public class ACADEMY
@@ -12,7 +11,7 @@ package
       
       public static var _upgrades:Object = {};
       
-      public static var _mc:MovieClip = null;
+      public static var _mc:ACADEMYPOPUP = null;
       
       public static var _open:Boolean = false;
       

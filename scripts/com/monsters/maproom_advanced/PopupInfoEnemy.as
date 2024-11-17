@@ -52,8 +52,7 @@ package com.monsters.maproom_advanced
       public function PopupInfoEnemy()
       {
          super();
-         x = 455;
-         y = 260;
+         this.Center();
          this.bAttack.SetupKey("map_attack_btn");
          this.bAttack.Highlight = true;
          this.bAttack.Enabled = true;
@@ -161,6 +160,7 @@ package com.monsters.maproom_advanced
          }
          GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc4_);
          MapRoom._flingerInRange = param2;
+         this.bAlliance.visible = true;
          for each(_loc5_ in GLOBAL._attackerCellsInRange)
          {
             _loc10_ = _loc5_["cell"];
@@ -204,6 +204,10 @@ package com.monsters.maproom_advanced
             else
             {
                this.bAlliance.Enabled = false;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  this.bAlliance.visible = false;
+               }
             }
             if(!this._cell._destroyed)
             {
@@ -252,6 +256,10 @@ package com.monsters.maproom_advanced
             else
             {
                this.bAlliance.Enabled = false;
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  this.bAlliance.visible = false;
+               }
             }
             tName.htmlText = "<b>" + this._cell._name + "\'s Yard</b>";
             if(this._cell._alliance)
@@ -283,6 +291,7 @@ package com.monsters.maproom_advanced
             this.bSendMessage.Enabled = false;
             this.bTruce.Enabled = false;
             this.bAlliance.Enabled = false;
+            this.bAlliance.visible = false;
             if(!this._cell._destroyed)
             {
                tName.htmlText = "<b>" + this._cell._name + " Tribe</b>";
@@ -891,6 +900,11 @@ package com.monsters.maproom_advanced
             _loc1_ += "<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h);
             _loc1_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
          }
+      }
+      
+      public function Center() : void
+      {
+         POPUPSETTINGS.AlignToCenter(this);
       }
    }
 }

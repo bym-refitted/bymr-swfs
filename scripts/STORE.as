@@ -1643,7 +1643,7 @@ package
             {
                _loc21_.t = KEYS.Get("str_code_bew_title2");
                _loc21_.d = KEYS.Get("str_code_bew_body2");
-               if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+               if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
                {
                   _loc36_ = GLOBAL.GetABTestHash("tutorial");
                   if(_loc36_ < 14)
@@ -2276,6 +2276,13 @@ package
          {
             BASE.Fund(int(param1.substr(2,1)),int(_loc6_));
             BASE.PointsAdd(Math.ceil(_loc6_ * 0.3));
+         }
+         if(param1.substr(0,3) == "HOD")
+         {
+            if(param2)
+            {
+               LOGGER.Stat([76,"overdriveused"]);
+            }
          }
          if(param1.substr(0,2) == "SP")
          {

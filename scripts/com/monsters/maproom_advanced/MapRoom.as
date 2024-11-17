@@ -247,13 +247,25 @@ package com.monsters.maproom_advanced
             }
             if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
             {
-               GLOBAL._bymChat.show();
-               UI_BOTTOM._missions.visible = true;
+               if(GLOBAL._bymChat)
+               {
+                  GLOBAL._bymChat.show();
+               }
+               if(UI_BOTTOM._missions)
+               {
+                  UI_BOTTOM._missions.visible = true;
+               }
             }
             else
             {
-               GLOBAL._bymChat.hide();
-               UI_BOTTOM._missions.visible = false;
+               if(GLOBAL._bymChat)
+               {
+                  GLOBAL._bymChat.hide();
+               }
+               if(UI_BOTTOM._missions)
+               {
+                  UI_BOTTOM._missions.visible = false;
+               }
             }
          }
       }

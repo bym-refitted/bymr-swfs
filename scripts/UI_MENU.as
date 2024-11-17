@@ -116,7 +116,7 @@ package
          if(this._loaded)
          {
             x = int(GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - (this.wood.width + 10));
-            y = int(GLOBAL._SCREENHUD.y - this.wood.height);
+            y = int(GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - this.wood.height - 10);
             if(Boolean(UI_BOTTOM._missions) && Boolean(UI_BOTTOM._missions.frame))
             {
                y = int(UI_BOTTOM._missions.y + UI_BOTTOM._missions.frame.y - this.wood.height);

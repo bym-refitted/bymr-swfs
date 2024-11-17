@@ -276,6 +276,7 @@ package
                SOUNDS.Play("error1");
             }
             this.Update();
+            GLOBAL._bHatcheryCC.Tick();
          }
       }
       

@@ -19,6 +19,8 @@ package
       
       public static var NORMAL:Boolean = false;
       
+      public static const ALLIANCE_TYPE_DEFENSE:String = "DEFENSE";
+      
       public static const ALLIANCE_ARMAMENT:String = "ap_armament";
       
       public static const ALLIANCE_CONQUEST:String = "ap_conquest";

@@ -274,7 +274,7 @@ package
                GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("pop_tupgraded_streamtitle",{
                   "v1":_lvl.Get(),
                   "v2":KEYS.Get(_buildingProps.name)
-               }),"",_loc2_]);
+               }),KEYS.Get("pop_tupgraded_streambody"),_loc2_]);
                POPUPS.Next();
             };
             mc = new popup_building();

@@ -49,51 +49,25 @@ package
             {
                _maxWorkers = 1;
             }
-            if(!GLOBAL.flagsShouldChatDisplay())
+            _loc1_ = 0;
+            while(_loc1_ < _maxWorkers)
             {
-               _loc1_ = 0;
-               while(_loc1_ < _maxWorkers)
-               {
-                  _loc2_ = new icon_worker();
-                  _loc2_.x = 10 + _loc1_ * 45;
-                  _loc2_.mouseChildren = false;
-                  _loc2_.addEventListener(MouseEvent.CLICK,MouseClicked(_loc1_));
-                  _loc2_.addEventListener(MouseEvent.MOUSE_OVER,MouseOver(_loc1_));
-                  _loc2_.addEventListener(MouseEvent.MOUSE_OUT,MouseOut);
-                  _loc2_.buttonMode = true;
-                  _mc.addChild(_loc2_);
-                  _workers.push({
-                     "purchased":false,
-                     "active":false,
-                     "id":0,
-                     "message":"",
-                     "mc":_loc2_
-                  });
-                  _loc1_++;
-               }
-            }
-            else
-            {
-               _loc1_ = 0;
-               while(_loc1_ < _maxWorkers)
-               {
-                  _loc2_ = new icon_worker();
-                  _loc2_.y = 20 + _loc1_ * _workerMCOffset;
-                  _loc2_.mouseChildren = false;
-                  _loc2_.addEventListener(MouseEvent.CLICK,MouseClicked(_loc1_));
-                  _loc2_.addEventListener(MouseEvent.MOUSE_OVER,MouseOver(_loc1_));
-                  _loc2_.addEventListener(MouseEvent.MOUSE_OUT,MouseOut);
-                  _loc2_.buttonMode = true;
-                  _mc.addChild(_loc2_);
-                  _workers.push({
-                     "purchased":false,
-                     "active":false,
-                     "id":0,
-                     "message":"",
-                     "mc":_loc2_
-                  });
-                  _loc1_++;
-               }
+               _loc2_ = new icon_worker();
+               _loc2_.y = 20 + _loc1_ * _workerMCOffset;
+               _loc2_.mouseChildren = false;
+               _loc2_.addEventListener(MouseEvent.CLICK,MouseClicked(_loc1_));
+               _loc2_.addEventListener(MouseEvent.MOUSE_OVER,MouseOver(_loc1_));
+               _loc2_.addEventListener(MouseEvent.MOUSE_OUT,MouseOut);
+               _loc2_.buttonMode = true;
+               _mc.addChild(_loc2_);
+               _workers.push({
+                  "purchased":false,
+                  "active":false,
+                  "id":0,
+                  "message":"",
+                  "mc":_loc2_
+               });
+               _loc1_++;
             }
             _do = GLOBAL._layerUI.addChild(_mc);
          }
@@ -126,14 +100,7 @@ package
             {
                _loc3_ = KEYS.Get("ui_worker_hire");
             }
-            if(!GLOBAL.flagsShouldChatDisplay())
-            {
-               PopupShow(_mc.x + 30 + i * _workerMCOffset,_mc.y,_loc3_,i);
-            }
-            else
-            {
-               PopupShow(_mc.x - 5,_mc.y + i * _workerMCOffset + _workerMCOffset * 0.5,_loc3_,i);
-            }
+            PopupShow(_mc.x - 5,_mc.y + _workerMCOffset / 2 + i * _workerMCOffset + _workerMCOffset * 0.5,_loc3_,i);
          };
       }
       
@@ -199,6 +166,7 @@ package
          {
             Render();
          }
+         Resize();
       }
       
       public static function Resize() : *
@@ -213,14 +181,22 @@ package
          }
          else if(_mc)
          {
-            _mc.x = GLOBAL._SCREEN.right - _workerMCOffset;
+            _mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - _workerMCOffset;
             if(BASE._isProtected - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
             {
                _mc.y = GLOBAL._SCREEN.top + 70;
+               if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
+               {
+                  _mc.y = GLOBAL._SCREEN.top + 100;
+               }
             }
             else
             {
                _mc.y = GLOBAL._SCREEN.top + 50;
+               if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
+               {
+                  _mc.y = GLOBAL._SCREEN.top + 80;
+               }
             }
          }
       }
@@ -263,22 +239,11 @@ package
       public static function PopupShow(param1:int, param2:int, param3:String, param4:int) : *
       {
          PopupHide();
-         if(!GLOBAL.flagsShouldChatDisplay())
-         {
-            _popupID = param4;
-            _popupmc2 = new bubblepopup();
-            _popupmc2.Setup(param1,param2,param3);
-            _popupmc2.Nudge("up");
-            _popupdo = GLOBAL._layerUI.addChild(_popupmc2);
-         }
-         else
-         {
-            _popupID = param4;
-            _popupmc = new bubblepopupRight();
-            _popupmc.Setup(param1,param2,param3);
-            _popupmc.Nudge("left");
-            _popupdo = GLOBAL._layerUI.addChild(_popupmc);
-         }
+         _popupID = param4;
+         _popupmc = new bubblepopupRight();
+         _popupmc.Setup(param1,param2,param3);
+         _popupmc.Nudge("left");
+         _popupdo = GLOBAL._layerUI.addChild(_popupmc);
       }
       
       public static function PopupUpdate(param1:String) : *

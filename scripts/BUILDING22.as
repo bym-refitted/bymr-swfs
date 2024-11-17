@@ -432,7 +432,6 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         GLOBAL._bBaiter = this;
          if(GLOBAL._mode == "build" && !BASE._isOutpost)
          {
             Brag = function(param1:MouseEvent):*

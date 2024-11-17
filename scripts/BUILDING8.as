@@ -77,7 +77,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-ml",KEYS.Get("pop_clocbuilt_streamtitle"),"","build-monsterlocker.png"]);
+               GLOBAL.CallJS("sendFeed",["build-ml",KEYS.Get("pop_clocbuilt_streamtitle"),KEYS.Get("pop_clocbuilt_streambody"),"build-monsterlocker.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();
@@ -99,7 +99,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["upgrade-ml-",KEYS.Get("cloc_upgrade_streamtitle",{"v1":_lvl.Get()}),"","upgrade-monsterlocker.png"]);
+               GLOBAL.CallJS("sendFeed",["upgrade-ml-",KEYS.Get("cloc_upgrade_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("cloc_upgrade_streambody"),"upgrade-monsterlocker.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

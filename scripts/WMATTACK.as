@@ -439,9 +439,7 @@ package
          onImage = function(param1:String, param2:BitmapData):void
          {
             var _loc3_:Bitmap = new Bitmap(param2);
-            asp.addChild(_loc3_);
-            _loc3_.x = -219;
-            _loc3_.y = -40;
+            asp.mcImage.addChild(_loc3_);
          };
          onMoreDown = function(param1:MouseEvent):void
          {

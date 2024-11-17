@@ -118,10 +118,7 @@ package
          try
          {
             UI_BOTTOM.Setup();
-            if(GLOBAL._flags.showProgressBar == 0)
-            {
-               UI_WORKERS.Setup();
-            }
+            UI_WORKERS.Setup();
          }
          catch(e:Error)
          {
@@ -396,6 +393,10 @@ package
                   {
                      _top.mcProtected.visible = false;
                   }
+                  if(_top.mcReinforcements.visible)
+                  {
+                     _top.mcReinforcements.visible = false;
+                  }
                   if(_top.mcSave.visible)
                   {
                      _top.mcSave.visible = false;
@@ -434,6 +435,25 @@ package
                   {
                      _top.mcProtected.visible = false;
                   }
+                  if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
+                  {
+                     if(!_top.mcReinforcements.visible)
+                     {
+                        _top.mcReinforcements.visible = true;
+                     }
+                     if(BASE._isReinforcements - GLOBAL.Timestamp() > 86400)
+                     {
+                        _top.mcReinforcements.tCountdown.htmlText = GLOBAL.ToTime(BASE._isReinforcements - GLOBAL.Timestamp(),true,false);
+                     }
+                     else
+                     {
+                        _top.mcReinforcements.tCountdown.htmlText = GLOBAL.ToTime(BASE._isReinforcements - GLOBAL.Timestamp(),true);
+                     }
+                  }
+                  else if(_top.mcReinforcements.visible)
+                  {
+                     _top.mcReinforcements.visible = false;
+                  }
                   if(!_top.mcSave.visible)
                   {
                      _top.mcSave.visible = true;
@@ -464,6 +484,7 @@ package
                   _top.mcSave.visible = false;
                }
                _top.mcProtected.y = 35;
+               _top.mcReinforcements.y = 65;
                _top.mcSave.y = 3;
                _top.mcZoom.y = 3;
                _top.mcFullscreen.y = 3;
@@ -518,6 +539,7 @@ package
             _top.x = _loc4_.x + 10;
             _top.y = _loc4_.y + 4;
             _top.mcProtected.x = _loc4_.width - 125;
+            _top.mcReinforcements.x = _loc4_.width - 125;
             _top.mcSave.x = _loc4_.width - 160;
             _top.mcZoom.x = _loc4_.width - 130;
             _top.mcFullscreen.x = _loc4_.width - 100;

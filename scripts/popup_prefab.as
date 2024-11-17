@@ -48,6 +48,7 @@ package
             GLOBAL.BlockerAdd(GLOBAL._layerTop);
             GLOBAL._layerTop.addChild(_loc2_);
             _loc2_.Setup(n);
+            _loc2_.Center();
          };
       }
       

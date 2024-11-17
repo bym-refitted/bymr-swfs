@@ -196,8 +196,9 @@ package com.monsters.maproom_advanced
          if(this._alliance)
          {
             mc.mcPlayer.mcFlag.visible = true;
+            ALLIANCES.SetCellAlliance(this,true);
          }
-         else if(Boolean(this._allianceID) && this._allianceID != 0)
+         else if(Boolean(this._allianceID) && this._allianceID > 0)
          {
             ALLIANCES.SetCellAlliance(this,true);
             mc.mcPlayer.mcFlag.visible = false;
@@ -636,7 +637,7 @@ package com.monsters.maproom_advanced
             }
             return true;
          }
-         if(Boolean(this._alliance) && !this._alliance.relationship)
+         if(this._alliance)
          {
             this._alliance.Relations(ALLIANCES._allianceID);
          }
@@ -909,6 +910,8 @@ package com.monsters.maproom_advanced
          mc.mcHit.removeEventListener(MouseEvent.MOUSE_OVER,this.Over);
          mc.mcHit.removeEventListener(MouseEvent.MOUSE_OUT,this.Out);
          mc.mcHit.removeEventListener(MouseEvent.MOUSE_UP,this.Click);
+         this._allianceID = 0;
+         this._alliance = null;
       }
       
       private function SecureMonsterData() : *

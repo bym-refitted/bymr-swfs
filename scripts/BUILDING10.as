@@ -56,7 +56,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-yardplanner",KEYS.Get("pop_planner_streamtitle"),"","build-yardplanner.png"]);
+               GLOBAL.CallJS("sendFeed",["build-yardplanner",KEYS.Get("pop_planner_streamtitle"),KEYS.Get("pop_planner_body"),"build-yardplanner.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

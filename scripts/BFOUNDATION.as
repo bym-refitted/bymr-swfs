@@ -1029,8 +1029,10 @@ package
       
       public function Place(param1:MouseEvent = null) : *
       {
+         var BragBiggulp:Function;
          var tmpBuildTime:int = 0;
          var fromStorage:Boolean = false;
+         var mc:MovieClip = null;
          var e:MouseEvent = param1;
          try
          {
@@ -1107,6 +1109,25 @@ package
                   else
                   {
                      this.Constructed();
+                     if(this._type == 2 * 60)
+                     {
+                        LOGGER.Stat([75,"placedgoldenbiggulp"]);
+                     }
+                     if(GLOBAL._mode == "build" && !BASE._isOutpost && this._type == 2 * 60)
+                     {
+                        BragBiggulp = function():*
+                        {
+                           GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
+                           POPUPS.Next();
+                        };
+                        mc = new popup_biggulp();
+                        mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
+                        mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
+                        mc.bPost.SetupKey("btn_brag");
+                        mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
+                        mc.bPost.Highlight = true;
+                        POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                     }
                   }
                   if(BASE._pendingPurchase.length == 0)
                   {
@@ -2431,6 +2452,7 @@ package
          var _loc2_:Point = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
+         var _loc5_:int = 0;
          this._type = param1.t;
          this._id = param1.id;
          _loc2_ = GRID.ToISO(param1.X,param1.Y,0);
@@ -2536,7 +2558,9 @@ package
          }
          else
          {
-            this._hpMax.Set(this._buildingProps.hp[this._lvl.Get() - 1]);
+            _loc4_ = this._lvl.Get();
+            _loc5_ = int(this._buildingProps.hp[_loc4_ - 1]);
+            this._hpMax.Set(_loc5_);
          }
          if(param1.hp == null)
          {

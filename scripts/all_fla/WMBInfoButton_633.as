@@ -3,12 +3,12 @@ package all_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2119")]
-   public dynamic class icon_counter_568 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1047")]
+   public dynamic class WMBInfoButton_633 extends MovieClip
    {
-      public var t:TextField;
+      public var tA:TextField;
       
-      public function icon_counter_568()
+      public function WMBInfoButton_633()
       {
          super();
          addFrameScript(0,this.frame1);

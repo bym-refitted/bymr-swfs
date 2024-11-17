@@ -1088,7 +1088,7 @@ package
                   {
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
                      FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
+                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                      this._targetCenter = this._targetCreep._tmpPoint;
                      this._targetPosition = this._targetCreep._tmpPoint;
                   }
@@ -1098,7 +1098,7 @@ package
                      this._targetPosition = this._targetBuilding._position;
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
                      FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
+                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                   }
                   else
                   {
@@ -1225,7 +1225,7 @@ package
                {
                   _loc5_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetCreep._tmpPoint,0.8);
                   FIREBALLS.Spawn2(_loc5_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get(),0);
-                  FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
+                  FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                }
                else
                {
@@ -1637,7 +1637,7 @@ package
                   this._attacking = true;
                   _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
                   FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
-                  FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
+                  FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                   SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   this._targetCenter = this._targetCreep._tmpPoint;
                   this._targetPosition = this._targetCreep._tmpPoint;
@@ -1655,7 +1655,7 @@ package
                      this._targetPosition = this._targetBuilding._position;
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
                      FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
+                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                      SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   }
                   else if(this._targetBuilding)

@@ -8,7 +8,7 @@ package
    import com.monsters.display.BuildingOverlay;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.fire.Fire;
-   import com.monsters.effects.particles.ParticleDamage;
+   import com.monsters.effects.particles.ParticleText;
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.maproom_advanced.MapRoomCell;
@@ -166,6 +166,8 @@ package
       
       public static var _isProtected:int;
       
+      public static var _isReinforcements:int;
+      
       public static var _isSanctuary:int;
       
       public static var _isFan:int;
@@ -181,6 +183,10 @@ package
       public static var _pendingPurchase:Array;
       
       public static var _pendingPromo:int;
+      
+      public static var _pendingFBPromo:int;
+      
+      public static var _pendingFBPromoIDs:Array;
       
       public static var _salePromoTime:int;
       
@@ -247,6 +253,7 @@ package
          _pageErrors = 0;
          _lastSaved = 0;
          _isProtected = 0;
+         _isReinforcements = 0;
          _isSanctuary = 0;
          _isFan = 0;
          _isBookmarked = 0;
@@ -450,6 +457,8 @@ package
             var loader:Loader = null;
             var promoTimer:int = 0;
             var promoItemsArr:Array = null;
+            var promoID:Array = null;
+            var promoGifts:Array = null;
             var obj:Object = param1;
             if(obj.error == 0)
             {
@@ -905,7 +914,7 @@ package
                      var fbid:int = param2;
                      return function(param1:MouseEvent):*
                      {
-                        GLOBAL.CallJS("sendFeed",["tauntB","YOU attacked my yard!?! Remember, revenge is a dish best served cold..."," ","taunt" + n + ".png",fbid]);
+                        GLOBAL.CallJS("sendFeed",["tauntB","YOU attacked my yard!?! Remember, revenge is a dish best served cold...","Taunted!","taunt" + n + ".png",fbid]);
                         POPUPS.Next();
                      };
                   };
@@ -1026,6 +1035,40 @@ package
                      }
                   }
                }
+               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+               {
+                  if(obj.fbpromos)
+                  {
+                     promoID = [];
+                     promoGifts = [];
+                     if(obj.fbpromos)
+                     {
+                        if(obj.fbpromos.ids)
+                        {
+                           promoID = obj.fbpromos.ids;
+                        }
+                        if(promoGifts)
+                        {
+                           promoGifts = obj.fbpromos.items;
+                        }
+                        if(Boolean(promoID) && Boolean(promoGifts))
+                        {
+                           _pendingFBPromo = 1;
+                           GLOBAL._flags.hasFBPromo = 1;
+                           if(promoGifts)
+                           {
+                              BUY.purchaseProcess(promoGifts);
+                              BUY.purchaseComplete("biggulp");
+                           }
+                           if(promoID)
+                           {
+                              _pendingFBPromoIDs = promoID;
+                           }
+                        }
+                        GLOBAL._flags.hasPromo = 1;
+                     }
+                  }
+               }
                _tempGifts = obj.gifts;
                if(obj.sentgifts)
                {
@@ -1061,6 +1104,14 @@ package
                         break;
                      }
                      GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base";
+                     break;
+                  case 3:
+                     if(GLOBAL._baseURL == "http://bmdev.vx.casualcollective.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bmdev.vx.casualcollective.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bmdev.vx.casualcollective.com/base/";
                      break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
@@ -1119,7 +1170,7 @@ package
          CUSTOMATTACKS.Setup();
          UPDATES.Setup();
          BuildingOverlay.Clear();
-         ParticleDamage.Clear();
+         ParticleText.Clear();
          SPRITES.Clear();
          SPRITES.Setup();
          Fire.Clear();
@@ -1396,7 +1447,7 @@ package
                      "t":2,
                      "l":1
                   });
-                  if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID > -GLOBAL._flags.splituserid2)
+                  if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
                   {
                      if(GLOBAL.GetABTestHash("tutorial") < 14)
                      {
@@ -1476,7 +1527,7 @@ package
                      }
                      if(tmpcount > o.quantity[thl])
                      {
-                        LOGGER.Log("log","Too many buildings of type " + b._type);
+                        LOGGER.Log("log","Too many buildings of type " + b._type + " th " + thl + " count " + tmpcount);
                         BASE.BuildingDeselect();
                         b.Clean();
                         tmpcount--;
@@ -1863,7 +1914,9 @@ package
          var WhatsNewAction45:Function;
          var WhatsNewAction47:Function;
          var WhatsNewAction48:Function;
+         var WhatsNewAction49:Function;
          var popupWhatsNewDisplayed:Function;
+         var MoreInfo711:Function;
          var RepairAll:Function;
          var Action:Function;
          var BragA:Function;
@@ -1876,6 +1929,8 @@ package
          var popupWhatsNew:MovieClip = null;
          var display:Boolean = false;
          var newWhatsnewid:int = 0;
+         var fbPromoTimer:Number = NaN;
+         var fbPromoPopup:MovieClip = null;
          var helper:int = 0;
          var popupMCDamaged:popup_damaged = null;
          var promptSPost:Boolean = false;
@@ -2061,6 +2116,19 @@ package
                      popupWhatsNew.bAction.Setup("Upgrade Now");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction48);
                   }
+                  else if(GLOBAL._whatsnewid < 1049 && Boolean(GLOBAL._advancedMap))
+                  {
+                     WhatsNewAction49 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL.ShowMap();
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew49();
+                     newWhatsnewid = 1049;
+                     display = true;
+                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction49);
+                  }
                   if(display)
                   {
                      popupWhatsNewDisplayed = function():*
@@ -2070,6 +2138,45 @@ package
                      _showingWhatsNew = true;
                      LOGGER.Stat([23]);
                      POPUPS.Push(popupWhatsNew,popupWhatsNewDisplayed,null,"","",true);
+                  }
+               }
+            }
+            if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+            {
+               if((!GLOBAL._flags.viximo || !GLOBAL._flags.kongregate) && !GLOBAL._displayedPromoNew)
+               {
+                  fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
+                  if(GLOBAL.StatGet("fbpromotimer") == 0)
+                  {
+                     MoreInfo711 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,[63,1]);
+                        POPUPS.Next();
+                     };
+                     if(GLOBAL._displayedPromoNew)
+                     {
+                        return;
+                     }
+                     fbPromoPopup = new FBPROMO_711_CLIP();
+                     fbPromoPopup.bAction3.buttonMode = true;
+                     fbPromoPopup.bAction3.useHandCursor = true;
+                     fbPromoPopup.bAction3.mouseChildren = false;
+                     fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
+                     fbPromoPopup.bAction3.bg.visible = false;
+                     fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                     fbPromoPopup.bAction4.buttonMode = true;
+                     fbPromoPopup.bAction4.useHandCursor = true;
+                     fbPromoPopup.bAction4.mouseChildren = false;
+                     fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
+                     fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                     fbPromoPopup.bAction4.bg.visible = false;
+                     fbPromoPopup.bInfo.useHandCursor = true;
+                     fbPromoPopup.bInfo.buttonMode = true;
+                     fbPromoPopup.bInfo.mouseChildren = false;
+                     fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                     POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
+                     GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                     GLOBAL._displayedPromoNew = true;
                   }
                }
             }
@@ -2412,7 +2519,7 @@ package
          BASE.Save();
       }
       
-      public static function Save(param1:int = 0, param2:Boolean = false, param3:Boolean = false) : *
+      public static function Save(param1:int = 0, param2:Boolean = false, param3:Boolean = false) : void
       {
          if(Boolean(UI2._top) && Boolean(UI2._top.mcSave))
          {
@@ -3098,6 +3205,13 @@ package
                loadObjects.purchasecomplete = 1;
                _pendingPromo = 0;
             }
+            if(_pendingFBPromo)
+            {
+               loadObjects.fbpromos = com.adobe.serialization.json.JSON.encode(_pendingFBPromoIDs);
+               _pendingFBPromo = 0;
+               GLOBAL._displayedPromoNew = true;
+               GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+            }
             GLOBAL._timePlayed = 0;
          }
          catch(e:Error)
@@ -3105,7 +3219,7 @@ package
             LOGGER.Log("err","BASE.SaveB " + e.errorID + " | " + e.getStackTrace);
             GLOBAL.ErrorMessage("BASE.SaveB 1");
          }
-         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved"];
+         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved","fbpromos"];
          loadVars = [];
          so = 0;
          while(so < saveOrder.length)
@@ -4571,7 +4685,7 @@ package
                {
                   StreamPost = function(param1:MouseEvent):*
                   {
-                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get("pop_levelup_streamtitle",{"v1":lvl.level}),"","levelup/levelup" + lvl.level + ".png"]);
+                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get("pop_levelup_streamtitle",{"v1":lvl.level}),KEYS.Get("pop_levelup_body"),"levelup/levelup" + lvl.level + ".png"]);
                      POPUPS.Next();
                   };
                   mc = new popup_levelup();
@@ -4637,18 +4751,22 @@ package
       
       public static function EllipseEdgeDistance(param1:Number, param2:int, param3:int) : *
       {
-         var _loc4_:* = Math.pow(Math.pow(param2 / 2,-2) + Math.pow(Math.tan(param1),2) * Math.pow(param3 / 2,-2),-0.5);
-         var _loc5_:* = param1 * 180 / Math.PI;
+         var _loc4_:* = undefined;
+         var _loc5_:* = undefined;
+         var _loc6_:* = undefined;
+         _loc4_ = Math.pow(Math.pow(param2 / 2,-2) + Math.pow(Math.tan(param1),2) * Math.pow(param3 / 2,-2),-0.5);
+         _loc5_ = param1 * 180 / Math.PI;
          if(_loc5_ < -90 || _loc5_ > 90)
          {
             _loc4_ *= -1;
          }
-         var _loc6_:* = Math.tan(param1) * _loc4_;
+         _loc6_ = Math.tan(param1) * _loc4_;
          return Math.sqrt(_loc4_ * _loc4_ + _loc6_ * _loc6_);
       }
       
       public static function WallIntersects(param1:Point, param2:Point) : *
       {
+         var _loc3_:* = undefined;
          var _loc4_:Number = NaN;
          var _loc5_:Number = NaN;
          var _loc6_:Number = NaN;
@@ -4659,7 +4777,7 @@ package
          var _loc11_:Number = NaN;
          var _loc12_:* = undefined;
          var _loc13_:* = undefined;
-         var _loc3_:* = false;
+         _loc3_ = false;
          for(_loc13_ in _buildingsAll)
          {
             _loc12_ = _buildingsAll[_loc13_];

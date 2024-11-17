@@ -141,8 +141,15 @@ package
       
       public static function purchaseComplete(param1:String) : void
       {
-         SALESPECIALSPOPUP.EndSale();
-         SALESPECIALSPOPUP.Show("giftconfirm");
+         if(param1 == "biggulp")
+         {
+            SALESPECIALSPOPUP.Show("biggulp");
+         }
+         else
+         {
+            SALESPECIALSPOPUP.EndSale();
+            SALESPECIALSPOPUP.Show("giftconfirm");
+         }
          BASE.Save();
       }
       
@@ -172,7 +179,14 @@ package
             _loc5_ = 0;
             while(_loc5_ < _loc4_)
             {
-               STORE.AddInventory(_loc3_);
+               if(_loc3_ == "BIGGULP")
+               {
+                  BASE.BuildingStorageAdd(2 * 60);
+               }
+               else
+               {
+                  STORE.AddInventory(_loc3_);
+               }
                _loc5_++;
             }
             _loc2_++;
@@ -182,6 +196,17 @@ package
       public static function logPromoShown(param1:String = null) : void
       {
          LOGGER.Log("pro","POPUPS.CallbackShiny " + param1);
+      }
+      
+      public static function logFB711PromoShown(param1:String = null) : void
+      {
+         LOGGER.Log("pro7-11","POPUPS.CallbackShiny " + param1);
+         LOGGER.Stat([74,"popupshow"]);
+      }
+      
+      public static function logFB711NoticeShown(param1:String = null) : void
+      {
+         LOGGER.Stat([77,"noticeshow"]);
       }
    }
 }

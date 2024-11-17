@@ -519,7 +519,7 @@ package
                GLOBAL.CallJS("sendFeed",["unlock-start",KEYS.Get("mon_unlockstart",{
                   "v1":KEYS.Get(creature.name),
                   "v2":KEYS.Get(creature.name)
-               }),"",CREATURELOCKER._creatures[creatureID].stream[2],0]);
+               }),KEYS.Get("mon_unlockstart_streambody",{"v1":KEYS.Get(creature.name)}),CREATURELOCKER._creatures[creatureID].stream[2],0]);
                POPUPS.Next();
             };
             SpeedUp = function(param1:MouseEvent = null):*

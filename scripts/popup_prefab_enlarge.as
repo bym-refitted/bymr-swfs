@@ -15,8 +15,6 @@ package
       public function Setup(param1:int) : *
       {
          ImageCache.GetImageWithCallBack("ui/prefab-large-" + (param1 + 1) + ".jpg",this.ShowImage,true,1);
-         x = 450;
-         y = 250;
       }
       
       public function ShowImage(param1:String, param2:BitmapData) : *
@@ -30,10 +28,9 @@ package
          this.parent.removeChild(this);
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
       }
    }
 }

@@ -257,6 +257,10 @@ package
          this._attacking = false;
          this._frameNumber = 0;
          SPRITES.SetupSprite(this._creatureID);
+         if(this._creatureID == "C12")
+         {
+            SPRITES.SetupSprite("rocket");
+         }
          if(this._movement == "fly")
          {
             if(this._creatureID == "C14")
@@ -2041,8 +2045,8 @@ package
                         {
                            if(this._creatureID == "C12")
                            {
-                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0);
-                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0);
+                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0,FIREBALL.TYPE_MISSILE);
+                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0,FIREBALL.TYPE_MISSILE);
                            }
                            else
                            {
@@ -2064,8 +2068,8 @@ package
                      }
                      else if(this._creatureID == "C12" && this.PoweredUp())
                      {
-                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2);
-                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2);
+                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2,0,0,FIREBALL.TYPE_MISSILE);
+                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2,0,0,FIREBALL.TYPE_MISSILE);
                      }
                      else
                      {
@@ -2379,8 +2383,8 @@ package
                   }
                   else if(this.CanShootCreep())
                   {
-                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0);
-                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0);
+                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0,FIREBALL.TYPE_MISSILE);
+                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0,FIREBALL.TYPE_MISSILE);
                   }
                   else
                   {

@@ -529,6 +529,30 @@ package
                      name = "upgrade_instant";
                      val = int(data[1]);
                   }
+                  else if(data[0] == 74)
+                  {
+                     st1 = "711promo";
+                     name = "popup";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 75)
+                  {
+                     st1 = "711promo";
+                     name = "goldenbiggulp";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 76)
+                  {
+                     st1 = "711promo";
+                     name = "overdriveused";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 77)
+                  {
+                     st1 = "711promo";
+                     name = "noticeshown";
+                     val = int(data[1]);
+                  }
                }
             }
             if(st1)

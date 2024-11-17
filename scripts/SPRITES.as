@@ -276,6 +276,13 @@ package
             "height":32,
             "middle":new Point(24,16)
          };
+         _sprites.rocket = {
+            "key":"monsters/daverocket.png",
+            "sprite":null,
+            "width":16,
+            "height":16,
+            "middle":new Point(26,36)
+         };
       }
       
       public static function Clear() : void
@@ -548,6 +555,14 @@ package
             {
                GetFrame(param1,_sprites.C200,param4 / 12,1);
             }
+         }
+         if(param2 == "rocket")
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites.rocket,32 - param4 / 12);
+            }
+            return param4 / 12;
          }
          return 0;
       }

@@ -1,10 +1,18 @@
 package
 {
+   import flash.display.Bitmap;
+   import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.geom.Point;
    
-   public class FIREBALL extends FIREBALL_CLIP
+   public class FIREBALL
    {
+      public static const TYPE_FIREBALL:String = "fireball";
+      
+      public static const TYPE_MISSILE:String = "missile";
+      
+      private const DO_ROCKETS_ACCELERATE:Boolean = false;
+      
       public var _startPoint:Point;
       
       public var _targetPoint:Point;
@@ -20,8 +28,6 @@ package
       public var _glaves:int = 0;
       
       public var _speed:Number;
-      
-      public var _mc:MovieClip;
       
       public var _yd:Number;
       
@@ -65,9 +71,49 @@ package
       
       public var _frameNumber:int = 4;
       
+      public var _graphic:MovieClip;
+      
+      public var _type:String;
+      
+      public var _bitmapData:BitmapData;
+      
+      private var _acceleration:Number;
+      
       public function FIREBALL()
       {
          super();
+      }
+      
+      public function Setup(param1:String = "fireball") : *
+      {
+         var _loc2_:Bitmap = null;
+         if(this._graphic)
+         {
+            if(this._graphic.numChildren > 0)
+            {
+               this._graphic.removeChildAt(0);
+            }
+            this._graphic = null;
+         }
+         this._type = param1;
+         this._acceleration = 0.5;
+         if(this._type == TYPE_FIREBALL)
+         {
+            this._graphic = new FIREBALL_CLIP();
+         }
+         else if(this._type == TYPE_MISSILE)
+         {
+            this._graphic = new MovieClip();
+            if(this.DO_ROCKETS_ACCELERATE)
+            {
+               this._acceleration = 0.05;
+            }
+            this._bitmapData = new BitmapData(16,16,true,0xffffff);
+            _loc2_ = new Bitmap(this._bitmapData);
+            _loc2_.x = -10;
+            _loc2_.y = -10;
+            this._graphic.addChild(_loc2_);
+         }
       }
       
       public function Tick() : Boolean
@@ -104,7 +150,11 @@ package
       
       public function Move() : Boolean
       {
-         var _loc1_:Number = this._maxSpeed * 0.5;
+         if(this._type == TYPE_MISSILE && this.DO_ROCKETS_ACCELERATE)
+         {
+            this._acceleration += 0.025;
+         }
+         var _loc1_:Number = this._maxSpeed * this._acceleration;
          if(this._frameNumber % 5 == 0)
          {
             this._xd = this._targetPoint.x - this._tmpX;
@@ -180,10 +230,18 @@ package
       
       public function Render() : *
       {
+         var _loc1_:Number = NaN;
+         var _loc2_:Number = NaN;
          if(GLOBAL._render)
          {
-            x = int(this._tmpX);
-            y = int(this._tmpY);
+            this._graphic.x = int(this._tmpX);
+            this._graphic.y = int(this._tmpY);
+         }
+         if(this._type == TYPE_MISSILE)
+         {
+            _loc1_ = Math.atan2(this._targetPoint.x - this._tmpX,this._targetPoint.y - this._tmpY);
+            _loc2_ = _loc1_ * (180 / Math.PI);
+            SPRITES.GetSprite(this._bitmapData,"rocket","",_loc2_ - 90);
          }
       }
       
@@ -278,7 +336,7 @@ package
          var _loc5_:BFOUNDATION = null;
          var _loc6_:* = undefined;
          var _loc4_:Array = [];
-         _loc1_ = new Point(x,y);
+         _loc1_ = new Point(this._graphic.x,this._graphic.y);
          for(_loc6_ in BASE._buildingsMain)
          {
             _loc5_ = BASE._buildingsMain[_loc6_];

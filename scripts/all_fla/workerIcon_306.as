@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol200")]
-   public dynamic class workerIcon_308 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol215")]
+   public dynamic class workerIcon_306 extends MovieClip
    {
-      public function workerIcon_308()
+      public function workerIcon_306()
       {
          super();
          addFrameScript(0,this.frame1);

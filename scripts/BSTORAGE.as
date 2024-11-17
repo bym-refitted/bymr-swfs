@@ -102,7 +102,7 @@ package
             {
                _loc2_ = int(_loc2_ / 5);
             }
-            ATTACK.Loot(_loc4_.id,_loc2_,_mc.x,_mc.y,9);
+            ATTACK.Loot(_loc4_.id,_loc2_,_mc.x,_mc.y,9,this);
          }
          else
          {

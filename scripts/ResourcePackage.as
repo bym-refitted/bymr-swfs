@@ -22,7 +22,7 @@ package
       
       internal var _speed:Number;
       
-      public function ResourcePackage(param1:Point, param2:Point, param3:int, param4:int, param5:int, param6:int, param7:BFOUNDATION = null, param8:Number = 0)
+      public function ResourcePackage(param1:Point, param2:Point, param3:int, param4:int, param5:int, param6:int = 0, param7:BFOUNDATION = null, param8:Number = 0)
       {
          var time:Number;
          var Sound:Function = null;

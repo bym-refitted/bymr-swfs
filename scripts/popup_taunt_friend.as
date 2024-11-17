@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1112")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1137")]
    public dynamic class popup_taunt_friend extends MovieClip
    {
       public var mcIcon1:MovieClip;

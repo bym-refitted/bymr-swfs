@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol263")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol278")]
    public dynamic class MapRoomCell_CLIP extends MovieClip
    {
       public var mc:MovieClip;

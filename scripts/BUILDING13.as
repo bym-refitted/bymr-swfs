@@ -433,7 +433,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["build-ha",KEYS.Get("pop_hatbuilt_streamtitle"),"","build-hatchery.png"]);
+               GLOBAL.CallJS("sendFeed",["build-ha",KEYS.Get("pop_hatbuilt_streamtitle"),KEYS.Get("pop_hatbuilt_body"),"build-hatchery.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();
@@ -467,7 +467,7 @@ package
          {
             Brag = function(param1:MouseEvent):*
             {
-               GLOBAL.CallJS("sendFeed",["upgrade-ha-" + _lvl.Get(),KEYS.Get("pop_hatupgraded_streamtitle",{"v1":_lvl.Get()}),"","upgrade-hatchery.png"]);
+               GLOBAL.CallJS("sendFeed",["upgrade-ha-" + _lvl.Get(),KEYS.Get("pop_hatupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_hatupgraded_body",{"v1":_lvl.Get()}),"upgrade-hatchery.png"]);
                POPUPS.Next();
             };
             mc = new popup_building();

@@ -3,12 +3,12 @@ package all_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1826")]
-   public dynamic class MonsterLabItem_Star_486 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol2142")]
+   public dynamic class icon_counter_577 extends MovieClip
    {
-      public var tLevel:TextField;
+      public var t:TextField;
       
-      public function MonsterLabItem_Star_486()
+      public function icon_counter_577()
       {
          super();
          addFrameScript(0,this.frame1);

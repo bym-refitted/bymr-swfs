@@ -473,22 +473,6 @@ package
             "prereq":"S1",
             "rules":{"b6lvl":2}
          },{
-            "order":70,
-            "list":true,
-            "priority":1,
-            "reward":[0,0,0,0,50],
-            "id":"FAN",
-            "group":3,
-            "name":"q_fan_name",
-            "description":"q_fan_description",
-            "hint":"q_fan_hint",
-            "questimage":"fantastic.v2.png",
-            "questicon":"icon_fantastic.png",
-            "streamTitle":"q_fan_streamtitle",
-            "streamDescription":"q_fan_streamdescription",
-            "streamImage":"quests/fantastic.r3.png",
-            "rules":{"bonus_fan":1}
-         },{
             "order":29,
             "list":true,
             "reward":[20000,0,0,0,0],
@@ -1046,26 +1030,26 @@ package
             "streamImage":"quests/goldcoin.png",
             "prereq":"GA2",
             "rules":{"gift_accept":50}
-         },{
-            "order":17,
-            "list":true,
-            "priority":1,
-            "reward":[20000,20000,20000,20000,0],
-            "id":"EM1",
-            "group":0,
-            "name":"q_em1_name",
-            "description":"q_em1_description",
-            "hint":"q_em1_hint",
-            "questimage":"radiotower.png",
-            "questicon":"icon_radiotower.png",
-            "streamTitle":"q_em1_streamtitle",
-            "streamDescription":"q_em1_streamdescription",
-            "streamImage":"quests/build-radio.png",
-            "prereq":"C13",
-            "rules":{"b113lvl":1}
          }];
-         if(!GLOBAL._flags.kongregate)
+         if(!GLOBAL._flags.kongregate && !GLOBAL._flags.viximo)
          {
+            _quests.push({
+               "order":70,
+               "list":true,
+               "priority":1,
+               "reward":[0,0,0,0,50],
+               "id":"FAN",
+               "group":3,
+               "name":"q_fan_name",
+               "description":"q_fan_description",
+               "hint":"q_fan_hint",
+               "questimage":"fantastic.v2.png",
+               "questicon":"icon_fantastic.png",
+               "streamTitle":"q_fan_streamtitle",
+               "streamDescription":"q_fan_streamdescription",
+               "streamImage":"quests/fantastic.r3.png",
+               "rules":{"bonus_fan":1}
+            });
             _quests.push({
                "order":71,
                "list":true,
@@ -1118,6 +1102,24 @@ package
                "streamImage":"quests/monsterparty.png",
                "prereq":"INVITE5",
                "rules":{"bonus_invites":10}
+            });
+            _quests.push({
+               "order":17,
+               "list":true,
+               "priority":1,
+               "reward":[20000,20000,20000,20000,0],
+               "id":"EM1",
+               "group":0,
+               "name":"q_em1_name",
+               "description":"q_em1_description",
+               "hint":"q_em1_hint",
+               "questimage":"radiotower.png",
+               "questicon":"icon_radiotower.png",
+               "streamTitle":"q_em1_streamtitle",
+               "streamDescription":"q_em1_streamdescription",
+               "streamImage":"quests/build-radio.png",
+               "prereq":"C13",
+               "rules":{"b113lvl":1}
             });
          }
          var _loc1_:Array = [0,0,10,10,10,2,15,15,15,20,20,5,2,5,5,1];

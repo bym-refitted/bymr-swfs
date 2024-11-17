@@ -120,10 +120,13 @@ package
       
       private static function TimerDone(param1:TimerEvent) : *
       {
-         _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
-         _timer.stop();
-         _timer = null;
-         Show(_lastGroup);
+         if(_timer)
+         {
+            _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
+            _timer.stop();
+            _timer = null;
+            Show(_lastGroup);
+         }
       }
       
       public static function Show(param1:String = "now") : *
@@ -216,12 +219,25 @@ package
                _lastGroup = "wait";
                NextDelayed(50 * 60);
             }
-            else if(_timer)
+            else
             {
-               _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
-               _timer.stop();
-               _timer = null;
+               if(_timer)
+               {
+                  _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
+                  _timer.stop();
+                  _timer = null;
+               }
+               if(QueueCount("wait") > 0)
+               {
+                  _lastGroup = "wait";
+                  NextDelayed(2000);
+               }
             }
+         }
+         else if(QueueCount("wait") > 0)
+         {
+            _lastGroup = "wait";
+            NextDelayed(2000);
          }
       }
       
@@ -269,7 +285,6 @@ package
       
       public static function Timeout() : *
       {
-         var _loc1_:MovieClip = null;
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
@@ -281,7 +296,7 @@ package
          _mcBG.x = (GLOBAL._SCREENINIT.width - GLOBAL._ROOT.stage.stageWidth) / 2;
          _mcBG.y = (GLOBAL._SCREENINIT.height - GLOBAL._ROOT.stage.stageHeight) / 2;
          _mcBG.cacheAsBitmap = true;
-         _loc1_ = new popup_timeout();
+         var _loc1_:MovieClip = new popup_timeout();
          _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_timeout_title") + "</b>";
          _loc1_.tB.htmlText = KEYS.Get("pop_timeout_body");
          if(!GLOBAL._flags.kongregate)
