@@ -158,10 +158,7 @@ package
          {
             if(GLOBAL.flagsShouldChatExist())
             {
-               if(TUTORIAL._stage >= 200)
-               {
-                  GLOBAL.initChat();
-               }
+               GLOBAL.initChat();
             }
          }
          catch(e:Error)

@@ -33,7 +33,7 @@ package
                _loc1_.fb_kongregate_api_path = "http://chat.kongregate.com/flash/API_AS3_46ebaf5ef297ce57605ca0a769f70b7d.swf";
                _loc1_._appid = "";
                _loc1_._tpid = "";
-               _loc1_._countryCode = "en";
+               _loc1_._countryCode = "us";
             }
             else
             {
@@ -46,7 +46,7 @@ package
                _loc1_._mapURL = "http://bmdev.fb.casualcollective.com/worldmapv2/";
                _loc1_._appid = "";
                _loc1_._tpid = "";
-               _loc1_._countryCode = "en";
+               _loc1_._countryCode = "us";
             }
             this.Data(_loc1_,false);
          }

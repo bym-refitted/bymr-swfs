@@ -36,7 +36,8 @@ package
             "now":[],
             "alerts":[],
             "gifts":[],
-            "wait":[]
+            "wait":[],
+            "tip":[]
          };
          _open = false;
       }
@@ -68,7 +69,7 @@ package
          {
             GLOBAL.CallJS("reloadPage");
          }
-         if(!GLOBAL._catchup)
+         if(!GLOBAL._catchup || _lastGroup == "tip")
          {
             Hide();
          }
@@ -95,8 +96,12 @@ package
             _mc.parent.removeChild(_mc);
          }
          _mc = null;
-         if(_lastGroup == "alerts" || _lastGroup == "wait")
+         if(_lastGroup == "alerts" || _lastGroup == "wait" || _lastGroup == "tip")
          {
+            if(_lastGroup == "tip")
+            {
+               _lastGroup = "now";
+            }
             NextDelayed();
          }
          else
@@ -126,7 +131,7 @@ package
          var ImageLoaded:Function;
          var message:* = undefined;
          var group:String = param1;
-         if(!GLOBAL._catchup)
+         if(!GLOBAL._catchup || group == "tip")
          {
             _lastGroup = group;
             message = _popups[group].shift();

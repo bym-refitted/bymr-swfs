@@ -50,6 +50,8 @@ package
       
       public static var _bymChat:BYMChat;
       
+      public static var _proTip:PROTIP_CLIP;
+      
       public static var _ROOT:MovieClip;
       
       public static var _BASESELECT:MovieClip;
@@ -93,8 +95,6 @@ package
       public static var _statsURL:String;
       
       public static var _chatServer:String;
-      
-      public static var _countryCode:String;
       
       public static var _appid:String;
       
@@ -294,7 +294,9 @@ package
       
       public static var _checkPromo:int = 1;
       
-      public static var _giveTips:int = 0;
+      public static var _giveTips:int = 1;
+      
+      public static var _countryCode:String = "us";
       
       public static var _shinyShroomCount:int = 0;
       
@@ -10832,8 +10834,98 @@ package
             "tutstage":28,
             "sale":0,
             "description":"railguntower_desc",
-            "block":true,
-            "quantity":[0]
+            "stats":[{
+               "range":5 * 60,
+               "damage":400,
+               "rate":160,
+               "speed":20,
+               "splash":0
+            },{
+               "range":315,
+               "damage":10 * 60,
+               "rate":160,
+               "speed":20,
+               "splash":0
+            },{
+               "range":330,
+               "damage":15 * 60,
+               "rate":160,
+               "speed":20,
+               "splash":0
+            },{
+               "range":345,
+               "damage":20 * 60,
+               "rate":160,
+               "speed":20,
+               "splash":0
+            },{
+               "range":6 * 60,
+               "damage":1600,
+               "rate":160,
+               "speed":20,
+               "splash":0
+            }],
+            "costs":[{
+               "r1":1600000,
+               "r2":32 * 60 * 1000,
+               "r3":1280000,
+               "r4":0,
+               "time":12 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":800 * 60 * 60,
+               "r2":40 * 24 * 60 * 60,
+               "r3":640 * 60 * 60,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":60 * 24 * 60 * 60,
+               "r2":72 * 24 * 60 * 60,
+               "r3":48 * 24 * 60 * 60,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":108 * 24 * 60 * 60,
+               "r2":11197440,
+               "r3":7464960,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":16796160,
+               "r2":20115392,
+               "r3":13436928,
+               "r4":0,
+               "time":6 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
+            "imageData":{
+               "baseurl":"buildings/railguntower/",
+               "1":{
+                  "anim":["anim.3.loaded.png",new Rectangle(-49,-9,96,56),32],
+                  "top":["top.3.png",new Point(-39,7)],
+                  "shadow":["shadow.3.jpg",new Point(-40,20)],
+                  "animdamaged":["anim.3.damaged.png",new Rectangle(-49,-9,97,56),32],
+                  "topdamaged":["top.3.damaged.png",new Point(-39,7)],
+                  "shadowdamaged":["shadow.3.jpg",new Point(-40,20)],
+                  "topdestroyed":["top.3.destroyed.png",new Point(-34,-5)],
+                  "shadowdestroyed":["shadow.3.destroyed.jpg",new Point(-36,23)],
+                  "topdestroyedfire":["top.3.destroyed.fire.png",new Point(-45,-13)]
+               }
+            },
+            "upgradeImgData":{
+               "baseurl":"buildingbuttons/",
+               "1":{"img":"118.jpg"}
+            },
+            "thumbImgData":{
+               "baseurl":"buildingthumbs/",
+               "1":{"img":"118.png"}
+            },
+            "quantity":[0,1],
+            "hp":[294 * 60,34400,750 * 60,58000,75500],
+            "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000]
          }];
          if(BASE._isOutpost)
          {
@@ -11887,6 +11979,10 @@ package
       
       public static function initChat() : void
       {
+         if(TUTORIAL._stage < 205)
+         {
+            return;
+         }
          if(_chatInited)
          {
             if(_bymChat != null)
@@ -11927,7 +12023,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","GLOBAL.initChat #3: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","GLOBAL.initChat #2: " + e.message + " | " + e.getStackTrace());
          }
          try
          {
@@ -11945,19 +12041,19 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","GLOBAL.initChat #4: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","GLOBAL.initChat #3: " + e.message + " | " + e.getStackTrace());
          }
          try
          {
-            _chatServer = _chatServers[LOGIN._playerID % _chatServers.length];
+            _chatServer = _chatServers[_chatroomNumber % _chatServers.length];
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","GLOBAL.initChat #5: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","GLOBAL.initChat #4: " + e.message + " | " + e.getStackTrace());
          }
          if(_bymChat == null)
          {
-            if(_countryCode == "ph")
+            if(!chatUserIsInABTest())
             {
                return;
             }
@@ -11968,7 +12064,7 @@ package
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","GLOBAL.initChat #6: " + e.message + " | " + e.getStackTrace());
+               LOGGER.Log("err","GLOBAL.initChat #5: " + e.message + " | " + e.getStackTrace());
             }
             try
             {
@@ -11979,7 +12075,7 @@ package
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","GLOBAL.initChat #7: " + e.message + " | " + e.getStackTrace());
+               LOGGER.Log("err","GLOBAL.initChat #6: " + e.message + " | " + e.getStackTrace());
             }
             try
             {
@@ -11987,7 +12083,7 @@ package
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","GLOBAL.initChat #8: " + e.message + " | " + e.getStackTrace());
+               LOGGER.Log("err","GLOBAL.initChat #7: " + e.message + " | " + e.getStackTrace());
             }
          }
          try
@@ -11996,7 +12092,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","GLOBAL.initChat #9: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","GLOBAL.initChat #8: " + e.message + " | " + e.getStackTrace());
          }
          try
          {
@@ -12004,7 +12100,7 @@ package
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","GLOBAL.initChat #10: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","GLOBAL.initChat #9: " + e.message + " | " + e.getStackTrace());
          }
       }
       
@@ -12110,19 +12206,44 @@ package
          }
       }
       
+      public static function chatUserIsInABTest() : Boolean
+      {
+         switch(LOGIN._playerID)
+         {
+            case 23:
+            case 2:
+            case 3:
+               return true;
+            default:
+               if(_countryCode != "us" || KEYS != null && KEYS._language != "en")
+               {
+                  return false;
+               }
+               if(_countryCode == "ph")
+               {
+                  return false;
+               }
+               if(!_chatEnabled)
+               {
+                  return false;
+               }
+               return true;
+         }
+      }
+      
       public static function flagsShouldChatDisplay() : Boolean
       {
-         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 2;
+         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 2 && chatUserIsInABTest();
       }
       
       public static function flagsShouldChatExist() : Boolean
       {
-         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat > 0;
+         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat > 0 && chatUserIsInABTest();
       }
       
       public static function flagsShouldChatConnectButStayInvisible() : Boolean
       {
-         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 1;
+         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 1 && chatUserIsInABTest();
       }
       
       public static function ValidateMushroomPick(param1:BFOUNDATION) : void

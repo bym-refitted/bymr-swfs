@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1800")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1783")]
    public dynamic class ThreadMember_CLIP extends MovieClip
    {
       public var leftbg_mc:MovieClip;

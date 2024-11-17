@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1373")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1357")]
    public dynamic class PopupRelocateMe_CLIP extends MovieClip
    {
       public var mcBG:frame2_CLIP;

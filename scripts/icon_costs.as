@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol834")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol826")]
    public dynamic class icon_costs extends MovieClip
    {
       public var tTitle:TextField;

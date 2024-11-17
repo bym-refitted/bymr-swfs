@@ -240,14 +240,6 @@ package com.monsters.chat
                      _loc3_ = _loc1_;
                      _chat.unignore(_loc3_);
                      break;
-                  case "/?":
-                  case "/h":
-                  case "/help":
-                     this.system_message("Commands:");
-                     this.system_message("To ignore: /i &lt;name&gt;");
-                     this.system_message("To unignore: /u &lt;name&gt;");
-                     this.system_message("To whisper: /w &lt;name&gt; &lt;msg&gt;");
-                     break;
                   default:
                      this.default_chat(_loc1_);
                }
@@ -573,7 +565,6 @@ package com.monsters.chat
          {
             _loc2_ = param1.Get("channel") as Channel;
             this.system_message("Joined channel " + _loc2_.Name + ".");
-            this.system_message("Type /h for help.");
             _chat.updateDisplayName(_loc2_,_userRecord.Name,"[" + BASE.BaseLevel().level + "] " + _userRecord.Id);
          }
          else

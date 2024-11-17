@@ -442,7 +442,7 @@ package
             var obj:Object = param1;
             if(obj.error == 0)
             {
-               if(!_loadedSomething)
+               if(!_loadedSomething && ExternalInterface.available)
                {
                   ExternalInterface.call("cc.recordStats","baseend");
                   _loadedSomething = true;
@@ -1130,7 +1130,7 @@ package
          {
             loadVars.push(["checkpromotion",1]);
          }
-         if(!_loadedSomething)
+         if(!_loadedSomething && ExternalInterface.available)
          {
             ExternalInterface.call("cc.recordStats","basestart");
          }
@@ -1763,11 +1763,6 @@ package
       
       public static function ProcessD() : *
       {
-         var WhatsNewAction26:Function;
-         var WhatsNewAction28:Function;
-         var WhatsNewAction29:Function;
-         var WhatsNewAction30:Function;
-         var WhatsNewAction31:Function;
          var WhatsNewAction32:Function;
          var popupWhatsNewDisplayed:Function;
          var RepairAll:Function;
@@ -1853,76 +1848,7 @@ package
                   GLOBAL._displayedWhatsNew = true;
                   display = false;
                   newWhatsnewid = GLOBAL._whatsnewid;
-                  if(GLOBAL._whatsnewid < 1026)
-                  {
-                     WhatsNewAction26 = function(param1:MouseEvent):*
-                     {
-                        BUILDINGS._buildingID = 114;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,0);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew26();
-                     newWhatsnewid = 1026;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction26);
-                  }
-                  else if(GLOBAL._whatsnewid < 1028)
-                  {
-                     WhatsNewAction28 = function(param1:MouseEvent):*
-                     {
-                        STORE.ShowB(4,1,["BLK2","BLK3","BLK4","BLK5"]);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew28();
-                     newWhatsnewid = 1028;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Upgrade Walls");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction28);
-                  }
-                  else if(GLOBAL._whatsnewid < 1029)
-                  {
-                     WhatsNewAction29 = function(param1:MouseEvent):*
-                     {
-                        BUILDINGS._buildingID = 117;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,0);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew29();
-                     newWhatsnewid = 1029;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction29);
-                  }
-                  else if(GLOBAL._whatsnewid < 1030)
-                  {
-                     WhatsNewAction30 = function(param1:MouseEvent):*
-                     {
-                        STORE.ShowB(4,1,["PRO1","PRO2","PRO3"]);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew30();
-                     newWhatsnewid = 1030;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Buy Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction30);
-                  }
-                  else if(GLOBAL._whatsnewid < 1031)
-                  {
-                     WhatsNewAction31 = function(param1:MouseEvent):*
-                     {
-                        STORE.ShowB(4,1,["MOD","MDOD","MSOD"]);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew31();
-                     newWhatsnewid = 1031;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Buy Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction31);
-                  }
-                  else if(GLOBAL._whatsnewid < 1032)
+                  if(GLOBAL._whatsnewid < 1032)
                   {
                      WhatsNewAction32 = function(param1:MouseEvent):*
                      {
@@ -1936,6 +1862,12 @@ package
                      display = true;
                      popupWhatsNew.bAction.Setup("Build Now");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction32);
+                  }
+                  else if(GLOBAL._whatsnewid < 1033 && GLOBAL._advancedMap != 0)
+                  {
+                     popupWhatsNew = new popup_whatsnew33();
+                     newWhatsnewid = 1033;
+                     display = true;
                   }
                   if(display)
                   {

@@ -648,11 +648,18 @@ package
          this._looking = true;
          if(GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE || this.CanShootCreep())
          {
+            if(this._friendly)
+            {
+            }
+            this._waypoints = [];
             this._atTarget = true;
             this._looking = false;
          }
          else if(this._noDefensePath || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE * 3 || this._pathing == "direct")
          {
+            if(this._friendly)
+            {
+            }
             this._waypoints = [this._targetCreep._tmpPoint];
             this._targetPosition = this._targetCreep._tmpPoint;
             _loc1_ = GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint);
@@ -665,14 +672,26 @@ package
                this._doDefenseBurrow = true;
             }
          }
-         else if(this._targetCreep._atTarget || this._targetCreep._waypoints.length < 8 || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 250)
-         {
-            this.WaypointTo(this._targetCreep._tmpPoint,null);
-         }
          else
          {
-            this.WaypointTo(this._targetCreep._waypoints[7],null);
-            this._intercepting = true;
+            if(this._friendly)
+            {
+            }
+            if(this._targetCreep._atTarget || this._targetCreep._waypoints.length < 8 || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 250)
+            {
+               if(this._friendly)
+               {
+               }
+               this.WaypointTo(this._targetCreep._tmpPoint,null);
+            }
+            else
+            {
+               if(this._friendly)
+               {
+               }
+               this.WaypointTo(this._targetCreep._waypoints[7],null);
+               this._intercepting = true;
+            }
          }
          this._hasTarget = true;
       }
@@ -1942,6 +1961,7 @@ package
                }
                else if(GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE || this.CanShootCreep())
                {
+                  this._waypoints = [];
                   this._atTarget = true;
                }
                else if(!this._attacking && this._frameNumber % 150 == 0)
@@ -1963,12 +1983,20 @@ package
                this._intercepting = false;
                if(this._targetCreep._behaviour != "heal" && this._invisibleTime == 0 && !this._targetCreep._explode && !this._explode)
                {
+                  this._waypoints = [];
                   this._targetCreep._targetCreep = this;
                   if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
                   {
                      this._targetCreep._atTarget = true;
                   }
+                  else
+                  {
+                     this._targetCreep._atTarget = false;
+                     this._targetCreep._waypoints = [this._tmpPoint];
+                  }
                   this._targetCreep._hasTarget = true;
+                  this._targetCreep._looking = false;
+                  this._targetCreep._hasPath = true;
                }
                if(this.attackCooldown <= 0)
                {
@@ -2050,11 +2078,20 @@ package
                   {
                      if(!this._targetCreep._explode && !this._targetCreep._targetCreep && this._targetCreep._behaviour != "heal")
                      {
+                        this._waypoints = [];
                         this._targetCreep._targetCreep = this;
-                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
                         {
                            this._targetCreep._atTarget = true;
                         }
+                        else
+                        {
+                           this._targetCreep._atTarget = false;
+                           this._targetCreep._waypoints = [this._tmpPoint];
+                        }
+                        this._targetCreep._hasTarget = true;
+                        this._targetCreep._looking = false;
+                        this._targetCreep._hasPath = true;
                         this._targetCreep._hasTarget = true;
                      }
                      if(this._invisibleTime == 0)
@@ -2319,12 +2356,20 @@ package
                         _loc3_ = GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint);
                         if(_loc3_ < this.DEFENSE_RANGE || this.CanShootCreep())
                         {
+                           this._waypoints = [];
                            this._atTarget = true;
                            this._targetCreep._targetCreep = this;
-                           if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                           if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
                            {
                               this._targetCreep._atTarget = true;
                            }
+                           else
+                           {
+                              this._targetCreep._atTarget = false;
+                              this._targetCreep._waypoints = [this._tmpPoint];
+                           }
+                           this._targetCreep._hasTarget = true;
+                           this._targetCreep._looking = false;
                            this._targetCreep._hasTarget = true;
                            return;
                         }
@@ -2349,13 +2394,21 @@ package
                   if(this._targetCreep && (GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE || this.CanShootCreep()))
                   {
                      this._atTarget = true;
+                     this._waypoints = [];
                      if(!this._targetCreep._explode)
                      {
                         this._targetCreep._targetCreep = this;
-                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < 50 || this._targetCreep._movement == "fly")
+                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._movement == "fly")
                         {
                            this._targetCreep._atTarget = true;
                         }
+                        else
+                        {
+                           this._targetCreep._atTarget = false;
+                           this._targetCreep._waypoints = [this._tmpPoint];
+                        }
+                        this._targetCreep._hasTarget = true;
+                        this._targetCreep._looking = false;
                         this._targetCreep._hasTarget = true;
                      }
                      this._targetPosition = this._targetCreep._tmpPoint;

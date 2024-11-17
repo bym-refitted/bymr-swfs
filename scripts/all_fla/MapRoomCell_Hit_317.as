@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol140")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol121")]
    public dynamic class MapRoomCell_Hit_317 extends MovieClip
    {
       public function MapRoomCell_Hit_317()

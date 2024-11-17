@@ -119,7 +119,7 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = com.adobe.serialization.json.JSON.decode("{\"fb_sig_request_method\":\"GET\",\"fb_sig_in_canvas\":\"1\",\"fb_sig_locale\":\"en_US\",\"fb_sig_in_new_facebook\":\"1\",\"fb_sig_time\":\"1311647783.3984\",\"fb_sig_added\":\"1\",\"fb_sig_profile_update_time\":\"1308780677\",\"fb_sig_expires\":\"1311652800\",\"fb_sig_user\":\"13704940\",\"fb_sig_session_key\":\"2.AQDQaWSHaQO_Cq2I.3600.1311652800.1-13704940\",\"fb_sig_ext_perms\":\"email\",\"fb_sig_preload_fql_timestamp\":\"1311647783.3983\",\"fb_sig_country\":\"us\",\"fb_sig_api_key\":\"c11ea2880d6b94be2fd187e9f274acea\",\"fb_sig_app_id\":\"191772264192545\",\"fb_sig\":\"34635a6558beba68f0ed783cbf507697\",\"PHPSESSID\":\"c11ea2880d6b94be2fd187e9f274acea13704940\",\"app_id\":\"191772264192545\",\"tpid\":\"1UVfTZ6WMQX114LKFlu8rnBTmfs\"}");
+            _loc1_ = com.adobe.serialization.json.JSON.decode("{\"fb_sig_request_method\":\"GET\",\"fb_sig_in_canvas\":\"1\",\"fb_sig_locale\":\"en_US\",\"fb_sig_in_new_facebook\":\"1\",\"fb_sig_time\":\"1311874119.2296\",\"fb_sig_added\":\"1\",\"fb_sig_profile_update_time\":\"1308185854\",\"fb_sig_expires\":\"1311879600\",\"fb_sig_user\":\"1122820153\",\"fb_sig_session_key\":\"2.AQDEHtI0K4K1by-A.3600.1311879600.1-1122820153\",\"fb_sig_ext_perms\":\"email\",\"fb_sig_preload_fql_timestamp\":\"1311874119.2296\",\"fb_sig_country\":\"us\",\"fb_sig_api_key\":\"c11ea2880d6b94be2fd187e9f274acea\",\"fb_sig_app_id\":\"191772264192545\",\"fb_sig\":\"892d045714dd569836fa09d2e85bb78d\",\"PHPSESSID\":\"c11ea2880d6b94be2fd187e9f274acea1122820153\",\"app_id\":\"191772264192545\",\"tpid\":\"P_kb65UzVLyvpQONAARv0PtXm9g\"}");
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
          }
@@ -148,7 +148,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt(class_1.method_1(-289,-737));
+         return this.decodeSalt(class_1.method_1(479,-851));
       }
       
       private function decodeSalt(param1:String) : String

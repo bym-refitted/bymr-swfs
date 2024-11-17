@@ -119,8 +119,8 @@ package com.monsters.maproom
          handleLoadSuccessful = function(param1:Object):*
          {
             var aib:Object = null;
-            var ai:String = null;
             var start:int = 0;
+            var ai:String = null;
             var _o:Object = null;
             var obj:Object = param1;
             try
@@ -130,24 +130,27 @@ package com.monsters.maproom
                {
                   obj.wmbases = [];
                   aib = MapRoom.BRIDGE.WMBASE._bases;
-                  for(ai in aib)
+                  if(aib)
                   {
-                     if(aib[ai].destroyed == false)
+                     for(ai in aib)
                      {
-                        _o = {};
-                        if(aib[ai].tribe)
+                        if(aib[ai].destroyed == false)
                         {
-                           _o.baseid = aib[ai].baseid;
-                           _o.level = aib[ai].level;
-                           _o.type = aib[ai].tribe.type;
-                           _o.description = aib[ai].tribe.description;
-                           _o.wm = 1;
-                           _o.friend = 0;
-                           _o.pic = aib[ai].tribe.profilepic;
-                           _o.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
-                           if(_o.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                           _o = {};
+                           if(Boolean(aib[ai]) && Boolean(aib[ai].tribe))
                            {
-                              obj.wmbases.push(_o);
+                              _o.baseid = aib[ai].baseid;
+                              _o.level = aib[ai].level;
+                              _o.type = aib[ai].tribe.type;
+                              _o.description = aib[ai].tribe.description;
+                              _o.wm = 1;
+                              _o.friend = 0;
+                              _o.pic = aib[ai].tribe.profilepic;
+                              _o.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
+                              if(_o.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                              {
+                                 obj.wmbases.push(_o);
+                              }
                            }
                         }
                      }
@@ -163,7 +166,10 @@ package com.monsters.maproom
                   MapRoom.BRIDGE.Log("err","MAPROOMPOPUP.Get: " + obj.error);
                   MapRoom.BRIDGE.GLOBAL.ErrorMessage("");
                }
-               MiniMap.getInstance().Update(basesForeign,basesWM);
+               if(MiniMap.getInstance())
+               {
+                  MiniMap.getInstance().Update(basesForeign,basesWM);
+               }
             }
             catch(e:Error)
             {

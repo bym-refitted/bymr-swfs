@@ -2,7 +2,6 @@ package
 {
    import flash.display.MovieClip;
    import flash.utils.*;
-   import gs.TweenLite;
    import gs.easing.*;
    
    public class PLEASEWAIT extends MovieClip
@@ -29,7 +28,7 @@ package
       
       public static var processDuration:int = 0;
       
-      public static var processThreshold:int = 21600;
+      public static var processThreshold:int = 43200;
       
       public static var tipsAvailable:int = 33;
       
@@ -53,13 +52,6 @@ package
             _mc = GLOBAL._layerTop.addChild(new PLEASEWAITMC());
             _mc.tMessage.htmlText = "<b>" + param1 + "</b>";
             _mc.mcFrame.Setup(false);
-            _mcTips = _mc.tips;
-            _mcTips.mcFrame.Setup(false);
-            HideTips();
-            if(lastTipTime + tipDelay < getTimer() / 1000)
-            {
-               AddTips();
-            }
          }
       }
       
@@ -68,10 +60,7 @@ package
          if(_mc)
          {
             _mc.tMessage.htmlText = "<b>" + param1 + "</b>";
-            if(lastTipTime + tipDelay < getTimer() / 1000)
-            {
-               AddTips();
-            }
+            AddTips();
          }
       }
       
@@ -99,13 +88,17 @@ package
       {
          if(GLOBAL._giveTips && KEYS._setup && HasTips())
          {
-            if(Boolean(BASE._catchupTime) && BASE._catchupTime >= processThreshold)
+            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build")
             {
-               if(lastTipTime + tipDelay < getTimer() / 1000)
+               if(GLOBAL.StatGet("tipno"))
                {
-                  tipIndex = Math.round(Math.random() * (tips.length - 1));
+                  tipIndex = GLOBAL.StatGet("tipno");
+               }
+               if(tipIndex < tips.length)
+               {
                   ShowTips(tips[tipIndex]);
                }
+               GLOBAL.StatSet("tipno",tipIndex + 1);
             }
          }
       }
@@ -142,26 +135,18 @@ package
       
       public static function ShowTips(param1:String) : void
       {
-         HideTips();
-         _mcTips.tTitle.htmlText = KEYS.Get("tips_title");
-         _mcTips.tDesc.htmlText = "<b>" + param1 + "</b>";
-         _mcTips.x = 390;
-         _mcTips.y = 260;
-         _mcTips.scaleY = 0.9;
-         _mcTips.scaleX = 0.9;
-         TweenLite.to(_mcTips,0.2,{
-            "autoAlpha":1,
-            "scaleX":1,
-            "scaleY":1,
-            "ease":Quad.easeOut
-         });
-         lastTipTime = getTimer() / 1000;
+         GLOBAL._proTip = new PROTIP_CLIP();
+         GLOBAL._proTip.tTitle.htmlText = KEYS.Get("tips_title");
+         GLOBAL._proTip.tDesc.htmlText = "<b>" + param1 + "</b>";
+         GLOBAL._proTip.x = 390;
+         GLOBAL._proTip.y = 4 * 60;
+         POPUPS.Push(GLOBAL._proTip,null,null,null,null,true,"tip");
+         POPUPS.Show("tip");
+         lastTipTime = 1;
       }
       
       public static function HideTips() : void
       {
-         _mcTips.alpha = 0;
-         _mcTips.visible = false;
       }
    }
 }

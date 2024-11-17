@@ -28,7 +28,7 @@ package
                GLOBAL.ErrorMessage("");
             }
          }
-         else if(GLOBAL.Check() != "b9ceb6adfa30f5a771da7b6e77b2c5e0")
+         else if(GLOBAL.Check() != "c9698832f35d6319cefc9cee774f6013")
          {
             LOGGER.Log("err","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
             GLOBAL.ErrorMessage("");
@@ -56,7 +56,7 @@ package
             LOGGER.Log("err","CHECKER.Creatures " + CREATURELOCKER.Check());
             GLOBAL.ErrorMessage("");
          }
-         if(ResourceBombs.Check() != class_1.method_1(-288,-736))
+         if(ResourceBombs.Check() != class_1.method_1(8 * 60,-850))
          {
             LOGGER.Log("err","CHECKER.ResourceBombs " + ResourceBombs.Check());
             GLOBAL.ErrorMessage("");

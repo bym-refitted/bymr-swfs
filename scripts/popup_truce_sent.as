@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol983")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol967")]
    public dynamic class popup_truce_sent extends MovieClip
    {
       public var mcIcon1:MovieClip;

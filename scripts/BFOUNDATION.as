@@ -428,12 +428,14 @@ package
          {
             ImageCallback = function(param1:Array, param2:String):*
             {
-               var _loc3_:Array = null;
-               var _loc4_:String = null;
-               var _loc5_:BitmapData = null;
-               var _loc6_:BuildingAssetContainer = null;
-               var _loc7_:* = undefined;
-               if(param2 == _renderState)
+               var image:Array = null;
+               var key:String = null;
+               var bmd:BitmapData = null;
+               var container:BuildingAssetContainer = null;
+               var s:* = undefined;
+               var images:Array = param1;
+               var imagestate:String = param2;
+               if(imagestate == _renderState)
                {
                   _mcBase.Clear();
                   topContainer.Clear();
@@ -474,40 +476,46 @@ package
                   }
                   _lastLoadedState = state;
                   _mc.removeEventListener(Event.ENTER_FRAME,TickFast);
-                  for each(_loc3_ in param1)
+                  for each(image in images)
                   {
-                     _loc4_ = _loc3_[0];
-                     _loc5_ = _loc3_[1];
-                     if(Boolean(imageDataB["shadow" + state]) && imageDataA.baseurl + imageDataB["shadow" + state][0] == _loc4_)
+                     key = image[0];
+                     bmd = image[1];
+                     if(Boolean(imageDataB["shadow" + state]) && imageDataA.baseurl + imageDataB["shadow" + state][0] == key)
                      {
-                        _loc6_ = _mcBase;
-                        _loc6_.Clear();
-                        _loc7_ = _loc6_.addChild(new Bitmap(_loc5_));
-                        _loc7_.blendMode = "multiply";
-                        _loc7_.x = imageDataB["shadow" + state][1].x;
-                        _loc7_.y = imageDataB["shadow" + state][1].y;
+                        container = _mcBase;
+                        container.Clear();
+                        s = container.addChild(new Bitmap(bmd));
+                        s.blendMode = "multiply";
+                        s.x = imageDataB["shadow" + state][1].x;
+                        s.y = imageDataB["shadow" + state][1].y;
                      }
-                     else if(Boolean(imageDataB["top" + state]) && imageDataA.baseurl + imageDataB["top" + state][0] == _loc4_)
+                     else if(Boolean(imageDataB["top" + state]) && imageDataA.baseurl + imageDataB["top" + state][0] == key)
                      {
-                        _loc6_ = topContainer;
-                        _loc6_.Clear();
-                        _loc6_.addChild(new Bitmap(_loc5_));
-                        _loc6_.x = imageDataB["top" + state][1].x;
-                        _loc6_.y = imageDataB["top" + state][1].y;
-                        _mcHit.gotoAndStop("f" + imageLevel + state);
+                        container = topContainer;
+                        container.Clear();
+                        container.addChild(new Bitmap(bmd));
+                        container.x = imageDataB["top" + state][1].x;
+                        container.y = imageDataB["top" + state][1].y;
+                        try
+                        {
+                           _mcHit.gotoAndStop("f" + imageLevel + state);
+                        }
+                        catch(e:Error)
+                        {
+                        }
                         if(state == "destroyed" && _type != 14)
                         {
                            _mcHit.gotoAndStop("f" + state);
                         }
-                        _mcHit.x = _loc6_.x;
-                        _mcHit.y = _loc6_.y;
+                        _mcHit.x = container.x;
+                        _mcHit.y = container.y;
                      }
-                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == _loc4_)
+                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == key)
                      {
-                        _animBMD = _loc5_;
+                        _animBMD = bmd;
                         _animLoaded = true;
-                        _loc6_ = animContainer;
-                        _loc6_.Clear();
+                        container = animContainer;
+                        container.Clear();
                         _animRect = imageDataB["anim" + state][1];
                         _animFrames = imageDataB["anim" + state][2];
                         _animTick = int(Math.random() * (_animFrames - 2));
@@ -516,25 +524,31 @@ package
                            _animTick = 0;
                         }
                         _animContainerBMD = new BitmapData(_animRect.width,_animRect.height,true,0xffffff);
-                        _loc6_.addChild(new Bitmap(_animContainerBMD));
-                        _loc6_.x = _animRect.x;
-                        _loc6_.y = _animRect.y;
+                        container.addChild(new Bitmap(_animContainerBMD));
+                        container.x = _animRect.x;
+                        container.y = _animRect.y;
                         AnimFrame(false);
                         _mc.addEventListener(Event.ENTER_FRAME,TickFast);
                         if(!imageDataB["top" + state])
                         {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
+                           try
+                           {
+                              _mcHit.gotoAndStop("f" + imageLevel + state);
+                           }
+                           catch(e:Error)
+                           {
+                           }
                            if(state == "destroyed" && _type != 14)
                            {
                               _mcHit.gotoAndStop("f" + state);
                            }
-                           _mcHit.x = _loc6_.x;
-                           _mcHit.y = _loc6_.y;
+                           _mcHit.x = container.x;
+                           _mcHit.y = container.y;
                         }
                      }
-                     else if(imageDataB.topdestroyedfire && _oldRenderState == "damaged" && !GLOBAL._catchup && imageDataA.baseurl + imageDataB.topdestroyedfire[0] == _loc4_)
+                     else if(imageDataB.topdestroyedfire && _oldRenderState == "damaged" && !GLOBAL._catchup && imageDataA.baseurl + imageDataB.topdestroyedfire[0] == key)
                      {
-                        Fire.Add(_mc,new Bitmap(_loc5_),new Point(imageDataB.topdestroyedfire[1].x,imageDataB.topdestroyedfire[1].y));
+                        Fire.Add(_mc,new Bitmap(bmd),new Point(imageDataB.topdestroyedfire[1].x,imageDataB.topdestroyedfire[1].y));
                      }
                   }
                }
