@@ -20,8 +20,6 @@ package com.monsters.chat
       
       public static const WIDTH:int = 380;
       
-      private static var _serverTestMode:Boolean = false;
-      
       private static var _serverInited:Boolean = false;
       
       private static var _displayNameMap:Dictionary = new Dictionary();
@@ -109,23 +107,9 @@ package com.monsters.chat
          return _serverInited;
       }
       
-      public static function get serverTestMode() : Boolean
-      {
-         return _serverTestMode;
-      }
-      
-      public static function set serverTestMode(param1:Boolean) : void
-      {
-         if(_serverInited)
-         {
-            return;
-         }
-         _serverTestMode = true;
-      }
-      
       override public function set visible(param1:Boolean) : void
       {
-         super.visible = _serverTestMode ? false : param1;
+         super.visible = GLOBAL.flagsShouldChatConnectButStayInvisible() ? false : param1;
       }
       
       public function get IsConnected() : Boolean
@@ -288,7 +272,6 @@ package com.monsters.chat
          this._auth.authenticate();
          if(!this._isConnected)
          {
-            LOGGER.Log("err","BYMChat.login(): not connected");
             if(!this.displayedUnavailable)
             {
                this.system_message("Chat is currently unavailable.");
@@ -531,6 +514,7 @@ package com.monsters.chat
             this._isConnected = chatEvent.Success;
             if(!this._isConnected)
             {
+               LOGGER.Log("err","BYMChat.login(): not connected");
                if(!this.displayedUnavailable)
                {
                   this.system_message("Chat is currently unavailable.");
@@ -547,6 +531,7 @@ package com.monsters.chat
          }
          catch(e:Error)
          {
+            LOGGER.Log("err","BYMChat.onConnect: " + e.message + "\n" + e.getStackTrace());
          }
       }
       

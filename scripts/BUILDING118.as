@@ -143,7 +143,7 @@ package
          var c:* = undefined;
          var target:* = param1;
          super.Fire(target);
-         SOUNDS.Play("railgun1",0.4);
+         SOUNDS.Play("railgun1");
          damagepenalty = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          damagebuff = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())

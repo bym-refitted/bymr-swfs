@@ -302,7 +302,6 @@ package com.monsters.chat
          loginRequest = new LoginRequest(this.m_user.Name,_password,this.zone,_params);
          try
          {
-            §§pop();
             this.sfs.send(loginRequest);
             this._isLoggingOut = false;
          }
@@ -381,7 +380,6 @@ package com.monsters.chat
             joinRoomRequest = new JoinRoomRequest(this.join_channel.Name,"",doNotLeaveRoom,false);
             try
             {
-               §§pop();
                this.sfs.send(joinRoomRequest);
             }
             catch(e:*)
@@ -396,7 +394,6 @@ package com.monsters.chat
             extensionRequest = new ExtensionRequest(EXT_REQ_STRING,params);
             try
             {
-               §§pop();
                this.sfs.send(extensionRequest);
             }
             catch(e:*)
@@ -420,7 +417,6 @@ package com.monsters.chat
          extensionRequest = new ExtensionRequest(EXT_REQ_STRING,params);
          try
          {
-            §§pop();
             this.sfs.send(extensionRequest);
          }
          catch(e:*)
@@ -431,14 +427,12 @@ package com.monsters.chat
       
       public function updateDisplayNameDirect(param1:Channel, param2:String, param3:String, param4:String) : void
       {
-         var params:SFSObject;
          var extensionRequest:ExtensionRequest;
          var channel:Channel = param1;
          var recipientId:String = param2;
          var userId:String = param3;
          var displayName:String = param4;
-         §§pop();
-         params = new SFSObject();
+         var params:SFSObject = new SFSObject();
          params.putUtfString("command","updatename");
          params.putUtfString("action","updatedirect");
          params.putUtfString("roomname",channel.Name);
@@ -448,7 +442,6 @@ package com.monsters.chat
          extensionRequest = new ExtensionRequest(EXT_REQ_STRING,params);
          try
          {
-            §§pop();
             this.sfs.send(extensionRequest);
          }
          catch(e:*)
@@ -462,7 +455,6 @@ package com.monsters.chat
          var _loc3_:Dictionary = new Dictionary();
          _loc3_["channel"] = this.join_channel;
          dispatchEvent(new ChatEvent(ChatEvent.JOIN,true,_loc3_));
-         §§pop();
       }
       
       private function onRoomJoinError(param1:SFSEvent) : void
@@ -470,7 +462,6 @@ package com.monsters.chat
          var _loc3_:Dictionary = new Dictionary();
          _loc3_["channel"] = this.join_channel;
          dispatchEvent(new ChatEvent(ChatEvent.JOIN,false,_loc3_));
-         §§pop();
       }
       
       private function onRoomAdd(param1:SFSEvent) : void

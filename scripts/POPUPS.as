@@ -247,6 +247,7 @@ package
       public static function Timeout() : *
       {
          var _loc1_:MovieClip = null;
+         SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
             GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;

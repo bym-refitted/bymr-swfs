@@ -18,6 +18,7 @@ package
    import flash.display.Loader;
    import flash.display.MovieClip;
    import flash.events.*;
+   import flash.external.ExternalInterface;
    import flash.geom.Point;
    import flash.net.*;
    import flash.utils.getTimer;
@@ -204,6 +205,8 @@ package
       
       public static var _guardianData:Object = null;
       
+      private static var _loadedSomething:Boolean = false;
+      
       public function BASE()
       {
          super();
@@ -345,7 +348,6 @@ package
       
       public static function LoadBase(param1:String = null, param2:int = 0, param3:int = 0, param4:String = "build", param5:Boolean = false) : *
       {
-         SOUNDS.StopAll();
          if(Boolean(GLOBAL._advancedMap) && MapRoom._open)
          {
             MapRoom.Hide();
@@ -440,6 +442,11 @@ package
             var obj:Object = param1;
             if(obj.error == 0)
             {
+               if(!_loadedSomething)
+               {
+                  ExternalInterface.call("cc.recordStats","baseend");
+                  _loadedSomething = true;
+               }
                if(GLOBAL._mode == "build")
                {
                   GLOBAL._openBase = null;
@@ -479,7 +486,15 @@ package
                {
                   GLOBAL._chatServers = new Array();
                }
-               if(obj.chatenabled == null)
+               if(obj.chatenabled != null)
+               {
+                  GLOBAL._chatEnabled = obj.chatenabled;
+                  if(GLOBAL.flagsShouldChatExist())
+                  {
+                     GLOBAL.initChat();
+                  }
+               }
+               else
                {
                   GLOBAL._chatEnabled = 0;
                }
@@ -1114,6 +1129,10 @@ package
          if(GLOBAL._checkPromo == 1 && midgameIncentive != 0)
          {
             loadVars.push(["checkpromotion",1]);
+         }
+         if(!_loadedSomething)
+         {
+            ExternalInterface.call("cc.recordStats","basestart");
          }
          if(url)
          {

@@ -152,7 +152,7 @@ package de.polygonal.ds
          return _size;
       }
       
-      public function method_2(param1:Object) : Boolean
+      public function class_1(param1:Object) : Boolean
       {
          var _loc5_:* = 0;
          var _loc6_:* = 0;

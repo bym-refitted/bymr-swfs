@@ -290,7 +290,7 @@ package
       
       public static var _chatInited:Boolean = false;
       
-      public static var _chatEnabled:Boolean = false;
+      public static var _chatEnabled:Boolean = true;
       
       public static var _checkPromo:int = 1;
       
@@ -11885,18 +11885,14 @@ package
          _flags.showProgressBar = 0;
       }
       
-      public static function hideChat() : void
-      {
-         if(_bymChat)
-         {
-            _bymChat.hide();
-         }
-      }
-      
       public static function initChat() : void
       {
          if(_chatInited)
          {
+            if(_bymChat != null)
+            {
+               _bymChat.show();
+            }
             return;
          }
          if(_chatServers.length == 0)
@@ -11905,13 +11901,14 @@ package
          }
          try
          {
-            if(Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 0)
+            if(!flagsShouldChatExist())
             {
                if(_bymChat != null)
                {
                   _bymChat.logout();
                   _bymChat.hide();
                   _bymChat = null;
+                  _chatInited = false;
                }
                return;
             }
@@ -11922,21 +11919,10 @@ package
          }
          try
          {
-            if(Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 1)
-            {
-               BYMChat.serverTestMode = true;
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #2: " + e.message + " | " + e.getStackTrace());
-         }
-         try
-         {
             _chatroomNumber = 1;
             if(!_local)
             {
-               _chatroomNumber = LOGIN._playerID % (!!GLOBAL._flags.numchatrooms ? GLOBAL._flags.numchatrooms : 5 * 60);
+               _chatroomNumber = LOGIN._playerID % (_flags != null && Boolean(_flags.numchatrooms) ? _flags.numchatrooms : 5 * 60);
             }
          }
          catch(e:Error)
@@ -11952,6 +11938,7 @@ package
                   _bymChat.logout();
                   _bymChat.hide();
                   _bymChat = null;
+                  _chatInited = false;
                }
                return;
             }
@@ -11985,7 +11972,7 @@ package
             }
             try
             {
-               if(BYMChat.serverTestMode)
+               if(flagsShouldChatConnectButStayInvisible())
                {
                   _bymChat.hide();
                }
@@ -12089,6 +12076,21 @@ package
             _bymChat.position();
             _bymChat.show();
          }
+      }
+      
+      public static function flagsShouldChatDisplay() : Boolean
+      {
+         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 2;
+      }
+      
+      public static function flagsShouldChatExist() : Boolean
+      {
+         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat > 0;
+      }
+      
+      public static function flagsShouldChatConnectButStayInvisible() : Boolean
+      {
+         return _chatEnabled && _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 1;
       }
       
       public static function ValidateMushroomPick(param1:BFOUNDATION) : void

@@ -156,8 +156,12 @@ package
          }
          try
          {
-            if(GLOBAL._flags != null && Boolean(GLOBAL._flags.hasOwnProperty("chat")) && GLOBAL._flags.chat != 0)
+            if(GLOBAL.flagsShouldChatExist())
             {
+               if(TUTORIAL._stage >= 200)
+               {
+                  GLOBAL.initChat();
+               }
             }
          }
          catch(e:Error)
@@ -167,7 +171,7 @@ package
          }
          try
          {
-            if(GLOBAL._flags != null && Boolean(GLOBAL._flags.hasOwnProperty("chat")) && GLOBAL._flags.chat == 2 && GLOBAL._chatEnabled)
+            if(GLOBAL.flagsShouldChatDisplay())
             {
                GLOBAL.setChatPosition(GLOBAL._layerUI,10,5 * 60);
             }
@@ -272,11 +276,7 @@ package
          }
          if(GLOBAL._bymChat)
          {
-            if(GLOBAL._bymChat.parent)
-            {
-               GLOBAL._bymChat.parent.removeChild(GLOBAL._bymChat);
-            }
-            GLOBAL._bymChat = null;
+            GLOBAL._bymChat.hide();
          }
       }
       
@@ -357,8 +357,7 @@ package
          {
             if(GLOBAL._layerUI.contains(GLOBAL._bymChat))
             {
-               GLOBAL._layerUI.removeChild(GLOBAL._bymChat);
-               GLOBAL._bymChat = null;
+               GLOBAL._bymChat.hide();
             }
          }
          if(GLOBAL._render)
@@ -433,6 +432,10 @@ package
                   if(!_top.mcFullscreen.visible)
                   {
                      _top.mcFullscreen.visible = true;
+                  }
+                  if(!GLOBAL._chatInited && GLOBAL.flagsShouldChatExist())
+                  {
+                     GLOBAL.initChat();
                   }
                }
                if(GLOBAL._mode != "build" || !GLOBAL._flags.saveicon)

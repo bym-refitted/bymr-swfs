@@ -151,7 +151,7 @@ package
                            _loc3_ = 1.25;
                         }
                         this._target._health.Add(-(this._target._damageMult * int(_damage * _loc2_ * _loc3_)));
-                        ATTACK.Damage(_mc.x,_mc.y - 50,int(_damage * _loc2_ * _loc3_));
+                        ATTACK.Damage(_mc.x,_mc.y - 50,this._target._damageMult * int(_damage * _loc2_ * _loc3_));
                      }
                      SOUNDS.Play("lightningfire");
                      ++this._shotsFired;

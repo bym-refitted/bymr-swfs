@@ -358,19 +358,7 @@ package
       
       public static function StopAll() : void
       {
-         var _loc1_:Number = NaN;
-         _loc1_ = 0;
-         if(_currentMusic)
-         {
-            _loc1_ = _musicChannel.position;
-         }
          SoundMixer.stopAll();
-         if(_currentMusic)
-         {
-            _queuedMusic = _currentMusic;
-            _currentMusic = null;
-            PlayMusicB(_queuedMusic,_musicVolume,_musicPan,_loc1_);
-         }
       }
       
       public static function Toggle(param1:MouseEvent = null) : void

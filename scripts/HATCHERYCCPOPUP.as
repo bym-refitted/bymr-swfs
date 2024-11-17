@@ -568,7 +568,7 @@ package
          var _loc1_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          var _loc3_:int = 1;
          var _loc6_:int = 1;
-         while(_loc6_ < 15)
+         while(_loc6_ < 16)
          {
             _loc10_ = "C" + _loc6_;
             _loc11_ = "monster" + _loc6_;

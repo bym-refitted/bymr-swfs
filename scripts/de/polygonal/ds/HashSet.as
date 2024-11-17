@@ -116,7 +116,7 @@ package de.polygonal.ds
          return _h._size;
       }
       
-      public function method_2(param1:Object) : Boolean
+      public function class_1(param1:Object) : Boolean
       {
          var _loc3_:* = null as IntIntHashTable;
          var _loc4_:* = 0;

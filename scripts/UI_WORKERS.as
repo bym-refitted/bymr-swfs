@@ -48,7 +48,7 @@ package
             {
                _maxWorkers = 1;
             }
-            if(!GLOBAL._chatEnabled || GLOBAL._flags && GLOBAL._flags.hasOwnProperty("chat") && GLOBAL._flags.chat != 2)
+            if(!GLOBAL.flagsShouldChatDisplay())
             {
                _loc1_ = 0;
                while(_loc1_ < _maxWorkers)
@@ -125,7 +125,7 @@ package
             {
                _loc3_ = KEYS.Get("ui_worker_hire");
             }
-            if(!GLOBAL._chatEnabled || GLOBAL._flags && GLOBAL._flags.hasOwnProperty("chat") && GLOBAL._flags.chat != 2)
+            if(!GLOBAL.flagsShouldChatDisplay())
             {
                PopupShow(_mc.x + 30 + i * _workerMCOffset,_mc.y,_loc3_,i);
             }
@@ -205,7 +205,7 @@ package
          var _loc1_:* = undefined;
          var _loc2_:* = undefined;
          var _loc3_:Rectangle = null;
-         if(!GLOBAL._chatEnabled || GLOBAL._flags && GLOBAL._flags.hasOwnProperty("chat") && GLOBAL._flags.chat != 2)
+         if(!GLOBAL.flagsShouldChatDisplay())
          {
             if(_mc)
             {
@@ -271,7 +271,7 @@ package
       public static function PopupShow(param1:int, param2:int, param3:String, param4:int) : *
       {
          PopupHide();
-         if(!GLOBAL._chatEnabled || GLOBAL._flags && GLOBAL._flags.hasOwnProperty("chat") && GLOBAL._flags.chat != 2)
+         if(!GLOBAL.flagsShouldChatDisplay())
          {
             _popupID = param4;
             _popupmc2 = new bubblepopup();

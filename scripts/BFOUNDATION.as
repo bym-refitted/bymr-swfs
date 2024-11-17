@@ -1970,6 +1970,10 @@ package
          this._type = param1.t;
          this._id = param1.id;
          _loc2_ = GRID.ToISO(param1.X,param1.Y,0);
+         if(this._type == 112)
+         {
+            param1.l = 1;
+         }
          if(param1.l)
          {
             this._lvl.Set(int(param1.l));

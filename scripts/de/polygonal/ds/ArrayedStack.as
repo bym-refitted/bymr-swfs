@@ -139,7 +139,7 @@ package de.polygonal.ds
          }
       }
       
-      public function method_2(param1:int, param2:Object) : void
+      public function class_1(param1:int, param2:Object) : void
       {
          _a[param1] = param2;
       }
@@ -286,7 +286,7 @@ package de.polygonal.ds
          return _top == 0;
       }
       
-      public function method_3(param1:int) : Object
+      public function method_2(param1:int) : Object
       {
          return _a[param1];
       }
