@@ -101,6 +101,40 @@ package com.monsters.maproom_advanced
          }
       }
       
+      public function Cleanup() : *
+      {
+         if(this._mode == "invite")
+         {
+            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               if(this.parent)
+               {
+                  this.parent.removeChild(this);
+               }
+               MapRoom.AcceptInvitation(true);
+            });
+            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               if(this.parent)
+               {
+                  this.parent.removeChild(this);
+               }
+               MapRoom.AcceptInvitation(false);
+            });
+         }
+         else
+         {
+            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               RelocateConfirm(true);
+            });
+            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               RelocateConfirm(false);
+            });
+         }
+      }
+      
       public function Hide() : *
       {
          GLOBAL.BlockerRemove();

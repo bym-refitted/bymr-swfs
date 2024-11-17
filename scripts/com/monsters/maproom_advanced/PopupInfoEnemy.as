@@ -2,11 +2,13 @@ package com.monsters.maproom_advanced
 {
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
+   import com.monsters.alliances.*;
    import com.monsters.display.ImageCache;
    import com.monsters.mailbox.Message;
    import com.monsters.mailbox.model.Contact;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
    import flash.events.Event;
@@ -14,8 +16,6 @@ package com.monsters.maproom_advanced
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.net.URLRequest;
-   import gs.TweenLite;
-   import gs.easing.Elastic;
    
    public class PopupInfoEnemy extends PopupInfoEnemy_CLIP
    {
@@ -28,6 +28,10 @@ package com.monsters.maproom_advanced
       private static var _takeoverCoeff2:SecNum;
       
       private static var _shinyCost:SecNum;
+      
+      private static var _popupmc:bubblepopupRight;
+      
+      private static var _popupdo:DisplayObject;
       
       private static var _bookmarked:Boolean;
       
@@ -53,42 +57,57 @@ package com.monsters.maproom_advanced
          this.bAttack.SetupKey("map_attack_btn");
          this.bAttack.Highlight = true;
          this.bAttack.Enabled = true;
-         this.bAttack.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
-            ButtonInfo("attack");
+            PopupHide();
          });
          this.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
          this.bView.SetupKey("map_view_btn");
-         this.bView.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
-            ButtonInfo("view");
+            PopupHide();
          });
          this.bView.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
             View();
          });
          this.bSendMessage.SetupKey("map_message_btn");
-         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
-            ButtonInfo("message");
+            PopupHide();
          });
          this.bSendMessage.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
             ShowMessage();
          });
          this.bTruce.SetupKey("newmap_truce_btn");
-         this.bTruce.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
-            ButtonInfo("truce");
+            PopupHide();
          });
          this.bTruce.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
             ShowTruce();
          });
-         this.bBookmark.SetupKey("newmap_bookmark_btn");
-         this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bAlliance.Setup("Invite to Alliance");
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
          {
-            ButtonInfo("bookmark");
+            PopupHide();
+         });
+         this.bAlliance.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            ShowAllianceInvite();
+         });
+         this.bBookmark.SetupKey("newmap_bookmark_btn");
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
          });
          this.bBookmark.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
@@ -171,27 +190,92 @@ package com.monsters.maproom_advanced
          {
             this.bSendMessage.Enabled = true;
             this.bTruce.Enabled = true;
+            if(ALLIANCES._myAlliance)
+            {
+               this.bAlliance.Enabled = true;
+            }
+            else
+            {
+               this.bAlliance.Enabled = false;
+            }
             if(!this._cell._destroyed)
             {
                tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + "</b>";
+               if(this._cell._alliance)
+               {
+                  tName.htmlText += "<br>" + this._cell._alliance.name;
+               }
             }
             else
             {
                tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               if(this._cell._alliance)
+               {
+                  tName.htmlText += "<br>" + this._cell._alliance.name;
+               }
             }
             this.ProfilePic();
+            if(this._cell._level)
+            {
+               mcLevel.visible = true;
+               mcLevel.lv_txt.htmlText = "<b>" + this._cell._level + "</b>";
+            }
+            else
+            {
+               mcLevel.visible = false;
+            }
+            if(this._cell._alliance)
+            {
+               this.AlliancePic(AllyInfo._picURLs.sizeM,this.mcAlliancePic.mcImage,this.mcAlliancePic.mcBG,true);
+            }
+            else
+            {
+               this.mcAlliancePic.visible = false;
+               this.mcRelations.visible = false;
+            }
          }
          else if(this._cell._base == 2)
          {
             this.bSendMessage.Enabled = true;
             this.bTruce.Enabled = true;
+            if(ALLIANCES._myAlliance)
+            {
+               this.bAlliance.Enabled = true;
+            }
+            else
+            {
+               this.bAlliance.Enabled = false;
+            }
             tName.htmlText = "<b>" + this._cell._name + "\'s Yard</b>";
+            if(this._cell._alliance)
+            {
+               tName.htmlText += "<br>" + this._cell._alliance.name;
+            }
             this.ProfilePic();
+            if(this._cell._level)
+            {
+               mcLevel.visible = true;
+               mcLevel.lv_txt.htmlText = "<b>" + this._cell._level + "</b>";
+            }
+            else
+            {
+               mcLevel.visible = false;
+            }
+            if(this._cell._alliance)
+            {
+               this.AlliancePic(AllyInfo._picURLs.sizeM,this.mcAlliancePic.mcImage,this.mcAlliancePic.mcBG,true);
+            }
+            else
+            {
+               this.mcAlliancePic.visible = false;
+               this.mcRelations.visible = false;
+            }
          }
          else if(this._cell._base == 1)
          {
             this.bSendMessage.Enabled = false;
             this.bTruce.Enabled = false;
+            this.bAlliance.Enabled = false;
             if(!this._cell._destroyed)
             {
                tName.htmlText = "<b>" + this._cell._name + " Tribe</b>";
@@ -201,6 +285,24 @@ package com.monsters.maproom_advanced
                tName.htmlText = "<b>" + this._cell._name + " Tribe (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
+            if(this._cell._level)
+            {
+               mcLevel.visible = true;
+               mcLevel.lv_txt.htmlText = "<b>" + this._cell._level + "</b>";
+            }
+            else
+            {
+               mcLevel.visible = false;
+            }
+            if(this._cell._alliance)
+            {
+               this.AlliancePic(AllyInfo._picURLs.sizeM,this.mcAlliancePic.mcImage,this.mcAlliancePic.mcBG,false);
+            }
+            else
+            {
+               this.mcAlliancePic.visible = false;
+               this.mcRelations.visible = false;
+            }
          }
          tLocation.htmlText = this._cell.X + "x" + this._cell.Y;
          tHeight.htmlText = this._cell._height - 100 + "m";
@@ -245,7 +347,6 @@ package com.monsters.maproom_advanced
          {
             this.bView.SetupKey("map_view_btn");
          }
-         this.ButtonInfo("attack");
          _bookmarked = false;
          this.bBookmark.Enabled = true;
          if(MapRoom._bookmarks)
@@ -270,6 +371,72 @@ package com.monsters.maproom_advanced
             }
          }
          this.Update();
+      }
+      
+      public function Cleanup() : *
+      {
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bAttack.removeEventListener(MouseEvent.CLICK,this.Attack);
+         this.bView.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            View();
+         });
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bSendMessage.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            ShowMessage();
+         });
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bTruce.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            ShowTruce();
+         });
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bAlliance.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            ShowAllianceInvite();
+         });
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         {
+            PopupHide();
+         });
+         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            if(!_bookmarked)
+            {
+               MapRoom._mc.ShowBookmarkAddPopup(_cell);
+            }
+            else
+            {
+               GLOBAL.Message(KEYS.Get("newmap_bm_done"));
+            }
+         });
+         _minTakeoverCost = null;
+         _takeoverCoeff1 = null;
+         _takeoverCoeff2 = null;
+         mcFrame = null;
       }
       
       private function ProfilePic() : *
@@ -325,6 +492,64 @@ package com.monsters.maproom_advanced
          }
       }
       
+      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : *
+      {
+         var k:int = 0;
+         var allyinfo:AllyInfo = null;
+         var size:String = param1;
+         var container:MovieClip = param2;
+         var containerBG:MovieClip = param3;
+         var showRel:Boolean = param4;
+         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         {
+            var _loc4_:Bitmap = new Bitmap(param2);
+            if(param3[0])
+            {
+               param3[0].addChild(_loc4_);
+               param3[0].setChildIndex(_loc4_,0);
+               if(param3[0].parent)
+               {
+                  param3[0].parent.visible = true;
+               }
+            }
+         };
+         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         {
+            var _loc4_:Bitmap = new Bitmap(param2);
+            if(param3[0])
+            {
+               param3[0].addChild(_loc4_);
+               param3[0].visible = true;
+            }
+         };
+         if(!this._cell._facebookID || this._cell._base <= 1)
+         {
+            this.mcAlliancePic.visible = false;
+            this.mcRelations.visible = false;
+            return;
+         }
+         if(this._cell._base > 1 && Boolean(this._cell._alliance))
+         {
+            k = int(this.mcAlliancePic.mcImage.numChildren);
+            while(k--)
+            {
+               this.mcAlliancePic.mcImage.removeChildAt(k);
+            }
+            k = this.mcRelations.numChildren;
+            while(k--)
+            {
+               this.mcRelations.removeChildAt(k);
+            }
+            this.mcAlliancePic.visible = true;
+            allyinfo = this._cell._alliance;
+            allyinfo.AlliancePic(size,container,containerBG,true);
+         }
+         else
+         {
+            this.mcAlliancePic.visible = false;
+         }
+      }
+      
       public function Attack(param1:MouseEvent) : *
       {
          var _loc2_:Number = NaN;
@@ -377,6 +602,18 @@ package com.monsters.maproom_advanced
          {
             GLOBAL.Message(KEYS.Get("newmap_truce"));
          }
+         else if(Boolean(this._cell._alliance) && this._cell._allianceID == ALLIANCES._allianceID)
+         {
+            GLOBAL.Message(KEYS.Get("map_attack_ally",{"v1":this._cell._name}),KEYS.Get("map_attack_btn"),this.DoAttack);
+         }
+         else if(Boolean(this._cell._alliance) && this._cell._alliance.relationship > 0)
+         {
+            GLOBAL.Message(KEYS.Get("map_attack_allyfriend",{"v1":this._cell._name}),KEYS.Get("map_attack_btn"),this.DoAttack);
+         }
+         else if(this._cell._friend)
+         {
+            GLOBAL.Message("Really?!  You want to attack " + this._cell._name + "? We thought you were friends.",KEYS.Get("map_attack_btn"),this.DoAttack);
+         }
          else
          {
             MapRoom._mc.ShowAttack(this._cell);
@@ -412,6 +649,7 @@ package com.monsters.maproom_advanced
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
                BASE._isOutpost = 1;
+               GLOBAL.BlockerRemove();
                BASE.LoadBase(null,null,_cell._baseID,"build");
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
@@ -543,44 +781,96 @@ package com.monsters.maproom_advanced
          (this.parent as MovieClip).addChild(this._message);
       }
       
-      public function ButtonInfo(param1:String) : *
+      public function ShowAllianceInvite() : *
       {
-         if(param1 == "attack")
+         if(this._cell._base < 2)
+         {
+            GLOBAL.Message(KEYS.Get("newmap_wmtruce",{"v1":this._cell._name}));
+            return;
+         }
+         ALLIANCES.AllianceInvite(this._cell);
+      }
+      
+      public function ButtonInfo(param1:MouseEvent) : *
+      {
+         var _loc2_:String = "";
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         if(param1.currentTarget.name == "bAttack")
          {
             if(this._cell._destroyed)
             {
-               txtButtonInfo.htmlText = KEYS.Get("newmap_take5");
+               _loc2_ = KEYS.Get("newmap_take5");
             }
             else
             {
-               txtButtonInfo.htmlText = KEYS.Get("newmap_att4");
+               _loc2_ = KEYS.Get("newmap_att4");
             }
-            mcArrow.x = bAttack.x + bAttack.width / 2 - 5;
+            _loc3_ = bAttack.x - 5;
+            _loc4_ = bAttack.y + bAttack.height / 2 - 0;
          }
-         else if(param1 == "view")
+         else if(param1.currentTarget.name == "bView")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_view",{"v1":this._cell._name});
-            mcArrow.x = bView.x + bView.width / 2 - 5;
+            _loc2_ = KEYS.Get("newmap_view",{"v1":this._cell._name});
+            _loc3_ = bView.x - 5;
+            _loc4_ = bView.y + bAttack.height / 2 - 0;
          }
-         else if(param1 == "message")
+         else if(param1.currentTarget.name == "bSendMessage")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_msg");
-            mcArrow.x = bSendMessage.x + bSendMessage.width / 2 - 5;
+            _loc2_ = KEYS.Get("newmap_msg");
+            _loc3_ = bSendMessage.x - 5;
+            _loc4_ = bSendMessage.y + bAttack.height / 2 - 0;
          }
-         else if(param1 == "truce")
+         else if(param1.currentTarget.name == "bTruce")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_reqtruce");
-            mcArrow.x = bTruce.x + bTruce.width / 2 - 5;
+            _loc2_ = KEYS.Get("newmap_reqtruce");
+            _loc3_ = bTruce.x - 5;
+            _loc4_ = bTruce.y + bAttack.height / 2 - 0;
          }
-         else if(param1 == "bookmark")
+         else if(param1.currentTarget.name == "bBookmark")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_bookmark");
-            mcArrow.x = bBookmark.x + bBookmark.width / 2 - 5;
+            _loc2_ = KEYS.Get("newmap_bookmark");
+            _loc3_ = bBookmark.x - 5;
+            _loc4_ = bBookmark.y + bAttack.height / 2 - 0;
          }
-         TweenLite.to(mcArrow,0.6,{
-            "x":mcArrow.x + 5,
-            "ease":Elastic.easeOut
-         });
+         else if(param1.currentTarget.name == "bAlliance")
+         {
+            _loc2_ = "Invite to Alliance";
+            _loc3_ = bAlliance.x - 5;
+            _loc4_ = bAlliance.y + bAttack.height / 2 - 0;
+         }
+         _loc3_ += this.x;
+         _loc4_ += this.y;
+         this.PopupShow(_loc3_,_loc4_,_loc2_);
+      }
+      
+      public function PopupShow(param1:int, param2:int, param3:String) : *
+      {
+         this.PopupHide();
+         _popupmc = new bubblepopupRight();
+         _popupmc.Setup(param1,param2,param3,150);
+         _popupmc.Nudge("left");
+         _popupdo = this.parent.addChild(_popupmc);
+      }
+      
+      public function PopupUpdate(param1:String) : *
+      {
+         if(_popupmc)
+         {
+            _popupmc.Update(param1);
+         }
+      }
+      
+      public function PopupHide() : *
+      {
+         if(_popupdo)
+         {
+            if(this.parent)
+            {
+               this.parent.removeChild(_popupdo);
+            }
+            _popupdo = null;
+         }
       }
       
       public function Update() : *

@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol337")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol387")]
    public dynamic class buttonFullscreen_CLIP extends buttonFullscreen
    {
       public function buttonFullscreen_CLIP()

@@ -1,5 +1,6 @@
 package com.monsters.maproom_advanced
 {
+   import com.monsters.alliances.AllyInfo;
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -172,6 +173,10 @@ package com.monsters.maproom_advanced
             this.bJump.visible = false;
             this.HideResourceDisplay();
          }
+         mcInfo.labelOwner.htmlText = "<b>Owner:</b>";
+         mcInfo.labelAlliance.htmlText = "<b>Alliance:</b>";
+         mcInfo.labelStatus.htmlText = "<b>Status:</b>";
+         mcInfo.labelLocation.htmlText = "<b>Location:</b>";
          this.GenerateCells(MapRoom._homePoint);
          this._sortArray.sortOn("depth",Array.NUMERIC);
          i = 0;
@@ -208,8 +213,11 @@ package com.monsters.maproom_advanced
          };
          JumpPopupHide = function(param1:MouseEvent = null):*
          {
-            popupMC.parent.removeChild(popupMC);
             GLOBAL.BlockerRemove();
+            popupMC.bJump.removeEventListener(MouseEvent.CLICK,Jump);
+            popupMC.mcFrame = null;
+            popupMC.parent.removeChild(popupMC);
+            popupMC = null;
          };
          this.HideBookmarkMenu();
          popupMC = new MapRoomPopupJump();
@@ -264,14 +272,25 @@ package com.monsters.maproom_advanced
          {
             return;
          }
-         var _loc2_:int = int(mcInfo.mcProfilePic.mcBG.numChildren);
+         var _loc2_:int = int(mcInfo.mcProfilePic.mcImage.numChildren);
          while(_loc2_--)
          {
-            mcInfo.mcProfilePic.mcBG.removeChildAt(_loc2_);
+            mcInfo.mcProfilePic.mcImage.removeChildAt(_loc2_);
          }
+         _loc2_ = int(mcInfo.mcAlliancePic.mcImage.numChildren);
+         while(_loc2_--)
+         {
+            mcInfo.mcAlliancePic.mcImage.removeChildAt(_loc2_);
+         }
+         mcInfo.mcAlliancePic.visible = false;
          if(param1._base > 1 && Boolean(param1._facebookID))
          {
             this.ProfilePic(param1._facebookID);
+            if(Boolean(param1._alliance) && Boolean(param1._alliance.image))
+            {
+               this.AlliancePic(AllyInfo._picURLs.sizeM,param1._alliance);
+               mcInfo.mcAlliancePic.visible = true;
+            }
          }
          if(param1._base == 1 && Boolean(param1._name))
          {
@@ -279,35 +298,65 @@ package com.monsters.maproom_advanced
          }
          if(param1._water)
          {
-            mcInfo.tName.htmlText = "Water";
-            mcInfo.tStatus.htmlText = "Wet";
-            mcInfo.tOwner.htmlText = "No One";
+            mcInfo.tAlliance.text = "";
+            mcInfo.tStatus.htmlText = "Water";
+            mcInfo.tOwner.htmlText = "";
          }
          else
          {
-            if(param1._base == 0)
+            if(param1._alliance)
             {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_re");
+               if(param1._base == 0)
+               {
+                  mcInfo.tAlliance.text = "";
+               }
+               if(param1._base == 1)
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_wm");
+               }
+               if(param1._base == 2 && Boolean(param1._mine))
+               {
+                  mcInfo.tAlliance.text = param1._alliance.name;
+               }
+               if(param1._base == 2 && !param1._mine)
+               {
+                  mcInfo.tAlliance.text = param1._alliance.name;
+               }
+               if(param1._base == 3 && Boolean(param1._mine))
+               {
+                  mcInfo.tAlliance.text = param1._alliance.name;
+               }
+               if(param1._base == 3 && !param1._mine)
+               {
+                  mcInfo.tAlliance.text = param1._alliance.name;
+               }
             }
-            if(param1._base == 1)
+            else
             {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_wm");
-            }
-            if(param1._base == 2 && Boolean(param1._mine))
-            {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_my");
-            }
-            if(param1._base == 2 && !param1._mine)
-            {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_ey");
-            }
-            if(param1._base == 3 && Boolean(param1._mine))
-            {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_outposts");
-            }
-            if(param1._base == 3 && !param1._mine)
-            {
-               mcInfo.tName.htmlText = KEYS.Get("newmap_eo");
+               if(param1._base == 0)
+               {
+                  mcInfo.tAlliance.text = "";
+               }
+               if(param1._base == 1)
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_wm");
+               }
+               if(param1._base == 2 && Boolean(param1._mine))
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_my");
+               }
+               if(param1._base == 2 && !param1._mine)
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_ey");
+               }
+               if(param1._base == 3 && Boolean(param1._mine))
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_outposts");
+               }
+               if(param1._base == 3 && !param1._mine)
+               {
+                  mcInfo.tAlliance.text = KEYS.Get("newmap_eo");
+               }
             }
             if(param1._damage)
             {
@@ -317,26 +366,34 @@ package com.monsters.maproom_advanced
             {
                mcInfo.tStatus.htmlText = "Fine";
             }
+            if(!param1._damage && param1._base < 1)
+            {
+               mcInfo.tStatus.htmlText = KEYS.Get("newmap_re");
+            }
             mcInfo.tOwner.htmlText = param1._name;
          }
          mcInfo.tLocation.htmlText = param1.X + " x " + param1.Y;
          mcInfo.visible = true;
       }
       
-      private function ProfilePic(param1:int) : *
+      private function ProfilePic(param1:Number) : *
       {
          var profilePic:Loader = null;
          var onImageLoad:Function = null;
          var LoadImageError:Function = null;
-         var fbid:int = param1;
+         var fbid:Number = param1;
          onImageLoad = function(param1:Event):void
          {
             profilePic.height = 50;
             profilePic.width = 50;
-            mcInfo.mcProfilePic.mcBG.addChild(profilePic);
+            mcInfo.mcProfilePic.mcImage.addChild(profilePic);
+            profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
+            profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
          LoadImageError = function(param1:IOErrorEvent):*
          {
+            profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
+            profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
          profilePic = new Loader();
          profilePic.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
@@ -351,7 +408,7 @@ package com.monsters.maproom_advanced
          imageComplete = function(param1:String, param2:BitmapData):void
          {
             var _loc3_:Bitmap = new Bitmap(param2);
-            mcInfo.mcProfilePic.mcBG.addChild(_loc3_);
+            mcInfo.mcProfilePic.mcImage.addChild(_loc3_);
          };
          switch(tribe)
          {
@@ -370,6 +427,11 @@ package com.monsters.maproom_advanced
          }
       }
       
+      private function AlliancePic(param1:String, param2:AllyInfo) : *
+      {
+         param2.AlliancePic(param1,mcInfo.mcAlliancePic.mcImage,mcInfo.mcAlliancePic.mcBG,true);
+      }
+      
       public function Hide(param1:MouseEvent = null) : *
       {
          GLOBAL._attackerCellsInRange = [];
@@ -384,7 +446,99 @@ package com.monsters.maproom_advanced
             BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build");
          }
          SOUNDS.Play("close");
+         this.Cleanup();
          MapRoom.Hide();
+      }
+      
+      public function Cleanup() : void
+      {
+         var i:int = 0;
+         this._bubble = null;
+         if(this._popupInfoMine)
+         {
+            this._popupInfoMine.Cleanup();
+            this._popupInfoMine = null;
+         }
+         if(this._popupInfoEnemy)
+         {
+            this._popupInfoEnemy.Cleanup();
+            this._popupInfoEnemy = null;
+         }
+         if(this._popupMonsters)
+         {
+            this._popupMonsters.Cleanup();
+            this._popupMonsters = null;
+         }
+         if(this._popupMonstersB)
+         {
+            this._popupMonstersB.Cleanup();
+            this._popupMonstersB = null;
+         }
+         if(this._popupAttackA)
+         {
+            this._popupAttackA.Cleanup();
+            this._popupAttackA = null;
+         }
+         if(this._popupBookmarkAdd)
+         {
+            this._popupBookmarkAdd.mcFrame = null;
+            this._popupBookmarkAdd = null;
+         }
+         if(this._popupRelocateMe)
+         {
+            this._popupRelocateMe.Cleanup();
+            this._popupRelocateMe = null;
+         }
+         this._popupBookmarkMenu = null;
+         if(this._popupInfoViewOnly)
+         {
+            this._popupInfoViewOnly.Cleanup();
+            this._popupInfoViewOnly = null;
+         }
+         mcFrame = null;
+         mcFrame2 = null;
+         if(this._cellContainer)
+         {
+            while(this._cellContainer.numChildren > 0)
+            {
+               this._cellContainer.removeChildAt(0);
+            }
+            this._cellContainer.removeEventListener(MouseEvent.MOUSE_DOWN,this.ContainerClick);
+            GLOBAL._ROOT.stage.removeEventListener(MouseEvent.MOUSE_UP,this.ContainerRelease);
+            if(this._cellContainer.parent)
+            {
+               this._cellContainer.parent.removeChild(this._cellContainer);
+            }
+            this._cellContainer = null;
+         }
+         if(this._cells)
+         {
+            i = int(this._cells.length - 1);
+            while(i >= 0)
+            {
+               this._cells[i].Cleanup();
+               delete this._cells[i];
+               i--;
+            }
+            this._cells = [];
+         }
+         if(!MapRoom._viewOnly)
+         {
+            this.bHome.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               HideBookmarkMenu();
+               MapRoom.JumpTo(GLOBAL._mapHome);
+            });
+            this.bJump.removeEventListener(MouseEvent.CLICK,this.JumpPopupShow);
+            this.bBookmarks.removeEventListener(MouseEvent.CLICK,this.ShowBookmarkMenu);
+         }
+         else
+         {
+            this.bBookmarks.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            {
+               MapRoom.JumpTo(MapRoom._inviteLocation);
+            });
+         }
       }
       
       public function Setup() : void
@@ -453,6 +607,7 @@ package com.monsters.maproom_advanced
          var _loc3_:int = 0;
          var _loc5_:MapRoomCell = null;
          var _loc6_:int = 0;
+         var _loc7_:int = 0;
          var _loc2_:* = GLOBAL._ROOT.stage.stageWidth;
          _loc3_ = GLOBAL.GetGameHeight();
          if(_loc2_ > 1024)
@@ -464,8 +619,32 @@ package com.monsters.maproom_advanced
             _loc3_ = 768;
          }
          var _loc4_:Rectangle = new Rectangle(0 - (_loc2_ - 760) / 2,0 - (_loc3_ - 520) / 2,_loc2_,_loc3_);
-         this._cellContainer = new MovieClip();
+         if(this._cellContainer)
+         {
+            while(this._cellContainer.numChildren > 0)
+            {
+               this._cellContainer.removeChildAt(0);
+            }
+            this._cellContainer.removeEventListener(MouseEvent.MOUSE_DOWN,this.ContainerClick);
+            GLOBAL._ROOT.stage.removeEventListener(MouseEvent.MOUSE_UP,this.ContainerRelease);
+            if(this._cellContainer.parent)
+            {
+               this._cellContainer.parent.removeChild(this._cellContainer);
+            }
+            this._cellContainer = null;
+         }
+         if(this._cells)
+         {
+            _loc6_ = int(this._cells.length - 1);
+            _loc6_ = int(this._cells.length - 1);
+            while(_loc6_ >= 0)
+            {
+               delete this._cells[_loc6_];
+               _loc6_--;
+            }
+         }
          this._cells = [];
+         this._cellContainer = new MovieClip();
          this._sortArray = [];
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
@@ -480,14 +659,14 @@ package com.monsters.maproom_advanced
          _loc3_ = 0;
          while(_loc3_ < this._cellCountX)
          {
-            _loc6_ = 0;
-            while(_loc6_ < this._cellCountY)
+            _loc7_ = 0;
+            while(_loc7_ < this._cellCountY)
             {
                _loc5_ = new MapRoomCell();
                _loc5_.x = int(_loc3_ * (this._cellWidth * 0.75) - this._cellWidth * 0.75 * 4);
-               _loc5_.y = int(_loc6_ * this._cellHeight - this._cellHeight * 5);
+               _loc5_.y = int(_loc7_ * this._cellHeight - this._cellHeight * 5);
                _loc5_.X = _loc3_;
-               _loc5_.Y = _loc6_;
+               _loc5_.Y = _loc7_;
                _loc5_.cacheAsBitmap = true;
                _loc5_.mc.gotoAndStop(1);
                _loc5_.mc.mcPlayer.visible = false;
@@ -501,7 +680,7 @@ package com.monsters.maproom_advanced
                   "cell":_loc5_
                });
                this._cellContainer.addChild(_loc5_);
-               _loc6_++;
+               _loc7_++;
             }
             _loc3_++;
          }
@@ -540,6 +719,9 @@ package com.monsters.maproom_advanced
                }
             }
          }
+         this._cellContainer.addEventListener(MouseEvent.MOUSE_DOWN,this.ContainerClick);
+         GLOBAL._ROOT.stage.addEventListener(MouseEvent.MOUSE_UP,this.ContainerRelease);
+         this.mcMask.mcBG.addChild(this._cellContainer);
       }
       
       private function ContainerClick(param1:MouseEvent) : void
@@ -1496,6 +1678,8 @@ package com.monsters.maproom_advanced
          var newY:int = 0;
          var menuItem:MapRoomBookmark = null;
          var i:int = 0;
+         var InBookmarkRemove:Function = null;
+         var inBookmarkSelect:Function = null;
          var e:MouseEvent = param1;
          SOUNDS.Play("click1");
          if(!this._menuShown && MapRoom._bookmarks.length > 0)
@@ -1505,6 +1689,16 @@ package com.monsters.maproom_advanced
             i = 0;
             while(i < length)
             {
+               InBookmarkRemove = function(param1:MouseEvent):*
+               {
+                  BookmarkRemove(param1.target.index);
+                  menuItem.bDelete.removeEventListener(MouseEvent.CLICK,InBookmarkRemove);
+               };
+               inBookmarkSelect = function(param1:MouseEvent):*
+               {
+                  BookmarkSelect(param1.target.index);
+                  menuItem.mcBG.removeEventListener(MouseEvent.CLICK,inBookmarkSelect);
+               };
                menuItem = new MapRoomBookmark();
                menuItem.mcBG.index = i;
                menuItem.x = bBookmarks.x + 115;
@@ -1512,15 +1706,9 @@ package com.monsters.maproom_advanced
                newY += menuItem.height;
                menuItem.tName.mouseEnabled = false;
                menuItem.bDelete.index = i;
-               menuItem.bDelete.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
-               {
-                  BookmarkRemove(param1.target.index);
-               });
+               menuItem.bDelete.addEventListener(MouseEvent.CLICK,InBookmarkRemove);
                menuItem.bDelete.buttonMode = true;
-               menuItem.mcBG.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
-               {
-                  BookmarkSelect(param1.target.index);
-               });
+               menuItem.mcBG.addEventListener(MouseEvent.CLICK,inBookmarkSelect);
                menuItem.tName.text = MapRoom._bookmarks[i].name;
                menuItem.visible = true;
                this._popupBookmarkMenu[i] = menuItem;

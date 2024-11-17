@@ -21,6 +21,8 @@ package
       
       private static var _mcBG:MovieClip;
       
+      public static var _timer:Timer;
+      
       private static var _lastGroup:String = "alerts";
       
       public static var _open:Boolean = false;
@@ -85,6 +87,14 @@ package
          {
             Show("now");
          }
+         if(BASE._mcAllianceArrow)
+         {
+            if(BASE._mcAllianceArrow.parent)
+            {
+               BASE._mcAllianceArrow.parent.removeChild(BASE._mcAllianceArrow);
+            }
+            BASE._mcAllianceArrow = null;
+         }
       }
       
       private static function HideB() : *
@@ -112,18 +122,17 @@ package
       
       private static function NextDelayed(param1:int = 200) : *
       {
-         var timer:Timer = null;
-         var TimerDone:Function = null;
-         var delay:int = param1;
-         TimerDone = function(param1:TimerEvent):*
-         {
-            timer.stop();
-            timer = null;
-            Show(_lastGroup);
-         };
-         timer = new Timer(delay,1);
-         timer.addEventListener(TimerEvent.TIMER,TimerDone);
-         timer.start();
+         _timer = new Timer(param1,1);
+         _timer.addEventListener(TimerEvent.TIMER,TimerDone);
+         _timer.start();
+      }
+      
+      private static function TimerDone(param1:TimerEvent) : *
+      {
+         _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
+         _timer.stop();
+         _timer = null;
+         Show(_lastGroup);
       }
       
       public static function Show(param1:String = "now") : *
@@ -221,6 +230,12 @@ package
             {
                _lastGroup = "wait";
                NextDelayed(50 * 60);
+            }
+            else if(_timer)
+            {
+               _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
+               _timer.stop();
+               _timer = null;
             }
          }
       }

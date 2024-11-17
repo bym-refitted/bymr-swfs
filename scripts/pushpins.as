@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/1896_pushpins_pushpins.png")]
+   [Embed(source="/_assets/1876_pushpins_pushpins.png")]
    public dynamic class pushpins extends BitmapData
    {
       public function pushpins(param1:int = 105, param2:int = 100)

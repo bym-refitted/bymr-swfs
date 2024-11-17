@@ -267,9 +267,9 @@ package
          {
             bDamageA.mcBar.width = 100 / _maxDamage * -_loc6_;
          }
-         bResourceA.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime");
-         bStorageA.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource");
-         bTimeA.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage");
+         bResourceA.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource");
+         bStorageA.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage");
+         bTimeA.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime");
          tSpeedA.text = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed")});
          tHealthA.text = CREATURES.GetProperty(_monsterID,"health").toString();
          if(!_loc7_)
@@ -292,9 +292,9 @@ package
          bSpeedB.mcBar.width = 100 / _maxSpeed * CREATURES.GetProperty(_monsterID,"speed",_loc8_);
          bHealthB.mcBar.width = 100 / _maxHealth * CREATURES.GetProperty(_monsterID,"health",_loc8_);
          bDamageB.mcBar.width = 100 / _maxDamage * _loc6_;
-         bResourceB.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime",_loc8_);
-         bStorageB.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource",_loc8_);
-         bTimeB.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage",_loc8_);
+         bResourceB.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource",_loc8_);
+         bStorageB.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage",_loc8_);
+         bTimeB.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime",_loc8_);
          tSpeedB.text = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed",_loc8_)});
          tHealthB.text = CREATURES.GetProperty(_monsterID,"health",_loc8_).toString();
          if(!_loc7_)

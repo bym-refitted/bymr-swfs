@@ -1598,6 +1598,10 @@ package
       
       public function Export(param1:Boolean = true) : *
       {
+         if(this._behaviour == "juice")
+         {
+            return;
+         }
          if(param1 && CREATURES._guardian == this)
          {
             BASE._guardianData = {};
@@ -1666,7 +1670,7 @@ package
          if(this._health.Get() > this._maxHealth)
          {
             LOGGER.Log("log","Champion monster health exceeds maximum");
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("GUARDIANMONSTER hack 1");
             return;
          }
          if(this._frameNumber % 30 == 0)
@@ -1674,31 +1678,31 @@ package
             if(this._maxHealth != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"health"))
             {
                LOGGER.Log("log","Champion monster health max incorrect");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 2");
                return;
             }
             if(this._maxSpeed != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"speed") / 2 * 1.1)
             {
                LOGGER.Log("log","Champion monster speed incorrect");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 3");
                return;
             }
             if(this._range != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"range"))
             {
                LOGGER.Log("log","Champion monster range incorrect");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 4");
                return;
             }
             if(this._secureSpeedMult.Get() != int(this._speedMult * 100))
             {
                LOGGER.Log("log","Champion monster speed buff incorrect");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 5");
                return;
             }
             if(this._secureDamageMult.Get() != int(this._damageMult * 100))
             {
                LOGGER.Log("log","Champion monster damage buff incorrect");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 6");
                return;
             }
          }

@@ -27,6 +27,7 @@ package
                {
                   _logged[param1 + param2] = 1;
                }
+               param2 = "" + GLOBAL._softversion + " " + param2;
                _loc4_ = [["key",param1],["value",param2],["saveid",BASE._lastSaveID]];
                new URLLoaderApi().load(GLOBAL._apiURL + "player/recorddebugdata",_loc4_,handleLoadSuccessful,handleLoadError);
             }
@@ -41,6 +42,7 @@ package
          var name:String = null;
          var val:int = 0;
          var level:int = 0;
+         var n2:int = 0;
          var o:Object = null;
          var data:Array = param1;
          if(!GLOBAL._flags.gamestatsb)
@@ -49,6 +51,7 @@ package
          }
          try
          {
+            n2 = 0;
             if(data[0] >= 1 && data[0] <= 4 || data[0] == 26 || data[0] == 51)
             {
                if(data[0] == 1 || data[0] == 2 || data[0] == 26)
@@ -218,12 +221,20 @@ package
                         name = "huge";
                      }
                      val = int(data[3]);
+                     if(data.length > 4)
+                     {
+                        n2 = int(data[4]);
+                     }
                   }
                   else if(data[0] == 28)
                   {
                      st1 = "flinger";
                      name = data[1];
                      val = int(data[2]);
+                     if(data.length > 3)
+                     {
+                        n2 = int(data[3]);
+                     }
                   }
                   else if(data[0] == 29)
                   {
@@ -453,6 +464,10 @@ package
                if(val)
                {
                   o.value = val;
+               }
+               if(n2)
+               {
+                  o.n2 = n2;
                }
                o.level = BASE.BaseLevel().level;
                GLOBAL.CallJS("cc.recordEvent",[name,o],false);

@@ -21,6 +21,8 @@ package com.monsters.chat
       
       public static const IGNORE:String = "ignore";
       
+      public static const IGNOREERROR:String = "ignoreerror";
+      
       public static const UPDATE_NAME:String = "update_name";
       
       public static const USER_ENTER:String = "user_enter";

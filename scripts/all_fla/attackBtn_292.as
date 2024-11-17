@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1675")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1649")]
    public dynamic class attackBtn_292 extends MovieClip
    {
       public var sorter_mc:MovieClip;

@@ -63,7 +63,7 @@ package com.cc.utils
       public function BadNum(param1:int) : void
       {
          LOGGER.Log("err","SecNum" + param1);
-         GLOBAL.ErrorMessage();
+         GLOBAL.ErrorMessage("SecNum");
       }
    }
 }

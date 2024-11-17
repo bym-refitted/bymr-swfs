@@ -27,9 +27,12 @@ package
    import flash.utils.*;
    import gs.TweenLite;
    import gs.easing.Cubic;
+   import package_1.class_1;
    
    public class GLOBAL
    {
+      public static var _softversion:int;
+      
       public static var _mapVersion:int;
       
       public static var _mailVersion:int;
@@ -87,6 +90,8 @@ package
       public static var _gameURL:String;
       
       public static var _storageURL:String;
+      
+      public static var _allianceURL:String;
       
       public static var _soundPathURL:String;
       
@@ -280,7 +285,7 @@ package
       
       public static var _testKongregate:Boolean = false;
       
-      public static var _version:int = 115;
+      public static var _version:int = 116;
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -307,6 +312,10 @@ package
       public static var _openBase:Object = null;
       
       public static var _chatServers:Array = null;
+      
+      public static var _chatBlackList:Array = null;
+      
+      public static var _chatWhiteList:Array = null;
       
       public static var _newMapFirstOpen:Boolean = false;
       
@@ -409,6 +418,12 @@ package
       public static var _otherStats:Object = {};
       
       public static var _baseLoads:int = 0;
+      
+      public static const ERROR_OOPS_ONLY:int = 0;
+      
+      public static const ERROR_OOPS_AND_ORANGE_BOX:int = 1;
+      
+      public static const ERROR_ORANGE_BOX_ONLY:int = 2;
       
       private static var _blockerList:Array = [];
       
@@ -2743,6 +2758,13 @@ package
                "r4":0,
                "time":24 * 60 * 60,
                "re":[[14,1,6],[8,1,4]]
+            },{
+               "r1":250 * 60 * 60,
+               "r2":250 * 60 * 60,
+               "r3":0,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,7],[8,1,4]]
             }],
             "imageData":{
                "baseurl":"buildings/academy/",
@@ -2798,8 +2820,8 @@ package
                "4":{"img":"26.4.png"}
             },
             "quantity":[0,0,0,1,1,2,2,2,2],
-            "hp":[100 * 60,10000,14000,20000],
-            "repairTime":[3800,128 * 60,10640,260 * 60]
+            "hp":[100 * 60,10000,14000,20000,500 * 60],
+            "repairTime":[3800,128 * 60,10640,260 * 60,380 * 60]
          },{
             "id":27,
             "group":999,
@@ -11172,7 +11194,7 @@ package
                         if(tmpCountdown > 1 && tmpStored != b._stored.Get())
                         {
                            LOGGER.Log("log","BRESOURCE.StoredB " + tmpStored + " - " + b._stored.Get());
-                           GLOBAL.ErrorMessage();
+                           GLOBAL.ErrorMessage("BRESOURCE.StoredB");
                            return;
                         }
                      }
@@ -11421,6 +11443,26 @@ package
          }
       }
       
+      public static function OpenMap(param1:String) : void
+      {
+         var _loc2_:Object = com.adobe.serialization.json.JSON.decode(param1);
+         if(_loc2_.status)
+         {
+            if(_loc2_.status == "open")
+            {
+               GLOBAL.ShowMap();
+            }
+            else
+            {
+               GLOBAL.ErrorMessage(_loc2_.error_message,ERROR_ORANGE_BOX_ONLY);
+            }
+         }
+         else
+         {
+            LOGGER.Log("err","OpenMap " + param1);
+         }
+      }
+      
       public static function ToTime(param1:int, param2:Boolean = false, param3:Boolean = true, param4:Boolean = true, param5:Boolean = false) : *
       {
          var _loc6_:int = 0;
@@ -11522,11 +11564,12 @@ package
          return param1;
       }
       
-      public static function ErrorMessage(param1:String = "") : *
+      public static function ErrorMessage(param1:String = "", param2:int = 0) : *
       {
          var err:String = param1;
+         var errortype:int = param2;
          var em:* = new ERRORMESSAGE();
-         em.Show(err);
+         em.Show(err,errortype);
          return function(param1:MouseEvent = null):*
          {
          };
@@ -11589,7 +11632,7 @@ package
          hid = int(o.hid);
          s = s.split(",\"h\":\"" + h + "\"").join("");
          s = s.split(",\"hid\":" + hid).join("");
-         hash = MD5.hash("ilevbioghv890347ho3nrkljebv" + s + hid * (hid % 11));
+         hash = MD5.hash(class_1.method_1(447,17) + s + hid * (hid % 11));
          if(hash == h)
          {
             return true;
@@ -11995,193 +12038,102 @@ package
          {
             return;
          }
-         try
+         if(!flagsShouldChatExist())
          {
-            if(!flagsShouldChatExist())
+            if(_bymChat != null)
             {
-               if(_bymChat != null)
-               {
-                  _bymChat.logout();
-                  _bymChat.hide();
-                  _bymChat = null;
-                  _chatInited = false;
-               }
-               return;
+               _bymChat.logout();
+               _bymChat.hide();
+               _bymChat = null;
+               _chatInited = false;
             }
+            return;
          }
-         catch(e:Error)
+         _chatroomNumber = 0;
+         if(!_local)
          {
-            LOGGER.Log("err","GLOBAL.initChat #1: " + e.message + " | " + e.getStackTrace());
+            _chatroomNumber = LOGIN._playerID % (_flags != null && Boolean(_flags.numchatrooms) ? _flags.numchatrooms : 5 * 60);
          }
-         try
+         if(!GLOBAL._chatEnabled || _chatServers.length == 0)
          {
-            _chatroomNumber = 0;
-            if(!_local)
+            if(_bymChat != null)
             {
-               _chatroomNumber = LOGIN._playerID % (_flags != null && Boolean(_flags.numchatrooms) ? _flags.numchatrooms : 5 * 60);
+               _bymChat.logout();
+               _bymChat.hide();
+               _bymChat = null;
+               _chatInited = false;
             }
+            return;
          }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #2: " + e.message + " | " + e.getStackTrace());
-         }
-         try
-         {
-            if(!GLOBAL._chatEnabled || _chatServers.length == 0)
-            {
-               if(_bymChat != null)
-               {
-                  _bymChat.logout();
-                  _bymChat.hide();
-                  _bymChat = null;
-                  _chatInited = false;
-               }
-               return;
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #3: " + e.message + " | " + e.getStackTrace());
-         }
-         try
-         {
-            _chatServer = _chatServers[_chatroomNumber % _chatServers.length];
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #4: " + e.message + " | " + e.getStackTrace());
-         }
+         _chatServer = _chatServers[_chatroomNumber % _chatServers.length];
          if(_bymChat == null)
          {
             if(!chatUserIsInABTest())
             {
                return;
             }
-            try
+            _bymChat = new BYMChat(new ChatBox(),_chatServer);
+            _chatInited = true;
+            if(flagsShouldChatConnectButStayInvisible())
             {
-               _bymChat = new BYMChat(new ChatBox(),_chatServer);
-               _chatInited = true;
+               _bymChat.hide();
             }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","GLOBAL.initChat #5: " + e.message + " | " + e.getStackTrace());
-            }
-            try
-            {
-               if(flagsShouldChatConnectButStayInvisible())
-               {
-                  _bymChat.hide();
-               }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","GLOBAL.initChat #6: " + e.message + " | " + e.getStackTrace());
-            }
-            try
-            {
-               _layerUI.addChild(_bymChat);
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","GLOBAL.initChat #7: " + e.message + " | " + e.getStackTrace());
-            }
+            _layerUI.addChild(_bymChat);
          }
-         try
-         {
-            _bymChat.init();
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #8: " + e.message + " | " + e.getStackTrace());
-         }
-         try
-         {
-            GLOBAL.connectAndLogin();
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.initChat #9: " + e.message + " | " + e.getStackTrace());
-         }
+         _bymChat.init();
+         GLOBAL.connectAndLogin();
       }
       
       public static function connectAndLogin() : void
       {
-         var firstName:String = null;
-         var lastName:String = null;
-         var loginName:String = null;
+         var _loc1_:String = null;
+         var _loc2_:String = null;
+         var _loc3_:String = null;
          if(!_chatInited)
          {
             return;
          }
-         try
+         if(_bymChat == null || BYMChat.serverInited)
          {
-            if(_bymChat == null || BYMChat.serverInited)
-            {
-               return;
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","GLOBAL.connectAndLogin #1: " + e.message + " | " + e.getStackTrace());
+            return;
          }
          if(_bymChat)
          {
-            try
+            _bymChat.initServer();
+            _loc1_ = LOGIN._playerName;
+            if(_loc1_ != null && _loc1_.length > 0)
             {
-               _bymChat.initServer();
+               _loc1_ = _loc1_.replace(/ /,"_");
             }
-            catch(e:Error)
+            else
             {
-               LOGGER.Log("err","GLOBAL.connectAndLogin #2: " + e.message + " | " + e.getStackTrace());
+               _loc1_ = "Dr";
             }
-            try
+            _loc2_ = LOGIN._playerLastName;
+            if(_loc2_ != null && _loc2_.length > 0)
             {
-               firstName = LOGIN._playerName;
-               if(firstName != null && firstName.length > 0)
+               _loc2_ = _loc2_.substr(0,1);
+               if(_loc2_.length == 1)
                {
-                  firstName = firstName.replace(/ /,"_");
-               }
-               else
-               {
-                  firstName = "Dr";
-               }
-               lastName = LOGIN._playerLastName;
-               if(lastName != null && lastName.length > 0)
-               {
-                  lastName = lastName.substr(0,1);
-                  if(lastName.length == 1)
+                  _loc2_ = _loc2_.toUpperCase();
+                  if(_loc2_ != null && _loc2_.length == 1)
                   {
-                     lastName = lastName.toUpperCase();
-                     if(lastName != null && lastName.length == 1)
-                     {
-                        lastName = lastName.replace(/ /,"_");
-                     }
-                  }
-                  if(lastName == null || lastName.length != 1)
-                  {
-                     lastName = "X";
+                     _loc2_ = _loc2_.replace(/ /,"_");
                   }
                }
-               if(lastName == null || lastName.length != 1)
+               if(_loc2_ == null || _loc2_.length != 1)
                {
-                  lastName = "X";
+                  _loc2_ = "X";
                }
-               loginName = firstName + lastName;
             }
-            catch(e:Error)
+            if(_loc2_ == null || _loc2_.length != 1)
             {
-               LOGGER.Log("err","GLOBAL.connectAndLogin #3: Name - \'" + LOGIN._playerName + "\' \'" + LOGIN._playerLastName + "\' | " + e.message + " | " + e.getStackTrace());
+               _loc2_ = "X";
             }
-            try
-            {
-               GLOBAL._bymChat.login(loginName,LOGIN._playerID.toString(),BASE.BaseLevel().level);
-               _bymChat.show();
-               _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","GLOBAL.connectAndLogin #4: " + e.message + " | " + e.getStackTrace());
-            }
+            _loc3_ = _loc1_ + _loc2_;
+            GLOBAL._bymChat.login(_loc3_,LOGIN._playerID.toString(),BASE.BaseLevel().level);
+            _bymChat.show();
+            _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
          }
       }
       
@@ -12208,27 +12160,38 @@ package
       
       public static function chatUserIsInABTest() : Boolean
       {
-         switch(LOGIN._playerID)
+         if(_flags)
          {
-            case 23:
-            case 2:
-            case 3:
-               return true;
-            default:
-               if(_countryCode != "us" || KEYS != null && KEYS._language != "en")
-               {
-                  return false;
-               }
-               if(_countryCode == "ph")
-               {
-                  return false;
-               }
-               if(!_chatEnabled)
-               {
-                  return false;
-               }
-               return true;
+            if(_flags.hasOwnProperty("chatwhitelist"))
+            {
+               _chatWhiteList = String(_flags.chatwhitelist).split(",");
+            }
+            if(_flags.hasOwnProperty("chatblacklist"))
+            {
+               _chatBlackList = String(_flags.chatblacklist).split(",");
+            }
          }
+         if(_chatWhiteList != null && _chatWhiteList.indexOf(LOGIN._playerID.toString()) != -1)
+         {
+            return true;
+         }
+         if(_chatBlackList != null && _chatBlackList.indexOf(LOGIN._playerID.toString()) != -1)
+         {
+            return false;
+         }
+         if(_countryCode != "us" || KEYS != null && KEYS._language != "en")
+         {
+            return false;
+         }
+         if(_countryCode == "ph")
+         {
+            return false;
+         }
+         if(!_chatEnabled)
+         {
+            return false;
+         }
+         return true;
       }
       
       public static function flagsShouldChatDisplay() : Boolean
@@ -12252,7 +12215,7 @@ package
          if(int(_loc2_.random() * 16) >> 2)
          {
             LOGGER.Log("log","Invalid shinyshroom");
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("GLOBAL mushroom hack 1");
             _shinyShroomValid = false;
             return;
          }
@@ -12263,7 +12226,7 @@ package
             if(param1.x == _shinyShrooms[_loc4_].x && param1.y == _shinyShrooms[_loc4_].y)
             {
                LOGGER.Log("log","Shinyshroom multi-pick");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("GLOBAL mushroom hack 2");
                _shinyShroomValid = false;
                return;
             }
@@ -12272,7 +12235,7 @@ package
          if(BASE._buildingsMushrooms["m" + param1._id])
          {
             LOGGER.Log("log","Shinyshroom not recycled");
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("GLOBAL mushroom hack 3");
             _shinyShroomValid = false;
             return;
          }
@@ -12288,6 +12251,13 @@ package
          var _loc3_:Number = param1.x - param2.x;
          var _loc4_:Number = param1.y - param2.y;
          return Math.sqrt(_loc3_ * _loc3_ + _loc4_ * _loc4_);
+      }
+      
+      public static function QuickDistanceSquared(param1:Point, param2:Point) : Number
+      {
+         var _loc3_:Number = param1.x - param2.x;
+         var _loc4_:Number = param1.y - param2.y;
+         return _loc3_ * _loc3_ + _loc4_ * _loc4_;
       }
       
       private static function UpdateAFKTimer() : *

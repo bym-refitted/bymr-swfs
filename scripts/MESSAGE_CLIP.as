@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol228")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol278")]
    public dynamic class MESSAGE_CLIP extends MovieClip
    {
       public var mcBG:frame2_CLIP;

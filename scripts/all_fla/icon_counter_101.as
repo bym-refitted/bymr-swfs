@@ -3,7 +3,7 @@ package all_fla
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1400")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1373")]
    public dynamic class icon_counter_101 extends MovieClip
    {
       public var t:TextField;

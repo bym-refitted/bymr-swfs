@@ -113,7 +113,7 @@ package
          else
          {
             LOGGER.Log("err","KitCostMismatch (BuyOutright) expected:" + _loc4_ + " got:" + param2);
-            GLOBAL.ErrorMessage("Expected to cost:" + param2 + " recalculated cost was:" + _loc4_);
+            GLOBAL.ErrorMessage("Expected to cost:" + param2 + " recalculated cost was:" + _loc4_,GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
       }
       
@@ -230,7 +230,7 @@ package
          else
          {
             LOGGER.Log("err","KitCostMismatch expected:" + param2 + " got:" + Math.ceil(Math.pow(Math.sqrt(_loc4_ / 2),0.75)));
-            GLOBAL.ErrorMessage("Expected to cost:" + param2 + " recalculated cost was:" + Math.ceil(Math.pow(Math.sqrt(_loc4_ / 2),0.75)));
+            GLOBAL.ErrorMessage("Expected to cost:" + param2 + " recalculated cost was:" + Math.ceil(Math.pow(Math.sqrt(_loc4_ / 2),0.75)),GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
       }
       

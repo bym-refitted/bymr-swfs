@@ -144,7 +144,11 @@ package
                if(!this._hasTargets || !this.targetInRange())
                {
                   this.FindTargets(1,this._priority);
-                  this._fireTick = 2;
+                  this._fireTick = 30;
+                  if(CREEPS._creepCount > 150)
+                  {
+                     this._fireTick += CREEPS._creepCount / 15;
+                  }
                }
                else
                {
@@ -164,7 +168,11 @@ package
                   if(Boolean(this._retarget) || _loc1_)
                   {
                      this.FindTargets(1,this._priority);
-                     this._fireTick = 2;
+                     this._fireTick = 30;
+                     if(CREEPS._creepCount > 150)
+                     {
+                        this._fireTick += CREEPS._creepCount / 15;
+                     }
                   }
                }
             }
@@ -181,8 +189,8 @@ package
          for(_loc4_ in this._targetCreeps)
          {
             _loc1_ = GRID.FromISO(this._targetCreeps[_loc4_].creep._tmpPoint.x,this._targetCreeps[_loc4_].creep._tmpPoint.y);
-            _loc3_ = Point.distance(_loc2_,_loc1_);
-            if(_loc3_ < this._range)
+            _loc3_ = GLOBAL.QuickDistanceSquared(_loc2_,_loc1_);
+            if(_loc3_ < this._range * this._range)
             {
                return true;
             }

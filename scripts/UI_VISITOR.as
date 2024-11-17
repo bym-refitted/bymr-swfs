@@ -130,10 +130,8 @@ package
             }
             else if(!GLOBAL._currentCell._protected && !(GLOBAL._currentCell._truce && GLOBAL._currentCell._truce > GLOBAL.Timestamp()))
             {
-               MapRoom._mc._popupAttackA.Setup(GLOBAL._currentCell);
-               MapRoom._mc._popupAttackA._cellsInRange = GLOBAL._attackerCellsInRange;
-               GLOBAL.BlockerAdd();
-               GLOBAL._layerWindows.addChild(MapRoom._mc._popupAttackA);
+               MapRoom._showAttackWait = true;
+               MapRoom.Show();
             }
             else if(GLOBAL._currentCell._protected)
             {

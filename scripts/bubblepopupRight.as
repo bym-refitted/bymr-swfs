@@ -26,12 +26,22 @@ package
          mcText.autoSize = TextFieldAutoSize.CENTER;
       }
       
-      public function Setup(param1:int, param2:int, param3:String = "") : *
+      public function Setup(param1:int, param2:int, param3:String = "", param4:int = 0) : *
       {
          this.mouseEnabled = false;
          this.mouseChildren = false;
          this.x = param1;
          this.y = param2;
+         if(param3.length < 20)
+         {
+            this.mcBG.width = 80;
+            this.mcText.width = 60;
+         }
+         else if(param3.length < 80)
+         {
+            this.mcBG.width = 150;
+            this.mcText.width = 130;
+         }
          if(param1 > 450)
          {
             mcBG.x = int(0 - (mcBG.width - 25));

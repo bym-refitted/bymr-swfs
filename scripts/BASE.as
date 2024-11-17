@@ -4,6 +4,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.ai.TRIBES;
    import com.monsters.ai.WMBASE;
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.BuildingOverlay;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.fire.Fire;
@@ -133,7 +134,7 @@ package
       
       public static var _loadedFriendlyBaseID:int;
       
-      public static var _loadedFBID:int;
+      public static var _loadedFBID:Number;
       
       public static var _baseLevel:int;
       
@@ -189,6 +190,8 @@ package
       
       public static var _userID:int;
       
+      public static var _allianceID:int;
+      
       public static var _damagedBaseWarnTime:Number;
       
       public static var _takeoverFirstOpen:int;
@@ -197,6 +200,8 @@ package
       
       private static var _tmpPercent:Number;
       
+      public static var _mcAllianceArrow:TUTORIALARROWMC;
+      
       public static var _loadedOutpost:int = 0;
       
       public static var _isOutpost:int = 0;
@@ -204,6 +209,8 @@ package
       public static var _userDigits:Array = [];
       
       public static var _guardianData:Object = null;
+      
+      public static var _showingWhatsNew:Boolean = false;
       
       private static var _loadedSomething:Boolean = false;
       
@@ -324,6 +331,9 @@ package
          {
             UI2.Hide("wmbar");
          }
+         GRID.Cleanup();
+         PATHING.Cleanup();
+         _showingWhatsNew = false;
          _deltaResources = {
             "dirty":false,
             "r1":new SecNum(0),
@@ -366,7 +376,7 @@ package
             if((param4 == "attack" || param4 == "wmattack") && (!GLOBAL._advancedMap && (!GLOBAL._bFlinger || !GLOBAL._bFlinger._canFunction)))
             {
                LOGGER.Log("err","Impossible fling");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("BASE.LoadBase impossible fling");
                return false;
             }
             _loadBase = [param1,param2,param3,param4];
@@ -516,6 +526,17 @@ package
                   _userDigits.push(int(idstr.charAt(ix)));
                   ix++;
                }
+               if(obj.allianceid)
+               {
+                  _allianceID = int(obj.allianceid);
+                  ALLIANCES._allianceID = int(obj.allianceid);
+               }
+               if(obj.alliancedata)
+               {
+                  _allianceID = int(obj.alliancedata.alliance_id);
+                  ALLIANCES._allianceID = int(obj.alliancedata.alliance_id);
+                  ALLIANCES._myAlliance = ALLIANCES.SetAlliance(obj.alliancedata);
+               }
                _attackID = int(obj.attackid);
                if(obj.worldsize)
                {
@@ -599,7 +620,7 @@ package
                      if(Boolean(_isOutpost) && (GLOBAL._currentCell && GLOBAL._currentCell._base == 3))
                      {
                         LOGGER.Log("err","Base ID " + _loadedBaseID + " outpost w TH bdg");
-                        GLOBAL.ErrorMessage();
+                        GLOBAL.ErrorMessage("BASE.Process outpost w TH");
                      }
                      break;
                   }
@@ -608,7 +629,7 @@ package
                      if(!_isOutpost && (GLOBAL._currentCell && GLOBAL._currentCell._base != 3))
                      {
                         LOGGER.Log("err","Base ID " + _loadedBaseID + " yard w OP bdg");
-                        GLOBAL.ErrorMessage();
+                        GLOBAL.ErrorMessage("BASE.Process yard w outpost");
                      }
                      break;
                   }
@@ -1024,7 +1045,7 @@ package
             }
             else
             {
-               GLOBAL.ErrorMessage(obj.error);
+               GLOBAL.ErrorMessage(obj.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
                PLEASEWAIT.Hide();
             }
          };
@@ -1038,7 +1059,7 @@ package
             {
                LOGGER.Log("err","BASE.Load HTTP");
                PLEASEWAIT.Hide();
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("BASE.Load HTTP");
             }
          };
          GLOBAL.Message("Load userid:" + userid + " baseid:" + baseid + " force URL:" + url);
@@ -1053,6 +1074,7 @@ package
          PLEASEWAIT.Hide();
          Cleanup();
          PLEASEWAIT.Show(KEYS.Get("msg_loading"));
+         GRID.CreateGrid();
          POPUPS.Setup();
          CREEPS.Clear();
          GLOBAL.Clear();
@@ -1073,6 +1095,7 @@ package
          SPRITES.Setup();
          Fire.Clear();
          ResourceBombs.Data();
+         ALLIANCES.Setup();
          GLOBAL._catchup = true;
          _mushroomList = [];
          _lastSpawnedMushroom = 0;
@@ -1146,6 +1169,7 @@ package
       
       public static function Build() : *
       {
+         var buildingobject:Object = null;
          var lm:int = 0;
          var tmpDO:DisplayObject = null;
          var t:* = undefined;
@@ -1165,7 +1189,6 @@ package
          var hpMax:int = 0;
          var i:* = undefined;
          var building:BFOUNDATION = null;
-         var maxProcess:int = 0;
          PLEASEWAIT.Update(KEYS.Get("msg_building"));
          try
          {
@@ -1182,8 +1205,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build A1: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -1191,8 +1213,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build A2: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build A2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -1200,14 +1221,12 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build A3: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build A3: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
             GLOBAL._render = false;
             PATHING.Setup();
-            GRID.CreateGrid();
             t = getTimer();
             texture = "grass";
             if(Boolean(GLOBAL._currentCell) && (_isOutpost || GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview"))
@@ -1220,9 +1239,9 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build B: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build B: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
+         buildingobject = {};
          try
          {
             count = 0;
@@ -1234,6 +1253,7 @@ package
                {
                   if(!(o.t == 53 || o.t == 54))
                   {
+                     buildingobject = o;
                      if(o.t == 18)
                      {
                         o.t = 17;
@@ -1298,9 +1318,8 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build C: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
-            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _isOutpost);
+            GLOBAL.ErrorMessage("BASE.Build C: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _isOutpost + " BObj " + com.adobe.serialization.json.JSON.encode(buildingobject));
          }
          try
          {
@@ -1364,6 +1383,7 @@ package
                   _basePoints = 0;
                   _deltaResources.dirty = true;
                   _hpDeltaResources.dirty = true;
+                  SOUNDS.TutorialStopMusic();
                }
             }
             else if(!_isOutpost && !hasTownHall)
@@ -1373,8 +1393,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build D: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build D: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -1411,8 +1430,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build E: " + e.message + " | " + e.getStackTrace() + " | " + tmpType);
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build E: " + e.message + " | " + e.getStackTrace() + " | " + tmpType,GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -1437,8 +1455,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build F: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build F: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -1451,24 +1468,11 @@ package
             {
                _lastProcessed = _currentTime;
             }
-            else
-            {
-               maxProcess = 162 * 60 * 60;
-               if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() == 7)
-               {
-                  maxProcess = 8 * 24 * 60 * 60;
-               }
-               if(_lastProcessed < _currentTime - maxProcess)
-               {
-                  _lastProcessed = _currentTime - maxProcess;
-               }
-            }
             Process();
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("BASE.Build G: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Build G: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          RADIO.Setup();
       }
@@ -1581,7 +1585,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("Base.Process " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("Base.Process " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
       }
       
@@ -1644,6 +1648,7 @@ package
             catch(e:Error)
             {
                LOGGER.Log("err","BASE.ProcessC 1: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               GLOBAL.ErrorMessage("BASE.ProcessC 1");
             }
             try
             {
@@ -1655,12 +1660,36 @@ package
                   building.Tick();
                   itemCount++;
                }
+            }
+            catch(e:Error)
+            {
+               LOGGER.Log("err","BASE.ProcessC 2.1: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               GLOBAL.ErrorMessage("BASE.ProcessC 2.1");
+            }
+            try
+            {
                if(!_isOutpost)
                {
                   CREATURELOCKER.Tick();
                   ACADEMY.Tick();
                }
+            }
+            catch(e:Error)
+            {
+               LOGGER.Log("err","BASE.ProcessC 2.2: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               GLOBAL.ErrorMessage("BASE.ProcessC 2.2");
+            }
+            try
+            {
                WMATTACK.Tick();
+            }
+            catch(e:Error)
+            {
+               LOGGER.Log("err","BASE.ProcessC 2.3: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               GLOBAL.ErrorMessage("BASE.ProcessC 2.3");
+            }
+            try
+            {
                if(CREATURES._guardian)
                {
                   if(CREATURES._guardian.Tick())
@@ -1673,8 +1702,8 @@ package
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","BASE.ProcessC 2: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage();
+               LOGGER.Log("err","BASE.ProcessC 2.4: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               GLOBAL.ErrorMessage("BASE.ProcessC 2.4");
             }
             try
             {
@@ -1764,6 +1793,8 @@ package
       public static function ProcessD() : *
       {
          var WhatsNewAction32:Function;
+         var WhatsNewAction34:Function;
+         var WhatsNewAction35_1:Function;
          var popupWhatsNewDisplayed:Function;
          var RepairAll:Function;
          var Action:Function;
@@ -1850,7 +1881,7 @@ package
                   newWhatsnewid = GLOBAL._whatsnewid;
                   if(GLOBAL._whatsnewid < 1032)
                   {
-                     WhatsNewAction32 = function(param1:MouseEvent):*
+                     WhatsNewAction32 = function(param1:MouseEvent):void
                      {
                         BUILDINGS._buildingID = 118;
                         BUILDINGS.Show();
@@ -1869,14 +1900,73 @@ package
                      newWhatsnewid = 1033;
                      display = true;
                   }
+                  else if(GLOBAL._whatsnewid < 1034)
+                  {
+                     WhatsNewAction34 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL._selectedBuilding = GLOBAL._bAcademy;
+                        BUILDINGOPTIONS.Show(GLOBAL._bAcademy,"upgrade");
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew34();
+                     newWhatsnewid = 1034;
+                     display = true;
+                     if(GLOBAL._bAcademy)
+                     {
+                        popupWhatsNew.bAction.Setup("Upgrade Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction34);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.visible = false;
+                     }
+                  }
+                  else if(GLOBAL._whatsnewid < 1035)
+                  {
+                     display = true;
+                     if(GLOBAL._advancedMap)
+                     {
+                        popupWhatsNew = new popup_whatsnew35_v2();
+                     }
+                     else
+                     {
+                        WhatsNewAction35_1 = function(param1:MouseEvent):void
+                        {
+                           GLOBAL._selectedBuilding = GLOBAL._bMap;
+                           BUILDINGOPTIONS.Show(GLOBAL._bMap,"upgrade");
+                           POPUPS.Next();
+                        };
+                        popupWhatsNew = new popup_whatsnew35_v1();
+                        if(GLOBAL._bMap)
+                        {
+                           popupWhatsNew.bAction.Setup("Upgrade Now");
+                           popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction35_1);
+                        }
+                        else
+                        {
+                           popupWhatsNew.bAction.visible = false;
+                        }
+                     }
+                     newWhatsnewid = 1035;
+                     display = true;
+                  }
                   if(display)
                   {
                      popupWhatsNewDisplayed = function():*
                      {
                         GLOBAL._whatsnewid = newWhatsnewid;
                      };
+                     _showingWhatsNew = true;
                      LOGGER.Stat([23]);
                      POPUPS.Push(popupWhatsNew,popupWhatsNewDisplayed,null,"","",true);
+                     if(newWhatsnewid == 1035)
+                     {
+                        _mcAllianceArrow = GLOBAL._layerTop.addChild(new TUTORIALARROWMC());
+                        _mcAllianceArrow.x = 650;
+                        _mcAllianceArrow.y = 5;
+                        _mcAllianceArrow.rotation = 310;
+                        _mcAllianceArrow.Rotate();
+                     }
                   }
                }
             }
@@ -1961,7 +2051,7 @@ package
          catch(e:Error)
          {
             LOGGER.Log("err","BASE.ProcessD B: " + e.message + " | " + e.getStackTrace() + " | " + bb);
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("BASE.ProcessD");
          }
          try
          {
@@ -2120,12 +2210,15 @@ package
                      hpMax += building._hpMax.Get();
                   }
                }
-               if(GLOBAL._mode == "build" && !GLOBAL._empireDestroyedShown && GLOBAL._advancedMap && !BASE._isOutpost && !WMATTACK._inProgress && (GLOBAL._mapOutpost.length == 0 || GLOBAL._empireDestroyed == 1) && hp < hpMax * 0.1)
+               if(!ALLIANCES._myAlliance)
                {
-                  GLOBAL._empireDestroyedShown = true;
-                  popupMCDestroyed = new PopupLostMainBase();
-                  popupMCDestroyed.Setup();
-                  POPUPS.Push(popupMCDestroyed,null,null,null,"base-destroyed.png");
+                  if(GLOBAL._mode == "build" && !GLOBAL._empireDestroyedShown && GLOBAL._advancedMap && !BASE._isOutpost && !WMATTACK._inProgress && (GLOBAL._mapOutpost.length == 0 || GLOBAL._empireDestroyed == 1) && hp < hpMax * 0.1)
+                  {
+                     GLOBAL._empireDestroyedShown = true;
+                     popupMCDestroyed = new PopupLostMainBase();
+                     popupMCDestroyed.Setup();
+                     POPUPS.Push(popupMCDestroyed,null,null,null,"base-destroyed.png");
+                  }
                }
             }
          }
@@ -2218,12 +2311,12 @@ package
       {
          if(_pendingPurchase.length > 0)
          {
-            GLOBAL.ErrorMessage(KEYS.Get("msg_err_purchase"));
+            GLOBAL.ErrorMessage(KEYS.Get("msg_err_purchase"),GLOBAL.ERROR_ORANGE_BOX_ONLY);
             return false;
          }
          if(param2 <= 0)
          {
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.Purchase zero quantity");
             LOGGER.Log("err","BASE.Purchase Id " + param1 + ", illegal quantity " + param2 + ", possible hack");
             return false;
          }
@@ -2373,7 +2466,7 @@ package
             else
             {
                LOGGER.Log("err","Base.Save: " + com.adobe.serialization.json.JSON.encode(param1));
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("BASE.SaveB 2: " + param1.error);
             }
             _saving = false;
          };
@@ -2385,7 +2478,7 @@ package
             if(_saveErrors >= 5)
             {
                LOGGER.Log("err","Base.Save HTTP");
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("BASE.Save HTTP");
             }
          };
          var t:int = getTimer();
@@ -2836,20 +2929,20 @@ package
                   if(_pendingPurchase[1] > 1)
                   {
                      LOGGER.Log("log","HACK " + _pendingPurchase[0] + " " + _pendingPurchase[1]);
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("BASE.Save Mushroom hack 1");
                      return;
                   }
                   ++GLOBAL._shinyShroomCount;
                   if(GLOBAL._shinyShroomCount > 30)
                   {
                      LOGGER.Log("log","Too many shiny shrooms in session");
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("BASE.Save Mushroom hack 2");
                      return;
                   }
                   if(!GLOBAL._shinyShroomValid)
                   {
                      LOGGER.Log("log","Shiny shroom not validated");
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("BASE.Save Mushroom hack 3");
                      return;
                   }
                   GLOBAL._shinyShroomValid = false;
@@ -2900,7 +2993,7 @@ package
          catch(e:Error)
          {
             LOGGER.Log("err","BASE.SaveB " + e.errorID + " | " + e.getStackTrace);
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BASE.SaveB 1");
          }
          saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete"];
          loadVars = [];
@@ -2993,7 +3086,7 @@ package
             else
             {
                LOGGER.Log("err","Base.Page: " + com.adobe.serialization.json.JSON.encode(param1));
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("Base.Page: " + param1.error);
             }
          };
          handleLoadError = function(param1:IOErrorEvent):void
@@ -3004,7 +3097,7 @@ package
             if(_pageErrors >= 6)
             {
                LOGGER.Log("err","Base.Page HTTP");
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("BASE.Page HTTP");
             }
          };
          var t:int = getTimer();
@@ -3844,7 +3937,7 @@ package
                   if(_deltaResources["r" + _loc1_].Get() != _hpDeltaResources["r" + _loc1_])
                   {
                      LOGGER.Log("log","Delta resources r" + _loc1_ + " secure " + _deltaResources["r" + _loc1_] + " unsecure " + _hpDeltaResources["r" + _loc1_]);
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("BASE.SaveDeltaResources");
                   }
                   if(_savedDeltaResources["r" + _loc1_])
                   {

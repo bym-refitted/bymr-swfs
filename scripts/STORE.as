@@ -2081,7 +2081,7 @@ package
          }
          else
          {
-            GLOBAL.ErrorMessage(_loc2_.error);
+            GLOBAL.ErrorMessage(_loc2_.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
       }
    }

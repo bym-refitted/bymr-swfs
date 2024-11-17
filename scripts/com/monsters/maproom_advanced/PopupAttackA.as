@@ -85,6 +85,12 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
+      public function Cleanup() : void
+      {
+         this.bAttack.removeEventListener(MouseEvent.CLICK,this.Attack);
+         this.bCancel.removeEventListener(MouseEvent.CLICK,this.Hide);
+      }
+      
       private function Attack(param1:MouseEvent) : *
       {
          if(!this._enabled)

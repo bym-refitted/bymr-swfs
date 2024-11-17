@@ -259,7 +259,7 @@ package
             this._targetFlyers = [];
             this._hasTargets = false;
          }
-         if(_countdownUpgrade.Get() == 0 && (!this._hasTargets || _loc1_ || this._frameNumber % 60 == 0))
+         if(_countdownUpgrade.Get() == 0 && ((!this._hasTargets || _loc1_) && this._frameNumber % 10 == 0 || this._frameNumber % 60 == 0))
          {
             this.FindTargets(3);
          }

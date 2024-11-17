@@ -1,5 +1,6 @@
 package com.monsters.mailbox
 {
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ScrollSet;
    import com.monsters.mailbox.model.Contact;
    import com.monsters.mailbox.model.ThreadData;
@@ -603,6 +604,11 @@ package com.monsters.mailbox
       
       private function migrateView(param1:MouseEvent) : void
       {
+         if(ALLIANCES._myAlliance)
+         {
+            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
+            return;
+         }
          SOUNDS.Play("click1");
          GLOBAL._currentCell = null;
          MapRoom.Setup(this.data.coords,this.data.worldID,this.data.baseID,true,this);

@@ -67,6 +67,23 @@ package com.monsters.maproom_advanced
          }
       }
       
+      public function Cleanup() : void
+      {
+         this.bTransfer.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            MapRoom.TransferMonstersC(_cell);
+         });
+         this.bCancel.removeEventListener(MouseEvent.CLICK,this.Hide);
+         if(this._mcMonsters)
+         {
+            while(this._mcMonsters.numChildren > 0)
+            {
+               this._mcMonsters.removeChildAt(0);
+            }
+            this._mcMonsters = null;
+         }
+      }
+      
       public function Hide(param1:MouseEvent = null) : *
       {
          if(MapRoom._mc)

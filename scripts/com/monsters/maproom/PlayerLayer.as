@@ -82,10 +82,10 @@ package com.monsters.maproom
             this.baseData[_loc1_].Clear();
             _loc1_++;
          }
-         this.basesForeign = null;
-         this.baseData = null;
-         this.basesAll = null;
-         this.basesWM = null;
+         this.basesForeign = [];
+         this.baseData = [];
+         this.basesAll = [];
+         this.basesWM = [];
          this.player = null;
       }
       
@@ -119,9 +119,9 @@ package com.monsters.maproom
          handleLoadSuccessful = function(param1:Object):*
          {
             var aib:Object = null;
-            var start:int = 0;
             var ai:String = null;
             var _o:Object = null;
+            var start:int = 0;
             var obj:Object = param1;
             try
             {
@@ -130,41 +130,58 @@ package com.monsters.maproom
                {
                   obj.wmbases = [];
                   aib = MapRoom.BRIDGE.WMBASE._bases;
-                  if(aib)
+                  try
                   {
-                     for(ai in aib)
+                     if(aib)
                      {
-                        if(aib[ai].destroyed == false)
+                        for(ai in aib)
                         {
-                           _o = {};
-                           if(Boolean(aib[ai]) && Boolean(aib[ai].tribe))
+                           if(aib[ai])
                            {
-                              _o.baseid = aib[ai].baseid;
-                              _o.level = aib[ai].level;
-                              _o.type = aib[ai].tribe.type;
-                              _o.description = aib[ai].tribe.description;
-                              _o.wm = 1;
-                              _o.friend = 0;
-                              _o.pic = aib[ai].tribe.profilepic;
-                              _o.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
-                              if(_o.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                              if(aib[ai].destroyed == false)
                               {
-                                 obj.wmbases.push(_o);
+                                 _o = {};
+                                 if(aib[ai].tribe)
+                                 {
+                                    _o.baseid = aib[ai].baseid;
+                                    _o.level = aib[ai].level;
+                                    _o.type = aib[ai].tribe.type;
+                                    _o.description = aib[ai].tribe.description;
+                                    _o.wm = 1;
+                                    _o.friend = 0;
+                                    _o.pic = aib[ai].tribe.profilepic;
+                                    _o.basename = MapRoom.BRIDGE.KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
+                                    if(_o.level >= MapRoom.BRIDGE.BASE._baseLevel - 10)
+                                    {
+                                       obj.wmbases.push(_o);
+                                    }
+                                 }
                               }
                            }
                         }
                      }
                   }
-                  start = getTimer();
-                  Create(obj);
-                  _getting = false;
-                  _lastUpdated = MapRoom.BRIDGE.GLOBAL.Timestamp() + int(Math.random() * 5);
-                  dispatchEvent(new Event(Event.COMPLETE));
+                  catch(e:Error)
+                  {
+                     LOGGER.Log("err","PlayerLayer WM: " + e.message);
+                  }
+                  try
+                  {
+                     start = getTimer();
+                     Create(obj);
+                     _getting = false;
+                     _lastUpdated = MapRoom.BRIDGE.GLOBAL.Timestamp() + int(Math.random() * 5);
+                     dispatchEvent(new Event(Event.COMPLETE));
+                  }
+                  catch(e:Error)
+                  {
+                     LOGGER.Log("err","PlayerLayer Create: " + e.message);
+                  }
                }
                else
                {
                   MapRoom.BRIDGE.Log("err","MAPROOMPOPUP.Get: " + obj.error);
-                  MapRoom.BRIDGE.GLOBAL.ErrorMessage("");
+                  MapRoom.BRIDGE.GLOBAL.ErrorMessage("MAPROOMPOPUP.Get 1");
                }
                if(MiniMap.getInstance())
                {
@@ -180,7 +197,7 @@ package com.monsters.maproom
          {
             MapRoom.BRIDGE.GLOBAL.WaitHide();
             MapRoom.BRIDGE.Log("err","MAPROOMPOPUP.Get HTTP");
-            MapRoom.BRIDGE.GLOBAL.ErrorMessage("");
+            MapRoom.BRIDGE.GLOBAL.ErrorMessage("MAPROOMPOPUP.Get 2");
          };
          this._getting = true;
          ++this._gets;
@@ -202,7 +219,23 @@ package com.monsters.maproom
          var _loc8_:WildMonsterBase = null;
          var _loc9_:ForeignBase = null;
          var _loc3_:Boolean = false;
-         if(param1.wmbases)
+         if(this.basesForeign == null)
+         {
+            this.basesForeign = [];
+         }
+         if(this.basesWM == null)
+         {
+            this.basesWM = [];
+         }
+         if(this.basesAll == null)
+         {
+            this.basesAll = [];
+         }
+         if(this.baseData == null)
+         {
+            this.baseData = [];
+         }
+         if(Boolean(param1) && Boolean(param1.wmbases))
          {
             _loc7_ = 0;
             while(_loc7_ < param1.wmbases.length)
@@ -241,7 +274,7 @@ package com.monsters.maproom
                _loc7_ += 1;
             }
          }
-         if(this.basesForeign.length < this._playersLimit)
+         if(this.basesForeign.length < this._playersLimit && param1 && Boolean(param1.bases))
          {
             if(this.basesForeign.length + param1.bases.length >= this._playersLimit)
             {
@@ -251,7 +284,7 @@ package com.monsters.maproom
             {
                _loc6_ = uint(param1.bases.length);
             }
-            if(param1.bases.length > 0)
+            if(param1 && param1.bases && param1.bases.length > 0)
             {
                _loc7_ = 0;
                while(_loc7_ < _loc6_)

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1753")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1736")]
    public dynamic class PopupMonstersA_CLIP extends MovieClip
    {
       public var bCancel:Button_CLIP;

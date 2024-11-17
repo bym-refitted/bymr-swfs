@@ -41,6 +41,10 @@ package
          {
             return false;
          }
+         if(BASE._showingWhatsNew)
+         {
+            return false;
+         }
          try
          {
             loop7:

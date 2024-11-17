@@ -3,6 +3,7 @@ package com.monsters.effects
    import com.adobe.crypto.MD5;
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ImageCache;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -358,7 +359,14 @@ package com.monsters.effects
          {
             _mc.fired();
          }
-         LOGGER.Stat([27,param3.resource,param3.col,param3.cost]);
+         if(ALLIANCES._myAlliance)
+         {
+            LOGGER.Stat([27,param3.resource,param3.col,param3.cost,ALLIANCES._allianceID]);
+         }
+         else
+         {
+            LOGGER.Stat([27,param3.resource,param3.col,param3.cost]);
+         }
       }
       
       public static function Tick() : *

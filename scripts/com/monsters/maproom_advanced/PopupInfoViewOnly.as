@@ -138,6 +138,8 @@ package com.monsters.maproom_advanced
          {
             _profilePic.height = 50;
             _profilePic.width = 50;
+            _profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
+            _profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
          imageComplete = function(param1:String, param2:BitmapData):void
          {
@@ -146,6 +148,8 @@ package com.monsters.maproom_advanced
          };
          LoadImageError = function(param1:IOErrorEvent):*
          {
+            _profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
+            _profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
          if(!this._cell._facebookID && this._cell._base != 1)
          {
@@ -177,6 +181,19 @@ package com.monsters.maproom_advanced
                   ImageCache.GetImageWithCallBack("monsters/tribe_abunakki_50.v2.jpg",imageComplete);
             }
          }
+      }
+      
+      public function Cleanup() : void
+      {
+         this.bView.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("view");
+         });
+         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            View();
+         });
+         mcFrame = null;
       }
       
       public function View() : *

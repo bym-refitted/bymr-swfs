@@ -199,6 +199,55 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
+      public function Cleanup() : void
+      {
+         this.bOpen.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("open");
+         });
+         this.bOpen.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            Open();
+         });
+         this.bMonsters.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("monsters");
+         });
+         this.bMonsters.removeEventListener(MouseEvent.CLICK,this.StartTransferM);
+         this.bRelocate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("relocateme");
+         });
+         this.bRelocate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            MapRoom._mc.ShowRelocateMePopup(_cell);
+         });
+         this.bInviteMigrate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("invitemigrate");
+         });
+         this.bInviteMigrate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            ShowInviteMigrate();
+         });
+         this.bBookmark.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         {
+            ButtonInfo("bookmark");
+         });
+         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         {
+            if(!_bookmarked)
+            {
+               MapRoom._mc.ShowBookmarkAddPopup(_cell);
+            }
+            else
+            {
+               GLOBAL.Message(KEYS.Get("newmap_bm_done"));
+            }
+         });
+         mcFrame = null;
+      }
+      
       public function Open() : *
       {
          if(!this._cell._locked || this._cell._locked == LOGIN._playerID)

@@ -2,6 +2,7 @@ package com.monsters.maproom_advanced
 {
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
+   import com.monsters.alliances.*;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -23,6 +24,10 @@ package com.monsters.maproom_advanced
       public var _base:int;
       
       public var _baseID:int;
+      
+      public var _allianceID:int;
+      
+      public var _alliance:AllyInfo;
       
       public var _height:int;
       
@@ -86,6 +91,8 @@ package com.monsters.maproom_advanced
       
       public var _terrain:String;
       
+      public var _hasWarned:int = 0;
+      
       private var _smokeBMD:BitmapData;
       
       private var _smokeDO:DisplayObject;
@@ -95,6 +102,37 @@ package com.monsters.maproom_advanced
       private var _smokeParticles:Array;
       
       private var _frame:int;
+      
+      private var inTest:Boolean = false;
+      
+      private var _inAllianceProps:Object = {
+         "txtNameX":0,
+         "txtNameY":1,
+         "txtAllyX":0,
+         "txtAllyY":11
+      };
+      
+      private var _soloProps:Object = {
+         "txtNameX":0,
+         "txtNameY":1,
+         "txtAllyX":0,
+         "txtAllyY":11
+      };
+      
+      private var _picURLs:Object = {
+         "baseURL":"alliances/",
+         "sizeL":"_large",
+         "sizeM":"_medium",
+         "sizeS":"_small",
+         "sizeXS":"_xsmall",
+         "ally":"A",
+         "friendly":"F",
+         "hostile":"H",
+         "neutral":"N",
+         "ext":".png"
+      };
+      
+      private var testAllianceIDs:Array = [1,2,3,102,111];
       
       public function MapRoomCell()
       {
@@ -112,6 +150,13 @@ package com.monsters.maproom_advanced
          mc.mcEdges.mouseChildren = false;
          mc.mcPlayer.mcWorker.visible = false;
          mc.mcPlayer.mcInvite.visible = false;
+         mc.mcPlayer.mcFlag.mouseEnabled = false;
+         mc.mcPlayer.mcFlag.mouseChildren = false;
+         mc.mcPlayer.mcFlag.gotoAndStop(1);
+         mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop(1);
+         mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop(1);
+         mc.mcPlayer.mcFlag.txtAlliance.visible = false;
+         mc.mcPlayer.mcFlag.txtAlliance.htmlText = "";
          mc.mcEdges.enabled = false;
          mc.mcEdges.visible = false;
          mc.mcPrompt.enabled = false;
@@ -120,16 +165,15 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:Object) : *
       {
-         var timer:*;
-         var tt:int = 0;
-         var tmpSave:int = 0;
-         var t:int = 0;
-         var o:Object = param1;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          this._dataAge = 10;
          this._updated = true;
          this._processed = false;
-         this._base = o.b;
-         if(o.bid)
+         this._base = param1.b;
+         if(param1.bid)
          {
             if(this._baseID != 0 && this._baseID == GLOBAL._homeBaseID)
             {
@@ -139,63 +183,90 @@ package com.monsters.maproom_advanced
             {
                MapRoom._homeCell = this;
             }
-            this._baseID = o.bid;
+            this._baseID = param1.bid;
          }
-         this._height = o.i;
-         this._water = this._height < 100;
-         this._mine = o.mine;
-         if(o.f)
+         if(param1.aid)
          {
-            this._flinger = new SecNum(o.f);
+            this._allianceID = param1.aid;
+         }
+         else if(this.inTest)
+         {
+            if(this._base > 1)
+            {
+               _loc3_ = Math.floor(Math.random() * (this.testAllianceIDs.length - 1));
+               this._allianceID = this.testAllianceIDs[_loc3_];
+            }
+         }
+         if(this._alliance)
+         {
+            if(ALLIANCES.canFetchAllianceData)
+            {
+               mc.mcPlayer.mcFlag.visible = true;
+            }
+         }
+         else if(Boolean(this._allianceID) && this._allianceID != 0)
+         {
+            ALLIANCES.SetCellAlliance(this,true);
+            if(ALLIANCES.canFetchAllianceData)
+            {
+               mc.mcPlayer.mcFlag.visible = false;
+            }
+         }
+         this._height = param1.i;
+         this._water = this._height < 100;
+         this._mine = param1.mine;
+         if(param1.f)
+         {
+            this._flinger = new SecNum(param1.f);
          }
          else
          {
             this._flinger = new SecNum(0);
          }
-         if(o.c)
+         if(param1.c)
          {
-            this._catapult = new SecNum(o.c);
+            this._catapult = new SecNum(param1.c);
          }
          else
          {
             this._catapult = new SecNum(0);
          }
-         this._userID = o.uid;
-         this._facebookID = o.fbid;
-         this._truce = o.t;
-         this._name = o.n;
-         this._friend = o.fr;
-         this._online = o.on;
-         this._protected = o.p;
-         if(o.pi)
+         this._userID = param1.uid;
+         this._facebookID = param1.fbid;
+         this._truce = param1.t;
+         this._name = param1.n;
+         this._friend = param1.fr;
+         this._online = param1.on;
+         this._protected = param1.p;
+         if(param1.pi)
          {
-            this._invitePendingID = o.pi;
+            this._invitePendingID = param1.pi;
          }
          else
          {
             this._invitePendingID = 0;
          }
-         if(o.r)
+         if(param1.r)
          {
             this._hpResources = {
-               "r1":int(o.r.r1),
-               "r2":int(o.r.r2),
-               "r3":int(o.r.r3),
-               "r4":int(o.r.r4),
-               "r1max":int(o.r.r1max),
-               "r2max":int(o.r.r2max),
-               "r3max":int(o.r.r3max),
-               "r4max":int(o.r.r4max)
+               "r1":int(param1.r.r1),
+               "r2":int(param1.r.r2),
+               "r3":int(param1.r.r3),
+               "r4":int(param1.r.r4),
+               "r1max":int(param1.r.r1max),
+               "r2max":int(param1.r.r2max),
+               "r3max":int(param1.r.r3max),
+               "r4max":int(param1.r.r4max)
             };
             this._resources = {
-               "r1":new SecNum(int(o.r.r1)),
-               "r2":new SecNum(int(o.r.r2)),
-               "r3":new SecNum(int(o.r.r3)),
-               "r4":new SecNum(int(o.r.r4)),
-               "r1max":int(o.r.r1max),
-               "r2max":int(o.r.r2max),
-               "r3max":int(o.r.r3max),
-               "r4max":int(o.r.r4max)
+               "r1":new SecNum(int(param1.r.r1)),
+               "r2":new SecNum(int(param1.r.r2)),
+               "r3":new SecNum(int(param1.r.r3)),
+               "r4":new SecNum(int(param1.r.r4)),
+               "r1max":int(param1.r.r1max),
+               "r2max":int(param1.r.r2max),
+               "r3max":int(param1.r.r3max),
+               "r4max":int(param1.r.r4max)
             };
          }
          else
@@ -222,9 +293,9 @@ package com.monsters.maproom_advanced
             };
          }
          this._dirty = false;
-         if(o.m && o.m.hcc != null && o.m.h != null && o.m.overdrivepower != null && o.m.housed != null)
+         if(param1.m && param1.m.hcc != null && param1.m.h != null && param1.m.overdrivepower != null && param1.m.housed != null)
          {
-            this._hpMonsterData = o.m;
+            this._hpMonsterData = param1.m;
             if(!this._hpMonsterData.overdrivetime)
             {
                this._hpMonsterData.overdrivetime = 0;
@@ -266,32 +337,53 @@ package com.monsters.maproom_advanced
          {
             this._hpMonsters = this._hpMonsterData.housed;
          }
-         this._level = o.l;
-         if(o.d)
+         this._level = param1.l;
+         if(param1.d)
          {
-            this._destroyed = o.d;
+            this._destroyed = param1.d;
          }
          else
          {
             this._destroyed = 0;
          }
-         if(o.lo)
+         if(param1.lo)
          {
-            this._locked = o.lo;
+            this._locked = param1.lo;
          }
          else
          {
             this._locked = 0;
          }
          this._ticks = 0;
-         if(o.dm)
+         if(param1.dm)
          {
-            this._damage = o.dm;
+            this._damage = param1.dm;
          }
          else
          {
             this._damage = 0;
          }
+         this.Update();
+         var _loc2_:* = getTimer();
+         if(this._monsterData)
+         {
+            _loc4_ = getTimer();
+            _loc5_ = int(this._monsterData.saved);
+            _loc6_ = int(this._monsterData.saved);
+            while(_loc6_ < GLOBAL.Timestamp())
+            {
+               if(this.Tick(_loc6_))
+               {
+                  break;
+               }
+               _loc6_++;
+            }
+         }
+         this._processed = true;
+      }
+      
+      public function Update() : void
+      {
          if(this._height < 100)
          {
             if(this._height < 80)
@@ -356,13 +448,23 @@ package com.monsters.maproom_advanced
          if(this._base > 0)
          {
             mc.mcPlayer.visible = true;
+            mc.mcPlayer.mcFlag2.visible = false;
+            this.SetupAlliance();
             if(this._base == 1)
             {
                mc.mcPlayer.gotoAndStop("tribe-" + this._name);
-               mc.mcPlayer.tlvl.htmlText = "<b>" + this._level + "</b>";
+               mc.mcPlayer.mcLevel.lv_txt.htmlText = "<b>" + this._level + "</b>";
+               mc.mcPlayer.mcLevel.gotoAndStop(1);
+               mc.mcPlayer.mcFlag.txt.htmlText = "" + this._name;
+               mc.mcPlayer.mcFlag.txt.y = this._inAllianceProps.txtNameY;
+               mc.mcPlayer.mcFlag.txtAlliance.htmlText = "";
+               mc.mcPlayer.mcFlag.txtAlliance.y = this._inAllianceProps.txtAllyY;
+               mc.mcPlayer.mcFlag.txtAlliance.visible = false;
             }
             else
             {
+               mc.mcPlayer.mcLevel.lv_txt.htmlText = "<b>" + this._level + "</b>";
+               mc.mcPlayer.mcLevel.gotoAndStop(2);
                if(this._protected)
                {
                   if(this._base == 2)
@@ -380,7 +482,7 @@ package com.monsters.maproom_advanced
                   {
                      mc.mcPlayer.gotoAndStop("main-destroyed");
                   }
-                  else if(this._damaged)
+                  else if(this._damage)
                   {
                      mc.mcPlayer.gotoAndStop("main-damaged");
                   }
@@ -395,7 +497,7 @@ package com.monsters.maproom_advanced
                   {
                      mc.mcPlayer.gotoAndStop("outpost-destroyed");
                   }
-                  else if(this._damaged)
+                  else if(this._damage)
                   {
                      mc.mcPlayer.gotoAndStop("outpost-damaged");
                   }
@@ -404,36 +506,43 @@ package com.monsters.maproom_advanced
                      mc.mcPlayer.gotoAndStop("outpost");
                   }
                }
-               mc.mcPlayer.mcFlag.txt.htmlText = "<b>[" + this._level + "]</b> " + this._name;
-               mc.mcPlayer.mcFlag.gotoAndStop(this._mine == 0 ? 1 : 2);
+               mc.mcPlayer.mcFlag.txt.htmlText = "<b>" + this._name + "</b> ";
+               if(this._alliance)
+               {
+                  mc.mcPlayer.mcFlag.txt.y = this._inAllianceProps.txtNameY;
+                  mc.mcPlayer.mcFlag.txtAlliance.visible = false;
+                  mc.mcPlayer.mcFlag.txtAlliance.y = this._inAllianceProps.txtAllyY;
+                  mc.mcPlayer.mcFlag.txtAlliance.htmlText = "";
+               }
+               else
+               {
+                  mc.mcPlayer.mcFlag.txt.y = this._soloProps.txtNameY;
+                  mc.mcPlayer.mcFlag.txtAlliance.visible = false;
+                  mc.mcPlayer.mcFlag.txtAlliance.y = this._soloProps.txtAllyY;
+                  mc.mcPlayer.mcFlag.txtAlliance.htmlText = "";
+               }
                mc.mcPlayer.mcTruce.visible = this._truce > GLOBAL.Timestamp();
             }
          }
          else
          {
             mc.mcPlayer.visible = false;
-            mc.mcPlayer.gotoAndStop("wmyard");
-            mc.mcPlayer.mcFlag.gotoAndStop(1);
          }
-         mc.mcPlayer.mcFlag2.visible = this._damage;
-         mc.mcPlayer.mcFlag2.txt.htmlText = !!this._destroyed ? "<b>" + KEYS.Get("newmap_inf_destroyed") + "</b>" : "<b>" + KEYS.Get("newmap_inf_damaged",{"v1":this._damage});
-         mc.mcPlayer.mcFlag2.gotoAndStop(!!this._destroyed ? 2 : 1);
-         timer = getTimer();
-         if(this._monsterData)
+         if(this._damage)
          {
-            tt = getTimer();
-            tmpSave = int(this._monsterData.saved);
-            t = int(this._monsterData.saved);
-            while(t < GLOBAL.Timestamp())
+            mc.mcPlayer.mcFlag2.visible = false;
+            mc.mcPlayer.mcFlag.nameBar.mcBar.width = 1 * Math.max(0,100 - this._damage);
+            if(this._base == 1)
             {
-               if(this.Tick(t))
-               {
-                  break;
-               }
-               t++;
+               mc.mcPlayer.mcFlag.txt.htmlText = "" + this._name + "";
+               mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop(!!this._destroyed ? "destroyed" : "wmyard");
+               mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop(!!this._destroyed ? "destroyed" : "wmyard");
             }
          }
-         this._processed = true;
+         else
+         {
+            mc.mcPlayer.mcFlag.nameBar.mcBar.width = 100;
+         }
          if(this._inRange)
          {
             if(this._over)
@@ -515,6 +624,10 @@ package com.monsters.maproom_advanced
                mc.mcPrompt.mouseChildren = false;
             }
             return true;
+         }
+         if(Boolean(this._alliance) && !this._alliance.relationship)
+         {
+            this._alliance.Relations(ALLIANCES._allianceID);
          }
          --this._dataAge;
          if(this._inRange)
@@ -774,6 +887,13 @@ package com.monsters.maproom_advanced
          {
             mc.mcGlow.gotoAndStop(1);
          }
+      }
+      
+      public function Cleanup() : *
+      {
+         mc.mcHit.removeEventListener(MouseEvent.MOUSE_OVER,this.Over);
+         mc.mcHit.removeEventListener(MouseEvent.MOUSE_OUT,this.Out);
+         mc.mcHit.removeEventListener(MouseEvent.MOUSE_UP,this.Click);
       }
       
       private function SecureMonsterData() : *
@@ -1036,6 +1156,89 @@ package com.monsters.maproom_advanced
          if(Boolean(this._smokeDO) && Boolean(this._smokeDO.parent))
          {
             this._smokeDO.parent.removeChild(this._smokeDO);
+         }
+      }
+      
+      private function SetupAlliance() : *
+      {
+         var _loc1_:int = 0;
+         if(this._allianceID)
+         {
+            mc.mcPlayer.mcFlag.gotoAndStop("inAllianceNoPic");
+            _loc1_ = int(mc.mcPlayer.mcFlag.pic.mcImage.numChildren);
+            while(_loc1_--)
+            {
+               mc.mcPlayer.mcFlag.pic.mcImage.removeChildAt(_loc1_);
+            }
+            if(this._alliance)
+            {
+               mc.mcPlayer.mcFlag.visible = true;
+               if(Boolean(this._alliance.relationship) || this._alliance.relationship == 0)
+               {
+                  switch(this._alliance.relationship)
+                  {
+                     case -1:
+                        mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("hostile");
+                        mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("hostile");
+                        break;
+                     case 1:
+                        mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("friendly");
+                        mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("friendly");
+                        break;
+                     case 4:
+                        mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("ally");
+                        mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("ally");
+                        break;
+                     case 5:
+                        mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("leader");
+                        mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("leader");
+                        break;
+                     default:
+                        mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("neutral");
+                        mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("neutral");
+                  }
+                  mc.mcPlayer.mcFlag.pic.visible = false;
+               }
+               else
+               {
+                  mc.mcPlayer.mcFlag.pic.visible = false;
+               }
+            }
+         }
+         else
+         {
+            mc.mcPlayer.mcFlag.gotoAndStop("noAlliance");
+            mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("none");
+            mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("none");
+            mc.mcPlayer.mcFlag.pic.visible = false;
+         }
+         if(this._base > 0)
+         {
+            if(this._base == 1)
+            {
+               mc.mcPlayer.mcFlag.gotoAndStop("noAlliance");
+               mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("wmyard");
+               mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("wmyard");
+               mc.mcPlayer.mcFlag.pic.visible = false;
+            }
+            else
+            {
+               mc.mcPlayer.mcFlag.visible = true;
+               if(this._base == 2 || this._base == 3)
+               {
+                  if(this._mine)
+                  {
+                     mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("player");
+                     mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("player");
+                     mc.mcPlayer.mcFlag.nameBar.mcBG.alph;
+                  }
+                  else if(!this._allianceID)
+                  {
+                     mc.mcPlayer.mcFlag.nameBar.mcBar.gotoAndStop("none");
+                     mc.mcPlayer.mcFlag.nameBar.mcBG.gotoAndStop("none");
+                  }
+               }
+            }
          }
       }
    }

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1651")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1625")]
    public dynamic class CreatureLockerItem extends MovieClip
    {
       public var mcTick:MovieClip;

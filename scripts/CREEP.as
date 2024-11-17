@@ -328,7 +328,7 @@ package
          if(param8 > 1)
          {
             LOGGER.Log("log","MONSTER Strength");
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CREEP");
          }
          if(this._behaviour == "juice")
          {
@@ -648,18 +648,12 @@ package
          this._looking = true;
          if(GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE || this.CanShootCreep())
          {
-            if(this._friendly)
-            {
-            }
             this._waypoints = [];
             this._atTarget = true;
             this._looking = false;
          }
          else if(this._noDefensePath || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE * 3 || this._pathing == "direct")
          {
-            if(this._friendly)
-            {
-            }
             this._waypoints = [this._targetCreep._tmpPoint];
             this._targetPosition = this._targetCreep._tmpPoint;
             _loc1_ = GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint);
@@ -672,26 +666,14 @@ package
                this._doDefenseBurrow = true;
             }
          }
+         else if(this._targetCreep._atTarget || this._targetCreep._waypoints.length < 8 || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 250)
+         {
+            this.WaypointTo(this._targetCreep._tmpPoint,null);
+         }
          else
          {
-            if(this._friendly)
-            {
-            }
-            if(this._targetCreep._atTarget || this._targetCreep._waypoints.length < 8 || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 250)
-            {
-               if(this._friendly)
-               {
-               }
-               this.WaypointTo(this._targetCreep._tmpPoint,null);
-            }
-            else
-            {
-               if(this._friendly)
-               {
-               }
-               this.WaypointTo(this._targetCreep._waypoints[7],null);
-               this._intercepting = true;
-            }
+            this.WaypointTo(this._targetCreep._waypoints[7],null);
+            this._intercepting = true;
          }
          this._hasTarget = true;
       }

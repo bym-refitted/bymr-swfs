@@ -3,6 +3,7 @@ package
    import com.adobe.serialization.json.*;
    import com.cc.utils.SecNum;
    import com.monsters.ai.*;
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.ParticleDamage;
@@ -518,7 +519,14 @@ package
                      _loc13_._hitLimit = int.MAX_VALUE;
                      _loc12_++;
                   }
-                  LOGGER.Stat([28,_loc8_,_flingerBucket[_loc8_].Get()]);
+                  if(ALLIANCES._myAlliance)
+                  {
+                     LOGGER.Stat([28,_loc8_,_flingerBucket[_loc8_].Get(),ALLIANCES._allianceID]);
+                  }
+                  else
+                  {
+                     LOGGER.Stat([28,_loc8_,_flingerBucket[_loc8_].Get()]);
+                  }
                   _flingValue += CREATURES.GetProperty(_loc8_,"cResource");
                }
             }
@@ -715,7 +723,7 @@ package
                   if(_deltaLoot["r" + _loc1_].Get() != _hpDeltaLoot["r" + _loc1_])
                   {
                      LOGGER.Log("log","ATTACK.SaveDeltaLoot delta loot mismatch secure " + _deltaLoot.Get() + " unsecure " + _hpDeltaLoot[_loc1_]);
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("ATTACK.SaveDeltaLoot");
                   }
                }
                _loc1_++;

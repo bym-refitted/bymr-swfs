@@ -71,6 +71,7 @@ package
             if(_mc)
             {
                GLOBAL._layerTop.removeChild(_mc);
+               _mc.mcFrame = null;
                _mc = null;
             }
          }
@@ -88,7 +89,7 @@ package
       {
          if(GLOBAL._giveTips && KEYS._setup && HasTips())
          {
-            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && !BASE._isOutpost)
+            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && !BASE._isOutpost && GLOBAL._whatsnewid == 1033)
             {
                if(GLOBAL.StatGet("tipno"))
                {

@@ -355,7 +355,7 @@ package
             else
             {
                LOGGER.Log("err","UPDATES.Create: " + com.adobe.serialization.json.JSON.encode(param1));
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("UPDATES.Create");
             }
          };
          handleLoadError = function(param1:IOErrorEvent):void

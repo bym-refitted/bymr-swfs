@@ -45,7 +45,7 @@ package
          }
       }
       
-      public function Accept(param1:MouseEvent) : *
+      public function Accept(param1:MouseEvent) : void
       {
          if(tInput.text.length > 12)
          {
@@ -64,7 +64,7 @@ package
          BASE.Save();
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          var _loc1_:String = GUARDIANCAGE._guardians["G" + CREATURES._guardian._type].name;
          CREATURES._guardian._name = _loc1_;

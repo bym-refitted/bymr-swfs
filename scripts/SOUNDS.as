@@ -157,7 +157,14 @@ package
             try
             {
                _muted = 0;
-               _musicVolume = 0.7;
+               if(_mutedMusic == 0)
+               {
+                  _musicVolume = 0.7;
+               }
+               else
+               {
+                  _musicVolume = 0;
+               }
                if(GLOBAL.StatGet("mute") == 1)
                {
                   MuteUnmute(true);
@@ -356,6 +363,13 @@ package
          }
       }
       
+      public static function TutorialStopMusic() : void
+      {
+         MuteUnmute(true,"music");
+         _queuedMusic = null;
+         _currentMusic = null;
+      }
+      
       public static function StopAll() : void
       {
          SoundMixer.stopAll();
@@ -439,6 +453,21 @@ package
                UI2._top.mcMusic.gotoAndStop(1);
                _musicVolume = 0.7;
                _mutedMusic = 0;
+               if(_currentMusic == null && _queuedMusic == null)
+               {
+                  switch(GLOBAL._mode)
+                  {
+                     case "attack":
+                     case "wmattack":
+                        PlayMusic("musicattack");
+                        break;
+                     case "build":
+                     case "help":
+                     case "view":
+                     default:
+                        PlayMusic("musicbuild");
+                  }
+               }
             }
             _loc3_.volume = _musicVolume;
             if(_musicChannel)

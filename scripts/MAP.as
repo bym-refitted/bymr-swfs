@@ -75,6 +75,8 @@ package
       
       public static var _following:Boolean;
       
+      public static var _inited:Boolean = false;
+      
       public static var stage:* = GLOBAL._ROOT;
       
       public static var _creepCells:Object = {};
@@ -194,6 +196,7 @@ package
             LOGGER.Log("err","MAP.Setup B: " + e.message + " | " + e.getStackTrace());
          }
          Edge();
+         _inited = true;
       }
       
       public static function Clear() : void
@@ -217,6 +220,7 @@ package
             _EFFECTSBMP.dispose();
          }
          _EFFECTSBMP = null;
+         _inited = false;
       }
       
       public static function Edge() : *
@@ -766,7 +770,7 @@ package
       public static function CreepCellAdd(param1:Point, param2:String, param3:MovieClip) : *
       {
          param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc4_:String = "node" + int(param1.x / 500) + "|" + int(param1.y / 500);
+         var _loc4_:String = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
          if(!_creepCells[_loc4_])
          {
             _creepCells[_loc4_] = new Object();
@@ -778,7 +782,7 @@ package
       public static function CreepCellMove(param1:Point, param2:String, param3:MovieClip, param4:String) : *
       {
          param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc5_:* = "node" + int(param1.x / 500) + "|" + int(param1.y / 500);
+         var _loc5_:* = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
          if(_loc5_ != param4)
          {
             CreepCellDelete(param2,param4);
@@ -796,51 +800,53 @@ package
       
       public static function CreepCellFind(param1:Point, param2:Number, param3:int = 0, param4:* = null) : Array
       {
-         var _loc9_:int = 0;
-         var _loc10_:* = undefined;
-         var _loc11_:* = undefined;
+         var _loc11_:int = 0;
          var _loc12_:* = undefined;
          var _loc13_:* = undefined;
          var _loc14_:* = undefined;
          var _loc15_:* = undefined;
+         var _loc16_:* = undefined;
+         var _loc17_:* = undefined;
          param1 = PATHING.FromISO(param1);
-         var _loc5_:int = int(param1.x / 500);
-         var _loc6_:int = int(param1.y / 500);
-         var _loc7_:Array = [];
-         var _loc8_:int = _loc5_ - 1;
-         while(_loc8_ <= _loc5_ + 1)
+         var _loc5_:int = int(param1.x / 100);
+         var _loc6_:int = int(param1.y / 100);
+         var _loc7_:int = int(param2 / 100) + 1;
+         var _loc8_:Array = [];
+         var _loc9_:Number = param2 * param2;
+         var _loc10_:int = _loc5_ - _loc7_;
+         while(_loc10_ <= _loc5_ + _loc7_)
          {
-            _loc9_ = _loc6_ - 1;
-            while(_loc9_ <= _loc6_ + 1)
+            _loc11_ = _loc6_ - _loc7_;
+            while(_loc11_ <= _loc6_ + _loc7_)
             {
-               _loc10_ = "node" + _loc8_ + "|" + _loc9_;
-               for(_loc11_ in _creepCells[_loc10_])
+               _loc12_ = "node" + _loc10_ + "|" + _loc11_;
+               for(_loc13_ in _creepCells[_loc12_])
                {
-                  _loc12_ = _creepCells[_loc10_][_loc11_];
-                  if(_loc12_._health.Get() > 0 && _loc12_._visible && _loc12_._blinkState == 0 && _loc12_ != param4)
+                  _loc14_ = _creepCells[_loc12_][_loc13_];
+                  if(_loc14_._health.Get() > 0 && _loc14_._visible && _loc14_._blinkState == 0 && _loc14_ != param4)
                   {
-                     if((param3 < 0 || _loc12_._invisibleTime == 0) && (_loc12_._movement != "fly" && param3 < 2 || _loc12_._movement == "fly" && param3 > 0))
+                     if((param3 < 0 || _loc14_._invisibleTime == 0) && (_loc14_._movement != "fly" && param3 < 2 || _loc14_._movement == "fly" && param3 > 0))
                      {
-                        _loc13_ = _loc12_._health.Get();
-                        _loc14_ = PATHING.FromISO(_loc12_._tmpPoint);
-                        _loc15_ = int(Point.distance(param1,_loc14_));
-                        if(_loc15_ < param2)
+                        _loc15_ = _loc14_._health.Get();
+                        _loc16_ = PATHING.FromISO(_loc14_._tmpPoint);
+                        _loc17_ = int(GLOBAL.QuickDistanceSquared(param1,_loc16_));
+                        if(_loc17_ < _loc9_)
                         {
-                           _loc7_.push({
-                              "creep":_loc12_,
-                              "dist":_loc15_,
-                              "pos":_loc14_,
-                              "hp":_loc13_
+                           _loc8_.push({
+                              "creep":_loc14_,
+                              "dist":Math.sqrt(_loc17_),
+                              "pos":_loc16_,
+                              "hp":_loc15_
                            });
                         }
                      }
                   }
                }
-               _loc9_++;
+               _loc11_++;
             }
-            _loc8_++;
+            _loc10_++;
          }
-         return _loc7_;
+         return _loc8_;
       }
       
       public static function OnLand(param1:int, param2:int, param3:int) : *

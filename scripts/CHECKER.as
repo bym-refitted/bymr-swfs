@@ -2,7 +2,6 @@ package
 {
    import com.monsters.effects.ResourceBombs;
    import com.monsters.maproom_advanced.MapRoom;
-   import package_1.class_1;
    
    public class CHECKER
    {
@@ -22,49 +21,49 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "7e8f81e0c3ac9670f370cafa9ab15300")
+            if(GLOBAL.Check() != "245ed15eaf925640ad1967fd2d9226d2")
             {
                LOGGER.Log("err","CHECKER.buildingprops YARD " + GLOBAL.Check());
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
             }
          }
          else if(GLOBAL.Check() != "c9698832f35d6319cefc9cee774f6013")
          {
             LOGGER.Log("err","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
          }
          if(!GLOBAL._flags.kongregate)
          {
             if(QUESTS.CheckB() != "229df3c5be8059752f9af3e15090021e")
             {
                LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("CHECKER.Quests");
             }
          }
-         else if(QUESTS.CheckB() != "6fe6aa0a9cb56c49dcf94e2063d243cb")
+         else if(QUESTS.CheckB() != "064c69e873f38d2a6e068218ae4ceb36")
          {
             LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("CHECKER.Quests");
          }
          if(GUARDIANCAGE.Check() != "52828a21e22ced0235fd56298c222347")
          {
             LOGGER.Log("err","CHECKER.Guardian " + GUARDIANCAGE.Check());
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("CHECKER.GUARDIANCAGE");
          }
-         if(CREATURELOCKER.Check() != "ea0d5156021f5c577457789ab85d0891")
+         if(CREATURELOCKER.Check() != "4f23177e5caa74b4abd2ef4af7fd4107")
          {
             LOGGER.Log("err","CHECKER.Creatures " + CREATURELOCKER.Check());
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("CHECKER.CREATURES");
          }
-         if(ResourceBombs.Check() != class_1.method_1(-811,-459))
+         if(ResourceBombs.Check() != "51473261afdd50efbddbad1e2098e140")
          {
             LOGGER.Log("err","CHECKER.ResourceBombs " + ResourceBombs.Check());
-            GLOBAL.ErrorMessage("");
+            GLOBAL.ErrorMessage("CHECKER.ResourceBombs");
          }
          if(GLOBAL._mode == "build" && BASE._credits.Get() != BASE._hpCredits)
          {
             LOGGER.Log("log","CHECKER.Credits " + BASE._hpCredits + " vs " + BASE._credits.Get());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER.Credits");
          }
          if(BASE._resources.r1.Get() != BASE._hpResources.r1)
          {
@@ -76,7 +75,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource1 base");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER base1");
          }
          if(BASE._resources.r2.Get() != BASE._hpResources.r2)
          {
@@ -88,7 +87,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource2 base");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER base2");
          }
          if(BASE._resources.r3.Get() != BASE._hpResources.r3)
          {
@@ -100,7 +99,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource3 base");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER base3");
          }
          if(BASE._resources.r4.Get() != BASE._hpResources.r4)
          {
@@ -112,7 +111,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource4 base");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER base4");
          }
          if(GLOBAL._resources.r1.Get() != GLOBAL._hpResources.r1 && GLOBAL._resources.r1.Get() && Boolean(GLOBAL._hpResources.r1))
          {
@@ -124,7 +123,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource1 global");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER global1");
          }
          if(GLOBAL._resources.r2.Get() != GLOBAL._hpResources.r2 && GLOBAL._resources.r2.Get() && Boolean(GLOBAL._hpResources.r2))
          {
@@ -136,7 +135,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource2 global");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER global2");
          }
          if(GLOBAL._resources.r3.Get() != GLOBAL._hpResources.r3 && GLOBAL._resources.r3.Get() && Boolean(GLOBAL._hpResources.r3))
          {
@@ -148,7 +147,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource3 global");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER global3");
          }
          if(GLOBAL._resources.r4.Get() != GLOBAL._hpResources.r4)
          {
@@ -160,7 +159,7 @@ package
             {
                LOGGER.Log("log","CHECKER.resource4 global");
             }
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("CHECKER global4");
          }
          if(GLOBAL._advancedMap)
          {
@@ -176,7 +175,7 @@ package
             if(Boolean(_loc3_._hpLvl) && _loc3_._hpLvl != _loc3_._lvl.Get())
             {
                LOGGER.Log("log","CHECKER.building-level");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("CHECKER.building-level");
             }
             if(!_loc1_ && !GLOBAL._catchup && _loc3_._class == "resource")
             {
@@ -188,7 +187,7 @@ package
                if(_loc3_._stored.Get() != 0)
                {
                   LOGGER.Log("log","CHECKER.building-tick 1");
-                  GLOBAL.ErrorMessage();
+                  GLOBAL.ErrorMessage("CHECKER.building-tick 1");
                }
                _loc6_ = int(_loc3_._buildingProps.produce[_loc3_._lvl.Get() - 1]);
                if(Boolean(GLOBAL._advancedMap) && Boolean(BASE._isOutpost))
@@ -205,12 +204,12 @@ package
                if(_loc3_._stored.Get() > _loc6_)
                {
                   LOGGER.Log("log","CHECKER.building-tick 2");
-                  GLOBAL.ErrorMessage();
+                  GLOBAL.ErrorMessage("CHECKER.building-tick 2");
                }
                if(_loc3_._countdownProduce.Get() <= 0)
                {
                   LOGGER.Log("log","CHECKER.building-tick 3");
-                  GLOBAL.ErrorMessage();
+                  GLOBAL.ErrorMessage("CHECKER.building-tick 3");
                }
                _loc1_ = true;
                _loc3_._stored.Set(_loc4_);

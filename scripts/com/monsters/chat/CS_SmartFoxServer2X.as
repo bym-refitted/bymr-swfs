@@ -6,6 +6,7 @@ package com.monsters.chat
    import com.smartfoxserver.v2.entities.User;
    import com.smartfoxserver.v2.entities.data.SFSArray;
    import com.smartfoxserver.v2.entities.data.SFSObject;
+   import com.smartfoxserver.v2.entities.variables.SFSUserVariable;
    import com.smartfoxserver.v2.logging.LoggerEvent;
    import com.smartfoxserver.v2.requests.AdminMessageRequest;
    import com.smartfoxserver.v2.requests.ExtensionRequest;
@@ -15,6 +16,7 @@ package com.monsters.chat
    import com.smartfoxserver.v2.requests.MessageRecipientMode;
    import com.smartfoxserver.v2.requests.PrivateMessageRequest;
    import com.smartfoxserver.v2.requests.PublicMessageRequest;
+   import com.smartfoxserver.v2.requests.SetUserVariablesRequest;
    import com.smartfoxserver.v2.util.ClientDisconnectionReason;
    import flash.events.EventDispatcher;
    import flash.events.TimerEvent;
@@ -87,6 +89,7 @@ package com.monsters.chat
          this.sfs.addEventListener(SFSEvent.PRIVATE_MESSAGE,this.onPrivateMessage);
          this.sfs.addEventListener(SFSEvent.USER_ENTER_ROOM,this.onUserEnterRoom);
          this.sfs.addEventListener(SFSEvent.USER_EXIT_ROOM,this.onUserExitRoom);
+         this.sfs.addEventListener(SFSEvent.USER_VARIABLES_UPDATE,this.onUserVarsUpdate);
          this.connect();
       }
       
@@ -134,6 +137,9 @@ package com.monsters.chat
                break;
             case "ignore":
                this.ignoreResponse(param1);
+               break;
+            case "ignoreerror":
+               this.ignoreErrorResponse(param1);
                break;
             case "updatename":
                this.updateName(param1);
@@ -215,6 +221,18 @@ package com.monsters.chat
             _loc7_["target"] = _loc2_.getUtfString("target");
          }
          dispatchEvent(new ChatEvent(ChatEvent.IGNORE,_loc5_,_loc7_));
+      }
+      
+      private function ignoreErrorResponse(param1:SFSEvent) : void
+      {
+         var _loc2_:SFSObject = param1.params.params as SFSObject;
+         var _loc3_:String = _loc2_.getUtfString("command");
+         var _loc4_:String = _loc2_.getUtfString("reason");
+         var _loc5_:Boolean = _loc2_.getBool("success");
+         var _loc6_:Dictionary = new Dictionary();
+         _loc6_["command"] = _loc3_;
+         _loc6_["reason"] = _loc4_;
+         dispatchEvent(new ChatEvent(ChatEvent.IGNOREERROR,_loc5_,_loc6_));
       }
       
       private function onAdminMessage(param1:SFSEvent) : void
@@ -402,6 +420,18 @@ package com.monsters.chat
          }
       }
       
+      public function setDisplayNameUserVar(param1:String) : void
+      {
+         var _loc2_:Array = [];
+         _loc2_.push(new SFSUserVariable("displayName",param1));
+         this.sfs.send(new SetUserVariablesRequest(_loc2_));
+      }
+      
+      private function onUserVarsUpdate(param1:SFSEvent) : void
+      {
+         §§pop();
+      }
+      
       public function updateDisplayName(param1:Channel, param2:String, param3:String) : void
       {
          var extensionRequest:ExtensionRequest;
@@ -559,6 +589,8 @@ package com.monsters.chat
          chatMessage = chatMessage.replace(/&#10;/g,"");
          chatMessage = chatMessage.replace(/&#13;/g,"");
          chatMessage = chatMessage.replace(/^\s+$/,"");
+         chatMessage = chatMessage.replace(/:/g,"&#58;");
+         chatMessage = chatMessage.replace(/\'/g,"&#39;");
          if(chatMessage == "")
          {
             return;
@@ -653,6 +685,15 @@ package com.monsters.chat
          var _loc3_:Dictionary = new Dictionary();
          _loc3_["members"] = new Array();
          dispatchEvent(new ChatEvent(ChatEvent.MEMBERS,true,_loc3_));
+      }
+      
+      public function showIgnore() : void
+      {
+         var _loc1_:SFSObject = new SFSObject();
+         _loc1_.putUtfString("command","ignore");
+         _loc1_.putUtfString("action","showlist");
+         var _loc2_:ExtensionRequest = new ExtensionRequest(EXT_REQ_STRING,_loc1_);
+         this.sfs.send(_loc2_);
       }
       
       public function getIgnore() : void

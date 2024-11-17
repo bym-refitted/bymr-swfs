@@ -129,7 +129,7 @@ package
          if(param4 > 0)
          {
             LOGGER.Log("log","Instant monster hack");
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("HOUSING insta monster hack");
             return;
          }
          if(param1 == "C100")

@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.maproom_advanced.MapRoom;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
@@ -103,13 +104,13 @@ package
             else
             {
                LOGGER.Log("err","BUILDING11.NewWorldSuccess Invalid home base coordinate. " + param1.homebase);
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("BUILDING11 1");
             }
          }
          else
          {
             LOGGER.Log("err",param1.error);
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BUILDING11 2");
          }
          this.callPending = false;
          PLEASEWAIT.Hide();
@@ -119,7 +120,7 @@ package
       {
          this.callPending = false;
          LOGGER.Log("err","BUILDING11.NewWorld HTTP");
-         GLOBAL.ErrorMessage();
+         GLOBAL.ErrorMessage("BUILDING11.NewWorld HTTP");
          PLEASEWAIT.Hide();
       }
       
@@ -183,6 +184,11 @@ package
       {
          if(GLOBAL._advancedMap)
          {
+            if(ALLIANCES._myAlliance != null)
+            {
+               GLOBAL.Message(KEYS.Get("map_alliance_recycle",{"v1":ALLIANCES._myAlliance.name}));
+               return;
+            }
             GLOBAL.Message(KEYS.Get("newmap_recycle1"),KEYS.Get("btn_recycle"),this.RecycleD);
          }
          else
@@ -223,7 +229,7 @@ package
          else
          {
             LOGGER.Log("err",param1.error);
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BUILDING11 RecycleD 1");
          }
       }
       
@@ -231,7 +237,7 @@ package
       {
          PLEASEWAIT.Hide();
          LOGGER.Log("err","BUILDING11.Recycle HTTP");
-         GLOBAL.ErrorMessage();
+         GLOBAL.ErrorMessage("BUILDING11 RecycleD 2");
       }
       
       override public function Setup(param1:Object) : *

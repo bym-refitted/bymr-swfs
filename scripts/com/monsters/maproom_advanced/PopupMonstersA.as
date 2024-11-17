@@ -139,6 +139,15 @@ package com.monsters.maproom_advanced
          this._mc.removeEventListener(MouseEvent.MOUSE_UP,this.TickRemove);
       }
       
+      public function Cleanup() : void
+      {
+         removeEventListener(Event.ENTER_FRAME,this.AddTick);
+         removeEventListener(Event.ENTER_FRAME,this.SubtractTick);
+         removeEventListener(MouseEvent.MOUSE_UP,this.TickRemove);
+         this.bCancel.removeEventListener(MouseEvent.CLICK,this.Hide);
+         this.bTransfer.removeEventListener(MouseEvent.CLICK,this.Transfer);
+      }
+      
       private function Update() : *
       {
          var _loc2_:MonsterTransferBar = null;

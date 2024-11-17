@@ -25,7 +25,7 @@ package all_fla
    import flash.utils.*;
    import flash.xml.*;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1403")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1376")]
    public dynamic class ui_progressbar_slot_mc_112 extends MovieClip
    {
       public var mcHit:MovieClip;

@@ -11,7 +11,6 @@ package com.monsters.mailbox
    import flash.events.MouseEvent;
    import flash.net.URLRequest;
    import gs.TweenLite;
-   import package_1.class_1;
    
    public class FriendPicker extends FriendPicker_CLIP
    {
@@ -175,13 +174,12 @@ package com.monsters.mailbox
       private function onKey(param1:KeyboardEvent) : void
       {
          var _loc7_:Number = NaN;
-         var _loc2_:String = class_1.method_1(-809,-457);
          var _loc3_:Array = [65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90];
          var _loc4_:Object = {};
          var _loc5_:Number = 0;
          while(_loc5_ < _loc3_.length)
          {
-            _loc4_[_loc3_[_loc5_]] = _loc2_.charAt(_loc5_);
+            _loc4_[_loc3_[_loc5_]] = "abcdefghijklmnopqrstuvwxyz".charAt(_loc5_);
             _loc5_++;
          }
          var _loc6_:String = _loc4_[param1.keyCode];

@@ -699,6 +699,17 @@ package com.monsters.pathing
          }
       }
       
+      public static function Cleanup() : *
+      {
+         var _loc1_:* = undefined;
+         for each(_loc1_ in _costs)
+         {
+            delete _costs[_loc1_];
+         }
+         _costs = {};
+         _floods = {};
+      }
+      
       public static function LineOfSight(param1:int, param2:int, param3:int, param4:int, param5:BFOUNDATION = null, param6:Boolean = false) : Boolean
       {
          var _loc7_:int = 0;

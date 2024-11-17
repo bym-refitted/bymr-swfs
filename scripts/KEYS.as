@@ -61,7 +61,7 @@ package
          l = new URLLoader();
          if(GLOBAL._local)
          {
-            l.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/gamedev/assets/" + _language + ".v" + _languageVersion + ".txt"));
+            l.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/gamestage/assets/" + _language + ".v" + _languageVersion + ".txt"));
          }
          else
          {

@@ -36,8 +36,7 @@ package
          var _loc1_:int = getTimer();
          _mapWidth = 2600;
          _mapHeight = 2600;
-         _gridBuildings = {};
-         Clear();
+         Cleanup();
          var _loc3_:int = 0;
          while(_loc3_ < _mapWidth / 5)
          {
@@ -164,6 +163,17 @@ package
       
       public static function Clear() : *
       {
+         _floods = {};
+      }
+      
+      public static function Cleanup() : *
+      {
+         var _loc1_:* = null;
+         for each(_loc1_ in _gridBuildings)
+         {
+            delete _gridBuildings[_loc1_];
+         }
+         _gridBuildings = {};
          _floods = {};
       }
       

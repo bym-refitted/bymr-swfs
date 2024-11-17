@@ -347,7 +347,7 @@ package
          };
          if(!_loc5_[param1])
          {
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("MONSTERBUNKERPOPUP");
             return 0;
          }
          return _loc5_[param1] * param2;

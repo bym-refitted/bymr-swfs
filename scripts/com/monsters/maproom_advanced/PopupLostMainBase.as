@@ -61,14 +61,14 @@ package com.monsters.maproom_advanced
             }
             else
             {
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("PopupLostMainBase.Relocate 1");
                LOGGER.Log("err","PopupLostMainBase.Relocate non-zero error " + param1.error);
             }
          };
          RelocateFail = function(param1:IOErrorEvent):*
          {
             PLEASEWAIT.Hide();
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("PopupLostMainBase.Relocate 2");
             LOGGER.Log("err","PopupLostMainBase.Relocate HTTP");
          };
          var relocateVars:Array = [["type","random"],["baseid",0],["shiny",0]];

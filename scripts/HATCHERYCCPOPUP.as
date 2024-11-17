@@ -166,17 +166,17 @@ package
             "delay":0.1
          });
          TweenLite.to(mcMonsterInfo.bResource.mcBar,0.4,{
-            "width":100 / _loc8_ * CREATURES.GetProperty(_loc3_,"cTime"),
+            "width":100 / _loc9_ * CREATURES.GetProperty(_loc3_,"cResource"),
             "ease":Circ.easeInOut,
             "delay":0.15
          });
          TweenLite.to(mcMonsterInfo.bStorage.mcBar,0.4,{
-            "width":100 / _loc9_ * CREATURES.GetProperty(_loc3_,"cResource"),
+            "width":100 / _loc10_ * CREATURES.GetProperty(_loc3_,"cStorage"),
             "ease":Circ.easeInOut,
             "delay":0.2
          });
          TweenLite.to(mcMonsterInfo.bTime.mcBar,0.4,{
-            "width":100 / _loc10_ * CREATURES.GetProperty(_loc3_,"cStorage"),
+            "width":100 / _loc8_ * CREATURES.GetProperty(_loc3_,"cTime"),
             "ease":Circ.easeInOut,
             "delay":0.25
          });

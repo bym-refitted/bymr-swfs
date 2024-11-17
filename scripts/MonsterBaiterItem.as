@@ -22,6 +22,8 @@ package
       
       private var _enabled:Boolean = false;
       
+      private var _initialCount:int = 0;
+      
       public function MonsterBaiterItem()
       {
          super();
@@ -35,7 +37,7 @@ package
          ImageCache.GetImageWithCallBack("monsters/" + param1 + "-medium.jpg",this.IconLoaded,true,1,"",[mcIcon]);
          tInfo.text = "";
          tName.htmlText = "<b>" + KEYS.Get(this._configObj.name) + "</b>";
-         this._cost = this._configObj.props.cStorage[0];
+         this._cost = CREATURES.GetProperty(param1,"cStorage");
          decr_btn.addEventListener(MouseEvent.MOUSE_DOWN,this.decrDown);
          addEventListener(Event.ADDED_TO_STAGE,this.onAdd);
          incr_btn.addEventListener(MouseEvent.MOUSE_DOWN,this.incrDownB);
@@ -82,6 +84,7 @@ package
       
       private function incrDown(param1:MouseEvent) : void
       {
+         this._initialCount = this._count;
          ++this._count;
          this.tick = 0;
          this.addEventListener(Event.ENTER_FRAME,this.moreTick);
@@ -98,7 +101,7 @@ package
       
       private function moreTick(param1:Event) : void
       {
-         if(this.tick > 10 && this.tick % 2 == 0)
+         if(this.tick > 10 && this.tick % 2 == 0 || this._count - this._initialCount > 60)
          {
             this.moreTickB();
          }
@@ -116,6 +119,7 @@ package
       {
          if(this._count > 0)
          {
+            this._initialCount = this._count;
             --this._count;
             this.tick = 0;
             this.addEventListener(Event.ENTER_FRAME,this.lessTick);
@@ -127,7 +131,7 @@ package
       
       private function lessTick(param1:Event) : void
       {
-         if(this.tick > 10 && this.tick % 2 == 0)
+         if(this.tick > 10 && this.tick % 2 == 0 || this._initialCount - this._count > 60)
          {
             this.lessTickB();
          }

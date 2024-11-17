@@ -293,7 +293,7 @@ package
                else if(_stored.Get() > _buildingProps.capacity[_lvl.Get() - 1])
                {
                   LOGGER.Log("log","Resource gatherer storage capacity exceeded");
-                  GLOBAL.ErrorMessage();
+                  GLOBAL.ErrorMessage("BRESOURCE overcapacity hack");
                   _stored.Set(_buildingProps.capacity[_lvl.Get() - 1]);
                }
                else if(_stored.Get() < _buildingProps.capacity[_lvl.Get() - 1] && _hp.Get() > 0)
@@ -381,7 +381,7 @@ package
             if(Math.max(_countdownProduce.Get(),0))
             {
                LOGGER.Log("log","BRESOURCE.Produce hack");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("BRESOURCE production hack");
                return;
             }
             if(_producing)

@@ -47,13 +47,13 @@ package
                }
                else
                {
-                  GLOBAL.ErrorMessage(param1.error);
+                  GLOBAL.ErrorMessage(param1.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
                }
             };
             handleLoadError = function(param1:IOErrorEvent):void
             {
                GLOBAL.WaitHide();
-               GLOBAL.ErrorMessage("");
+               GLOBAL.ErrorMessage("LOGIN loadEror");
             };
             new URLLoaderApi().load(GLOBAL._apiURL + "player/getinfo",[["version",GLOBAL._version]],handleLoadSuccessful);
          }
@@ -72,12 +72,12 @@ package
                   else
                   {
                      LOGGER.Log("err","JSLogin",true);
-                     GLOBAL.ErrorMessage();
+                     GLOBAL.ErrorMessage("JSLogin");
                   }
                }
                else
                {
-                  GLOBAL.ErrorMessage(_loc2_.error);
+                  GLOBAL.ErrorMessage(_loc2_.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
                }
             });
             GLOBAL.CallJS("cc.initApplication",[GLOBAL._version,"loginsuccessful"]);
@@ -88,7 +88,7 @@ package
       {
          if(param1.version != GLOBAL._version)
          {
-            GLOBAL.ErrorMessage(KEYS.Get("We have updated the game. Please reload."));
+            GLOBAL.ErrorMessage(KEYS.Get("We have updated the game. Please reload."),GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
          else
          {
@@ -211,7 +211,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt(class_1.method_1(-810,-458));
+         return decodeSalt(class_1.method_1(448,18));
       }
       
       public static function decodeSalt(param1:String) : String

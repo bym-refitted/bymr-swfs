@@ -1,6 +1,7 @@
 package
 {
    import com.adobe.serialization.json.JSON;
+   import com.monsters.alliances.ALLIANCES;
    import com.monsters.radio.RADIO;
    import flash.display.*;
    import flash.events.Event;
@@ -30,6 +31,7 @@ package
                _loc1_._storageURL = "assets/";
                _loc1_._soundPathURL = "assets/sounds/";
                _loc1_._mapURL = "http://bm-kg-web2.dev.casualcollective.com/worldmapv2/";
+               _loc1_._allianceURL = "http://bmstage.fb.casualcollective.com/alliance/";
                _loc1_.fb_kongregate_api_path = "http://chat.kongregate.com/flash/API_AS3_46ebaf5ef297ce57605ca0a769f70b7d.swf";
                _loc1_._appid = "";
                _loc1_._tpid = "";
@@ -44,6 +46,7 @@ package
                _loc1_._storageURL = "assets/";
                _loc1_._soundPathURL = "assets/sounds/";
                _loc1_._mapURL = "http://bmdev.fb.casualcollective.com/worldmapv2/";
+               _loc1_._allianceURL = "http://bmdev.fb.casualcollective.com/alliance/";
                _loc1_._appid = "";
                _loc1_._tpid = "";
                _loc1_._countryCode = "us";
@@ -62,12 +65,14 @@ package
          GLOBAL._apiURL = obj._apiURL;
          GLOBAL._gameURL = obj._gameURL;
          GLOBAL._storageURL = obj._storageURL;
+         GLOBAL._allianceURL = obj._allianceURL;
          GLOBAL._soundPathURL = obj._soundPathURL;
          GLOBAL._statsURL = obj._statsURL;
          GLOBAL._mapURL = obj._mapURL;
          GLOBAL._appid = obj.app_id;
          GLOBAL._tpid = obj.tpid;
          GLOBAL._countryCode = obj._countryCode;
+         GLOBAL._softversion = obj.softversion;
          GLOBAL._fbdata = obj;
          GLOBAL._monetized = obj.monetized;
          GLOBAL._ROOT = new MovieClip();
@@ -102,7 +107,14 @@ package
                   BASE._isOutpost = 0;
                   GLOBAL._currentCell = null;
                   _loc2_ = com.adobe.serialization.json.JSON.decode(param1);
-                  BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"help",true);
+                  if(_loc2_.viewleader)
+                  {
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"view",true);
+                  }
+                  else
+                  {
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"help",true);
+                  }
                }
             });
             ExternalInterface.addCallback("fbcBuyItem",function(param1:String):*
@@ -152,6 +164,22 @@ package
             ExternalInterface.addCallback("startPromoTimer",function(param1:String):*
             {
                BUY.startPromo(param1);
+            });
+            ExternalInterface.addCallback("alliancesShow",function(param1:String):*
+            {
+               ALLIANCES.AlliancesCallback(param1);
+            });
+            ExternalInterface.addCallback("alliancesUpdate",function(param1:String):*
+            {
+               ALLIANCES.AlliancesServerUpdate(param1);
+            });
+            ExternalInterface.addCallback("alliancesViewLeader",function(param1:String):*
+            {
+               ALLIANCES.AlliancesViewLeader(param1);
+            });
+            ExternalInterface.addCallback("openmap",function(param1:String):*
+            {
+               GLOBAL.ShowMap();
             });
          }
       }

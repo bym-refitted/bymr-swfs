@@ -294,17 +294,17 @@ package
             "delay":0.1
          });
          TweenLite.to(bResource.mcBar,0.4,{
-            "width":100 / maxTime * CREATURES.GetProperty(this._creatureID,"cTime"),
+            "width":100 / maxResource * CREATURES.GetProperty(this._creatureID,"cResource"),
             "ease":Circ.easeInOut,
             "delay":0.15
          });
          TweenLite.to(bStorage.mcBar,0.4,{
-            "width":100 / maxResource * CREATURES.GetProperty(this._creatureID,"cResource"),
+            "width":100 / maxStorage * CREATURES.GetProperty(this._creatureID,"cStorage"),
             "ease":Circ.easeInOut,
             "delay":0.2
          });
          TweenLite.to(bTime.mcBar,0.4,{
-            "width":100 / maxStorage * CREATURES.GetProperty(this._creatureID,"cStorage"),
+            "width":100 / maxTime * CREATURES.GetProperty(this._creatureID,"cTime"),
             "ease":Circ.easeInOut,
             "delay":0.25
          });

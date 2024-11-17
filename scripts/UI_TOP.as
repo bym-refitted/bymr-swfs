@@ -24,6 +24,8 @@ package
       
       public var _catapult:CATAPULTPOPUP;
       
+      public var _buttonIcons:Array;
+      
       public function UI_TOP()
       {
          var InfoShow:Function;
@@ -94,6 +96,8 @@ package
             mc.bAlert.addEventListener(MouseEvent.CLICK,this.ButtonClick("alert"));
             mc.bAlert.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
             mc.bAlert.addEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            this._buttonIcons = [];
+            this._buttonIcons = [mc.bInvite,mc.bGift,mc.bInbox,mc.bAlert];
             if(GLOBAL._flags.showFBCEarn == 1)
             {
                mc.bEarn.buttonMode = true;
@@ -372,8 +376,7 @@ package
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:int = 0;
-         var _loc9_:String = null;
+         var _loc8_:String = null;
          if(!GLOBAL._catchup)
          {
             if(GLOBAL._mode == "build")
@@ -422,6 +425,7 @@ package
                      mc["mcR" + _loc1_].bAdd.visible = false;
                      _loc1_++;
                   }
+                  this.SortButtonIcons();
                }
                else
                {
@@ -445,11 +449,6 @@ package
                      _loc1_++;
                   }
                   _loc5_ = 0;
-                  _loc6_ = 140;
-                  if(GLOBAL._advancedMap)
-                  {
-                     _loc6_ += 35;
-                  }
                   if(GLOBAL._canInvite && !GLOBAL._flags.kongregate)
                   {
                      if(GLOBAL._sessionCount >= 2 && !GLOBAL._canGift && GLOBAL.Timestamp() - GLOBAL.StatGet("pi") > 129600)
@@ -461,13 +460,12 @@ package
                         mc.bInvite.mcSpinner.visible = false;
                      }
                      mc.bInvite.visible = true;
-                     mc.bAlert.y = _loc6_ = (mc.bInbox.y = (mc.bGift.y = (mc.bInvite.y = _loc6_ + 55) + 55) + 55) + 55;
                   }
                   else
                   {
                      mc.bInvite.visible = false;
-                     mc.bAlert.y = _loc6_ = (mc.bInbox.y = (mc.bGift.y = _loc6_ + 55) + 55) + 55;
                   }
+                  this.SortButtonIcons();
                   mc.bGift.visible = true;
                   _loc5_ = POPUPS.QueueCount("gifts");
                   if(_loc5_ > 0)
@@ -537,19 +535,19 @@ package
                   this._creatureButtons[_loc1_].Update();
                   _loc1_++;
                }
-               _loc8_ = _loc7_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
-               for(_loc9_ in ATTACK._flingerBucket)
+               _loc7_ = _loc6_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               for(_loc8_ in ATTACK._flingerBucket)
                {
-                  if(_loc9_.substr(0,1) == "G")
+                  if(_loc8_.substr(0,1) == "G")
                   {
-                     _loc8_ -= GUARDIANCAGE.GetGuardianProperty(_loc9_.substr(0,2),1,"bucket");
+                     _loc7_ -= GUARDIANCAGE.GetGuardianProperty(_loc8_.substr(0,2),1,"bucket");
                   }
                   else
                   {
-                     _loc8_ -= CREATURES.GetProperty(_loc9_,"bucket") * ATTACK._flingerBucket[_loc9_].Get();
+                     _loc7_ -= CREATURES.GetProperty(_loc8_,"bucket") * ATTACK._flingerBucket[_loc8_].Get();
                   }
                }
-               this._creatureButtonsMC.mcBar.width = 100 - 100 / _loc7_ * _loc8_;
+               this._creatureButtonsMC.mcBar.width = 100 - 100 / _loc6_ * _loc7_;
                if(ATTACK._countdown > 0)
                {
                   mc.tMessage.htmlText = KEYS.Get("attack_ui_flingerlock");
@@ -577,6 +575,39 @@ package
             }
             _loc2_ = BASE.BaseLevel();
             this.SetPoints(_loc2_.lower,_loc2_.upper,_loc2_.needed,_loc2_.points,_loc2_.level,false);
+         }
+      }
+      
+      public function SortButtonIcons(param1:int = 2, param2:int = 4) : void
+      {
+         var _loc5_:* = param1;
+         var _loc6_:* = param2;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
+         if(GLOBAL._advancedMap)
+         {
+            _loc9_ += 35;
+         }
+         var _loc13_:int = 0;
+         while(_loc13_ < this._buttonIcons.length)
+         {
+            if(this._buttonIcons[_loc13_].visible)
+            {
+               this._buttonIcons[_loc13_].x = 9 + _loc10_;
+               this._buttonIcons[_loc13_].y = 195 + _loc9_;
+               _loc12_++;
+               _loc9_ += 55;
+               if(_loc12_ >= _loc6_)
+               {
+                  _loc12_ = 0;
+                  _loc11_++;
+                  _loc9_ = 0;
+                  _loc10_ += 67;
+               }
+            }
+            _loc13_++;
          }
       }
       

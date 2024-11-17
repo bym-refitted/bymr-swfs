@@ -76,8 +76,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A1: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          if(GLOBAL._flags.showProgressBar == 1)
          {
@@ -88,8 +87,7 @@ package
             }
             catch(e:Error)
             {
-               GLOBAL.ErrorMessage("UI2.Setup A2: " + e.message + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("UI2.Setup A2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
             }
          }
          try
@@ -98,8 +96,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A3: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A3: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -107,8 +104,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A4: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A4: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -129,8 +125,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A5: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A5: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -142,8 +137,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A6: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A6: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -151,8 +145,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A7: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A7: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -163,8 +156,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A8 CHAT1: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A8 CHAT1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
          try
          {
@@ -175,8 +167,7 @@ package
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
       }
       
@@ -206,6 +197,10 @@ package
          else if(param1 == "warning" && !_showWarning)
          {
             _showWarning = true;
+            if(GLOBAL._bymChat)
+            {
+               GLOBAL._bymChat.hide();
+            }
             if(GLOBAL._render)
             {
                TweenLite.to(_warning.mc,1,{
@@ -223,6 +218,10 @@ package
             if(GLOBAL._render && !_scareAway)
             {
                _scareAway = GLOBAL._layerUI.addChild(new UI_BAITERSCAREAWAY());
+               if(GLOBAL._bymChat)
+               {
+                  GLOBAL._bymChat.hide();
+               }
                ResizeHandler();
             }
          }
@@ -301,6 +300,10 @@ package
          else if(what == "warning" && _showWarning)
          {
             _showWarning = false;
+            if(GLOBAL._bymChat)
+            {
+               GLOBAL._bymChat.show();
+            }
             if(GLOBAL._render)
             {
                TweenLite.to(_warning.mc,0.5,{
@@ -318,6 +321,10 @@ package
             if(GLOBAL._layerUI.contains(_scareAway))
             {
                GLOBAL._layerUI.removeChild(_scareAway);
+               if(GLOBAL._bymChat)
+               {
+                  GLOBAL._bymChat.show();
+               }
                _scareAway = null;
             }
          }

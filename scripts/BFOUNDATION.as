@@ -267,29 +267,128 @@ package
       
       public function SetProps() : *
       {
-         this._buildingProps = GLOBAL._buildingProps[this._type - 1];
-         this._mcFootprint = MAP._BUILDINGFOOTPRINTS.addChild(this.GetFootprintMC());
-         this._mc = MAP._BUILDINGTOPS.addChild(new MovieClip());
-         this.topContainer = new BuildingAssetContainer();
-         this.topContainer.mouseChildren = false;
-         this.topContainer.mouseEnabled = false;
-         this.animContainer = new BuildingAssetContainer();
-         this.animContainer.mouseChildren = false;
-         this.animContainer.mouseEnabled = false;
-         this._mc.addChild(this.topContainer);
-         this._mc.addChild(this.animContainer);
-         this._mcBase = MAP._BUILDINGBASES.addChild(new BuildingAssetContainer());
-         this._mcHit = this._mc.addChild(this.GetHitMC());
-         this._mcHit.gotoAndStop(1);
-         this._mcHit.cacheAsBitmap = true;
-         this._mcHit.alpha = 0;
-         this._size = this._buildingProps.size;
-         this._class = this._buildingProps.type;
-         this._mcFootprint.gotoAndStop(1);
-         this._attackgroup = this._buildingProps.attackgroup;
-         this._mouseOffset = new Point(0,int(this._mcFootprint.height / 20) * 10);
-         this._middle = this._footprint[0].height * 0.5;
-         this._mc._middle = this._middle;
+         try
+         {
+            this._buildingProps = GLOBAL._buildingProps[this._type - 1];
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  buildingprops | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps buildingprops");
+            return;
+         }
+         try
+         {
+            this._mcFootprint = MAP._BUILDINGFOOTPRINTS.addChild(this.GetFootprintMC());
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mcfootprint 1 | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps mcfootprint1");
+            return;
+         }
+         try
+         {
+            this._mc = MAP._BUILDINGTOPS.addChild(new MovieClip());
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mc | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  mc");
+            return;
+         }
+         try
+         {
+            this.topContainer = new BuildingAssetContainer();
+            this.topContainer.mouseChildren = false;
+            this.topContainer.mouseEnabled = false;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  topContainer | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  topContainer");
+            return;
+         }
+         try
+         {
+            this.animContainer = new BuildingAssetContainer();
+            this.animContainer.mouseChildren = false;
+            this.animContainer.mouseEnabled = false;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  animContainer | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  animContainer");
+            return;
+         }
+         try
+         {
+            this._mc.addChild(this.topContainer);
+            this._mc.addChild(this.animContainer);
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mc.addChildren | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  mc.addChildren");
+            return;
+         }
+         try
+         {
+            this._mcBase = MAP._BUILDINGBASES.addChild(new BuildingAssetContainer());
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mcBase | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  mcBase");
+            return;
+         }
+         try
+         {
+            this._mcHit = this._mc.addChild(this.GetHitMC());
+            this._mcHit.gotoAndStop(1);
+            this._mcHit.cacheAsBitmap = true;
+            this._mcHit.alpha = 0;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mcHit | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  mcHit");
+            return;
+         }
+         try
+         {
+            this._size = this._buildingProps.size;
+            this._class = this._buildingProps.type;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  size/class | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  size/class");
+            return;
+         }
+         try
+         {
+            this._mcFootprint.gotoAndStop(1);
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  mcFootprint 2 | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  mcFootprint 2");
+            return;
+         }
+         try
+         {
+            this._attackgroup = this._buildingProps.attackgroup;
+            this._mouseOffset = new Point(0,int(this._mcFootprint.height / 20) * 10);
+            this._middle = this._footprint[0].height * 0.5;
+            this._mc._middle = this._middle;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  end stuff | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  end");
+            return;
+         }
       }
       
       public function Bank() : *
@@ -1397,7 +1496,7 @@ package
             if(Math.max(this._countdownUpgrade.Get(),0))
             {
                LOGGER.Log("log","bdg up cnt > 0, probable hack");
-               GLOBAL.ErrorMessage();
+               GLOBAL.ErrorMessage("BFOUNDATION upgrade hack");
                return;
             }
             this._countdownUpgrade.Set(0);
@@ -1688,7 +1787,7 @@ package
          catch(e:Error)
          {
             LOGGER.Log("err","BFOUNDATION.StartMove: " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BFOUNDATION.StartMove");
          }
       }
       
@@ -1745,7 +1844,7 @@ package
          catch(e:Error)
          {
             LOGGER.Log("err","BFOUNDATION.StartMove: " + e.getStackTrace());
-            GLOBAL.ErrorMessage();
+            GLOBAL.ErrorMessage("BFOUNDATION.StartMove 2");
          }
       }
       

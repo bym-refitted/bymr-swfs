@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1791")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1774")]
    public dynamic class subjectBtn_35 extends MovieClip
    {
       public var sorter_mc:MovieClip;

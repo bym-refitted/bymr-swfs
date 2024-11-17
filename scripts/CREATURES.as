@@ -134,7 +134,7 @@ package
       
       public static function Clear() : void
       {
-         var _loc1_:CREEP = null;
+         var _loc1_:* = undefined;
          var _loc2_:String = null;
          for(_loc2_ in _creatures)
          {

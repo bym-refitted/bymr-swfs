@@ -387,7 +387,6 @@ package com.monsters.chat.ui
                "autoAlpha":0,
                "ease":Quad.easeIn
             });
-            this.UpdateAlert();
          }
          this._maximized = !this._maximized;
          this._animating = true;
@@ -476,7 +475,14 @@ package com.monsters.chat.ui
          {
             this._chatHistory[_loc4_].y = _loc1_;
             this._chatHistory[_loc4_].scaleY = 1;
-            this._chatHistory[_loc4_].bg.gotoAndStop(_loc4_ % 2 + 1);
+            if(this._chatHistory[_loc4_].isOwnMessage)
+            {
+               this._chatHistory[_loc4_].bg.gotoAndStop(3);
+            }
+            else
+            {
+               this._chatHistory[_loc4_].bg.gotoAndStop(_loc4_ % 2 + 1);
+            }
             if(GLOBAL._mode == "build" && Boolean(BASE._isOutpost))
             {
                this._chatHistory[_loc4_].txt.width = this._chatWidthShort.tOutputW;
@@ -557,6 +563,7 @@ package com.monsters.chat.ui
          _loc7_.ignoreBtn.visible = false;
          _loc7_.ignoreBtn.buttonMode = true;
          _loc7_.msgData = _loc6_;
+         _loc7_.isOwnMessage = param3 == LOGIN._playerID.toString();
          if(param2 != null)
          {
             _loc7_.ignoreBtn.addEventListener(MouseEvent.MOUSE_DOWN,this.OnMsgIgnoreMouseDown);
@@ -588,7 +595,6 @@ package com.monsters.chat.ui
       override public function update() : void
       {
          super.update();
-         this.UpdateAlert(0);
          this.ResizeWindow();
          this.ResizeMessages();
       }
@@ -622,7 +628,7 @@ package com.monsters.chat.ui
       public function OnMsgMouseOver(param1:MouseEvent) : void
       {
          var _loc2_:ChatBox_msg_CLIP = null;
-         if(Boolean(param1.currentTarget) && Boolean(param1.currentTarget.msgData))
+         if(param1.currentTarget && param1.currentTarget.msgData && !param1.currentTarget.isOwnMessage)
          {
             if(param1.currentTarget.msgData.userid)
             {

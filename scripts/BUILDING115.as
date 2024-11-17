@@ -65,7 +65,7 @@ package
                if(!_hasTargets || !targetInRange())
                {
                   FindTargets(_loc1_,_priority);
-                  _fireTick = 2;
+                  _fireTick = 30;
                }
                else if(this._shotsFired >= _loc1_)
                {
