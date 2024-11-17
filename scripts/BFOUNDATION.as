@@ -2417,6 +2417,10 @@ package
             "r4":0,
             "r5":0
          };
+         if(GLOBAL._buildingProps[this._type - 1].rewarded)
+         {
+            return _loc1_;
+         }
          if(this._lvl.Get() == 0)
          {
             _loc1_.r1 += this._buildingProps.costs[0].r1;

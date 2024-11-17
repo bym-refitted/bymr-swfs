@@ -97,6 +97,8 @@ package de.polygonal.ds
       
       public function appendTo(param1:DLLNode) : DLLNode
       {
+         null;
+         null;
          prev = param1;
          if(param1 != null)
          {

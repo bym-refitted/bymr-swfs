@@ -88,6 +88,8 @@ package
       
       private static var _catapultsSetup:Boolean = false;
       
+      public static var debugGoEasy:Number = 0;
+      
       public static var vol:Number = 1;
       
       private static var keyunlock:int = 0;

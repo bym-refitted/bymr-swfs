@@ -122,7 +122,7 @@ package com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg
          _name = "Monster Blitzkrieg";
          _originalStartDate = 0;
          _progress = -1;
-         _priority = 5 * 60;
+         _priority = 200;
          _id = 2;
          _titleImage = "events/monblitz/monblitz_logo.v3.png";
          _imageURL = "events/monblitz/monblitz_event.png";

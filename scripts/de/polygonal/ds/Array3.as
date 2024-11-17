@@ -297,7 +297,6 @@ package de.polygonal.ds
       
       public function indexToCell(param1:int, param2:Array3Cell) : Array3Cell
       {
-         null;
          var _loc3_:* = _w * _h;
          var _loc4_:int = param1 % _loc3_;
          param2.z = int(param1 / _loc3_);
@@ -329,7 +328,6 @@ package de.polygonal.ds
       public function getRow(param1:int, param2:int, param3:Array) : Array
       {
          var _loc7_:int = 0;
-         null;
          var _loc4_:* = param1 * _w * _h + param2 * _w;
          var _loc5_:int = 0;
          var _loc6_:int = _w;
@@ -362,7 +360,6 @@ package de.polygonal.ds
          var _loc7_:int = 0;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
-         null;
          var _loc3_:* = param1 * _w * _h;
          var _loc4_:int = 0;
          var _loc5_:int = _w;
@@ -374,6 +371,7 @@ package de.polygonal.ds
             while(_loc7_ < _loc8_)
             {
                _loc9_ = _loc7_++;
+               null;
                param2._a[_loc9_ * param2._w + _loc6_] = _a[_loc3_ + _loc9_ * _w + _loc6_];
             }
          }
@@ -487,6 +485,7 @@ package de.polygonal.ds
             while(_loc5_ < _loc6_)
             {
                _loc7_ = _loc5_++;
+               null;
                _loc8_ = _a[_loc7_];
                _loc4_._a[_loc7_] = _loc8_.clone();
             }
@@ -518,7 +517,6 @@ package de.polygonal.ds
       
       public function cellToIndex(param1:Array3Cell) : int
       {
-         null;
          return param1.z * _w * _h + param1.y * _w + param1.x;
       }
       

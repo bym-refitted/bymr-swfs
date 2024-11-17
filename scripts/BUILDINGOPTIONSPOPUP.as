@@ -107,7 +107,7 @@ package
                if(_loc6_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
                   _loc9_ = "#bi_townhall#";
-                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2])
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
                   {
                      _loc7_ = 1;
                   }
@@ -187,6 +187,16 @@ package
                _loc2_ += "<br><br>" + KEYS.Get("bdg_upgraderequirements",{"v1":_loc4_});
             }
             _loc3_ = GLOBAL._buildingProps[this._building._type - 1].costs[0];
+            if(GLOBAL._buildingProps[this._building._type - 1].rewarded)
+            {
+               _loc3_ = {
+                  "r1":0,
+                  "r2":0,
+                  "r3":0,
+                  "r4":0,
+                  "r5":0
+               };
+            }
             this.toggleCheckbox(true);
          }
          else if(param1 == "upgrade")
@@ -204,7 +214,7 @@ package
                      if(_loc6_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                      {
                         _loc9_ = "#bi_townhall#";
-                        if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2])
+                        if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
                         {
                            _loc7_ = 1;
                         }
@@ -497,6 +507,17 @@ package
          var _loc4_:int = 0;
          var _loc5_:Object = BASE.CanBuild(this._building._type);
          var _loc6_:Object = GLOBAL._buildingProps[this._building._type - 1].costs[0];
+         if(GLOBAL._buildingProps[this._building._type - 1].rewarded)
+         {
+            _loc6_ = {
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "time":_loc6_.time,
+               "re":_loc6_.re
+            };
+         }
          if(Boolean(_loc5_.error) && !_loc5_.needResource)
          {
             GLOBAL.Message(_loc5_.errorMessage);
@@ -980,7 +1001,7 @@ package
                      lowestLevel = Math.min(lowestLevel,Number(n));
                   }
                }
-               if(lowestLevel != int.MAX_VALUE && buildingProps.upgradeImgData[lowestLevel].silhouette_img && !BASE.HasRequirements(buildingProps.costs[0]))
+               if(lowestLevel != int.MAX_VALUE && buildingProps.upgradeImgData[lowestLevel].silhouette_img && !BASE.HasRequirements(buildingProps.costs[0]) && !buildingProps.rewarded)
                {
                   img = buildingProps.upgradeImgData.baseurl + buildingProps.upgradeImgData[lowestLevel].silhouette_img;
                }

@@ -3121,6 +3121,7 @@ package
             if(GLOBAL.getDerps(o) <= 0)
             {
                LOGGER.Log("err","Empty Base object.");
+               GLOBAL.ErrorMessage("BASE.SaveB(Empty Base Object)");
             }
             stats = {};
             stats.mp = int(QUESTS._global.mushroomspicked);
@@ -4143,6 +4144,10 @@ package
          {
             if(GLOBAL._buildingProps[_loc7_].id == param1)
             {
+               if(GLOBAL._buildingProps[_loc7_].rewarded)
+               {
+                  return {"error":false};
+               }
                _loc3_ = GLOBAL._buildingProps[_loc7_];
                break;
             }

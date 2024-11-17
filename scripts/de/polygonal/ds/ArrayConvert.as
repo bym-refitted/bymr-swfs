@@ -9,6 +9,7 @@ package de.polygonal.ds
       public static function toArray2(param1:Array, param2:int, param3:int) : Array2
       {
          var _loc8_:int = 0;
+         null;
          var _loc4_:Array2 = new Array2(param2,param3);
          var _loc5_:Array = _loc4_._a;
          var _loc6_:int = 0;
@@ -24,7 +25,6 @@ package de.polygonal.ds
       public static function toArray3(param1:Array, param2:int, param3:int, param4:int) : Array3
       {
          var _loc9_:int = 0;
-         null;
          var _loc5_:Array3 = new Array3(param2,param3,param4);
          var _loc6_:Array = _loc5_._a;
          var _loc7_:int = 0;
@@ -105,6 +105,7 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = null as SLLNode;
          var _loc8_:* = null as SLLNode;
+         null;
          var _loc2_:SLL = new SLL();
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);
@@ -169,6 +170,7 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = null as LinkedQueueNode;
          var _loc8_:* = null as LinkedQueueNode;
+         null;
          var _loc2_:LinkedQueue = new LinkedQueue();
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);

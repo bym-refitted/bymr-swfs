@@ -1,5 +1,6 @@
 package com.monsters.replayableEvents
 {
+   import com.monsters.replayableEvents.monsterInvasion.hellRaisers.HellRaisers;
    import com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg.MonsterBlitzkrieg;
    import com.monsters.replayableEvents.yardCrawl.battletoads.Battletoads;
    
@@ -8,6 +9,8 @@ package com.monsters.replayableEvents
       public static const BATTLE_TOADS:Battletoads = new Battletoads();
       
       public static const MONSTER_BLITZKRIEG:MonsterBlitzkrieg = new MonsterBlitzkrieg();
+      
+      public static const HELL_RAISERS:HellRaisers = new HellRaisers();
       
       public static const EVENTS:Vector.<ReplayableEvent> = Vector.<ReplayableEvent>([BATTLE_TOADS,MONSTER_BLITZKRIEG]);
       

@@ -141,10 +141,6 @@ package com.monsters.replayableEvents.monsterMadness
       
       public function Hide() : void
       {
-         if(true)
-         {
-            parent.removeChild(this);
-         }
       }
       
       public function Resize() : void

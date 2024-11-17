@@ -99,10 +99,7 @@ package de.polygonal.ds
       public function swp(param1:int, param2:int) : void
       {
          null;
-         null;
-         null;
          var _loc3_:Object = _a[int((param1 + _front) % _capacity)];
-         null;
          _a[int((param1 + _front) % _capacity)] = _a[int((param2 + _front) % _capacity)];
          _a[int((param2 + _front) % _capacity)] = _loc3_;
       }
@@ -147,7 +144,6 @@ package de.polygonal.ds
       
       public function method_1(param1:int, param2:Object) : void
       {
-         null;
          _a[int((param1 + _front) % _capacity)] = param2;
       }
       
@@ -279,6 +275,7 @@ package de.polygonal.ds
       
       public function method_2(param1:int) : Object
       {
+         null;
          return _a[int((param1 + _front) % _capacity)];
       }
       
@@ -396,7 +393,6 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
-         null;
          null;
          null;
          null;

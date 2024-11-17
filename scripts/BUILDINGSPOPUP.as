@@ -238,7 +238,7 @@ package
                            _loc11_ = Math.min(_loc11_,Number(_loc12_));
                         }
                      }
-                     if(_loc11_ != int.MAX_VALUE && _loc2_.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(_loc2_.costs[0]))
+                     if(_loc11_ != int.MAX_VALUE && _loc2_.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(_loc2_.costs[0]) && !_loc2_.rewarded)
                      {
                         _loc2_.buildStatus = 2;
                      }

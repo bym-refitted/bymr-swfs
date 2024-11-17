@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2217")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2214")]
    public dynamic class QUESTINFO extends MovieClip
    {
       public var mcArrow:MovieClip;

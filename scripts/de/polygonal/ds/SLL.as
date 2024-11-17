@@ -515,6 +515,7 @@ package de.polygonal.ds
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         null;
          if(param1.head != null)
          {
             _loc2_ = param1.head;
@@ -571,6 +572,7 @@ package de.polygonal.ds
       {
          var _loc4_:* = null as SLLNode;
          null;
+         null;
          var _loc3_:SLLNode = _reservedSize == 0 || _poolSize == 0 ? new SLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.val = param2, _loc4_.next = null, _loc4_);
          if(param1 == head)
          {
@@ -593,7 +595,6 @@ package de.polygonal.ds
       public function insertAfter(param1:SLLNode, param2:Object) : SLLNode
       {
          var _loc4_:* = null as SLLNode;
-         null;
          var _loc3_:SLLNode = _reservedSize == 0 || _poolSize == 0 ? new SLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.val = param2, _loc4_.next = null, _loc4_);
          param1._insertAfter(_loc3_);
          if(param1 == tail)
@@ -607,6 +608,7 @@ package de.polygonal.ds
       public function getNodeAt(param1:int) : SLLNode
       {
          var _loc4_:int = 0;
+         null;
          var _loc2_:SLLNode = head;
          var _loc3_:int = 0;
          while(_loc3_ < param1)
@@ -678,6 +680,7 @@ package de.polygonal.ds
          var _loc4_:* = null as Object;
          var _loc5_:* = null as SLLNode;
          var _loc6_:* = null as SLLNode;
+         null;
          var _loc2_:SLL = new SLL();
          var _loc3_:SLLNode = head;
          while(_loc3_ != null)

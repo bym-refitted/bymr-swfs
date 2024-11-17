@@ -301,7 +301,7 @@ package
       
       public static var _save:Boolean = true;
       
-      public static var _localMode:int = 2;
+      public static var _localMode:int = 1;
       
       public static var _version:SecNum = new SecNum(127);
       
@@ -2091,7 +2091,7 @@ package
          {
             if(Boolean(param1.costs[0].re) && Boolean(param1.costs[0].re[0]))
             {
-               return param1.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID ? (MAPROOM_DESCENT.DescentPassed ? StatGet(BUILDING14.UNDERHALL_LEVEL) : 0) : int(_bTownhall._lvl.Get());
+               return param1.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID ? (MAPROOM_DESCENT.DescentPassed ? StatGet(BUILDING14.UNDERHALL_LEVEL) : (!!param1.rewarded ? 9 : 0)) : int(_bTownhall._lvl.Get());
             }
             return _bTownhall._lvl.Get();
          }

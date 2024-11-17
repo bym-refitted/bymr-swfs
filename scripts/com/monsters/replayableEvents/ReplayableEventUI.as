@@ -198,7 +198,7 @@ package com.monsters.replayableEvents
       
       public function Hide() : void
       {
-         if(true)
+         if(Boolean(this.parent))
          {
             bHelp.removeEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
             bAction.removeEventListener(MouseEvent.CLICK,this.ShowEventPopup);

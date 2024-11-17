@@ -141,6 +141,7 @@ package de.polygonal.ds
       
       public function method_1(param1:int, param2:Object) : void
       {
+         null;
          _a[param1] = param2;
       }
       

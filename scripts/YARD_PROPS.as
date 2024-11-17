@@ -6812,6 +6812,7 @@ package
          "sale":0,
          "description":"bi_magmatower_desc",
          "block":true,
+         "rewarded":false,
          "stats":[{
             "range":3 * 60,
             "damage":3 * 60,

@@ -226,8 +226,6 @@ package de.polygonal.ds
                {
                   _loc6_ = int(_loc12_.length);
                }
-               null;
-               null;
                _loc7_ = 0;
                _loc8_ = 0;
                while(_loc8_ < _loc6_)
@@ -723,6 +721,7 @@ package de.polygonal.ds
          {
             _loc5_ = int(_loc6_.length);
          }
+         null;
          _loc7_ = 0;
          _loc8_ = 0;
          while(_loc8_ < _loc5_)
@@ -804,26 +803,27 @@ package de.polygonal.ds
             _loc9_ = _h;
             _loc10_ = int(_vals[_loc6_].key);
             _loc11_ = int(_loc9_._hash[_loc10_ * 73856093 & _loc9_._mask]);
-            if(_loc11_ != -1)
+            if(_loc11_ == -1)
             {
-               if(int(_loc9_._data[_loc11_]) == _loc10_)
+               false;
+            }
+            else if(int(_loc9_._data[_loc11_]) == _loc10_)
+            {
+               _loc9_._data[_loc11_ + 1] = _loc6_;
+            }
+            else
+            {
+               _loc11_ = int(_loc9_._data[_loc11_ + 2]);
+               while(_loc11_ != -1)
                {
-                  _loc9_._data[_loc11_ + 1] = _loc6_;
-               }
-               else
-               {
-                  _loc11_ = int(_loc9_._data[_loc11_ + 2]);
-                  while(_loc11_ != -1)
+                  if(int(_loc9_._data[_loc11_]) == _loc10_)
                   {
-                     if(int(_loc9_._data[_loc11_]) == _loc10_)
-                     {
-                        _loc9_._data[_loc11_ + 1] = _loc6_;
-                        break;
-                     }
-                     _loc11_ = int(_loc9_._data[_loc11_ + 2]);
+                     _loc9_._data[_loc11_ + 1] = _loc6_;
+                     break;
                   }
-                  _loc11_ != -1;
+                  _loc11_ = int(_loc9_._data[_loc11_ + 2]);
                }
+               _loc11_ != -1;
             }
          }
       }

@@ -1680,14 +1680,17 @@ package
                   {
                      ++_hits;
                   }
-                  if(_hits > 20 && _goeasy)
+                  if(_hits > 20 && _goeasy && !GLOBAL._aiDesignMode)
                   {
                      ModeRetreat();
                      return false;
                   }
                   if(!_goeasy && GLOBAL._mode == "build" && _hits > _hitLimit)
                   {
-                     return true;
+                     if(!GLOBAL._aiDesignMode)
+                     {
+                        return true;
+                     }
                   }
                   if(int(_creatureID.substr(1)) < 5)
                   {

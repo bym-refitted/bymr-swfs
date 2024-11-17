@@ -1,6 +1,7 @@
 package com.monsters.rewarding
 {
    import com.monsters.debug.Console;
+   import com.monsters.rewarding.rewards.magmaTowers.UnlockMagmaTowers;
    import com.monsters.rewarding.rewards.slimeattikus.UnblockSlimeattikusReward;
    import com.monsters.rewarding.rewards.slimeattikus.UnlockSlimeattikusReward;
    import com.monsters.rewarding.rewards.vorg.UnblockVorgReward;
@@ -21,6 +22,7 @@ package com.monsters.rewarding
          addRewardType(UnlockSlimeattikusReward.ID,UnlockSlimeattikusReward);
          addRewardType(UnblockSlimeattikusReward.ID,UnblockSlimeattikusReward);
          addRewardType(UnblockVorgReward.ID,UnblockVorgReward);
+         addRewardType(UnlockMagmaTowers.ID,UnlockMagmaTowers);
       }
       
       public static function addRewardType(param1:String, param2:Class) : void
