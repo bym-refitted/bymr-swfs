@@ -211,7 +211,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt(class_1.method_1(479,-851));
+         return decodeSalt(class_1.method_1(-810,-458));
       }
       
       public static function decodeSalt(param1:String) : String

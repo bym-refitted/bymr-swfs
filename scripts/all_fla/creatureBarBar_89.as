@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol952")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol949")]
    public dynamic class creatureBarBar_89 extends MovieClip
    {
       public function creatureBarBar_89()

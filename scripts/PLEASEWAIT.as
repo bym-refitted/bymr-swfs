@@ -88,7 +88,7 @@ package
       {
          if(GLOBAL._giveTips && KEYS._setup && HasTips())
          {
-            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build")
+            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && !BASE._isOutpost)
             {
                if(GLOBAL.StatGet("tipno"))
                {
