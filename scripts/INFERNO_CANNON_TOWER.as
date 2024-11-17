@@ -29,7 +29,8 @@ package
       {
          if(_animLoaded && GLOBAL._render)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
       }
       

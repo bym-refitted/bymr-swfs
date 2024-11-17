@@ -16,12 +16,8 @@ package
          SetProps();
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
          if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
          {
             _canFunction = false;
@@ -30,7 +26,7 @@ package
          {
             _canFunction = true;
          }
-         super.Tick();
+         super.Tick(param1);
       }
       
       public function Fund() : *
@@ -85,7 +81,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -107,7 +103,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -124,6 +120,10 @@ package
          if(_countdownBuild.Get() <= 0)
          {
             this.LoadEffects();
+            if(GLOBAL._mode == "build")
+            {
+               GLOBAL._playerCatapultLevel = _lvl;
+            }
             GLOBAL._bCatapult = this;
          }
       }

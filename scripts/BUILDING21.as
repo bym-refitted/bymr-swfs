@@ -32,7 +32,8 @@ package
       {
          if(_animLoaded && GLOBAL._render)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
       }
       
@@ -41,11 +42,11 @@ package
          super.Fire(param1);
          if(BASE.isInferno())
          {
-            SOUNDS.Play("isniper");
+            SOUNDS.Play("isniper",!isJard ? 0.8 : 0.4);
          }
          else
          {
-            SOUNDS.Play("snipe1");
+            SOUNDS.Play("snipe1",!isJard ? 0.8 : 0.4);
          }
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
@@ -53,7 +54,23 @@ package
          {
             _loc3_ = 1.25;
          }
-         PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),false,_splash);
+         if(isJard)
+         {
+            _jarHealth.Add(-int(_damage * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * _loc2_ * _loc3_);
+            if(_jarHealth.Get() <= 0)
+            {
+               KillJar();
+            }
+         }
+         else if(_targetVacuum)
+         {
+            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),GLOBAL._bTownhall._position.add(new Point(0,-GLOBAL._bTownhall._mc.height)),null,_speed,int(_damage * _loc3_ * _loc2_),false,_splash);
+         }
+         else
+         {
+            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),false,_splash);
+         }
       }
       
       override public function Props() : *

@@ -6,6 +6,7 @@ package
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
+   import com.monsters.events.BuildingEvent;
    import com.monsters.pathing.PATHING;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -14,11 +15,14 @@ package
    import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.filters.ColorMatrixFilter;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class BFOUNDATION
    {
+      public static const TICK_LIMIT:int = 2 * 24 * 60 * 60;
+      
       internal var _mcBase:*;
       
       internal var _mcFootprint:*;
@@ -70,6 +74,8 @@ package
       public var _buildInstantCost:SecNum;
       
       public var _fortification:SecNum;
+      
+      public const _nullPoint:Point = new Point(0,0);
       
       public var _animLoaded:Boolean = false;
       
@@ -655,6 +661,7 @@ package
          {
             ImageCallback = function(param1:Array, param2:String):*
             {
+               var rect:Rectangle = null;
                var image:Array = null;
                var key:String = null;
                var bmd:BitmapData = null;
@@ -745,7 +752,8 @@ package
                         _animLoaded = true;
                         container = animContainer;
                         container.Clear();
-                        _animRect = imageDataB["anim" + state][1];
+                        rect = imageDataB["anim" + state][1];
+                        _animRect = new Rectangle(0,0,rect.width,rect.height);
                         _animFrames = imageDataB["anim" + state][2];
                         if(_animRandomStart)
                         {
@@ -759,10 +767,10 @@ package
                         {
                            _animTick = 0;
                         }
-                        _animContainerBMD = new BitmapData(_animRect.width,_animRect.height,true,0xffffff);
+                        _animContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
                         container.addChild(new Bitmap(_animContainerBMD));
-                        container.x = _animRect.x;
-                        container.y = _animRect.y;
+                        container.x = rect.x;
+                        container.y = rect.y;
                         AnimFrame(false);
                         _mc.addEventListener(Event.ENTER_FRAME,TickFast);
                         if(!imageDataB["top" + state])
@@ -788,7 +796,8 @@ package
                         _anim2Loaded = true;
                         container = anim2Container;
                         container.Clear();
-                        _anim2Rect = imageDataB["anim2" + state][1];
+                        rect = imageDataB["anim2" + state][1];
+                        _anim2Rect = new Rectangle(0,0,rect.width,rect.height);
                         _anim2Frames = imageDataB["anim2" + state][2];
                         if(_animRandomStart)
                         {
@@ -798,10 +807,10 @@ package
                         {
                            _anim2Tick = 0;
                         }
-                        _anim2ContainerBMD = new BitmapData(_anim2Rect.width,_anim2Rect.height,true,0xffffff);
+                        _anim2ContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
                         container.addChild(new Bitmap(_anim2ContainerBMD));
-                        container.x = _anim2Rect.x;
-                        container.y = _anim2Rect.y;
+                        container.x = rect.x;
+                        container.y = rect.y;
                         if(_animLoaded && _anim2Loaded && _anim3Loaded)
                         {
                            AnimFrame(false);
@@ -824,7 +833,8 @@ package
                         _anim3Loaded = true;
                         container = anim3Container;
                         container.Clear();
-                        _anim3Rect = imageDataB["anim3" + state][1];
+                        rect = imageDataB["anim3" + state][1];
+                        _anim3Rect = new Rectangle(0,0,rect.width,rect.height);
                         _anim3Frames = imageDataB["anim3" + state][2];
                         if(_animRandomStart)
                         {
@@ -834,10 +844,10 @@ package
                         {
                            _anim3Tick = 0;
                         }
-                        _anim3ContainerBMD = new BitmapData(_anim3Rect.width,_anim3Rect.height,true,0xffffff);
+                        _anim3ContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
                         container.addChild(new Bitmap(_anim3ContainerBMD));
-                        container.x = _anim3Rect.x;
-                        container.y = _anim3Rect.y;
+                        container.x = rect.x;
+                        container.y = rect.y;
                         if(_animLoaded && _anim2Loaded && _anim3Loaded)
                         {
                            AnimFrame(false);
@@ -860,7 +870,8 @@ package
                         _animLoaded = true;
                         container = animContainer;
                         container.Clear();
-                        _animRect = imageDataB["anim" + state][1];
+                        rect = imageDataB["anim" + state][1];
+                        _animRect = new Rectangle(0,0,rect.width,rect.height);
                         _animFrames = imageDataB["anim" + state][2];
                         if(_animRandomStart)
                         {
@@ -874,10 +885,10 @@ package
                         {
                            _animTick = 0;
                         }
-                        _animContainerBMD = new BitmapData(_animRect.width,_animRect.height,true,0xffffff);
+                        _animContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
                         container.addChild(new Bitmap(_animContainerBMD));
-                        container.x = _animRect.x;
-                        container.y = _animRect.y;
+                        container.x = rect.x;
+                        container.y = rect.y;
                         AnimFrame(false);
                         _mc.addEventListener(Event.ENTER_FRAME,TickFast);
                         if(!imageDataB["top" + state])
@@ -1051,29 +1062,43 @@ package
          }
       }
       
-      public function Tick() : *
+      public function get tickLimit() : int
       {
-         var _loc1_:int = 0;
+         if(this._hp.Get() == 0 && !this._repairing)
+         {
+            return TICK_LIMIT;
+         }
+         var _loc1_:int = TICK_LIMIT;
+         if(this._countdownBuild.Get() > 0)
+         {
+            _loc1_ = Math.min(_loc1_,this._countdownBuild.Get());
+         }
+         if(this._countdownUpgrade.Get() > 0)
+         {
+            _loc1_ = Math.min(_loc1_,this._countdownUpgrade.Get());
+         }
+         if(this._countdownFortify.Get() > 0)
+         {
+            _loc1_ = Math.min(_loc1_,this._countdownFortify.Get());
+         }
+         return _loc1_;
+      }
+      
+      public function Tick(param1:int) : void
+      {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         if(GLOBAL._catchup && this._repairing && BASE._currentTime - GLOBAL.Timestamp() > 60 * 60)
-         {
-            this.Repaired();
-         }
-         if(GLOBAL._catchup && this._hp.Get() == 0 && !this._repairing)
-         {
-            this.CatchupRemove();
-         }
+         var _loc5_:int = 0;
          if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() + this._repairing > 0)
          {
-            _loc1_ = 0;
             _loc2_ = 0;
+            _loc3_ = 0;
             if(this._repairing == 1)
             {
-               _loc4_ = this._lvl.Get() == 0 ? 0 : this._lvl.Get() - 1;
-               _loc3_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc4_]));
-               this._hp.Add(_loc3_);
+               _loc5_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
+               _loc4_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
+               this._hp.Add(_loc4_ * param1);
                if(this._hp.Get() >= this._hpMax.Get())
                {
                   this.Repaired();
@@ -1083,7 +1108,7 @@ package
             {
                if(this._countdownUpgrade.Get() > 0 && this._hasWorker && this._hasResources)
                {
-                  this._countdownUpgrade.Add(-1);
+                  this._countdownUpgrade.Add(-param1);
                   if(!Math.max(this._countdownUpgrade.Get(),0))
                   {
                      this.Upgraded();
@@ -1091,7 +1116,7 @@ package
                }
                else if(this._countdownBuild.Get() > 0 && this._hasWorker && this._hasResources)
                {
-                  this._countdownBuild.Add(-1);
+                  this._countdownBuild.Add(-param1);
                   if(!Math.max(this._countdownBuild.Get(),0))
                   {
                      this.Constructed();
@@ -1099,7 +1124,7 @@ package
                }
                else if(this._countdownFortify.Get() > 0 && this._hasWorker && this._hasResources)
                {
-                  this._countdownFortify.Add(-1);
+                  this._countdownFortify.Add(-param1);
                   if(!Math.max(this._countdownFortify.Get(),0))
                   {
                      this.Fortified();
@@ -1107,10 +1132,7 @@ package
                }
             }
          }
-         if(!GLOBAL._catchup)
-         {
-            this.Update();
-         }
+         this.Update();
       }
       
       public function TickFast(param1:Event = null) : *
@@ -1128,7 +1150,8 @@ package
          {
             if(!GLOBAL._catchup && Boolean(this._animBMD))
             {
-               this._animContainerBMD.copyPixels(this._animBMD,new Rectangle(this._animRect.width * this._animTick,0,this._animRect.width,this._animRect.height),new Point(0,0));
+               this._animRect.x = this._animRect.width * this._animTick;
+               this._animContainerBMD.copyPixels(this._animBMD,this._animRect,this._nullPoint);
                if(increment)
                {
                   if(this._class == "resource")
@@ -1154,7 +1177,8 @@ package
             }
             if(!GLOBAL._catchup && Boolean(this._anim2BMD))
             {
-               this._anim2ContainerBMD.copyPixels(this._anim2BMD,new Rectangle(this._anim2Rect.width * this._anim2Tick,0,this._anim2Rect.width,this._anim2Rect.height),new Point(0,0));
+               this._anim2Rect.x = this._anim2Rect.width * this._anim2Tick;
+               this._anim2ContainerBMD.copyPixels(this._anim2BMD,this._anim2Rect,this._nullPoint);
                if(increment)
                {
                   ++this._anim2Tick;
@@ -1166,7 +1190,8 @@ package
             }
             if(!GLOBAL._catchup && Boolean(this._anim3BMD))
             {
-               this._anim3ContainerBMD.copyPixels(this._anim3BMD,new Rectangle(this._anim3Rect.width * this._anim2Tick,0,this._anim3Rect.width,this._anim3Rect.height),new Point(0,0));
+               this._anim3Rect.x = this._anim3Rect.width * this._anim3Tick;
+               this._anim3ContainerBMD.copyPixels(this._anim3BMD,this._anim3Rect,this._nullPoint);
                if(increment)
                {
                   ++this._anim3Tick;
@@ -1245,6 +1270,7 @@ package
          var BragTotem:Function;
          var tmpBuildTime:int = 0;
          var fromStorage:int = 0;
+         var isInfernoBuilding:Boolean = false;
          var mc:MovieClip = null;
          var totemImgUrl:String = null;
          var e:MouseEvent = param1;
@@ -1302,7 +1328,7 @@ package
                   this.PlaceB();
                   this._mc.removeChild(this._mcHit);
                   this._mc.addChild(this._mcHit);
-                  this.Tick();
+                  this.Tick(1);
                   this.Update();
                   this.Description();
                   fromStorage = BASE.BuildingStorageRemove(this._type);
@@ -1310,10 +1336,11 @@ package
                   {
                      if(!this._buildInstant)
                      {
-                        BASE.Charge(1,this._buildingProps.costs[0].r1);
-                        BASE.Charge(2,this._buildingProps.costs[0].r2);
-                        BASE.Charge(3,this._buildingProps.costs[0].r3);
-                        BASE.Charge(4,this._buildingProps.costs[0].r4);
+                        isInfernoBuilding = BASE.isInfernoBuilding(this._type);
+                        BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
+                        BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
+                        BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
+                        BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
                         if(STORE._storeItems["BUILDING" + this._type])
                         {
                            BASE.Purchase("BUILDING" + this._type,1,"building");
@@ -1336,14 +1363,6 @@ package
                      if(this._type == 2 * 60)
                      {
                         LOGGER.Stat([75,"placedgoldenbiggulp"]);
-                     }
-                     if(BTOTEM.IsTotem(this._type))
-                     {
-                        LOGGER.Stat([82,SPECIALEVENT.wave]);
-                     }
-                     if(BTOTEM.IsTotem2(this._type))
-                     {
-                        LOGGER.Stat([86,SPECIALEVENT.wave]);
                      }
                      if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
                      {
@@ -1553,7 +1572,6 @@ package
          else
          {
             BASE._buildingsAll["b" + this._id] = this;
-            this.CatchupAdd();
             if(this._class == "wall")
             {
                BASE._buildingsWalls["b" + this._id] = this;
@@ -1595,6 +1613,7 @@ package
          {
             BUILDINGS._buildingID = 0;
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.PLACED_FOR_CONSTRUCTION,this));
       }
       
       public function Destroyed(param1:Boolean = true) : *
@@ -1691,12 +1710,23 @@ package
       public function HasWorker() : *
       {
          var _loc1_:* = 0;
+         var _loc2_:int = 0;
+         var _loc3_:* = 0;
          this._hasWorker = true;
          if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
-            _loc1_ = BASE.isInferno() ? 5 : 1;
-            ResourcePackages.Create(_loc1_,this,2,true);
-            ResourcePackages.Create(_loc1_ + 1,this,2,true);
+            _loc1_ = BASE.isInfernoBuilding(this._type) || BASE.isInferno() ? 5 : 1;
+            _loc2_ = 1;
+            while(_loc2_ < 5)
+            {
+               _loc3_ = uint(this._buildingProps.costs[this._lvl.Get()]["r" + _loc2_]);
+               if(_loc3_)
+               {
+                  ResourcePackages.Create(_loc1_,this,_loc3_,true);
+               }
+               _loc1_++;
+               _loc2_++;
+            }
          }
       }
       
@@ -1972,6 +2002,7 @@ package
          var GetFriends:Function;
          var canUpgrade:Object = null;
          var o:* = undefined;
+         var isInfernoBuilding:Boolean = false;
          var tmpUpgradeTime:int = 0;
          var popupMC:* = undefined;
          if(this._countdownUpgrade.Get() == 0)
@@ -1980,21 +2011,22 @@ package
             if(!canUpgrade.error)
             {
                o = this.UpgradeCost();
+               isInfernoBuilding = BASE.isInfernoBuilding(this._type);
                if(o.r1 > 0)
                {
-                  BASE.Charge(1,o.r1);
+                  BASE.Charge(1,o.r1,false,isInfernoBuilding);
                }
                if(o.r2 > 0)
                {
-                  BASE.Charge(2,o.r2);
+                  BASE.Charge(2,o.r2,false,isInfernoBuilding);
                }
                if(o.r3 > 0)
                {
-                  BASE.Charge(3,o.r3);
+                  BASE.Charge(3,o.r3,false,isInfernoBuilding);
                }
                if(o.r4 > 0)
                {
-                  BASE.Charge(4,o.r4);
+                  BASE.Charge(4,o.r4,false,isInfernoBuilding);
                }
                tmpUpgradeTime = int(this._buildingProps.costs[this._lvl.Get()].time * GLOBAL._buildTime);
                this._countdownUpgrade.Set(tmpUpgradeTime);
@@ -2030,6 +2062,7 @@ package
                   GLOBAL._selectedBuilding = this;
                   GLOBAL.Message(KEYS.Get("msg_inactiveupgrade"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
                }
+               GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.UPGRADED,this));
             }
             else if(GLOBAL._mode == "build")
             {
@@ -2127,26 +2160,28 @@ package
       public function UpgradeCancelC() : *
       {
          var _loc1_:Object = null;
+         var _loc2_:Boolean = false;
          if(this._countdownUpgrade.Get() > 0)
          {
             QUEUE.Remove("building" + this._id,false,this);
             this._countdownUpgrade.Set(0);
             _loc1_ = this.UpgradeCost();
-            if(_loc1_.r1 > 0)
+            _loc2_ = BASE.isInfernoBuilding(this._type);
+            if(_loc1_.r1)
             {
-               BASE.Fund(1,int(_loc1_.r1));
+               BASE.Fund(1,int(_loc1_.r1),false,null,_loc2_);
             }
-            if(_loc1_.r2 > 0)
+            if(_loc1_.r2)
             {
-               BASE.Fund(2,int(_loc1_.r2));
+               BASE.Fund(2,int(_loc1_.r2),false,null,_loc2_);
             }
-            if(_loc1_.r3 > 0)
+            if(_loc1_.r3)
             {
-               BASE.Fund(3,int(_loc1_.r3));
+               BASE.Fund(3,int(_loc1_.r3),false,null,_loc2_);
             }
-            if(_loc1_.r4 > 0)
+            if(_loc1_.r4)
             {
-               BASE.Fund(4,int(_loc1_.r4));
+               BASE.Fund(4,int(_loc1_.r4),false,null,_loc2_);
             }
             BASE.Save();
          }
@@ -2287,6 +2322,7 @@ package
       public function RecycleB(param1:MouseEvent = null) : *
       {
          var _loc2_:* = undefined;
+         var _loc3_:Boolean = false;
          BUILDINGOPTIONS.Hide();
          if(this._class != "decoration" && !this._blockRecycle)
          {
@@ -2294,21 +2330,22 @@ package
             {
                this._recycled = true;
                _loc2_ = this.RecycleCost();
+               _loc3_ = BASE.isInfernoBuilding(this._type);
                if(_loc2_.r1)
                {
-                  BASE.Fund(1,int(_loc2_.r1),false);
+                  BASE.Fund(1,int(_loc2_.r1),false,null,_loc3_);
                }
                if(_loc2_.r2)
                {
-                  BASE.Fund(2,int(_loc2_.r2),false);
+                  BASE.Fund(2,int(_loc2_.r2),false,null,_loc3_);
                }
                if(_loc2_.r3)
                {
-                  BASE.Fund(3,int(_loc2_.r3),false);
+                  BASE.Fund(3,int(_loc2_.r3),false,null,_loc3_);
                }
                if(_loc2_.r4)
                {
-                  BASE.Fund(4,int(_loc2_.r4),false);
+                  BASE.Fund(4,int(_loc2_.r4),false,null,_loc3_);
                }
                this.RecycleC();
                LOGGER.Stat([40,this._type,this._lvl.Get()]);
@@ -2643,7 +2680,7 @@ package
             if(this._repairing == 1)
             {
                _loc5_ = 0;
-               _loc6_ = this._lvl.Get() == 0 ? 0 : this._lvl.Get() - 1;
+               _loc6_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
                _loc5_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc6_]));
                this._repairTime = int(this._hpMax.Get() - this._hp.Get()) / _loc5_;
                QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(this._repairTime,true));
@@ -3050,7 +3087,6 @@ package
             delete BASE._buildingsTowers["b" + this._id];
             delete BASE._buildingsMain["b" + this._id];
             delete BASE._buildingsGifts["b" + this._id];
-            this.CatchupRemove();
          }
          this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
          MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
@@ -3085,34 +3121,25 @@ package
          this.anim3Container.Clear();
       }
       
-      public function CatchupAdd() : void
-      {
-         BASE._buildingsCatchup["b" + this._id] = this;
-      }
-      
-      public function CatchupRemove() : void
-      {
-         delete BASE._buildingsCatchup["b" + this._id];
-      }
-      
       private function GetHitMC() : MovieClip
       {
-         var _loc1_:Boolean = BASE.isInferno();
+         var _loc1_:Object = GLOBAL._buildingProps[this._type - 1] || {};
+         var _loc2_:Boolean = BASE.isInferno();
          if(this._type == 1)
          {
-            return _loc1_ ? new boneCrusherHit() : new building1hit();
+            return _loc2_ ? new boneCrusherHit() : new building1hit();
          }
          if(this._type == 2)
          {
-            return _loc1_ ? new coalProducerHit() : new building2hit();
+            return _loc2_ ? new coalProducerHit() : new building2hit();
          }
          if(this._type == 3)
          {
-            return _loc1_ ? new sulpherProducerHit() : new building3hit();
+            return _loc2_ ? new sulpherProducerHit() : new building3hit();
          }
          if(this._type == 4)
          {
-            return _loc1_ ? new magmaProducerHit() : new building4hit();
+            return _loc2_ ? new magmaProducerHit() : new building4hit();
          }
          if(this._type == 5)
          {
@@ -3120,7 +3147,7 @@ package
          }
          if(this._type == 6)
          {
-            return _loc1_ ? new siloHit() : new building6hit();
+            return _loc2_ ? new siloHit() : new building6hit();
          }
          if(this._type == 7)
          {
@@ -3128,7 +3155,7 @@ package
          }
          if(this._type == 8)
          {
-            return _loc1_ ? new monsterLockerHit() : new building8hit();
+            return _loc2_ ? new monsterLockerHit() : new building8hit();
          }
          if(this._type == 9)
          {
@@ -3148,11 +3175,11 @@ package
          }
          if(this._type == 13)
          {
-            return _loc1_ ? new hatcheryHit() : new building13hit();
+            return _loc2_ ? new hatcheryHit() : new building13hit();
          }
          if(this._type == 14)
          {
-            return _loc1_ ? new townHallHit() : new building14hit();
+            return _loc2_ ? new townHallHit() : new building14hit();
          }
          if(this._type == 15)
          {
@@ -3164,7 +3191,7 @@ package
          }
          if(this._type == 17)
          {
-            return _loc1_ ? new wallHit() : new building17hit();
+            return _loc2_ ? new wallHit() : new building17hit();
          }
          if(this._type == 18)
          {
@@ -3176,11 +3203,11 @@ package
          }
          if(this._type == 20)
          {
-            return _loc1_ ? new cannonTowerHit() : new building20hit();
+            return _loc2_ ? new cannonTowerHit() : new building20hit();
          }
          if(this._type == 21)
          {
-            return _loc1_ ? new sniperTowerHit() : new building21hit();
+            return _loc2_ ? new sniperTowerHit() : new building21hit();
          }
          if(this._type == 22)
          {
@@ -3200,7 +3227,7 @@ package
          }
          if(this._type == 26)
          {
-            return new building26hit();
+            return _loc2_ ? new infernoAcademyHit() : new building26hit();
          }
          if(this._type == 27)
          {
@@ -3442,7 +3469,7 @@ package
          {
             return new magmaTowerHit();
          }
-         return new building1hit();
+         return !!_loc1_.hitCls ? new _loc1_.hitCls() : new building1hit();
       }
       
       private function GetFootprintMC() : MovieClip
@@ -3490,6 +3517,28 @@ package
          return new MovieClip();
       }
       
+      public function highlight(param1:uint) : void
+      {
+         var _loc2_:Array = null;
+         if(this._mc)
+         {
+            _loc2_ = new Array();
+            _loc2_ = _loc2_.concat([2,0,0,0,0]);
+            _loc2_ = _loc2_.concat([0,2,0,0,0]);
+            _loc2_ = _loc2_.concat([0,0,3,0,0]);
+            _loc2_ = _loc2_.concat([0,0,0,1,0]);
+            this._mc.filters = [new ColorMatrixFilter(_loc2_)];
+         }
+      }
+      
+      public function disableHighlight() : void
+      {
+         if(this._mc)
+         {
+            this._mc.filters = [];
+         }
+      }
+      
       public function get x() : int
       {
          return this._mc.x;
@@ -3508,6 +3557,36 @@ package
       public function set y(param1:int) : *
       {
          this._mc.y = param1;
+      }
+      
+      public function moveTo(param1:int, param2:int) : void
+      {
+         this.x = param1;
+         this.y = param2;
+         this._mcBase.x = param1;
+         this._mcBase.y = param2;
+         if(this._mcFootprint)
+         {
+            this._mcFootprint.x = param1;
+            this._mcFootprint.y = param2;
+         }
+         MAP.SortDepth(false,true);
+         this.Render("");
+      }
+      
+      public function get name() : String
+      {
+         return KEYS.Get(this._buildingProps.name);
+      }
+      
+      public function get isUpgrading() : Boolean
+      {
+         return this._countdownUpgrade.Get() > 0;
+      }
+      
+      public function get isBuilding() : Boolean
+      {
+         return this._countdownBuild.Get() > 0;
       }
    }
 }

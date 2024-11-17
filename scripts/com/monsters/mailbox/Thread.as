@@ -5,7 +5,6 @@ package com.monsters.mailbox
    import com.monsters.mailbox.model.Contact;
    import com.monsters.mailbox.model.ThreadData;
    import com.monsters.maproom_advanced.MapRoom;
-   import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.display.StageDisplayState;
    import flash.events.Event;
@@ -584,7 +583,7 @@ package com.monsters.mailbox
          SOUNDS.Play("click1");
          MapRoom._inviteBaseID = this.data.baseID;
          MapRoom._migrateThread = this;
-         MapRoom.PreAcceptInvitation(this.parent as MovieClip);
+         MapRoom.PreAcceptInvitation(this.parent);
       }
       
       private function migrateReject(param1:MouseEvent) : void

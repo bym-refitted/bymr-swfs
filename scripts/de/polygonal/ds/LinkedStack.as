@@ -113,6 +113,7 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
+         null;
          var _loc3_:LinkedStackNode = _head;
          if(param1 < param2)
          {
@@ -434,6 +435,8 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
+         null;
+         null;
          var _loc3_:LinkedStackNode = _head;
          if(param1 < param2)
          {

@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.monsters.effects.LASERS;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.Particles;
@@ -154,7 +153,7 @@ package
          LASERS.Fire(param1,param2,param3,param4,param5,param6,param7,param8);
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc1_:Object = null;
          var _loc2_:String = null;
@@ -212,7 +211,7 @@ package
          }
       }
       
-      public static function Remove(param1:*, param2:*) : *
+      public static function Remove(param1:*, param2:*) : void
       {
          var container:* = param1;
          var item:* = param2;
@@ -225,7 +224,7 @@ package
          }
       }
       
-      public static function Process(param1:*) : *
+      public static function Process(param1:*) : void
       {
          var _loc3_:Array = null;
          while(_effects.length > _effectsLimit)
@@ -247,16 +246,16 @@ package
             }
             _loc2_++;
          }
-         _effectsJSON = com.adobe.serialization.json.JSON.encode(_effects);
+         _effectsJSON = JSON.encode(_effects);
       }
       
-      public static function SnapShot(param1:Object) : *
+      public static function SnapShot(param1:Object) : void
       {
          SnapShotB(param1.mc.x,param1.mc.y,param1.code,0,param1.mc.scaleX);
          Push([int(param1.mc.x),int(param1.mc.y),param1.code,0]);
       }
       
-      public static function SnapShotB(param1:int, param2:int, param3:String, param4:int, param5:Number = 0) : *
+      public static function SnapShotB(param1:int, param2:int, param3:String, param4:int, param5:Number = 0) : void
       {
          var b:BitmapData = null;
          var m:Matrix = null;
@@ -302,12 +301,12 @@ package
          }
       }
       
-      public static function Push(param1:Array) : *
+      public static function Push(param1:Array) : void
       {
          if(_switcher % 2 == 0)
          {
             _effects.push(param1);
-            _effectsJSON = com.adobe.serialization.json.JSON.encode(_effects);
+            _effectsJSON = JSON.encode(_effects);
             if(_effects.length > _effectsLimit)
             {
                _effects.shift();
@@ -316,12 +315,12 @@ package
          ++_switcher;
       }
       
-      public static function Dig(param1:int, param2:int) : *
+      public static function Dig(param1:int, param2:int) : void
       {
          Particles.Create(new Point(param1,param2),1 + Math.random() * 0.5,30,20,0);
       }
       
-      public static function Burrow(param1:int, param2:int) : *
+      public static function Burrow(param1:int, param2:int) : void
       {
          Particles.Create(new Point(param1,param2),0.5 + Math.random() * 0.5,10,3,0);
       }

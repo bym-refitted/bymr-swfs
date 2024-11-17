@@ -4,9 +4,18 @@ package
    {
       public static var _completed:Object;
       
+      public static const DESCENT_LEVEL:String = "descentLevel";
+      
+      public static const UNDERHALL_LEVEL:String = "underhallLevel";
+      
+      public static const INFERNO_QUESTS_COMPLETED:String = "infernoQuestsCompleted";
+      
       public static var _finished:Array = [];
       
       public static var _stats:Object = {
+         "DESCENT_LEVEL":0,
+         "UNDERHALL_LEVEL":0,
+         "INFERNO_QUESTS_COMPLETED":0,
          "thlevel":0,
          "map2":0,
          "wmoutpost":0,
@@ -22,7 +31,6 @@ package
          "starterkit":0,
          "alliance":0,
          "unlock_monster":0,
-         "upgrade_3":0,
          "stockpile":0
       };
       
@@ -43,10 +51,7 @@ package
       }},{"rules":{"map2":1}},{"rules":{"wmoutpost":1}},{"rules":{"playeroutpost":5}},{
          "block":true,
          "rules":{"hugerage":1}
-      },{"rules":{"wm2hall":1}},{"rules":{"monstersblended":5000}},{"rules":{"starterkit":1}},{"rules":{"alliance":1}},{"rules":{"stockpile":1}},{"rules":{"heavytraps":8}},{"rules":{"unlock_monster":1}},{
-         "block":true,
-         "rules":{"upgrade_3":1}
-      }];
+      },{"rules":{"wm2hall":1}},{"rules":{"monstersblended":5000}},{"rules":{"blocksbuilt":200}},{"rules":{"starterkit":1}},{"rules":{"alliance":1}},{"rules":{"stockpile":1}},{"rules":{"heavytraps":8}},{"rules":{"unlock_monster":1}},{"rules":{"DESCENT_LEVEL":1}},{"rules":{"DESCENT_LEVEL":MAPROOM_DESCENT._descentLvlMax}},{"rules":{"UNDERHALL_LEVEL":5}},{"rules":{"INFERNO_QUESTS_COMPLETED":10}}];
       
       public function ACHIEVEMENTS()
       {
@@ -85,6 +90,15 @@ package
             ACHIEVEMENTS._stats.wm2hall = 1;
          }
          ACHIEVEMENTS.Check("",0,true);
+      }
+      
+      public static function CheckRetroactiveAchievments() : void
+      {
+         ACHIEVEMENTS.Check(ACHIEVEMENTS.DESCENT_LEVEL,MAPROOM_DESCENT.DescentLevel);
+         if(BASE.isInferno())
+         {
+            ACHIEVEMENTS.Check(ACHIEVEMENTS.INFERNO_QUESTS_COMPLETED,QUESTS.amountCompleted);
+         }
       }
       
       public static function Check(param1:String = "", param2:int = 0, param3:Boolean = false) : *

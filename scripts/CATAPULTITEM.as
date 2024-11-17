@@ -18,11 +18,11 @@ package
       
       public var _locked:Boolean;
       
-      private var _popX:int;
+      public var _popX:int;
       
-      private var _popY:int;
+      public var _popY:int;
       
-      private var _popup:bubblepopup3;
+      public var _popup:bubblepopup3;
       
       private var _constant:Boolean;
       
@@ -31,21 +31,10 @@ package
          super();
       }
       
-      public function Setup(param1:String, param2:Boolean = false, param3:Boolean = false) : void
+      public function Setup(param1:String, param2:Boolean = false, param3:Boolean = false, param4:Boolean = true) : void
       {
-         var imageComplete:Function = null;
-         var id:String = param1;
-         var constant:Boolean = param2;
-         var enable:Boolean = param3;
-         imageComplete = function(param1:String, param2:BitmapData):*
-         {
-            var _loc3_:Bitmap = new Bitmap(param2);
-            _image.addChild(_loc3_);
-            _loc3_.width = 60;
-            _loc3_.height = 60;
-         };
-         this._props = ResourceBombs._bombs[id];
-         this._bombid = id;
+         this._props = ResourceBombs._bombs[param1];
+         this._bombid = param1;
          _txtMC._tA.htmlText = "<b>" + this._props.name + "</b>";
          this._image = new Sprite();
          addChild(this._image);
@@ -55,18 +44,26 @@ package
          addChild(this._popup);
          this._popX = this._popup.x;
          this._popY = this._popup.y;
-         this._constant = constant;
+         this._constant = param2;
          if(this._constant)
          {
-            this.Enabled = enable;
+            this.Enabled = param3;
          }
          setChildIndex(this._image,1);
          setChildIndex(_txtMC,2);
          setChildIndex(this._popup,3);
-         ImageCache.GetImageWithCallBack(this._props.image,imageComplete);
+         ImageCache.GetImageWithCallBack(this._props.image,this.imageComplete);
          this.mouseEnabled = false;
          this.Hide();
          this.Update();
+      }
+      
+      public function imageComplete(param1:String, param2:BitmapData) : *
+      {
+         var _loc3_:Bitmap = new Bitmap(param2);
+         this._image.addChild(_loc3_);
+         _loc3_.width = 60;
+         _loc3_.height = 60;
       }
       
       public function Update() : void

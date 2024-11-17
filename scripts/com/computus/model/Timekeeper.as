@@ -1,10 +1,10 @@
 package com.computus.model
 {
-   import flash.events.*;
+   import flash.events.TimerEvent;
    import flash.utils.Timer;
    import flash.utils.getTimer;
    
-   public class Timekeeper extends EventDispatcher
+   public class Timekeeper
    {
       private static var _instance:Timekeeper;
       
@@ -43,8 +43,7 @@ package com.computus.model
       
       public function setRealTimeValue() : void
       {
-         var _loc1_:* = new Date();
-         this.time = _loc1_.valueOf();
+         this.time = getTimer();
       }
       
       public function setRealTimeTick() : void
@@ -60,12 +59,10 @@ package com.computus.model
       
       public function setValue(param1:Number) : void
       {
-         var _loc2_:* = undefined;
          if(this.time != param1)
          {
             this.time = param1;
-            _loc2_ = new TimekeeperEvent(TimekeeperEvent.CHANGE,this.time);
-            dispatchEvent(_loc2_);
+            GLOBAL.Tick();
          }
       }
       

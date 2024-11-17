@@ -29,6 +29,15 @@ package com.monsters.maproom_advanced
          super();
          x = 455;
          y = 260;
+         mMonsters.mask = mMonstersMask;
+         this._scroller = new ScrollSet();
+         this._scroller.isHiddenWhileUnnecessary = true;
+         this._scroller.AutoHideEnabled = false;
+         this._scroller.width = scroll.width;
+         this._scroller.x = scroll.x;
+         this._scroller.y = scroll.y;
+         addChild(this._scroller);
+         this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this.bOpen.SetupKey("btn_open");
          this.bOpen.Highlight = true;
          this.bOpen.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
@@ -97,24 +106,22 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:MapRoomCell) : *
       {
+         var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:int = 0;
+         var _loc5_:* = null;
          var _loc6_:* = null;
-         var _loc7_:* = null;
-         var _loc8_:int = 0;
+         var _loc7_:int = 0;
          this._cell = param1;
          tLabel1.htmlText = "<b>" + KEYS.Get("popup_label_name") + "</b>";
          tLabel2.htmlText = "<b>" + KEYS.Get("popup_label_thisyardhas") + "</b>";
          tLabel3.htmlText = "<b>" + KEYS.Get("popup_label_locationheight") + "</b>";
          tLabel4.htmlText = "<b>" + KEYS.Get("popup_label_monstershoused") + "</b>";
-         var _loc2_:Boolean = false;
-         var _loc3_:Number = 0;
+         var _loc2_:Number = 0;
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
-            _loc2_ = true;
-            _loc3_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
+            _loc2_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
          }
-         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc3_);
+         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10 + _loc2_);
          if(this._cell._base == 3)
          {
             tName.htmlText = KEYS.Get("map_outpostowner",{"v1":this._cell._name});
@@ -127,37 +134,37 @@ package com.monsters.maproom_advanced
          tHeight.htmlText = this._cell._height - 100 + "m";
          if(this._cell._base == 2)
          {
+            _loc3_ = 0;
+         }
+         else
+         {
+            _loc3_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
+         }
+         if(this._cell._base == 2)
+         {
             _loc4_ = 0;
          }
          else
          {
-            _loc4_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
+            _loc4_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
          }
-         if(this._cell._base == 2)
+         if(_loc3_ >= 0)
          {
-            _loc5_ = 0;
+            _loc5_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h1",{"v1":_loc3_}) + "</font>";
          }
          else
          {
-            _loc5_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
+            _loc5_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h1",{"v1":Math.abs(_loc3_)}) + "</font>";
          }
          if(_loc4_ >= 0)
          {
-            _loc6_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h1",{"v1":_loc4_}) + "</font>";
+            _loc6_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h2",{"v1":_loc4_}) + "</font>";
          }
          else
          {
-            _loc6_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h1",{"v1":Math.abs(_loc4_)}) + "</font>";
+            _loc6_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h2",{"v1":Math.abs(_loc4_)}) + "</font>";
          }
-         if(_loc5_ >= 0)
-         {
-            _loc7_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h2",{"v1":_loc5_}) + "</font>";
-         }
-         else
-         {
-            _loc7_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h2",{"v1":Math.abs(_loc5_)}) + "</font>";
-         }
-         tBonus.htmlText = _loc6_ + "<br>" + _loc7_;
+         tBonus.htmlText = _loc5_ + "<br>" + _loc6_;
          if(GLOBAL._mapOutpost.length > 0)
          {
             this.bMonsters.Enabled = true;
@@ -170,15 +177,15 @@ package com.monsters.maproom_advanced
          this.bBookmark.Enabled = true;
          if(MapRoom._bookmarks)
          {
-            _loc8_ = 0;
-            while(_loc8_ < MapRoom._bookmarks.length)
+            _loc7_ = 0;
+            while(_loc7_ < MapRoom._bookmarks.length)
             {
-               if(MapRoom._bookmarks[_loc8_].location.x == this._cell.X && MapRoom._bookmarks[_loc8_].location.y == this._cell.Y)
+               if(MapRoom._bookmarks[_loc7_].location.x == this._cell.X && MapRoom._bookmarks[_loc7_].location.y == this._cell.Y)
                {
                   this._bookmarked = true;
                   break;
                }
-               _loc8_++;
+               _loc7_++;
             }
             if(this._bookmarked)
             {
@@ -268,7 +275,7 @@ package com.monsters.maproom_advanced
             MapRoom._mc.HideInfoMine();
             MapRoom.Hide();
             MapRoom.ClearCells();
-            GLOBAL._attackerCellsInRange = [];
+            GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
             _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
             BASE.LoadBase(null,null,this._cell._baseID,"build",false,_loc1_);
          }
@@ -440,24 +447,18 @@ package com.monsters.maproom_advanced
             _loc2_ = 0;
             for(_loc3_ in this._cell._monsters)
             {
-               if(_loc1_ < 3)
+               if(this._cell._monsters[_loc3_].Get() > 0)
                {
-                  if(this._cell._monsters[_loc3_].Get() > 0)
+                  _loc4_ = new MapRoomPopupInfoMonster();
+                  _loc4_.Setup(_loc1_ * 130,_loc2_ * 35,_loc3_,this._cell._monsters[_loc3_].Get());
+                  _loc1_ += 1;
+                  this._mcMonsters.addChild(_loc4_);
+                  if(_loc1_ == 2)
                   {
-                     _loc4_ = new MapRoomPopupInfoMonster();
-                     _loc4_.Setup(_loc1_ * 130,_loc2_ * 35,_loc3_,this._cell._monsters[_loc3_].Get());
-                     _loc1_ += 1;
-                     if(_loc2_ <= 4)
-                     {
-                        this._mcMonsters.addChild(_loc4_);
-                     }
-                     if(_loc1_ == 2)
-                     {
-                        _loc1_ = 0;
-                        _loc2_ += 1;
-                     }
-                     this._hasMonsters = true;
+                     _loc1_ = 0;
+                     _loc2_ += 1;
                   }
+                  this._hasMonsters = true;
                }
             }
             mMonsters.addChild(this._mcMonsters);
@@ -469,6 +470,10 @@ package com.monsters.maproom_advanced
          else
          {
             this.bMonsters.Enabled = false;
+         }
+         if(this._scroller)
+         {
+            this._scroller.Update();
          }
       }
    }

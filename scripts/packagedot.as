@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1643")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1690")]
    public dynamic class packagedot extends MovieClip
    {
       public function packagedot()

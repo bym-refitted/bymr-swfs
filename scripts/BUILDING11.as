@@ -9,6 +9,8 @@ package
    
    public class BUILDING11 extends BFOUNDATION
    {
+      public static const CHANGED_TO_MR2:String = "changedToMR2";
+      
       private var callPending:Boolean;
       
       public function BUILDING11()
@@ -20,12 +22,8 @@ package
          SetProps();
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
          if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
          {
             _canFunction = false;
@@ -46,7 +44,7 @@ package
          {
             this.PopupUpgrade(2);
          }
-         super.Tick();
+         super.Tick(param1);
       }
       
       private function NewWorld() : *
@@ -75,8 +73,8 @@ package
             {
                return;
             }
+            GLOBAL.StatSet(CHANGED_TO_MR2,1);
             GLOBAL.StatSet("mrl",2,true);
-            GLOBAL._newMapFirstOpen = true;
             GLOBAL._advancedMap = 1;
             GLOBAL._baseURL = param1.baseurl;
             GLOBAL._homeBaseID = param1.homebaseid;
@@ -219,15 +217,30 @@ package
       
       private function RecycleDSuccess(param1:Object) : *
       {
+         var _loc2_:int = 0;
          PLEASEWAIT.Hide();
          if(param1.error == 0 && GLOBAL._mode == GLOBAL._loadmode)
          {
+            LOGGER.StatB({
+               "st1":"world_map",
+               "st2":"leave"
+            },MapRoom._worldID);
             GLOBAL.StatSet("mrl",1,true);
             GLOBAL._bMap = null;
             GLOBAL._advancedMap = 0;
             GLOBAL._baseURL = param1.baseurl;
             BASE._baseID = 0;
             BASE._loadedFriendlyBaseID = 0;
+            _loc2_ = 1;
+            while(_loc2_ < 5)
+            {
+               BASE._GIP["r" + _loc2_].Set(0);
+               _loc2_++;
+            }
+            BASE._lastProcessedGIP = GLOBAL.Timestamp();
+            BASE._rawGIP = {"t":BASE._lastProcessedGIP};
+            BASE._processedGIP = {"t":BASE._lastProcessedGIP};
+            GLOBAL._mapOutpost = [];
             if(param1.basesaveid != 1)
             {
                BASE._lastSaveID = param1.basesaveid;

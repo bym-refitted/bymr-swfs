@@ -12,11 +12,21 @@ package
       
       public static const MONSTERS:int = 3;
       
+      public static const SIEGEWEAPON_GROUND:int = 4;
+      
+      public static const SIEGEWEAPON_BUILDINGS:int = 5;
+      
+      public static const SIEGEWEAPON_GROUND_SPECIAL:int = 6;
+      
+      public static const SIEGEWEAPON_GROUND_SPECIAL_RADIUS:int = 30;
+      
       public var _size:int;
       
       public var _middle:Point = new Point(0,0);
       
       public var _dropTarget:int = 1;
+      
+      private var _targetedBuildings:Vector.<BFOUNDATION> = new Vector.<BFOUNDATION>();
       
       public function DROPZONE(param1:int = 32, param2:int = 1)
       {
@@ -54,44 +64,121 @@ package
          {
             x = MAP._GROUND.mouseX;
             y = MAP._GROUND.mouseY;
-            if(this._dropTarget == GROUND)
+            switch(this._dropTarget)
             {
-               if(BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
-               {
+               case GROUND:
+                  if(!BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
+                  {
+                     ring1.gotoAndStop(1);
+                     break;
+                  }
                   ring1.gotoAndStop(2);
-               }
-               else
-               {
-                  ring1.gotoAndStop(1);
-               }
-            }
-            else if(this._dropTarget == BUILDINGS)
-            {
-               if(BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
-               {
-                  ring1.gotoAndStop(1);
-               }
-               else
-               {
+                  break;
+               case SIEGEWEAPON_GROUND:
+                  if(!BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
+                  {
+                     ring1.gotoAndStop(1);
+                  }
+                  else
+                  {
+                     ring1.gotoAndStop(2);
+                  }
+                  this.UpdateTargetBuildings(x,y,this._size);
+                  break;
+               case SIEGEWEAPON_GROUND_SPECIAL:
+                  if(!BASE.BuildingOverlap(new Point(x,y),SIEGEWEAPON_GROUND_SPECIAL_RADIUS,true,true,true))
+                  {
+                     ring1.gotoAndStop(1);
+                  }
+                  else
+                  {
+                     ring1.gotoAndStop(2);
+                  }
+                  this.UpdateTargetBuildings(x,y,this._size);
+                  break;
+               case BUILDINGS:
+               case SIEGEWEAPON_BUILDINGS:
+                  if(BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
+                  {
+                     ring1.gotoAndStop(1);
+                  }
+                  else
+                  {
+                     ring1.gotoAndStop(2);
+                  }
+                  this.UpdateTargetBuildings(x,y,this._size);
+                  break;
+               case MONSTERS:
+                  if(CREEPS.CreepOverlap(new Point(x,y),this._size))
+                  {
+                     ring1.gotoAndStop(1);
+                     break;
+                  }
                   ring1.gotoAndStop(2);
-               }
+                  break;
             }
-            else if(this._dropTarget == MONSTERS)
-            {
-               if(CREEPS.CreepOverlap(new Point(x,y),this._size))
+         }
+      }
+      
+      public function Clear() : *
+      {
+         while(this._targetedBuildings.length)
+         {
+            this._targetedBuildings.pop().disableHighlight();
+         }
+      }
+      
+      public function Destroy() : void
+      {
+         this.Clear();
+         removeEventListener(Event.ENTER_FRAME,this.Follow);
+      }
+      
+      public function get isOverTarget() : Boolean
+      {
+         return this._targetedBuildings.length > 0;
+      }
+      
+      public function UpdateTargetBuildings(param1:Number, param2:Number, param3:Number) : void
+      {
+         var _loc4_:int = 0;
+         this.Clear();
+         BASE.GetBuildingOverlap(param1,param2,param3,this._targetedBuildings);
+         switch(this._dropTarget)
+         {
+            case SIEGEWEAPON_BUILDINGS:
+               _loc4_ = int(this._targetedBuildings.length - 1);
+               while(_loc4_ >= 0)
                {
-                  ring1.gotoAndStop(1);
+                  if(!(this._targetedBuildings[_loc4_] is BTOWER))
+                  {
+                     this._targetedBuildings.splice(_loc4_,1);
+                  }
+                  _loc4_--;
                }
-               else
+               break;
+            case SIEGEWEAPON_GROUND_SPECIAL:
+               _loc4_ = int(this._targetedBuildings.length - 1);
+               while(_loc4_ >= 0)
                {
-                  ring1.gotoAndStop(2);
+                  if(!(this._targetedBuildings[_loc4_] is BUILDING22))
+                  {
+                     this._targetedBuildings.splice(_loc4_,1);
+                  }
+                  _loc4_--;
                }
-            }
+         }
+         _loc4_ = 0;
+         while(_loc4_ < this._targetedBuildings.length)
+         {
+            this._targetedBuildings[_loc4_].highlight(0x333399);
+            _loc4_++;
          }
       }
       
       public function Drop() : *
       {
+         var _loc1_:SIEGEWEAPONPOPUP = null;
          switch(this._dropTarget)
          {
             case GROUND:
@@ -110,8 +197,41 @@ package
                if(CREEPS.CreepOverlap(new Point(x,y),this._size))
                {
                   ResourceBombs.BombDrop();
+               }
+               break;
+            case SIEGEWEAPON_GROUND:
+               if(BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
+               {
                   break;
                }
+               _loc1_ = UI2._top._siegeweapon;
+               if(Boolean(_loc1_) && _loc1_._state == 1)
+               {
+                  _loc1_.Fire(x,y);
+               }
+               break;
+            case SIEGEWEAPON_BUILDINGS:
+               if(!BASE.BuildingOverlap(new Point(x,y),this._size,true,true,true))
+               {
+                  break;
+               }
+               _loc1_ = UI2._top._siegeweapon;
+               if(Boolean(_loc1_) && _loc1_._state == 1)
+               {
+                  _loc1_.Fire(x,y);
+               }
+               break;
+            case SIEGEWEAPON_GROUND_SPECIAL:
+               if(BASE.BuildingOverlap(new Point(x,y),SIEGEWEAPON_GROUND_SPECIAL_RADIUS,true,true,true))
+               {
+                  break;
+               }
+               _loc1_ = UI2._top._siegeweapon;
+               if(Boolean(_loc1_) && _loc1_._state == 1)
+               {
+                  _loc1_.Fire(x,y);
+               }
+               break;
          }
       }
    }

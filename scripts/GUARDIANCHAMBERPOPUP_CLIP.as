@@ -3,36 +3,26 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1339")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1459")]
    public dynamic class GUARDIANCHAMBERPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
       
-      public var bSpeed:MovieClip;
-      
-      public var bFreeze2:Button_CLIP;
-      
-      public var bFreeze3:Button_CLIP;
+      public var bSpeed:creatureBar;
       
       public var selectedImage:MovieClip;
       
-      public var bBuff:MovieClip;
+      public var mcMask:MovieClip;
       
-      public var bFreeze1:Button_CLIP;
+      public var bBuff:creatureBar;
       
-      public var bDamage:MovieClip;
+      public var bDamage:creatureBar;
       
       public var health_txt:TextField;
       
-      public var slot1:MovieClip;
-      
       public var tTitle:TextField;
       
-      public var slot2:MovieClip;
-      
       public var tSpeed:TextField;
-      
-      public var slot3:MovieClip;
       
       public var tHealth:TextField;
       
@@ -44,13 +34,17 @@ package
       
       public var tBuff:TextField;
       
+      public var mcBgCubes:MovieClip;
+      
       public var tDamage:TextField;
       
       public var damage_txt:TextField;
       
       public var speed_txt:TextField;
       
-      public var bHealth:MovieClip;
+      public var bHealth:creatureBar;
+      
+      public var mcBgBot:MovieClip;
       
       public function GUARDIANCHAMBERPOPUP_CLIP()
       {

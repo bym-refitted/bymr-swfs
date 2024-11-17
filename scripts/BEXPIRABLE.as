@@ -13,9 +13,9 @@ package
          super();
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         super.Tick();
+         super.Tick(param1);
          if(this._buildingProps.lifespan != 0)
          {
             if(GLOBAL.Timestamp() > this._createTime + _buildingProps.lifespan)

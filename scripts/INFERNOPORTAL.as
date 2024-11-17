@@ -1,14 +1,23 @@
 package
 {
+   import com.cc.utils.SecNum;
+   import com.monsters.siege.SiegeFactory;
+   import com.monsters.siege.SiegeLab;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class INFERNOPORTAL extends BFOUNDATION
    {
+      private static var _ascensionMc:INFERNO_ASCENSION_POPUP;
+      
       public static var building:INFERNOPORTAL;
       
+      public static var _ascensionData:Object;
+      
       public static const ENTER_BUTTON:String = "btn_entercavern";
+      
+      public static const ASCENSION_BUTTON:String = "btn_ascendmonsters";
       
       public static const EXIT_BUTTON:String = "btn_exitcavern";
       
@@ -46,13 +55,101 @@ package
          }
       }
       
-      private static function EnterDescent() : void
+      public static function AscendMonsters() : void
+      {
+         var loader:URLLoaderApi;
+         var onLoad:Function = null;
+         var onError:Function = null;
+         onLoad = function(param1:Object):void
+         {
+            var _loc2_:String = null;
+            PLEASEWAIT.Hide();
+            _ascensionData = {};
+            for(_loc2_ in param1.imonsters)
+            {
+               if(_loc2_.substr(0,2) == "IC")
+               {
+                  _ascensionData[_loc2_] = new SecNum(int(param1.imonsters[_loc2_]));
+               }
+            }
+            ShowAscendMonstersDialog();
+         };
+         onError = function():void
+         {
+            LOGGER.Log("err","INFERNOPORTAL.AscendMonsters No inferno monster data");
+            GLOBAL.ErrorMessage("INFERNOPORTAL.AscendMonsters No inferno monster data");
+         };
+         if(BASE._yardType != BASE.MAIN_YARD)
+         {
+            return;
+         }
+         PLEASEWAIT.Show(KEYS.Get("msg_loading"));
+         loader = new URLLoaderApi();
+         loader.load(GLOBAL._infBaseURL + "infernomonsters",[["type","get"]],onLoad,onError);
+      }
+      
+      public static function PageAscensionData() : void
+      {
+         var result:Object;
+         var s:String = null;
+         var loader:URLLoaderApi = null;
+         var onLoad:Function = null;
+         var onError:Function = null;
+         onLoad = function(param1:Object):void
+         {
+            PLEASEWAIT.Hide();
+            BASE.Save();
+         };
+         onError = function():void
+         {
+            LOGGER.Log("err","INFERNOPORTAL.PageAscensionData Could not save inferno monster changes");
+            GLOBAL.ErrorMessage("INFERNOPORTAL.PageAscensionData Could not save inferno monster changes");
+         };
+         PLEASEWAIT.Show(KEYS.Get("msg_loading"));
+         result = {};
+         for(s in _ascensionData)
+         {
+            if(s.substr(0,2) == "IC" && _ascensionData[s].Get() > 0)
+            {
+               result[s] = int(_ascensionData[s].Get());
+            }
+         }
+         _ascensionData = null;
+         loader = new URLLoaderApi();
+         loader.load(GLOBAL._infBaseURL + "infernomonsters",[["type","set"],["imonsters",JSON.encode(result)]],onLoad,onError);
+      }
+      
+      public static function ShowAscendMonstersDialog() : void
+      {
+         GLOBAL.BlockerAdd();
+         GLOBAL._layerWindows.addChild(_ascensionMc = new INFERNO_ASCENSION_POPUP());
+         _ascensionMc.Center();
+         _ascensionMc.ScaleUp();
+      }
+      
+      public static function HideAscendMonstersDialog() : void
+      {
+         if(_ascensionMc)
+         {
+            GLOBAL.BlockerRemove();
+            SOUNDS.Play("close");
+            GLOBAL._layerWindows.removeChild(_ascensionMc);
+            _ascensionMc = null;
+         }
+      }
+      
+      public static function EnterDescent() : void
       {
          MAPROOM_DESCENT.Setup(true);
       }
       
       public static function ToggleYard() : void
       {
+         if(BASE._saving || BASE._loading || BASE._saveCounterA != BASE._saveCounterB)
+         {
+            GLOBAL._toggleYardWaiting = 1;
+            return;
+         }
          GLOBAL._advancedMap = 0;
          if(BASE.isInferno())
          {
@@ -66,7 +163,7 @@ package
       
       public static function AddPortal(param1:uint = 0) : INFERNOPORTAL
       {
-         var _loc2_:Point = BASE.isInferno() ? new Point(-750,-150) : new Point(-1200,-150);
+         var _loc2_:Point = new Point(-1200,-150);
          var _loc3_:Point = GRID.ToISO(_loc2_.x,_loc2_.y,0);
          var _loc4_:INFERNOPORTAL = BASE.addBuildingC(127) as INFERNOPORTAL;
          building = _loc4_;
@@ -84,7 +181,7 @@ package
       
       public static function isAboveMaxLevel() : Boolean
       {
-         return building._lvl.Get() >= GetMaxLevel();
+         return Boolean(building) && building._lvl.Get() >= GetMaxLevel();
       }
       
       override public function Click(param1:MouseEvent = null) : *
@@ -104,6 +201,7 @@ package
          param1 = Math.min(param1,_buildingProps.costs.length);
          var _loc2_:int = _lvl.Get();
          var _loc3_:uint = uint(_buildingProps.costs.length);
+         this.checkBuildingUnlocks();
          if(param1 == _loc2_)
          {
             return;
@@ -118,6 +216,17 @@ package
          RenderClear();
          Update(true);
          Render();
+      }
+      
+      private function checkBuildingUnlocks() : void
+      {
+         if(isAboveMaxLevel() && BASE._yardType == BASE.MAIN_YARD)
+         {
+            GLOBAL._buildingProps[INFERNO_MAGMA_TOWER.ID - 1].block = false;
+            GLOBAL._buildingProps[INFERNOQUAKETOWER.TYPE - 1].block = false;
+            GLOBAL._buildingProps[SiegeFactory.ID - 1].block = false;
+            GLOBAL._buildingProps[SiegeLab.ID - 1].block = false;
+         }
       }
       
       public function Hide() : void

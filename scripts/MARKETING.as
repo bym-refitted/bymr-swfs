@@ -35,7 +35,6 @@ package
          var tgtb:BFOUNDATION = null;
          var laser:Boolean = false;
          var tesla:* = undefined;
-         var i:int = 0;
          var key:String = param1;
          if(GLOBAL._mode != "build")
          {
@@ -51,30 +50,8 @@ package
          }
          try
          {
-            loop7:
             switch(key)
             {
-               case "catapult":
-                  if(!GLOBAL._bCatapult && GLOBAL._bTownhall._lvl.Get() >= 3 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM1") > 432000)
-                  {
-                     GLOBAL.StatSet("CM1",GLOBAL.Timestamp());
-                     pTitle = KEYS.Get("mkting_catapult_title");
-                     pBody = KEYS.Get("mkting_catapult_body");
-                     pImage = "building-catapult.png";
-                     pImagePosition = new Point(-270,-65);
-                     pButton = KEYS.Get("mkting_catapult_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
-                     {
-                        BUILDINGS._menuA = 2;
-                        BUILDINGS._menuB = 1;
-                        BUILDINGS._page = 0;
-                        BUILDINGS._buildingID = 51;
-                        BUILDINGS.Show();
-                        POPUPS.Next();
-                     };
-                     found = true;
-                  }
-                  break;
                case "upgradeapult":
                   if(GLOBAL._bCatapult && GLOBAL._bCatapult._lvl.Get() == 1 && GLOBAL._bTownhall._lvl.Get() >= 5 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM2") > 432000)
                   {
@@ -90,47 +67,6 @@ package
                         POPUPS.Next();
                      };
                      found = true;
-                  }
-                  break;
-               case "unlock":
-                  if(GLOBAL._bLocker && !CREATURELOCKER._unlocking && GLOBAL.Timestamp() - GLOBAL.StatGet("CM3") > 432000)
-                  {
-                     GLOBAL.StatSet("CM3",GLOBAL.Timestamp());
-                     i = 1;
-                     while(true)
-                     {
-                        if(i >= 13)
-                        {
-                           break loop7;
-                        }
-                        if(!CREATURELOCKER._lockerData["C" + i])
-                        {
-                           pTitle = KEYS.Get("mkting_unlock_title");
-                           if(BASE.isInferno())
-                           {
-                              if(i > 8)
-                              {
-                                 i = 8;
-                              }
-                              pBody = KEYS.Get("mkting_unlock_body",{"v1":KEYS.Get(CREATURELOCKER._creatures["IC" + i].name)});
-                           }
-                           else
-                           {
-                              pBody = KEYS.Get("mkting_unlock_body",{"v1":KEYS.Get(CREATURELOCKER._creatures["C" + i].name)});
-                           }
-                           pImage = "monster" + i + ".v2.png";
-                           pImagePosition = new Point(-270,-65);
-                           pButton = KEYS.Get("mkting_unlock_btn");
-                           pAction = function fcatapult(param1:MouseEvent):*
-                           {
-                              CREATURELOCKER.Show();
-                              POPUPS.Next();
-                           };
-                           found = true;
-                           break loop7;
-                        }
-                        i++;
-                     }
                   }
                   break;
                case "fillapult":
@@ -158,27 +94,6 @@ package
                   }
                   break;
                case "train":
-                  break;
-               case "academy":
-                  if(!GLOBAL._bAcademy && GLOBAL._bTownhall._lvl.Get() >= 3 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM5") > 432000)
-                  {
-                     GLOBAL.StatSet("CM5",GLOBAL.Timestamp());
-                     pTitle = KEYS.Get("mkting_academy_title");
-                     pBody = KEYS.Get("mkting_academy_body");
-                     pImage = "building-academy.png";
-                     pImagePosition = new Point(-270,-65);
-                     pButton = KEYS.Get("mkting_academy_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
-                     {
-                        BUILDINGS._menuA = 2;
-                        BUILDINGS._menuB = 1;
-                        BUILDINGS._page = 0;
-                        BUILDINGS._buildingID = 26;
-                        BUILDINGS.Show();
-                        POPUPS.Next();
-                     };
-                     found = true;
-                  }
                   break;
                case "overdrive":
                   tmpCountA = 0;

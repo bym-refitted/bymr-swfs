@@ -130,7 +130,7 @@ package com.monsters.maproom_inferno.views
             this.map_mc.getChildAt(i).visible = false;
             i++;
          }
-         ImageCache.GetImageWithCallBack("ui/descent_maproom.jpg",imageLoaded,true,1);
+         ImageCache.GetImageWithCallBack("ui/descent_maproom2.jpg",imageLoaded,true,1);
          this.map = new Sprite();
          this.map.addChild(this.map_mc);
          this.shell.addChild(this.map);

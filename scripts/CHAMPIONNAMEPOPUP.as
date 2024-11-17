@@ -7,25 +7,13 @@ package
    {
       public function CHAMPIONNAMEPOPUP()
       {
-         var _loc1_:String = null;
+         var _loc2_:String = null;
          super();
          tTitle.htmlText = "<b>CONGRATULATIONS!</b>";
          tDescription.htmlText = "<b>You can now start raising your Champion. What will you name him?<b>";
-         if(CREATURES._guardian._type == 1)
-         {
-            tInput.text = "Gorgo";
-            mcGuard.gotoAndStop(1);
-         }
-         else if(CREATURES._guardian._type == 2)
-         {
-            tInput.text = "Drull";
-            mcGuard.gotoAndStop(7);
-         }
-         else
-         {
-            tInput.text = "Fomor";
-            mcGuard.gotoAndStop(13);
-         }
+         var _loc1_:int = CREATURES._guardian._type;
+         mcGuard.gotoAndStop((_loc1_ - 1) * 6 + 1);
+         tInput.text = CHAMPIONCAGE._guardians[_loc1_].description;
          bAction.SetupKey("btn_accept");
          bAction.addEventListener(MouseEvent.CLICK,this.Accept);
          bAction.Highlight = false;
@@ -34,13 +22,20 @@ package
          {
             if(!CREATURES._guardian._name)
             {
-               _loc1_ = CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].name;
-               CREATURES._guardian._name = _loc1_;
+               _loc2_ = CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].name;
+               CREATURES._guardian._name = _loc2_;
             }
          }
          if(GLOBAL._ROOT.stage.displayState != StageDisplayState.NORMAL)
          {
-            UI2._top.mcZoom.gotoAndStop(1);
+            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            {
+               UI2._top.mcZoom.gotoAndStop(4);
+            }
+            else
+            {
+               UI2._top.mcZoom.gotoAndStop(1);
+            }
             GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
       }
@@ -49,7 +44,7 @@ package
       {
          if(tInput.text.length > 12)
          {
-            GLOBAL.Message("The name needs to  be 12 characters or less.");
+            GLOBAL.Message("The name needs to be 12 characters or less.");
             return;
          }
          var _loc2_:String = tInput.text;

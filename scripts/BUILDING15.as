@@ -25,7 +25,7 @@ package
       
       override public function StopMoveB() : *
       {
-         var _loc2_:CREEP = null;
+         var _loc2_:* = undefined;
          super.StopMoveB();
          var _loc1_:int = 0;
          while(_loc1_ < _creatures.length)
@@ -37,15 +37,6 @@ package
                _loc2_.ModeHousing();
             }
             _loc1_++;
-         }
-      }
-      
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
          }
       }
       
@@ -96,7 +87,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       

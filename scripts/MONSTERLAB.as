@@ -109,17 +109,6 @@ package
                "costs":[[96000,108000],[128000,108000],[40 * 60 * 60,108000]],
                "effect":[1,2,3]
             },
-            "C5":{
-               "name":"lab_eyeraname",
-               "order":5,
-               "description":"lab_eyeradesc",
-               "ability":"Airburst Bonus",
-               "upgrade_description":"lab_eyeradesc_u",
-               "stream":["lab_eyerastream","lab_eyerastream_unlock","lab_eyerastream_upgrade"],
-               "streampic":"lab_eyera5.png",
-               "costs":[[3560000,172800],[4120000,194400],[5120000,216000]],
-               "effect":[0.2,0.3,0.4]
-            },
             "C7":{
                "name":"lab_banditoname",
                "order":3,
@@ -141,6 +130,17 @@ package
                "streampic":"lab_fang5.png",
                "costs":[[2000000,129600],[50 * 60 * 1000,129600],[4500000,129600]],
                "effect":[0.1,0.2,0.3]
+            },
+            "C5":{
+               "name":"lab_eyeraname",
+               "order":5,
+               "description":"lab_eyeradesc",
+               "ability":"Airburst Bonus",
+               "upgrade_description":"lab_eyeradesc_u",
+               "stream":["lab_eyerastream","lab_eyerastream_unlock","lab_eyerastream_upgrade"],
+               "streampic":"lab_eyera5.png",
+               "costs":[[3560000,172800],[4120000,194400],[5120000,216000]],
+               "effect":[0.2,0.3,0.4]
             },
             "C9":{
                "name":"lab_brainname",
@@ -209,9 +209,9 @@ package
          super.Click(param1);
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         super.Tick();
+         super.Tick(param1);
          if(Boolean(_upgrading) && GLOBAL.Timestamp() >= this._upgradeFinishTime.Get())
          {
             this.FinishMonsterPowerup();
@@ -219,10 +219,6 @@ package
          if(_open)
          {
             (_mcPopup as MONSTERLABPOPUP).Tick();
-         }
-         if(GLOBAL._catchup && !_repairing && !_upgrading && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
-         {
-            CatchupRemove();
          }
       }
       
@@ -262,7 +258,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -514,10 +510,6 @@ package
          if(_countdownBuild.Get() <= 0)
          {
             GLOBAL._bLab = this;
-         }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
          }
       }
       

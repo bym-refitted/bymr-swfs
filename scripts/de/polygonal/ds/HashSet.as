@@ -226,6 +226,8 @@ package de.polygonal.ds
                {
                   _loc6_ = int(_loc12_.length);
                }
+               null;
+               null;
                _loc7_ = 0;
                _loc8_ = 0;
                while(_loc8_ < _loc6_)
@@ -666,6 +668,9 @@ package de.polygonal.ds
             {
                _loc5_ = int(_loc6_.length);
             }
+            null;
+            null;
+            null;
             _loc7_ = 0;
             _loc8_ = 0;
             while(_loc8_ < _loc5_)
@@ -867,6 +872,7 @@ package de.polygonal.ds
          {
             _loc5_ = int(_loc9_.length);
          }
+         null;
          _loc6_ = 0;
          _loc7_ = 0;
          while(_loc7_ < _loc5_)

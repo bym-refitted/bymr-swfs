@@ -44,15 +44,6 @@ package
          }
          ++this._frameNumber;
       }
-      
-      override public function Setup(param1:Object) : *
-      {
-         super.Setup(param1);
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
-         }
-      }
    }
 }
 

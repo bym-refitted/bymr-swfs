@@ -40,8 +40,6 @@ package
       
       public static var _maxLevel:Number = 6;
       
-      public static var _starveTime:Number = 86400;
-      
       public static var _isFeed:Boolean = false;
       
       public static var _useBonusIndicators:Boolean = false;
@@ -292,17 +290,10 @@ package
                      mcInstant.enabled = true;
                      mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("gcage_instantBuff") + "</b>";
                      mcInstant.bAction.Highlight = false;
+                     mcInstant.bAction.Enabled = true;
                      _loc7_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny");
                      mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":_loc7_}),false,0,0);
-                     if(CREATURES._guardian._foodBonus.Get() >= 3)
-                     {
-                        mcInstant.bAction.Enabled = false;
-                        mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.CantInstantClick);
-                     }
-                     else
-                     {
-                        mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.InstantClick);
-                     }
+                     mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.InstantClick);
                      bEvolve.SetupKey("btn_feednow",false,0,0);
                      bEvolve.visible = true;
                      bEvolve.Enabled = true;
@@ -376,53 +367,48 @@ package
          }
       }
       
+      private function FeedIconLoaded(param1:String, param2:BitmapData) : *
+      {
+         feedIcons[0].mcImage.addChild(new Bitmap(param2));
+         feedIcons[0].mcImage.width = 30;
+         feedIcons[0].mcImage.height = 27;
+      }
+      
+      private function FeedIconLoaded2(param1:String, param2:BitmapData) : *
+      {
+         feedIcons[1].mcImage.addChild(new Bitmap(param2));
+         feedIcons[1].mcImage.width = 30;
+         feedIcons[1].mcImage.height = 27;
+      }
+      
       private function UpdateDNA() : void
       {
-         var FeedIconLoaded:Function;
-         var FeedIconLoaded2:Function;
-         var MASKSTART:Number = NaN;
-         var MASKLENGTH:Number = NaN;
-         var feedRatio:Number = NaN;
-         var time:int = 0;
-         var feedReqs:* = undefined;
-         var feedReqCount:Number = NaN;
-         var cName:String = null;
-         var cID:String = null;
-         var cImage:String = null;
-         var i:* = undefined;
-         var guardIndex:int = 1;
+         var _loc2_:Number = NaN;
+         var _loc3_:Number = NaN;
+         var _loc4_:Number = NaN;
+         var _loc5_:int = 0;
+         var _loc6_:* = undefined;
+         var _loc7_:int = 0;
+         var _loc8_:String = null;
+         var _loc9_:int = 0;
+         var _loc10_:* = undefined;
+         var _loc11_:* = undefined;
          if(CREATURES._guardian)
          {
-            if(CREATURES._guardian._type == 1)
+            if(mcCurrGuardian.numChildren == 0)
             {
-               guardIndex = 1;
-               guardIndex += CREATURES._guardian._level.Get() - 1;
-               mcCurrGuardian.gotoAndStop(guardIndex);
-               mcNextGuardian.gotoAndStop(Math.min(guardIndex + 1,6));
+               ImageCache.loadImageAndAddChild("monsters/G" + CREATURES._guardian._type + "_L" + CREATURES._guardian._level.Get() + "-150.png",mcCurrGuardian);
+               ImageCache.loadImageAndAddChild("monsters/G" + CREATURES._guardian._type + "_L" + (CREATURES._guardian._level.Get() + 1) + "-150G.png",mcNextGuardian);
             }
-            else if(CREATURES._guardian._type == 2)
-            {
-               guardIndex = 7;
-               guardIndex += CREATURES._guardian._level.Get() - 1;
-               mcCurrGuardian.gotoAndStop(guardIndex);
-               mcNextGuardian.gotoAndStop(Math.min(guardIndex + 1,12));
-            }
-            else if(CREATURES._guardian._type == 3)
-            {
-               guardIndex = 13;
-               guardIndex += CREATURES._guardian._level.Get() - 1;
-               mcCurrGuardian.gotoAndStop(guardIndex);
-               mcNextGuardian.gotoAndStop(Math.min(guardIndex + 1,18));
-            }
-            MASKSTART = -517;
-            MASKLENGTH = 222;
-            feedRatio = this.currFeeds / this.totalFeeds;
-            barDNA_mask.x = MASKSTART + feedRatio * MASKLENGTH;
-            time = CREATURES._guardian._feedTime.Get();
-            if(time < GLOBAL.Timestamp())
+            _loc2_ = -517;
+            _loc3_ = 222;
+            _loc4_ = this.currFeeds / this.totalFeeds;
+            barDNA_mask.x = _loc2_ + _loc4_ * _loc3_;
+            _loc5_ = CREATURES._guardian._feedTime.Get();
+            if(_loc5_ < GLOBAL.Timestamp())
             {
                tNextFeedTitle.htmlText = "<b>" + KEYS.Get("gcage_hungry") + "</b>";
-               tNextFeed.htmlText = GLOBAL.ToTime(time + _starveTime - GLOBAL.Timestamp());
+               tNextFeed.htmlText = GLOBAL.ToTime(_loc5_ + CHAMPIONCAGE.STARVETIMER - GLOBAL.Timestamp());
             }
             else
             {
@@ -432,76 +418,57 @@ package
             tFeedsFrom.htmlText = Math.max(0,this.totalFeeds - this.currFeeds) + KEYS.Get("gcage_feedsFromEvo");
             feedIcons[0].visible = false;
             feedIcons[1].visible = false;
-            feedReqs = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"feeds");
-            feedReqCount = 0;
-            i = 1;
-            while(i <= 13)
+            _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"feeds");
+            _loc7_ = 1;
+            for(_loc8_ in _loc6_)
             {
-               cName = KEYS.Get(CREATURELOCKER._creatures["C" + i].name);
-               cID = "C" + i;
-               cImage = "monsters/" + cID + "-small.png";
-               if(feedReqs["C" + i])
+               _loc9_ = int(_loc6_[_loc8_]);
+               _loc10_ = KEYS.Get(CREATURELOCKER.getShortCreatureName(_loc8_));
+               _loc11_ = "monsters/" + _loc8_ + "-small.png";
+               if(HOUSING._creatures[_loc8_] == null || HOUSING._creatures[_loc8_] && HOUSING._creatures[_loc8_].Get() < _loc9_)
                {
-                  FeedIconLoaded = function(param1:String, param2:BitmapData):*
-                  {
-                     feedIcons[0].mcImage.addChild(new Bitmap(param2));
-                     feedIcons[0].mcImage.width = 30;
-                     feedIcons[0].mcImage.height = 27;
-                  };
-                  FeedIconLoaded2 = function(param1:String, param2:BitmapData):*
-                  {
-                     feedIcons[1].mcImage.addChild(new Bitmap(param2));
-                     feedIcons[1].mcImage.width = 30;
-                     feedIcons[1].mcImage.height = 27;
-                  };
-                  feedReqCount++;
-                  if(HOUSING._creatures["C" + i] == null || HOUSING._creatures["C" + i] && HOUSING._creatures["C" + i].Get() < feedReqs["C" + i])
-                  {
-                     feedIcons[feedReqCount - 1].tName.htmlText = "<font color=\"#ff0000\"><b>" + feedReqs[cID] + " " + cName + "</b></font>";
-                  }
-                  else
-                  {
-                     feedIcons[feedReqCount - 1].tName.htmlText = "<font color=\"#000000\"><b>" + feedReqs[cID] + " " + cName + "</b></font>";
-                  }
-                  if(feedReqCount == 1)
-                  {
-                     ImageCache.GetImageWithCallBack(cImage,FeedIconLoaded);
-                  }
-                  else if(feedReqCount == 2)
-                  {
-                     ImageCache.GetImageWithCallBack(cImage,FeedIconLoaded2);
-                  }
-                  feedIcons[feedReqCount - 1].visible = true;
+                  feedIcons[_loc7_ - 1].tName.htmlText = "<font color=\"#ff0000\"><b>" + _loc9_ + " " + _loc10_ + "</b></font>";
                }
-               if(feedReqCount >= 2)
+               else
+               {
+                  feedIcons[_loc7_ - 1].tName.htmlText = "<font color=\"#000000\"><b>" + _loc9_ + " " + _loc10_ + "</b></font>";
+               }
+               if(_loc7_ == 1)
+               {
+                  ImageCache.GetImageWithCallBack(_loc11_,this.FeedIconLoaded);
+               }
+               else if(_loc7_ == 2)
+               {
+                  ImageCache.GetImageWithCallBack(_loc11_,this.FeedIconLoaded2);
+               }
+               feedIcons[_loc7_ - 1].visible = true;
+               _loc7_++;
+               if(_loc7_ >= 3)
                {
                   break;
                }
-               i++;
             }
          }
       }
       
       private function UpdateStats() : *
       {
-         var _loc1_:String = null;
-         var _loc2_:String = null;
-         var _loc3_:String = null;
+         var _loc1_:Number = NaN;
+         var _loc2_:Number = NaN;
+         var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
          var _loc5_:Number = NaN;
          var _loc6_:Number = NaN;
          var _loc7_:Number = NaN;
          var _loc8_:Number = NaN;
          var _loc9_:Number = NaN;
-         var _loc10_:Number = NaN;
-         var _loc11_:Number = NaN;
-         var _loc12_:Number = NaN;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
          var _loc13_:int = 0;
          var _loc14_:int = 0;
          var _loc15_:int = 0;
-         var _loc16_:int = 0;
-         var _loc17_:int = 0;
-         var _loc18_:int = 0;
+         var _loc16_:Number = NaN;
          this.UpdateVars();
          if(CREATURES._guardian)
          {
@@ -514,127 +481,122 @@ package
             health_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
             speed_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
             buff_txt2.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
-            _loc1_ = KEYS.Get("mon_gorgodesc");
-            _loc2_ = KEYS.Get("mon_drulldesc");
-            _loc3_ = KEYS.Get("mon_fomordesc");
-            switch(CREATURES._guardian._type)
+            tEvoDesc.htmlText = KEYS.Get(CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].description);
+            if(Boolean(CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].powerLevel2Desc) && CREATURES._guardian._powerLevel.Get() > 1)
             {
-               case 1:
-                  tEvoDesc.htmlText = _loc1_;
-                  break;
-               case 2:
-                  tEvoDesc.htmlText = _loc2_;
-                  break;
-               case 3:
-                  tEvoDesc.htmlText = _loc3_;
+               tEvoDesc.htmlText += "<br/><b>" + KEYS.Get("mon_specialability") + "</b>" + "<br/>* " + KEYS.Get(CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].powerLevel2Desc);
+               if(Boolean(KEYS.Get(CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].powerLevel3Desc)) && CREATURES._guardian._powerLevel.Get() > 2)
+               {
+                  tEvoDesc.htmlText += "* " + KEYS.Get(CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].powerLevel3Desc);
+               }
             }
-            _loc4_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"damage");
-            _loc5_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"health");
-            _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"speed");
-            _loc7_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"buffs") * 100;
+            _loc1_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"damage");
+            _loc2_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"health");
+            _loc3_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"speed");
+            _loc4_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"buffs") * 100;
             if(this.foodBonus > 0)
             {
-               _loc4_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusDamage");
-               _loc5_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusHealth");
-               _loc6_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusSpeed");
-               _loc7_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusBuffs") * 100;
+               _loc1_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusDamage");
+               _loc2_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusHealth");
+               _loc3_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusSpeed");
+               _loc4_ += CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.foodBonus,"bonusBuffs") * 100;
             }
-            _loc8_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"damage");
-            _loc9_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"health");
-            _loc10_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"speed");
-            _loc11_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"buffs") * 100;
-            _loc12_ = int(_loc6_ * 10) / 10;
-            tDamage.htmlText = "" + _loc4_;
-            tHealth.htmlText = "" + _loc5_;
-            tSpeed.htmlText = "" + _loc12_;
-            tBuff.htmlText = "" + int(_loc7_) + "%";
+            _loc5_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"damage");
+            _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"health");
+            _loc7_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"speed");
+            _loc8_ = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"buffs") * 100;
+            _loc9_ = int(_loc3_ * 10) / 10;
+            tDamage.htmlText = "" + _loc1_;
+            tHealth.htmlText = "" + _loc2_;
+            tSpeed.htmlText = "" + _loc9_;
+            tBuff.htmlText = "" + int(_loc4_) + "%";
             tHP.htmlText = Math.floor(this.guard._health.Get()) + " / " + Math.floor(this.guard._maxHealth);
             TweenLite.to(bDamage.mcBar,0.4,{
-               "width":100 / _maxDamage * _loc4_,
+               "width":100 / _maxDamage * _loc1_,
                "ease":Circ.easeInOut,
                "delay":0
             });
             if(this.guardLevel == _maxLevel && _useBonusIndicators)
             {
-               _loc13_ = this.foodBonus;
-               while(_loc13_ <= 3)
+               _loc10_ = this.foodBonus;
+               while(_loc10_ <= 3)
                {
-                  if(_loc13_ > 0)
+                  if(_loc10_ > 0)
                   {
-                     (bDamage["mcBuff" + _loc13_] as MovieClip).gotoAndStop(_loc13_ + 1);
-                     TweenLite.to(bDamage["mcBuff" + _loc13_],0,{
-                        "width":100 / _maxDamage * (_loc8_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc13_,"bonusDamage")),
+                     (bDamage["mcBuff" + _loc10_] as MovieClip).gotoAndStop(_loc10_ + 1);
+                     TweenLite.to(bDamage["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxDamage * (_loc5_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc10_,"bonusDamage")) + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
                   }
-                  _loc13_++;
+                  _loc10_++;
                }
             }
             TweenLite.to(bHealth.mcBar,0.4,{
-               "width":100 / _maxHealth * _loc5_,
+               "width":100 / _maxHealth * _loc2_,
                "ease":Circ.easeInOut,
                "delay":0.05
             });
             if(this.guardLevel == _maxLevel && _useBonusIndicators)
             {
-               _loc13_ = this.foodBonus;
-               while(_loc13_ <= 3)
+               _loc10_ = this.foodBonus;
+               while(_loc10_ <= 3)
                {
-                  if(_loc13_ > 0)
+                  if(_loc10_ > 0)
                   {
-                     TweenLite.to(bHealth["mcBuff" + _loc13_],0,{
-                        "width":100 / _maxHealth * (_loc9_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc13_,"bonusHealth")),
+                     TweenLite.to(bHealth["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxHealth * (_loc6_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc10_,"bonusHealth")) + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     bHealth["mcBuff" + _loc13_].gotoAndStop(1 + _loc13_);
+                     bHealth["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
                   }
-                  _loc13_++;
+                  _loc10_++;
                }
             }
             TweenLite.to(bSpeed.mcBar,0.4,{
-               "width":100 / _maxSpeed * _loc6_,
+               "width":100 / _maxSpeed * _loc3_,
                "ease":Circ.easeInOut,
                "delay":0.1
             });
             if(this.guardLevel == _maxLevel && _useBonusIndicators)
             {
-               _loc13_ = this.foodBonus;
-               while(_loc13_ <= 3)
+               _loc10_ = this.foodBonus;
+               while(_loc10_ <= 3)
                {
-                  if(_loc13_ > 0)
+                  if(_loc10_ > 0)
                   {
-                     TweenLite.to(bSpeed["mcBuff" + _loc13_],0,{
-                        "width":100 / _maxSpeed * (_loc10_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc13_,"bonusSpeed")),
+                     TweenLite.to(bSpeed["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxSpeed * (_loc7_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc10_,"bonusSpeed")) + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     bSpeed["mcBuff" + _loc13_].gotoAndStop(1 + _loc13_);
+                     bSpeed["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
                   }
-                  _loc13_++;
+                  _loc10_++;
                }
             }
             TweenLite.to(bBuff.mcBar,0.4,{
-               "width":100 / _maxBuff * _loc7_,
+               "width":100 / _maxBuff * _loc4_,
                "ease":Circ.easeInOut,
                "delay":0.15
             });
             if(this.guardLevel == _maxLevel && _useBonusIndicators)
             {
-               _loc13_ = this.foodBonus;
-               while(_loc13_ <= 3)
+               _loc10_ = this.foodBonus;
+               while(_loc10_ <= 3)
                {
-                  if(_loc13_ > 0)
+                  if(_loc10_ > 0)
                   {
-                     TweenLite.to(bBuff["mcBuff" + _loc13_],0,{
-                        "width":100 / _maxBuff * (_loc11_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc13_,"bonusBuffs")),
+                     TweenLite.to(bBuff["mcBuff" + _loc10_],0,{
+                        "width":100 / _maxBuff * (_loc8_ + CHAMPIONCAGE.GetGuardianProperty(this.guardID,_loc10_,"bonusBuffs")) + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     bBuff["mcBuff" + _loc13_].gotoAndStop(1 + _loc13_);
+                     bBuff["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
                   }
-                  _loc13_++;
+                  _loc10_++;
                }
             }
             if(this.guardLevel == _maxLevel)
@@ -654,62 +616,63 @@ package
                day3.bonusHealth.htmlText = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusHealth") ? "+" + GLOBAL.FormatNumber(Number([CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusHealth") - CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,2,"bonusHealth")])) + "" : "";
                day3.bonusSpeed.htmlText = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusSpeed") ? "+" + Number([CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusSpeed") - CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,2,"bonusSpeed")]) + "" : "";
                day3.bonusBuff.htmlText = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusBuffs") ? "+" + Number([CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusBuffs") - CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,2,"bonusBuffs")]) * 100 + "%" + "" : "";
-               _loc14_ = 1;
-               while(_loc14_ <= 3)
+               _loc11_ = 1;
+               while(_loc11_ <= 3)
                {
-                  if(_loc14_ < this.foodBonus + 1)
+                  if(_loc11_ < this.foodBonus + 1)
                   {
-                     this["day" + _loc14_].alpha = 1;
-                     this["day" + _loc14_].mcDivider.alpha = 0;
-                     if(_loc14_ <= this.foodBonus)
+                     this["day" + _loc11_].alpha = 1;
+                     this["day" + _loc11_].mcDivider.alpha = 0;
+                     if(_loc11_ <= this.foodBonus)
                      {
-                        this["day" + _loc14_].bonusDamage.htmlText = "";
-                        this["day" + _loc14_].bonusHealth.htmlText = "";
-                        this["day" + _loc14_].bonusSpeed.htmlText = "";
-                        this["day" + _loc14_].bonusBuff.htmlText = "";
+                        this["day" + _loc11_].bonusDamage.htmlText = "";
+                        this["day" + _loc11_].bonusHealth.htmlText = "";
+                        this["day" + _loc11_].bonusSpeed.htmlText = "";
+                        this["day" + _loc11_].bonusBuff.htmlText = "";
                      }
                   }
-                  else if(_loc14_ == this.foodBonus + 1)
+                  else if(_loc11_ == this.foodBonus + 1)
                   {
-                     this["day" + _loc14_].alpha = 1;
-                     this["day" + _loc14_].mcDivider.alpha = 0.8;
-                     this["day" + _loc14_].bonusDamage.htmlText = "<b>" + this["day" + _loc14_].bonusDamage.htmlText + "</b>";
-                     this["day" + _loc14_].bonusHealth.htmlText = "<b>" + this["day" + _loc14_].bonusHealth.htmlText + "</b>";
-                     this["day" + _loc14_].bonusSpeed.htmlText = "<b>" + this["day" + _loc14_].bonusSpeed.htmlText + "</b>";
-                     this["day" + _loc14_].bonusBuff.htmlText = "<b>" + this["day" + _loc14_].bonusBuff.htmlText + "</b>";
+                     this["day" + _loc11_].alpha = 1;
+                     this["day" + _loc11_].mcDivider.alpha = 0.8;
+                     this["day" + _loc11_].bonusDamage.htmlText = "<b>" + this["day" + _loc11_].bonusDamage.htmlText + "</b>";
+                     this["day" + _loc11_].bonusHealth.htmlText = "<b>" + this["day" + _loc11_].bonusHealth.htmlText + "</b>";
+                     this["day" + _loc11_].bonusSpeed.htmlText = "<b>" + this["day" + _loc11_].bonusSpeed.htmlText + "</b>";
+                     this["day" + _loc11_].bonusBuff.htmlText = "<b>" + this["day" + _loc11_].bonusBuff.htmlText + "</b>";
                   }
                   else
                   {
-                     this["day" + _loc14_].alpha = 0.5;
-                     this["day" + _loc14_].mcDivider.alpha = 1;
+                     this["day" + _loc11_].alpha = 0.5;
+                     this["day" + _loc11_].mcDivider.alpha = 1;
                   }
-                  _loc14_++;
+                  _loc11_++;
                }
-               tDamage2.htmlText = "" + _loc4_;
-               tHealth2.htmlText = "" + _loc5_;
-               tSpeed2.htmlText = "" + _loc12_;
-               tBuff2.htmlText = "" + int(_loc7_) + "%";
-               _loc15_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusDamage") ? 1 : 0;
-               _loc16_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusHealth") ? 1 : 0;
-               _loc17_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusSpeed") ? 1 : 0;
-               _loc18_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusBuffs") ? 1 : 0;
+               tDamage2.htmlText = "" + _loc1_;
+               tHealth2.htmlText = "" + _loc2_;
+               tSpeed2.htmlText = "" + _loc9_;
+               tBuff2.htmlText = "" + int(_loc4_) + "%";
+               _loc12_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusDamage") ? 1 : 0;
+               _loc13_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusHealth") ? 1 : 0;
+               _loc14_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusSpeed") ? 1 : 0;
+               _loc15_ = !!CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get() + 1,"bonusBuffs") ? 1 : 0;
+               _loc16_ = 25.5;
                TweenLite.to(bDamage2.mcBar,0.4,{
-                  "width":25 + this.foodBonus * 25,
+                  "width":_loc16_ + this.foodBonus * 25,
                   "ease":Circ.easeInOut,
                   "delay":0
                });
                TweenLite.to(bHealth2.mcBar,0.4,{
-                  "width":25 + this.foodBonus * 25,
+                  "width":_loc16_ + this.foodBonus * 25,
                   "ease":Circ.easeInOut,
                   "delay":0.05
                });
                TweenLite.to(bSpeed2.mcBar,0.4,{
-                  "width":25 + this.foodBonus * 25,
+                  "width":_loc16_ + this.foodBonus * 25,
                   "ease":Circ.easeInOut,
                   "delay":0.1
                });
                TweenLite.to(bBuff2.mcBar,0.4,{
-                  "width":25 * _loc18_ + this.foodBonus * 25 * _loc18_,
+                  "width":_loc16_ * _loc15_ + this.foodBonus * 25 * _loc15_,
                   "ease":Circ.easeInOut,
                   "delay":0.15
                });
@@ -733,7 +696,7 @@ package
                this.Switch(1);
             }
             tNextFeedTitle.htmlText = "<b>" + KEYS.Get("gcage_hungry") + "</b>";
-            tNextFeed.htmlText = GLOBAL.ToTime(_loc1_ + _starveTime - GLOBAL.Timestamp());
+            tNextFeed.htmlText = GLOBAL.ToTime(_loc1_ + CHAMPIONCAGE.STARVETIMER - GLOBAL.Timestamp());
             bFeedTimer.mcBar.width = 0;
          }
          else

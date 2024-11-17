@@ -1,12 +1,18 @@
 package
 {
    import com.monsters.display.BuildingOverlay;
+   import flash.display.MovieClip;
    import flash.events.Event;
+   import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class INFERNOQUAKETOWER extends BTOWER
    {
+      public static const UNDERHALL_ID:int = 999;
+      
+      public static const TYPE:int = 129;
+      
       private var _shouldAnimate:Boolean;
       
       public function INFERNOQUAKETOWER()
@@ -23,11 +29,24 @@ package
       override public function PlaceB() : *
       {
          super.PlaceB();
-         _origin = new Point(x,y);
+         _origin = new Point(_mc.x,_mc.y);
+      }
+      
+      override public function FollowMouseB(param1:Event = null) : *
+      {
+         super.FollowMouseB(param1);
+         _origin = new Point(_mc.x,_mc.y);
+      }
+      
+      override public function StopMoveB() : *
+      {
+         super.StopMoveB();
+         _origin = new Point(_mc.x,_mc.y);
       }
       
       override public function TickFast(param1:Event = null) : *
       {
+         super.TickFast(param1);
          if(_shake > 0)
          {
             _mc.x = _origin.x - 2 + Math.random() * 4;
@@ -56,7 +75,7 @@ package
             if(_repairing == 1)
             {
                _loc5_ = 0;
-               _loc6_ = _lvl.Get() == 0 ? 0 : _lvl.Get() - 1;
+               _loc6_ = _lvl.Get() == 0 ? 0 : int(_lvl.Get() - 1);
                _loc5_ = Math.ceil(_hpMax.Get() / Math.min(60 * 60,_buildingProps.repairTime[_loc6_]));
                _repairTime = int(_hpMax.Get() - _hp.Get()) / _loc5_;
                QUEUE.Update("building" + _id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(_repairTime,true));
@@ -81,7 +100,7 @@ package
             {
                Render("destroyed");
             }
-            else if(_hp.Get() < _hpMax.Get() * 0.15)
+            else if(_hp.Get() < _hpMax.Get() * 0.5)
             {
                Render("damaged");
             }
@@ -94,7 +113,7 @@ package
       
       override public function TickAttack() : *
       {
-         if(_hp.Get() < _hpMax.Get() * 0.15)
+         if(_hp.Get() <= 0)
          {
             _animTick = 0;
             return;
@@ -109,7 +128,7 @@ package
                {
                   if(_animTick == _animFrames - 6)
                   {
-                     SOUNDS.Play("quake");
+                     SOUNDS.Play("quake",!isJard ? 0.8 : 0.4);
                   }
                   ++_animTick;
                }
@@ -128,7 +147,7 @@ package
       
       override public function Fire(param1:*) : *
       {
-         if(_hp.Get() < _hpMax.Get() * 0.15)
+         if(_hp.Get() <= 0)
          {
             return;
          }
@@ -139,16 +158,29 @@ package
       
       private function DelayedFire() : void
       {
+         var _loc3_:QuakeGraphic = null;
          var _loc2_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc2_ = 1.25;
          }
-         this.Quake(int(_damage * 1 * _loc2_));
-         var _loc3_:QuakeGraphic = new QuakeGraphic(20,_range * 2);
-         _loc3_.graphic.y += _top;
-         _mc.addChild(_loc3_.graphic);
-         _origin = new Point(x,y);
+         if(isJard)
+         {
+            _jarHealth.Add(-int(_damage * 3 * 1 * _loc2_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * 1 * _loc2_);
+            if(_jarHealth.Get() <= 0)
+            {
+               KillJar();
+            }
+         }
+         else
+         {
+            this.Quake(int(_damage * 1 * _loc2_));
+            _loc3_ = new QuakeGraphic(20,_range * 2);
+            _loc3_.graphic.y += _top;
+            _mc.addChild(_loc3_.graphic);
+         }
+         _origin = new Point(_mc.x,_mc.y);
          _shake = 10;
       }
       
@@ -179,19 +211,85 @@ package
             _loc7_ += _loc5_;
             _loc3_._health.Add(-_loc5_);
          }
+         if(Boolean((GLOBAL._bTownhall as BUILDING14)._vacuum) && GLOBAL.QuickDistance(_position,GLOBAL._bTownhall._position) < _range)
+         {
+            _loc5_ = param1 / _range * (_range - GLOBAL.QuickDistance(_position,GLOBAL._bTownhall._position));
+            (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-_loc5_);
+            _loc7_ += _loc5_;
+         }
          ATTACK.Damage(_mc.x,_mc.y - _top,_loc7_);
       }
       
       private function GetCreepsInRange() : Array
       {
-         return MAP.CreepCellFind(new Point(_mc.x,_mc.y),_range,-1);
+         return MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),_range,-1);
+      }
+      
+      override public function Upgraded() : *
+      {
+         var _loc1_:MovieClip = null;
+         super.Upgraded();
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         {
+            _loc1_ = new popup_building();
+            _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{
+               "v1":KEYS.Get(_buildingProps.name),
+               "v2":_lvl.Get()
+            }) + "</b>";
+            _loc1_.tB.htmlText = KEYS.Get("pop_tupgraded_body",{"v1":KEYS.Get(_buildingProps.name)});
+            _loc1_.bPost.SetupKey("btn_brag");
+            _loc1_.bPost.addEventListener(MouseEvent.CLICK,this.UpgradedBrag);
+            _loc1_.bPost.Highlight = true;
+            POPUPS.Push(_loc1_,null,null,null,"build.v2.png");
+         }
+      }
+      
+      private function UpgradedBrag(param1:MouseEvent) : *
+      {
+         GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("upgrade_quaketower_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("upgrade_quaketower_streambody"),"quests/quake_tower.png"]);
+         POPUPS.Next();
+      }
+      
+      override public function Constructed() : *
+      {
+         var _loc1_:MovieClip = null;
+         super.Constructed();
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         {
+            _loc1_ = new popup_building();
+            _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{
+               "v1":KEYS.Get(_buildingProps.name),
+               "v2":_lvl.Get()
+            }) + "</b>";
+            _loc1_.tB.htmlText = KEYS.Get("pop_tbuild_body",{"v1":KEYS.Get(_buildingProps.name)});
+            _loc1_.bPost.SetupKey("btn_brag");
+            _loc1_.bPost.addEventListener(MouseEvent.CLICK,this.ConstructedBrag);
+            _loc1_.bPost.Highlight = true;
+            POPUPS.Push(_loc1_,null,null,null,"build.v2.png");
+         }
+      }
+      
+      private function ConstructedBrag(param1:MouseEvent) : *
+      {
+         GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("build_quaketower_streamtitle"),KEYS.Get("build_quaketower_streambody"),"quests/quake_tower.png"]);
+         POPUPS.Next();
       }
       
       override public function Setup(param1:Object) : *
       {
          param1.t = _type;
          super.Setup(param1);
+         _origin = new Point(_mc.x,_mc.y);
          _animRandomStart = false;
+      }
+      
+      override public function Export() : *
+      {
+         var _loc1_:Object = super.Export();
+         var _loc2_:Point = GRID.FromISO(_origin.x,_origin.y);
+         _loc1_.X = _loc2_.x;
+         _loc1_.Y = _loc2_.y;
+         return _loc1_;
       }
    }
 }

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol938")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol964")]
    public dynamic class bubblepopup6_CLIP extends MovieClip
    {
       public var mcArrow:MovieClip;

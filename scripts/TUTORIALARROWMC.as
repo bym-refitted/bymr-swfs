@@ -41,6 +41,8 @@ package
          {
             this.mouseEnabled = false;
             this.mouseChildren = false;
+            mcArrow.mouseEnabled = false;
+            mcArrow.mouseChildren = false;
          }
          this.addEventListener(Event.ENTER_FRAME,this.Wobble);
          this.ResizeParams = new Array();
@@ -87,6 +89,7 @@ package
                x = GLOBAL._SCREEN.x + posX * (GLOBAL._SCREEN.width / GLOBAL._SCREENINIT.width);
                y = GLOBAL._SCREEN.y + posY * (GLOBAL._SCREEN.height / GLOBAL._SCREENINIT.height);
             }
+            Rotate();
          };
       }
       
@@ -116,21 +119,36 @@ package
       
       public function Rotate() : *
       {
-         if(y < GLOBAL._ROOT.stage.stageHeight / 2)
+         if(this.ResizeParams && this.ResizeParams[3] && this.ResizeParams[3] is int)
          {
-            mcArrow.rotation = this.x / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 130;
+            mcArrow.rotation = this.ResizeParams[3];
+            if(mcArrow.rotation >= 0)
+            {
+               mcArrow.mcArrow.gotoAndStop(1);
+            }
+            else
+            {
+               mcArrow.mcArrow.gotoAndStop(2);
+            }
          }
          else
          {
-            mcArrow.rotation = (0 - this.x) / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 45;
-         }
-         if(x < GLOBAL._ROOT.stage.stageWidth / 2)
-         {
-            mcArrow.mcArrow.gotoAndStop(1);
-         }
-         else
-         {
-            mcArrow.mcArrow.gotoAndStop(2);
+            if(y < GLOBAL._ROOT.stage.stageHeight / 2)
+            {
+               mcArrow.rotation = this.x / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 130;
+            }
+            else
+            {
+               mcArrow.rotation = (0 - this.x) / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 45;
+            }
+            if(x < GLOBAL._ROOT.stage.stageWidth / 2)
+            {
+               mcArrow.mcArrow.gotoAndStop(1);
+            }
+            else
+            {
+               mcArrow.mcArrow.gotoAndStop(2);
+            }
          }
       }
       

@@ -37,6 +37,65 @@ package
          super.Description();
       }
       
+      override public function Destroyed(param1:Boolean = true) : *
+      {
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc2_:SecNum = new SecNum(0);
+         if(_monsterQueue.length > 0)
+         {
+            _loc5_ = int(_monsterQueue.length);
+            _loc6_ = 0;
+            while(_loc6_ < _loc5_)
+            {
+               _loc2_.Add(CREATURES.GetProperty(_monsterQueue[_loc6_][0],"cResource") * _monsterQueue[_loc6_][1]);
+               _loc6_++;
+            }
+            _monsterQueue = [];
+         }
+         BASE.Fund(4,Math.ceil(_loc2_.Get() * 0.75),false,this);
+         var _loc3_:int = 0;
+         if(_loc2_.Get() > 20000)
+         {
+            _loc3_ = 12;
+         }
+         else if(_loc2_.Get() > 10000)
+         {
+            _loc3_ = 9;
+         }
+         else if(_loc2_.Get() > 5000)
+         {
+            _loc3_ = 7;
+         }
+         else if(_loc2_.Get() > 1000)
+         {
+            _loc3_ = 5;
+         }
+         else if(_loc2_.Get() > 400)
+         {
+            _loc3_ = 4;
+         }
+         else if(_loc2_.Get() > 200)
+         {
+            _loc3_ = 3;
+         }
+         else if(_loc2_.Get() > 100)
+         {
+            _loc3_ = 2;
+         }
+         else if(_loc2_.Get() > 0)
+         {
+            _loc3_ = 1;
+         }
+         var _loc4_:int = 0;
+         while(_loc4_ < _loc3_)
+         {
+            ResourcePackages.Spawn(this,GLOBAL._bTownhall,BASE.isInferno() ? 8 : 4,_loc4_);
+            _loc4_++;
+         }
+         super.Destroyed(param1);
+      }
+      
       public function ResetProduction() : *
       {
          if(_inProduction == "")
@@ -55,14 +114,13 @@ package
       {
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
          var _loc4_:BFOUNDATION = null;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:String = null;
-         super.Tick();
-         var _loc1_:Boolean = true;
+         super.Tick(param1);
          var _loc2_:int = HOUSING._housingSpace.Get();
          var _loc3_:int = 0;
          this._finishQueue = {};
@@ -76,7 +134,6 @@ package
                {
                   if(_loc4_._inProduction != "" && _loc2_ >= CREATURES.GetProperty(_loc4_._inProduction,"cStorage"))
                   {
-                     _loc1_ = false;
                      _loc2_ -= CREATURES.GetProperty(_loc4_._inProduction,"cStorage");
                      if(this._finishQueue[_loc4_._inProduction])
                      {
@@ -90,10 +147,6 @@ package
                   }
                   else if(_monsterQueue.length > 0)
                   {
-                     if(BASE._buildingsCatchup["b" + _loc4_._id])
-                     {
-                        _loc1_ = false;
-                     }
                      if(_loc4_._canFunction && _loc4_._inProduction == "")
                      {
                         _loc4_._inProduction = _monsterQueue[0][0];
@@ -103,7 +156,7 @@ package
                            _monsterQueue.splice(0,1);
                         }
                         _loc4_._productionStage.Set(3);
-                        _loc4_.Tick();
+                        _loc4_.Tick(1);
                         HATCHERYCC.Tick();
                         if(_monsterQueue.length == 0)
                         {
@@ -267,7 +320,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -303,7 +356,6 @@ package
          {
             GLOBAL._bHatcheryCC = this;
          }
-         CatchupAdd();
       }
       
       override public function Export() : *

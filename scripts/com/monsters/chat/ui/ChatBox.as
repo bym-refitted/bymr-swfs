@@ -1,5 +1,6 @@
 package com.monsters.chat.ui
 {
+   import com.monsters.chat.Chat;
    import com.monsters.display.ScrollSet;
    import flash.display.*;
    import flash.events.*;
@@ -213,7 +214,7 @@ package com.monsters.chat.ui
       
       private function handleSendClick(param1:MouseEvent) : void
       {
-         GLOBAL._bymChat.SendMessage();
+         Chat._bymChat.SendMessage();
          this.forceFocus();
       }
       
@@ -272,7 +273,7 @@ package com.monsters.chat.ui
             this._enabled = true;
             this._maximized = false;
          }
-         if(!GLOBAL._bymChat.initialized)
+         if(!Chat._bymChat.initialized)
          {
             this.OnChatDisableClick();
          }
@@ -324,7 +325,7 @@ package com.monsters.chat.ui
          }
          if(param1 == null)
          {
-            if(GLOBAL._bymChat._open)
+            if(Chat._bymChat._open)
             {
                _loc4_ = this._openProps;
             }
@@ -338,7 +339,7 @@ package com.monsters.chat.ui
             this.background.arrowUp.buttonMode = true;
             this.background.arrowDown.buttonMode = false;
          }
-         else if(this._maximized && GLOBAL._bymChat._open)
+         else if(this._maximized && Chat._bymChat._open)
          {
             if(_loc2_)
             {
@@ -351,12 +352,12 @@ package com.monsters.chat.ui
             this.background.arrowUp.buttonMode = true;
             this.background.arrowDown.buttonMode = true;
          }
-         else if(GLOBAL._bymChat._open)
+         else if(Chat._bymChat._open)
          {
             this.ClearAlert();
             if(!_loc2_)
             {
-               GLOBAL._bymChat._open = false;
+               Chat._bymChat._open = false;
                _loc4_ = this._closeProps;
                this._maximized = false;
                this.background.arrowUp.gotoAndStop("on" + this._skinTag);
@@ -376,13 +377,13 @@ package com.monsters.chat.ui
                GLOBAL.StatSet("chatmin",0);
             }
          }
-         else if(!GLOBAL._bymChat._open)
+         else if(!Chat._bymChat._open)
          {
             if(!_loc2_)
             {
                return;
             }
-            GLOBAL._bymChat._open = true;
+            Chat._bymChat._open = true;
             _loc4_ = this._openProps;
             this._maximized = false;
             this.background.arrowUp.gotoAndStop("on" + this._skinTag);
@@ -403,7 +404,7 @@ package com.monsters.chat.ui
          TweenLite.to(this.background.mcScreen,0.5,{"height":_loc4_.screenHeight});
          TweenLite.to(this.background.mcMask,0.5,{"height":_loc4_.maskHeight});
          TweenLite.to(this._scrollbar,0.5,{"y":_loc4_.scrollerY});
-         if(GLOBAL._bymChat._open)
+         if(Chat._bymChat._open)
          {
             TweenLite.to(this.inputbar,0.5,{
                "y":_loc4_.inputY,
@@ -425,7 +426,7 @@ package com.monsters.chat.ui
          }
          this._animating = true;
          var _loc6_:int = _loc4_ == this._closeProps ? 0 : 1;
-         if(TUTORIAL._completed)
+         if(TUTORIAL.hasFinished)
          {
             if(this._maximized)
             {
@@ -454,14 +455,14 @@ package com.monsters.chat.ui
          var _loc1_:Object = this._maximized ? this._maxProps : this._openProps;
          this._scrollbar.Update();
          this._scrollbar.visible = this._shell.height > this.background.mcMask.height;
-         if(!GLOBAL._bymChat._open)
+         if(!Chat._bymChat._open)
          {
-            GLOBAL._bymChat.toggleMinimizedStat(true);
+            Chat._bymChat.toggleMinimizedStat(true);
             this._scrollbar.visible = false;
          }
          else if(GLOBAL.StatGet("chatmin") != 0)
          {
-            GLOBAL._bymChat.toggleMinimizedStat(false);
+            Chat._bymChat.toggleMinimizedStat(false);
          }
          this._scrollbar.ScrollTo(1,0);
          this.update();
@@ -522,7 +523,7 @@ package com.monsters.chat.ui
             _loc1_ += this._chatHistory[_loc4_].height;
             _loc4_++;
          }
-         if(!this._scrollbar.visible && GLOBAL._bymChat._open)
+         if(!this._scrollbar.visible && Chat._bymChat._open)
          {
             this._scrollbar.visible = this._shell.height > this.background.mcMask.height;
          }
@@ -542,7 +543,7 @@ package com.monsters.chat.ui
             this.background.alert.visible = false;
             return;
          }
-         if(!GLOBAL._bymChat._open)
+         if(!Chat._bymChat._open)
          {
             this._alertsCounter += param1;
             _loc2_ = this._alertsCounter < 100 ? String(this._alertsCounter) : "99+";
@@ -550,14 +551,14 @@ package com.monsters.chat.ui
             this.background.alert.alert_txt.x = 2;
             this.background.alert.bg.width = this.background.alert.alert_txt.width + 6;
          }
-         if(this._alertsCounter > 0 && !GLOBAL._bymChat._open && this._useAlerts)
+         if(this._alertsCounter > 0 && !Chat._bymChat._open && this._useAlerts)
          {
             TweenLite.to(this.background.alert,0.5,{
                "autoAlpha":1,
                "ease":Circ.easeIn
             });
          }
-         else if(GLOBAL._bymChat._open && this.background.alert.alpha != 0)
+         else if(Chat._bymChat._open && this.background.alert.alpha != 0)
          {
             TweenLite.to(this.background.alert,0.5,{
                "autoAlpha":0,
@@ -568,7 +569,7 @@ package com.monsters.chat.ui
       
       public function ClearAlert() : void
       {
-         if(GLOBAL._bymChat._open)
+         if(Chat._bymChat._open)
          {
             this._alertsCounter = 0;
             this.UpdateAlert();
@@ -655,15 +656,15 @@ package com.monsters.chat.ui
          super.update();
          this.ResizeWindow();
          this.ResizeMessages();
-         if(!TUTORIAL._completed)
+         if(!TUTORIAL.hasFinished)
          {
-            this.background.arrowUp.visible = TUTORIAL._completed;
-            this.background.mcToggle.visible = TUTORIAL._completed;
+            this.background.arrowUp.visible = TUTORIAL.hasFinished;
+            this.background.mcToggle.visible = TUTORIAL.hasFinished;
          }
          else if(GLOBAL._mode == "build")
          {
-            this.background.arrowUp.visible = TUTORIAL._completed;
-            this.background.mcToggle.visible = TUTORIAL._completed;
+            this.background.arrowUp.visible = TUTORIAL.hasFinished;
+            this.background.mcToggle.visible = TUTORIAL.hasFinished;
          }
          this.Skin();
          this.UpdateChatStatus();
@@ -672,7 +673,7 @@ package com.monsters.chat.ui
       public function UpdateChatStatus() : void
       {
          this.background.mcToggle.gotoAndStop(this._enabled ? "close" + this._skinTag : "on" + this._skinTag);
-         if(GLOBAL._bymChat.isLoggingOut)
+         if(Chat._bymChat.isLoggingOut)
          {
             this.background.mcToggle.gotoAndStop("wait" + this._skinTag);
          }
@@ -714,13 +715,13 @@ package com.monsters.chat.ui
                _loc2_ = param1.currentTarget as ChatBox_msg_CLIP;
                if(_loc2_.msgData.msgtype == "IgnoreList")
                {
-                  if(GLOBAL._bymChat.userIsIgnored(_loc2_.msgData.userid))
+                  if(Chat._bymChat.userIsIgnored(_loc2_.msgData.userid))
                   {
                      _loc2_.ignoreBtn.gotoAndStop(2);
                      _loc2_.ignoreBtn.visible = true;
                   }
                }
-               else if(!GLOBAL._bymChat.userIsIgnored(_loc2_.msgData.userid))
+               else if(!Chat._bymChat.userIsIgnored(_loc2_.msgData.userid))
                {
                   _loc2_.ignoreBtn.gotoAndStop(1);
                   _loc2_.ignoreBtn.visible = true;
@@ -741,11 +742,11 @@ package com.monsters.chat.ui
          {
             if(param1.currentTarget.parent.msgData.msgtype == "IgnoreList")
             {
-               GLOBAL._bymChat.unignoreUser(param1.currentTarget.parent.msgData.userid);
+               Chat._bymChat.unignoreUser(param1.currentTarget.parent.msgData.userid);
             }
             else
             {
-               GLOBAL._bymChat.ignoreUser(param1.currentTarget.parent.msgData.userid,param1.currentTarget.parent.msgData.username);
+               Chat._bymChat.ignoreUser(param1.currentTarget.parent.msgData.userid,param1.currentTarget.parent.msgData.username);
             }
          }
       }
@@ -780,23 +781,23 @@ package com.monsters.chat.ui
          {
             return;
          }
-         if(param1 && param1.currentTarget == this.background.mcToggle && TUTORIAL._completed)
+         if(param1 && param1.currentTarget == this.background.mcToggle && TUTORIAL.hasFinished)
          {
             this._enabled = !this._enabled;
          }
-         if(TUTORIAL._completed && !GLOBAL._bymChat.isLoggingOut)
+         if(TUTORIAL.hasFinished && !Chat._bymChat.isLoggingOut)
          {
             this.EnableInput(this._enabled);
-            if(!this._enabled && GLOBAL._bymChat.IsJoined)
+            if(!this._enabled && Chat._bymChat.IsJoined)
             {
-               GLOBAL._bymChat.disableChat();
+               Chat._bymChat.disableChat();
                LOGGER.Stat([68,"hide"]);
             }
-            else if(GLOBAL.flagsShouldChatExist())
+            else if(Chat.flagsShouldChatExist())
             {
-               if(!GLOBAL._bymChat.IsConnected)
+               if(!Chat._bymChat.IsConnected)
                {
-                  GLOBAL.connectAndLogin();
+                  Chat.connectAndLogin();
                   LOGGER.Stat([68,"unhide"]);
                }
             }

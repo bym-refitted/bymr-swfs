@@ -33,15 +33,7 @@ package
          ImageCache.GetImageWithCallBack(SPECIALEVENT.BANNERIMAGE,bannerComplete);
          ImageCache.GetImageWithCallBack("specialevent/wmi2_4-v2.png",imageComplete);
          mcFrame.Setup(true);
-         if(SPECIALEVENT.wave == 1)
-         {
-            closeBtn.Setup(KEYS.Get("wmi_buttonpopup2"),false,0,0);
-            closeBtn.addEventListener(MouseEvent.CLICK,this.CloseButtonClicked);
-         }
-         else
-         {
-            closeBtn.visible = false;
-         }
+         closeBtn.visible = false;
          mcText.htmlText = KEYS.Get("wmi2_popup4");
          _open = true;
       }

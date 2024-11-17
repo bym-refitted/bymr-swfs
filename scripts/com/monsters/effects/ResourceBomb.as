@@ -49,9 +49,17 @@ package com.monsters.effects
       
       public function ResourceBomb(param1:MovieClip, param2:Point, param3:Object, param4:int)
       {
-         var _loc5_:BFOUNDATION = null;
-         var _loc6_:* = undefined;
-         var _loc7_:Object = null;
+         var _loc5_:* = undefined;
+         var _loc6_:BFOUNDATION = null;
+         var _loc7_:Point = null;
+         var _loc8_:* = undefined;
+         var _loc9_:* = undefined;
+         var _loc10_:* = undefined;
+         var _loc11_:* = undefined;
+         var _loc12_:* = undefined;
+         var _loc13_:* = undefined;
+         var _loc14_:* = undefined;
+         var _loc15_:Object = null;
          this.particles = {};
          this.targets = [];
          super();
@@ -64,51 +72,57 @@ package com.monsters.effects
          this.positionFromISO = PATHING.FromISO(this.position);
          if(this.resourceid != 3)
          {
-            for each(_loc5_ in BASE._buildingsAll)
+            for(_loc5_ in BASE._buildingsAll)
             {
-               if(_loc5_._hp.Get() > 0 && _loc5_._class != "enemy" && _loc5_._class != "trap" && _loc5_._class != "decoration" && _loc5_._class != "immovable")
+               _loc6_ = BASE._buildingsAll[_loc5_];
+               _loc7_ = new Point(_loc6_._mc.x,_loc6_._mc.y + _loc6_._middle);
+               if(!(_loc6_._class == "trap" || _loc6_._hp.Get() <= 0 || _loc6_._class == "decoration" || _loc6_._class == "enemy" || _loc6_._class == "immovable"))
                {
-                  this.tempPoint = PATHING.FromISO(new Point(_loc5_._mc.x,_loc5_._mc.y));
-                  this.tempPoint.add(new Point(_loc5_._footprint[0].width * 0.5,_loc5_._footprint[0].height * 0.5));
-                  this.dist = Point.distance(this.positionFromISO,this.tempPoint);
-                  if(this.dist < this.size * 0.45)
+                  _loc8_ = Math.atan2(this.position.y - _loc7_.y,this.position.x - _loc7_.x);
+                  _loc9_ = BASE.EllipseEdgeDistance(_loc8_,this.size,this.size * BASE._angle);
+                  _loc8_ = Math.atan2(_loc7_.y - this.position.y,_loc7_.x - this.position.x);
+                  _loc10_ = BASE.EllipseEdgeDistance(_loc8_,_loc6_._size * 0.5,_loc6_._size * 0.5 * BASE._angle);
+                  _loc11_ = this.position.x - _loc7_.x;
+                  _loc12_ = this.position.y - _loc7_.y;
+                  _loc13_ = int(Math.sqrt(_loc11_ * _loc11_ + _loc12_ * _loc12_));
+                  if(_loc13_ < _loc9_ + _loc10_)
                   {
-                     this.targets.push([_loc5_,1 - 1 / (this.size * 0.5) * this.dist,this.tempPoint,_loc5_._footprint[0].width * 0.5]);
+                     this.targets.push([_loc6_,1 - 1 / (this.size * 0.5) * _loc13_,this.tempPoint,_loc6_._footprint[0].width * 0.5]);
                   }
                }
             }
          }
          else
          {
-            for each(_loc6_ in CREEPS._creeps)
+            for each(_loc14_ in CREEPS._creeps)
             {
-               this.tempPoint = PATHING.FromISO(new Point(_loc6_.x,_loc6_.y));
-               if(_loc6_._creatureID.substr(0,1) == "G")
+               this.tempPoint = PATHING.FromISO(new Point(_loc14_.x,_loc14_.y));
+               if(_loc14_._creatureID.substr(0,1) == "G")
                {
-                  _loc7_ = SPRITES._sprites[_loc6_._spriteID];
+                  _loc15_ = SPRITES._sprites[_loc14_._spriteID];
                }
                else
                {
-                  _loc7_ = SPRITES._sprites[_loc6_._creatureID];
+                  _loc15_ = SPRITES._sprites[_loc14_._creatureID];
                }
-               this.tempPoint.add(_loc7_.middle);
-               this.dist = Point.distance(this.positionFromISO,this.tempPoint);
-               if(this.dist < this.size * 0.5)
+               this.tempPoint.add(_loc15_.middle);
+               _loc13_ = Point.distance(this.positionFromISO,this.tempPoint);
+               if(_loc13_ < this.size * 0.5)
                {
-                  this.targets.push([_loc6_]);
+                  this.targets.push([_loc14_]);
                }
             }
          }
          this.mctop = MAP._BUILDINGTOPS.addChild(new MovieClip());
          this.mcbottom = MAP._BUILDINGBASES.addChild(new MovieClip());
-         this.i = 0;
-         while(this.i < this.bomb.particles)
+         _loc5_ = 0;
+         while(_loc5_ < this.bomb.particles)
          {
-            this.angle = Math.random() * 360 * 0.0174532925;
+            _loc8_ = Math.random() * 360 * 0.0174532925;
             this.distance = Math.random() * this.size / 2;
-            this.particles[this.i] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(this.angle) * this.distance,this.position.y + Math.cos(this.angle) * this.distance * 0.5),this,this.i.toString(),param4,this.resourceid);
+            this.particles[_loc5_] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(_loc8_) * this.distance,this.position.y + Math.cos(_loc8_) * this.distance * 0.5),this,_loc5_.toString(),param4,this.resourceid);
             ++this.particleCount;
-            ++this.i;
+            _loc5_++;
          }
          this.dpp = param3.damage / this.particleCount;
       }
@@ -148,6 +162,10 @@ package com.monsters.effects
                if(_loc6_._class == "tower")
                {
                   _loc4_ *= 0.9;
+                  if(_loc6_._type != 22 && _loc6_._type != 128 && (_loc6_ as BTOWER).isJard)
+                  {
+                     _loc4_ = 0;
+                  }
                }
                if(_loc6_._type == 114)
                {

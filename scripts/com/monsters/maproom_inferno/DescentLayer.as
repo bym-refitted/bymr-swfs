@@ -43,7 +43,7 @@ package com.monsters.maproom_inferno
       
       public var player:PlayerBase;
       
-      public var _wmbToDisplay:int = 13;
+      public var _wmbToDisplay:int = 20;
       
       private var wmBasesUsed:* = 0;
       
@@ -61,58 +61,36 @@ package com.monsters.maproom_inferno
             "y":10
          },
          "1":{
-            "x":350,
-            "y":260
-         },
-         "2":{
             "x":550,
             "y":340
          },
-         "3":{
-            "x":350,
-            "y":7 * 60
-         },
-         "4":{
+         "2":{
             "x":135,
             "y":440
          },
-         "5":{
-            "x":270,
-            "y":620
-         },
-         "6":{
+         "3":{
             "x":550,
             "y":560
          },
-         "7":{
-            "x":450,
-            "y":775
-         },
-         "8":{
+         "4":{
             "x":150,
             "y":885
          },
-         "9":{
+         "5":{
             "x":9 * 60,
             "y":1010
          },
-         "10":{
-            "x":330,
-            "y":1170
-         },
-         "11":{
+         "6":{
             "x":155,
             "y":1390
          },
-         "12":{
-            "x":9 * 60,
-            "y":1360
-         },
-         "13":{
+         "7":{
             "x":350,
             "y":1765
          }
       };
+      
+      private var descentBaseIDs:Array = [201,202,203,204,205,206,207];
       
       public var faked:Boolean = false;
       
@@ -289,7 +267,9 @@ package com.monsters.maproom_inferno
          var _loc7_:* = 0;
          var _loc8_:DescentMonsterBase = null;
          var _loc9_:DescentMonsterBase = null;
-         var _loc10_:ForeignBase = null;
+         var _loc10_:Boolean = false;
+         var _loc11_:int = 0;
+         var _loc12_:ForeignBase = null;
          var _loc3_:Boolean = false;
          if(this.basesForeign == null)
          {
@@ -333,7 +313,7 @@ package com.monsters.maproom_inferno
                      _loc9_.addEventListener("over",this.onBaseStateChange);
                      _loc9_.addEventListener("off",this.onBaseStateChange);
                      _loc9_.addEventListener("down",this.onBaseStateChange);
-                     if(this.setMapLinear(_loc9_,_loc2_.level))
+                     if(this.setMapLinear(_loc9_,_loc2_.baseid,_loc2_.level))
                      {
                         this.baseData.push(_loc5_);
                         addChild(_loc9_);
@@ -344,7 +324,7 @@ package com.monsters.maproom_inferno
                         {
                            ++this.targetLvl;
                         }
-                        else if(this.targetLvl + 1 == _loc9_.data.level.Get())
+                        else if(this.targetLvl + 1 == _loc9_.data.level.Get() && _loc9_.data.baseid.Get() > 200)
                         {
                            this.targetBase = _loc9_;
                            this.PositionShroud(this.targetBase);
@@ -359,6 +339,35 @@ package com.monsters.maproom_inferno
                if(_loc8_ == this.targetBase)
                {
                   _loc8_.InitTargetListener();
+               }
+               if(_loc8_.data.level.Get() < this.targetBase.data.level.Get())
+               {
+                  _loc8_.visible = false;
+               }
+               _loc10_ = false;
+               _loc11_ = 0;
+               while(_loc11_ < this.descentBaseIDs.length)
+               {
+                  if(_loc8_.data.baseid.Get() == this.descentBaseIDs[_loc11_])
+                  {
+                     _loc10_ = true;
+                     if(_loc8_.data.level.Get() < this.targetBase.data.level.Get())
+                     {
+                        _loc10_ = false;
+                     }
+                  }
+                  _loc11_++;
+               }
+               if(!_loc10_)
+               {
+                  _loc8_.visible = false;
+                  if(_loc8_.parent)
+                  {
+                     _loc8_.removeEventListener("over",this.onBaseStateChange);
+                     _loc8_.removeEventListener("off",this.onBaseStateChange);
+                     _loc8_.removeEventListener("down",this.onBaseStateChange);
+                     _loc8_.parent.removeChild(_loc8_);
+                  }
                }
             }
          }
@@ -392,19 +401,19 @@ package com.monsters.maproom_inferno
                   if(!_loc3_)
                   {
                      _loc5_ = new BaseObject(_loc2_);
-                     _loc10_ = new ForeignBase();
-                     _loc10_.Setup(_loc5_);
-                     _loc10_.useHandCursor = true;
-                     _loc10_.buttonMode = true;
-                     _loc10_.addEventListener("over",this.onBaseStateChange);
-                     _loc10_.addEventListener("off",this.onBaseStateChange);
-                     _loc10_.addEventListener("down",this.onBaseStateChange);
+                     _loc12_ = new ForeignBase();
+                     _loc12_.Setup(_loc5_);
+                     _loc12_.useHandCursor = true;
+                     _loc12_.buttonMode = true;
+                     _loc12_.addEventListener("over",this.onBaseStateChange);
+                     _loc12_.addEventListener("off",this.onBaseStateChange);
+                     _loc12_.addEventListener("down",this.onBaseStateChange);
                      this.baseData.push(_loc5_);
-                     if(this.setMapCoords(_loc10_))
+                     if(this.setMapCoords(_loc12_))
                      {
-                        addChild(_loc10_);
-                        this.basesForeign.push(_loc10_);
-                        this.basesAll.push(_loc10_);
+                        addChild(_loc12_);
+                        this.basesForeign.push(_loc12_);
+                        this.basesAll.push(_loc12_);
                      }
                   }
                   _loc7_ += 1;
@@ -421,7 +430,7 @@ package com.monsters.maproom_inferno
          var _loc3_:Boolean = false;
          for each(_loc2_ in this.basesWM)
          {
-            if(int(_loc2_.data.baseid.Get()) == param1.data.baseid.Get())
+            if(int(_loc2_.data.baseid.Get()) == param1.data.baseid.Get() && Boolean(int(_loc2_.data.baseid.Get() > 200)))
             {
                _loc3_ = true;
             }
@@ -453,22 +462,26 @@ package com.monsters.maproom_inferno
          setChildIndex(param1.target,this.numChildren - 1);
       }
       
-      public function setMapLinear(param1:*, param2:String) : Boolean
+      public function setMapLinear(param1:*, param2:Number, param3:String) : Boolean
       {
-         var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:Number = NaN;
-         if(Number(param2) > 13)
+         var _loc6_:int = 0;
+         var _loc7_:Number = NaN;
+         if(Number(param3) > MAPROOM_DESCENT._descentLvlMax)
          {
             return false;
          }
-         _loc4_ = int(this.descentBaseProps[param2].x);
-         _loc5_ = int(this.descentBaseProps[param2].y);
-         param1.mapX = _loc4_;
-         param1.mapY = _loc5_;
-         _loc6_ = 0;
-         param1.x = _loc4_;
-         param1.y = _loc5_;
+         if(!this.descentBaseProps.hasOwnProperty(param3))
+         {
+            return false;
+         }
+         _loc5_ = int(this.descentBaseProps[param3].x);
+         _loc6_ = int(this.descentBaseProps[param3].y);
+         param1.mapX = _loc5_;
+         param1.mapY = _loc6_;
+         _loc7_ = 0;
+         param1.x = _loc5_;
+         param1.y = _loc6_;
          return true;
       }
       

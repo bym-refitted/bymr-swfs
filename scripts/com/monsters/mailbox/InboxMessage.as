@@ -113,6 +113,7 @@ package com.monsters.mailbox
          }
          this.sendtime = this.data.sendtime;
          this.subject = this.data.subject;
+         userid_txt.htmlText = KEYS.Get("label_userid",{"v1":this.data.userid});
          replies_txt.htmlText = KEYS.Get("mail_numreplies",{"v1":this.data.messagecount - 1});
       }
       

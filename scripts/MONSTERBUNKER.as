@@ -21,6 +21,8 @@ package
       
       public static var _creatures:Object;
       
+      public static const TYPE:uint = 22;
+      
       public function MONSTERBUNKER()
       {
          super();
@@ -60,7 +62,7 @@ package
       
       public static function BunkerStore(param1:String, param2:*, param3:Boolean = false) : *
       {
-         var _loc6_:CREEP = null;
+         var _loc6_:* = undefined;
          var _loc7_:Array = null;
          var _loc8_:BFOUNDATION = null;
          var _loc9_:* = undefined;
@@ -181,7 +183,6 @@ package
       {
          if(_open)
          {
-            _mc.Update();
          }
       }
       

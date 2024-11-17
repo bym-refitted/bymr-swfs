@@ -1,8 +1,10 @@
 package
 {
-   import com.adobe.crypto.MD5;
-   import com.adobe.serialization.json.JSON;
    import com.monsters.missions.*;
+   import com.monsters.siege.SiegeWeapons;
+   import com.monsters.siege.weapons.Decoy;
+   import com.monsters.siege.weapons.Jars;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.events.MouseEvent;
    import flash.text.TextFieldAutoSize;
    
@@ -27,6 +29,17 @@ package
       public function QUESTS()
       {
          super();
+      }
+      
+      public static function get amountCompleted() : int
+      {
+         var _loc1_:Number = 0;
+         var _loc2_:int = 0;
+         for each(_loc2_ in _completed)
+         {
+            _loc1_++;
+         }
+         return _loc1_;
       }
       
       public static function Setup() : *
@@ -64,7 +77,9 @@ package
             "b51lvl":0,
             "b128lvl":0,
             "b113lvl":0,
+            "b129lvl":0,
             "b130lvl":0,
+            "b132lvl":0,
             "kills":0,
             "bonus_bookmark":0,
             "bonus_fan":0,
@@ -90,7 +105,13 @@ package
             "gift_accept":0,
             "email_build":0,
             "email_att":0,
-            "email_news":0
+            "email_news":0,
+            "siege_decoy_built":0,
+            "siege_vacuum_built":0,
+            "siege_jars_built":0,
+            "siege_decoy_level":0,
+            "siege_vacuum_level":0,
+            "siege_jars_level":0
          };
          _questGroups = [{
             "id":0,
@@ -1077,11 +1098,11 @@ package
                "name":"q_invite1_name",
                "description":"q_invite1_description",
                "hint":"q_invite1_hint",
-               "questimage":"friendlymonster.v2.png",
+               "questimage":"friendlymonster.png",
                "questicon":"icon_shiny.png",
                "streamTitle":"q_invite1_streamtitle",
                "streamDescription":"q_invite1_streamdescription",
-               "streamImage":"quests/friendlymonster.r3.png",
+               "streamImage":"quests/friendlymonster.png",
                "rules":{"bonus_invites":1}
             });
             _quests.push({
@@ -1368,6 +1389,204 @@ package
             "prereq":"UC11",
             "rules":{"UNLOCK":"C13"}
          });
+         _quests.push({
+            "order":59,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW4",
+            "group":2,
+            "name":"q_unlockweapon_name",
+            "description":"q_unlockweapon_desc",
+            "keyvars":{"v1":SiegeWeapons.getWeapon(Decoy.ID).name},
+            "hint":"q_unlockweapon_hint",
+            "questimage":"siegeweapon_decoy.jpg",
+            "questicon":"icon_siegeweapon_decoy.v2.png",
+            "streamImage":"siegebuild_decoy.png",
+            "streamTitle":"q_unlockdecoy_streamtitle",
+            "streamDescription":"q_unlockdecoy_streambody",
+            "prereq":"C16",
+            "siegeweapon_reward":"decoy",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_decoy_level":1}
+         });
+         _quests.push({
+            "order":60,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW5",
+            "group":2,
+            "name":"q_unlockweapon_name",
+            "description":"q_unlockweapon_desc",
+            "keyvars":{"v1":SiegeWeapons.getWeapon(Vacuum.ID).name},
+            "hint":"q_unlockweapon_hint",
+            "questimage":"siegeweapon_vacuum.jpg",
+            "questicon":"icon_siegeweapon_vacuum.v2.png",
+            "streamImage":"siegebuild_vacuum.png",
+            "streamTitle":"q_unlockvacuum_streamtitle",
+            "streamDescription":"q_unlockvacuum_streambody",
+            "prereq":"C16",
+            "siegeweapon_reward":"vacuum",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_vacuum_level":1}
+         });
+         _quests.push({
+            "order":61,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW6",
+            "group":2,
+            "name":"q_unlockweapon_name",
+            "description":"q_unlockweapon_desc",
+            "keyvars":{"v1":SiegeWeapons.getWeapon(Jars.ID).name},
+            "hint":"q_unlockweapon_hint",
+            "questimage":"siegeweapon_jars.jpg",
+            "questicon":"icon_siegeweapon_jars.v2.png",
+            "streamImage":"siegebuild_jars.png",
+            "streamTitle":"q_unlockjars_streamtitle",
+            "streamDescription":"q_unlockjars_streambody",
+            "prereq":"C16",
+            "siegeweapon_reward":"jars",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_jars_level":1}
+         });
+         _quests.push({
+            "order":62,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW7",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Decoy.ID).name,
+               "v2":5
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_decoy.jpg",
+            "questicon":"icon_siegeweapon_decoy.v2.png",
+            "streamImage":"siegebuild_decoy.png",
+            "streamTitle":"q_upgradedecoy_streamtitle_5",
+            "streamDescription":"q_upgradedecoy_streambody",
+            "prereq":"SW4",
+            "siegeweapon_reward":"decoy",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_decoy_level":5}
+         });
+         _quests.push({
+            "order":63,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW8",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Vacuum.ID).name,
+               "v2":5
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_vacuum.jpg",
+            "questicon":"icon_siegeweapon_vacuum.v2.png",
+            "streamImage":"siegebuild_vacuum.png",
+            "streamTitle":"q_upgradevacuum_streamtitle_5",
+            "streamDescription":"q_upgradevacuum_streambody",
+            "prereq":"SW5",
+            "siegeweapon_reward":"vacuum",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_vacuum_level":5}
+         });
+         _quests.push({
+            "order":64,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW9",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Jars.ID).name,
+               "v2":5
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_jars.jpg",
+            "questicon":"icon_siegeweapon_jars.v2.png",
+            "streamImage":"siegebuild_jars.png",
+            "streamTitle":"q_upgradejars_streamtitle_5",
+            "streamDescription":"q_upgradejars_streambody",
+            "prereq":"SW6",
+            "siegeweapon_reward":"jars",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_jars_level":5}
+         });
+         _quests.push({
+            "order":65,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW10",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Decoy.ID).name,
+               "v2":10
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_decoy.jpg",
+            "questicon":"icon_siegeweapon_decoy.v2.png",
+            "streamImage":"siegebuild_decoy.png",
+            "streamTitle":"q_upgradedecoy_streamtitle_10",
+            "streamDescription":"q_upgradedecoy_streambody",
+            "prereq":"SW7",
+            "siegeweapon_reward":"decoy",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_decoy_level":10}
+         });
+         _quests.push({
+            "order":66,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW11",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Vacuum.ID).name,
+               "v2":10
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_vacuum.jpg",
+            "questicon":"icon_siegeweapon_vacuum.v2.png",
+            "streamImage":"siegebuild_vacuum.png",
+            "streamTitle":"q_upgradevacuum_streamtitle_10",
+            "streamDescription":"q_upgradevacuum_streambody",
+            "prereq":"SW8",
+            "siegeweapon_reward":"vacuum",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_vacuum_level":10}
+         });
+         _quests.push({
+            "order":67,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"SW12",
+            "group":2,
+            "name":"q_upgradeweapon_name",
+            "description":"q_upgradeweapon_desc",
+            "keyvars":{
+               "v1":SiegeWeapons.getWeapon(Jars.ID).name,
+               "v2":10
+            },
+            "hint":"q_upgradeweapon_hint",
+            "questimage":"siegeweapon_jars.jpg",
+            "questicon":"icon_siegeweapon_jars.v2.png",
+            "streamImage":"siegebuild_jars.png",
+            "streamTitle":"q_upgradejars_streamtitle_10",
+            "streamDescription":"q_upgradejars_streambody",
+            "prereq":"SW9",
+            "siegeweapon_reward":"jars",
+            "siegeweapon_rewardcount":1,
+            "rules":{"siege_jars_level":10}
+         });
       }
       
       public static function setupInfernoQuests() : void
@@ -1377,6 +1596,10 @@ package
       
       public static function Data(param1:Object) : *
       {
+         if(param1 == null)
+         {
+            return;
+         }
          _completed = param1;
          if(_completed.UC100)
          {
@@ -1456,6 +1679,10 @@ package
                         if(!fail)
                         {
                            _completed[q.id] = 1;
+                           if(BASE.isInferno())
+                           {
+                              ACHIEVEMENTS.Check(ACHIEVEMENTS.INFERNO_QUESTS_COMPLETED,amountCompleted);
+                           }
                         }
                      }
                   }
@@ -1543,6 +1770,7 @@ package
          var r:int = 0;
          var storage:int = 0;
          var quantity:int = 0;
+         var hasRoom:Boolean = false;
          var z:int = 0;
          var popupMC:* = undefined;
          var h:int = 0;
@@ -1586,11 +1814,20 @@ package
                {
                   if(HOUSING._housingSpace.Get() < storage)
                   {
-                     GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_questi_housing" : "msg_quest_housing"),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                     GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_questi_housing" : "msg_quest_housing"),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
                      return false;
                   }
                   quantity = HOUSING._housingSpace.Get() / storage;
-                  GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "inf_msg_housinglimited" : "msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                  GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "inf_msg_housinglimited" : "msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
+                  return false;
+               }
+            }
+            if(q.siegeweapon_reward)
+            {
+               hasRoom = Boolean(GLOBAL._bSiegeFactory) && !GLOBAL._bSiegeFactory.upgradingWeapon && !GLOBAL._bSiegeFactory.hasBuiltWeapon;
+               if(!hasRoom)
+               {
+                  GLOBAL.Message(KEYS.Get("msg_quest_noroomsiegeweapon",{"v1":SiegeWeapons.getWeapon(q.siegeweapon_reward).name}));
                   return false;
                }
             }
@@ -1636,6 +1873,10 @@ package
                   z++;
                }
             }
+            if(Boolean(q.siegeweapon_reward) && Boolean(q.siegeweapon_rewardcount))
+            {
+               GLOBAL._bSiegeFactory.CompleteUpgradingWeapon(q.siegeweapon_reward,false);
+            }
             _completed[questID] = 2;
             BASE.PointsAdd(Math.ceil(value / 50));
             if(questID == "C0")
@@ -1676,6 +1917,10 @@ package
                   {
                      _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
                   }
+                  if(q.siegeweapon_reward)
+                  {
+                     _loc1_.push([q.siegeweapon_rewardcount,SiegeWeapons.getWeapon(q.siegeweapon_reward).name]);
+                  }
                   var _loc2_:String = GLOBAL.Array2String(_loc1_);
                   var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
                   var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
@@ -1703,7 +1948,7 @@ package
          return true;
       }
       
-      public static function CollectMonsters(param1:String) : void
+      public static function CollectSpecial(param1:String) : void
       {
          var Brag:Function;
          var questGroup:int = 0;
@@ -1762,6 +2007,10 @@ package
                   z++;
                }
             }
+            if(Boolean(q.siegeweapon_reward) && Boolean(q.siegeweapon_rewardcount))
+            {
+               GLOBAL._bSiegeFactory.CompleteUpgradingWeapon(q.siegeweapon_reward,false);
+            }
             _completed[questID] = 2;
             BASE.PointsAdd(Math.ceil(value / 50));
             BASE.Save();
@@ -1794,6 +2043,10 @@ package
                   if(q.monster_reward != undefined)
                   {
                      _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
+                  }
+                  if(q.siegeweapon_reward != undefined)
+                  {
+                     _loc1_.push([q.siegeweapon_rewardcount,SiegeWeapons.getWeapon(q.siegeweapon_reward).name]);
                   }
                   var _loc2_:String = GLOBAL.Array2String(_loc1_);
                   var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
@@ -1847,7 +2100,6 @@ package
       {
          if(_open)
          {
-            SOUNDS.Play("close");
             _open = false;
             POPUPS.Next();
             if(_mc)
@@ -1880,7 +2132,7 @@ package
             }
             _loc2_++;
          }
-         return MD5.hash(com.adobe.serialization.json.JSON.encode(_loc1_));
+         return md5(JSON.encode(_loc1_));
       }
       
       public static function Completed() : *

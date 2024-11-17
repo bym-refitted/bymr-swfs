@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.*;
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;

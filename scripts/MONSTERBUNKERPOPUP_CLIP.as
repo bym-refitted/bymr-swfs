@@ -3,24 +3,16 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1920")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1912")]
    public dynamic class MONSTERBUNKERPOPUP_CLIP extends MovieClip
    {
-      public var bunker8:MovieClip;
+      public var transferCanvasBmask:MovieClip;
       
-      public var house3:MovieClip;
+      public var transferCanvasA:MovieClip;
       
-      public var house4:MovieClip;
-      
-      public var house5:MovieClip;
-      
-      public var house6:MovieClip;
-      
-      public var house7:MovieClip;
+      public var transferCanvasAmask:MovieClip;
       
       public var tNoMonsters:TextField;
-      
-      public var house8:MovieClip;
       
       public var title_txt:TextField;
       
@@ -34,25 +26,13 @@ package
       
       public var bSpecial:Button_CLIP;
       
-      public var bunker1:MovieClip;
-      
-      public var bunker2:MovieClip;
-      
-      public var bunker3:MovieClip;
-      
-      public var bunker4:MovieClip;
+      public var scrollerA:MovieClip;
       
       public var tCost:TextField;
       
-      public var bunker5:MovieClip;
+      public var transferCanvasB:MovieClip;
       
-      public var bunker6:MovieClip;
-      
-      public var house1:MovieClip;
-      
-      public var bunker7:MovieClip;
-      
-      public var house2:MovieClip;
+      public var scrollerB:MovieClip;
       
       public var mcStorage:MovieClip;
       

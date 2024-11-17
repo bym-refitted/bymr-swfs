@@ -61,7 +61,7 @@ package
                {
                   if(STORE._storeData.BEW.q > 0)
                   {
-                     LOGGER.Log("err","QUEUE.Spawn Outpost " + BASE._loadedBaseID + "  has store data for " + STORE._storeData.BEW.q + " extra worker(s)");
+                     LOGGER.Log("log","QUEUE.Spawn Outpost " + BASE._loadedBaseID + "  has store data for " + STORE._storeData.BEW.q + " extra worker(s)");
                   }
                }
                else
@@ -305,10 +305,6 @@ package
                   s.expanded = false;
                }
                i++;
-            }
-            if(upgradingCount < 3)
-            {
-               ACHIEVEMENTS.Check("upgrade_3",1);
             }
          }
          catch(e:Error)

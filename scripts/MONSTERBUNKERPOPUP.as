@@ -2,6 +2,7 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSet;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -10,7 +11,7 @@ package
    
    public class MONSTERBUNKERPOPUP extends MONSTERBUNKERPOPUP_CLIP
    {
-      public var _juiceList:Object;
+      public var _juiceList:Object = {};
       
       private var _bunker:* = null;
       
@@ -20,17 +21,78 @@ package
       
       private var _selected:Object;
       
+      private var _scrollerA:ScrollSet;
+      
+      private var _scrollerB:ScrollSet;
+      
+      private const BUYABLE_MONSTERS:Object = {
+         "C2":2,
+         "IC1":3,
+         "C6":5,
+         "C5":16,
+         "C7":8,
+         "C8":12,
+         "C10":14,
+         "C11":24,
+         "C13":24,
+         "C12":65,
+         "C17":17,
+         "IC2":4,
+         "IC5":32,
+         "IC7":32,
+         "IC8":55
+      };
+      
+      private const BUNKERABLE_MONSTERS:Object = {
+         "IC1":1,
+         "IC2":1,
+         "IC3":1,
+         "IC4":1,
+         "IC5":1,
+         "IC6":1,
+         "IC7":1,
+         "IC8":1,
+         "C1":1,
+         "C2":1,
+         "C3":1,
+         "C4":1,
+         "C5":1,
+         "C6":1,
+         "C7":1,
+         "C8":1,
+         "C9":1,
+         "C10":1,
+         "C11":1,
+         "C12":1,
+         "C13":1,
+         "C17":1
+      };
+      
       private var _guidePage:int = 0;
       
       public function MONSTERBUNKERPOPUP()
       {
-         var _loc1_:MovieClip = null;
-         this._juiceList = {};
          super();
          this._bunker = GLOBAL._selectedBuilding;
          this._capacity = GLOBAL._buildingProps[21].capacity[this._bunker._lvl.Get() - 1];
          this._selected = {};
          this._juiceList = {};
+         transferCanvasA.mask = transferCanvasAmask;
+         transferCanvasB.mask = transferCanvasBmask;
+         this._scrollerA = new ScrollSet();
+         this._scrollerA.AutoHideEnabled = false;
+         this._scrollerA.width = scrollerA.width;
+         this._scrollerA.x = scrollerA.x;
+         this._scrollerA.y = scrollerA.y;
+         addChild(this._scrollerA);
+         this._scrollerA.Init(transferCanvasA,transferCanvasAmask,0,scrollerA.y,scrollerA.height);
+         this._scrollerB = new ScrollSet();
+         this._scrollerB.AutoHideEnabled = false;
+         this._scrollerB.width = scrollerB.width;
+         this._scrollerB.x = scrollerB.x;
+         this._scrollerB.y = scrollerB.y;
+         addChild(this._scrollerB);
+         this._scrollerB.Init(transferCanvasB,transferCanvasBmask,0,scrollerB.y,scrollerB.height);
          title_txt.htmlText = KEYS.Get("bunker_title");
          tCapacity.htmlText = "<b>" + KEYS.Get("bunker_capacity") + "</b>";
          bHousing.addEventListener(MouseEvent.CLICK,this.Switch("housing"));
@@ -42,35 +104,51 @@ package
          bTransfer.addEventListener(MouseEvent.CLICK,this.Transfer);
          bTransfer.Setup(">>");
          bTransfer.buttonMode = true;
-         var _loc2_:int = 1;
-         while(_loc2_ <= 8)
-         {
-            _loc1_ = this["house" + _loc2_];
-            _loc1_.bAdd.addEventListener(MouseEvent.CLICK,this.SelectAdd);
-            _loc1_.bAdd.Setup("+");
-            _loc1_.bAdd.buttonMode = true;
-            _loc1_.bRemove.addEventListener(MouseEvent.CLICK,this.SelectRemove);
-            _loc1_.bRemove.Setup("-");
-            _loc1_.bRemove.buttonMode = true;
-            _loc2_++;
-         }
-         _loc2_ = 1;
-         while(_loc2_ <= 8)
-         {
-            _loc1_ = this["bunker" + _loc2_];
-            _loc1_.bRemove.addEventListener(MouseEvent.CLICK,this.BunkerJuice);
-            if(GLOBAL._bJuicer)
-            {
-               _loc1_.bRemove.SetupKey("bunker_btn_juice");
-            }
-            else
-            {
-               _loc1_.bRemove.SetupKey("bunker_btn_remove");
-            }
-            _loc1_.bRemove.buttonMode = true;
-            _loc2_++;
-         }
          this.SwitchB("housing");
+      }
+      
+      public function InitTransferBarAListeners(param1:MovieClip) : void
+      {
+         param1.bAdd.addEventListener(MouseEvent.CLICK,this.SelectAdd);
+         param1.bAdd.Setup("+");
+         param1.bAdd.buttonMode = true;
+         param1.bRemove.addEventListener(MouseEvent.CLICK,this.SelectRemove);
+         param1.bRemove.Setup("-");
+         param1.bRemove.buttonMode = true;
+      }
+      
+      public function InitTransferBarBListeners(param1:MovieClip) : void
+      {
+         param1.bRemove.addEventListener(MouseEvent.CLICK,this.BunkerJuiceID);
+         var _loc2_:* = param1.id.substring(0,2) == "IC";
+         if(GLOBAL._bJuicer && !_loc2_)
+         {
+            param1.bRemove.SetupKey("bunker_btn_juice");
+         }
+         else
+         {
+            param1.bRemove.SetupKey("bunker_btn_remove");
+         }
+         param1.bRemove.buttonMode = true;
+      }
+      
+      public function RemoveTransferBarListeners(param1:MovieClip) : void
+      {
+         if(param1 is MonsterBunkerPopup_TransferBtnA_CLIP)
+         {
+            param1.bAdd.removeEventListener(MouseEvent.CLICK,this.SelectAdd);
+            param1.bRemove.removeEventListener(MouseEvent.CLICK,this.SelectRemove);
+         }
+         else if(param1 is MonsterBunkerPopup_TransferBtnB_CLIP)
+         {
+            param1.bRemove.removeEventListener(MouseEvent.CLICK,this.BunkerJuiceID);
+         }
+      }
+      
+      public function RemoveTransferBarBListeners(param1:MovieClip) : void
+      {
+         param1.bAdd.removeEventListener(MouseEvent.CLICK,this.SelectAdd);
+         param1.bRemove.removeEventListener(MouseEvent.CLICK,this.SelectRemove);
       }
       
       public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
@@ -87,6 +165,7 @@ package
          return function(param1:MouseEvent):*
          {
             SwitchB(mode);
+            UpdateScrollers(true);
          };
       }
       
@@ -108,6 +187,86 @@ package
          this.Update();
       }
       
+      private function CanBunkerFromHousingNormal(param1:Number) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         if(param1 <= 13 && param1 > 0)
+         {
+            _loc2_ = true;
+         }
+         return _loc2_;
+      }
+      
+      private function CanBunkerFromHousingInferno(param1:Number) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         if(param1 <= 8 && param1 > 0)
+         {
+            _loc2_ = true;
+         }
+         return _loc2_;
+      }
+      
+      private function CanBunkerFromHousing(param1:String) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         if(this.BUNKERABLE_MONSTERS[param1])
+         {
+            _loc2_ = true;
+         }
+         return _loc2_;
+      }
+      
+      private function CanBunkerFromStoreNormal(param1:String) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         if(this.BUYABLE_MONSTERS[param1] > 0)
+         {
+            _loc2_ = true;
+         }
+         return _loc2_;
+      }
+      
+      private function CanBunkerFromStoreInferno(param1:Number) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         if(param1 <= 8 && param1 > 0)
+         {
+            _loc2_ = true;
+         }
+         return _loc2_;
+      }
+      
+      private function ClearTransferCanvas(param1:MovieClip = null) : void
+      {
+         var _loc2_:Array = [];
+         switch(param1)
+         {
+            case transferCanvasA:
+               _loc2_.push(transferCanvasA);
+               break;
+            case transferCanvasB:
+               _loc2_.push(transferCanvasB);
+               break;
+            default:
+               _loc2_.push(transferCanvasA);
+               _loc2_.push(transferCanvasB);
+         }
+         var _loc3_:int = 0;
+         while(_loc3_ < _loc2_.length)
+         {
+            while(_loc2_[_loc3_].numChildren)
+            {
+               if(_loc2_[_loc3_].getChildAt(0) is MovieClip)
+               {
+                  this.RemoveTransferBarListeners(_loc2_[_loc3_].getChildAt(0));
+               }
+               _loc2_[_loc3_].removeChildAt(0);
+            }
+            _loc3_++;
+         }
+      }
+      
       public function Update() : *
       {
          var monsterID:String = null;
@@ -119,122 +278,147 @@ package
          var v:int = 0;
          var barMC:MovieClip = null;
          var p:int = 0;
-         var arr:Array = null;
+         var housedMonsters:Array = null;
+         var transferBtnA:* = undefined;
+         var name:String = null;
+         var availableMonsters:Array = null;
          var quantity:* = undefined;
+         var transferBtnB:* = undefined;
          var count:int = 0;
          var usedA:int = 0;
          var usedB:int = 0;
+         var currX:* = 0;
+         var currY:* = 0;
+         var offsetX:* = 0;
+         var offsetY:* = 0;
+         var spacingX:* = 0;
+         var spacingY:* = 0;
          try
          {
+            this.ClearTransferCanvas(transferCanvasA);
             if(this._mode == "housing")
             {
                n = 1;
-               i = 1;
-               while(i <= 13)
+               housedMonsters = HOUSING.GetHousingCreatures();
+               i = 0;
+               while(i < housedMonsters.length)
                {
-                  if(n < 9 && (HOUSING._creatures["C" + i] && HOUSING._creatures["C" + i].Get() > 0) || this._selected["C" + i] && this._selected["C" + i].Get() > 0)
+                  monsterID = housedMonsters[i].id;
+                  if(this.CanBunkerFromHousing(monsterID))
                   {
-                     barMC = this["house" + n];
-                     if(!barMC.visible)
+                     transferBtnA = new MonsterBunkerPopup_TransferBtnA_CLIP();
+                     ImageCache.GetImageWithCallBack("monsters/" + monsterID + "-medium.jpg",this.IconLoaded,true,1,"",[transferBtnA.mcIcon]);
+                     name = CREATURELOCKER._creatures[monsterID].name;
+                     if(monsterID == "IC8")
                      {
-                        barMC.visible = true;
+                        name = "#m_k_wormzer#";
                      }
-                     ImageCache.GetImageWithCallBack("monsters/C" + i + "-medium.jpg",this.IconLoaded,true,1,"",[barMC.mcIcon]);
-                     barMC.tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures["C" + i].name) + "</b>";
-                     barMC._id = i;
-                     v = int(HOUSING._creatures["C" + i].Get());
-                     if(this._selected["C" + i])
+                     transferBtnA.tName.htmlText = "<b>" + KEYS.Get(name) + "</b>";
+                     transferBtnA.id = monsterID;
+                     transferBtnA._id = monsterID.substring(monsterID.indexOf("C") + 1);
+                     transferBtnA.index = monsterID.substring(monsterID.indexOf("C") + 1);
+                     v = int(HOUSING._creatures[monsterID].Get());
+                     if(this._selected[monsterID])
                      {
-                        v -= this._selected["C" + i].Get();
+                        v -= this._selected[monsterID].Get();
                      }
                      if(v == 0)
                      {
-                        barMC.tHoused.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_housed",{"v1":0}) + "</font>";
+                        transferBtnA.tHoused.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_housed",{"v1":0}) + "</font>";
                      }
                      else
                      {
-                        barMC.tHoused.htmlText = "<font color=\"#000000\">" + KEYS.Get("bunker_housed",{"v1":v}) + "</font>";
+                        transferBtnA.tHoused.htmlText = "<font color=\"#000000\">" + KEYS.Get("bunker_housed",{"v1":v}) + "</font>";
                      }
-                     if(Boolean(this._selected["C" + i]) && this._selected["C" + i].Get() > 0)
+                     if(Boolean(this._selected[monsterID]) && this._selected[monsterID].Get() > 0)
                      {
-                        barMC.tSelected.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_selected",{"v1":this._selected["C" + i].Get()}) + "</font>";
+                        transferBtnA.tSelected.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_selected",{"v1":this._selected[monsterID].Get()}) + "</font>";
                      }
                      else
                      {
-                        barMC.tSelected.htmlText = "<font color=\"#CCCCCC\">" + KEYS.Get("bunker_selected",{"v1":0}) + "</font>";
+                        transferBtnA.tSelected.htmlText = "<font color=\"#CCCCCC\">" + KEYS.Get("bunker_selected",{"v1":0}) + "</font>";
                      }
+                     transferBtnA.x = 0 * transferBtnA.width;
+                     transferBtnA.y = -(1 * transferBtnA.height) + n * transferBtnA.height + n * spacingY;
+                     this.InitTransferBarAListeners(transferBtnA);
+                     transferCanvasA.addChild(transferBtnA);
                      n += 1;
                   }
-                  i++;
-               }
-               if(n == 1)
-               {
-                  tNoMonsters.htmlText = KEYS.Get("bunker_empty");
-               }
-               else
-               {
-                  tNoMonsters.htmlText = "";
-               }
-               while(n < 9)
-               {
-                  barMC = this["house" + n];
-                  if(barMC.visible)
+                  if(n == 1)
                   {
-                     barMC.visible = false;
+                     tNoMonsters.htmlText = KEYS.Get("bunker_empty");
                   }
-                  n += 1;
+                  else
+                  {
+                     tNoMonsters.htmlText = "";
+                  }
+                  i++;
                }
             }
             else
             {
-               arr = [2,6,7,8,10,5,12];
                n = 1;
-               while(n <= arr.length)
+               availableMonsters = this.GetBunkerCreatures();
+               i = 0;
+               while(i < availableMonsters.length)
                {
-                  i = int(arr[n - 1]);
-                  barMC = this["house" + n];
-                  if(!barMC.visible)
+                  monsterID = availableMonsters[i].id;
+                  if(this.CanBunkerFromStoreNormal(monsterID))
                   {
-                     barMC.visible = true;
-                  }
-                  ImageCache.GetImageWithCallBack("monsters/C" + i + "-medium.jpg",this.IconLoaded,true,1,"",[barMC.mcIcon]);
-                  barMC.tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures["C" + i].name) + "</b>";
-                  barMC._id = i;
-                  if(Boolean(CREATURELOCKER._lockerData["C" + i]) && CREATURELOCKER._lockerData["C" + i].t == 2)
-                  {
-                     barMC.tHoused.htmlText = "<font color=\"#0000CC\">" + this.GetCost("C" + i,1) + " " + KEYS.Get(GLOBAL._resourceNames[4]) + "</font>";
-                     if(Boolean(this._selected["C" + i]) && this._selected["C" + i].Get() > 0)
+                     transferBtnA = new MonsterBunkerPopup_TransferBtnA_CLIP();
+                     ImageCache.GetImageWithCallBack("monsters/" + monsterID + "-medium.jpg",this.IconLoaded,true,1,"",[transferBtnA.mcIcon]);
+                     name = CREATURELOCKER._creatures[monsterID].name;
+                     if(monsterID == "IC8")
                      {
-                        barMC.tSelected.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_selected",{"v1":this._selected["C" + i].Get()}) + "</font>";
+                        name = "#m_k_wormzer#";
+                     }
+                     transferBtnA.tName.htmlText = "<b>" + KEYS.Get(name) + "</b>";
+                     transferBtnA.id = monsterID;
+                     transferBtnA._id = monsterID.substring(monsterID.indexOf("C") + 1);
+                     transferBtnA.index = monsterID.substring(monsterID.indexOf("C") + 1);
+                     if(HOUSING._creatures[monsterID])
+                     {
+                        v = int(HOUSING._creatures[monsterID].Get());
+                     }
+                     if(Boolean(CREATURELOCKER._lockerData[monsterID]) && CREATURELOCKER._lockerData[monsterID].t == 2)
+                     {
+                        transferBtnA.tHoused.htmlText = "<font color=\"#0000CC\">" + this.GetCost(monsterID,1) + " " + KEYS.Get(GLOBAL._resourceNames[4]) + "</font>";
+                        if(Boolean(this._selected[monsterID]) && this._selected[monsterID].Get() > 0)
+                        {
+                           transferBtnA.tSelected.htmlText = "<font color=\"#FF0000\">" + KEYS.Get("bunker_selected",{"v1":this._selected[monsterID].Get()}) + "</font>";
+                        }
+                        else
+                        {
+                           transferBtnA.tSelected.htmlText = "<font color=\"#CCCCCC\">" + KEYS.Get("bunker_selected",{"v1":0}) + "</font>";
+                        }
                      }
                      else
                      {
-                        barMC.tSelected.htmlText = "<font color=\"#CCCCCC\">" + KEYS.Get("bunker_selected",{"v1":0}) + "</font>";
+                        transferBtnA.tHoused.htmlText = "<font color=\"#0000CC\">" + this.GetCost(monsterID,1) + " " + KEYS.Get(GLOBAL._resourceNames[4]) + "</font>";
+                        transferBtnA.tSelected.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("bunker_store_locked") + "</font>";
                      }
+                     transferBtnA.x = 0 * transferBtnA.width;
+                     transferBtnA.y = -(1 * transferBtnA.height) + n * transferBtnA.height + n * spacingY;
+                     this.InitTransferBarAListeners(transferBtnA);
+                     transferCanvasA.addChild(transferBtnA);
+                     n += 1;
+                  }
+                  if(n == 1)
+                  {
+                     tNoMonsters.htmlText = KEYS.Get("bunker_empty");
                   }
                   else
                   {
-                     barMC.tHoused.htmlText = "<font color=\"#0000CC\">" + this.GetCost("C" + i,1) + " " + KEYS.Get(GLOBAL._resourceNames[4]) + "</font>";
-                     barMC.tSelected.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("bunker_store_locked") + "</font>";
+                     tNoMonsters.htmlText = "";
                   }
-                  n++;
-               }
-               tNoMonsters.htmlText = "";
-               while(n < 9)
-               {
-                  barMC = this["house" + n];
-                  if(barMC.visible)
-                  {
-                     barMC.visible = false;
-                  }
-                  n += 1;
+                  i++;
                }
             }
          }
          catch(e:Error)
          {
-            GLOBAL.ErrorMessage("MONSTERBUNKERPOPUP.Update " + e.message + " | " + e.getStackTrace());
-            LOGGER.Log("err","MONSTERBUNKERPOPUP.Update " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("MONSTERBUNKERPOPUP.Update TransferA" + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","MONSTERBUNKERPOPUP.Update TransferA" + e.message + " | " + e.getStackTrace());
          }
          n = 0;
          for(c in this._selected)
@@ -298,74 +482,86 @@ package
          {
             tCost.htmlText = "<font color=\"#0000CC\"><b>" + GLOBAL.FormatNumber(usedA) + "<br>" + KEYS.Get(GLOBAL._resourceNames[4]) + "</b></font>";
          }
-         n = 1;
-         for(c in this._bunker._monsters)
+         try
          {
-            quantity = this._bunker._monsters[c];
-            if(quantity > 0 && n <= 8)
+            this.ClearTransferCanvas(transferCanvasB);
+            n = 1;
+            for(c in this._bunker._monsters)
             {
-               creatureProps = CREATURELOCKER._creatures[c];
-               barMC = this["bunker" + n];
-               if(!barMC.visible)
+               quantity = this._bunker._monsters[c];
+               if(quantity > 0)
                {
-                  barMC.visible = true;
+                  creatureProps = CREATURELOCKER._creatures[c];
+                  transferBtnB = new MonsterBunkerPopup_TransferBtnB_CLIP();
+                  transferBtnB.id = c;
+                  transferBtnB._id = c.substr(1);
+                  transferBtnB.index = c.substr(1);
+                  transferBtnB.tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[c].name) + "</b>";
+                  transferBtnB.tHoused.htmlText = KEYS.Get("bunker_bunkered",{"v1":quantity});
+                  ImageCache.GetImageWithCallBack("monsters/" + c + "-medium.jpg",this.IconLoaded,true,1,"",[transferBtnB.mcIcon]);
+                  transferBtnB.x = 0 * transferBtnB.width;
+                  transferBtnB.y = -(1 * transferBtnB.height) + n * transferBtnB.height + n * spacingY;
+                  this.InitTransferBarBListeners(transferBtnB);
+                  transferCanvasB.addChild(transferBtnB);
+                  n += 1;
                }
-               barMC._id = c.substr(1);
-               barMC.tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[c].name) + "</b>";
-               barMC.tHoused.htmlText = KEYS.Get("bunker_bunkered",{"v1":quantity});
-               ImageCache.GetImageWithCallBack("monsters/" + c + "-medium.jpg",this.IconLoaded,true,1,"",[barMC.mcIcon]);
-               n += 1;
             }
          }
-         while(n < 9)
+         catch(e:Error)
          {
-            barMC = this["bunker" + n];
-            if(barMC.visible)
-            {
-               barMC.visible = false;
-            }
-            n += 1;
+            GLOBAL.ErrorMessage("MONSTERBUNKERPOPUP.Update TransferB" + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","MONSTERBUNKERPOPUP.Update TransferB" + e.message + " | " + e.getStackTrace());
+         }
+         this.UpdateScrollers();
+      }
+      
+      private function UpdateScrollers(param1:Boolean = false) : void
+      {
+         if(this._scrollerA)
+         {
+            this._scrollerA.Update();
+         }
+         if(this._scrollerB)
+         {
+            this._scrollerB.Update();
+         }
+         if(param1)
+         {
+            this._scrollerA.ScrollTo(0,true);
+            this._scrollerA.Update();
+            this._scrollerB.ScrollTo(0,true);
+            this._scrollerB.Update();
          }
       }
       
       private function GetCost(param1:String, param2:int) : int
       {
-         var _loc5_:Object = null;
          var _loc3_:String = LOGIN._playerID.toString();
          if(this._mode == "housing")
          {
             return CREATURES.GetProperty(param1,"cResource",0,true) * 0.5 * param2;
          }
-         _loc5_ = {
-            "C2":2,
-            "C6":5,
-            "C5":16,
-            "C7":8,
-            "C8":12,
-            "C10":14,
-            "C12":65
-         };
-         if(!_loc5_[param1])
+         if(!this.BUYABLE_MONSTERS[param1])
          {
             GLOBAL.ErrorMessage("MONSTERBUNKERPOPUP");
             return 0;
          }
-         return _loc5_[param1] * param2;
+         return this.BUYABLE_MONSTERS[param1] * param2;
       }
       
       private function SelectAdd(param1:MouseEvent = null) : *
       {
          SOUNDS.Play("click1");
-         var _loc2_:int = int(param1.target.parent._id);
-         if(this.Check(_loc2_))
+         var _loc2_:String = param1.target.parent.id;
+         if(this.CheckID(_loc2_))
          {
-            if(this._selected["C" + _loc2_])
+            if(this._selected[_loc2_])
             {
-               this._selected["C" + _loc2_].Add(1);
+               this._selected[_loc2_].Add(1);
             }
             else
             {
-               this._selected["C" + _loc2_] = new SecNum(1);
+               this._selected[_loc2_] = new SecNum(1);
             }
             this.Update();
          }
@@ -374,14 +570,14 @@ package
       private function SelectRemove(param1:MouseEvent = null) : *
       {
          SOUNDS.Play("click1");
-         var _loc2_:int = int(param1.target.parent._id);
-         if(this._selected["C" + _loc2_])
+         var _loc2_:String = param1.target.parent.id;
+         if(this._selected[_loc2_])
          {
-            this._selected["C" + _loc2_].Add(-1);
+            this._selected[_loc2_].Add(-1);
          }
-         if(Boolean(this._selected["C" + _loc2_]) && this._selected["C" + _loc2_].Get() <= 0)
+         if(Boolean(this._selected[_loc2_]) && this._selected[_loc2_].Get() <= 0)
          {
-            delete this._selected["C" + _loc2_];
+            delete this._selected[_loc2_];
          }
          this.Update();
       }
@@ -455,6 +651,7 @@ package
             }
             this.Update();
          }
+         this.UpdateScrollers(true);
       }
       
       private function Check(param1:int) : *
@@ -502,12 +699,65 @@ package
          return false;
       }
       
+      private function CheckID(param1:String) : *
+      {
+         var _loc6_:String = null;
+         var _loc2_:* = param1.substring(0,2) == "IC";
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         for(_loc6_ in this._bunker._monsters)
+         {
+            _loc4_ += CREATURES.GetProperty(_loc6_,"cStorage",0,true) * this._bunker._monsters[_loc6_];
+         }
+         for(_loc6_ in this._selected)
+         {
+            _loc5_ += CREATURES.GetProperty(_loc6_,"cStorage",0,true) * this._selected[_loc6_].Get();
+         }
+         _loc5_ += int(CREATURELOCKER._creatures[param1].props.cStorage);
+         if(_loc4_ + _loc5_ > this._capacity)
+         {
+            return false;
+         }
+         if(this._mode == "housing")
+         {
+            if(Boolean(HOUSING._creatures[param1]) && HOUSING._creatures[param1].Get() > 0)
+            {
+               _loc3_ = int(HOUSING._creatures[param1].Get());
+            }
+            if(this._selected[param1])
+            {
+               _loc3_ -= this._selected[param1].Get();
+            }
+            if(_loc3_ > 0)
+            {
+               return true;
+            }
+         }
+         else
+         {
+            if(Boolean(CREATURELOCKER._lockerData[param1]) && CREATURELOCKER._lockerData[param1].t == 2)
+            {
+               return true;
+            }
+            if(_loc2_)
+            {
+               GLOBAL.Message(KEYS.Get("bunker_locker_desc_inf",{"v1":KEYS.Get(CREATURELOCKER._creatures[param1].name)}),null,null);
+            }
+            else
+            {
+               GLOBAL.Message(KEYS.Get("bunker_locker_desc",{"v1":KEYS.Get(CREATURELOCKER._creatures[param1].name)}),KEYS.Get("btn_openlocker"),CREATURELOCKER.Show);
+            }
+         }
+         return false;
+      }
+      
       private function BunkerStore(param1:String) : *
       {
          var _loc3_:BFOUNDATION = null;
          var _loc4_:int = 0;
-         var _loc5_:CREEP = null;
-         var _loc6_:CREEP = null;
+         var _loc5_:* = undefined;
+         var _loc6_:* = undefined;
          var _loc2_:Array = [];
          for each(_loc3_ in BASE._buildingsHousing)
          {
@@ -562,48 +812,57 @@ package
       
       private function BunkerJuice(param1:MouseEvent = null) : *
       {
-         var _loc3_:String = null;
-         var _loc4_:Boolean = false;
-         var _loc5_:CREEP = null;
          SOUNDS.Play("click1");
-         var _loc2_:int = int(param1.target.parent._id);
-         if(GLOBAL._bJuicer)
+         this.BunkerJuiceById(param1.target.parent._id);
+      }
+      
+      private function BunkerJuiceID(param1:MouseEvent = null) : *
+      {
+         SOUNDS.Play("click1");
+         this.BunkerJuiceById(param1.target.parent.id);
+      }
+      
+      private function BunkerJuiceById(param1:String) : *
+      {
+         var _loc3_:Boolean = false;
+         var _loc4_:* = undefined;
+         var _loc2_:* = param1.substring(0,2) == "IC";
+         if(GLOBAL._bJuicer && !_loc2_)
          {
             if(GLOBAL._bJuicer && GLOBAL._bJuicer._countdownUpgrade.Get() == 0)
             {
                if(GLOBAL._bJuicer._hp.Get() > GLOBAL._bJuicer._hpMax.Get() * 0.5)
                {
-                  _loc3_ = "C" + _loc2_;
-                  if(this._bunker._monsters[_loc3_])
+                  if(this._bunker._monsters[param1])
                   {
-                     _loc4_ = false;
-                     for each(_loc5_ in CREATURES._creatures)
+                     _loc3_ = false;
+                     for each(_loc4_ in CREATURES._creatures)
                      {
-                        if(_loc5_._creatureID == _loc3_ && _loc5_._behaviour == "bunker")
+                        if(_loc4_._creatureID == param1 && _loc4_._behaviour == "bunker")
                         {
-                           _loc5_.ModeJuice();
-                           --this._bunker._monstersDispatched[_loc3_];
-                           if(this._bunker._monstersDispatched[_loc3_] < 0)
+                           _loc4_.ModeJuice();
+                           --this._bunker._monstersDispatched[param1];
+                           if(this._bunker._monstersDispatched[param1] < 0)
                            {
-                              this._bunker._monstersDispatched[_loc3_] = 0;
+                              this._bunker._monstersDispatched[param1] = 0;
                            }
                            --this._bunker._monstersDispatchedTotal;
                            if(this._bunker._monstersDispatchedTotal < 0)
                            {
                               this._bunker._monstersDispatchedTotal = 0;
                            }
-                           _loc4_ = true;
+                           _loc3_ = true;
                            break;
                         }
                      }
-                     if(!_loc4_)
+                     if(!_loc3_)
                      {
-                        CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,"juice",new Point(this._bunker.x,this._bunker.y).add(new Point(-60 + Math.random() * 135,-5 + Math.random() * 20)),Math.random() * 360);
+                        CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"juice",new Point(this._bunker.x,this._bunker.y).add(new Point(-60 + Math.random() * 135,-5 + Math.random() * 20)),Math.random() * 360);
                      }
-                     --this._bunker._monsters[_loc3_];
-                     if(this._bunker._monsters[_loc3_] < 0)
+                     --this._bunker._monsters[param1];
+                     if(this._bunker._monsters[param1] < 0)
                      {
-                        this._bunker._monsters[_loc3_] = 0;
+                        this._bunker._monsters[param1] = 0;
                      }
                   }
                   this.Update();
@@ -612,17 +871,69 @@ package
                }
             }
          }
-         _loc3_ = "C" + _loc2_;
-         if(this._bunker._monsters[_loc3_])
+         if(this._bunker._monsters[param1])
          {
-            --this._bunker._monsters[_loc3_];
-            if(this._bunker._monsters[_loc3_] < 0)
+            --this._bunker._monsters[param1];
+            if(this._bunker._monsters[param1] < 0)
             {
-               this._bunker._monsters[_loc3_] = 0;
+               this._bunker._monsters[param1] = 0;
             }
          }
          this.Update();
          BASE.Save();
+      }
+      
+      public function GetBunkerCreatures() : Array
+      {
+         var _loc9_:String = null;
+         var _loc10_:Object = null;
+         var _loc11_:String = null;
+         var _loc12_:Object = null;
+         var _loc1_:* = {};
+         var _loc2_:Array = [];
+         var _loc3_:Array = [];
+         var _loc4_:Array = [];
+         var _loc5_:Object = CREATURELOCKER.GetCreatures("above");
+         var _loc6_:* = !BASE.isInferno();
+         if(_loc6_)
+         {
+            for(_loc9_ in _loc5_)
+            {
+               _loc10_ = CREATURELOCKER._creatures[_loc9_];
+               if(!_loc10_.blocked)
+               {
+                  _loc10_.id = _loc9_;
+                  _loc2_.push(_loc10_);
+                  _loc1_[_loc9_] = _loc10_;
+               }
+            }
+            _loc2_.sortOn(["index"],Array.NUMERIC);
+         }
+         var _loc7_:Object = CREATURELOCKER.GetCreatures("inferno");
+         var _loc8_:Boolean = MAPROOM_DESCENT.DescentPassed;
+         if(_loc8_)
+         {
+            for(_loc11_ in _loc7_)
+            {
+               _loc12_ = CREATURELOCKER._creatures[_loc11_];
+               if(!_loc12_.blocked)
+               {
+                  _loc12_.id = _loc11_;
+                  _loc3_.push(_loc12_);
+                  _loc1_[_loc11_] = _loc12_;
+               }
+            }
+            _loc3_.sortOn(["index"],Array.NUMERIC);
+         }
+         if(_loc2_.length > 0)
+         {
+            _loc4_ = _loc4_.concat(_loc2_);
+         }
+         if(_loc3_.length > 0)
+         {
+            _loc4_ = _loc4_.concat(_loc3_);
+         }
+         return _loc4_;
       }
       
       public function Help(param1:MouseEvent = null) : void

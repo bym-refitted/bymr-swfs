@@ -24,7 +24,7 @@ package
          super();
       }
       
-      public static function Process(param1:*) : *
+      public static function Process(param1:*) : void
       {
          var _loc2_:Array = null;
          var _loc3_:Number = NaN;
@@ -49,12 +49,13 @@ package
          }
       }
       
-      public static function ProcessAcceptedGifts(param1:*) : *
+      public static function ProcessAcceptedGifts(param1:*) : void
       {
          var _loc2_:Array = null;
          var _loc3_:Number = NaN;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         print("Processing Accepted Gifts, " + param1);
          if(TUTORIAL._stage >= 69)
          {
             for each(_loc2_ in param1)
@@ -74,7 +75,7 @@ package
          }
       }
       
-      public static function ProcessAcceptedInvites(param1:Array) : *
+      public static function ProcessAcceptedInvites(param1:Array) : void
       {
          var _loc2_:Array = null;
          var _loc3_:Number = NaN;
@@ -99,7 +100,7 @@ package
          }
       }
       
-      public static function Show(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
+      public static function Show(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : void
       {
          var img:String;
          var LoadImageError:Function;
@@ -146,22 +147,44 @@ package
             }
          }
          img = "resourcetwigs.png";
-         if(resourceID == 2)
+         if(!BASE.isInferno())
          {
-            img = "resourcepebbles.png";
+            if(resourceID == 2)
+            {
+               img = "resourcepebbles.png";
+            }
+            if(resourceID == 3)
+            {
+               img = "resourceputty.png";
+            }
+            if(resourceID == 4)
+            {
+               img = "resourcegoo.png";
+            }
          }
-         if(resourceID == 3)
+         else
          {
-            img = "resourceputty.png";
-         }
-         if(resourceID == 4)
-         {
-            img = "resourcegoo.png";
+            if(resourceID == 1)
+            {
+               img = "resource-cauldron_bones.png";
+            }
+            if(resourceID == 2)
+            {
+               img = "resource-cauldron_coal.png";
+            }
+            if(resourceID == 3)
+            {
+               img = "resource-cauldron_sulphur.png";
+            }
+            if(resourceID == 4)
+            {
+               img = "resource-cauldron_magma.png";
+            }
          }
          POPUPS.Push(_mc,GIFTS.Fund,[giftID,resourceID,giftValue],"",img,false,"gifts");
       }
       
-      public static function ShowSentGift(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
+      public static function ShowSentGift(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : void
       {
          var img:String;
          var LoadImageError:Function;
@@ -213,7 +236,7 @@ package
          POPUPS.Push(_mc,GIFTS.AddXP,[giftID,giftValue],"",img,false,"gifts");
       }
       
-      public static function ShowSentInvite(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
+      public static function ShowSentInvite(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : void
       {
          var img:String;
          var LoadImageError:Function;
@@ -266,7 +289,7 @@ package
          POPUPS.Push(_mc,GIFTS.AddXP,[giftID,giftValue],"",img,false,"gifts");
       }
       
-      public static function Fund(param1:String, param2:int, param3:int) : *
+      public static function Fund(param1:String, param2:int, param3:int) : void
       {
          _giftsAccepted.push(param1);
          BASE.Fund(param2,param3);
@@ -300,21 +323,23 @@ package
          var giftValue:int = param3;
          return function(param1:MouseEvent = null):*
          {
+            var _loc2_:* = BASE.isInferno() ? resourceID + 4 : resourceID;
+            var _loc3_:* = "gift" + _loc2_ + ".png";
             GLOBAL.CallJS("sendFeed",["thanks",KEYS.Get("pop_givethanks_streamtitle"),KEYS.Get("pop_givethanks_streambody",{
                "v1":GLOBAL.FormatNumber(giftValue),
                "v2":KEYS.Get(GLOBAL._resourceNames[resourceID - 1])
-            }),"gift" + resourceID + ".png",giftFromID]);
+            }),_loc3_,giftFromID]);
             POPUPS.Next();
          };
       }
       
-      public static function SendGift(param1:MouseEvent) : *
+      public static function SendGift(param1:MouseEvent) : void
       {
          GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
          POPUPS.Next();
       }
       
-      public static function ClosePopup(param1:MouseEvent) : *
+      public static function ClosePopup(param1:MouseEvent) : void
       {
          POPUPS.Next(param1);
       }

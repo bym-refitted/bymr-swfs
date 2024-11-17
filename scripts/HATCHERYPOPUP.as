@@ -1,11 +1,14 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSet;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.display.Sprite;
    import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.geom.Rectangle;
    import gs.TweenLite;
    import gs.easing.Circ;
    
@@ -13,13 +16,25 @@ package
    {
       public var _hatchery:BUILDING13;
       
+      public var _monsterSlots:Array;
+      
+      private var MONSTERSLOTSIZE:Rectangle;
+      
+      private var _scrollSet:ScrollSet;
+      
+      private var _scrollSetContainer:Sprite;
+      
       public var _guidePage:int = 1;
       
       public function HATCHERYPOPUP()
       {
-         var _loc2_:String = null;
-         var _loc3_:int = 0;
-         var _loc4_:MovieClip = null;
+         var _loc1_:int = 0;
+         var _loc5_:Array = null;
+         var _loc7_:int = 0;
+         var _loc8_:Boolean = false;
+         var _loc9_:int = 0;
+         var _loc10_:MovieClip = null;
+         this.MONSTERSLOTSIZE = new Rectangle(0,0,65,50);
          super();
          title_txt.htmlText = KEYS.Get(GLOBAL._bHatchery._buildingProps.name);
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
@@ -37,31 +52,56 @@ package
          bFinish.mouseChildren = false;
          bFinish.addEventListener(MouseEvent.CLICK,this.FinishNow);
          bFinish.buttonMode = true;
-         var _loc1_:int = 1;
-         for(_loc2_ in CREATURELOCKER.GetAppropriateCreatures())
+         this._scrollSet = new ScrollSet();
+         this._scrollSet.x = scroller.x;
+         this._scrollSet.y = scroller.y;
+         this._scrollSet.width = scroller.width;
+         this._scrollSet.Init(monsterCanvas,monsterMask,ScrollSet.BROWN,monsterMask.y,monsterMask.height);
+         this._scrollSet.AutoHideEnabled = false;
+         this._scrollSet.isHiddenWhileUnnecessary = true;
+         this._scrollSetContainer = new Sprite();
+         this._scrollSetContainer.addChild(this._scrollSet);
+         addChild(this._scrollSetContainer);
+         scroller.visible = false;
+         _loc1_ = 0;
+         var _loc2_:int = 0;
+         this._monsterSlots = [];
+         _loc5_ = CREATURELOCKER.GetSortedCreatures(true);
+         var _loc6_:int = !BASE.isInferno() ? CREATURELOCKER.maxCreatures("above") : CREATURELOCKER.maxCreatures("inferno");
+         _loc7_ = 0;
+         while(_loc7_ < _loc6_)
          {
-            _loc3_ = int(_loc2_.substring(_loc2_.indexOf("C") + 1));
-            _loc4_ = this["monster" + _loc3_];
-            _loc4_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc3_));
-            ImageCache.GetImageWithCallBack("monsters/" + _loc2_ + "-medium.jpg",this.IconLoaded,true,1,"",[this["monster" + _loc3_]]);
-            if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
+            _loc8_ = false;
+            if(Boolean(_loc5_[_loc7_]) && _loc5_[_loc7_].blocked == true)
             {
-               _loc4_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc3_));
-               _loc4_.alpha = 1;
-               _loc4_.buttonMode = true;
+               _loc2_++;
             }
             else
             {
-               _loc4_.alpha = 0.5;
-               _loc4_.buttonMode = false;
+               _loc9_ = int(_loc5_[_loc7_].id.substr(_loc5_[_loc7_].id.indexOf("C") + 1));
+               _loc10_ = new HatcheryMonsterIcon_CLIP();
+               _loc10_.width = this.MONSTERSLOTSIZE.width;
+               _loc10_.height = this.MONSTERSLOTSIZE.height;
+               _loc10_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc9_));
+               _loc10_.x = _loc1_ % 9 * (_loc10_.width + 5);
+               _loc10_.y = Math.floor(_loc1_ / 9) * (_loc10_.height + 5);
+               monsterCanvas.addChild(_loc10_);
+               this._monsterSlots.push(_loc10_);
+               ImageCache.GetImageWithCallBack("monsters/" + _loc5_[_loc7_].id + "-medium.jpg",this.IconLoaded,true,1,"",[_loc10_]);
+               if(Boolean(CREATURELOCKER._lockerData[_loc5_[_loc7_].id]) && CREATURELOCKER._lockerData[_loc5_[_loc7_].id].t == 2)
+               {
+                  _loc10_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc9_));
+                  _loc10_.alpha = 1;
+                  _loc10_.buttonMode = true;
+               }
+               else
+               {
+                  _loc10_.alpha = 0.5;
+                  _loc10_.buttonMode = false;
+               }
+               _loc1_++;
             }
-            _loc1_++;
-         }
-         while(_loc1_ < 16)
-         {
-            _loc4_ = this["monster" + _loc1_];
-            _loc4_.visible = false;
-            _loc1_++;
+            _loc7_++;
          }
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          mcMonsterInfo.health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
@@ -416,7 +456,7 @@ package
          _loc3_ = _loc2_;
          while(_loc3_ < 5)
          {
-            this["slot" + _loc3_].gotoAndStop("locked");
+            this["slot" + _loc3_].gotoAndStop(1);
             _loc3_++;
          }
          _loc3_ = 0;
@@ -464,7 +504,7 @@ package
          {
             if(this._hatchery._productionStage.Get() == 2 && !HOUSING.HousingStore(this._hatchery._inProduction,new Point(this._hatchery._mc.x,this._hatchery._mc.y),true))
             {
-               _loc2_ = [2,KEYS.Get("hat_needhousing")];
+               _loc2_ = [2,KEYS.Get(BASE.isInferno() ? "incubator_needhousing" : "hat_needhousing")];
             }
             else
             {
@@ -519,6 +559,7 @@ package
          {
             mcOverdrive.visible = false;
          }
+         this._scrollSet.Update();
       }
       
       public function Help(param1:MouseEvent = null) : void
@@ -587,7 +628,7 @@ package
          }
          else if(this._hatchery._finishCost.Get() <= 0)
          {
-            GLOBAL.Message(KEYS.Get("msg_housingfull"));
+            GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_compoundfull" : "msg_housingfull"));
          }
       }
       

@@ -93,6 +93,7 @@ package de.polygonal.ds
             _tailPool = _tailPool.next = param1;
             _loc5_ = null;
             param1.val = _loc5_;
+            null;
             ++_poolSize;
          }
          else
@@ -514,6 +515,7 @@ package de.polygonal.ds
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         null;
          if(param1.head != null)
          {
             _loc2_ = param1.head;
@@ -612,7 +614,7 @@ package de.polygonal.ds
       public function insertBefore(param1:DLLNode, param2:Object) : DLLNode
       {
          var _loc4_:* = null as DLLNode;
-         var _loc3_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.next = null, _loc4_.val = param2, _loc4_);
+         var _loc3_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param2,this) : (_loc4_ = _headPool, null, _headPool = _headPool.next, --_poolSize, _loc4_.next = null, _loc4_.val = param2, _loc4_);
          param1._insertBefore(_loc3_);
          if(param1 == head)
          {
@@ -629,6 +631,7 @@ package de.polygonal.ds
       public function insertAfter(param1:DLLNode, param2:Object) : DLLNode
       {
          var _loc4_:* = null as DLLNode;
+         null;
          var _loc3_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.next = null, _loc4_.val = param2, _loc4_);
          param1._insertAfter(_loc3_);
          if(param1 == tail)
@@ -646,6 +649,7 @@ package de.polygonal.ds
       public function getNodeAt(param1:int) : DLLNode
       {
          var _loc4_:int = 0;
+         null;
          var _loc2_:DLLNode = head;
          var _loc3_:int = 0;
          while(_loc3_ < param1)
@@ -724,6 +728,7 @@ package de.polygonal.ds
          var _loc7_:* = 0;
          var _loc8_:int = 0;
          var _loc9_:* = null as DLLNode;
+         null;
          var _loc2_:DLL = new DLL();
          var _loc3_:int = param1._size;
          if(_loc3_ > 0)
@@ -951,7 +956,7 @@ package de.polygonal.ds
       public function append(param1:Object) : DLLNode
       {
          var _loc3_:* = null as DLLNode;
-         var _loc2_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param1,this) : (_loc3_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc3_.next = null, _loc3_.val = param1, _loc3_);
+         var _loc2_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param1,this) : (_loc3_ = _headPool, null, _headPool = _headPool.next, --_poolSize, _loc3_.next = null, _loc3_.val = param1, _loc3_);
          if(tail != null)
          {
             tail.next = _loc2_;
@@ -986,6 +991,7 @@ package de.polygonal.ds
             _tailPool = _tailPool.next = param1;
             _loc4_ = null;
             param1.val = _loc4_;
+            null;
             ++_poolSize;
          }
          else

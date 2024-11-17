@@ -29,7 +29,7 @@ package
          }
       }
       
-      internal function Say(param1:String, param2:Boolean, param3:Boolean) : *
+      public function Say(param1:String, param2:Boolean, param3:Boolean) : *
       {
          mcText.htmlText = param1;
          if(TUTORIAL._stage < 200)
@@ -66,19 +66,19 @@ package
          mcText.y = 0 - mcBubble.height + 10;
       }
       
-      internal function DragStart(param1:MouseEvent) : *
+      public function DragStart(param1:MouseEvent) : *
       {
          this.offsetX = GLOBAL._ROOT.mouseX - x;
          this.offsetY = GLOBAL._ROOT.mouseY - y;
          addEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      internal function DragStop(param1:MouseEvent) : *
+      public function DragStop(param1:MouseEvent) : *
       {
          removeEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      internal function Move(param1:Event = null) : *
+      public function Move(param1:Event = null) : *
       {
          x = GLOBAL._ROOT.mouseX - this.offsetX;
          y = GLOBAL._ROOT.mouseY - this.offsetY;
@@ -103,15 +103,11 @@ package
             {
                _loc1_ += _loc3_.x;
                _loc2_ += _loc3_.y;
-               if(_loc3_.parent == GLOBAL._ROOT.stage)
-               {
-                  break;
-               }
                _loc3_ = _loc3_.parent;
             }
          }
-         mcBlocker.x = GLOBAL._SCREEN.x - _loc1_ + this.posX;
-         mcBlocker.y = GLOBAL._SCREEN.y - _loc2_ + this.posY;
+         mcBlocker.x = -this.posX;
+         mcBlocker.y = -this.posY;
          mcBlocker.width = GLOBAL._SCREEN.width;
          mcBlocker.height = GLOBAL._SCREEN.height;
       }

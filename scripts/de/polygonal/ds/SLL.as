@@ -570,6 +570,7 @@ package de.polygonal.ds
       public function insertBefore(param1:SLLNode, param2:Object) : SLLNode
       {
          var _loc4_:* = null as SLLNode;
+         null;
          var _loc3_:SLLNode = _reservedSize == 0 || _poolSize == 0 ? new SLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.val = param2, _loc4_.next = null, _loc4_);
          if(param1 == head)
          {
@@ -592,6 +593,7 @@ package de.polygonal.ds
       public function insertAfter(param1:SLLNode, param2:Object) : SLLNode
       {
          var _loc4_:* = null as SLLNode;
+         null;
          var _loc3_:SLLNode = _reservedSize == 0 || _poolSize == 0 ? new SLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.val = param2, _loc4_.next = null, _loc4_);
          param1._insertAfter(_loc3_);
          if(param1 == tail)

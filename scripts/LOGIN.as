@@ -1,13 +1,12 @@
 package
 {
-   import com.adobe.crypto.MD5;
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.radio.RADIO;
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.net.*;
+   import flash.system.Capabilities;
    
    public class LOGIN
    {
@@ -69,7 +68,7 @@ package
          {
             ExternalInterface.addCallback("loginsuccessful",function(param1:String):void
             {
-               var _loc2_:Object = com.adobe.serialization.json.JSON.decode(param1);
+               var _loc2_:Object = JSON.decode(param1);
                GLOBAL.WaitHide();
                if(_loc2_.error == 0)
                {
@@ -89,14 +88,26 @@ package
                }
             });
             GLOBAL.CallJS("cc.initApplication",[GLOBAL._version.Get(),"loginsuccessful"]);
+            logFlashCapabilities();
          }
       }
       
       public static function Process(param1:Object) : void
       {
+         var _loc2_:Object = null;
          if(param1.version != GLOBAL._version.Get())
          {
-            GLOBAL.ErrorMessage(KEYS.Get("We have updated the game. Please reload."),GLOBAL.ERROR_ORANGE_BOX_ONLY);
+            if(ExternalInterface.available)
+            {
+               _loc2_ = {
+                  "tag":"userload",
+                  "version_mismatch_h":1,
+                  "vh2":param1.version,
+                  "vh1":GLOBAL._version.Get()
+               };
+               GLOBAL.CallJS("cc.logGenericEvent",[_loc2_]);
+            }
+            GLOBAL.ErrorMessage(KEYS.Get("msg_updatedgame"),GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
          else
          {
@@ -120,6 +131,9 @@ package
             GLOBAL._mailVersion = param1.mailversion;
             GLOBAL._soundVersion = param1.soundversion;
             GLOBAL._languageVersion = param1.languageversion;
+            GLOBAL._appid = param1.app_id;
+            GLOBAL._tpid = param1.tpid;
+            GLOBAL._currencyURL = param1.currency_url;
             if(param1.bookmarks)
             {
                MapRoom._bookmarkData = param1.bookmarks;
@@ -150,6 +164,10 @@ package
                GLOBAL._canInvite = true;
             }
             BASE._isFan = int(param1.isfan);
+            if(param1.ncpCandidate == 1)
+            {
+               GLOBAL._fbcncp = param1.ncpCandidate;
+            }
             KEYS._storageURL = GLOBAL._storageURL;
             KEYS._logFunction = LOGGER.Log;
             KEYS._languageVersion = GLOBAL._languageVersion;
@@ -220,15 +238,29 @@ package
          }
       }
       
+      private static function logFlashCapabilities() : void
+      {
+         var _loc1_:Object = null;
+         if(ExternalInterface.available)
+         {
+            _loc1_ = {
+               "flash_version":Capabilities.version,
+               "screen_resolution":Capabilities.screenResolutionX + "x" + Capabilities.screenResolutionY,
+               "screen_dpi":Capabilities.screenDPI
+            };
+            GLOBAL.CallJS("cc.logFlashCapabilities",[_loc1_]);
+         }
+      }
+      
       public static function checkHash(param1:String) : *
       {
          var _loc2_:Array = param1.split(",\"h\":");
          param1 = _loc2_[0] + "}";
          var _loc3_:String = "{\"h\":" + _loc2_[1];
          var _loc4_:String = param1;
-         var _loc5_:* = com.adobe.serialization.json.JSON.decode(param1);
-         var _loc6_:* = com.adobe.serialization.json.JSON.decode(_loc3_);
-         var _loc7_:String = MD5.hash(getSalt() + _loc4_ + getNum(_loc6_.hn));
+         var _loc5_:* = JSON.decode(param1);
+         var _loc6_:* = JSON.decode(_loc3_);
+         var _loc7_:String = md5(getSalt() + _loc4_ + getNum(_loc6_.hn));
          if(_loc7_ !== _loc6_.h)
          {
             return false;
@@ -243,7 +275,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt("YU87XV0U16511302843X74619X747UV4UZ34558V");
+         return decodeSalt("1V87Z84V19XV71U86583YX799Y8X5X89339UZ155");
       }
       
       public static function decodeSalt(param1:String) : String

@@ -58,15 +58,6 @@ package
          }
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(!GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-      }
-      
       override public function Constructed() : *
       {
          var Brag:Function;
@@ -86,7 +77,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -108,7 +99,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2145")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2280")]
    public dynamic class PopupNewBookmark extends MovieClip
    {
       public var tName:TextField;

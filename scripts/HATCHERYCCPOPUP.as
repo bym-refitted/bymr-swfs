@@ -1,11 +1,14 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSet;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.geom.Point;
    import gs.TweenLite;
    import gs.easing.Circ;
    
@@ -13,15 +16,28 @@ package
    {
       private var _tick:int = 0;
       
-      private var _monsterID:int = 0;
+      private var _monsterID:String = "";
+      
+      private var _monsterIndex:int = 0;
+      
+      private var _scrollSet:ScrollSet;
+      
+      private var _scrollSetContainer:Sprite;
+      
+      public var _monsterSlots:Array;
       
       public var _guidePage:int = 1;
       
       public function HATCHERYCCPOPUP()
       {
          var _loc1_:String = null;
-         var _loc3_:MovieClip = null;
-         var _loc4_:MovieClip = null;
+         var _loc2_:int = 0;
+         var _loc4_:Point = null;
+         var _loc5_:int = 0;
+         var _loc7_:Array = null;
+         var _loc10_:MovieClip = null;
+         var _loc11_:MovieClip = null;
+         var _loc12_:MovieClip = null;
          super();
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
@@ -49,42 +65,75 @@ package
             bTopup.addEventListener(MouseEvent.CLICK,STORE.Show(2,4,["BR41I","BR42I","BR43I"]));
          }
          bTopup.buttonMode = true;
-         var _loc2_:int = 1;
-         while(_loc2_ <= 15)
+         this._scrollSet = new ScrollSet();
+         this._scrollSet.x = scroller.x;
+         this._scrollSet.y = scroller.y;
+         this._scrollSet.width = scroller.width;
+         this._scrollSet.Init(monsterCanvas,monsterMask,ScrollSet.BROWN,monsterMask.y,monsterMask.height);
+         this._scrollSet.AutoHideEnabled = false;
+         this._scrollSet.isHiddenWhileUnnecessary = true;
+         this._scrollSetContainer = new Sprite();
+         this._scrollSetContainer.addChild(this._scrollSet);
+         addChild(this._scrollSetContainer);
+         scroller.visible = false;
+         _loc2_ = 0;
+         var _loc3_:int = 0;
+         _loc4_ = new Point(10,14);
+         _loc5_ = 5;
+         this._monsterSlots = [];
+         _loc7_ = CREATURELOCKER.GetSortedCreatures(true);
+         var _loc8_:int = !BASE.isInferno() ? CREATURELOCKER.maxCreatures("above") : CREATURELOCKER.maxCreatures("inferno");
+         var _loc9_:int = 0;
+         while(_loc9_ < _loc8_)
          {
-            _loc1_ = "C" + _loc2_;
-            _loc3_ = this["monster" + _loc2_];
-            _loc3_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc2_));
-            _loc3_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc2_));
-            _loc3_.buttonMode = true;
-            ImageCache.GetImageWithCallBack("monsters/C" + _loc2_ + "-medium.jpg",this.IconLoaded,true,1,"",["monster",_loc2_]);
-            _loc4_ = this["monsterLevel" + _loc2_];
-            if(Boolean(ACADEMY._upgrades[_loc1_]) && ACADEMY._upgrades[_loc1_].level > 1)
+            _loc1_ = _loc7_[_loc9_].id;
+            if(CREATURELOCKER._creatures && CREATURELOCKER._creatures[_loc1_] && CREATURELOCKER._creatures[_loc1_].blocked == true)
             {
-               _loc4_.visible = true;
-               _loc4_.tLevel.htmlText = "<b>" + ACADEMY._upgrades[_loc1_].level + "</b>";
+               _loc3_++;
             }
             else
             {
-               _loc4_.visible = false;
+               _loc10_ = new HatcheryCCMonsterIcon_CLIP();
+               _loc10_.id = _loc1_;
+               _loc10_.x = _loc4_.x + _loc2_ % _loc5_ * (_loc10_.mcMonster.width + 5);
+               _loc10_.y = _loc4_.y + Math.floor(_loc2_ / _loc5_) * (_loc10_.mcMonster.height + 5);
+               _loc11_ = _loc10_.mcMonster;
+               _loc11_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc7_[_loc9_].id));
+               monsterCanvas.addChild(_loc10_);
+               this._monsterSlots.push(_loc10_);
+               _loc11_.addEventListener(MouseEvent.MOUSE_OVER,this.MonsterInfo(_loc7_[_loc9_].id));
+               _loc11_.addEventListener(MouseEvent.MOUSE_DOWN,this.QueueAdd(_loc7_[_loc9_].id));
+               _loc11_.buttonMode = true;
+               ImageCache.GetImageWithCallBack("monsters/" + _loc1_ + "-medium.jpg",this.MonsterIconLoaded,true,1,"",[_loc11_]);
+               _loc12_ = _loc10_.mcLevel;
+               if(Boolean(ACADEMY._upgrades[_loc1_]) && ACADEMY._upgrades[_loc1_].level > 1)
+               {
+                  _loc12_.visible = true;
+                  _loc12_.tLevel.htmlText = "<b>" + ACADEMY._upgrades[_loc1_].level + "</b>";
+               }
+               else
+               {
+                  _loc12_.visible = false;
+               }
+               if(!(Boolean(CREATURELOCKER._lockerData[_loc1_]) && CREATURELOCKER._lockerData[_loc1_].t == 2))
+               {
+                  _loc11_.alpha = 0.75;
+                  _loc12_.visible = false;
+               }
+               _loc2_++;
             }
-            if(!(Boolean(CREATURELOCKER._lockerData[_loc1_]) && CREATURELOCKER._lockerData[_loc1_].t == 2))
-            {
-               _loc3_.alpha = 0.75;
-               _loc4_.visible = false;
-            }
-            _loc2_++;
+            _loc9_++;
          }
-         _loc2_ = 1;
-         while(_loc2_ <= 5)
+         _loc9_ = 1;
+         while(_loc9_ <= 5)
          {
-            this["hatchery" + _loc2_].gotoAndStop("blank");
-            this["hatcheryRemove" + _loc2_].visible = false;
-            this["hatchery" + _loc2_].addEventListener(MouseEvent.MOUSE_OVER,this.ShowRemove(this["hatcheryRemove" + _loc2_]));
-            this["hatchery" + _loc2_].addEventListener(MouseEvent.MOUSE_OUT,this.HideRemove(this["hatcheryRemove" + _loc2_]));
-            this["hatchery" + _loc2_].addEventListener(MouseEvent.MOUSE_DOWN,this.StopProduction(_loc2_));
-            this["hatchery" + _loc2_].buttonMode = true;
-            _loc2_++;
+            this["hatchery" + _loc9_].gotoAndStop("blank");
+            this["hatcheryRemove" + _loc9_].visible = false;
+            this["hatchery" + _loc9_].addEventListener(MouseEvent.MOUSE_OVER,this.ShowRemove(this["hatcheryRemove" + _loc9_]));
+            this["hatchery" + _loc9_].addEventListener(MouseEvent.MOUSE_OUT,this.HideRemove(this["hatcheryRemove" + _loc9_]));
+            this["hatchery" + _loc9_].addEventListener(MouseEvent.MOUSE_DOWN,this.StopProduction(_loc9_));
+            this["hatchery" + _loc9_].buttonMode = true;
+            _loc9_++;
          }
          title_txt.htmlText = KEYS.Get("hcc_title");
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
@@ -112,16 +161,24 @@ package
          this[param3[0] + param3[1]].mcImage.visible = true;
       }
       
-      public function MonsterInfo(param1:int) : Function
+      public function MonsterIconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
       {
-         var n:int = param1;
+         var _loc4_:Bitmap = new Bitmap(param2);
+         _loc4_.smoothing = true;
+         param3[0].mcImage.addChild(_loc4_);
+         param3[0].mcImage.visible = true;
+      }
+      
+      public function MonsterInfo(param1:String) : Function
+      {
+         var n:String = param1;
          return function(param1:MouseEvent = null):*
          {
             MonsterInfoB(n);
          };
       }
       
-      public function MonsterInfoB(param1:int) : *
+      public function MonsterInfoB(param1:String) : *
       {
          var _loc11_:String = null;
          var _loc12_:int = 0;
@@ -130,7 +187,7 @@ package
          {
             _loc2_++;
          }
-         var _loc3_:* = "C" + param1;
+         var _loc3_:* = param1;
          var _loc4_:* = CREATURELOCKER._creatures[_loc3_];
          var _loc5_:int = 0;
          var _loc6_:int = 0;
@@ -240,13 +297,13 @@ package
          mcMonsterInfo.visible = false;
       }
       
-      public function QueueAdd(param1:int) : Function
+      public function QueueAdd(param1:String) : Function
       {
-         var n:int = param1;
+         var targetID:String = param1;
          return function(param1:MouseEvent = null):*
          {
             _tick = 0;
-            _monsterID = n;
+            _monsterID = targetID;
             QueueAddTick();
             addEventListener(Event.ENTER_FRAME,QueueAddTick);
          };
@@ -260,7 +317,7 @@ package
          {
             return;
          }
-         var _loc2_:* = "C" + this._monsterID;
+         var _loc2_:* = this._monsterID;
          if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true))
          {
             return;
@@ -295,7 +352,7 @@ package
                SOUNDS.Play("error1");
             }
             this.Update();
-            GLOBAL._bHatcheryCC.Tick();
+            GLOBAL._bHatcheryCC.Tick(1);
          }
       }
       
@@ -368,7 +425,7 @@ package
          return function(param1:MouseEvent = null):*
          {
             _tick = 0;
-            _monsterID = n;
+            _monsterIndex = n;
             QueueRemoveTick();
             addEventListener(Event.ENTER_FRAME,QueueRemoveTick);
          };
@@ -382,13 +439,13 @@ package
             return;
          }
          var _loc2_:Array = GLOBAL._bHatcheryCC._monsterQueue;
-         if(_loc2_.length >= this._monsterID)
+         if(_loc2_.length >= this._monsterIndex)
          {
-            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterID - 1][0],"cResource"));
-            --_loc2_[this._monsterID - 1][1];
-            if(_loc2_[this._monsterID - 1][1] <= 0)
+            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterIndex - 1][0],"cResource"));
+            --_loc2_[this._monsterIndex - 1][1];
+            if(_loc2_[this._monsterIndex - 1][1] <= 0)
             {
-               _loc2_.splice(this._monsterID - 1,1);
+               _loc2_.splice(this._monsterIndex - 1,1);
             }
             BASE.Save();
          }
@@ -586,28 +643,24 @@ package
          var _loc7_:BFOUNDATION = null;
          var _loc8_:int = 0;
          var _loc10_:String = null;
-         var _loc11_:String = null;
-         var _loc12_:String = null;
-         var _loc13_:int = 0;
-         var _loc14_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
          this.RenderQueue();
          var _loc1_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          var _loc3_:int = 1;
-         var _loc6_:int = 1;
-         while(_loc6_ < 16)
+         var _loc6_:int = 0;
+         while(_loc6_ < this._monsterSlots.length)
          {
-            _loc10_ = "C" + _loc6_;
-            _loc11_ = "monster" + _loc6_;
-            _loc12_ = "monsterLevel" + _loc6_;
+            _loc10_ = this._monsterSlots[_loc6_].id;
             if(!BASE.Charge(4,CREATURES.GetProperty(_loc10_,"cResource"),true))
             {
-               this[_loc12_].alpha = 0.5;
-               this[_loc11_].alpha = 0.5;
+               this._monsterSlots[_loc6_].mcMonster.alpha = 0.5;
+               this._monsterSlots[_loc6_].mcLevel.alpha = 0.5;
             }
             else
             {
-               this[_loc12_].alpha = 1;
-               this[_loc11_].alpha = 1;
+               this._monsterSlots[_loc6_].mcMonster.alpha = 1;
+               this._monsterSlots[_loc6_].mcLevel.alpha = 1;
             }
             _loc6_++;
          }
@@ -639,13 +692,13 @@ package
                {
                   _loc4_.mcLoading.visible = true;
                   ImageCache.GetImageWithCallBack("monsters/" + _loc7_._inProduction + "-medium.jpg",this.IconLoaded,true,1,"",["hatchery",_loc3_]);
-                  _loc13_ = int(CREATURELOCKER._creatures[_loc7_._inProduction].props.cTime);
-                  _loc14_ = 100 / _loc13_ * _loc7_._countdownProduce.Get();
-                  if(_loc14_ < 0)
+                  _loc11_ = int(CREATURELOCKER._creatures[_loc7_._inProduction].props.cTime);
+                  _loc12_ = 100 / _loc11_ * _loc7_._countdownProduce.Get();
+                  if(_loc12_ < 0)
                   {
-                     _loc14_ = 0;
+                     _loc12_ = 0;
                   }
-                  this["bProgress" + _loc3_].mcBar.width = 100 - _loc14_;
+                  this["bProgress" + _loc3_].mcBar.width = 100 - _loc12_;
                   if(_loc7_._countdownProduce.Get() > 0 && _loc7_._hasResources)
                   {
                      this["tProgress" + _loc3_].htmlText = "<b>" + GLOBAL.ToTime(_loc7_._countdownProduce.Get(),true) + "</b>";
@@ -721,6 +774,7 @@ package
          {
             mcOverdrive.visible = false;
          }
+         this._scrollSet.Update();
       }
       
       public function Help(param1:MouseEvent = null) : void

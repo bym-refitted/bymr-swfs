@@ -1,9 +1,13 @@
 package
 {
+   import flash.display.Shape;
+   import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   import gs.TweenLite;
+   import gs.easing.Expo;
    
    public class HOUSINGBUNKER extends BFOUNDATION
    {
@@ -32,6 +36,8 @@ package
       public var _isLogged:Boolean;
       
       public var _monstersDispatchedTotal:int;
+      
+      private var _radiusGraphic:Shape;
       
       public function HOUSINGBUNKER()
       {
@@ -64,15 +70,6 @@ package
                _loc2_.ModeHousing();
             }
             _loc1_++;
-         }
-      }
-      
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
          }
       }
       
@@ -176,10 +173,6 @@ package
             BASE._buildingsBunkers["b" + _id] = this;
             BASE._buildingsTowers["b" + _id] = this;
          }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
-         }
          this.updateLocalProperties();
       }
       
@@ -192,11 +185,11 @@ package
             this._targetFlyers = [];
             return;
          }
-         var _loc3_:Array = MAP.CreepCellFind(_position.add(new Point(_footprint[0].width / 2,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range);
+         var _loc3_:Array = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range);
          this._targetCreeps = this.addTargetCreeps(param1,_loc3_,param2);
          if(this.canTargetAir())
          {
-            _loc3_ = MAP.CreepCellFind(_position.add(new Point(_footprint[0].width / 2,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range,2);
+            _loc3_ = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range,2);
             this._targetFlyers = this.addTargetCreeps(param1,_loc3_,param2);
          }
          else
@@ -301,10 +294,6 @@ package
             this._capacity = _buildingProps.capacity[_lvl.Get() - 1];
          }
          var _loc1_:Array = this.getUnusedCreatures();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
          var _loc2_:Boolean = false;
          var _loc3_:int = 0;
          while(_loc3_ < this._targetCreeps.length)
@@ -472,6 +461,52 @@ package
       public function Cull() : *
       {
          HOUSING.Cull();
+      }
+      
+      override public function Over(param1:MouseEvent) : *
+      {
+         if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
+         {
+            TweenLite.delayedCall(0.25,this.RangeIndicator);
+         }
+      }
+      
+      private function RangeIndicator() : void
+      {
+         this._radiusGraphic = new Shape();
+         this._radiusGraphic.graphics.beginFill(0xffffff,0.1);
+         this._radiusGraphic.graphics.lineStyle(1,0xffffff,0.25);
+         var _loc2_:Sprite = new Sprite();
+         var _loc3_:Point = _position.add(new Point(0,_footprint[0].height * 0.25));
+         var _loc4_:Point = new Point(_range * 2.8,_range * 1.2);
+         this._radiusGraphic.graphics.drawEllipse(0,0,_loc4_.x,_loc4_.y);
+         this._radiusGraphic.x = -(_loc4_.x * 0.5);
+         this._radiusGraphic.y = -(_loc4_.y * 0.5);
+         _loc2_.addChild(this._radiusGraphic);
+         _loc2_.x = _loc3_.x;
+         _loc2_.y = _loc3_.y;
+         MAP._BUILDINGFOOTPRINTS.addChild(_loc2_);
+         TweenLite.from(_loc2_,0.25,{
+            "alpha":0.5,
+            "scaleX":0.25,
+            "scaleY":0,
+            "delay":0,
+            "ease":Expo.easeOut
+         });
+         TweenLite.killDelayedCallsTo(this.RangeIndicator);
+      }
+      
+      override public function Out(param1:MouseEvent) : *
+      {
+         if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
+         {
+            if(this._radiusGraphic.parent)
+            {
+               this._radiusGraphic.parent.removeChild(this._radiusGraphic);
+            }
+            this._radiusGraphic = null;
+         }
+         TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
       public function RemoveCreature(param1:String) : void

@@ -12,19 +12,29 @@ package
       
       public static var _page:int = 1;
       
-      public static var _maxSpeed:int = 0;
+      public static var _maxSpeed:Number = 0;
       
-      public static var _maxHealth:int = 0;
+      public static var _maxHealth:Number = 0;
       
-      public static var _maxDamage:int = 0;
+      public static var _maxDamage:Number = 0;
       
-      public static var _maxTime:int = 0;
+      public static var _maxTime:Number = 0;
       
-      public static var _maxResource:int = 0;
+      public static var _maxResource:Number = 0;
       
-      public static var _maxStorage:int = 0;
+      public static var _maxStorage:Number = 0;
+      
+      private static var _monsterString:String = "C";
+      
+      private static var _maxMonsters:int = 16;
+      
+      private static var lastAction:int = 0;
       
       public static var _instantUpgradeCost:int = 0;
+      
+      private const _infernoFrameOffset:int = 6;
+      
+      private const _infernoMaxMonsters:int = 9;
       
       private var _portraitImage:DisplayObject;
       
@@ -34,6 +44,20 @@ package
       {
          var _loc2_:String = null;
          super();
+         if(BASE.isInferno())
+         {
+            _monsterString = "IC";
+            _maxMonsters = this._infernoMaxMonsters;
+            if(_page > this._infernoMaxMonsters)
+            {
+               _page = 1;
+            }
+         }
+         else
+         {
+            _monsterString = "C";
+            _maxMonsters = CREATURELOCKER.NUM_CREEP_TYPE + 1;
+         }
          bPrevious.addEventListener(MouseEvent.CLICK,this.Previous);
          bPrevious.mcArrow.gotoAndStop(2);
          bNext.addEventListener(MouseEvent.CLICK,this.Next);
@@ -42,18 +66,18 @@ package
          while(_loc1_ < 5)
          {
             bB["mcR" + _loc1_].visible = false;
+            bB["mcR" + _loc1_].gotoAndStop(_loc1_ + (BASE.isInferno() ? this._infernoFrameOffset : 0));
             if(_loc1_ != 3)
             {
                bB["mcR" + _loc1_].alpha = 0.25;
             }
             bB["mcR" + _loc1_].tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc1_ - 1]) + "</b>";
             bB["mcR" + _loc1_].tValue.htmlText = "<b>0</b>";
-            bB["mcR" + _loc1_].gotoAndStop(_loc1_);
             _loc1_++;
          }
          bB.mcTime.visible = false;
+         bB.mcTime.gotoAndStop((BASE.isInferno() ? this._infernoFrameOffset : 0) + 6);
          bB.mcTime.tTitle.htmlText = "<b>" + KEYS.Get("#r_time#") + "</b>";
-         bB.mcTime.gotoAndStop(6);
          for(_loc2_ in CREATURELOCKER._creatures)
          {
             if(CREATURES.GetProperty(_loc2_,"speed",10) > _maxSpeed)
@@ -83,20 +107,24 @@ package
          }
          if(ACADEMY._building._upgrading)
          {
-            _page = int(String(ACADEMY._building._upgrading).substr(1));
+            _page = int(String(ACADEMY._building._upgrading).substr(ACADEMY._building._upgrading.indexOf("C") + 1));
          }
-         this.Setup("C" + _page);
+         this.Setup(_monsterString + _page);
          speed_txt.htmlText = "<b>" + KEYS.Get("acad_att_speed") + "</b>";
          health_txt.htmlText = "<b>" + KEYS.Get("acad_att_health") + "</b>";
          damage_txt.htmlText = "<b>" + KEYS.Get("acad_att_damage") + "</b>";
          cost_txt.htmlText = "<b>" + KEYS.Get("acad_att_cost") + "</b>";
+         if(BASE.isInferno())
+         {
+            cost_txt.htmlText = "<b>" + KEYS.Get("infacad_att_cost") + "</b>";
+         }
          housing_txt.htmlText = "<b>" + KEYS.Get("acad_att_housing") + "</b>";
          time_txt.htmlText = "<b>" + KEYS.Get("acad_att_time") + "</b>";
          before_txt.htmlText = "<b>" + KEYS.Get("acad_att_before") + "</b>";
          after_txt.htmlText = "<b>" + KEYS.Get("acad_att_after") + "</b>";
       }
       
-      public function Setup(param1:String) : *
+      public function Setup(param1:String) : void
       {
          _monsterID = param1;
          if(!ACADEMY._upgrades[_monsterID])
@@ -104,6 +132,7 @@ package
             ACADEMY._upgrades[_monsterID] = {"level":1};
          }
          this.Update(true);
+         lastAction = 0;
       }
       
       private function UpdatePortrait(param1:String, param2:BitmapData, param3:Array) : *
@@ -133,6 +162,7 @@ package
       public function Update(param1:Boolean = false) : *
       {
          var _loc7_:Boolean = false;
+         var _loc11_:Object = null;
          var _loc2_:Object = ACADEMY._upgrades[_monsterID];
          var _loc3_:Object = ACADEMY.StartMonsterUpgrade(_monsterID,true);
          var _loc4_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[ACADEMY._upgrades[_monsterID].level - 1];
@@ -188,6 +218,7 @@ package
                bB.bAction.addEventListener(MouseEvent.CLICK,this.StartMonsterUpgrade);
                bB.bAction.removeEventListener(MouseEvent.CLICK,this.CancelMonsterUpgrade);
                bB.bAction.visible = true;
+               bB.bAction.Enabled = true;
                bB.mcR1.visible = true;
                bB.mcR2.visible = true;
                bB.mcR3.visible = true;
@@ -196,7 +227,7 @@ package
                bB.mcTime.visible = true;
                bB.mcTime.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc4_[1]) + "</b>";
             }
-            else if(_loc3_.status == KEYS.Get("acad_err_putty"))
+            else if(_loc3_.status == KEYS.Get("acad_err_putty") || _loc3_.status == KEYS.Get("acad_err_sulfur"))
             {
                bA.tDescription.visible = true;
                bA.gArrow.visible = true;
@@ -286,7 +317,28 @@ package
          });
          tStorageA.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage")});
          tTimeA.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime"),true);
-         var _loc8_:int = ACADEMY._upgrades[_monsterID].level + 1;
+         var _loc8_:int = int(ACADEMY._upgrades[_monsterID].level);
+         var _loc9_:* = false;
+         var _loc10_:int = 1;
+         for each(_loc11_ in GLOBAL._buildingProps)
+         {
+            if(_loc11_.id == 26)
+            {
+               if(Boolean(_loc11_.costs) && _loc11_.costs.length > _loc10_)
+               {
+                  _loc10_ = int(_loc11_.costs.length);
+               }
+            }
+         }
+         _loc9_ = ACADEMY._upgrades[_monsterID].level <= _loc10_;
+         if(_loc9_)
+         {
+            _loc8_ = ACADEMY._upgrades[_monsterID].level + 1;
+         }
+         else
+         {
+            _loc8_ = int(ACADEMY._upgrades[_monsterID].level);
+         }
          _loc6_ = CREATURES.GetProperty(_monsterID,"damage",_loc8_);
          if(_loc7_)
          {
@@ -374,6 +426,7 @@ package
       {
          var Post:Function;
          var building:* = undefined;
+         var bragImage:String = null;
          var monsterName:String = null;
          var popupMC:popup_monster = null;
          var e:MouseEvent = param1;
@@ -410,18 +463,36 @@ package
                break;
             }
          }
-         LOGGER.Stat([47,_monsterID.substr(1),ACADEMY._upgrades[_monsterID].level]);
+         LOGGER.Stat([47,_monsterID,ACADEMY._upgrades[_monsterID].level]);
          if(GLOBAL._mode == "build")
          {
             Post = function():*
             {
-               GLOBAL.CallJS("sendFeed",["academy-training",KEYS.Get("acad_stream_title",{
-                  "v1":monsterName,
-                  "v2":ACADEMY._upgrades[_monsterID].level
-               }),KEYS.Get("acad_stream_description"),CREATURELOCKER._creatures[_monsterID].stream[2],0]);
+               if(BASE.isInferno())
+               {
+                  GLOBAL.CallJS("sendFeed",["academy-training",KEYS.Get("acad_stream_title_inf",{
+                     "v1":monsterName,
+                     "v2":ACADEMY._upgrades[_monsterID].level
+                  }),KEYS.Get("acad_stream_description"),bragImage,0]);
+               }
+               else
+               {
+                  GLOBAL.CallJS("sendFeed",["academy-training",KEYS.Get("acad_stream_title",{
+                     "v1":monsterName,
+                     "v2":ACADEMY._upgrades[_monsterID].level
+                  }),KEYS.Get("acad_stream_description"),bragImage,0]);
+               }
                POPUPS.Next();
             };
+            if(CREATURELOCKER._creatures[_monsterID].stream[2])
+            {
+               bragImage = CREATURELOCKER._creatures[_monsterID].stream[2];
+            }
             monsterName = CREATURELOCKER._creatures[_monsterID].name;
+            if(monsterName.substring(0,1) == "#")
+            {
+               monsterName = KEYS.Get(monsterName);
+            }
             popupMC = new popup_monster();
             popupMC.tText.htmlText = KEYS.Get("acad_pop_complete",{"v1":monsterName});
             popupMC.bAction.SetupKey("btn_warnyourfriends");
@@ -450,24 +521,64 @@ package
          STORE.SpeedUp("SP4");
       }
       
-      public function Previous(param1:MouseEvent) : *
+      public function Previous(param1:MouseEvent = null) : *
       {
          --_page;
+         lastAction = -1;
          if(_page == 0)
          {
-            _page = 15;
+            _page = _maxMonsters - 1;
          }
-         this.Setup("C" + _page);
+         if(this.CheckMonsterLock(_monsterString + _page))
+         {
+            if(lastAction > 0)
+            {
+               this.Next();
+            }
+            else
+            {
+               this.Previous();
+            }
+         }
+         else
+         {
+            this.Setup(_monsterString + _page);
+         }
       }
       
-      public function Next(param1:MouseEvent) : *
+      public function Next(param1:MouseEvent = null) : *
       {
          ++_page;
-         if(_page == 16)
+         lastAction = 1;
+         if(_page == _maxMonsters)
          {
             _page = 1;
          }
-         this.Setup("C" + _page);
+         if(this.CheckMonsterLock(_monsterString + _page))
+         {
+            if(lastAction > 0)
+            {
+               this.Next();
+            }
+            else
+            {
+               this.Previous();
+            }
+         }
+         else
+         {
+            this.Setup(_monsterString + _page);
+         }
+      }
+      
+      public function CheckMonsterLock(param1:String) : Boolean
+      {
+         var _loc2_:Boolean = Boolean(CREATURELOCKER._creatures[param1].blocked);
+         if(_loc2_)
+         {
+            return true;
+         }
+         return false;
       }
       
       public function Help(param1:MouseEvent = null) : void

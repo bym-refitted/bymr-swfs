@@ -479,7 +479,7 @@ package
          STORE.SpeedUp("SP4");
       }
       
-      public function List() : *
+      public function List() : void
       {
          var offset:int;
          var i:int;
@@ -494,8 +494,11 @@ package
          for(cr in MONSTERLAB._powerupProps)
          {
             abilityUpgrade = MONSTERLAB._powerupProps[cr];
-            abilityUpgrade.id = cr;
-            this._abilityUpgradesList.push(abilityUpgrade);
+            if(!abilityUpgrade.blocked && !(Boolean(CREATURELOCKER._creatures[cr]) && Boolean(CREATURELOCKER._creatures[cr].blocked)))
+            {
+               abilityUpgrade.id = cr;
+               this._abilityUpgradesList.push(abilityUpgrade);
+            }
          }
          this._abilityUpgradesList.sortOn(["order"],Array.NUMERIC);
          if(this._listContainer)

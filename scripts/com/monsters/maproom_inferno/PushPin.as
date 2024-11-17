@@ -54,18 +54,15 @@ package com.monsters.maproom_inferno
       
       public static function getRandomPinWithColor(param1:uint) : Sprite
       {
-         var _loc3_:Bitmap = null;
-         var _loc4_:BitmapData = null;
-         var _loc5_:* = 0;
          if(!isSetup)
          {
             Setup();
          }
          var _loc2_:Sprite = new Sprite();
-         _loc3_ = new Bitmap(keys.shadow.data);
+         var _loc3_:Bitmap = new Bitmap(keys.shadow.data);
          _loc2_.addChild(_loc3_);
-         _loc4_ = new BitmapData(columnWidth,columnHeight,true);
-         _loc5_ = Math.random() * 5;
+         var _loc4_:BitmapData = new BitmapData(columnWidth,columnHeight,true);
+         var _loc5_:uint = Math.random() * 5;
          _loc3_.x = 3 + Math.random() * 3;
          _loc3_.y = 3 + Math.random() * 3;
          _loc4_.copyPixels(keys.pins.data,new Rectangle(columnWidth * _loc5_,param1 * columnHeight,columnWidth,columnHeight),new Point(0,0));

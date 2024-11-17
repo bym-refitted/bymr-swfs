@@ -37,6 +37,8 @@ package com.monsters.display
       
       private var _AutoHideEnabled:Boolean = true;
       
+      public var isHiddenWhileUnnecessary:Boolean = false;
+      
       private var _MinScrollerHeight:Number;
       
       private var _IsDragging:Boolean = false;
@@ -70,10 +72,11 @@ package com.monsters.display
          }
          this.mcScroller.y = this._Margin;
          this.mcBG.height = param5;
-         this.mcScroller.addEventListener(MouseEvent.MOUSE_DOWN,this.ScrollerDown);
          this.mcScroller.useHandCursor = true;
-         this.addEventListener(MouseEvent.MOUSE_OVER,this.Show);
-         this.addEventListener(MouseEvent.MOUSE_OUT,this.Hide);
+         this.addEventListener(MouseEvent.MOUSE_OVER,this.Show,false,0,true);
+         this.addEventListener(MouseEvent.MOUSE_OUT,this.Hide,false,0,true);
+         this._Container.addEventListener(Event.RESIZE,this.onResize,false,0,true);
+         this.mcScroller.addEventListener(MouseEvent.MOUSE_DOWN,this.ScrollerDown,false,0,true);
          if(Boolean(this.parent) && param1.height < this._Mask.height)
          {
             this.parent.removeChild(this);
@@ -91,6 +94,11 @@ package com.monsters.display
          this._IsInitialized = true;
       }
       
+      protected function onResize(param1:MouseEvent) : void
+      {
+         this.Update();
+      }
+      
       public function Update() : void
       {
          this.ResizeScroller();
@@ -99,6 +107,17 @@ package com.monsters.display
             this.ResizeScrollBar();
          }
          this._ContainerHeight = this._Container.height;
+         if(this.isHiddenWhileUnnecessary)
+         {
+            if(this._ContainerHeight <= this._Mask.height)
+            {
+               visible = false;
+            }
+            else
+            {
+               visible = true;
+            }
+         }
          var _loc1_:int = GLOBAL.InfernoMode() ? 1 : 0;
          if(_loc1_ < 0 || _loc1_ >= NUM_COLORS)
          {

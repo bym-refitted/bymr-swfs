@@ -93,6 +93,10 @@ package com.monsters.maproom
          var ty:Number = NaN;
          var t:TweenLite = null;
          var e:MouseEvent = param1;
+         if(TUTORIAL._stage < 110)
+         {
+            return;
+         }
          if(e.target != this.selector)
          {
             reposition = function():void
@@ -121,6 +125,10 @@ package com.monsters.maproom
       
       private function selectorDown(param1:MouseEvent) : void
       {
+         if(TUTORIAL._stage < 110)
+         {
+            return;
+         }
          var _loc2_:Rectangle = new Rectangle(background_mc.x,background_mc.y,background_mc.width - this.selector.width + 1,background_mc.height - this.selector.height + 1);
          this.selector.startDrag(false,_loc2_);
          addEventListener(Event.ENTER_FRAME,this.onSelectorDragged);

@@ -6,6 +6,8 @@ package com.monsters.ai
       
       public static var _infernotribes:Object;
       
+      public static var _eventtribes:Object;
+      
       private static var _assoc:Object;
       
       public static const L_IDS:Array = [1,2,3,4,5,6,7,8,9,10,41,42];
@@ -14,7 +16,9 @@ package com.monsters.ai
       
       public static const A_IDS:Array = [21,22,23,24,25,26,27,28,29,30,45,46];
       
-      public static const D_IDS:Array = [31,32,33,34,35,36,37,38,39,40,47,48];
+      public static const D_IDS:Array = [31,32,33,34,35,36,37,38,39,40,47,48,101,102,103,104,105,106,107,108,109,110];
+      
+      public static const B_IDS:Array = [101,102,103,104,105,106,107,108,109,110];
       
       public function TRIBES()
       {
@@ -28,7 +32,8 @@ package com.monsters.ai
             "l":L_IDS,
             "k":K_IDS,
             "a":A_IDS,
-            "d":D_IDS
+            "d":D_IDS,
+            "b":B_IDS
          };
          _tribes.l = {
             "id":1,
@@ -94,13 +99,28 @@ package com.monsters.ai
             "process":PROCESS7,
             "type":WMATTACK.TYPE_NERD,
             "taunt":KEYS.Get("ai_descenttribe_taunt"),
-            "splash":"popups/portrait_moloch.png",
+            "splash":"popups/tribe_moloch.png",
             "description":KEYS.Get("ai_descenttribe_description"),
             "succ":KEYS.Get("ai_descenttribe_succ"),
             "succ_stream":KEYS.Get("ai_descenttribe_succstream"),
             "fail":KEYS.Get("ai_descenttribe_fail"),
             "profilepic":"monsters/tribe_moloch_50.jpg",
-            "streampostpic":"tribe-moloch.png"
+            "streampostpic":"tribe-moloch.v2.png"
+         };
+         _eventtribes = {};
+         _eventtribes.b = {
+            "id":1,
+            "name":KEYS.Get("ai_brukkarg_name"),
+            "process":PROCESS7,
+            "type":WMATTACK.TYPE_NERD,
+            "taunt":KEYS.Get("ai_brukkarg_taunt"),
+            "splash":"popups/tribe_brukkarg.png",
+            "description":KEYS.Get("ai_brukkarg_description"),
+            "succ":KEYS.Get("ai_brukkarg_succ"),
+            "succ_stream":KEYS.Get("ai_brukkarg_succstream"),
+            "fail":KEYS.Get("ai_brukkarg_fail"),
+            "profilepic":"monsters/tribe_brukkarg_50.jpg",
+            "streampostpic":"tribe_brukkarg.png"
          };
       }
       
@@ -147,6 +167,10 @@ package com.monsters.ai
          if(GLOBAL._loadmode != GLOBAL._mode)
          {
             return _infernotribes.d;
+         }
+         if(param1 >= B_IDS[0] && param1 <= B_IDS[B_IDS.length - 1])
+         {
+            return _eventtribes.b;
          }
          for(_loc3_ in _assoc)
          {

@@ -191,8 +191,7 @@ package com.monsters.missions
          this.frame.mcToggle.buttonMode = true;
          this.frame.mcToggle.useHandCursor = true;
          this.frame.mcToggle.gotoAndStop(this._enabled ? "on" + this._skinTag : "close" + this._skinTag);
-         this.frame.mcToggle.visible = TUTORIAL._completed;
-         this.OnDisableClick();
+         this.frame.mcToggle.visible = TUTORIAL.hasFinished;
          this.toggleHide();
       }
       
@@ -220,7 +219,7 @@ package com.monsters.missions
          this.Skin();
          if(!this.frame.mcToggle.visible && GLOBAL._mode == "build")
          {
-            this.frame.mcToggle.visible = TUTORIAL._completed;
+            this.frame.mcToggle.visible = TUTORIAL.hasFinished;
          }
          if(GLOBAL._catchup)
          {
@@ -244,7 +243,7 @@ package com.monsters.missions
             {
                this._Priority.addChild(_loc4_);
                _loc4_.y = (_loc4_._Height + this._ItemPaddingY) * this._prioritycounter;
-               _loc4_.gotoAndStop("shiny" + this._skinTag);
+               _loc4_.bg.gotoAndStop("shiny" + this._skinTag);
             }
             else
             {
@@ -500,6 +499,25 @@ package com.monsters.missions
          {
             return;
          }
+         if(!this._open)
+         {
+            if(BASE.isInferno())
+            {
+               SOUNDS.Play("iquestshow");
+            }
+            else
+            {
+               SOUNDS.Play("click1");
+            }
+         }
+         else if(BASE.isInferno())
+         {
+            SOUNDS.Play("iquesthide");
+         }
+         else
+         {
+            SOUNDS.Play("close");
+         }
          if(param1 == null)
          {
             if(this._open)
@@ -645,11 +663,11 @@ package com.monsters.missions
       
       private function OnDisableClick(param1:MouseEvent = null) : void
       {
-         if(param1 && param1.currentTarget == this.frame.mcToggle && TUTORIAL._completed)
+         if(param1 && param1.currentTarget == this.frame.mcToggle && TUTORIAL.hasFinished)
          {
             this._enabled = !this._enabled;
          }
-         if(TUTORIAL._completed)
+         if(TUTORIAL.hasFinished)
          {
             if(!this._enabled)
             {

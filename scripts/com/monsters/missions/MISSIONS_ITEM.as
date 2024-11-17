@@ -122,7 +122,7 @@ package com.monsters.missions
             if(GLOBAL._mode == "build" && !_isDisable)
             {
                _loc2_ = _missionObject.id;
-               if(TUTORIAL._completed || QUESTS._completed && QUESTS._completed[_loc2_] == 1 && TUTORIAL._stage >= 26)
+               if(TUTORIAL.hasFinished || QUESTS._completed && QUESTS._completed[_loc2_] == 1 && TUTORIAL._stage >= 26)
                {
                   _loc3_ = new MISSIONS_INFO(missionID);
                   POPUPS.Push(_loc3_);

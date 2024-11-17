@@ -1,10 +1,12 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.alliances.*;
    import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
+   import com.monsters.siege.SiegeWeapons;
+   import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.Loader;
@@ -18,8 +20,6 @@ package com.monsters.maproom_advanced
    {
       private var _cell:MapRoomCell;
       
-      private var _mcMonsters:MovieClip;
-      
       private var _mcResources:MovieClip;
       
       private var _attackMonsters:Object = {};
@@ -28,7 +28,7 @@ package com.monsters.maproom_advanced
       
       private var _monstersInRange:Boolean = false;
       
-      public var _cellsInRange:Array = [];
+      public var _cellsInRange:Vector.<CellData> = new Vector.<CellData>(0,true);
       
       private var _enabled:Boolean = false;
       
@@ -38,9 +38,20 @@ package com.monsters.maproom_advanced
       
       private var _protectedInRange:Boolean;
       
+      private var _scroller:ScrollSet;
+      
       public function PopupAttackA()
       {
          super();
+         mMonsters.mask = mMonstersMask;
+         this._scroller = new ScrollSet();
+         this._scroller.isHiddenWhileUnnecessary = true;
+         this._scroller.AutoHideEnabled = false;
+         this._scroller.width = scroll.width;
+         this._scroller.x = scroll.x;
+         this._scroller.y = scroll.y;
+         addChild(this._scroller);
+         this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this.bAttack.SetupKey("map_attack_btn");
          this.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
          this.bAttack.enabled = false;
@@ -175,13 +186,14 @@ package com.monsters.maproom_advanced
       
       public function Update() : *
       {
-         var _loc3_:Object = null;
-         var _loc5_:MapRoomCell = null;
+         var _loc2_:CellData = null;
+         var _loc4_:MapRoomCell = null;
+         var _loc5_:* = undefined;
          var _loc6_:* = undefined;
          var _loc7_:* = undefined;
-         var _loc8_:* = undefined;
-         var _loc9_:int = 0;
-         var _loc10_:CATAPULTITEM = null;
+         var _loc8_:int = 0;
+         var _loc9_:CATAPULTITEM = null;
+         var _loc10_:SiegeWeapon = null;
          var _loc11_:int = 0;
          var _loc12_:int = 0;
          var _loc13_:String = null;
@@ -191,27 +203,18 @@ package com.monsters.maproom_advanced
          var _loc17_:String = null;
          var _loc18_:MapRoomPopupInfoMonster = null;
          var _loc19_:MapRoomPopupInfoMonster = null;
-         var _loc1_:Boolean = false;
-         var _loc2_:Number = 0;
+         var _loc1_:Number = 0;
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
-            _loc1_ = true;
-            _loc2_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
+            _loc1_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
          }
          if(MapRoom._open)
          {
-            if(_loc1_)
+            this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10 + _loc1_);
+            for each(_loc2_ in this._cellsInRange)
             {
-               this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,6);
-            }
-            else
-            {
-               this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
-            }
-            for each(_loc3_ in this._cellsInRange)
-            {
-               _loc5_ = _loc3_["cell"];
-               if((Boolean(_loc5_)) && !_loc5_._processed)
+               _loc4_ = _loc2_.cell;
+               if((Boolean(_loc4_)) && !_loc4_._processed)
                {
                   return false;
                }
@@ -234,21 +237,21 @@ package com.monsters.maproom_advanced
                "catapult":new SecNum(0),
                "flinger":new SecNum(0)
             };
-            for each(_loc3_ in this._cellsInRange)
+            for each(_loc2_ in this._cellsInRange)
             {
-               _loc5_ = _loc3_["cell"];
-               _loc11_ = int(_loc3_["range"]);
-               if(Boolean(_loc5_) && Boolean(_loc5_._mine))
+               _loc4_ = _loc2_["cell"];
+               _loc11_ = int(_loc2_["range"]);
+               if(Boolean(_loc4_) && Boolean(_loc4_._mine))
                {
                   _loc12_ = 0;
-                  if(_loc5_._flinger.Get() + (_loc1_ ? 2 : 0) >= _loc11_)
+                  if(_loc4_._flingerRange.Get() + _loc1_ >= _loc11_)
                   {
-                     for(_loc13_ in _loc5_._monsters)
+                     for(_loc13_ in _loc4_._monsters)
                      {
-                        _loc14_ = int(_loc5_._monsters[_loc13_].Get());
+                        _loc14_ = int(_loc4_._monsters[_loc13_].Get());
                         this._monstersInRange = true;
                         _loc12_++;
-                        if(_loc14_ > 0 && Boolean(_loc5_._protected))
+                        if(_loc14_ > 0 && Boolean(_loc4_._protected))
                         {
                            this._protectedInRange = true;
                         }
@@ -263,159 +266,202 @@ package com.monsters.maproom_advanced
                      }
                      MapRoom._flingerInRange = true;
                   }
-                  if(_loc5_._catapult.Get() >= _loc11_ && _loc5_._catapult.Get() > this._attackResources.catapult.Get())
+                  if(_loc4_._flingerRange.Get() >= this._attackResources.flinger.Get())
                   {
-                     this._attackResources.catapult.Set(_loc5_._catapult.Get());
-                  }
-                  if(_loc5_._flinger.Get() + (_loc1_ ? 2 : 0) >= this._attackResources.flinger.Get() + (_loc1_ ? 2 : 0))
-                  {
-                     this._attackResources.flinger.Set(_loc5_._flinger.Get() + (_loc1_ ? 0 : 0));
+                     this._attackResources.flinger.Set(_loc4_._flingerLevel.Get());
                   }
                }
             }
-            if(GLOBAL._playerGuardianData && GLOBAL._playerGuardianData.hp.Get() > 0 && MapRoom._flingerInRange)
+            if(MapRoom._flingerInRange)
             {
-               this._monstersInRange = true;
+               if(GLOBAL._playerCatapultLevel)
+               {
+                  this._attackResources.catapult.Set(GLOBAL._playerCatapultLevel.Get());
+               }
+               if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+               {
+                  this._monstersInRange = true;
+               }
+            }
+            while(mMonsters.numChildren)
+            {
+               mMonsters.removeChildAt(0);
             }
             if(this._monstersInRange)
             {
-               if(Boolean(this._mcMonsters) && Boolean(this._mcMonsters.parent))
-               {
-                  this._mcMonsters.parent.removeChild(this._mcMonsters);
-                  this._mcMonsters = null;
-               }
-               this._mcMonsters = new MovieClip();
-               this._mcMonsters.x = -180;
-               this._mcMonsters.y = 25;
                _loc15_ = 0;
                _loc16_ = 0;
                if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
                {
                   _loc18_ = new MapRoomPopupInfoMonster();
                   _loc18_.Setup(0,0,"G" + GLOBAL._playerGuardianData.t + "_L" + GLOBAL._playerGuardianData.l.Get(),1);
-                  this._mcMonsters.addChild(_loc18_);
+                  mMonsters.addChild(_loc18_);
                   _loc15_ += 1;
                }
                for(_loc17_ in this._attackMonsters)
                {
-                  if(_loc16_ < 4)
+                  _loc19_ = new MapRoomPopupInfoMonster();
+                  _loc19_.Setup(_loc15_ * 125,_loc16_ * 30,_loc17_,this._attackMonsters[_loc17_].Get());
+                  _loc15_ += 1;
+                  mMonsters.addChild(_loc19_);
+                  if(_loc15_ == 3)
                   {
-                     _loc19_ = new MapRoomPopupInfoMonster();
-                     _loc19_.Setup(_loc15_ * 125,_loc16_ * 30,_loc17_,this._attackMonsters[_loc17_].Get());
-                     _loc15_ += 1;
-                     if(_loc16_ <= 2)
-                     {
-                        this._mcMonsters.addChild(_loc19_);
-                     }
-                     if(_loc15_ == 3)
-                     {
-                        _loc15_ = 0;
-                        _loc16_ += 1;
-                     }
+                     _loc15_ = 0;
+                     _loc16_ += 1;
                   }
                }
-               this.addChild(this._mcMonsters);
+               this.addChild(mMonsters);
             }
-            else if(Boolean(this._mcMonsters) && Boolean(this._mcMonsters.parent))
-            {
-               this._mcMonsters.parent.removeChild(this._mcMonsters);
-               this._mcMonsters = null;
-            }
+            _loc6_ = -1;
             _loc7_ = -1;
             _loc8_ = -1;
-            _loc9_ = -1;
+            if(Boolean(this._mcResources) && Boolean(this._mcResources.parent))
+            {
+               this._mcResources.parent.removeChild(this._mcResources);
+               this._mcResources = null;
+            }
             this._mcResources = new MovieClip();
             this._mcResources.x = -175;
             this._mcResources.y = -75;
             if(this._attackResources.catapult.Get() >= 1)
             {
-               _loc6_ = 0;
-               while(_loc6_ < 3)
+               _loc5_ = 0;
+               while(_loc5_ < 3)
                {
-                  if(this._attackResources.r1 < ResourceBombs._bombs["tw" + _loc6_].cost)
+                  if(this._attackResources.r1 < ResourceBombs._bombs["tw" + _loc5_].cost)
                   {
                      break;
                   }
-                  _loc7_ = _loc6_;
-                  _loc6_++;
+                  _loc6_ = _loc5_;
+                  _loc5_++;
                }
             }
             if(this._attackResources.catapult.Get() >= 2)
             {
-               _loc6_ = 0;
-               while(_loc6_ < 4)
+               _loc5_ = 0;
+               while(_loc5_ < 4)
                {
-                  if(this._attackResources.r2 < ResourceBombs._bombs["pb" + _loc6_].cost)
+                  if(this._attackResources.r2 < ResourceBombs._bombs["pb" + _loc5_].cost)
                   {
                      break;
                   }
-                  _loc8_ = _loc6_;
-                  _loc6_++;
+                  _loc7_ = _loc5_;
+                  _loc5_++;
                }
             }
             if(this._attackResources.catapult.Get() >= 3)
             {
-               _loc6_ = 0;
-               while(_loc6_ < 4)
+               _loc5_ = 0;
+               while(_loc5_ < 4)
                {
-                  if(this._attackResources.r3 < ResourceBombs._bombs["pu" + _loc6_].cost)
+                  if(this._attackResources.r3 < ResourceBombs._bombs["pu" + _loc5_].cost)
                   {
                      break;
                   }
-                  _loc9_ = _loc6_;
-                  _loc6_++;
+                  _loc8_ = _loc5_;
+                  _loc5_++;
                }
             }
-            _loc10_ = new CATAPULTITEM();
+            _loc9_ = new CATAPULTITEM();
+            if(_loc6_ >= 0)
+            {
+               _loc9_.Setup("tw" + _loc6_,true,true);
+            }
+            else
+            {
+               _loc9_.Setup("tw0",true,false);
+            }
+            _loc9_.x = 0;
+            _loc9_.y = 0;
+            this._mcResources.addChild(_loc9_);
+            _loc9_ = new CATAPULTITEM();
             if(_loc7_ >= 0)
             {
-               _loc10_.Setup("tw" + _loc7_,true,true);
+               _loc9_.Setup("pb" + _loc7_,true,true);
             }
             else
             {
-               _loc10_.Setup("tw0",true,false);
+               _loc9_.Setup("pb0",true,false);
             }
-            _loc10_.x = 0;
-            _loc10_.y = 0;
-            this._mcResources.addChild(_loc10_);
-            _loc10_ = new CATAPULTITEM();
+            _loc9_.x = 65;
+            _loc9_.y = 0;
+            this._mcResources.addChild(_loc9_);
+            _loc9_ = new CATAPULTITEM();
             if(_loc8_ >= 0)
             {
-               _loc10_.Setup("pb" + _loc8_,true,true);
+               _loc9_.Setup("pu" + _loc8_,true,true);
             }
             else
             {
-               _loc10_.Setup("pb0",true,false);
+               _loc9_.Setup("pu0",true,false);
             }
-            _loc10_.x = 65;
-            _loc10_.y = 0;
-            this._mcResources.addChild(_loc10_);
-            _loc10_ = new CATAPULTITEM();
-            if(_loc9_ >= 0)
+            _loc9_.x = 130;
+            _loc9_.y = 0;
+            this._mcResources.addChild(_loc9_);
+            _loc10_ = SiegeWeapons.availableWeapon;
+            if((Boolean(_loc10_)) && MapRoom._flingerInRange)
             {
-               _loc10_.Setup("pu" + _loc9_,true,true);
+               _loc9_ = new CATAPULTITEM();
+               _loc9_._props = _loc10_;
+               _loc9_._bombid = _loc10_.weaponID;
+               _loc9_._txtMC._tA.htmlText = "<b>" + _loc10_.name + "</b>";
+               _loc9_._image = new MovieClip();
+               _loc9_.addChild(_loc9_._image);
+               _loc9_._popup = new bubblepopup3();
+               _loc9_._popup.x = 44;
+               _loc9_._popup.y = 29;
+               _loc9_.addChild(_loc9_._popup);
+               _loc9_._popX = _loc9_._popup.x;
+               _loc9_._popY = _loc9_._popup.y;
+               _loc9_.Enabled = true;
+               _loc9_.Hide();
+               _loc9_.setChildIndex(_loc9_._image,1);
+               _loc9_.setChildIndex(_loc9_._txtMC,2);
+               _loc9_.setChildIndex(_loc9_._popup,3);
+               ImageCache.GetImageWithCallBack(_loc10_.image,this.onSiegeIconComplete,true,1,"",[_loc9_._image]);
+               _loc9_.mouseEnabled = false;
+               _loc9_.x = 195;
+               _loc9_.y = 0;
+               this._mcResources.addChild(_loc9_);
             }
-            else
-            {
-               _loc10_.Setup("pu0",true,false);
-            }
-            _loc10_.x = 130;
-            _loc10_.y = 0;
-            this._mcResources.addChild(_loc10_);
             this.addChild(this._mcResources);
             this.bAttack.Enabled = true;
             this._enabled = true;
          }
-         var _loc4_:String = "";
-         _loc4_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flinger + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + com.adobe.serialization.json.JSON.encode(this._cell._resources) + "<br>_ticks:" + com.adobe.serialization.json.JSON.encode(this._cell._ticks) + "<br>_monsters:" + com.adobe.serialization.json.JSON.encode(this._cell._monsters);
+         var _loc3_:String = "";
+         _loc3_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
          if(this._cell._monsterData)
          {
-            _loc4_ += "<br>_monsterData:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData);
-            _loc4_ = _loc4_ + ("<br>_monsterData.saved:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.saved));
-            _loc4_ = _loc4_ + ("<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h));
-            _loc4_ = _loc4_ + ("<br>_monsterData.hcount:" + this._cell._monsterData.hcount);
+            _loc3_ += "<br>_monsterData:" + JSON.encode(this._cell._monsterData);
+            _loc3_ += "<br>_monsterData.saved:" + JSON.encode(this._cell._monsterData.saved);
+            _loc3_ += "<br>_monsterData.h:" + JSON.encode(this._cell._monsterData.h);
+            _loc3_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
+         }
+         if(this._scroller)
+         {
+            this._scroller.Update();
          }
          return this._enabled;
+      }
+      
+      private function onSiegeIconComplete(param1:String, param2:BitmapData, param3:Array = null) : void
+      {
+         var _loc4_:MovieClip = null;
+         if(param3[0])
+         {
+            _loc4_ = param3[0];
+            while(_loc4_.numChildren > 0)
+            {
+               _loc4_.removeChildAt(0);
+            }
+         }
+         var _loc5_:* = new Bitmap(param2);
+         _loc5_.height = 60;
+         _loc5_.width = 60;
+         if(_loc4_)
+         {
+            _loc4_.addChild(_loc5_);
+         }
       }
       
       private function ProfilePic() : *

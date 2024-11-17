@@ -10,6 +10,8 @@ package
    
    public class BUILDING23 extends BTOWER
    {
+      public static const TYPE:uint = 23;
+      
       public var _animMC:MovieClip;
       
       public var _animFrame:int = 0;
@@ -42,14 +44,32 @@ package
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         SOUNDS.Play("laser");
+         SOUNDS.Play("laser",!isJard ? 0.8 : 0.4);
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc3_ = 1.25;
          }
-         EFFECTS.Laser(x,y + 35,param1.x,param1.y,60,int(_damage * _loc2_ * _loc3_),_splash,this.Track);
+         if(isJard)
+         {
+            _jarHealth.Add(-int(_damage * 25 * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 25 * _loc2_ * _loc3_);
+            if(_jarHealth.Get() <= 0)
+            {
+               KillJar();
+            }
+         }
+         else if(_targetVacuum)
+         {
+            EFFECTS.Laser(x,y + 35,GLOBAL._bTownhall.x,GLOBAL._bTownhall.y - GLOBAL._bTownhall._mc.height * 2,int(_damage * 25 * _loc2_ * _loc3_),0,null);
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 25 * _loc2_ * _loc3_);
+            (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 25 * _loc2_ * _loc3_));
+         }
+         else
+         {
+            EFFECTS.Laser(x,y + 35,param1.x,param1.y,60,int(_damage * _loc2_ * _loc3_),_splash,this.Track);
+         }
       }
       
       public function Track(param1:int) : *
@@ -70,7 +90,8 @@ package
          {
             if(_animLoaded && !GLOBAL._catchup)
             {
-               _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+               _animRect.x = _animRect.width * _animTick;
+               _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
             }
             ++_frameNumber;
          }
@@ -97,7 +118,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
    }

@@ -1,5 +1,9 @@
 package
 {
+   import com.monsters.dealspot.DealSpot;
+   import com.monsters.maproom_inferno.views.DescentDebuffPopup;
+   import com.monsters.siege.SiegeWeapons;
+   import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -27,7 +31,23 @@ package
       
       public var _catapult:CATAPULTPOPUP;
       
+      public var _siegeweapon:SIEGEWEAPONPOPUP;
+      
       public var _buttonIcons:Array;
+      
+      public var _descentDebuff:DescentDebuffPopup;
+      
+      public var _dealspot:DealSpot;
+      
+      public var _resourceUI:Object;
+      
+      public var _resourceR1:int;
+      
+      public var _resourceR2:int;
+      
+      public var _resourceR3:int;
+      
+      public var _resourceR4:int;
       
       public function UI_TOP()
       {
@@ -37,6 +57,7 @@ package
          var i:int = 0;
          var count:int = 0;
          var s:String = null;
+         var availableSiegeWeapons:SiegeWeapon = null;
          var gb:MovieClip = null;
          var creatureID:int = 0;
          var creature:String = null;
@@ -99,6 +120,15 @@ package
                mc["mcR" + i].bAdd.mouseChildren = false;
                i++;
             }
+            this._resourceUI = {};
+            this._resourceUI.r1 = BASE._resources["r1"].Get();
+            this._resourceUI.r2 = BASE._resources["r2"].Get();
+            this._resourceUI.r3 = BASE._resources["r3"].Get();
+            this._resourceUI.r4 = BASE._resources["r4"].Get();
+            mc["mcR1"]._resource = BASE._resources["r1"].Get();
+            mc["mcR2"]._resource = BASE._resources["r2"].Get();
+            mc["mcR3"]._resource = BASE._resources["r3"].Get();
+            mc["mcR4"]._resource = BASE._resources["r4"].Get();
             mc.mcR5.bAdd.txtAdd.autoSize = TextFieldAutoSize.LEFT;
             mc.mcR5.bAdd.txtAdd.htmlText = KEYS.Get("ui_topaddshiny");
             mc.mcR5.bAdd.mcBG.width = mc.mcR5.bAdd.txtAdd.width + 11;
@@ -239,10 +269,23 @@ package
             {
                this._catapult = new CATAPULTPOPUP();
                mc.addChild(this._catapult);
-               this._catapult.x = 452;
+               this._catapult.x = 448;
                this._catapult.y = 4;
                this._catapult.Setup();
             }
+            availableSiegeWeapons = SiegeWeapons.availableWeapon;
+            if(availableSiegeWeapons != null && !BASE.isInferno())
+            {
+               this._siegeweapon = new SIEGEWEAPONPOPUP();
+               mc.addChild(this._siegeweapon);
+               this._siegeweapon.x = 632;
+               this._siegeweapon.y = 4;
+               this._siegeweapon.Setup();
+            }
+         }
+         else
+         {
+            this.DescentDebuffHide();
          }
          this.Update();
       }
@@ -263,6 +306,15 @@ package
       
       public function Clear() : void
       {
+      }
+      
+      public function ClearSiegeWeapon() : void
+      {
+         if(Boolean(this._siegeweapon) && Boolean(this._siegeweapon.parent))
+         {
+            this._siegeweapon.parent.removeChild(this._siegeweapon);
+            this._siegeweapon = null;
+         }
       }
       
       public function Topup(param1:int) : *
@@ -350,6 +402,17 @@ package
          {
             mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonstersinferno");
          }
+         if((GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iattack") && !MAPROOM_DESCENT.DescentPassed)
+         {
+            if(BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed)
+            {
+               this.DescentDebuffShow();
+            }
+            else
+            {
+               this.DescentDebuffHide();
+            }
+         }
       }
       
       public function BombSelect(param1:int) : *
@@ -404,18 +467,28 @@ package
             var _loc3_:* = undefined;
             if(n < 5)
             {
-               if(!topup)
+               if(topup)
+               {
+                  _loc2_ = "<b><font size=\"12\">" + KEYS.Get(GLOBAL._resourceNames[n - 1]) + "</font></b><br><b>" + KEYS.Get("bubble_topup") + "</b>";
+                  _loc3_ = 2;
+               }
+               else if(GLOBAL._advancedMap)
+               {
+                  _loc2_ = KEYS.Get("pop_resource2",{
+                     "v1":KEYS.Get(GLOBAL._resourceNames[n - 1]),
+                     "v2":GLOBAL.FormatNumber(BASE._resources["r" + n + "max"]),
+                     "v3":GLOBAL.FormatNumber(BASE._resources["r" + n + "Rate"]),
+                     "v4":GLOBAL.FormatNumber(BASE.getEmpireResources(n))
+                  });
+                  _loc3_ = 4;
+               }
+               else
                {
                   _loc2_ = "<b><font size=\"12\">" + KEYS.Get(GLOBAL._resourceNames[n - 1]) + "</font></b><br>" + KEYS.Get("pop_resource",{
                      "v1":GLOBAL.FormatNumber(BASE._resources["r" + n + "max"]),
                      "v2":GLOBAL.FormatNumber(BASE._resources["r" + n + "Rate"])
                   });
                   _loc3_ = 3;
-               }
-               else
-               {
-                  _loc2_ = "<b><font size=\"12\">" + KEYS.Get(GLOBAL._resourceNames[n - 1]) + "</font></b><br><b>" + KEYS.Get("bubble_topup") + "</b>";
-                  _loc3_ = 2;
                }
             }
             else
@@ -424,7 +497,7 @@ package
                _loc3_ = 2;
             }
             var _loc4_:* = mc["mcR" + n];
-            BubbleShow(_loc4_.x + _loc4_.width,_loc4_.y + int(_loc4_.height * 0.5),_loc2_,_loc3_);
+            BubbleShow(_loc4_.x + 135,_loc4_.y + int(_loc4_.height * 0.5),_loc2_,_loc3_);
          };
       }
       
@@ -454,40 +527,74 @@ package
          }
       }
       
+      public function UpdateTweenResourceText(param1:Number) : void
+      {
+         var _loc3_:int = 0;
+         var _loc4_:* = undefined;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc2_:int = param1;
+         _loc4_ = mc["mcR" + _loc2_];
+         _loc5_ = Number(_loc4_._resource);
+         _loc4_.tR.htmlText = "<b>" + GLOBAL.FormatNumber(_loc5_) + "</b>";
+         _loc3_ = 90 / BASE._resources["r" + _loc2_ + "max"] * _loc5_;
+         if(_loc3_ > 90)
+         {
+            _loc3_ = 90;
+         }
+         _loc4_.mcBar.width = _loc3_;
+      }
+      
       public function Update() : *
       {
          var _loc1_:int = 0;
-         var _loc2_:Object = null;
-         var _loc3_:int = 0;
-         var _loc4_:* = undefined;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:String = null;
+         var _loc2_:* = undefined;
+         var _loc3_:Object = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc7_:Number = NaN;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:String = null;
          if(!GLOBAL._catchup)
          {
             if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
             {
-               _loc1_ = 1;
-               while(_loc1_ < 6)
-               {
-                  _loc4_ = mc["mcR" + _loc1_];
-                  if(_loc1_ < 5)
-                  {
-                     _loc4_.tR.htmlText = "<b>" + GLOBAL.FormatNumber(BASE._resources["r" + _loc1_].Get()) + "</b>";
-                     _loc3_ = 90 / BASE._resources["r" + _loc1_ + "max"] * BASE._resources["r" + _loc1_].Get();
-                     if(_loc3_ > 90)
-                     {
-                        _loc3_ = 90;
-                     }
-                     _loc4_.mcBar.width = _loc3_;
-                  }
-                  else
-                  {
-                     _loc4_.tR.htmlText = "<b>" + GLOBAL.FormatNumber(BASE._credits.Get()) + "</b>";
-                  }
-                  _loc1_++;
-               }
+               _loc4_ = Number(BASE._resources["r1"].Get());
+               _loc5_ = Number(BASE._resources["r2"].Get());
+               _loc6_ = Number(BASE._resources["r3"].Get());
+               _loc7_ = Number(BASE._resources["r4"].Get());
+               TweenLite.to(mc.mcR1,0.5,{
+                  "_resource":_loc4_,
+                  "onUpdate":this.UpdateTweenResourceText,
+                  "onUpdateParams":[1],
+                  "ease":Linear.easeNone,
+                  "overwrite":1
+               });
+               TweenLite.to(mc.mcR2,0.5,{
+                  "_resource":_loc5_,
+                  "onUpdate":this.UpdateTweenResourceText,
+                  "onUpdateParams":[2],
+                  "ease":Linear.easeNone,
+                  "overwrite":1
+               });
+               TweenLite.to(mc.mcR3,0.5,{
+                  "_resource":_loc6_,
+                  "onUpdate":this.UpdateTweenResourceText,
+                  "onUpdateParams":[3],
+                  "ease":Linear.easeNone,
+                  "overwrite":1
+               });
+               TweenLite.to(mc.mcR4,0.5,{
+                  "_resource":_loc7_,
+                  "onUpdate":this.UpdateTweenResourceText,
+                  "onUpdateParams":[4],
+                  "ease":Linear.easeNone,
+                  "overwrite":1
+               });
+               mc["mcR5"].tR.htmlText = "<b>" + GLOBAL.FormatNumber(BASE._credits.Get()) + "</b>";
                if(GLOBAL._advancedMap)
                {
                   mc.mcOutposts.visible = true;
@@ -535,7 +642,7 @@ package
                      }
                      _loc1_++;
                   }
-                  _loc5_ = 0;
+                  _loc8_ = 0;
                   if(GLOBAL._canInvite && !GLOBAL._flags.kongregate)
                   {
                      if(GLOBAL._sessionCount >= 2 && !GLOBAL._canGift && GLOBAL.Timestamp() - GLOBAL.StatGet("pi") > 129600)
@@ -554,14 +661,14 @@ package
                   }
                   this.SortButtonIcons();
                   mc.bGift.visible = true;
-                  _loc5_ = POPUPS.QueueCount("gifts");
-                  if(_loc5_ > 0)
+                  _loc8_ = POPUPS.QueueCount("gifts");
+                  if(_loc8_ > 0)
                   {
                      mc.bGift.mcSpinner.visible = true;
                      mc.bGift.mcCounter.visible = true;
-                     if(_loc5_ < 10)
+                     if(_loc8_ < 10)
                      {
-                        mc.bGift.mcCounter.t.htmlText = "<b>" + _loc5_ + "</b>";
+                        mc.bGift.mcCounter.t.htmlText = "<b>" + _loc8_ + "</b>";
                      }
                      else
                      {
@@ -585,15 +692,15 @@ package
                      mc.bInbox.mcCounter.visible = false;
                      mc.bInbox.mcSpinner.visible = false;
                   }
-                  _loc5_ = POPUPS.QueueCount("alerts");
-                  if(_loc5_ > 0)
+                  _loc8_ = POPUPS.QueueCount("alerts");
+                  if(_loc8_ > 0)
                   {
                      mc.bAlert.visible = true;
                      mc.bAlert.mcSpinner.visible = true;
                      mc.bAlert.mcCounter.visible = true;
-                     if(_loc5_ < 10)
+                     if(_loc8_ < 10)
                      {
-                        mc.bAlert.mcCounter.t.htmlText = "<b>" + _loc5_ + "</b>";
+                        mc.bAlert.mcCounter.t.htmlText = "<b>" + _loc8_ + "</b>";
                      }
                      else
                      {
@@ -612,9 +719,9 @@ package
                _loc1_ = 1;
                while(_loc1_ < 5)
                {
-                  _loc4_ = mc["mcR" + _loc1_];
-                  _loc4_.tR.htmlText = "<b>" + GLOBAL.FormatNumber(ATTACK._loot["r" + _loc1_].Get()) + "</b>";
-                  _loc4_.mcBar.visible = false;
+                  _loc2_ = mc["mcR" + _loc1_];
+                  _loc2_.tR.htmlText = "<b>" + GLOBAL.FormatNumber(ATTACK._loot["r" + _loc1_].Get()) + "</b>";
+                  _loc2_.mcBar.visible = false;
                   _loc1_++;
                }
                _loc1_ = 0;
@@ -623,24 +730,28 @@ package
                   this._creatureButtons[_loc1_].Update();
                   _loc1_++;
                }
-               _loc6_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               _loc9_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               if(MAPROOM_DESCENT.InDescent)
+               {
+                  _loc9_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               }
                if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
                {
-                  _loc6_ += _loc6_ * 0.25;
+                  _loc9_ += _loc9_ * 0.25;
                }
-               _loc7_ = _loc6_;
-               for(_loc8_ in ATTACK._flingerBucket)
+               _loc10_ = _loc9_;
+               for(_loc11_ in ATTACK._flingerBucket)
                {
-                  if(_loc8_.substr(0,1) == "G")
+                  if(_loc11_.substr(0,1) == "G")
                   {
-                     _loc7_ -= CHAMPIONCAGE.GetGuardianProperty(_loc8_.substr(0,2),1,"bucket");
+                     _loc10_ -= CHAMPIONCAGE.GetGuardianProperty(_loc11_.substr(0,2),1,"bucket");
                   }
                   else
                   {
-                     _loc7_ -= CREATURES.GetProperty(_loc8_,"bucket") * ATTACK._flingerBucket[_loc8_].Get();
+                     _loc10_ -= CREATURES.GetProperty(_loc11_,"bucket") * ATTACK._flingerBucket[_loc11_].Get();
                   }
                }
-               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc6_ * _loc7_;
+               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc9_ * _loc10_;
                if(GLOBAL._mode != GLOBAL._loadmode)
                {
                   if(ATTACK._countdown > 0)
@@ -677,8 +788,8 @@ package
                   mc.tTime.htmlText = "<font color=\"#FFFFFF\">" + KEYS.Get("attack_ui_over") + "</font>";
                }
             }
-            _loc2_ = BASE.BaseLevel();
-            this.SetPoints(_loc2_.lower,_loc2_.upper,_loc2_.needed,_loc2_.points,_loc2_.level,false);
+            _loc3_ = BASE.BaseLevel();
+            this.SetPoints(_loc3_.lower,_loc3_.upper,_loc3_.needed,_loc3_.points,_loc3_.level,false);
          }
       }
       
@@ -712,6 +823,30 @@ package
                }
             }
             _loc13_++;
+         }
+      }
+      
+      public function InitDealspot() : *
+      {
+         if(mc.bDealSpot)
+         {
+            mc.bDealSpot.visible = true;
+            mc.bDealSpot.buttonMode = true;
+            mc.bDealSpot.mouseChildren = true;
+            while(mc.bDealSpot.numChildren)
+            {
+               mc.bDealSpot.removeChildAt(0);
+            }
+            this._dealspot = new DealSpot(this);
+            this._dealspot.x = -5;
+            this._dealspot.y = -5;
+            mc.bDealSpot.addChild(this._dealspot);
+         }
+         else if(mc.bDealSpot)
+         {
+            mc.bDealSpot.visible = false;
+            mc.bDealSpot.mouseChildren = false;
+            this._dealspot = null;
          }
       }
       
@@ -759,6 +894,28 @@ package
                BUY.Offers("earn");
             }
          };
+      }
+      
+      public function DescentDebuffShow() : void
+      {
+         var _loc1_:Boolean = (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed && (MAPROOM_DESCENT.DescentLevel > 6 && MAPROOM_DESCENT.DescentLevel < MAPROOM_DESCENT._descentLvlMax);
+         if(this._descentDebuff)
+         {
+            this.DescentDebuffHide();
+         }
+         if(_loc1_)
+         {
+            this._descentDebuff = new DescentDebuffPopup();
+            this._descentDebuff.Show(MAPROOM_DESCENT.DescentLevel);
+         }
+      }
+      
+      public function DescentDebuffHide() : void
+      {
+         if(this._descentDebuff)
+         {
+            this._descentDebuff.Hide();
+         }
       }
       
       public function DisplayBuffs() : void
@@ -894,6 +1051,7 @@ package
          var _loc4_:String = null;
          var _loc2_:int = param1.target.x + 50;
          var _loc3_:int = param1.target.y + 25;
+         var _loc5_:Boolean = true;
          switch(param1.target.name)
          {
             case "bInvite":
@@ -917,8 +1075,31 @@ package
                _loc4_ = KEYS.Get("pop_outposts");
                _loc2_ = param1.target.parent.x + 140;
                _loc3_ = param1.target.parent.y + 20;
+               break;
+            case "bDealSpot":
+            case "_dealspot":
+               _loc4_ = "<b>DealSpot Offers</b><br>Check DealSpot to earn Shiny.";
+               _loc2_ = param1.target.parent.x + 40;
+               _loc3_ = param1.target.parent.y + 20;
+               if(Boolean(this._dealspot) && this._dealspot._hasOffers)
+               {
+                  _loc4_ = "<b>DealSpot Offers</b><br>Check DealSpot to earn Shiny.";
+                  _loc3_ = param1.target.parent.y + 25;
+                  break;
+               }
+               _loc4_ = " ";
+               mc.bDealSpot.mouseChildren = false;
+               this.BubbleHide();
+               mc.bDealSpot.visible = false;
+               mc.bDealSpot.enabled = false;
+               if(Boolean(this._dealspot) && Boolean(this._dealspot.parent))
+               {
+                  this._dealspot.parent.removeChild(this._dealspot);
+               }
+               _loc5_ = false;
+               return;
          }
-         if(_loc4_ != null)
+         if(_loc5_ && _loc4_ != null)
          {
             this.BubbleShow(_loc2_,_loc3_,_loc4_);
          }

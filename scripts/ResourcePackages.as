@@ -166,7 +166,7 @@ package
          ++_packageCount;
       }
       
-      public static function Remove(param1:*) : *
+      public static function Remove(param1:*) : void
       {
          var id:* = param1;
          try

@@ -51,15 +51,6 @@ package
          super.Update(param1);
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-      }
-      
       override public function TickFast(param1:Event = null) : *
       {
          super.TickFast(param1);
@@ -104,7 +95,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       

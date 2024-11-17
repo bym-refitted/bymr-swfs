@@ -102,6 +102,8 @@ package
       
       public function SwitchB(param1:int, param2:int, param3:int) : *
       {
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          var _loc10_:Object = null;
          var _loc11_:BUILDINGBUTTON = null;
          BUILDINGS._menuA = param1;
@@ -129,11 +131,18 @@ package
          this._thumbnailsMC = this.addChild(new MovieClip());
          this._thumbnailsMC.x = 60;
          this._thumbnailsMC.y = 140;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
+         _loc5_ = 0;
+         _loc6_ = 0;
          var _loc7_:Array = GLOBAL._buildingProps.concat();
          var _loc8_:int = 0;
-         _loc7_.sortOn("order",Array.NUMERIC);
+         if(TUTORIAL.hasFinished)
+         {
+            this.SortBuildings(_loc7_);
+         }
+         else
+         {
+            _loc7_.sortOn("order",Array.NUMERIC);
+         }
          param2 = 0;
          while(param2 < _loc7_.length)
          {
@@ -186,9 +195,72 @@ package
          }
       }
       
+      public function SortBuildings(param1:Array) : void
+      {
+         var _loc2_:Object = null;
+         var _loc4_:Object = null;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:String = null;
+         var _loc9_:int = 0;
+         var _loc10_:* = undefined;
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
+         var _loc3_:int = 0;
+         while(_loc3_ < param1.length)
+         {
+            _loc4_ = param1[_loc3_];
+            if(_loc4_.group == BUILDINGS._menuA && (_loc4_.subgroup == null || _loc4_.subgroup == BUILDINGS._menuB) && (!_loc4_.block || BASE.BuildingStorageCount(_loc4_.id)))
+            {
+               _loc2_ = GLOBAL._buildingProps[_loc4_.id - 1];
+               if(_loc2_.type != "decoration")
+               {
+                  _loc5_ = GLOBAL.GetBuildingTownHallLevel(_loc2_);
+                  _loc6_ = int(_loc2_.quantity[_loc5_]);
+                  _loc7_ = 0;
+                  _loc2_.buildStatus = 1;
+                  for(_loc8_ in BASE._buildingsAll)
+                  {
+                     _loc10_ = BASE._buildingsAll[_loc8_];
+                     if(_loc10_._type == _loc4_.id)
+                     {
+                        _loc7_++;
+                     }
+                  }
+                  if(_loc7_ <= 0 && Boolean(_loc2_.upgradeImgData))
+                  {
+                     _loc11_ = int.MAX_VALUE;
+                     for(_loc12_ in _loc2_.upgradeImgData)
+                     {
+                        if(!isNaN(Number(_loc12_)))
+                        {
+                           _loc11_ = Math.min(_loc11_,Number(_loc12_));
+                        }
+                     }
+                     if(_loc11_ != int.MAX_VALUE && _loc2_.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(_loc2_.costs[0]))
+                     {
+                        _loc2_.buildStatus = 2;
+                     }
+                  }
+                  else if(_loc7_ >= _loc6_)
+                  {
+                     _loc2_.buildStatus = 3;
+                  }
+                  _loc9_ = int(Math.max.apply(Math,_loc2_.quantity));
+                  if(_loc7_ >= _loc9_ && _loc9_ > 0)
+                  {
+                     _loc2_.buildStatus = 4;
+                  }
+               }
+            }
+            _loc3_++;
+         }
+         param1.sortOn(["buildStatus","order"],Array.NUMERIC);
+      }
+      
       public function SubMenu(param1:Array) : *
       {
-         var _loc3_:int = 0;
          var _loc4_:Button = null;
          if(this._subButtonsMC)
          {
@@ -196,7 +268,7 @@ package
          }
          this._subButtonsMC = this.addChild(new MovieClip());
          var _loc2_:* = [];
-         _loc3_ = 0;
+         var _loc3_:int = 0;
          while(_loc3_ < param1.length)
          {
             _loc4_ = this._subButtonsMC.addChild(new Button_CLIP());

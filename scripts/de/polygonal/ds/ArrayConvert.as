@@ -24,6 +24,7 @@ package de.polygonal.ds
       public static function toArray3(param1:Array, param2:int, param3:int, param4:int) : Array3
       {
          var _loc9_:int = 0;
+         null;
          var _loc5_:Array3 = new Array3(param2,param3,param4);
          var _loc6_:Array = _loc5_._a;
          var _loc7_:int = 0;
@@ -85,6 +86,7 @@ package de.polygonal.ds
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
+         null;
          var _loc2_:ArrayedStack = new ArrayedStack(int(param1.length));
          var _loc3_:int = 0;
          var _loc4_:int = int(param1.length);

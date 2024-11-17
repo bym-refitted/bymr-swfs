@@ -2,6 +2,8 @@ package
 {
    import com.monsters.display.ImageCache;
    import com.monsters.maproom_advanced.MapRoomPopupInfoMonster;
+   import com.monsters.siege.SiegeWeapons;
+   import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -17,6 +19,8 @@ package
       public var _infoMC:*;
       
       public var _monsterRewardMC:MapRoomPopupInfoMonster;
+      
+      public var _specialReward:SpecialRewardInfo;
       
       public var _groupID:int;
       
@@ -231,9 +235,10 @@ package
          var description:String = null;
          var hintStr:String = null;
          var qq:int = 0;
+         var n:int = 0;
+         var weapon:SiegeWeapon = null;
          var c:int = 0;
          var questID:String = param1;
-         SOUNDS.Play("click1");
          this._questID = questID;
          if(this._infoMC)
          {
@@ -311,6 +316,21 @@ package
                   this._monsterRewardMC = new MapRoomPopupInfoMonster();
                   this._monsterRewardMC.Setup(this._infoMC.R1.x,this._infoMC.R1.y,q.reward_creatureid,q.monster_reward);
                   this._infoMC.addChild(this._monsterRewardMC);
+               }
+               else if(q.siegeweapon_reward)
+               {
+                  n = 1;
+                  while(n <= 5)
+                  {
+                     this._infoMC["R" + n].visible = false;
+                     n++;
+                  }
+                  weapon = SiegeWeapons.getWeapon(q.siegeweapon_reward);
+                  this._specialReward = new SpecialRewardInfo();
+                  this._specialReward.x = this._infoMC.R1.x;
+                  this._specialReward.y = this._infoMC.R1.y;
+                  this._specialReward.Setup(weapon.name,q.siegeweapon_rewardcount,weapon.rewardImage);
+                  this._infoMC.addChild(this._specialReward);
                }
                else
                {

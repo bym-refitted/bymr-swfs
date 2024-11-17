@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.gskinner.utils.Rndm;
    import com.monsters.ai.*;
    import com.monsters.display.ImageCache;
@@ -30,6 +29,8 @@ package
       
       public static var _enabled:Boolean;
       
+      private static var _cleanUpFunc:Function;
+      
       public static var _lastClick:int = 0;
       
       public static var _attackResolution:int = 16;
@@ -58,13 +59,15 @@ package
       
       public static var _infernoMonsterKeys:Array = ["IC1","IC2","IC3","IC4","IC5","IC6","IC7","IC8"];
       
-      public static var _infernoLooters:Array = ["IC3","IC6"];
+      public static var _infernoLooters:Array = ["IC3","IC3","IC3","IC6"];
       
-      public static var _infernoDps:Array = ["IC1","IC4","IC6","IC7","IC8"];
+      public static var _infernoDps:Array = ["IC1","IC1","IC2","IC3","IC4","IC6","IC7","IC8"];
       
-      public static var _infernoTanks:Array = ["IC2","IC7"];
+      public static var _infernoTanks:Array = ["IC2","IC2","IC2","IC2","IC7"];
       
-      public static var _infernoAnything:Array = ["IC1","IC8"];
+      public static var _infernoAnything:Array = ["IC1","IC1","IC1","IC1","IC8"];
+      
+      public static var _infernoHunters:Array = ["IC1","IC1","IC2","IC5"];
       
       public static var _infernoFodder:Array = ["IC1","IC1","IC1","IC2","IC3"];
       
@@ -146,7 +149,12 @@ package
                _history.attackPreference = 0;
             }
             _history.sessionsSinceLastAttack += 1;
+            if(GLOBAL._aiDesignMode)
+            {
+               _sessionsBetweenAttacks = 1;
+            }
             _inProgress = false;
+            setEnd();
             if(_history["s1"])
             {
                if(_history["s1"].length == 2 && _history["s1"][0] == 1)
@@ -259,8 +267,13 @@ package
                _history.sessionsSinceLastAttack = 20;
                break;
             case 6:
-               _history = com.adobe.serialization.json.JSON.decode("{\"sessionsSinceLastAttack\":45,\"attackPreference\":0,\"queued\":{\"attack\":{\"C10\":27,\"C7\":13},\"warned\":1,\"degrees\":180,\"attackTime\":1284677486,\"distances\":{\"C10\":275,\"C7\":275}},\"lastattack\":1284676962,\"nextAttack\":1284612571,\"s1\":[1,1284676962,1]}");
+               _history = JSON.decode("{\"sessionsSinceLastAttack\":45,\"attackPreference\":0,\"queued\":{\"attack\":{\"C10\":27,\"C7\":13},\"warned\":1,\"degrees\":180,\"attackTime\":1284677486,\"distances\":{\"C10\":275,\"C7\":275}},\"lastattack\":1284676962,\"nextAttack\":1284612571,\"s1\":[1,1284676962,1]}");
          }
+      }
+      
+      public static function set enabled(param1:Boolean) : void
+      {
+         _enabled = param1;
       }
       
       public static function Tick() : void
@@ -273,7 +286,6 @@ package
          {
             if(GLOBAL._mode == "build")
             {
-               SPECIALEVENT.Tick();
                if(t % 10 == 0)
                {
                   count = 0;
@@ -294,7 +306,7 @@ package
                t += 1;
                if(_queued != null && !_inProgress)
                {
-                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
+                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
                   {
                      try
                      {
@@ -302,10 +314,10 @@ package
                      }
                      catch(e:Error)
                      {
-                        LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                        LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                      }
                   }
-                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
+                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
                   {
                      try
                      {
@@ -313,7 +325,7 @@ package
                      }
                      catch(e:Error)
                      {
-                        LOGGER.Log("err","WMATTACK.TickC " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                        LOGGER.Log("err","WMATTACK.TickC " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                      }
                   }
                   else if(baseIsRepairing && !GLOBAL._catchup)
@@ -329,7 +341,7 @@ package
                      }
                      catch(e:Error)
                      {
-                        LOGGER.Log("err","WMATTACK.TickD " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                        LOGGER.Log("err","WMATTACK.TickD " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                      }
                   }
                   if(!baseIsRepairing && _queued.attackTime <= GLOBAL.Timestamp() && _enabled && BASE._isSanctuary <= GLOBAL.Timestamp())
@@ -342,7 +354,7 @@ package
                         }
                         catch(e:Error)
                         {
-                           LOGGER.Log("err","WMATTACK.TickE " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                           LOGGER.Log("err","WMATTACK.TickE " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                         }
                      }
                   }
@@ -354,13 +366,13 @@ package
                      }
                      catch(e:Error)
                      {
-                        LOGGER.Log("err","WMATTACK.TickF " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                        LOGGER.Log("err","WMATTACK.TickF " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                      }
                   }
                }
                else if(!_inProgress)
                {
-                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !BASE.isInferno())
+                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
                   {
                      _processing = true;
                      try
@@ -369,7 +381,7 @@ package
                      }
                      catch(e:Error)
                      {
-                        LOGGER.Log("err","WMATTACK.TickG " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                        LOGGER.Log("err","WMATTACK.TickG " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                      }
                   }
                }
@@ -377,9 +389,9 @@ package
                {
                   try
                   {
-                     if(CREEPS._creepCount == 0 && (!SPECIALEVENT.active || SPECIALEVENT.AllWavesSpawned()))
+                     if(CREEPS._creepCount == 0)
                      {
-                        CleanUp();
+                        _cleanUpFunc();
                      }
                      else if(GLOBAL.Timestamp() % 10 == 0)
                      {
@@ -391,22 +403,22 @@ package
                               a++;
                            }
                         }
-                        if(a == 0 && (!SPECIALEVENT.active || SPECIALEVENT.AllWavesSpawned()))
+                        if(a == 0)
                         {
-                           CleanUp();
+                           _cleanUpFunc();
                         }
                      }
                   }
                   catch(e:Error)
                   {
-                     LOGGER.Log("err","WMATTACK.TickH " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+                     LOGGER.Log("err","WMATTACK.TickH " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
                   }
                }
             }
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","WMATTACK.Tick " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " GLOBAL._catchup:" + GLOBAL._catchup + " Timestamp():" + GLOBAL.Timestamp() + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
+            LOGGER.Log("err","WMATTACK.Tick " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " GLOBAL._catchup:" + GLOBAL._catchup + " Timestamp():" + GLOBAL.Timestamp() + " _history:" + JSON.encode(_history));
          }
       }
       
@@ -547,14 +559,20 @@ package
             {
                intelligence = aiLevel;
                quickly = andAttack;
-               if(WMBASE._bases)
+               if(Boolean(WMBASE._bases) && WMBASE._bases.length > 0)
                {
                   for each(b in WMBASE._bases)
                   {
                      if(b.destroyed == 0 && b.level >= BASE._baseLevel - 10)
                      {
-                        _type = b.tribe.type;
                         _attackersBaseID = b.baseid;
+                        if(BASE.isInferno())
+                        {
+                           _type = WMATTACK.TYPE_SWARM;
+                           proc = PROCESS_INFERNO1;
+                           break;
+                        }
+                        _type = b.tribe.type;
                         proc = b.tribe.process;
                         break;
                      }
@@ -651,10 +669,9 @@ package
       public static function SendAttack(param1:Object, param2:Number, param3:Object) : void
       {
          var _loc8_:String = null;
-         var _loc13_:int = 0;
+         var _loc14_:Array = null;
          var _loc15_:Array = null;
-         var _loc16_:Array = null;
-         var _loc17_:* = undefined;
+         var _loc16_:* = undefined;
          if(_history)
          {
             if(_history["s1"] && _history["s1"][0] == 1 && _history["s1"][2] == 0 && !BASE.isInferno())
@@ -681,99 +698,81 @@ package
             SOUNDS.PlayMusic("musicpanic");
          }
          var _loc7_:Array = [];
-         var _loc9_:int = 0;
-         var _loc10_:Object = {};
-         var _loc11_:Object = {};
-         var _loc12_:Object = {};
-         _loc13_ = 0;
-         while(_loc13_ < _looters.length)
+         var _loc13_:Number = param2;
+         _loc13_ = param2;
+         for(_loc8_ in param1)
          {
-            _loc12_[_looters[_loc13_]] = param1[_looters[_loc13_]];
-            _loc13_ += 1;
+            _loc7_.push([_loc8_,"bounce",param1[_loc8_],param3[_loc8_],_loc13_,0,0]);
          }
-         _loc13_ = 0;
-         while(_loc13_ < _infernoLooters.length)
+         _loc14_ = SpawnA(_loc7_);
+         for each(_loc15_ in _loc14_)
          {
-            _loc12_[_looters[_loc13_]] = param1[_infernoLooters[_loc13_]];
-            _loc13_++;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _dps.length)
-         {
-            _loc11_[_dps[_loc13_]] = param1[_dps[_loc13_]];
-            _loc13_ += 1;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _infernoDps.length)
-         {
-            _loc11_[_infernoDps[_loc13_]] = param1[_infernoDps[_loc13_]];
-            _loc13_ += 1;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _tanks.length)
-         {
-            _loc10_[_tanks[_loc13_]] = param1[_tanks[_loc13_]];
-            _loc13_ += 1;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _infernoTanks.length)
-         {
-            _loc10_[_infernoTanks[_loc13_]] = param1[_infernoTanks[_loc13_]];
-            _loc13_ += 1;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _kamikaze.length)
-         {
-            _loc11_[_kamikaze[_loc13_]] = param1[_kamikaze[_loc13_]];
-            _loc13_ += 1;
-         }
-         _loc13_ = 0;
-         while(_loc13_ < _infernoKamikaze.length)
-         {
-            _loc11_[_infernoKamikaze[_loc13_]] = param1[_infernoKamikaze[_loc13_]];
-            _loc13_ += 1;
-         }
-         var _loc14_:Number = param2;
-         for(_loc8_ in _loc10_)
-         {
-            if(_loc10_[_loc8_] > 0)
+            for each(_loc16_ in _loc15_)
             {
-               _loc7_.push([_loc8_,"bounce",_loc10_[_loc8_],param3[_loc8_],_loc14_,0,0]);
-               break;
+               _loc16_._hitLimit = _hitsPerCreep;
             }
          }
-         for(_loc8_ in _loc11_)
+         if(_loc14_.length > 0 && _loc14_[0].length > 0)
          {
-            if(_loc11_[_loc8_] > 0)
-            {
-               _loc7_.push([_loc8_,"bounce",_loc11_[_loc8_],param3[_loc8_],_loc14_,0,0]);
-               _loc9_ += 1;
-            }
-         }
-         for(_loc8_ in _loc12_)
-         {
-            if(_loc12_[_loc8_] > 0)
-            {
-               _loc7_.push([_loc8_,"bounce",_loc12_[_loc8_],param3[_loc8_],_loc14_,0,0]);
-            }
-         }
-         _loc15_ = SpawnA(_loc7_);
-         for each(_loc16_ in _loc15_)
-         {
-            for each(_loc17_ in _loc16_)
-            {
-               _loc17_._hitLimit = _hitsPerCreep;
-            }
-         }
-         if(_loc15_.length > 0 && _loc15_[0].length > 0)
-         {
-            MAP.FocusTo(_loc15_[0][0].x,_loc15_[0][0].y,1);
+            MAP.FocusTo(_loc14_[0][0].x,_loc14_[0][0].y,1);
          }
       }
       
       public static function Attack(param1:String = "") : void
       {
          PreemptQueue();
+      }
+      
+      public static function SpawnWave(param1:Array, param2:int) : Array
+      {
+         var _loc5_:Point = null;
+         var _loc6_:Point = null;
+         var _loc7_:Array = null;
+         var _loc10_:int = 0;
+         var _loc3_:int = getTimer();
+         var _loc4_:Array = [];
+         var _loc9_:* = 0;
+         while(_loc9_ < param1.length)
+         {
+            _loc10_ = param1[_loc9_][4] + param2;
+            _loc5_ = GRID.ToISO(Math.cos(_loc10_ * 0.0174532925) * (800 + param1[_loc9_][3] / 2),Math.sin(_loc10_ * 0.0174532925) * (800 + param1[_loc9_][3] / 2),0);
+            _loc6_ = GRID.ToISO(Math.cos(_loc10_ * 0.0174532925) * 900,Math.sin(_loc10_ * 0.0174532925) * 900,0);
+            _loc7_ = SpawnCreep(_loc5_,param1[_loc9_][3],param1[_loc9_][0],param1[_loc9_][2],param1[_loc9_][1]);
+            _loc4_.push(_loc7_);
+            if(param1[_loc9_][6] == 1)
+            {
+               MAP.FocusTo(_loc6_.x,_loc6_.y,1,0,0,true);
+            }
+            _loc9_ += 1;
+         }
+         return _loc4_;
+      }
+      
+      public static function SpawnCreep(param1:Point, param2:int, param3:String, param4:int, param5:String) : Array
+      {
+         var _loc6_:Number = NaN;
+         var _loc7_:int = 0;
+         var _loc8_:Point = null;
+         var _loc9_:MovieClip = null;
+         var _loc10_:Rndm = new Rndm(int(param1.x + param1.y));
+         param1 = GRID.FromISO(param1.x,param1.y);
+         var _loc11_:Array = [];
+         var _loc12_:int = 0;
+         while(_loc12_ < param4)
+         {
+            _loc6_ = _loc10_.random() * 360 * 0.0174532925;
+            _loc7_ = _loc10_.random() * param2 / 2;
+            _loc8_ = param1.add(new Point(Math.cos(_loc6_) * _loc7_,Math.sin(_loc6_) * _loc7_));
+            _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc10_.random() * 360);
+            _loc9_._hitLimit = int.MAX_VALUE;
+            if(_rage)
+            {
+               _loc9_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
+            }
+            _loc11_.push(_loc9_);
+            _loc12_++;
+         }
+         return _loc11_;
       }
       
       public static function SpawnA(param1:Array) : Array
@@ -895,6 +894,18 @@ package
          WMATTACK._queued = null;
       }
       
+      public static function setEnd(param1:Function = null) : void
+      {
+         if(Boolean(param1))
+         {
+            _cleanUpFunc = param1;
+         }
+         else
+         {
+            _cleanUpFunc = CleanUp;
+         }
+      }
+      
       public static function CleanUp() : void
       {
          var _loc1_:BFOUNDATION = null;
@@ -955,17 +966,6 @@ package
          {
             ATTACK.PoorDefense();
          }
-         else if(SPECIALEVENT.active)
-         {
-            if(CREEPS._creepCount > 0 || !SPECIALEVENT.AllWavesSpawned() || _loc2_ <= _loc3_ * 0.1)
-            {
-               ATTACK.PoorDefense();
-            }
-            else
-            {
-               ATTACK.WellDefended(true);
-            }
-         }
          else if(_loc2_ < _loc3_ * 0.9 || TUTORIAL._stage < 200)
          {
             ATTACK.PoorDefense();
@@ -985,6 +985,68 @@ package
          {
             WMATTACK.ShowAttackSettings();
          }
+      }
+      
+      public static function CleanUpLite() : void
+      {
+         var _loc1_:BFOUNDATION = null;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:* = undefined;
+         var _loc5_:BFOUNDATION = null;
+         _inProgress = false;
+         UI2.Show("top");
+         UI2.Show("bottom");
+         UI2.Hide("warning");
+         UI2.Hide("scareAway");
+         warningPopup = null;
+         if(Boolean(_history["s1"]) && _history["s1"][0] == 1)
+         {
+            _history["s1"][0] = 2;
+            _trojan = false;
+         }
+         if(_isAI)
+         {
+            ResetWait();
+         }
+         if(BASE.isInferno())
+         {
+            SOUNDS.PlayMusic("musicibuild");
+         }
+         else
+         {
+            SOUNDS.PlayMusic("musicbuild");
+         }
+         for each(_loc1_ in BASE._buildingsAll)
+         {
+            _loc1_.GridCost(true);
+         }
+         for each(_loc1_ in BASE._buildingsMushrooms)
+         {
+            _loc1_.GridCost();
+         }
+         BASE._blockSave = false;
+         BASE.Save();
+         for(_loc4_ in BASE._buildingsAll)
+         {
+            _loc1_ = BASE._buildingsAll[_loc4_];
+            if(_loc1_._class != "trap" && _loc1_._class != "wall" && _loc1_._repairing != 1)
+            {
+               _loc2_ += _loc1_._hp.Get();
+               _loc3_ += _loc1_._hpMax.Get();
+            }
+         }
+         for each(_loc5_ in BASE._buildingsAll)
+         {
+            if(_loc5_._hp.Get() < _loc5_._hpMax.Get() && _loc5_._repairing == 0)
+            {
+               _loc5_.Repair();
+            }
+         }
+         MONSTERBAITER._scaredAway = false;
+         CUSTOMATTACKS._started = false;
+         QUESTS.Check();
+         MONSTERBAITER._attacking = 0;
       }
       
       public static function End() : void
@@ -1037,17 +1099,6 @@ package
          {
             ATTACK.PoorDefense();
          }
-         else if(SPECIALEVENT.active)
-         {
-            if(CREEPS._creepCount > 0 || !SPECIALEVENT.AllWavesSpawned() || _loc2_ <= _loc3_ * 0.1)
-            {
-               ATTACK.PoorDefense();
-            }
-            else
-            {
-               ATTACK.WellDefended(true);
-            }
-         }
          else if(_loc2_ < _loc3_ * 0.9 || TUTORIAL._stage < 200)
          {
             ATTACK.PoorDefense();
@@ -1091,6 +1142,10 @@ package
                _attackVolumeAmplifier = 0.5;
                _hitsPerCreep = 20;
                _history.attackPreference = -1;
+               if(BASE.isInferno())
+               {
+                  LOGGER.Stat([89,"slow"]);
+               }
                break;
             case 0:
             default:
@@ -1098,13 +1153,23 @@ package
                _attackVolumeAmplifier = 1;
                _hitsPerCreep = 30;
                _history.attackPreference = 0;
+               if(BASE.isInferno())
+               {
+                  LOGGER.Stat([89,"med"]);
+               }
                break;
             case 1:
                _history.nextAttack = _history.lastattack + 2 * 24 * 60 * 60;
                _attackVolumeAmplifier = 1.3;
                _hitsPerCreep = 50;
                _history.attackPreference = 1;
+               if(BASE.isInferno())
+               {
+                  LOGGER.Stat([89,"fast"]);
+                  break;
+               }
          }
+         BASE.Save();
       }
       
       public static function dpsAtPoint(param1:Solution, param2:Point) : Number

@@ -53,7 +53,7 @@ package com.monsters.maproom_inferno
       
       public var pctY:Number;
       
-      public const fowCoordMap:Array = [25,35,37,45,64,60,82,96,106,126,148,148,190];
+      public const fowCoordMap:Array = [25,35,45,60,106,148,190];
       
       public function MiniMap(param1:MovieClip)
       {
@@ -230,7 +230,7 @@ package com.monsters.maproom_inferno
          {
             for each(_loc6_ in param2)
             {
-               if(_loc6_.data.destroyed == 0)
+               if(_loc6_.data.destroyed == 0 && _loc6_.data.baseid.Get() > 200 && _loc6_.data.level.Get() >= MAPROOM_DESCENT.DescentLevel)
                {
                   this.dotAt(_loc6_.x * _loc3_,_loc6_.y * _loc3_,0xff0000,this.ai);
                }

@@ -1587,7 +1587,7 @@ package
                _loc7_ = WAVES[_wave.Get()][_group];
                _loc8_ = (_loc7_.angle + _randomDirection) % 360;
                _loc9_ = GRID.ToISO(Math.cos(_loc8_ * 0.0174532925) * 900,Math.sin(_loc8_ * 0.0174532925) * 900,0);
-               _loc10_ = CREEPS.SpawnGuardian(_loc7_.guardianID,MAP._BUILDINGTOPS,"bounce",_loc7_.level,_loc9_,_loc7_.direction,_loc7_.health,_loc7_.foodbonus,true);
+               _loc10_ = CREEPS.SpawnGuardian(_loc7_.guardianID,MAP._BUILDINGTOPS,"bounce",_loc7_.level,_loc9_,_loc7_.direction,_loc7_.health,_loc7_.foodbonus,0,true);
                _currentAttackers.push([_loc10_]);
          }
          _timeOfNextWave = GLOBAL.Timestamp();
@@ -1914,7 +1914,7 @@ package
       
       public static function get active() : Boolean
       {
-         return _active;
+         return false;
       }
       
       public static function get numWaves() : int

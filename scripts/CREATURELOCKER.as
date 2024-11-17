@@ -1,7 +1,5 @@
 package
 {
-   import com.adobe.crypto.MD5;
-   import com.adobe.serialization.json.JSON;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
@@ -20,6 +18,10 @@ package
       public static var _unlocking:String;
       
       public static var _popupCreatureID:String;
+      
+      public static const NUM_CREEP_TYPE:* = 18;
+      
+      public static const NUM_ICREEP_TYPE:* = 8;
       
       public function CREATURELOCKER()
       {
@@ -46,17 +48,36 @@ package
             _lockerData.C12 = _lockerData.C100;
             delete _lockerData.C100;
          }
-         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         if(GLOBAL._mode == "build")
          {
-            _loc2_ = 2;
-            while(_loc2_ <= 15)
+            if(BASE.isInferno())
             {
-               if(Boolean(_lockerData["C" + _loc2_]) && _lockerData["C" + _loc2_].t == 2)
+               _loc2_ = 2;
+               while(true)
                {
-                  ACHIEVEMENTS.Check("unlock_monster",1);
-                  break;
+                  if(_loc2_ <= NUM_ICREEP_TYPE)
+                  {
+                     if(!(Boolean(_lockerData["IC" + _loc2_]) && _lockerData["IC" + _loc2_].t == 2))
+                     {
+                        continue;
+                     }
+                     ACHIEVEMENTS.Check("unlock_monster",1);
+                  }
+                  _loc2_++;
                }
-               _loc2_++;
+            }
+            else
+            {
+               _loc2_ = 2;
+               while(_loc2_ <= NUM_CREEP_TYPE)
+               {
+                  if(Boolean(_lockerData["C" + _loc2_]) && _lockerData["C" + _loc2_].t == 2)
+                  {
+                     ACHIEVEMENTS.Check("unlock_monster",1);
+                     break;
+                  }
+                  _loc2_++;
+               }
             }
          }
       }
@@ -69,6 +90,7 @@ package
          _open = false;
          _mainCreatures = {
             "C1":{
+               "index":1,
                "page":1,
                "order":1,
                "resource":0xfa0,
@@ -91,6 +113,7 @@ package
                }
             },
             "C2":{
+               "index":2,
                "page":1,
                "order":2,
                "resource":0x1f40,
@@ -112,6 +135,7 @@ package
                }
             },
             "C3":{
+               "index":3,
                "page":1,
                "order":3,
                "resource":16000,
@@ -133,6 +157,7 @@ package
                }
             },
             "C4":{
+               "index":4,
                "page":1,
                "order":4,
                "resource":32000,
@@ -154,6 +179,7 @@ package
                }
             },
             "C5":{
+               "index":5,
                "page":2,
                "order":1,
                "resource":64000,
@@ -176,6 +202,7 @@ package
                }
             },
             "C6":{
+               "index":6,
                "page":2,
                "order":2,
                "resource":128000,
@@ -197,6 +224,7 @@ package
                }
             },
             "C7":{
+               "index":7,
                "page":2,
                "order":3,
                "resource":256000,
@@ -218,6 +246,7 @@ package
                }
             },
             "C8":{
+               "index":8,
                "page":2,
                "order":4,
                "resource":512000,
@@ -239,6 +268,7 @@ package
                }
             },
             "C9":{
+               "index":10,
                "page":3,
                "order":1,
                "resource":0xfa000,
@@ -260,8 +290,9 @@ package
                }
             },
             "C10":{
+               "index":11,
                "page":3,
-               "order":2,
+               "order":3,
                "resource":0x1f4000,
                "time":208800,
                "level":3,
@@ -281,8 +312,9 @@ package
                }
             },
             "C11":{
+               "index":12,
                "page":3,
-               "order":3,
+               "order":4,
                "resource":4096000,
                "time":223200,
                "level":3,
@@ -302,6 +334,7 @@ package
                }
             },
             "C12":{
+               "index":16,
                "page":4,
                "order":3,
                "resource":8192000,
@@ -323,6 +356,7 @@ package
                }
             },
             "C13":{
+               "index":15,
                "page":4,
                "order":2,
                "resource":4096000,
@@ -346,6 +380,7 @@ package
                }
             },
             "C14":{
+               "index":14,
                "page":4,
                "order":1,
                "resource":4096000,
@@ -369,8 +404,9 @@ package
                }
             },
             "C15":{
+               "index":13,
                "page":3,
-               "order":4,
+               "order":5,
                "resource":6192000,
                "time":216000,
                "level":3,
@@ -380,6 +416,7 @@ package
                "trainingCosts":[[6192000,129600],[130 * 60 * 1000,194400],[200 * 60 * 1000,288000],[5 * 60 * 60 * 1000,489600]],
                "movement":"fly",
                "pathing":"direct",
+               "antiHeal":true,
                "props":{
                   "speed":[0.75,0.8,0.85,0.9,0.95],
                   "health":[0x1f40],
@@ -391,7 +428,84 @@ package
                   "targetGroup":[5]
                }
             },
+            "C16":{
+               "index":9,
+               "page":2,
+               "order":5,
+               "resource":384000,
+               "time":129600,
+               "level":2,
+               "name":"#m_vorg#",
+               "blocked":true,
+               "description":"mon_vorgdesc",
+               "trainingCosts":[[384000,86400],[384000,129600],[512000,172800],[768000,216000],[0xfa000,259200]],
+               "movement":"fly",
+               "stream":["","","quests/monster16.png"],
+               "pathing":"direct",
+               "antiHeal":true,
+               "blocked":true,
+               "props":{
+                  "speed":[0.75],
+                  "health":[750],
+                  "damage":[-60,-70,-80,-90,-100,-110],
+                  "cTime":[20 * 60],
+                  "cResource":[16000,25000,38500,62500,75000,25 * 60 * 60],
+                  "cStorage":[60],
+                  "bucket":[60],
+                  "targetGroup":[5]
+               }
+            },
+            "C17":{
+               "index":10,
+               "page":3,
+               "order":2,
+               "resource":0x1f4000,
+               "time":129600,
+               "level":3,
+               "name":"#m_slimeattikus#",
+               "description":"mon_slimeattikusdesc",
+               "trainingCosts":[[2560000,86400],[64 * 60 * 1000,129600],[4096000,172800],[6250000,216000],[8500000,288000]],
+               "stream":["","","quests/monster17.png"],
+               "blocked":true,
+               "props":{
+                  "speed":[1,1.1,1.2,1.3,1.4,1.5],
+                  "health":[700,725,750,800,15 * 60,1000],
+                  "damage":[850,850,15 * 60,1000,20 * 60,1400],
+                  "cTime":[500,450,400,350,5 * 60,250],
+                  "cResource":[450 * 60,675 * 60,60750,25 * 60 * 60,125000,150000],
+                  "cStorage":[40],
+                  "bucket":[40],
+                  "targetGroup":[1],
+                  "splits":[2,2,3,3,4,5]
+               }
+            },
+            "C18":{
+               "index":18,
+               "page":3,
+               "order":2,
+               "resource":0x1f4000,
+               "time":129600,
+               "level":3,
+               "name":"#m_slimeattikusmini#",
+               "blocked":true,
+               "description":"mon_slimeattikusminidesc",
+               "trainingCosts":[[2560000,86400],[64 * 60 * 1000,129600],[4096000,172800],[6250000,216000],[8500000,288000]],
+               "stream":["","",""],
+               "blocked":true,
+               "fake":true,
+               "props":{
+                  "speed":[1.5,1.6,1.7,1.8,1.9,2],
+                  "health":[250],
+                  "damage":[310,320,330,340,350],
+                  "cTime":[500,450,400,350,5 * 60,250],
+                  "cResource":[450 * 60,675 * 60,60750,25 * 60 * 60,125000,150000],
+                  "cStorage":[40],
+                  "bucket":[40],
+                  "targetGroup":[1]
+               }
+            },
             "IC1":{
+               "index":1,
                "page":1,
                "order":1,
                "resource":40 * 60,
@@ -404,7 +518,7 @@ package
                "props":{
                   "speed":[1.2],
                   "health":[400,425,450,475,510,550],
-                  "damage":[2 * 60,130,140,150,160,175],
+                  "damage":[160,200,200,250,5 * 60,350],
                   "cTime":[15,10,8,7,6,5],
                   "cResource":[500,1000,2000,0xfa0,100 * 60,10000],
                   "cStorage":[15],
@@ -413,6 +527,7 @@ package
                }
             },
             "IC2":{
+               "index":2,
                "page":1,
                "order":2,
                "resource":80 * 60,
@@ -424,7 +539,7 @@ package
                "trainingCosts":[[80 * 60,4 * 60 * 60],[160 * 60,0x7080],[4 * 60 * 60,12 * 60 * 60],[320 * 60,16 * 60 * 60],[0x7080,24 * 60 * 60]],
                "props":{
                   "speed":[1.8],
-                  "health":[25 * 60,27 * 60,1760,1900,2150,2300],
+                  "health":[25 * 60,1820,2300,2800,3350,60 * 60],
                   "damage":[80,85,90,95,100,110],
                   "cTime":[15,16,16,16,16,16],
                   "cResource":[2500,0xfa0,0x1f40,200 * 60,16000,20000],
@@ -434,6 +549,7 @@ package
                }
             },
             "IC4":{
+               "index":3,
                "page":2,
                "order":1,
                "resource":640 * 60,
@@ -447,7 +563,7 @@ package
                "pathing":"direct",
                "props":{
                   "speed":[2,2,2,2,2,2],
-                  "health":[715,730,750,765,13 * 60,800],
+                  "health":[2000,40 * 60,2800,3200,60 * 60,0xfa0],
                   "damage":[490,530,580,645,700,775],
                   "cTime":[450,350,250,225,195,195],
                   "cResource":[31000,35000,650 * 60,44000,50000,55000],
@@ -457,6 +573,7 @@ package
                }
             },
             "IC3":{
+               "index":4,
                "page":2,
                "order":2,
                "resource":76800,
@@ -479,6 +596,7 @@ package
                }
             },
             "IC5":{
+               "index":5,
                "page":3,
                "order":1,
                "resource":614400,
@@ -492,16 +610,17 @@ package
                "pathing":"direct",
                "props":{
                   "speed":[4.5],
-                  "health":[800,14 * 60,880,920,965,1125],
-                  "damage":[400,430,460,490,520,560],
+                  "health":[3200,60 * 60,0xfa0,75 * 60,5000,5600],
+                  "damage":[10 * 60,665,730,795,860,930],
                   "cTime":[30 * 60,32 * 60,34 * 60,36 * 60,38 * 60,40 * 60],
-                  "cResource":[800 * 60,15 * 60 * 60,61000,69000,77000,87000],
+                  "cResource":[88000,104000,161000,249000,327000,487000],
                   "cStorage":[40],
                   "bucket":[60],
                   "targetGroup":[6]
                }
             },
             "IC6":{
+               "index":6,
                "page":3,
                "order":2,
                "resource":1228800,
@@ -513,16 +632,17 @@ package
                "trainingCosts":[[1228800,24 * 60 * 60],[2457600,2 * 24 * 60 * 60],[3686400,3 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60]],
                "props":{
                   "speed":[1.3,1.3,1.4,1.4,1.5,1.6],
-                  "health":[1600,1750,1900,35 * 60,2300,2500],
+                  "health":[7600,8750,165 * 60,10100,11300,12500],
                   "damage":[400,425,450,475,500,550],
-                  "cTime":[100,100,100,100,90,90],
-                  "cResource":[40000,750 * 60,55000,75000,100000,125000],
+                  "cTime":[30 * 60,30 * 60,30 * 60,30 * 60,30 * 60,30 * 60],
+                  "cResource":[80000,105000,135000,175000,210000,325000],
                   "cStorage":[50],
                   "bucket":[60],
                   "targetGroup":[3]
                }
             },
             "IC7":{
+               "index":7,
                "page":3,
                "order":3,
                "resource":2457600,
@@ -534,32 +654,34 @@ package
                "trainingCosts":[[2457600,2 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60],[9830400,8 * 24 * 60 * 60],[14745600,12 * 24 * 60 * 60]],
                "props":{
                   "speed":[1.7,1.8,1.9,2,2.1,2.2],
-                  "health":[920,16 * 60,1000,1050,1100,20 * 60],
-                  "damage":[500,525,550,575,10 * 60,650],
+                  "health":[1120,21 * 60,1400,1650,1900,2200],
+                  "damage":[700,825,950,1075,20 * 60,1350],
                   "cTime":[1384,1384,1384,1384,1384,1384],
-                  "cResource":[60 * 1000,70000,85000,110000,130000,150000],
+                  "cResource":[60 * 1000,25 * 60 * 60,145000,200000,330000,125 * 60 * 60],
                   "cStorage":[80],
                   "bucket":[90],
                   "targetGroup":[4]
                }
             },
             "IC8":{
+               "index":8,
                "page":4,
                "order":1,
                "resource":4915200,
                "time":3 * 24 * 60 * 60,
                "level":4,
                "name":"#m_king_wormzer#",
+               "shortName":"#m_k_wormzer#",
                "description":"mi_King_Wormzer_desc",
                "stream":["mi_King_Wormzer_stream","mi_King_Wormzer_streambody","quests/king_wormzer.png"],
-               "trainingCosts":[[4915200,3 * 24 * 60 * 60],[9830400,6 * 24 * 60 * 60],[14745600,9 * 24 * 60 * 60],[19660800,12 * 24 * 60 * 60],[29491200,18 * 24 * 60 * 60]],
+               "trainingCosts":[[4915200,3 * 24 * 60 * 60],[7268000,6 * 24 * 60 * 60],[9296000,9 * 24 * 60 * 60],[13624000,12 * 24 * 60 * 60],[19248000,18 * 24 * 60 * 60]],
                "movement":"burrow",
                "pathing":"direct",
                "props":{
                   "speed":[2.5,2.6,2.7,2.8,2.9,3],
-                  "health":[2500,2600,45 * 60,2900,3100,3400],
-                  "damage":[15 * 60,16 * 60,1030,1120,1220,1350],
-                  "cTime":[1384,1384,1384,1384,1384,1384],
+                  "health":[6200,7600,145 * 60,10900,13100,16000],
+                  "damage":[20 * 60,1360,1630,32 * 60,37 * 60,2500],
+                  "cTime":[45 * 60],
                   "cResource":[425000,476000,580000,700000,910000,1204000],
                   "cStorage":[100],
                   "bucket":[100],
@@ -567,7 +689,7 @@ package
                }
             },
             "C200":{
-               "name":"AI Looter 1",
+               "name":"AILooter1",
                "blocked":true,
                "props":{
                   "speed":[3],
@@ -588,6 +710,7 @@ package
       {
          var StreamPost:Function;
          var i:String = null;
+         var isInfernoType:Boolean = false;
          var creature:Object = null;
          var img:String = null;
          var mc:popup_monster = null;
@@ -599,7 +722,12 @@ package
             {
                if(_lockerData[i].t == 1)
                {
-                  _unlocking = i;
+                  isInfernoType = i.substring(0,2) == "IC";
+                  if(BASE.isInferno() && isInfernoType || !BASE.isInferno() && !isInfernoType)
+                  {
+                     _unlocking = i;
+                     break;
+                  }
                }
             }
          }
@@ -625,7 +753,7 @@ package
                   delete _lockerData[_unlocking].e;
                   creature = _creatures[_unlocking];
                   img = "quests/monster" + _unlocking.substr(1) + ".v2.png";
-                  if(creature.stream.length > 1)
+                  if(creature.stream[2])
                   {
                      img = creature.stream[2];
                   }
@@ -645,8 +773,12 @@ package
                      };
                      mc = new popup_monster();
                      mc.bSpeedup.SetupKey("btn_warnyourfriends");
+                     if(!creature.stream[0])
+                     {
+                        mc.bSpeedup.visible = false;
+                     }
                      _body = "";
-                     if(creature.stream.length > 1)
+                     if(creature.stream[1])
                      {
                         _body = KEYS.Get(creature.stream[1]);
                      }
@@ -729,6 +861,10 @@ package
             popupMC = new popup_monster();
             popupMC.bAction.SetupKey("btn_warnyourfriends");
             popupMC.bAction.addEventListener(MouseEvent.CLICK,StreamPost);
+            if(!CREATURELOCKER._creatures[creatureID].stream[0])
+            {
+               popupMC.bAction.visible = false;
+            }
             popupMC.bSpeedup.SetupKey("btn_speedup");
             popupMC.bSpeedup.addEventListener(MouseEvent.CLICK,SpeedUp);
             popupMC.bSpeedup.Highlight = true;
@@ -813,7 +949,7 @@ package
          };
          tmpArray = [];
          var i:* = 1;
-         while(i <= 15)
+         while(i <= 16)
          {
             Push("C" + i);
             i++;
@@ -824,7 +960,7 @@ package
             Push("IC" + i);
             i++;
          }
-         return MD5.hash(com.adobe.serialization.json.JSON.encode(tmpArray));
+         return md5(JSON.encode(tmpArray));
       }
       
       public static function GetAppropriateCreatures() : Object
@@ -840,6 +976,209 @@ package
             }
          }
          return _loc2_;
+      }
+      
+      public static function GetCreatures(param1:String = "full") : Object
+      {
+         var _loc4_:String = null;
+         var _loc2_:Object = CREATURELOCKER._creatures;
+         var _loc3_:Object = {};
+         switch(param1)
+         {
+            case "inferno":
+               _loc3_ = GetInfernoCreatures();
+               break;
+            case "above":
+               _loc3_ = GetAboveCreatures();
+               break;
+            case "full":
+            default:
+               for(_loc4_ in _loc2_)
+               {
+                  if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+                  {
+                     _loc3_[_loc4_] = _loc2_[_loc4_];
+                  }
+               }
+         }
+         return _loc3_;
+      }
+      
+      public static function GetAboveCreatures() : Object
+      {
+         var _loc3_:String = null;
+         var _loc1_:Object = CREATURELOCKER._creatures;
+         var _loc2_:Object = {};
+         for(_loc3_ in _loc1_)
+         {
+            if(_loc3_.substr(0,1) == "C" && _loc3_ != "C200")
+            {
+               _loc2_[_loc3_] = _loc1_[_loc3_];
+            }
+         }
+         return _loc2_;
+      }
+      
+      public static function maxCreatures(param1:String = "full") : int
+      {
+         var _loc3_:Object = null;
+         var _loc4_:String = null;
+         var _loc5_:Object = null;
+         var _loc2_:int = 0;
+         switch(param1)
+         {
+            case "inferno":
+               _loc3_ = GetInfernoCreatures();
+               break;
+            case "above":
+               _loc3_ = GetAboveCreatures();
+               break;
+            case "full":
+            default:
+               _loc5_ = CREATURELOCKER._creatures;
+               for(_loc4_ in _loc5_)
+               {
+                  if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+                  {
+                     _loc3_[_loc4_] = _loc5_[_loc4_];
+                  }
+               }
+         }
+         for(_loc4_ in _loc3_)
+         {
+            _loc2_++;
+         }
+         return _loc2_;
+      }
+      
+      public static function GetInfernoCreatures() : Object
+      {
+         var _loc3_:String = null;
+         var _loc1_:Object = CREATURELOCKER._creatures;
+         var _loc2_:Object = {};
+         for(_loc3_ in _loc1_)
+         {
+            if(_loc3_.substr(0,1) == "I")
+            {
+               _loc2_[_loc3_] = _loc1_[_loc3_];
+            }
+         }
+         return _loc2_;
+      }
+      
+      public static function get maxInfernoCreatures() : int
+      {
+         var _loc3_:String = null;
+         var _loc1_:int = 0;
+         var _loc2_:Object = GetInfernoCreatures();
+         for(_loc3_ in _loc2_)
+         {
+            _loc1_++;
+         }
+         return _loc1_;
+      }
+      
+      public static function CheckCreatureAvailable(param1:String) : Boolean
+      {
+         var _loc4_:String = null;
+         var _loc2_:Boolean = false;
+         var _loc3_:Object = CREATURELOCKER._lockerData;
+         for(_loc4_ in _loc3_)
+         {
+            if(_loc4_ == param1)
+            {
+               _loc2_ = true;
+            }
+         }
+         return _loc2_;
+      }
+      
+      public static function GetAvailableCreatures() : Object
+      {
+         var _loc4_:String = null;
+         var _loc1_:Object = CREATURELOCKER._creatures;
+         var _loc2_:Object = {};
+         var _loc3_:Boolean = MAPROOM_DESCENT.DescentPassed && !BASE.isInferno();
+         for(_loc4_ in _loc1_)
+         {
+            if(_loc3_)
+            {
+               if(_loc4_ != "C200")
+               {
+                  _loc2_[_loc4_] = _loc1_[_loc4_];
+               }
+            }
+            else if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+            {
+               _loc2_[_loc4_] = _loc1_[_loc4_];
+            }
+         }
+         return _loc2_;
+      }
+      
+      public static function GetSortedCreatures(param1:Boolean = false) : Array
+      {
+         var _loc8_:Object = null;
+         var _loc9_:String = null;
+         var _loc10_:Object = null;
+         var _loc11_:int = 0;
+         var _loc12_:Object = null;
+         var _loc13_:String = null;
+         var _loc14_:Object = null;
+         var _loc2_:Object = GetAvailableCreatures();
+         var _loc3_:Array = [];
+         var _loc4_:Array = [];
+         var _loc5_:Array = [];
+         var _loc6_:* = !BASE.isInferno();
+         if(_loc6_)
+         {
+            _loc8_ = CREATURELOCKER.GetCreatures("above");
+            for(_loc9_ in _loc8_)
+            {
+               _loc10_ = CREATURELOCKER._creatures[_loc9_];
+               if(!_loc10_.blocked || param1)
+               {
+                  _loc10_.id = _loc9_;
+                  _loc11_ = int(_loc10_.id.substr(_loc10_.id.indexOf("C") + 1));
+                  _loc10_.type = _loc11_;
+                  _loc3_.push(_loc10_);
+               }
+            }
+            _loc3_.sortOn(["index"],Array.NUMERIC);
+         }
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed;
+         if(_loc7_)
+         {
+            _loc12_ = CREATURELOCKER.GetCreatures("inferno");
+            for(_loc13_ in _loc12_)
+            {
+               _loc14_ = CREATURELOCKER._creatures[_loc13_];
+               if(!_loc14_.blocked || param1)
+               {
+                  _loc14_.id = _loc13_;
+                  _loc4_.push(_loc14_);
+               }
+            }
+            _loc4_.sortOn(["index"],Array.NUMERIC);
+         }
+         if(_loc3_.length > 0)
+         {
+            _loc5_ = _loc5_.concat(_loc3_);
+         }
+         if(_loc4_.length > 0)
+         {
+            _loc5_ = _loc5_.concat(_loc4_);
+         }
+         return _loc5_;
+      }
+      
+      public static function getShortCreatureName(param1:String) : String
+      {
+         if(CREATURELOCKER._creatures[param1].shortName)
+         {
+            return CREATURELOCKER._creatures[param1].shortName;
+         }
+         return CREATURELOCKER._creatures[param1].name;
       }
    }
 }

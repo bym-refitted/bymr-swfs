@@ -246,6 +246,10 @@ package
             _loc3_.Update();
          }
          ATTACK.RemoveDropZone();
+         if(UI2._top._siegeweapon)
+         {
+            UI2._top._siegeweapon.Cancel();
+         }
          ResourceBombs.BombRemove();
          addChild(_mc);
          this._t.start();
@@ -255,6 +259,10 @@ package
       
       public function Fire(param1:MouseEvent = null) : void
       {
+         if(UI2._top._siegeweapon)
+         {
+            UI2._top._siegeweapon.Cancel();
+         }
          if(ResourceBombs._state == 0)
          {
             if(ResourceBombs._bombid && !ResourceBombs._bombs[ResourceBombs._bombid].used && GLOBAL._attackersResources["r" + ResourceBombs._bombs[ResourceBombs._bombid].resource].Get() >= ResourceBombs._bombs[ResourceBombs._bombid].cost)

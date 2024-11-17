@@ -98,6 +98,10 @@ package com.monsters.maproom
       
       private function lvBtnDown(param1:MouseEvent = null) : void
       {
+         if(TUTORIAL._stage < 110)
+         {
+            return;
+         }
          this.setView(this.lv);
          lvBtn.Highlight = true;
          mvBtn.Highlight = false;

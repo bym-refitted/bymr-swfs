@@ -1,6 +1,5 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -214,7 +213,7 @@ package com.monsters.maproom_advanced
          MapRoom.HideFromViewOnly();
          if(MapRoom._mc)
          {
-            GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
+            GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10);
          }
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
@@ -237,12 +236,12 @@ package com.monsters.maproom_advanced
       public function Update() : *
       {
          var _loc1_:String = "";
-         _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flinger + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + com.adobe.serialization.json.JSON.encode(this._cell._resources) + "<br>_ticks:" + com.adobe.serialization.json.JSON.encode(this._cell._ticks) + "<br>_monsters:" + com.adobe.serialization.json.JSON.encode(this._cell._monsters);
+         _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange.Get() + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
          if(this._cell._monsterData)
          {
-            _loc1_ += "<br>_monsterData:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData);
-            _loc1_ += "<br>_monsterData.saved:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.saved);
-            _loc1_ += "<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h);
+            _loc1_ += "<br>_monsterData:" + JSON.encode(this._cell._monsterData);
+            _loc1_ += "<br>_monsterData.saved:" + JSON.encode(this._cell._monsterData.saved);
+            _loc1_ += "<br>_monsterData.h:" + JSON.encode(this._cell._monsterData.h);
             _loc1_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
          }
       }

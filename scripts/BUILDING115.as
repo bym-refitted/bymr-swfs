@@ -60,31 +60,49 @@ package
             }
             if(this._fireStage == 2)
             {
-               if(!_hasTargets || !targetInRange())
+               if(BASE._yardType == BASE.MAIN_YARD && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range && (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Get() > 0)
                {
+                  _targetVacuum = true;
+                  _fireTick = 30;
+               }
+               else if(!_hasTargets || !targetInRange())
+               {
+                  _targetVacuum = false;
                   FindTargets(_loc1_,_priority);
                   _fireTick = 30;
                }
-               else if(this._shotsFired >= _loc1_)
+               if(_targetVacuum || _hasTargets)
                {
-                  this._fireStage = 1;
-               }
-               else if(_frameNumber % 4 == 0)
-               {
-                  _loc2_ = false;
-                  _loc3_ = this._shotsFired % _targetCreeps.length;
-                  if(_targetCreeps[_loc3_].creep._health.Get() > 0)
+                  if(this._shotsFired >= _loc1_)
                   {
-                     this.Fire(_targetCreeps[_loc3_].creep);
-                     ++this._shotsFired;
+                     this._fireStage = 1;
                   }
-                  else
+                  else if(_frameNumber % 4 == 0)
                   {
-                     _loc2_ = true;
-                  }
-                  if(Boolean(_retarget) || _loc2_)
-                  {
-                     FindTargets(_loc1_,_priority);
+                     _loc2_ = false;
+                     _loc3_ = 0;
+                     if(Boolean(_targetCreeps) && _targetCreeps.length > 0)
+                     {
+                        _loc3_ = this._shotsFired % _targetCreeps.length;
+                     }
+                     if(_targetVacuum)
+                     {
+                        this.Fire((GLOBAL._bTownhall as BUILDING14)._vacuum);
+                        ++this._shotsFired;
+                     }
+                     else if(_targetCreeps[_loc3_].creep._health.Get() > 0)
+                     {
+                        this.Fire(_targetCreeps[_loc3_].creep);
+                        ++this._shotsFired;
+                     }
+                     else
+                     {
+                        _loc2_ = true;
+                     }
+                     if(Boolean(_retarget) || _loc2_)
+                     {
+                        FindTargets(_loc1_,_priority);
+                     }
                   }
                }
             }
@@ -112,21 +130,38 @@ package
       {
          if(_animLoaded && GLOBAL._render)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
       }
       
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         SOUNDS.Play("snipe1");
+         SOUNDS.Play("snipe1",!isJard ? 0.8 : 0.4);
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc3_ = 1.25;
          }
-         PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),false,_splash,2);
+         if(isJard)
+         {
+            _jarHealth.Add(-int(_damage * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * _loc2_ * _loc3_);
+            if(_jarHealth.Get() <= 0)
+            {
+               KillJar();
+            }
+         }
+         else if(_targetVacuum)
+         {
+            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),GLOBAL._bTownhall._position.add(new Point(0,-GLOBAL._bTownhall._mc.height)),null,_speed,int(_damage * _loc3_ * _loc2_),false,0);
+         }
+         else
+         {
+            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),false,_splash,2);
+         }
       }
       
       override public function Description() : *
@@ -200,7 +235,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
    }

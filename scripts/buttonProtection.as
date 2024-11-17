@@ -17,7 +17,14 @@ package
       {
          var _loc2_:popup_protected = new popup_protected();
          _loc2_.tA.htmlText = "<b>" + KEYS.Get("pop_protection_title") + "</b>";
-         _loc2_.tB.htmlText = KEYS.Get("pop_protection_body",{"v1":GLOBAL.ToTime(BASE._isProtected - GLOBAL.Timestamp(),false,false)});
+         if(BASE._isSanctuary)
+         {
+            _loc2_.tB.htmlText = KEYS.Get("pop_protection_body",{"v1":GLOBAL.ToTime(BASE._isProtected - GLOBAL.Timestamp(),false,false)});
+         }
+         else
+         {
+            _loc2_.tB.htmlText = KEYS.Get("pop_starterprotection_body",{"v1":GLOBAL.ToTime(BASE._isProtected - GLOBAL.Timestamp(),false,false)});
+         }
          POPUPS.Push(_loc2_,null,null,"","greenbouncer.png");
       }
    }

@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.monsters.ai.TRIBES;
    import com.monsters.ai.WMBASE;
    import com.monsters.mailbox.Message;
@@ -170,6 +169,7 @@ package
             SOUNDS.Play("close");
             GLOBAL._layerWindows.removeChild(_mc);
             _open = false;
+            _mc.Hide();
             _mc = null;
             loadState = 0;
          }
@@ -207,7 +207,7 @@ package
                }
                else
                {
-                  LOGGER.Log("err","MAPROOM.RequestTruce: " + com.adobe.serialization.json.JSON.encode(param1));
+                  LOGGER.Log("err","MAPROOM.RequestTruce: " + JSON.encode(param1));
                }
             };
             new URLLoaderApi().load(GLOBAL._apiURL + "player/requesttruce",[["baseid",baseid],["duration",14 * 24 * 60 * 60],["message",mc.bMessage.text]],handleLoadSuccessful);

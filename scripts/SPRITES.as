@@ -1,9 +1,10 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.display.SpriteData;
+   import com.monsters.siege.weapons.Decoy;
+   import com.monsters.siege.weapons.Jars;
    import flash.display.BitmapData;
-   import flash.geom.Point;
-   import flash.geom.Rectangle;
    
    public class SPRITES
    {
@@ -19,339 +20,75 @@ package
          _sprites = {};
          if(!BASE.isInferno())
          {
-            _sprites.worker = {
-               "key":"monsters/worker.png",
-               "sprite":null,
-               "width":27,
-               "height":27,
-               "middle":new Point(9,19)
-            };
+            _sprites.worker = new SpriteData("monsters/worker.png",27,27,9,19);
          }
          else
          {
-            _sprites.worker = {
-               "key":"monsters/inferno_worker.v2.png",
-               "sprite":null,
-               "width":64,
-               "height":55,
-               "middle":new Point(32,36)
-            };
+            _sprites.worker = new SpriteData("monsters/inferno_worker.v2.png",64,55,32,36);
          }
-         _sprites.C1 = {
-            "key":"monsters/sprite.1.v1.png",
-            "sprite":null,
-            "width":24,
-            "height":21,
-            "middle":new Point(8,14)
-         };
-         _sprites.C2 = {
-            "key":"monsters/octoooze.png",
-            "sprite":null,
-            "width":39,
-            "height":28,
-            "middle":new Point(19,15)
-         };
-         _sprites.C3 = {
-            "key":"monsters/sprite.3.v2.png",
-            "sprite":null,
-            "width":30,
-            "height":28,
-            "middle":new Point(7,20)
-         };
-         _sprites.C4 = {
-            "key":"monsters/fink.png",
-            "sprite":null,
-            "width":34,
-            "height":32,
-            "middle":new Point(15,21)
-         };
-         _sprites.C5 = {
-            "key":"monsters/eyera.png",
-            "sprite":null,
-            "width":26,
-            "height":23,
-            "middle":new Point(11,15)
-         };
-         _sprites.C6 = {
-            "key":"monsters/ichi.png",
-            "sprite":null,
-            "width":27,
-            "height":26,
-            "middle":new Point(11,17)
-         };
-         _sprites.C7 = {
-            "key":"monsters/bandito.png",
-            "sprite":null,
-            "width":29,
-            "height":28,
-            "middle":new Point(11,17)
-         };
-         _sprites.C8 = {
-            "key":"monsters/fang.png",
-            "sprite":null,
-            "width":34,
-            "height":31,
-            "middle":new Point(16,19)
-         };
-         _sprites.C9 = {
-            "key":"monsters/brain.v2.png",
-            "sprite":null,
-            "width":34,
-            "height":24,
-            "middle":new Point(16,13)
-         };
-         _sprites.C10 = {
-            "key":"monsters/crabatron.png",
-            "sprite":null,
-            "width":37,
-            "height":27,
-            "middle":new Point(15,18)
-         };
-         _sprites.C11 = {
-            "key":"monsters/sprite.11.v2.png",
-            "sprite":null,
-            "width":48,
-            "height":35,
-            "middle":new Point(24,22)
-         };
-         _sprites.C12 = {
-            "key":"monsters/sprite.12.v2.png",
-            "sprite":null,
-            "width":53,
-            "height":46,
-            "middle":new Point(21,27)
-         };
-         _sprites.C13 = {
-            "key":"monsters/13.png",
-            "sprite":null,
-            "width":40,
-            "height":26,
-            "middle":new Point(19,17)
-         };
-         _sprites.C14 = {
-            "key":"monsters/14.v1.png",
-            "sprite":null,
-            "width":28,
-            "height":28,
-            "middle":new Point(15,14)
-         };
-         _sprites.C15 = {
-            "key":"monsters/zafreeti.v2.png",
-            "sprite":null,
-            "width":56,
-            "height":70,
-            "middle":new Point(28,35)
-         };
-         _sprites.IC1 = {
-            "key":"monsters/spurtz.png",
-            "sprite":null,
-            "width":24,
-            "height":28,
-            "middle":new Point(12,14)
-         };
-         _sprites.IC2 = {
-            "key":"monsters/zagnoid.png",
-            "sprite":null,
-            "width":64.4,
-            "height":46,
-            "middle":new Point(26,28)
-         };
-         _sprites.IC3 = {
-            "key":"monsters/malphus.png",
-            "sprite":null,
-            "width":51,
-            "height":35,
-            "middle":new Point(25,17)
-         };
-         _sprites.IC4 = {
-            "key":"monsters/valgos.png",
-            "sprite":null,
-            "width":55,
-            "height":32,
-            "middle":new Point(11,15)
-         };
-         _sprites.IC5 = {
-            "key":"monsters/balthazar.png",
-            "sprite":null,
-            "width":56,
-            "height":37,
-            "middle":new Point(33,18.5)
-         };
-         _sprites.IC6 = {
-            "key":"monsters/grokus.v2.png",
-            "sprite":null,
-            "width":57,
-            "height":39,
-            "middle":new Point(28,20)
-         };
-         _sprites.IC7 = {
-            "key":"monsters/sabnox.png",
-            "sprite":null,
-            "width":42,
-            "height":34,
-            "middle":new Point(21,17)
-         };
-         _sprites.IC8 = {
-            "key":"monsters/wormzer.png",
-            "sprite":null,
-            "width":58,
-            "height":42,
-            "middle":new Point(29,21)
-         };
-         _sprites.G1_1 = {
-            "key":"monsters/ape_1.png",
-            "sprite":null,
-            "width":96,
-            "height":69,
-            "middle":new Point(26,36)
-         };
-         _sprites.G1_2 = {
-            "key":"monsters/ape_2.png",
-            "sprite":null,
-            "width":89,
-            "height":73,
-            "middle":new Point(26,36)
-         };
-         _sprites.G1_3 = {
-            "key":"monsters/ape_3.png",
-            "sprite":null,
-            "width":103,
-            "height":88,
-            "middle":new Point(26,36)
-         };
-         _sprites.G1_4 = {
-            "key":"monsters/ape_4.png",
-            "sprite":null,
-            "width":148,
-            "height":127,
-            "middle":new Point(26,36)
-         };
-         _sprites.G1_5 = {
-            "key":"monsters/ape_5.png",
-            "sprite":null,
-            "width":160,
-            "height":137,
-            "middle":new Point(26,36)
-         };
-         _sprites.G1_6 = {
-            "key":"monsters/ape_6.png",
-            "sprite":null,
-            "width":140,
-            "height":2 * 60,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_1 = {
-            "key":"monsters/dragon_1.png",
-            "sprite":null,
-            "width":64,
-            "height":41,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_2 = {
-            "key":"monsters/dragon_2.png",
-            "sprite":null,
-            "width":87,
-            "height":58,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_3 = {
-            "key":"monsters/dragon_3.png",
-            "sprite":null,
-            "width":114,
-            "height":85,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_4 = {
-            "key":"monsters/dragon_4.png",
-            "sprite":null,
-            "width":131,
-            "height":93,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_5 = {
-            "key":"monsters/dragon_5.png",
-            "sprite":null,
-            "width":156,
-            "height":117,
-            "middle":new Point(26,36)
-         };
-         _sprites.G2_6 = {
-            "key":"monsters/dragon_6.png",
-            "sprite":null,
-            "width":171,
-            "height":125,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_1 = {
-            "key":"monsters/fly_1.png",
-            "sprite":null,
-            "width":53,
-            "height":40,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_2 = {
-            "key":"monsters/fly_2.png",
-            "sprite":null,
-            "width":63,
-            "height":46,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_3 = {
-            "key":"monsters/fly_3.png",
-            "sprite":null,
-            "width":98,
-            "height":81,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_4 = {
-            "key":"monsters/fly_4.png",
-            "sprite":null,
-            "width":2 * 60,
-            "height":92,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_5 = {
-            "key":"monsters/fly_5.png",
-            "sprite":null,
-            "width":133,
-            "height":105,
-            "middle":new Point(26,36)
-         };
-         _sprites.G3_6 = {
-            "key":"monsters/fly_6.png",
-            "sprite":null,
-            "width":124,
-            "height":105,
-            "middle":new Point(26,36)
-         };
-         _sprites.C200 = {
-            "key":"monsters/looter.png",
-            "sprite":null,
-            "width":51,
-            "height":47,
-            "middle":new Point(7,33)
-         };
-         _sprites.shadow = {
-            "key":"monsters/flyingshadow.png",
-            "sprite":null,
-            "width":31,
-            "height":20,
-            "middle":new Point(15,10)
-         };
-         _sprites.bigshadow = {
-            "key":"monsters/zafreeti-shadow.png",
-            "sprite":null,
-            "width":48,
-            "height":32,
-            "middle":new Point(24,16)
-         };
-         _sprites.rocket = {
-            "key":"monsters/daverocket.png",
-            "sprite":null,
-            "width":16,
-            "height":16,
-            "middle":new Point(26,36)
-         };
+         _sprites.C1 = new SpriteData("monsters/sprite.1.v1.png",24,21,8,14);
+         _sprites.C2 = new SpriteData("monsters/octoooze.png",39,28,19,15);
+         _sprites.C3 = new SpriteData("monsters/sprite.3.v2.png",30,28,7,20);
+         _sprites.C4 = new SpriteData("monsters/fink.png",34,32,15,21);
+         _sprites.C5 = new SpriteData("monsters/eyera.png",26,23,11,15);
+         _sprites.C6 = new SpriteData("monsters/ichi.png",27,26,11,17);
+         _sprites.C7 = new SpriteData("monsters/bandito.png",29,28,11,17);
+         _sprites.C8 = new SpriteData("monsters/fang.png",34,31,16,19);
+         _sprites.C9 = new SpriteData("monsters/brain.v2.png",34,24,16,13);
+         _sprites.C10 = new SpriteData("monsters/crabatron.png",37,27,15,18);
+         _sprites.C11 = new SpriteData("monsters/sprite.11.v2.png",48,35,24,22);
+         _sprites.C12 = new SpriteData("monsters/sprite.12.v2.png",53,46,21,27);
+         _sprites.C13 = new SpriteData("monsters/13.png",40,26,19,17);
+         _sprites.C14 = new SpriteData("monsters/14.v1.png",28,28,15,14);
+         _sprites.C15 = new SpriteData("monsters/zafreeti.v2.png",56,70,28,35);
+         _sprites.C16 = new SpriteData("monsters/vorg_anim.png",40,40,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.C17 = new SpriteData("monsters/slimeattikus_anim.png",48,31,SpriteData.FUBAR_X,SpriteData.FUBAR_Y - 21);
+         _sprites.C18 = new SpriteData("monsters/slimeattikusmini_anim.png",30,20,SpriteData.FUBAR_X - 11,SpriteData.FUBAR_Y - 25);
+         _sprites.IC1 = new SpriteData("monsters/spurtz.png",24,28,12,14);
+         _sprites.IC2 = new SpriteData("monsters/zagnoid.png",64.4,46,26,28);
+         _sprites.IC3 = new SpriteData("monsters/malphus.png",51,35,25,17);
+         _sprites.IC4 = new SpriteData("monsters/valgos.png",55,32,11,15);
+         _sprites.IC5 = new SpriteData("monsters/balthazar.png",56,37,33,18.5);
+         _sprites.IC6 = new SpriteData("monsters/grokus.v2.png",57,39,28,20);
+         _sprites.IC7 = new SpriteData("monsters/sabnox.png",42,34,21,17);
+         _sprites.IC8 = new SpriteData("monsters/wormzer.png",58,42,29,21);
+         _sprites.G1_1 = new SpriteData("monsters/ape_1.png",96,69,26,36);
+         _sprites.G1_2 = new SpriteData("monsters/ape_2.png",89,73,26,36);
+         _sprites.G1_3 = new SpriteData("monsters/ape_3.png",103,88,26,36);
+         _sprites.G1_4 = new SpriteData("monsters/ape_4.png",148,127,26,36);
+         _sprites.G1_5 = new SpriteData("monsters/ape_5.png",160,137,26,36);
+         _sprites.G1_6 = new SpriteData("monsters/ape_6.png",140,2 * 60,26,36);
+         _sprites.G2_1 = new SpriteData("monsters/dragon_1.png",64,41,26,36);
+         _sprites.G2_2 = new SpriteData("monsters/dragon_2.png",87,58,26,36);
+         _sprites.G2_3 = new SpriteData("monsters/dragon_3.png",114,85,26,36);
+         _sprites.G2_4 = new SpriteData("monsters/dragon_4.png",131,93,26,36);
+         _sprites.G2_5 = new SpriteData("monsters/dragon_5.png",156,117,26,36);
+         _sprites.G2_6 = new SpriteData("monsters/dragon_6.png",171,125,26,36);
+         _sprites.G3_1 = new SpriteData("monsters/fly_1.png",53,40,26,36);
+         _sprites.G3_2 = new SpriteData("monsters/fly_2.png",63,46,26,36);
+         _sprites.G3_3 = new SpriteData("monsters/fly_3.png",98,81,26,36);
+         _sprites.G3_4 = new SpriteData("monsters/fly_4.png",2 * 60,92,26,36);
+         _sprites.G3_5 = new SpriteData("monsters/fly_5.png",133,105,26,36);
+         _sprites.G3_6 = new SpriteData("monsters/fly_6.png",124,105,26,36);
+         _sprites.G4_1 = new SpriteData("monsters/korath_1.png",72,49,26,36);
+         _sprites.G4_2 = new SpriteData("monsters/korath_2.png",119,81,26,36);
+         _sprites.G4_3 = new SpriteData("monsters/korath_3.png",128,102,26,36);
+         _sprites.G4_4 = new SpriteData("monsters/korath_4.png",153,123,26,36);
+         _sprites.G4_5 = new SpriteData("monsters/korath_5.png",199,162,26,36);
+         _sprites.G4_6 = new SpriteData("monsters/korath_6.png",202,167,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.C200 = new SpriteData("monsters/looter.png",51,47,7,33);
+         _sprites.shadow = new SpriteData("monsters/flyingshadow.png",31,20,15,10);
+         _sprites.bigshadow = new SpriteData("monsters/zafreeti-shadow.png",48,32,24,16);
+         _sprites.rocket = new SpriteData("monsters/daverocket.png",16,16,26,36);
+         _sprites.vacuum_pipe = new SpriteData("siegeimages/vacuum-pipe.png",26,97,26,36);
+         _sprites.vacuum_end = new SpriteData("siegeimages/vacuum-end.png",52,52,26,36);
+         _sprites.heart = new SpriteData("effects/heart_icon.v2.png",12,12,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.flame = new SpriteData("effects/flame_icon.png",16,25,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.venom = new SpriteData("effects/venom_icon.v2.png",16,26,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[Jars.JAR_GRAPHIC] = new SpriteData(Jars.JAR_GRAPHIC_URL,Jars.JAR_GRAPHIC_WIDTH,Jars.JAR_GRAPHIC_HEIGHT,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[Decoy.DECOY_WAVE] = new SpriteData("siegeimages/decoy_wave_anim.png",61,70,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[Decoy.DECOY_FUSE] = new SpriteData("siegeimages/decoy_fuse_anim.png",44,49,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[Decoy.DECOY_EXPLOSION] = new SpriteData("siegeimages/decoy_explosion_anim.png",184,195,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
       }
       
       public static function Clear() : void
@@ -371,12 +108,12 @@ package
       
       private static function onAssetLoaded(param1:String, param2:BitmapData) : void
       {
-         var _loc3_:Object = null;
+         var _loc3_:SpriteData = null;
          for each(_loc3_ in _sprites)
          {
             if(_loc3_.key == param1)
             {
-               _loc3_.sprite = param2;
+               _loc3_.image = param2;
             }
          }
       }
@@ -384,6 +121,9 @@ package
       public static function GetSprite(param1:BitmapData, param2:String, param3:String, param4:int, param5:int = 0, param6:int = -1) : int
       {
          var _loc7_:String = null;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
          if(!GLOBAL._render)
          {
             return -1;
@@ -406,69 +146,6 @@ package
             {
                GetFrame(param1,_sprites.worker,param4 / 12,0);
             }
-         }
-         if(param2 == "C1")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C1,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C2")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C2,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C3")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C3,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C4")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C4,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C5")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C5,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C6")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C6,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C7")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C7,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C8")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C8,param4 / 12);
-            }
             return param4 / 12;
          }
          if(param2 == "C9")
@@ -484,22 +161,6 @@ package
             if(param6 != param4 / 12)
             {
                GetFrame(param1,_sprites.C9,param4 / 12,0);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C10")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C10,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "C11")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.C11,param4 / 12);
             }
             return param4 / 12;
          }
@@ -546,6 +207,14 @@ package
             }
             return param4 / 11.25 + param5 % 9 / 3 * 32;
          }
+         if(param2 == "C16")
+         {
+            if(param6 != param4 / 11.25 + param5 % 9 / 3 * 32)
+            {
+               GetFrame(param1,_sprites.C16,int(param4 / 11.25),param5 % 9 / 3);
+            }
+            return param4 / 11.25 + param5 % 9 / 3 * 32;
+         }
          if(param2 == "C15")
          {
             if(param6 != param4 / 11.25)
@@ -562,14 +231,6 @@ package
             }
             return param4 / 12;
          }
-         if(param2 == "IC2")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.IC2,param4 / 12);
-            }
-            return param4 / 12;
-         }
          if(param2 == "IC3")
          {
             if(param6 != param4 / 12)
@@ -578,43 +239,11 @@ package
             }
             return param4 / 12;
          }
-         if(param2 == "IC4")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.IC4,param4 / 12);
-            }
-            return param4 / 12;
-         }
          if(param2 == "IC5")
          {
             if(param6 != param4 / 12)
             {
                GetFrame(param1,_sprites.IC5,param4 / 12,param5 / 8 % 6 + 1);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "IC6")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.IC6,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "IC7")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.IC7,param4 / 12);
-            }
-            return param4 / 12;
-         }
-         if(param2 == "IC8")
-         {
-            if(param6 != param4 / 12)
-            {
-               GetFrame(param1,_sprites.IC8,param4 / 12);
             }
             return param4 / 12;
          }
@@ -642,6 +271,7 @@ package
                      GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % 7 + 8);
                   }
                }
+               return param4 / 22.5;
             }
          }
          if(param2.substr(0,2) == "G3")
@@ -668,15 +298,75 @@ package
                      GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % 6 + 1);
                   }
                }
+               return param4 / 22.5;
             }
+         }
+         if(param2.substr(0,2) == "G4" && Boolean(_sprites[param2]))
+         {
+            if(param3 == "idle")
+            {
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5));
+            }
+            else if(param3 == "walking")
+            {
+               _loc8_ = int(param2.substr(3,1));
+               _loc9_ = 8;
+               if(_loc8_ == 3)
+               {
+                  _loc9_ = 9;
+               }
+               else if(_loc8_ > 3)
+               {
+                  _loc9_ = 10;
+               }
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + 0);
+            }
+            else if(param3 == "attack")
+            {
+               _loc8_ = int(param2.substr(3,1));
+               switch(_loc8_)
+               {
+                  case 1:
+                     _loc9_ = 9;
+                     _loc10_ = 8;
+                     break;
+                  case 2:
+                     _loc9_ = 9;
+                     _loc10_ = 8;
+                     break;
+                  case 3:
+                     _loc9_ = 10;
+                     _loc10_ = 9;
+                     break;
+                  case 4:
+                     _loc9_ = 10;
+                     _loc10_ = 10;
+                     break;
+                  case 5:
+                     _loc9_ = 10;
+                     _loc10_ = 10;
+                     break;
+                  case 6:
+                     _loc9_ = 10;
+                     _loc10_ = 10;
+               }
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + _loc10_);
+            }
+            else if(param3 == "stomp")
+            {
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % 10 + 20);
+            }
+            return param4 / 22.5;
          }
          if(param2 == "shadow")
          {
             GetFrame(param1,_sprites.shadow,0);
+            return 0;
          }
          if(param2 == "bigshadow")
          {
             GetFrame(param1,_sprites.bigshadow,0);
+            return 0;
          }
          if(param2 == "C200")
          {
@@ -688,6 +378,7 @@ package
             {
                GetFrame(param1,_sprites.C200,param4 / 12,1);
             }
+            return param4 / 12;
          }
          if(param2 == "rocket")
          {
@@ -697,32 +388,33 @@ package
             }
             return param4 / 12;
          }
+         if(_sprites[param2])
+         {
+            if(param6 != param4 / 12)
+            {
+               GetFrame(param1,_sprites[param2],param4 / 12);
+            }
+            return param4 / 12;
+         }
          return 0;
       }
       
-      public static function GetFrame(param1:BitmapData, param2:Object, param3:int, param4:int = 0) : void
+      public static function GetFrame(param1:BitmapData, param2:SpriteData, param3:int, param4:int = 0) : void
       {
-         var offset:Point = null;
-         var canvas:BitmapData = param1;
-         var sprite:Object = param2;
-         var frame:int = param3;
-         var row:int = param4;
-         try
+         if(Boolean(param2) && Boolean(param2.image))
          {
-            offset = new Point(26,36);
-            if(sprite)
+            param2.rect.x = param2.rect.width * param3;
+            param2.rect.y = param2.rect.height * param4;
+            if(param1)
             {
-               offset.x -= sprite.middle.x;
-               offset.y -= sprite.middle.y;
-               if(sprite.sprite)
-               {
-                  canvas.copyPixels(sprite.sprite,new Rectangle(sprite.width * frame,sprite.height * row,sprite.width,sprite.height),offset);
-               }
+               param1.copyPixels(param2.image,param2.rect,param2.offset);
             }
          }
-         catch(e:Error)
-         {
-         }
+      }
+      
+      public static function GetFrameById(param1:BitmapData, param2:String, param3:int, param4:int = 0) : void
+      {
+         GetFrame(param1,_sprites[param2],param3,param4);
       }
    }
 }

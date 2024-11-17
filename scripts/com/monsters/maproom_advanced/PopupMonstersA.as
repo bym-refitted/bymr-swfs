@@ -1,6 +1,7 @@
 package com.monsters.maproom_advanced
 {
    import com.cc.utils.SecNum;
+   import com.monsters.display.ScrollSet;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -25,11 +26,22 @@ package com.monsters.maproom_advanced
       
       private var _transferBars:Array = [];
       
+      private var _scroller:ScrollSet;
+      
       public function PopupMonstersA()
       {
          super();
          x = 455;
          y = 250;
+         mMonsters.mask = mMonstersMask;
+         this._scroller = new ScrollSet();
+         this._scroller.isHiddenWhileUnnecessary = true;
+         this._scroller.AutoHideEnabled = false;
+         this._scroller.width = scroll.width;
+         this._scroller.x = scroll.x;
+         this._scroller.y = scroll.y;
+         addChild(this._scroller);
+         this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this._mc = this;
          this.bCancel.SetupKey("btn_cancel");
          this.bCancel.addEventListener(MouseEvent.CLICK,this.Hide);
@@ -70,8 +82,7 @@ package com.monsters.maproom_advanced
                _loc9_ = new MapRoomPopupInfoMonster();
                _loc9_.Setup(0,0,_loc7_,0);
                _loc8_.addChild(_loc9_);
-               _loc8_.x = -140;
-               _loc8_.y = _loc5_ * _loc8_.height - 100;
+               _loc8_.y = _loc5_ * _loc8_.height;
                _loc8_.b1a.Setup("-");
                _loc8_.b1a.addEventListener(MouseEvent.MOUSE_DOWN,this.Subtract(_loc6_));
                _loc8_.b1a.buttonMode = true;
@@ -102,14 +113,11 @@ package com.monsters.maproom_advanced
                   this._monstersLeft[_loc7_] = new SecNum(int(this._cell._monsters[_loc7_].Get()));
                   this._transferMonsters[_loc7_] = new SecNum(0);
                }
-               if(_loc5_ < 7)
-               {
-                  this._transferBars.push({
-                     "bar":_loc8_,
-                     "monster":_loc7_
-                  });
-                  this._mc.addChild(_loc8_);
-               }
+               this._transferBars.push({
+                  "bar":_loc8_,
+                  "monster":_loc7_
+               });
+               mMonsters.addChild(_loc8_);
                _loc5_ += 1;
             }
          }
@@ -164,6 +172,10 @@ package com.monsters.maproom_advanced
                _loc2_.t1.htmlText = "<b>" + GLOBAL.FormatNumber(this._transferMonsters[_loc3_].Get()) + "</b>";
             }
             _loc1_++;
+         }
+         if(this._scroller)
+         {
+            this._scroller.Update();
          }
       }
       

@@ -1,6 +1,10 @@
 package com.monsters.ui
 {
+   import com.monsters.chat.Chat;
    import com.monsters.missions.UI_MISSIONMENU;
+   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.replayableEvents.monsterMadness.MonsterMadnessInfoBar;
+   import flash.display.DisplayObject;
    import flash.events.MouseEvent;
    
    public class UI_BOTTOM
@@ -11,6 +15,10 @@ package com.monsters.ui
       
       public static var _missions:UI_MISSIONMENU;
       
+      public static var _monsterMadness:MonsterMadnessInfoBar;
+      
+      private static var _children:Vector.<DisplayObject>;
+      
       public function UI_BOTTOM()
       {
          super();
@@ -18,6 +26,7 @@ package com.monsters.ui
       
       public static function Setup() : *
       {
+         _children = new Vector.<DisplayObject>();
          _mc = new UI_MENU();
          if(!_missions && !GLOBAL._flags.viximo)
          {
@@ -69,28 +78,21 @@ package com.monsters.ui
                _loc1_ += 1;
             }
          }
-         if(_loc1_ > 0)
-         {
-            if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
-            {
-               _mc.bQuests.Alert = "<b>" + _loc1_ + "</b>";
-            }
-         }
-         else
-         {
-            _mc.bQuests.Alert = "";
-         }
+         _mc.bQuests.Alert = "";
          if(_missions)
          {
             _missions.Update();
          }
-         if(Boolean(GLOBAL._bStore) || Boolean(BASE._yardType))
+         if(_mc.bStore)
          {
-            _mc.bStore.Enabled = true;
-         }
-         else
-         {
-            _mc.bStore.Enabled = false;
+            if(Boolean(GLOBAL._bStore) || Boolean(BASE._yardType))
+            {
+               _mc.bStore.Enabled = true;
+            }
+            else
+            {
+               _mc.bStore.Enabled = false;
+            }
          }
          if(Boolean(GLOBAL._bMap) || Boolean(BASE._yardType))
          {
@@ -106,7 +108,7 @@ package com.monsters.ui
          }
       }
       
-      public static function Resize() : *
+      public static function Resize() : void
       {
          if(Boolean(_mc) && _mc._loaded)
          {
@@ -141,17 +143,18 @@ package com.monsters.ui
          {
             _missions.visible = true;
          }
-         if(GLOBAL.flagsShouldChatDisplay())
+         if(Chat.flagsShouldChatDisplay())
          {
-            if(GLOBAL._bymChat)
+            if(Chat._bymChat)
             {
-               GLOBAL._bymChat.show();
+               Chat._bymChat.show();
             }
          }
-         if(_nextwave && SPECIALEVENT.EventActive() && UI_NEXTWAVE.ShouldDisplay())
+         if(MonsterMadness.infoBar)
          {
-            _nextwave.visible = true;
+            MonsterMadness.addInfoBar();
          }
+         showChildren();
       }
       
       public static function Hide() : *
@@ -161,17 +164,59 @@ package com.monsters.ui
             _mc.bQuests.Alert = "";
             _mc.visible = false;
          }
-         if(!GLOBAL.flagsShouldChatDisplay())
+         if(!Chat.flagsShouldChatDisplay())
          {
-            if(GLOBAL._bymChat)
+            if(Chat._bymChat)
             {
-               GLOBAL._bymChat.hide();
+               Chat._bymChat.hide();
             }
          }
          if(_nextwave)
          {
             _nextwave.visible = false;
          }
+         if(MonsterMadness.infoBar)
+         {
+            MonsterMadness.removeInfoBar();
+         }
+         hideChildren();
+      }
+      
+      private static function hideChildren() : void
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < _children.length)
+         {
+            _children[_loc1_].visible = false;
+            _loc1_++;
+         }
+      }
+      
+      private static function showChildren() : void
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < _children.length)
+         {
+            _children[_loc1_].visible = true;
+            _loc1_++;
+         }
+      }
+      
+      public static function addChild(param1:DisplayObject) : void
+      {
+         _children.push(param1);
+         GLOBAL._layerUI.addChild(param1);
+      }
+      
+      public static function removeChild(param1:DisplayObject) : void
+      {
+         _children.push(param1);
+         var _loc2_:uint = uint(_children.indexOf(param1));
+         if(_loc2_)
+         {
+            _children.splice(_loc2_,1);
+         }
+         GLOBAL._layerUI.removeChild(param1);
       }
    }
 }

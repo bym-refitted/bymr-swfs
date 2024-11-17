@@ -1,5 +1,11 @@
 package
 {
+   import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSetH;
+   import flash.display.Bitmap;
+   import flash.display.BitmapData;
+   import flash.display.MovieClip;
+   import flash.display.Sprite;
    import flash.events.MouseEvent;
    
    public class CHAMPIONSELECTPOPUP extends GUARDIANSELECTPOPUP_CLIP
@@ -11,73 +17,84 @@ package
          super();
          this._guardCage = GLOBAL._bCage as CHAMPIONCAGE;
          tTitle.htmlText = KEYS.Get("popup_championselecttitle");
-         tGuard1_label.htmlText = "<b>" + KEYS.Get("mon_gorgotitle") + "<b>";
-         tGuard1_desc.htmlText = "<b>" + KEYS.Get("mon_gorgodesc") + "<b>";
-         tGuard2_label.htmlText = "<b>" + KEYS.Get("mon_fomortitle") + "<b>";
-         tGuard2_desc.htmlText = "<b>" + KEYS.Get("mon_fomordesc") + "<b>";
-         tGuard3_label.htmlText = "<b>" + KEYS.Get("mon_drulltitle") + "<b>";
-         tGuard3_desc.htmlText = "<b>" + KEYS.Get("mon_drulldesc") + "<b>";
-         bAction1.Setup(KEYS.Get("btn_raisechampion",{"v1":"Gorgo"}),false,0,0);
-         bAction1.addEventListener(MouseEvent.CLICK,this.RaiseGuard1);
-         bAction2.Setup(KEYS.Get("btn_raisechampion",{"v1":"Fomor"}),false,0,0);
-         bAction2.addEventListener(MouseEvent.CLICK,this.RaiseGuard2);
-         bAction3.Setup(KEYS.Get("btn_raisechampion",{"v1":"Drull"}),false,0,0);
-         bAction3.addEventListener(MouseEvent.CLICK,this.RaiseGuard3);
+         this.createScrollBar(this.createSlots());
       }
       
-      private function RaiseGuard1(param1:MouseEvent) : void
+      private function createScrollBar(param1:Sprite) : void
       {
+         var _loc2_:ScrollSetH = null;
+         param1.mask = mcMask;
+         _loc2_ = new ScrollSetH(param1,mcMask);
+         _loc2_.x = param1.x;
+         _loc2_.y = param1.y + param1.height;
+         addChild(_loc2_);
+      }
+      
+      private function createSlots() : Sprite
+      {
+         var _loc1_:Sprite = null;
+         var _loc3_:int = 0;
+         var _loc5_:guardianselect_selectportrait_CLIP = null;
+         var _loc6_:Object = null;
+         var _loc7_:Button = null;
+         _loc1_ = new Sprite();
+         _loc1_.x = mcMask.x;
+         _loc1_.y = mcMask.y;
+         addChild(_loc1_);
+         var _loc4_:int = int(CHAMPIONCAGE._guardians.length);
+         while(_loc4_ > 0)
+         {
+            if(CHAMPIONCAGE.CanTrainGuardian(_loc4_))
+            {
+               _loc5_ = new guardianselect_selectportrait_CLIP();
+               _loc6_ = CHAMPIONCAGE._guardians["G" + _loc4_];
+               _loc5_.tGuard_label.htmlText = "<b>" + KEYS.Get(_loc6_.title) + "<b>";
+               _loc5_.tGuard_desc.htmlText = "<b>" + KEYS.Get(_loc6_.description) + "<b>";
+               _loc5_.name = _loc4_.toString();
+               _loc7_ = _loc5_.bAction;
+               _loc7_.Setup(KEYS.Get("btn_raisechampion",{"v1":_loc6_.name}),false,0,0);
+               ImageCache.GetImageWithCallBack(_loc6_.selectGraphic,this.onImageLoad,true,4,"",[_loc5_.mcImage]);
+               _loc7_.addEventListener(MouseEvent.CLICK,this.clickedRaise);
+               _loc5_.x = _loc3_;
+               _loc1_.addChild(_loc5_);
+               _loc3_ += _loc5_.width + 10;
+            }
+            _loc4_--;
+         }
+         return _loc1_;
+      }
+      
+      private function onImageLoad(param1:String, param2:BitmapData, param3:Array = null) : void
+      {
+         MovieClip(param3[0]).addChild(new Bitmap(param2));
+      }
+      
+      private function clickedRaise(param1:MouseEvent) : void
+      {
+         var _loc2_:String = param1.currentTarget.parent.name;
+         var _loc3_:int = int(_loc2_.substr(_loc2_.length - 1));
+         this.RaiseGuard(_loc3_);
+      }
+      
+      private function RaiseGuard(param1:int) : void
+      {
+         var _loc2_:String = null;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            if(CHAMPIONCHAMBER.HasFrozen(1))
+            _loc2_ = "G" + param1;
+            if(CHAMPIONCHAMBER.HasFrozen(param1))
             {
-               GLOBAL.Message(KEYS.Get("championchamber_alreadyfrozen",{"v1":"Gorgo"}));
+               GLOBAL.Message(KEYS.Get("championchamber_alreadyfrozen",{"v1":CHAMPIONCAGE._guardians[_loc2_].name}));
                return;
             }
-            this._guardCage.SpawnGuardian(1,0,0,1,CHAMPIONCAGE.GetGuardianProperty("G1",1,"health"));
-            LOGGER.Stat([52,"G1",1]);
+            this._guardCage.SpawnGuardian(1,0,0,param1,CHAMPIONCAGE.GetGuardianProperty(_loc2_,1,"health"),"",0,CHAMPIONCAGE._guardians[_loc2_].props.powerLevel);
+            LOGGER.Stat([52,_loc2_,2]);
             BASE.Save();
             this.Hide();
          }
       }
       
-      private function RaiseGuard2(param1:MouseEvent) : void
-      {
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
-         {
-            if(CHAMPIONCHAMBER.HasFrozen(3))
-            {
-               GLOBAL.Message(KEYS.Get("championchamber_alreadyfrozen",{"v1":"Fomor"}));
-               return;
-            }
-            this._guardCage.SpawnGuardian(1,0,0,3,CHAMPIONCAGE.GetGuardianProperty("G3",1,"health"));
-            LOGGER.Stat([52,"G3",3]);
-            BASE.Save();
-            this.Hide();
-         }
-      }
-      
-      private function RaiseGuard3(param1:MouseEvent) : void
-      {
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
-         {
-            if(CHAMPIONCHAMBER.HasFrozen(2))
-            {
-               GLOBAL.Message(KEYS.Get("championchamber_alreadyfrozen",{"v1":"Drull"}));
-               return;
-            }
-            this._guardCage.SpawnGuardian(1,0,0,2,CHAMPIONCAGE.GetGuardianProperty("G2",1,"health"));
-            LOGGER.Stat([52,"G2",2]);
-            BASE.Save();
-            this.Hide();
-         }
-      }
-      
-      public function FinishGuard() : void
-      {
-      }
-      
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          CHAMPIONCAGE.Hide(param1);
       }

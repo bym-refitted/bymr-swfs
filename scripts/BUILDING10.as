@@ -65,7 +65,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -86,10 +86,6 @@ package
          if(_countdownBuild.Get() == 0)
          {
             GLOBAL._bYardPlanner = this;
-         }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
          }
       }
    }

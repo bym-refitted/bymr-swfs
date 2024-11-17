@@ -57,6 +57,8 @@ package
       
       public var _alert:String = "";
       
+      private var _multiline:Boolean = false;
+      
       public var spinnerInset:int = 7;
       
       public var alertMC:button_alert;
@@ -83,6 +85,23 @@ package
             _loc1_ = this._bm.height;
          }
          return _loc1_;
+      }
+      
+      public function set Multiline(param1:Boolean) : void
+      {
+         if(param1 != this._multiline)
+         {
+            this._multiline = param1;
+            if(Boolean(this.label) && Boolean(this.size))
+            {
+               this.Setup(this.label,this.size);
+            }
+         }
+      }
+      
+      public function get Multiline() : Boolean
+      {
+         return this._multiline;
       }
       
       public function set Enabled(param1:Boolean) : void

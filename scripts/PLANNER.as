@@ -7,6 +7,8 @@ package
    {
       public static var _mc:*;
       
+      public static const TYPE:uint = 10;
+      
       public static var _open:Boolean = false;
       
       public static var _selected:Boolean = false;

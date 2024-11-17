@@ -6,15 +6,9 @@ package com.monsters.pathing
       
       public var pointY:int;
       
-      public var pointID:int;
-      
       public var depth:int;
       
-      public var blocked:int;
-      
       public var cost:int;
-      
-      public var tempCost:int;
       
       public var building:BFOUNDATION;
       
@@ -27,12 +21,14 @@ package com.monsters.pathing
       {
          this.pointX = 0;
          this.pointY = 0;
-         this.pointID = 0;
          this.depth = 0;
-         this.blocked = 0;
          this.cost = 0;
-         this.tempCost = 0;
          this.building = null;
+      }
+      
+      public function get pointID() : int
+      {
+         return this.pointX * 1000 + this.pointY;
       }
    }
 }

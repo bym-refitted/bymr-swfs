@@ -11,6 +11,8 @@ package
       
       public static var _attackPt:Point;
       
+      public static const TYPE:uint = 19;
+      
       public static var _attacking:int = 0;
       
       public static var _scaredAway:Boolean = false;
@@ -40,20 +42,10 @@ package
          var _loc2_:String = null;
          var _loc3_:Array = null;
          var _loc4_:Array = null;
-         var _loc5_:CREEP = null;
+         var _loc5_:* = undefined;
          if(GLOBAL._bBaiter)
          {
-            if(_frameNumber % 4 == 0)
-            {
-               if(_musk + _replenishRate < _muskLimit)
-               {
-                  _musk += _replenishRate;
-               }
-               else
-               {
-                  _musk = _muskLimit;
-               }
-            }
+            _musk = _muskLimit;
             if(_mc)
             {
                _mc.Update();

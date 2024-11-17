@@ -7,6 +7,8 @@ package
    
    public class MONSTERBAITERPOPUP extends MONSTERBAITERPOPUP_CLIP
    {
+      private static const BAITER_BAR_WIDTH:int = 535;
+      
       public var monsters:Array;
       
       public var _arrows:Array;
@@ -37,11 +39,13 @@ package
          var _loc8_:MonsterBaiterItem = null;
          clearBtn.SetupKey("bait_clear_btn");
          clearBtn.addEventListener(MouseEvent.CLICK,this.clearDown);
-         buyBtn.SetupKey("bait_getmusk_btn");
+         tSize.htmlText = "<b>" + KEYS.Get("size_of_attack") + "</b>";
+         tUpgrade.htmlText = KEYS.Get("upgrade_monster_baiter");
          sendBtn.SetupKey("bait_start_btn");
          sendBtn.addEventListener(MouseEvent.CLICK,this.onSendDown);
          this.attackStrings = ["tl","tr","br","bl","t","r","b","l"];
          this.monsters = [m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14];
+         sendBtn.Highlight = true;
          this.items = [];
          _loc4_ = 1;
          while(_loc4_ < 15)
@@ -94,17 +98,11 @@ package
       private function onIncrementAttempt(param1:Event) : void
       {
          var _loc4_:MonsterBaiterItem = null;
-         var _loc5_:Number = NaN;
          var _loc2_:int = MONSTERBAITER._musk / MONSTERBAITER._muskLimit * 100;
          var _loc3_:int = 0;
          for each(_loc4_ in this.items)
          {
             _loc3_ += _loc4_.getCost();
-         }
-         _loc5_ = MonsterBaiterItem(param1.target)._cost;
-         if(_loc3_ + _loc5_ < MONSTERBAITER._muskLimit && MONSTERBAITER._musk - _loc3_ < _loc5_)
-         {
-            buyBtn.Highlight = true;
          }
       }
       
@@ -125,7 +123,8 @@ package
       
       public function setAttackDirection(param1:MovieClip) : void
       {
-         var _loc2_:Array = [new Point(400,3 * 60),new Point(400,270),new Point(400,0),new Point(400,90),new Point(400,225),new Point(400,315),new Point(400,45),new Point(400,135)];
+         var _loc2_:Array = null;
+         _loc2_ = [new Point(400,3 * 60),new Point(400,270),new Point(400,0),new Point(400,90),new Point(400,225),new Point(400,315),new Point(400,45),new Point(400,135)];
          if(this.attackArrow)
          {
             this.attackArrow.gotoAndStop(2);
@@ -184,13 +183,8 @@ package
          {
             _loc4_ = 0;
          }
-         mcStorage.mcBar.width = 535 / MONSTERBAITER._muskLimit * _loc4_;
-         tStorage.htmlText = "<b>" + KEYS.Get("bait_musklevel",{
-            "v1":GLOBAL.FormatNumber(MONSTERBAITER._musk),
-            "v2":GLOBAL.FormatNumber(MONSTERBAITER._muskLimit),
-            "v3":_loc3_
-         }) + "</b>";
-         mcStorage.mcBarB.width = 535 / MONSTERBAITER._muskLimit * MONSTERBAITER._musk;
+         mcStorage.mcBar.width = (1 - _loc4_ / MONSTERBAITER._muskLimit) * BAITER_BAR_WIDTH;
+         mcStorage.mcBarB.width = 0;
          var _loc5_:int = MONSTERBAITER._musk - _loc1_;
          for each(_loc2_ in this.items)
          {
@@ -206,21 +200,6 @@ package
          {
             sendBtn.Enabled = true;
             sendBtn.addEventListener(MouseEvent.CLICK,this.onSendDown);
-         }
-         if(_loc3_ == 100)
-         {
-            buyBtn.Enabled = false;
-            buyBtn.Highlight = false;
-            buyBtn.removeEventListener(MouseEvent.CLICK,this.onBuyDown);
-         }
-         else
-         {
-            buyBtn.Enabled = true;
-            buyBtn.addEventListener(MouseEvent.CLICK,this.onBuyDown);
-            if(_loc1_ > MONSTERBAITER._musk)
-            {
-               buyBtn.Highlight = true;
-            }
          }
       }
       
@@ -256,7 +235,7 @@ package
          }
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          MONSTERBAITER.Hide();
       }

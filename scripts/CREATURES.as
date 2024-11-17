@@ -86,11 +86,7 @@ package
                {
                   if(level == 0)
                   {
-                     if(SPECIALEVENT.active && !friendly)
-                     {
-                        level = int(GLOBAL._wmCreatureLevels[monsterID]);
-                     }
-                     else if(ACADEMY._upgrades[monsterID] != null)
+                     if(ACADEMY._upgrades[monsterID] != null)
                      {
                         level = int(ACADEMY._upgrades[monsterID].level);
                      }
@@ -124,7 +120,7 @@ package
          for(_loc3_ in _creatures)
          {
             _loc2_ = _creatures[_loc3_];
-            if(_loc2_.Tick())
+            if(_loc2_.Tick(1))
             {
                if(_loc2_._health.Get() <= 0)
                {

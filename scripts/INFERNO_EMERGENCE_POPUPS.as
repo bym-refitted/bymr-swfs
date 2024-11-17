@@ -220,10 +220,14 @@ package
             showRSVP.bAction.Setup(btnLabel);
             showRSVP.bAction.addEventListener(MouseEvent.CLICK,RSVPLink);
          }
-         else
+         else if(GLOBAL._bTownhall._lvl.Get() < INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
          {
             showRSVP.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
             showRSVP.bAction.addEventListener(MouseEvent.CLICK,EmergeUpgradeCB);
+         }
+         else
+         {
+            showRSVP.bAction.visible = false;
          }
          POPUPS.Push(showRSVP,null,null,"");
       }

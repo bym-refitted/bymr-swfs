@@ -58,15 +58,6 @@ package
          }
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && !GLOBAL._render && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-      }
-      
       public function FindTargets() : *
       {
          var _loc1_:* = undefined;

@@ -5,7 +5,6 @@ package
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class BUILDING26 extends BFOUNDATION
@@ -22,7 +21,7 @@ package
       {
          super();
          _type = 26;
-         _footprint = [new Rectangle(0,0,100,100)];
+         _footprint = BASE.isInferno() ? [new Rectangle(0,0,80,80)] : [new Rectangle(0,0,100,100)];
          _gridCost = [[new Rectangle(0,0,100,100),10],[new Rectangle(10,10,80,80),200]];
          SetProps();
       }
@@ -37,15 +36,6 @@ package
          super.Click(param1);
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(!_upgrading && !_repairing && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
-         {
-            CatchupRemove();
-         }
-      }
-      
       override public function TickFast(param1:Event = null) : *
       {
          super.TickFast(param1);
@@ -55,11 +45,11 @@ package
             {
                if(GLOBAL._mode == "build" && (this._frameNumber % 3 == 0 || GLOBAL._lockerOverdrive > 0) && CREEPS._creepCount == 0)
                {
-                  this.AnimFrame();
+                  AnimFrame();
                }
                else if(this._frameNumber % 10 == 0 || GLOBAL._lockerOverdrive > 0 && this._frameNumber % 4 == 0)
                {
-                  this.AnimFrame();
+                  AnimFrame();
                }
             }
          }
@@ -76,7 +66,14 @@ package
          {
             Brag = function():*
             {
-               GLOBAL.CallJS("sendFeed",["academy-construct",KEYS.Get("pop_acadbuilt_streamtitle"),KEYS.Get("pop_acadbuilt_streambody"),"build-academy.png"]);
+               if(BASE.isInferno())
+               {
+                  GLOBAL.CallJS("sendFeed",["iacademy-construct",KEYS.Get("q_build_infernalacademy_streamtitle"),KEYS.Get("q_build_infernalacademy_streambody"),"build-iacademy.png"]);
+               }
+               else
+               {
+                  GLOBAL.CallJS("sendFeed",["academy-construct",KEYS.Get("pop_acadbuilt_streamtitle"),KEYS.Get("pop_acadbuilt_streambody"),"build-academy.png"]);
+               }
                POPUPS.Next();
             };
             mc = new popup_building();
@@ -85,7 +82,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -105,23 +102,6 @@ package
          catch(e:Error)
          {
             LOGGER.Log("err","BUILDING26.Description _upgrading:" + _upgrading);
-         }
-      }
-      
-      override public function AnimFrame(param1:Boolean = true) : *
-      {
-         var increment:Boolean = param1;
-         try
-         {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
-            ++_animTick;
-            if(_animTick == 20)
-            {
-               _animTick = 0;
-            }
-         }
-         catch(e:Error)
-         {
          }
       }
       
@@ -162,10 +142,6 @@ package
          if(_countdownBuild.Get() <= 0)
          {
             GLOBAL._bAcademy = this;
-         }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
          }
       }
       

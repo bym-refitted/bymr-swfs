@@ -1,13 +1,19 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.siege.SiegeWeapons;
+   import com.monsters.siege.weapons.Decoy;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.display.Shape;
+   import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   import gs.TweenLite;
+   import gs.easing.Expo;
    
    public class BUILDING22 extends BFOUNDATION
    {
@@ -55,6 +61,8 @@ package
       
       private var _logged:Boolean = false;
       
+      private var _radiusGraphic:Shape;
+      
       public function BUILDING22()
       {
          super();
@@ -82,7 +90,7 @@ package
          var _loc9_:Array = null;
          if(_lvl.Get() > 0 && _hp.Get() > 0)
          {
-            _loc9_ = MAP.CreepCellFind(_position.add(new Point(_footprint[0].width / 2,_footprint[0].height / 2)),GLOBAL._buildingProps[21].stats[_lvl.Get() - 1].range);
+            _loc9_ = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[21].stats[_lvl.Get() - 1].range);
             this._hasTargets = false;
             if(_loc9_.length > 0)
             {
@@ -121,9 +129,9 @@ package
                   }
                }
             }
-            if(Boolean(this._monsters["C12"]) && Boolean(ACADEMY._upgrades["C12"].powerup) || Boolean(this._monsters["C5"]) && Boolean(ACADEMY._upgrades["C5"].powerup))
+            if(Boolean(this._monsters["C12"]) && Boolean(ACADEMY._upgrades["C12"].powerup) || Boolean(this._monsters["C5"]) && Boolean(ACADEMY._upgrades["C5"].powerup) || Boolean(this._monsters["IC5"]) || Boolean(this._monsters["IC7"]))
             {
-               _loc9_ = MAP.CreepCellFind(_position.add(new Point(_footprint[0].width / 2,_footprint[0].height / 2)),GLOBAL._buildingProps[21].stats[_lvl.Get() - 1].range,2);
+               _loc9_ = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[21].stats[_lvl.Get() - 1].range,2);
                if(_loc9_.length > 0)
                {
                   this._targetFlyers = [];
@@ -201,6 +209,81 @@ package
          return null;
       }
       
+      public function EjectCreeps(param1:Point) : void
+      {
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Number = NaN;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:* = undefined;
+         var _loc2_:String = null;
+         for(_loc3_ in this._monsters)
+         {
+            if(this._monsters[_loc3_] && this._monstersDispatched[_loc3_] < this._monsters[_loc3_] && _animTick >= 15)
+            {
+               _loc2_ = _loc3_;
+               if(_loc2_)
+               {
+                  _loc4_ = param1.x - _position.x;
+                  _loc5_ = param1.y - _position.y;
+                  _loc6_ = int(_footprint[0].width);
+                  _loc7_ = int(_footprint[0].height);
+                  if(_loc5_ <= 0)
+                  {
+                     _loc5_ = _loc7_ / 4;
+                     if(_loc4_ <= 0)
+                     {
+                        _loc4_ = _loc6_ / -3;
+                     }
+                     else
+                     {
+                        _loc4_ = _loc6_ / 2;
+                     }
+                  }
+                  else
+                  {
+                     _loc5_ = _loc7_ / 2;
+                     if(_loc4_ <= 0)
+                     {
+                        _loc4_ = _loc6_ / -4;
+                     }
+                     else
+                     {
+                        _loc4_ = _loc6_ / 2;
+                     }
+                  }
+                  _loc8_ = CREATURES.Spawn(_loc2_,MAP._BUILDINGTOPS,"decoy",_position.add(new Point(_loc4_,_loc5_)),Math.random() * 360);
+                  if(_loc8_)
+                  {
+                     _loc8_._homeBunker = this;
+                     ++this._monstersDispatched[_loc2_];
+                     ++this._monstersDispatchedTotal;
+                  }
+               }
+            }
+         }
+      }
+      
+      private function DecoyInRange() : Boolean
+      {
+         var _loc1_:Decoy = null;
+         var _loc2_:Point = null;
+         if(Boolean(SiegeWeapons.activeWeapon) && SiegeWeapons.activeWeaponID == Decoy.ID)
+         {
+            _loc1_ = SiegeWeapons.activeWeapon as Decoy;
+            if(_loc1_)
+            {
+               _loc2_ = new Point(_loc1_.x,_loc1_.y);
+               if(GLOBAL.QuickDistance(_loc2_,_position) < _loc1_.range)
+               {
+                  return true;
+               }
+            }
+         }
+         return false;
+      }
+      
       override public function TickAttack() : *
       {
          var _loc2_:String = null;
@@ -231,10 +314,6 @@ package
             }
          }
          this.Cull();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
          _loc3_ = 0;
          while(_loc3_ < this._targetCreeps.length)
          {
@@ -277,6 +356,14 @@ package
             {
                _loc4_ = "C5";
             }
+            else if(this._targetFlyers.length > 0 && this._monsters["IC5"] > 0 && this._monstersDispatched["IC5"] < this._monsters["IC5"])
+            {
+               _loc4_ = "IC5";
+            }
+            else if(this._targetFlyers.length > 0 && this._monsters["IC7"] > 0 && this._monstersDispatched["IC7"] < this._monsters["IC7"])
+            {
+               _loc4_ = "IC7";
+            }
             else if(this._targetCreeps.length > 0)
             {
                for(_loc2_ in this._monsters)
@@ -308,7 +395,7 @@ package
                      "v3":GLOBAL.Array2String(_loc11_)
                   }) + "</font>");
                }
-               if(this._targetFlyers.length > 0 && (_loc4_ == "C12" || _loc4_ == "C5"))
+               if(this._targetFlyers.length > 0 && (_loc4_ == "C12" || _loc4_ == "C5" || _loc4_ == "IC5" || _loc4_ == "IC7"))
                {
                   _loc5_ = this._targetFlyers[int(Math.random() * this._targetFlyers.length)].creep;
                }
@@ -369,7 +456,7 @@ package
          ++this._frameNumber;
          if(!GLOBAL._catchup)
          {
-            if(this._used > 0 && (this._targetCreeps.length > 0 || this._targetFlyers.length > 0 || this._monstersDispatchedTotal > 0))
+            if(this._used > 0 && (this._targetCreeps.length > 0 || this._targetFlyers.length > 0 || this._monstersDispatchedTotal > 0 || this.DecoyInRange()))
             {
                if(_animTick == 1)
                {
@@ -452,7 +539,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
          if(_lvl.Get() > 0)
          {
@@ -493,7 +580,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
          if(_lvl.Get() > 0)
          {
@@ -569,10 +656,6 @@ package
                this._monstersDispatched[_loc2_] = 0;
             }
          }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
-         {
-            CatchupRemove();
-         }
          if(_lvl.Get() > 0)
          {
             this._capacity = GLOBAL._buildingProps[21].capacity[_lvl.Get() - 1];
@@ -597,6 +680,52 @@ package
          {
             this._monstersDispatchedTotal = 0;
          }
+      }
+      
+      override public function Over(param1:MouseEvent) : *
+      {
+         if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
+         {
+            TweenLite.delayedCall(0.25,this.RangeIndicator);
+         }
+      }
+      
+      private function RangeIndicator() : void
+      {
+         this._radiusGraphic = new Shape();
+         this._radiusGraphic.graphics.beginFill(0xffffff,0.1);
+         this._radiusGraphic.graphics.lineStyle(1,0xffffff,0.25);
+         var _loc2_:Sprite = new Sprite();
+         var _loc3_:Point = _position.add(new Point(0,_footprint[0].height * 0.25));
+         var _loc4_:Point = new Point(_range * 2.8,_range * 1.2);
+         this._radiusGraphic.graphics.drawEllipse(0,0,_loc4_.x,_loc4_.y);
+         this._radiusGraphic.x = -(_loc4_.x * 0.5);
+         this._radiusGraphic.y = -(_loc4_.y * 0.5);
+         _loc2_.addChild(this._radiusGraphic);
+         _loc2_.x = _loc3_.x;
+         _loc2_.y = _loc3_.y;
+         MAP._BUILDINGFOOTPRINTS.addChild(_loc2_);
+         TweenLite.from(_loc2_,0.25,{
+            "alpha":0.5,
+            "scaleX":0.25,
+            "scaleY":0,
+            "delay":0,
+            "ease":Expo.easeOut
+         });
+         TweenLite.killDelayedCallsTo(this.RangeIndicator);
+      }
+      
+      override public function Out(param1:MouseEvent) : *
+      {
+         if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
+         {
+            if(this._radiusGraphic.parent)
+            {
+               this._radiusGraphic.parent.removeChild(this._radiusGraphic);
+            }
+            this._radiusGraphic = null;
+         }
+         TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
       override public function Export() : *

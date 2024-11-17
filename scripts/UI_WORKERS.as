@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.chat.Chat;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
@@ -179,7 +180,7 @@ package
       public static function Resize() : *
       {
          var _loc1_:int = 0;
-         if(!GLOBAL.flagsShouldChatDisplay() && _canUseHorizontal)
+         if(!Chat.flagsShouldChatDisplay() && _canUseHorizontal)
          {
             if(_mc)
             {

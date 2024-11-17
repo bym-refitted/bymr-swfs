@@ -149,7 +149,7 @@ package
                }
                if(_type == 112)
                {
-                  _loc4_ = Math.min(_loc4_,5000000);
+                  _loc4_ = Math.min(_loc4_,10000000);
                }
                if(_loc3_ == 4)
                {

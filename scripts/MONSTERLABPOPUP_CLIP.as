@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1418")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1546")]
    public dynamic class MONSTERLABPOPUP_CLIP extends MovieClip
    {
       public var tStatusDesc:TextField;
@@ -32,9 +32,9 @@ package
       
       public var mcResources:MovieClip;
       
-      public var mcPBarStatus:MovieClip;
+      public var mcPBarStatus:creatureBarAdv;
       
-      public var mcPBarStats:MovieClip;
+      public var mcPBarStats:creatureBarAdv;
       
       public var mcStatusIcon:MovieClip;
       

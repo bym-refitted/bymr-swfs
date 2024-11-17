@@ -1,15 +1,16 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.chat.Chat;
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.mailbox.MailBox;
    import com.monsters.mailbox.Thread;
    import com.monsters.mailbox.model.Contact;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.BitmapData;
-   import flash.display.MovieClip;
+   import flash.display.DisplayObjectContainer;
+   import flash.display.Sprite;
    import flash.display.StageDisplayState;
    import flash.events.*;
    import flash.geom.Point;
@@ -249,9 +250,9 @@ package com.monsters.maproom_advanced
             }
             if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
             {
-               if(GLOBAL._bymChat)
+               if(Chat._bymChat)
                {
-                  GLOBAL._bymChat.show();
+                  Chat._bymChat.show();
                }
                if(UI_BOTTOM._missions)
                {
@@ -260,9 +261,9 @@ package com.monsters.maproom_advanced
             }
             else
             {
-               if(GLOBAL._bymChat)
+               if(Chat._bymChat)
                {
-                  GLOBAL._bymChat.hide();
+                  Chat._bymChat.hide();
                }
                if(UI_BOTTOM._missions)
                {
@@ -270,6 +271,7 @@ package com.monsters.maproom_advanced
                }
             }
          }
+         Tutorial.ShowIfNeeded();
       }
       
       public static function Hide(param1:MouseEvent = null) : void
@@ -327,7 +329,7 @@ package com.monsters.maproom_advanced
          _mc._popupInfoMine.PendingInvite();
       }
       
-      public static function PreAcceptInvitation(param1:MovieClip) : void
+      public static function PreAcceptInvitation(param1:DisplayObjectContainer) : void
       {
          if(ALLIANCES._myAlliance)
          {
@@ -336,8 +338,11 @@ package com.monsters.maproom_advanced
          }
          _popupRelocateMe = new PopupRelocateMe();
          _popupRelocateMe.Setup(null,"invite");
-         GLOBAL.BlockerAdd(param1);
-         param1.addChild(_popupRelocateMe);
+         if(param1)
+         {
+            GLOBAL.BlockerAdd(param1 as Sprite);
+            param1.addChild(_popupRelocateMe);
+         }
       }
       
       public static function AcceptInvitation(param1:Boolean = false) : void
@@ -430,7 +435,7 @@ package com.monsters.maproom_advanced
                   GLOBAL.Message(KEYS.Get("map_rel_res"));
                   return;
                }
-               loadvars.push(["resources",com.adobe.serialization.json.JSON.encode({
+               loadvars.push(["resources",JSON.encode({
                   "r1":RESOURCECOST.Get(),
                   "r2":RESOURCECOST.Get(),
                   "r3":RESOURCECOST.Get(),
@@ -619,7 +624,7 @@ package com.monsters.maproom_advanced
             LOGGER.Log("err","MapRoom.BookmarksSave HTTP");
          };
          var url:String = GLOBAL._apiURL + "player/savebookmarks";
-         var loadvars:Array = [["bookmarks",com.adobe.serialization.json.JSON.encode(_bookmarkData)]];
+         var loadvars:Array = [["bookmarks",JSON.encode(_bookmarkData)]];
          new URLLoaderApi().load(url,loadvars,handleBMSaveSuccessful,handleBMSaveError);
       }
       
@@ -752,7 +757,7 @@ package com.monsters.maproom_advanced
                      while(_loc3_ < 5)
                      {
                         GLOBAL._resources["r" + _loc3_].Set(param1.resources["r" + _loc3_]);
-                        GLOBAL._hpResources["r" + _loc3_] = param1.resources["r" + _loc3_];
+                        GLOBAL._hpResources["r" + _loc3_] = GLOBAL._resources["r" + _loc3_].Get();
                         GLOBAL._resources["r" + _loc3_ + "max"] = param1.resources["r" + _loc3_ + "max"];
                         GLOBAL._hpResources["r" + _loc3_ + "max"] = param1.resources["r" + _loc3_ + "max"];
                         _loc3_++;
@@ -1048,11 +1053,11 @@ package com.monsters.maproom_advanced
                   }
                   if(!targetCell.Check())
                   {
-                     LOGGER.Log("err","BASE.Save:  transfer target Cell " + targetCell.X + "," + targetCell.Y + "does not check out before doing monster transfer!  " + com.adobe.serialization.json.JSON.encode(targetCell._hpMonsterData));
+                     LOGGER.Log("err","BASE.Save:  transfer target Cell " + targetCell.X + "," + targetCell.Y + "does not check out before doing monster transfer!  " + JSON.encode(targetCell._hpMonsterData));
                   }
                   if(!_monsterSource.Check())
                   {
-                     LOGGER.Log("err","BASE.Save:  transfer source Cell " + _monsterSource.X + "," + _monsterSource.Y + "does not check out before doing monster transfer!  " + com.adobe.serialization.json.JSON.encode(_monsterSource._hpMonsterData));
+                     LOGGER.Log("err","BASE.Save:  transfer source Cell " + _monsterSource.X + "," + _monsterSource.Y + "does not check out before doing monster transfer!  " + JSON.encode(_monsterSource._hpMonsterData));
                   }
                   srcMonsterData = {
                      "hcc":_monsterSource._hpMonsterData.hcc,
@@ -1070,7 +1075,7 @@ package com.monsters.maproom_advanced
                      "hstage":targetCell._hpMonsterData.hstage,
                      "saved":GLOBAL.Timestamp()
                   };
-                  transferVars = [["frombaseid",_monsterSource._baseID],["tobaseid",targetCell._baseID],["monsters",com.adobe.serialization.json.JSON.encode([srcMonsterData,targetMonsterData])]];
+                  transferVars = [["frombaseid",_monsterSource._baseID],["tobaseid",targetCell._baseID],["monsters",JSON.encode([srcMonsterData,targetMonsterData])]];
                   new URLLoaderApi().load(GLOBAL._mapURL + "transferassets",transferVars,transferSuccessful,transferError);
                   return;
                }

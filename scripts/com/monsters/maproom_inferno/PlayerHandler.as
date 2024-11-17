@@ -258,7 +258,7 @@ package com.monsters.maproom_inferno
          var _loc3_:Boolean = false;
          var _loc4_:String = "";
          var _loc5_:String = KEYS.Get("map_attack_btn2");
-         var _loc7_:Boolean = this._BRIDGE.HOUSING._housingUsed.Get() > 0 || GLOBAL._playerGuardianData != null;
+         var _loc7_:Boolean = Boolean(this._BRIDGE.HOUSING) && this._BRIDGE.HOUSING._housingUsed.Get() > 0 || GLOBAL._playerGuardianData != null && !MAPROOM_DESCENT.DescentPassed;
          if(_loc2_.wm.Get() == 0)
          {
             if(_loc2_.saved.Get() >= GLOBAL.Timestamp() - 62)
@@ -348,7 +348,14 @@ package com.monsters.maproom_inferno
             }
             else
             {
-               _loc4_ = KEYS.Get("infmap_msg_nomonsters");
+               if(MAPROOM_DESCENT.DescentPassed)
+               {
+                  _loc4_ = KEYS.Get("infmap_msg_nomonsters");
+               }
+               else
+               {
+                  _loc4_ = KEYS.Get("map_msg_nomonsters");
+               }
                GLOBAL.Message(_loc4_);
             }
          }
@@ -379,7 +386,10 @@ package com.monsters.maproom_inferno
          {
             LOGGER.Stat([87,_loc3_.level.Get(),"Attacked"]);
          }
-         this._BRIDGE.MAPROOM._mc.Hide();
+         if(this._BRIDGE.MAPROOM._mc)
+         {
+            this._BRIDGE.MAPROOM._mc.Hide();
+         }
       }
    }
 }

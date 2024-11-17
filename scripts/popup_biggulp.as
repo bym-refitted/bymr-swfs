@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol747")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol750")]
    public dynamic class popup_biggulp extends MovieClip
    {
       public var bPost:Button_CLIP;

@@ -110,7 +110,7 @@ package
       
       public static function HousingStore(param1:String, param2:Point, param3:Boolean = false, param4:int = 0) : *
       {
-         var _loc7_:CREEP = null;
+         var _loc7_:* = undefined;
          var _loc8_:Array = null;
          var _loc9_:BFOUNDATION = null;
          var _loc10_:* = undefined;
@@ -305,7 +305,7 @@ package
       {
          if(BASE._buildingsHousing.indexOf(param1) >= 0)
          {
-            throw new Error("You are trying to add a huilding to housing when it\'s already there, what is wrong with you?");
+            return;
          }
          BASE._buildingsHousing.push(param1);
          HousingSpace();
@@ -321,6 +321,76 @@ package
          }
          GLOBAL._bHousing = null;
          HousingSpace();
+      }
+      
+      public static function GetHousingCreatures() : Array
+      {
+         var _loc10_:String = null;
+         var _loc11_:Object = null;
+         var _loc12_:String = null;
+         var _loc13_:Object = null;
+         var _loc14_:String = null;
+         var _loc15_:* = undefined;
+         var _loc1_:Array = [];
+         var _loc2_:Array = [];
+         var _loc3_:Array = [];
+         var _loc4_:Object = CREATURELOCKER.GetCreatures("above");
+         var _loc5_:* = !BASE.isInferno();
+         if(_loc5_)
+         {
+            for(_loc10_ in _loc4_)
+            {
+               _loc11_ = CREATURELOCKER._creatures[_loc10_];
+               if(!_loc11_.blocked)
+               {
+                  _loc11_.id = _loc10_;
+                  _loc1_.push(_loc11_);
+               }
+            }
+            _loc1_.sortOn(["index"],Array.NUMERIC);
+         }
+         var _loc6_:Object = CREATURELOCKER.GetCreatures("inferno");
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed;
+         if(_loc7_)
+         {
+            for(_loc12_ in _loc6_)
+            {
+               _loc13_ = CREATURELOCKER._creatures[_loc12_];
+               if(!_loc13_.blocked)
+               {
+                  _loc13_.id = _loc12_;
+                  _loc2_.push(_loc13_);
+               }
+            }
+            _loc2_.sortOn(["index"],Array.NUMERIC);
+         }
+         if(_loc1_.length > 0)
+         {
+            _loc3_ = _loc3_.concat(_loc1_);
+         }
+         if(_loc2_.length > 0)
+         {
+            _loc3_ = _loc3_.concat(_loc2_);
+         }
+         var _loc8_:Array = [];
+         var _loc9_:int = 0;
+         while(_loc9_ < _loc3_.length)
+         {
+            for(_loc14_ in _creatures)
+            {
+               if(_loc14_ == _loc3_[_loc9_].id)
+               {
+                  if(_creatures[_loc14_].Get() > 0)
+                  {
+                     _loc15_ = _loc3_[_loc9_];
+                     _loc15_.quantity = _creatures[_loc14_];
+                     _loc8_.push(_loc15_);
+                  }
+               }
+            }
+            _loc9_++;
+         }
+         return _loc8_;
       }
    }
 }

@@ -22,6 +22,8 @@ package com.monsters.maproom.views
       
       public var shell:Sprite;
       
+      public var shell_mask:Sprite;
+      
       public var map_mc:MovieClip;
       
       public var miniMap:MiniMap;
@@ -113,6 +115,12 @@ package com.monsters.maproom.views
          this.hardBounds = new Rectangle(mask_mc.x,mask_mc.y,-1760 + mask_mc.width + mask_mc.x,-1760 + mask_mc.height + mask_mc.y);
          this.shell = new Sprite();
          addChild(this.shell);
+         this.shell_mask = new Sprite();
+         this.shell_mask.graphics.lineStyle(1,0);
+         this.shell_mask.graphics.beginFill(0xff00ff);
+         this.shell_mask.graphics.drawRect(0,0,700,385);
+         this.shell_mask.graphics.endFill();
+         addChild(this.shell_mask);
          this.map_mc = new map_bg_inferno();
          Obstruction.Clear();
          i = 1;
@@ -126,7 +134,8 @@ package com.monsters.maproom.views
          this.map = new Sprite();
          this.map.addChild(this.map_mc);
          this.shell.addChild(this.map);
-         this.shell.mask = mask_mc;
+         this.shell.mask = this.shell_mask;
+         mask_mc.visible = false;
          this.players.mapWidth = Math.abs(this.bounds.width + 260);
          this.players.addEventListener("down",this.onBaseDown,false,0,true);
          this.players.addEventListener(Event.COMPLETE,this.onPlayersData,false,0,true);
@@ -146,7 +155,7 @@ package com.monsters.maproom.views
       
       public function onAdd() : void
       {
-         if(true)
+         if(TUTORIAL._stage < 130)
          {
             this.scrollToBase(this.players.basesWM[0]);
          }
@@ -243,6 +252,10 @@ package com.monsters.maproom.views
       private function shellDown(param1:MouseEvent) : void
       {
          TweenLite.killTweensOf(this.shell,false);
+         if(TUTORIAL._stage < 110)
+         {
+            return;
+         }
          this.dragging = true;
          this.dragPoint = new Point(stage.mouseX - this.shell.x,stage.mouseY - this.shell.y);
          addEventListener(Event.ENTER_FRAME,this.shellDrag,false,0,true);

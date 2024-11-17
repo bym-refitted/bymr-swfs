@@ -69,7 +69,6 @@ package com.monsters.pathing
                _loc2_ = new PATHINGobject();
                _loc2_.pointX = _loc4_;
                _loc2_.pointY = _loc5_;
-               _loc2_.blocked = 0;
                _loc2_.cost = 10;
                _costs[_loc3_] = _loc2_;
                _loc5_ += 1;
@@ -412,7 +411,6 @@ package com.monsters.pathing
                                              o = new PATHINGobject();
                                              o.pointX = pointX;
                                              o.pointY = pointY;
-                                             o.pointID = pointID;
                                              tmpCost = int(_costs[pointID].cost);
                                              if(flood.ignoreWalls)
                                              {

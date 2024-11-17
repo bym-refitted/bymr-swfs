@@ -53,6 +53,10 @@ package
          WMATTACK._isAI = false;
          WMATTACK.AttackB();
          UI2.Show("scareAway");
+         if(UI2._scareAway)
+         {
+            UI2._scareAway.addEventListener("scareAway",MONSTERBAITER.End);
+         }
          var _loc3_:Array = WMATTACK.SpawnA(param1);
          var _loc4_:* = _loc3_[0][0];
          MAP.FocusTo(_loc4_.x,_loc4_.y,2);
@@ -65,15 +69,19 @@ package
          WMATTACK._isAI = false;
          WMATTACK.AttackB();
          UI2.Show("scareAway");
+         if(UI2._scareAway)
+         {
+            UI2._scareAway.addEventListener("scareAway",MONSTERBAITER.End);
+         }
          return WMATTACK.SpawnA(param1);
       }
       
       public static function TutorialAttack() : void
       {
          var _loc1_:Array = null;
-         var _loc2_:CREEP = null;
+         var _loc2_:* = undefined;
          var _loc3_:int = 0;
-         var _loc4_:CREEP = null;
+         var _loc4_:* = undefined;
          _started = true;
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",1,3 * 60,-10,0,1]]);
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",2,190,-5,0,1]]);

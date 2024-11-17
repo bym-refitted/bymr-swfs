@@ -15,7 +15,7 @@ package
       
       private static const _MOLOCH_PORTRAIT_WHIMPER:String = "portrait_muloch_whimper.png";
       
-      private static const _MOLOCH_PORTRAIT_NUETRAL:String = "portrait_moloch.png";
+      private static const _MOLOCH_PORTRAIT_NEUTRAL:String = "portrait_moloch.png";
       
       private static const _TOTAL_LOOT_LABEL:String = "descentTotalLoot";
       
@@ -28,7 +28,7 @@ package
       
       public static function ShowTauntDialog(param1:uint) : void
       {
-         var _loc2_:popup_dialogue = POPUPS.DisplayDialogue("",KEYS.Get("descent_moloch_taunt" + param1),KEYS.Get("taunt_player_response" + param1),_MOLOCH_PORTRAIT_NUETRAL,_PORTRAIT_IMAGE_OFFSET,POPUPS.Next) as popup_dialogue;
+         var _loc2_:popup_dialogue = POPUPS.DisplayDialogue("",KEYS.Get("descent_moloch_taunt" + param1),KEYS.Get("taunt_player_response" + param1),_MOLOCH_PORTRAIT_NEUTRAL,_PORTRAIT_IMAGE_OFFSET,POPUPS.Next) as popup_dialogue;
          FormatTextFieldForDialog(_loc2_.tBody);
       }
       
@@ -52,6 +52,24 @@ package
             _loc5_ = ShowGloatDialog(param1);
             LOGGER.Stat([87,param1,"Defeat"]);
          }
+      }
+      
+      public static function ShowEnticePopup() : void
+      {
+         var CloseAndEnter:Function = null;
+         CloseAndEnter = function(param1:MouseEvent):void
+         {
+            POPUPS.Next();
+            GLOBAL.StatSet("p_id",1);
+            INFERNOPORTAL.EnterPortal();
+         };
+         var entice:MovieClip = new popup_infernoentice_CLIP();
+         entice.tDesc.htmlText = KEYS.Get("entercavern_direct_popup");
+         entice.tButton.htmlText = KEYS.Get(INFERNOPORTAL.ENTER_BUTTON);
+         entice.tButton.mouseEnabled = false;
+         entice.bEnter.Setup(" ");
+         entice.bEnter.addEventListener(MouseEvent.CLICK,CloseAndEnter);
+         POPUPS.Push(entice);
       }
       
       public static function ShowGloatDialog(param1:uint) : MovieClip
@@ -107,7 +125,7 @@ package
       
       private static function isBragable(param1:uint) : Boolean
       {
-         return param1 == 1 || param1 == 6 || param1 == 13;
+         return param1 == 1 || param1 == 4 || param1 == 7;
       }
       
       private static function BragBattleReport(param1:MouseEvent) : void

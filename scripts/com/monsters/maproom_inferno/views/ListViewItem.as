@@ -89,6 +89,7 @@ package com.monsters.maproom_inferno.views
       {
          var _loc2_:Object = this.handler.configure(this);
          name_txt.htmlText = "<b>" + this.data.ownerName;
+         userid_txt.text = KEYS.Get("label_userid",{"v1":this.data.userid.Get()});
          online_txt.text = "";
          if(this.data.saved.Get() >= GLOBAL.Timestamp() - 62)
          {

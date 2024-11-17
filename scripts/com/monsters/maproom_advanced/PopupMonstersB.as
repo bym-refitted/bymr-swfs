@@ -1,5 +1,6 @@
 package com.monsters.maproom_advanced
 {
+   import com.monsters.display.ScrollSet;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
@@ -11,11 +12,22 @@ package com.monsters.maproom_advanced
       
       public var _mcMonsters:MovieClip;
       
+      private var _scroller:ScrollSet;
+      
       public function PopupMonstersB()
       {
          super();
          x = 455;
          y = 250;
+         mMonsters.mask = mMonstersMask;
+         this._scroller = new ScrollSet();
+         this._scroller.isHiddenWhileUnnecessary = true;
+         this._scroller.AutoHideEnabled = false;
+         this._scroller.width = scroll.width;
+         this._scroller.x = scroll.x;
+         this._scroller.y = scroll.y;
+         addChild(this._scroller);
+         this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this.bTransfer.SetupKey("bunker_btn_transfer");
          this.bTransfer.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
          {
@@ -66,6 +78,7 @@ package com.monsters.maproom_advanced
             }
             this.addChild(this._mcMonsters);
          }
+         this._scroller.Update();
       }
       
       public function Cleanup() : void

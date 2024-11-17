@@ -6,6 +6,8 @@ package
    {
       public static var _mc:HATCHERYCCPOPUP;
       
+      public static const TYPE:int = 16;
+      
       public static var _open:Boolean = false;
       
       public function HATCHERYCC()

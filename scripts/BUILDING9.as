@@ -11,6 +11,8 @@ package
    
    public class BUILDING9 extends BFOUNDATION
    {
+      public static const TYPE:uint = 9;
+      
       public var _animMC:*;
       
       public var _field:BitmapData;
@@ -53,15 +55,6 @@ package
          if(GLOBAL._mode == "build")
          {
             BASE.Save();
-         }
-      }
-      
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(!_repairing && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
-         {
-            CatchupRemove();
          }
       }
       
@@ -178,15 +171,6 @@ package
          }
       }
       
-      override public function Update(param1:Boolean = false) : *
-      {
-         if(GLOBAL._catchup && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-         super.Update(param1);
-      }
-      
       override public function Constructed() : *
       {
          var Brag:Function;
@@ -206,7 +190,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -241,7 +225,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       

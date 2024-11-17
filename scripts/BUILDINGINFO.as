@@ -1,6 +1,8 @@
 package
 {
    import com.monsters.radio.RADIO;
+   import com.monsters.siege.SiegeFactory;
+   import com.monsters.siege.SiegeLab;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -141,15 +143,22 @@ package
                   _loc1_.push(["btn_speedup",30,true]);
                   _loc1_.push(["btn_stopfortify",26]);
                }
-               else
+               else if(_props.type == "resource")
                {
-                  if(_props.type == "resource" && TUTORIAL._stage != 20 && TUTORIAL._stage != 21)
+                  if(BASE.isOutpost)
                   {
-                     _loc1_.push(["btn_bank",30,0,GLOBAL.FormatNumber(_building._stored.Get())]);
+                     _loc1_.push(["btn_bank_disabled",30,0,true]);
                   }
-                  if(_props.type == "resource" && TUTORIAL._stage >= 200)
+                  else
                   {
-                     _loc1_.push(["btn_bankall",30]);
+                     if(TUTORIAL._stage != 20 && TUTORIAL._stage != 21)
+                     {
+                        _loc1_.push(["btn_bank",30,0,GLOBAL.FormatNumber(_building._stored.Get())]);
+                     }
+                     if(TUTORIAL._stage >= 200)
+                     {
+                        _loc1_.push(["btn_bankall",30]);
+                     }
                   }
                }
                if(TUTORIAL._stage > 4)
@@ -263,6 +272,14 @@ package
                      {
                         _loc1_.push(["btn_openchamber",30,true]);
                      }
+                     else if(_props.id == SiegeFactory.ID)
+                     {
+                        _loc1_.push([SiegeFactory.SIEGE_BUTTON,30,true]);
+                     }
+                     else if(_props.id == SiegeLab.ID)
+                     {
+                        _loc1_.push([SiegeLab.SIEGE_BUTTON,30,true]);
+                     }
                   }
                   if(_loc2_ && _props.type != "mushroom")
                   {
@@ -323,7 +340,18 @@ package
             }
             if(_building == INFERNOPORTAL.building && INFERNOPORTAL.isAboveMaxLevel())
             {
-               _loc1_ = [[BASE.isInferno() ? INFERNOPORTAL.EXIT_BUTTON : INFERNOPORTAL.ENTER_BUTTON,30,true]];
+               if(BASE.isInferno())
+               {
+                  _loc1_ = [[INFERNOPORTAL.EXIT_BUTTON,30,true]];
+               }
+               else if(MAPROOM_DESCENT.DescentPassed)
+               {
+                  _loc1_ = [[INFERNOPORTAL.ENTER_BUTTON,30,true],[INFERNOPORTAL.ASCENSION_BUTTON,30,false]];
+               }
+               else
+               {
+                  _loc1_ = [[INFERNOPORTAL.ENTER_BUTTON,30,true]];
+               }
             }
             if(_buttonsMC)
             {
@@ -417,7 +445,11 @@ package
             }
             else if(_building._class == "resource")
             {
-               if(_building._producing)
+               if(BASE.isOutpost)
+               {
+                  _loc7_ = KEYS.Get("harvester_autobank_msg");
+               }
+               else if(_building._producing)
                {
                   _loc13_ = _building._buildingProps.capacity[_building._lvl.Get() - 1] - _building._stored.Get();
                   _loc14_ = 60 / _building._buildingProps.cycleTime[_building._lvl.Get() - 1] * _building._buildingProps.produce[_building._lvl.Get() - 1];
@@ -500,6 +532,7 @@ package
       {
          var _loc2_:BFOUNDATION = null;
          var _loc3_:MONSTERLAB = null;
+         var _loc4_:Boolean = false;
          if(param1.target.labelKey == "btn_bank")
          {
             _building.Bank();
@@ -605,13 +638,36 @@ package
          {
             INFERNOPORTAL.EnterPortal();
          }
+         if(param1.target.labelKey == INFERNOPORTAL.ASCENSION_BUTTON)
+         {
+            INFERNOPORTAL.AscendMonsters();
+         }
+         if(param1.target.labelKey == SiegeFactory.SIEGE_BUTTON)
+         {
+            SiegeFactory.Show();
+         }
+         if(param1.target.labelKey == SiegeLab.SIEGE_BUTTON)
+         {
+            SiegeLab.Show();
+         }
          if(param1.target.labelKey == "btn_move")
          {
             _building.StartMove();
          }
          if(param1.target.labelKey == "btn_upgrade")
          {
-            BUILDINGOPTIONS.Show(_building,"upgrade");
+            if(_building._type == 14 && _building._lvl.Get() && _building._lvl.Get() < _building._buildingProps.costs.length)
+            {
+               _loc4_ = BUY.FBCNcpCheckEligibility();
+               if(!_loc4_)
+               {
+                  BUILDINGOPTIONS.Show(_building,"upgrade");
+               }
+            }
+            else
+            {
+               BUILDINGOPTIONS.Show(_building,"upgrade");
+            }
          }
          if(param1.target.labelKey == "btn_fortify")
          {

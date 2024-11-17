@@ -200,14 +200,14 @@ package
          return param1 == BTOTEM_BUILDING_TYPE;
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         super.Tick();
-         var _loc1_:int = EarnedTotemLevel();
-         if(_lvl.Get() != _loc1_)
+         super.Tick(param1);
+         var _loc2_:int = EarnedTotemLevel();
+         if(_lvl.Get() != _loc2_)
          {
-            _lvl.Set(_loc1_);
-            _hpLvl = _loc1_;
+            _lvl.Set(_loc2_);
+            _hpLvl = _loc2_;
          }
       }
    }

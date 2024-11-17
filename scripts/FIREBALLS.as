@@ -70,7 +70,7 @@ package
          ++_fireballCount;
       }
       
-      public static function Spawn2(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0, param7:* = "fireball") : *
+      public static function Spawn2(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0, param7:* = "fireball") : FIREBALL
       {
          if(!param7)
          {
@@ -117,6 +117,7 @@ package
          _fireballs[_id] = _loc8_;
          ++_id;
          ++_fireballCount;
+         return _loc8_;
       }
       
       public static function Spawn3(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0) : *

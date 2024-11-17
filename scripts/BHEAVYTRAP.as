@@ -29,16 +29,19 @@ package
             _loc4_ = _loc1_.dist;
             _loc5_ = _loc1_.pos;
             _loc7_ = _loc2_._creatureID.substr(0,1);
-            _loc8_ = int(_loc2_._creatureID.substr(1,2));
-            if(!(_loc7_ != "G" && (_loc8_ < 10 || _loc8_ > 12)))
+            _loc8_ = int(_loc2_._creatureID.substring(_loc2_._creatureID.indexOf("C") + 1));
+            if(!(_loc7_ == "C" && (_loc8_ < 10 || _loc8_ > 12)))
             {
-               _targetCreeps.push({
-                  "creep":_loc2_,
-                  "dist":_loc4_,
-                  "position":_loc5_
-               });
-               _hasTargets = true;
-               return;
+               if(!(_loc7_ == "I" && (_loc8_ < 7 || _loc8_ > 8)))
+               {
+                  _targetCreeps.push({
+                     "creep":_loc2_,
+                     "dist":_loc4_,
+                     "position":_loc5_
+                  });
+                  _hasTargets = true;
+                  return;
+               }
             }
          }
       }

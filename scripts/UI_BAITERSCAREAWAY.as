@@ -1,31 +1,27 @@
 package
 {
+   import flash.events.Event;
    import flash.events.MouseEvent;
    
    public class UI_BAITERSCAREAWAY extends UI_BAITERSCAREAWAY_CLIP
    {
-      public function UI_BAITERSCAREAWAY()
+      public function UI_BAITERSCAREAWAY(param1:Boolean = true)
       {
          super();
-         if(SPECIALEVENT.active)
+         if(param1)
          {
-            bReturn.SetupKey("wmi_surrenderbtn");
+            bReturn.SetupKey("bait_scareaway");
          }
          else
          {
-            bReturn.SetupKey("bait_scareaway");
+            bReturn.SetupKey("wmi_surrenderbtn");
          }
          bReturn.addEventListener(MouseEvent.CLICK,this.onReturnDown);
       }
       
       private function onReturnDown(param1:MouseEvent) : void
       {
-         var _loc2_:Boolean = SPECIALEVENT.active;
-         if(_loc2_)
-         {
-            SPECIALEVENT.Surrender();
-         }
-         MONSTERBAITER.End(_loc2_);
+         dispatchEvent(new Event("scareAway"));
       }
       
       public function Resize() : void

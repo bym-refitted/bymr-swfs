@@ -4,11 +4,12 @@ package
    import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.events.Event;
-   import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class BUILDING25 extends BTOWER
    {
+      public static const TYPE:uint = 25;
+      
       public var _field:BitmapData;
       
       public var _fieldBMP:Bitmap;
@@ -86,7 +87,8 @@ package
          {
             if(_animLoaded && !GLOBAL._catchup)
             {
-               _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+               _animRect.x = _animRect.width * _animTick;
+               _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
             }
          }
          catch(e:Error)
@@ -97,11 +99,18 @@ package
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         this._target = param1;
+         if(param1 is CREEP || param1 is CREEP_INFERNO || param1 is CHAMPIONMONSTER)
+         {
+            this._target = param1;
+         }
+         else
+         {
+            this._target = null;
+         }
          if(this._fireStage == 0)
          {
             this._fireStage = 1;
-            SOUNDS.Play("lightningstart");
+            SOUNDS.Play("lightningstart",!isJard ? 0.8 : 0.4);
          }
       }
       
@@ -141,41 +150,89 @@ package
                   }
                   if(_frameNumber % 4 == 0)
                   {
-                     if(_hasTargets)
+                     if(_hasTargets || _targetVacuum)
                      {
-                        if(this._target._movement == "fly")
-                        {
-                           EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y - this._target._altitude);
-                        }
-                        else
-                        {
-                           EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y);
-                        }
                         _loc2_ = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
                         _loc3_ = 1;
                         if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
                         {
                            _loc3_ = 1.25;
                         }
-                        this._target._health.Add(-(this._target._damageMult * int(_damage * _loc2_ * _loc3_)));
-                        ATTACK.Damage(_mc.x,_mc.y - 50,this._target._damageMult * int(_damage * _loc2_ * _loc3_));
+                        if(isJard)
+                        {
+                           _jarHealth.Add(-int(_damage * _loc2_ * _loc3_));
+                           ATTACK.Damage(_mc.x,_mc.y + _top,_damage * _loc2_ * _loc3_);
+                           if(_jarHealth.Get() <= 0)
+                           {
+                              KillJar();
+                           }
+                        }
+                        else
+                        {
+                           if(_targetVacuum)
+                           {
+                              EFFECTS.Lightning(_mc.x,_mc.y - 50,GLOBAL._bTownhall._mc.x,GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height);
+                           }
+                           else if(this._target._movement == "fly")
+                           {
+                              EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y - this._target._altitude);
+                           }
+                           else
+                           {
+                              EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y);
+                           }
+                           if(_targetVacuum)
+                           {
+                              (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * _loc2_ * _loc3_));
+                              ATTACK.Damage(_mc.x,_mc.y - 50,int(_damage * _loc2_ * _loc3_));
+                           }
+                           else
+                           {
+                              this._target._health.Add(-(this._target._damageMult * int(_damage * _loc2_ * _loc3_)));
+                              ATTACK.Damage(_mc.x,_mc.y - 50,this._target._damageMult * int(_damage * _loc2_ * _loc3_));
+                           }
+                        }
                      }
-                     SOUNDS.Play("lightningfire");
+                     SOUNDS.Play("lightningfire",!isJard ? 0.8 : 0.4);
                      ++this._shotsFired;
                      if(this._shotsFired >= _rate)
                      {
                         this._fireStage = 3;
-                        SOUNDS.Play("lightningend");
+                        SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
                      }
-                     else if(this._target._health.Get() <= 0)
+                     else if(_targetVacuum && (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Get() <= 0)
                      {
-                        _hasTargets = false;
-                        FindTargets(1,_priority);
-                        if(!_hasTargets)
+                        if(Boolean((GLOBAL._bTownhall as BUILDING14)._vacuum) && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range)
                         {
-                           this._fireStage = 3;
+                           _targetVacuum = true;
                         }
-                        SOUNDS.Play("lightningend");
+                        else
+                        {
+                           _hasTargets = false;
+                           FindTargets(1,_priority);
+                           if(!_hasTargets)
+                           {
+                              this._fireStage = 3;
+                           }
+                           SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
+                        }
+                     }
+                     else if(Boolean(this._target) && this._target._health.Get() <= 0)
+                     {
+                        if(BASE._yardType == BASE.MAIN_YARD && GLOBAL._bTownhall && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range)
+                        {
+                           _targetVacuum = true;
+                        }
+                        else
+                        {
+                           _hasTargets = false;
+                           FindTargets(1,_priority);
+                           if(!_hasTargets)
+                           {
+                              this._fireStage = 3;
+                           }
+                           SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
+                        }
                      }
                   }
                }

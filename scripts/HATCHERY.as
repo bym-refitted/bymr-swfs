@@ -6,6 +6,8 @@ package
    {
       public static var _mc:HATCHERYPOPUP;
       
+      public static const TYPE:uint = 13;
+      
       public static var _open:Boolean = false;
       
       public function HATCHERY()

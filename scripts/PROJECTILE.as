@@ -91,6 +91,7 @@ package
       
       public function Move() : Boolean
       {
+         var _loc2_:BUILDING14 = null;
          var _loc1_:Number = this._maxSpeed * 0.5;
          if(this._frameNumber % 5 == 0)
          {
@@ -112,6 +113,12 @@ package
             {
                this._targetMC._health.Add(-(this._targetMC._damageMult * this._damage));
                ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._targetMC._damageMult * this._damage);
+            }
+            else
+            {
+               _loc2_ = GLOBAL._bTownhall as BUILDING14;
+               _loc2_._vacuumHealth.Add(-this._damage);
+               ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage);
             }
             PROJECTILES.Remove(this._id);
             return true;

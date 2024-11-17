@@ -1,13 +1,14 @@
 package
 {
    import com.cc.screenshot.screenshot;
+   import com.monsters.chat.Chat;
    import com.monsters.pathing.PATHING;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.*;
    import flash.geom.*;
-   import flash.utils.getTimer;
    import gs.*;
    import gs.easing.*;
    
@@ -81,8 +82,6 @@ package
       
       public static var _creepCells:Object = {};
       
-      public static var _sortArray:Array = [];
-      
       public static var _sortTo:int = 0;
       
       public static var _canScroll:Boolean = true;
@@ -95,7 +94,7 @@ package
       
       private static var _championLevel:Number = 4;
       
-      private static var _creepType:String = BASE.isInferno() ? "C" : "IC";
+      private static var _creepType:String = BASE.isInferno() ? "IC" : "C";
       
       public function MAP(param1:String)
       {
@@ -186,14 +185,11 @@ package
             _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
-            if(GLOBAL._local)
-            {
-            }
             if(!GLOBAL._aiDesignMode)
             {
-               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
+               _GROUND.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
             }
-            GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
+            _GROUND.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
             _EDGE = null;
          }
          catch(e:Error)
@@ -259,34 +255,33 @@ package
       
       public static function SortDepth(param1:Boolean = false, param2:Boolean = false) : *
       {
-         var _loc4_:* = undefined;
-         var _loc5_:int = 0;
-         var _loc3_:int = getTimer();
-         _sortArray = [];
+         var _loc3_:DisplayObject = null;
          var _loc6_:int = 0;
-         while(_loc6_ < _BUILDINGTOPS.numChildren)
+         var _loc4_:* = [];
+         var _loc5_:int = _BUILDINGTOPS.numChildren - 1;
+         while(_loc5_ >= 0)
          {
-            if(_BUILDINGTOPS.getChildAt(_loc6_))
+            _loc3_ = _BUILDINGTOPS.getChildAt(_loc5_);
+            _loc6_ = _loc3_.height * 0.5;
+            if(_loc3_ is MovieClip)
             {
-               _loc4_ = _BUILDINGTOPS.getChildAt(_loc6_);
-               _loc5_ = int(_loc4_.y);
-               _loc5_ = _loc5_ + _loc4_._middle;
-               _sortArray.push({
-                  "depth":_loc5_ * 1000 + _loc4_.x,
-                  "mc":_loc4_
-               });
+               _loc6_ = int(MovieClip(_loc3_)._middle);
             }
-            _loc6_++;
+            _loc4_.push({
+               "depth":(_loc3_.y + _loc6_) * 1000 + _loc3_.x,
+               "mc":_loc3_
+            });
+            _loc5_--;
          }
-         _sortArray.sortOn("depth",Array.NUMERIC);
-         _loc6_ = 0;
-         while(_loc6_ < _sortArray.length)
+         _loc4_.sortOn("depth",Array.NUMERIC);
+         _loc5_ = 0;
+         while(_loc5_ < _loc4_.length)
          {
-            if(_BUILDINGTOPS.getChildIndex(_sortArray[_loc6_].mc) != _loc6_)
+            if(_BUILDINGTOPS.getChildIndex(_loc4_[_loc5_].mc) != _loc5_)
             {
-               _BUILDINGTOPS.setChildIndex(_sortArray[_loc6_].mc,_loc6_);
+               _BUILDINGTOPS.setChildIndex(_loc4_[_loc5_].mc,_loc5_);
             }
-            _loc6_++;
+            _loc5_++;
          }
       }
       
@@ -317,7 +312,7 @@ package
          }
       }
       
-      public static function KeyDownLocal(param1:KeyboardEvent) : *
+      public static function KeyDownLocal(param1:KeyboardEvent) : void
       {
          if(param1.shiftKey)
          {
@@ -342,7 +337,7 @@ package
                keyunlock = 0;
             }
          }
-         if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._bymChat && GLOBAL._bymChat.chatInputHasFocus() && !GLOBAL._aiDesignMode)
+         if(!GLOBAL._flags.viximo && Chat._bymChat && Chat._bymChat.chatInputHasFocus() && !GLOBAL._aiDesignMode)
          {
             return;
          }
@@ -404,25 +399,10 @@ package
          var _loc4_:int = 0;
          if(!GLOBAL._catchup)
          {
-            if(GLOBAL._zoomed)
-            {
-               param1 /= 3;
-               param2 /= 3;
-            }
-            tx = 0 - (param1 - 380);
-            ty = 0 - (param2 - 335);
-            if(GLOBAL._zoomed)
-            {
-               tx /= 3;
-               ty /= 3;
-            }
-            _loc3_ = int(stage.stageWidth);
-            _loc4_ = GLOBAL.GetGameHeight();
-            if(GLOBAL._zoomed)
-            {
-               _loc3_ *= 3;
-               _loc4_ *= 3;
-            }
+            tx = GLOBAL._SCREEN.x - (param1 - GLOBAL._SCREEN.width / 2);
+            ty = GLOBAL._SCREEN.y - (param2 - GLOBAL._SCREEN.height / 2);
+            _loc3_ = GLOBAL._SCREEN.width;
+            _loc4_ = GLOBAL._SCREEN.height;
             _GROUND.x = tx;
             _GROUND.y = ty;
          }
@@ -457,21 +437,11 @@ package
                UI2.Hide("top");
                UI2.Hide("bottom");
             }
-            if(GLOBAL._zoomed)
-            {
-               X /= 3;
-               Y /= 3;
-            }
             _autoScroll = true;
             tx = 0 - (X - 380);
             ty = 0 - (Y - 340);
             w = int(stage.stageWidth);
             h = GLOBAL.GetGameHeight();
-            if(GLOBAL._zoomed)
-            {
-               w *= 3;
-               h *= 3;
-            }
             if(ease)
             {
                TweenLite.to(_GROUND,time,{
@@ -513,25 +483,25 @@ package
       
       public static function Scroll(param1:Event = null) : *
       {
-         var _loc7_:int = 0;
-         var _loc8_:MovieClip = null;
-         var _loc9_:* = undefined;
-         var _loc10_:* = undefined;
+         var _loc11_:int = 0;
+         var _loc12_:MovieClip = null;
+         var _loc13_:* = undefined;
+         var _loc14_:* = undefined;
          if(_following)
          {
             tx = 0;
             ty = 0;
-            _loc7_ = 0;
-            for each(_loc8_ in CREEPS._creeps)
+            _loc11_ = 0;
+            for each(_loc12_ in CREEPS._creeps)
             {
-               if(_loc8_._behaviour == "attack" || _loc8_._behaviour == "loot")
+               if(_loc12_._behaviour == "attack" || _loc12_._behaviour == "loot")
                {
-                  _loc7_++;
-                  tx += _loc8_.x;
-                  ty += _loc8_.y;
+                  _loc11_++;
+                  tx += _loc12_.x;
+                  ty += _loc12_.y;
                }
             }
-            if(_loc7_ <= 0)
+            if(_loc11_ <= 0)
             {
                tx = _dragX;
                ty = _dragY;
@@ -541,8 +511,8 @@ package
                }
                return;
             }
-            tx /= _loc7_;
-            ty /= _loc7_;
+            tx /= _loc11_;
+            ty /= _loc11_;
             tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth / 2;
             ty = 0 - ty + GLOBAL.GetGameHeight() / 2;
             _dragX = tx;
@@ -552,9 +522,9 @@ package
          {
             tx = int(stage.mouseX - _dragX);
             ty = int(stage.mouseY - _dragY);
-            _loc9_ = stage.mouseX - (_dragX + _startX);
-            _loc10_ = stage.mouseY - (_dragY + _startY);
-            _dragDistance = Math.abs(Math.sqrt(_loc9_ * _loc9_ + _loc10_ * _loc10_));
+            _loc13_ = stage.mouseX - (_dragX + _startX);
+            _loc14_ = stage.mouseY - (_dragY + _startY);
+            _dragDistance = Math.abs(Math.sqrt(_loc13_ * _loc13_ + _loc14_ * _loc14_));
             if(_dragDistance > 10)
             {
                _dragged = true;
@@ -562,37 +532,41 @@ package
          }
          var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
          var _loc3_:int = GLOBAL.GetGameHeight();
+         var _loc10_:int = 2375 - _loc2_ / 2;
          if(GLOBAL._zoomed)
          {
-            _loc2_ *= 3;
-            _loc3_ *= 3;
+            _loc10_ = (2375 - _loc2_ + 380) / 2;
          }
-         var _loc4_:int = (_loc2_ - 1700) / 2 - 375;
-         if(tx < _loc4_)
+         if(tx > _loc10_)
          {
-            tx = _loc4_;
+            tx = _loc10_;
          }
-         _loc4_ = 1700 - _loc2_ / 2 + 375;
-         if(tx > _loc4_)
-         {
-            tx = _loc4_;
-         }
-         var _loc5_:int = 990;
-         var _loc6_:int = 320;
+         _loc10_ = -1615 + _loc2_ / 2;
          if(GLOBAL._zoomed)
          {
-            _loc5_ = 1210;
-            _loc6_ = 380;
+            _loc10_ = (-1615 + _loc2_ + 380) / 2;
          }
-         _loc4_ = (_loc3_ - _loc5_) / 2 - _loc6_;
-         if(ty < _loc4_)
+         if(tx < _loc10_)
          {
-            ty = _loc4_;
+            tx = _loc10_;
          }
-         _loc4_ = _loc5_ - _loc3_ / 2 + _loc6_;
-         if(ty > _loc4_)
+         _loc10_ = -650 + _loc3_ / 2;
+         if(GLOBAL._zoomed)
          {
-            ty = _loc4_;
+            _loc10_ = (-650 + _loc3_ + 335) / 2;
+         }
+         if(ty < _loc10_)
+         {
+            ty = _loc10_;
+         }
+         _loc10_ = 1325 - _loc3_ / 2;
+         if(GLOBAL._zoomed)
+         {
+            _loc10_ = (1325 - _loc3_ + 335) / 2;
+         }
+         if(ty > _loc10_)
+         {
+            ty = _loc10_;
          }
          d = 2;
          targX = _GROUND.x;
@@ -659,6 +633,114 @@ package
          {
             delete _creepCells[param2]["creep" + param1];
          }
+      }
+      
+      public static function getAttackingCreepsInRange(param1:Number, param2:Point, param3:int = 2147483647) : Array
+      {
+         var _loc6_:* = undefined;
+         var _loc7_:Number = NaN;
+         var _loc4_:Array = [];
+         var _loc5_:Object = CREEPS._creeps;
+         if(CREEPS._guardian)
+         {
+            if(CREEPS._guardian != CREATURES._guardian)
+            {
+               if(GLOBAL.QuickDistance(new Point(CREEPS._guardian._mc.x,CREEPS._guardian._mc.y),param2) <= param1)
+               {
+                  _loc4_.push(CREEPS._guardian);
+               }
+            }
+         }
+         for each(_loc6_ in _loc5_)
+         {
+            _loc7_ = GLOBAL.QuickDistance(new Point(_loc6_._mc.x,_loc6_._mc.y),param2);
+            if(_loc7_ <= param1 && _loc6_._movement != "flying")
+            {
+               _loc4_.push(_loc6_);
+               if(_loc4_.length >= param3)
+               {
+                  return _loc4_;
+               }
+            }
+         }
+         return _loc4_;
+      }
+      
+      public static function getDefendingCreepsInRange(param1:Number, param2:Point, param3:int = 2147483647) : Array
+      {
+         var _loc6_:* = undefined;
+         var _loc7_:Number = NaN;
+         var _loc4_:Array = [];
+         var _loc5_:Object = CREATURES._creatures;
+         if(CREATURES._guardian)
+         {
+            if(CREATURES._guardian != CREEPS._guardian)
+            {
+               if(GLOBAL.QuickDistance(new Point(CREATURES._guardian._mc.x,CREATURES._guardian._mc.y),param2) <= param1)
+               {
+                  _loc4_.push(CREATURES._guardian);
+               }
+            }
+         }
+         for each(_loc6_ in _loc5_)
+         {
+            _loc7_ = GLOBAL.QuickDistance(new Point(_loc6_._mc.x,_loc6_._mc.y),param2);
+            if(_loc7_ <= param1 && _loc6_._movement != "flying")
+            {
+               _loc4_.push(_loc6_);
+               if(_loc4_.length >= param3)
+               {
+                  return _loc4_;
+               }
+            }
+         }
+         return _loc4_;
+      }
+      
+      public static function DealLinearAEDamage(param1:Point, param2:Number, param3:Number, param4:Array, param5:Number = 0) : void
+      {
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc10_:* = undefined;
+         if(param5 > param2)
+         {
+            param5 = param2 - 1;
+         }
+         for each(_loc10_ in param4)
+         {
+            _loc6_ = GLOBAL.QuickDistance(param1,new Point(_loc10_.x,_loc10_.y));
+            if(param2 >= _loc6_)
+            {
+               if(_loc6_ < param5)
+               {
+                  _loc7_ = param3;
+               }
+               else
+               {
+                  _loc7_ = param3 / param2 * (param2 - _loc6_);
+               }
+               if(_loc7_ < param3 / 5)
+               {
+                  _loc7_ = param3 / 5;
+               }
+               if(_loc10_ is BFOUNDATION)
+               {
+                  _loc10_.Damage(_loc7_,0,0);
+               }
+               else
+               {
+                  _loc7_ *= _loc10_._damageMult;
+                  if(_loc7_ > _loc10_._health.Get())
+                  {
+                     _loc7_ = int(_loc10_._health.Get());
+                  }
+                  _loc10_._health.Add(-_loc7_);
+               }
+               _loc8_ += _loc7_;
+            }
+         }
+         ATTACK.Damage(param1.x,param1.y,_loc8_);
       }
       
       public static function CreepCellFind(param1:Point, param2:Number, param3:int = 0, param4:* = null) : Array

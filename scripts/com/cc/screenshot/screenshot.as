@@ -20,7 +20,7 @@ package com.cc.screenshot
          super();
       }
       
-      public static function Take(param1:*, param2:*) : *
+      public static function Take(param1:*, param2:*) : void
       {
          _rawImage = new BitmapData(700,460,false,0);
          var _loc3_:Matrix = new Matrix();
@@ -28,7 +28,7 @@ package com.cc.screenshot
          _rawImage.draw(GLOBAL._layerMap,_loc3_,null,null,_rawImage.rect,true);
       }
       
-      public static function Process(param1:int = 0, param2:int = 0, param3:int = 0, param4:int = 0, param5:int = 0, param6:int = 0) : *
+      public static function Process(param1:int = 0, param2:int = 0, param3:int = 0, param4:int = 0, param5:int = 0, param6:int = 0) : void
       {
          var _loc7_:ColorMatrix = null;
          var _loc8_:Number = NaN;
@@ -100,7 +100,7 @@ package com.cc.screenshot
          }
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          Take(-20,-20);
          POPUPS.Push(new screenshot_ui());

@@ -21,8 +21,10 @@ package
       {
          var _loc6_:String = null;
          var _loc7_:* = null;
-         var _loc8_:* = undefined;
-         var _loc9_:int = 0;
+         var _loc9_:* = undefined;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
          this._id = param1;
          this._buildingProps = GLOBAL._buildingProps[this._id - 1];
          mouseChildren = false;
@@ -35,27 +37,23 @@ package
          mcSale.visible = this._buildingProps.sale == 1;
          mcSale.t.htmlText = "<b>" + KEYS.Get("ui_building_sale") + "</b>";
          mcNew.t.htmlText = "<b>" + KEYS.Get("str_new_caps") + "</b>";
-         var _loc3_:int = 0;
-         if(GLOBAL._bTownhall)
-         {
-            _loc3_ = GLOBAL._bTownhall._lvl.Get();
-         }
+         var _loc3_:int = GLOBAL.GetBuildingTownHallLevel(this._buildingProps);
          var _loc4_:int = int(this._buildingProps.quantity[_loc3_]);
          var _loc5_:int = 0;
          for(_loc6_ in BASE._buildingsAll)
          {
-            _loc8_ = BASE._buildingsAll[_loc6_];
-            if(_loc8_._type == this._id)
+            _loc9_ = BASE._buildingsAll[_loc6_];
+            if(_loc9_._type == this._id)
             {
                _loc5_++;
             }
          }
          if(this._buildingProps.type == "decoration")
          {
-            _loc9_ = BASE.BuildingStorageCount(this._id);
-            if(_loc9_ > 0)
+            _loc10_ = BASE.BuildingStorageCount(this._id);
+            if(_loc10_ > 0)
             {
-               tQuantity.htmlText = "<font color=\"#0000CC\"><b>" + KEYS.Get("bdg_numinstorage",{"v1":_loc9_}) + "</b></font>";
+               tQuantity.htmlText = "<font color=\"#0000CC\"><b>" + KEYS.Get("bdg_numinstorage",{"v1":_loc10_}) + "</b></font>";
             }
             else
             {
@@ -70,18 +68,39 @@ package
          {
             tQuantity.htmlText = "<b>" + _loc5_ + " / " + _loc4_ + "</b>";
          }
-         if(Boolean(this._buildingProps.buildingbuttons) && Boolean(BASE._buildingsStored["bl" + this._id]) && this._buildingProps.buildingbuttons.length >= BASE._buildingsStored["bl" + this._id].Get())
+         if(_loc5_ <= 0 && Boolean(this._buildingProps.upgradeImgData))
          {
-            _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._id].Get() - 1] + ".jpg";
+            _loc11_ = int.MAX_VALUE;
+            for(_loc12_ in this._buildingProps.upgradeImgData)
+            {
+               if(!isNaN(Number(_loc12_)))
+               {
+                  _loc11_ = Math.min(_loc11_,Number(_loc12_));
+               }
+            }
+            if(_loc11_ != int.MAX_VALUE && this._buildingProps.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(this._buildingProps.costs[0]))
+            {
+               _loc7_ = this._buildingProps.upgradeImgData.baseurl + this._buildingProps.upgradeImgData[_loc11_].silhouette_img;
+            }
          }
-         else if(Boolean(this._buildingProps.buildingbuttons) && this._buildingProps.buildingbuttons.length > 0)
+         if(!_loc7_)
          {
-            _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[0] + ".jpg";
+            if(Boolean(this._buildingProps.buildingbuttons) && Boolean(BASE._buildingsStored["bl" + this._id]) && this._buildingProps.buildingbuttons.length >= BASE._buildingsStored["bl" + this._id].Get())
+            {
+               _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._id].Get() - 1] + ".jpg";
+            }
+            else if(Boolean(this._buildingProps.buildingbuttons) && this._buildingProps.buildingbuttons.length > 0)
+            {
+               _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[0] + ".jpg";
+            }
+            else
+            {
+               _loc7_ = "buildingbuttons/" + this._id + ".jpg";
+            }
          }
-         else
-         {
-            _loc7_ = "buildingbuttons/" + this._id + ".jpg";
-         }
+         var _loc8_:int = int(Math.max.apply(Math,this._buildingProps.quantity));
+         mcShroud.visible = _loc5_ >= _loc4_ && _loc4_ > 0;
+         mcCheck.visible = _loc5_ >= _loc8_ && _loc8_ > 0;
          mcNew.visible = false;
          if(GLOBAL._newThings && Boolean(this._buildingProps.isNew))
          {

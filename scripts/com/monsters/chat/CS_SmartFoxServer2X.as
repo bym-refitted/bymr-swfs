@@ -287,6 +287,8 @@ package com.monsters.chat
       private function onConfigLoadFailure(param1:SFSEvent) : void
       {
          var _loc3_:Dictionary = new Dictionary();
+         _loc3_["reason"] = "config load failure";
+         "config load failure";
          dispatchEvent(new ChatEvent(ChatEvent.CONNECT,false,_loc3_));
       }
       
@@ -294,6 +296,11 @@ package com.monsters.chat
       {
          var _loc2_:Boolean = Boolean(param1.params.success);
          var _loc3_:Dictionary = new Dictionary();
+         if(!_loc2_)
+         {
+            _loc3_["reason"] = "connection failed";
+            "connection failed";
+         }
          dispatchEvent(new ChatEvent(ChatEvent.CONNECT,_loc2_,_loc3_));
       }
       
@@ -370,6 +377,10 @@ package com.monsters.chat
          }
          _loc4_ = true;
          _loc5_ = new Dictionary();
+         if(!_loc4_)
+         {
+            _loc5_["reason"] = "login failed";
+         }
          dispatchEvent(new ChatEvent(ChatEvent.LOGIN,_loc4_,_loc5_));
          this._isLoggedIn = true;
          this.initKeepAlive();
@@ -378,9 +389,9 @@ package com.monsters.chat
       private function onLoginError(param1:SFSEvent) : void
       {
          var _loc3_:Dictionary = new Dictionary();
+         _loc3_["reason"] = "login error";
          dispatchEvent(new ChatEvent(ChatEvent.LOGIN,false,_loc3_));
          this._isLoggedIn = false;
-         false;
       }
       
       public function logout() : void
@@ -518,6 +529,7 @@ package com.monsters.chat
       {
          var _loc3_:Dictionary = new Dictionary();
          _loc3_["channel"] = this.join_channel;
+         _loc3_["reason"] = "error joining room";
          dispatchEvent(new ChatEvent(ChatEvent.JOIN,false,_loc3_));
       }
       

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol63")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol83")]
    public dynamic class popup_levelup extends MovieClip
    {
       public var bPost:Button_CLIP;

@@ -17,15 +17,6 @@ package
          PATHING.RegisterBuilding(new Rectangle(_mc.x,_mc.y,20,20),this,param1);
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(!GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-      }
-      
       override public function Description() : *
       {
          var _loc1_:int = 0;

@@ -85,6 +85,7 @@ package de.polygonal.ds
       public function swp(param1:int, param2:int) : void
       {
          var _loc3_:Object = _a[param1];
+         null;
          _a[param1] = _a[param2];
          if(param1 >= _size)
          {
@@ -238,6 +239,7 @@ package de.polygonal.ds
          var _loc6_:* = null as Object;
          var _loc7_:* = 0;
          var _loc8_:int = 0;
+         null;
          if(param3 == null)
          {
             _loc4_ = _size;
@@ -390,6 +392,7 @@ package de.polygonal.ds
          var _loc5_:* = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
+         null;
          if(param2 == param1)
          {
             return;
@@ -718,6 +721,7 @@ package de.polygonal.ds
             while(_loc5_ < _loc6_)
             {
                _loc7_ = _loc5_++;
+               null;
                _loc8_ = _a[_loc7_];
                _loc4_._a[_loc7_] = _loc8_.clone();
             }
@@ -763,6 +767,7 @@ package de.polygonal.ds
       public function assign(param1:Class, param2:Array = undefined, param3:int = 0) : void
       {
          var _loc5_:int = 0;
+         null;
          if(param3 > 0)
          {
             _size = param3;
@@ -801,6 +806,8 @@ package de.polygonal.ds
             _loc9_ = _a[_loc6_];
             _loc10_ = _a[_loc7_];
             _loc11_ = _a[_loc8_];
+            null;
+            null;
             _loc13_ = int(_loc9_.compare(_loc11_));
             if(_loc13_ < 0 && int(_loc9_.compare(_loc10_)) < 0)
             {
@@ -818,6 +825,7 @@ package de.polygonal.ds
             _a[_loc12_] = _a[param1];
             while(_loc4_ < _loc5_)
             {
+               null;
                while(int(_loc14_.compare(_a[_loc5_])) < 0 && _loc4_ < _loc5_)
                {
                   _loc5_--;

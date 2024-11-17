@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol981")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1044")]
    public dynamic class BUILDINGSPOPUP_CLIP extends MovieClip
    {
       public var bNext:BUILDINGSARROW;

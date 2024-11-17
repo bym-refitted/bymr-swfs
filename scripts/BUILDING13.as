@@ -90,6 +90,70 @@ package
          }
       }
       
+      override public function Destroyed(param1:Boolean = true) : *
+      {
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc2_:SecNum = new SecNum(0);
+         if(_inProduction != "")
+         {
+            _loc2_.Add(CREATURES.GetProperty(_inProduction,"cResource"));
+            _inProduction = "";
+         }
+         if(_monsterQueue.length > 0)
+         {
+            _loc5_ = int(_monsterQueue.length);
+            _loc6_ = 0;
+            while(_loc6_ < _loc5_)
+            {
+               _loc2_.Add(CREATURES.GetProperty(_monsterQueue[_loc6_][0],"cResource") * _monsterQueue[_loc6_][1]);
+               _loc6_++;
+            }
+            _monsterQueue = [];
+         }
+         BASE.Fund(4,Math.ceil(_loc2_.Get() * 0.75));
+         var _loc3_:int = 0;
+         if(_loc2_.Get() > 20000)
+         {
+            _loc3_ = 12;
+         }
+         else if(_loc2_.Get() > 10000)
+         {
+            _loc3_ = 9;
+         }
+         else if(_loc2_.Get() > 5000)
+         {
+            _loc3_ = 7;
+         }
+         else if(_loc2_.Get() > 1000)
+         {
+            _loc3_ = 5;
+         }
+         else if(_loc2_.Get() > 400)
+         {
+            _loc3_ = 4;
+         }
+         else if(_loc2_.Get() > 200)
+         {
+            _loc3_ = 3;
+         }
+         else if(_loc2_.Get() > 100)
+         {
+            _loc3_ = 2;
+         }
+         else if(_loc2_.Get() > 0)
+         {
+            _loc3_ = 1;
+         }
+         var _loc4_:int = 0;
+         while(_loc4_ < _loc3_)
+         {
+            ResourcePackages.Spawn(this,GLOBAL._bTownhall,BASE.isInferno() ? 8 : 4,_loc4_);
+            _loc4_++;
+         }
+         super.Destroyed(param1);
+      }
+      
       override public function Description() : *
       {
          var _loc1_:int = 0;
@@ -211,27 +275,36 @@ package
             }
             HATCHERY.Tick();
             _productionStage.Set(3);
-            this.Tick();
+            this.Tick(1);
          }
       }
       
-      override public function Tick() : *
+      override public function get tickLimit() : int
       {
-         var _loc1_:int = 0;
+         var _loc1_:int = super.tickLimit;
+         if(this._timeStamp > GLOBAL.Timestamp())
+         {
+            _loc1_ = Math.min(_loc1_,this._timeStamp - GLOBAL.Timestamp());
+         }
+         else if(_inProduction != "" && _countdownProduce.Get() >= 0 && HOUSING.HousingStore(_inProduction,new Point(_mc.x,_mc.y),true,0))
+         {
+            _loc1_ = Math.min(_loc1_,_countdownProduce.Get());
+         }
+         return _loc1_;
+      }
+      
+      override public function Tick(param1:int) : void
+      {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:String = null;
-         var _loc6_:Boolean = false;
-         if(_inProduction)
-         {
-            CatchupAdd();
-         }
+         var _loc5_:int = 0;
+         var _loc6_:String = null;
          if(_inProduction == "C100")
          {
             _inProduction = "C12";
          }
-         super.Tick();
+         super.Tick(param1);
          if(this._timeStamp > GLOBAL.Timestamp())
          {
             return;
@@ -248,53 +321,53 @@ package
          {
             if(!GLOBAL._bHatcheryCC)
             {
-               _loc1_ = HOUSING._housingSpace.Get();
+               _loc2_ = HOUSING._housingSpace.Get();
                this._finishQueue = {};
                this._finishAll = true;
-               _loc2_ = 0;
-               if(_inProduction != "" && _loc1_ >= CREATURES.GetProperty(_inProduction,"cStorage"))
+               _loc3_ = 0;
+               if(_inProduction != "" && _loc2_ >= CREATURES.GetProperty(_inProduction,"cStorage"))
                {
-                  _loc1_ -= CREATURES.GetProperty(_inProduction,"cStorage");
+                  _loc2_ -= CREATURES.GetProperty(_inProduction,"cStorage");
                   this._finishQueue[_inProduction] = 1;
-                  _loc2_ = _countdownProduce.Get();
+                  _loc3_ = _countdownProduce.Get();
                   if(_monsterQueue.length > 0)
                   {
-                     _loc3_ = int(_monsterQueue.length);
-                     _loc4_ = 0;
-                     while(_loc4_ < _loc3_)
+                     _loc4_ = int(_monsterQueue.length);
+                     _loc5_ = 0;
+                     while(_loc5_ < _loc4_)
                      {
-                        _loc5_ = _monsterQueue[_loc4_][0];
-                        if(_loc1_ >= CREATURES.GetProperty(_loc5_,"cStorage") * _monsterQueue[_loc4_][1])
+                        _loc6_ = _monsterQueue[_loc5_][0];
+                        if(_loc2_ >= CREATURES.GetProperty(_loc6_,"cStorage") * _monsterQueue[_loc5_][1])
                         {
-                           _loc2_ += CREATURES.GetProperty(_loc5_,"cTime") * _monsterQueue[_loc4_][1];
-                           _loc1_ -= CREATURES.GetProperty(_loc5_,"cStorage") * _monsterQueue[_loc4_][1];
-                           if(this._finishQueue[_loc5_])
+                           _loc3_ += CREATURES.GetProperty(_loc6_,"cTime") * _monsterQueue[_loc5_][1];
+                           _loc2_ -= CREATURES.GetProperty(_loc6_,"cStorage") * _monsterQueue[_loc5_][1];
+                           if(this._finishQueue[_loc6_])
                            {
-                              this._finishQueue[_loc5_] += _monsterQueue[_loc4_][1];
+                              this._finishQueue[_loc6_] += _monsterQueue[_loc5_][1];
                            }
                            else
                            {
-                              this._finishQueue[_loc5_] = _monsterQueue[_loc4_][1];
+                              this._finishQueue[_loc6_] = _monsterQueue[_loc5_][1];
                            }
                         }
-                        else if(_loc1_ >= CREATURES.GetProperty(_loc5_,"cStorage"))
+                        else if(_loc2_ >= CREATURES.GetProperty(_loc6_,"cStorage"))
                         {
-                           _loc2_ += CREATURES.GetProperty(_loc5_,"cTime") * (_loc1_ / CREATURES.GetProperty(_loc5_,"cStorage"));
-                           if(this._finishQueue[_loc5_])
+                           _loc3_ += CREATURES.GetProperty(_loc6_,"cTime") * (_loc2_ / CREATURES.GetProperty(_loc6_,"cStorage"));
+                           if(this._finishQueue[_loc6_])
                            {
-                              this._finishQueue[_loc5_] += _loc1_ / CREATURES.GetProperty(_loc5_,"cStorage");
+                              this._finishQueue[_loc6_] += _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
                            }
                            else
                            {
-                              this._finishQueue[_loc5_] = _loc1_ / CREATURES.GetProperty(_loc5_,"cStorage");
+                              this._finishQueue[_loc6_] = _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
                            }
                            this._finishAll = false;
                            break;
                         }
-                        _loc4_++;
+                        _loc5_++;
                      }
                   }
-                  this._finishCost.Set(STORE.GetTimeCost(_loc2_,false) * 4);
+                  this._finishCost.Set(STORE.GetTimeCost(_loc3_,false) * 4);
                }
                else
                {
@@ -308,17 +381,17 @@ package
                   if(_countdownProduce.Get() <= 0)
                   {
                      _productionStage.Set(2);
-                     this.Tick();
+                     this.Tick(1);
                      return;
                   }
                   _hasResources = true;
                   if(GLOBAL._hatcheryOverdrive)
                   {
-                     _countdownProduce.Add(-GLOBAL._hatcheryOverdrivePower.Get());
+                     _countdownProduce.Add(-GLOBAL._hatcheryOverdrivePower.Get() * param1);
                   }
                   else
                   {
-                     _countdownProduce.Add(-1);
+                     _countdownProduce.Add(-param1);
                   }
                }
                if(_productionStage.Get() == 2 && Boolean(_inProduction))
@@ -327,18 +400,6 @@ package
                   if(HOUSING.HousingStore(_inProduction,new Point(_mc.x,_mc.y),false,_countdownProduce.Get()))
                   {
                      this.StartProduction();
-                  }
-                  else if(GLOBAL._catchup)
-                  {
-                     _loc6_ = true;
-                     if(_repairing || HOUSING._housingBuildingUpgrading || GLOBAL._bHatcheryCC && GLOBAL._bHatcheryCC._countdownUpgrade.Get() > 0)
-                     {
-                        _loc6_ = false;
-                     }
-                     if(_loc6_)
-                     {
-                        CatchupRemove();
-                     }
                   }
                }
                if(_productionStage.Get() == 3)
@@ -351,7 +412,7 @@ package
                   _hasResources = true;
                   _countdownProduce.Set(CREATURES.GetProperty(_inProduction,"cTime"));
                   _productionStage.Set(1);
-                  this.Tick();
+                  this.Tick(1);
                   return;
                }
             }
@@ -430,7 +491,7 @@ package
             }
             BASE.Purchase("FQ",this._finishCost.Get(),"BUILDING13.FinishNow");
             HATCHERY.Tick();
-            this.Tick();
+            this.Tick(1);
          }
          else
          {
@@ -457,7 +518,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -491,7 +552,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       
@@ -502,7 +563,7 @@ package
          {
             _monsterQueue = param1.mq;
          }
-         if(param1.saved)
+         if(param1.saved >= 0)
          {
             this._timeStamp = param1.saved;
          }

@@ -7,7 +7,7 @@ package com.monsters.maproom_inferno.views
    
    public class DescentBasePopup extends DescentBasePopup_CLIP
    {
-      public var maxDepth:int = 13;
+      public var maxDepth:int = 7;
       
       public var _t:Timer;
       
@@ -37,17 +37,15 @@ package com.monsters.maproom_inferno.views
          this.currLvl = param1;
          switch(this.currLvl)
          {
-            case 9:
-            case 10:
+            case 5:
                this.depthTxt = KEYS.Get("descent_depthBar");
                this.depthTxt2 = KEYS.Get("descent_depthBarWarn1");
                break;
-            case 11:
-            case 12:
+            case 6:
                this.depthTxt = KEYS.Get("descent_depthBar");
                this.depthTxt2 = KEYS.Get("descent_depthBarWarn2");
                break;
-            case 13:
+            case 7:
                this.depthTxt = KEYS.Get("descent_depthBar");
                this.depthTxt2 = KEYS.Get("descent_depthBarWarn3");
                break;
@@ -55,10 +53,6 @@ package com.monsters.maproom_inferno.views
             case 2:
             case 3:
             case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
             default:
                this.depthTxt = KEYS.Get("descent_depthBar");
                this.depthTxt2 = "";

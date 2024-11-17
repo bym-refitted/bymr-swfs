@@ -3,14 +3,14 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1475")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1234")]
    public dynamic class ACADEMYPOPUP_CLIP extends MovieClip
    {
       public var bNext:BUILDINGSARROW;
       
       public var tResourceA:TextField;
       
-      public var bDamageA:MovieClip;
+      public var bDamageA:creatureBar;
       
       public var bA:MovieClip;
       
@@ -28,15 +28,15 @@ package
       
       public var tHealthA:TextField;
       
-      public var bStorageB:MovieClip;
+      public var bStorageB:creatureBar;
       
       public var tDamageB:TextField;
       
       public var tTimeA:TextField;
       
-      public var bStorageA:MovieClip;
+      public var bStorageA:creatureBar;
       
-      public var bSpeedA:MovieClip;
+      public var bSpeedA:creatureBar;
       
       public var bPrevious:BUILDINGSARROW;
       
@@ -44,7 +44,7 @@ package
       
       public var tDamageA:TextField;
       
-      public var bSpeedB:MovieClip;
+      public var bSpeedB:creatureBar;
       
       public var bContinue:Button_CLIP;
       
@@ -56,13 +56,13 @@ package
       
       public var after_txt:TextField;
       
-      public var bHealthB:MovieClip;
+      public var bHealthB:creatureBar;
       
-      public var bResourceA:MovieClip;
+      public var bResourceA:creatureBar;
       
       public var mcImage:MovieClip;
       
-      public var bResourceB:MovieClip;
+      public var bResourceB:creatureBar;
       
       public var mcFrame:frame_CLIP;
       
@@ -70,15 +70,15 @@ package
       
       public var before_txt:TextField;
       
-      public var bDamageB:MovieClip;
+      public var bDamageB:creatureBar;
       
-      public var bTimeA:MovieClip;
+      public var bTimeA:creatureBar;
       
       public var tSpeedB:TextField;
       
-      public var bTimeB:MovieClip;
+      public var bTimeB:creatureBar;
       
-      public var bHealthA:MovieClip;
+      public var bHealthA:creatureBar;
       
       public var tStorageA:TextField;
       

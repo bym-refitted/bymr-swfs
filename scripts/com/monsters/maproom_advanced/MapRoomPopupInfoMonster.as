@@ -15,8 +15,8 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:int, param2:int, param3:String, param4:int) : *
       {
-         var names:Object = null;
          var ImageLoaded:Function = null;
+         var name:String = null;
          var X:int = param1;
          var Y:int = param2;
          var monsterID:String = param3;
@@ -27,24 +27,27 @@ package com.monsters.maproom_advanced
             mcImage.width = 30;
             mcImage.height = 27;
          };
-         names = {
-            "G1":"Gorgo",
-            "G2":"Drull",
-            "G3":"Fomor"
-         };
          x = X;
          y = Y;
          if(monsterID.substr(0,1) == "G")
          {
-            tName.htmlText = "<b>" + names[monsterID.substr(0,2)] + "</b>";
-         }
-         else if(quantity)
-         {
-            tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[monsterID].name) + ": " + GLOBAL.FormatNumber(quantity) + "</b>";
+            tName.htmlText = "<b>" + CHAMPIONCAGE._guardians[monsterID.substr(0,2)].name + "</b>";
          }
          else
          {
-            tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[monsterID].name) + "</b>";
+            name = CREATURELOCKER._creatures[monsterID].name;
+            if(monsterID == "IC8")
+            {
+               name = "#m_k_wormzer#";
+            }
+            if(quantity)
+            {
+               tName.htmlText = "<b>" + KEYS.Get(name) + ": " + GLOBAL.FormatNumber(quantity) + "</b>";
+            }
+            else
+            {
+               tName.htmlText = "<b>" + KEYS.Get(name) + "</b>";
+            }
          }
          if(!this._imageRequested)
          {

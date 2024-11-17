@@ -1,12 +1,13 @@
 package
 {
-   import com.adobe.serialization.json.*;
    import com.cc.utils.SecNum;
    import com.monsters.ai.*;
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.ParticleText;
+   import com.monsters.events.AttackEvent;
+   import com.monsters.siege.SiegeWeapons;
    import flash.display.*;
    import flash.events.*;
    import flash.geom.*;
@@ -211,7 +212,7 @@ package
          _loc8_ = false;
          for each(_loc9_ in BASE._buildingsAll)
          {
-            if(_loc9_._class != "wall" && _loc9_._class != "trap" && _loc9_._class != "enemy" && _loc9_._class != "decoration" && _loc9_._hp.Get() > 0)
+            if(_loc9_._class != "wall" && _loc9_._class != "trap" && _loc9_._class != "enemy" && _loc9_._class != "decoration" && _loc9_._class != "cage" && _loc9_._hp.Get() > 0)
             {
                _loc8_ = true;
                break;
@@ -486,6 +487,7 @@ package
       {
          if(_dropZone)
          {
+            _dropZone.Destroy();
             MAP._BUILDINGBASES.removeChild(_dropZone);
          }
          _dropZone = null;
@@ -515,7 +517,7 @@ package
                   _loc3_ = Math.random() * 360 * 0.0174532925;
                   _loc4_ = Math.random() * param2 / 2;
                   _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
-                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData.t,MAP._BUILDINGTOPS,"bounce",_loc10_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData.hp.Get(),GLOBAL._playerGuardianData.fb.Get());
+                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData.t,MAP._BUILDINGTOPS,"bounce",_loc10_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData.hp.Get(),GLOBAL._playerGuardianData.fb.Get(),GLOBAL._playerGuardianData.pl.Get());
                   _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc10_,"bucket"));
                   _loc11_ = "Level " + GLOBAL._playerGuardianData.l.Get() + " " + CHAMPIONCAGE._guardians[CREEPS._guardian._creatureID].name;
                   _loc6_.push([1,_loc11_]);
@@ -573,6 +575,10 @@ package
       {
          var _loc3_:String = null;
          var _loc2_:int = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+         if(MAPROOM_DESCENT.InDescent)
+         {
+            _loc2_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+         }
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
          {
             _loc2_ += Math.floor(_loc2_ * 0.25);
@@ -667,6 +673,10 @@ package
             }
          }
          ResourceBombs.BombRemove();
+         if(UI2._top._siegeweapon)
+         {
+            UI2._top._siegeweapon.Cancel();
+         }
          if(_loc1_ == 0)
          {
             RemoveDropZone();
@@ -683,8 +693,12 @@ package
          UI2.Update();
       }
       
-      public static function Loot(param1:int, param2:int, param3:int, param4:int, param5:int = 10, param6:BFOUNDATION = null) : int
+      public static function Loot(param1:int, param2:int, param3:int, param4:int, param5:int = 10, param6:BFOUNDATION = null, param7:Boolean = false) : int
       {
+         if(LOGIN._playerLevel < 20)
+         {
+            param2 += param2 * Math.max(0,(20 - LOGIN._playerLevel) * 0.03);
+         }
          _loot["r" + param1].Add(param2);
          switch(param1)
          {
@@ -700,29 +714,29 @@ package
             case 4:
                _hpLoot4 += param2;
          }
-         var _loc7_:int = param2;
+         var _loc8_:int = param2;
          if(GLOBAL._resources["r" + param1].Get() + param2 > GLOBAL._resources["r" + param1 + "max"])
          {
             if(BASE.isInferno() && MAPROOM_DESCENT.DescentPassed || GLOBAL._mode == GLOBAL._loadmode)
             {
-               _loc7_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
-               if(_loc7_ < 0)
+               _loc8_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
+               if(_loc8_ < 0)
                {
-                  _loc7_ = 0;
+                  _loc8_ = 0;
                }
             }
          }
-         GLOBAL._resources["r" + param1].Add(_loc7_);
-         GLOBAL._hpResources["r" + param1] += _loc7_;
+         GLOBAL._resources["r" + param1].Add(_loc8_);
+         GLOBAL._hpResources["r" + param1] += _loc8_;
          if(_deltaLoot["r" + param1])
          {
-            _deltaLoot["r" + param1].Add(_loc7_);
-            _hpDeltaLoot["r" + param1] += _loc7_;
+            _deltaLoot["r" + param1].Add(_loc8_);
+            _hpDeltaLoot["r" + param1] += _loc8_;
          }
          else
          {
-            _deltaLoot["r" + param1] = new SecNum(_loc7_);
-            _hpDeltaLoot["r" + param1] = _loc7_;
+            _deltaLoot["r" + param1] = new SecNum(_loc8_);
+            _hpDeltaLoot["r" + param1] = _loc8_;
          }
          _deltaLoot.dirty = true;
          _hpDeltaLoot.dirty = true;
@@ -732,7 +746,14 @@ package
             {
                param1 += 4;
             }
-            new ParticleLoot(param6,param2,param1);
+            if(param7)
+            {
+               new ParticleVacuumLoot(param6,param2,param1);
+            }
+            else
+            {
+               new ParticleLoot(param6,param2,param1);
+            }
             ParticleText.Create(new Point(param3,param4),param2,param1);
          }
          return param2;
@@ -863,6 +884,7 @@ package
          {
             _loc1_.ModeRetreat();
          }
+         SiegeWeapons.deactivateWeapon();
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "iattack")
          {
             _logOpen = false;
@@ -946,6 +968,7 @@ package
             if(INFERNO_DESCENT_POPUPS.isInDescent())
             {
                INFERNO_DESCENT_POPUPS.ShowPostAttackPopup(MAPROOM_DESCENT._descentLvl,_loc1_,Vector.<uint>([_loot.r1.Get(),_loot.r2.Get(),_loot.r3.Get(),_loot.r4.Get()]),Vector.<uint>([MAPROOM_DESCENT._loot.r1.Get(),MAPROOM_DESCENT._loot.r2.Get(),MAPROOM_DESCENT._loot.r3.Get(),MAPROOM_DESCENT._loot.r4.Get()]));
+               ACHIEVEMENTS.Check(ACHIEVEMENTS.DESCENT_LEVEL,MAPROOM_DESCENT.DescentLevel);
             }
          }
          if(BASE.isInferno())
@@ -956,6 +979,7 @@ package
          {
             SOUNDS.PlayMusic("musicbuild");
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new AttackEvent(AttackEvent.ATTACK_OVER,_loc1_,BASE._wmID));
          if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST || (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
          {
             _loc8_ = new popup_attackend(_loc1_);
@@ -999,11 +1023,6 @@ package
             }
             POPUPS.Next();
          };
-         if(SPECIALEVENT.active)
-         {
-            SPECIALEVENT.EndRound(true);
-            return;
-         }
          if(INFERNO_EMERGENCE_EVENT.isAttackActive)
          {
             INFERNO_EMERGENCE_POPUPS.ShowStagePassed(INFERNOPORTAL.building._lvl.Get());
@@ -1037,11 +1056,6 @@ package
          var mc:* = undefined;
          var RepairAll:Function = null;
          var RepairNow:Function = null;
-         if(SPECIALEVENT.active)
-         {
-            SPECIALEVENT.EndRound(false);
-            return;
-         }
          if(INFERNO_EMERGENCE_EVENT.isAttackActive)
          {
             INFERNO_EMERGENCE_POPUPS.ShowStagePassed(INFERNOPORTAL.building._lvl.Get());

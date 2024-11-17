@@ -1,7 +1,7 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.monsters.display.ImageCache;
+   import com.monsters.frontPage.FrontPageGraphic;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -44,7 +44,7 @@ package
          _open = false;
       }
       
-      public static function Push(param1:*, param2:Function = null, param3:Array = null, param4:String = "", param5:String = "", param6:Boolean = false, param7:String = "now") : *
+      public static function Push(param1:*, param2:Function = null, param3:Array = null, param4:String = "", param5:String = "", param6:Boolean = false, param7:String = "now") : void
       {
          if(param5)
          {
@@ -54,18 +54,22 @@ package
          {
             param7 = "alerts";
          }
+         if(param7 == "now" && _lastGroup != "now")
+         {
+            _lastGroup = "now";
+         }
          _popups[param7].push([param1,param2,param3,param4,param5]);
          if(param6)
          {
             Next();
          }
-         else if(!_open)
+         else if(!_open && !NewPopupSystem.dialogShowing)
          {
             Show();
          }
       }
       
-      public static function Next(param1:MouseEvent = null) : *
+      public static function Next(param1:MouseEvent = null) : void
       {
          if(GLOBAL._halt)
          {
@@ -77,7 +81,7 @@ package
          }
       }
       
-      private static function Hide() : *
+      private static function Hide() : void
       {
          if(_mc)
          {
@@ -89,7 +93,7 @@ package
          }
       }
       
-      private static function HideB() : *
+      private static function HideB() : void
       {
          _open = false;
          RemoveBG();
@@ -112,25 +116,38 @@ package
          }
       }
       
-      private static function NextDelayed(param1:int = 200) : *
+      public static function hasPopupsOpen() : Boolean
+      {
+         var _loc1_:Boolean = GLOBAL._newBuilding && (GLOBAL._newBuilding as BFOUNDATION)._placing == true;
+         return BUILDINGS._open || STORE._open || BUILDINGOPTIONS._open || ACADEMY._open || CREATURELOCKER._open || _loc1_ || Boolean(_mc) || _open;
+      }
+      
+      private static function NextDelayed(param1:int = 200) : void
       {
          _timer = new Timer(param1,1);
          _timer.addEventListener(TimerEvent.TIMER,TimerDone);
          _timer.start();
       }
       
-      private static function TimerDone(param1:TimerEvent) : *
+      private static function TimerDone(param1:TimerEvent) : void
       {
          if(_timer)
          {
             _timer.removeEventListener(TimerEvent.TIMER,TimerDone);
             _timer.stop();
             _timer = null;
-            Show(_lastGroup);
+            if(hasPopupsOpen())
+            {
+               NextDelayed(100);
+            }
+            else
+            {
+               Show(_lastGroup);
+            }
          }
       }
       
-      public static function Show(param1:String = "now") : *
+      public static function Show(param1:String = "now") : void
       {
          var ImageLoaded:Function;
          var message:* = undefined;
@@ -139,7 +156,7 @@ package
          {
             _lastGroup = group;
             message = _popups[group].shift();
-            if(message)
+            if(message && !_open)
             {
                _open = true;
                AddBG();
@@ -198,6 +215,10 @@ package
                      {
                         if(Boolean(_mc) && Boolean(_mc.mcImage))
                         {
+                           while(_mc.mcImage.numChildren)
+                           {
+                              _mc.mcImage.removeChildAt(0);
+                           }
                            _mc.mcImage.addChild(new Bitmap(bmd));
                            _mc.mcImage.mouseEnabled = false;
                            _mc.mcImage.mouseChildren = false;
@@ -218,7 +239,14 @@ package
             else if(_lastGroup == "now" && QueueCount("now") == 0 && QueueCount("wait") > 0)
             {
                _lastGroup = "wait";
-               NextDelayed(50 * 60);
+               if(_popups["wait"][0] is FrontPageGraphic)
+               {
+                  NextDelayed(100);
+               }
+               else
+               {
+                  NextDelayed(500);
+               }
             }
             else
             {
@@ -231,14 +259,28 @@ package
                if(QueueCount("wait") > 0)
                {
                   _lastGroup = "wait";
-                  NextDelayed(2000);
+                  if(_popups["wait"][0] is FrontPageGraphic)
+                  {
+                     NextDelayed(100);
+                  }
+                  else
+                  {
+                     NextDelayed(500);
+                  }
                }
             }
          }
          else if(QueueCount("wait") > 0)
          {
             _lastGroup = "wait";
-            NextDelayed(2000);
+            if(_popups["wait"][0] is FrontPageGraphic)
+            {
+               NextDelayed(100);
+            }
+            else
+            {
+               NextDelayed(500);
+            }
          }
       }
       
@@ -247,7 +289,7 @@ package
          return _popups[param1].length;
       }
       
-      public static function AddBG() : *
+      public static function AddBG() : void
       {
          RemoveBG();
          GLOBAL.RefreshScreen();
@@ -258,7 +300,7 @@ package
          _mcBG.y = GLOBAL._SCREEN.y;
       }
       
-      public static function RemoveBG(param1:MovieClip = null) : *
+      public static function RemoveBG(param1:MovieClip = null) : void
       {
          if(Boolean(_mcBG) && Boolean(_mcBG.parent))
          {
@@ -284,20 +326,21 @@ package
          }
       }
       
-      public static function Timeout() : *
+      public static function Timeout() : void
       {
+         var _loc1_:MovieClip = null;
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
             GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
          _mcBG = GLOBAL._layerTop.addChild(new popup_bg2());
-         _mcBG.width = GLOBAL._ROOT.stage.stageWidth;
-         _mcBG.height = GLOBAL._ROOT.stage.stageHeight;
-         _mcBG.x = (GLOBAL._SCREENINIT.width - GLOBAL._ROOT.stage.stageWidth) / 2;
-         _mcBG.y = (GLOBAL._SCREENINIT.height - GLOBAL._ROOT.stage.stageHeight) / 2;
+         _mcBG.x = GLOBAL._SCREEN.x;
+         _mcBG.y = GLOBAL._SCREEN.y;
+         _mcBG.width = GLOBAL._SCREEN.width;
+         _mcBG.height = GLOBAL._SCREEN.height;
          _mcBG.cacheAsBitmap = true;
-         var _loc1_:MovieClip = new popup_timeout();
+         _loc1_ = new popup_timeout();
          _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_timeout_title") + "</b>";
          _loc1_.tB.htmlText = KEYS.Get("pop_timeout_body");
          if(!GLOBAL._flags.kongregate)
@@ -318,13 +361,13 @@ package
          {
             _loc1_.bGift.visible = false;
          }
-         _loc1_.x = 380;
-         _loc1_.y = 250;
+         _loc1_.x = GLOBAL._SCREENCENTER.x;
+         _loc1_.y = GLOBAL._SCREENCENTER.y;
          GLOBAL._layerTop.addChild(_loc1_);
          GLOBAL._halt = true;
       }
       
-      public static function AFK() : *
+      public static function AFK() : void
       {
          if(!GLOBAL._promptedAFK && TUTORIAL._stage > 200)
          {
@@ -340,7 +383,7 @@ package
          GLOBAL._promptedAFK = true;
       }
       
-      public static function Gift(param1:Boolean = false) : *
+      public static function Gift(param1:Boolean = false) : void
       {
          var SendGift:Function;
          var GetFriends:Function;
@@ -401,7 +444,7 @@ package
          GLOBAL.StatSet("pg",GLOBAL.Timestamp());
       }
       
-      public static function Invite(param1:Boolean = false) : *
+      public static function Invite(param1:Boolean = false) : void
       {
          var GetFriends:Function;
          var popupMC:* = undefined;
@@ -440,21 +483,21 @@ package
          LOGGER.Stat([20,1]);
       }
       
-      public static function DisplayGiftSelect(param1:MouseEvent = null) : *
+      public static function DisplayGiftSelect(param1:MouseEvent = null) : void
       {
          AddBG();
          GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
          LOGGER.Stat([20,1]);
       }
       
-      public static function DisplayInviteSelect(param1:MouseEvent = null) : *
+      public static function DisplayInviteSelect(param1:MouseEvent = null) : void
       {
          AddBG();
          GLOBAL.CallJS("cc.showFeedDialog",["invite","callbackgift"]);
          LOGGER.Stat([21,1]);
       }
       
-      public static function DisplayWelcome(param1:MouseEvent = null) : *
+      public static function DisplayWelcome(param1:MouseEvent = null) : void
       {
          var Share:Function;
          var popupMC:MovieClip = null;
@@ -478,7 +521,7 @@ package
          }
       }
       
-      public static function DisplayGetShiny(param1:MouseEvent = null) : *
+      public static function DisplayGetShiny(param1:MouseEvent = null) : void
       {
          var _loc2_:MovieClip = new popup_noshiny();
          _loc2_.tA.htmlText = "<b>" + KEYS.Get("pop_noshiny_title") + "</b>";
@@ -489,7 +532,7 @@ package
          POPUPS.Push(_loc2_,null,null,"error1","aintgotnoshiny.png");
       }
       
-      public static function DisplayWorker(param1:int, param2:*) : *
+      public static function DisplayWorker(param1:int, param2:*) : void
       {
          var getWorker:Function = null;
          var n:int = param1;
@@ -499,7 +542,7 @@ package
             STORE.ShowB(1,0,["BEW"]);
             POPUPS.Next();
          };
-         var DisplayWorkerNext:Function = function(param1:int, param2:*):*
+         var DisplayWorkerNext:Function = function(param1:int, param2:*):void
          {
             var _loc4_:BFOUNDATION = null;
             var _loc3_:int = QUEUE.GetFinishCost();
@@ -588,7 +631,7 @@ package
          POPUPS.Push(mc,null,null,null,workerImage);
       }
       
-      public static function DisplayPleaseBuy(param1:String) : *
+      public static function DisplayPleaseBuy(param1:String) : void
       {
          var popupMC:popup_pleasebuy = null;
          var Action:Function = null;
@@ -606,7 +649,7 @@ package
          POPUPS.Push(popupMC,null,null,null,"purchased.png");
       }
       
-      public static function DisplayGeneric(param1:String, param2:String, param3:String, param4:String, param5:Function) : *
+      public static function DisplayGeneric(param1:String, param2:String, param3:String, param4:String, param5:Function) : void
       {
          var _loc6_:popup_generic = new popup_generic();
          _loc6_.tA.autoSize = TextFieldAutoSize.LEFT;
@@ -669,18 +712,18 @@ package
          return dialogueMC;
       }
       
-      public static function DisplayRate() : *
+      public static function DisplayRate() : void
       {
          var popupMCrate:popup_pleaserate = null;
          var ActionB:Function = null;
          var ActionC:Function = null;
-         ActionB = function():*
+         ActionB = function():void
          {
             popupMCrate.bAction.Enabled = false;
             popupMCrate.bAction.removeEventListener(MouseEvent.CLICK,ActionB);
             TweenLite.to(popupMCrate,1,{"onComplete":ActionC});
          };
-         ActionC = function():*
+         ActionC = function():void
          {
             GLOBAL.CallJS("cc.showRating");
          };
@@ -691,7 +734,7 @@ package
          POPUPS.Push(popupMCrate,null,null,null,"fivestarbob.png");
       }
       
-      public static function CallbackGift(param1:String) : *
+      public static function CallbackGift(param1:String) : void
       {
          RemoveBG();
          if(GLOBAL._halt)
@@ -700,7 +743,7 @@ package
          }
       }
       
-      public static function CallbackShiny(param1:String) : *
+      public static function CallbackShiny(param1:String) : void
       {
          var obj:Object = null;
          var o:String = param1;
@@ -710,7 +753,7 @@ package
          {
             if(o)
             {
-               obj = com.adobe.serialization.json.JSON.decode(o);
+               obj = JSON.decode(o);
                BASE._credits.Set(int(obj.credits));
                BASE._hpCredits = int(obj.credits);
                GLOBAL._credits.Set(int(obj.credits));

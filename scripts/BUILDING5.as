@@ -15,21 +15,29 @@ package
          SetProps();
       }
       
-      override public function Tick() : *
+      public static function getFlingerRange(param1:int, param2:Boolean) : int
       {
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
+         return param2 ? 2 + 2 * param1 : param1;
+      }
+      
+      override public function get tickLimit() : int
+      {
+         var _loc1_:int = super.tickLimit;
+         if(_countdownBuild.Get() > 0)
          {
-            delete BASE._buildingsCatchup["b" + _id];
+            _loc1_ = Math.min(_loc1_,_countdownBuild.Get());
          }
-         if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
+         if(_countdownUpgrade.Get() > 0)
          {
-            _canFunction = false;
+            _loc1_ = Math.max(_loc1_,_countdownUpgrade.Get());
          }
-         else
-         {
-            _canFunction = true;
-         }
-         super.Tick();
+         return _loc1_;
+      }
+      
+      override public function Tick(param1:int) : void
+      {
+         _canFunction = _countdownBuild.Get() <= 0 && _hp.Get() >= _hpMax.Get() * 0.5;
+         super.Tick(param1);
       }
       
       public function Fund() : *
@@ -89,7 +97,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
       

@@ -23,15 +23,6 @@ package
          super.Repair();
       }
       
-      override public function Tick() : *
-      {
-         super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
-      }
-      
       override public function Place(param1:MouseEvent = null) : *
       {
          if(!MAP._dragged)

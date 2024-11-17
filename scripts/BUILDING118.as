@@ -121,7 +121,8 @@ package
       {
          if(_animLoaded && GLOBAL._render)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
       }
       
@@ -129,78 +130,102 @@ package
       {
          var damagepenalty:Number;
          var damagebuff:Number;
-         var origin:Point;
-         var yd:Number;
-         var xd:Number;
-         var i:int;
-         var creeps:Array;
-         var length:int;
-         var totalDamage:int;
-         var finishPoint:Point;
-         var j:int;
+         var origin:Point = null;
+         var yd:Number = NaN;
+         var xd:Number = NaN;
+         var i:int = 0;
+         var creeps:Array = null;
+         var length:int = 0;
+         var totalDamage:int = 0;
+         var finishPoint:Point = null;
+         var j:int = 0;
          var c:* = undefined;
          var target:* = param1;
          super.Fire(target);
-         SOUNDS.Play("railgun1");
+         SOUNDS.Play("railgun1",!isJard ? 0.8 : 0.4);
          damagepenalty = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          damagebuff = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             damagebuff = 1.25;
          }
-         origin = new Point(_mc.x,_mc.y + _top);
-         this._spot = new Point(origin.x,origin.y);
-         yd = target._tmpPoint.y - origin.y;
-         xd = target._tmpPoint.x - origin.x;
-         this._segment = new Point(Math.cos(Math.atan2(yd,xd)) * 32,Math.sin(Math.atan2(yd,xd)) * 32);
-         while(this._gunballs.length > 0)
+         if(isJard)
          {
-            try
+            _jarHealth.Add(-int(_damage * 3 * damagepenalty * damagebuff));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * damagepenalty * damagebuff);
+            if(_jarHealth.Get() <= 0)
             {
-               MAP._PROJECTILES.removeChild(this._gunballs[0]);
-               MAP._PROJECTILES.removeChild(this._trail[0]);
+               KillJar();
             }
-            catch(e:Error)
-            {
-            }
-            this._gunballs.shift();
-            this._trail.shift();
          }
-         this._spawnCount = 0;
-         this._fireCount = 0;
-         i = 0;
-         while(i < 50)
+         else
          {
-            this._gunballs[i] = new RAILGUNPROJECTILE_CLIP();
-            this._gunballs[i].x = this._spot.x + this._segment.x;
-            this._gunballs[i].y = this._spot.y + this._segment.y;
-            this._trail[i] = new Shape();
-            this._trail[i].graphics.lineStyle(1,0xffffff,1);
-            this._trail[i].graphics.moveTo(this._spot.x,this._spot.y);
-            this._trail[i].graphics.lineTo(this._spot.x + this._segment.x,this._spot.y + this._segment.y);
-            this._trail[i].filters = [new GlowFilter(0x88bb,1,5 + Math.random() * 2,5 + Math.random() * 2,4,1,false,false)];
-            this._spot = this._spot.add(this._segment);
-            MAP._PROJECTILES.addChild(this._trail[i]);
-            MAP._PROJECTILES.addChild(this._gunballs[i]);
-            ++this._spawnCount;
-            i++;
-         }
-         creeps = MAP.CreepCellFind(origin,1600,-1);
-         length = int(creeps.length);
-         totalDamage = 0;
-         finishPoint = origin.add(new Point(this._segment.x * 50,this._segment.y * 50));
-         j = 0;
-         while(j < length)
-         {
-            c = creeps[j].creep;
-            if(this.lineIntersectCircle(origin,finishPoint,c._tmpPoint))
+            origin = new Point(_mc.x,_mc.y + _top);
+            this._spot = new Point(origin.x,origin.y);
+            if(_targetVacuum)
             {
-               totalDamage += _damage * damagebuff * damagepenalty * c._damageMult;
-               c._health.Add(-(_damage * damagebuff * damagepenalty * c._damageMult));
+               xd = GLOBAL._bTownhall._mc.x - origin.x;
+               yd = GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height - origin.y;
+               (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 3 * damagepenalty * damagebuff));
             }
-            j++;
+            else
+            {
+               yd = target._tmpPoint.y - origin.y;
+               xd = target._tmpPoint.x - origin.x;
+            }
+            this._segment = new Point(Math.cos(Math.atan2(yd,xd)) * 32,Math.sin(Math.atan2(yd,xd)) * 32);
+            while(this._gunballs.length > 0)
+            {
+               try
+               {
+                  MAP._PROJECTILES.removeChild(this._gunballs[0]);
+                  MAP._PROJECTILES.removeChild(this._trail[0]);
+               }
+               catch(e:Error)
+               {
+               }
+               this._gunballs.shift();
+               this._trail.shift();
+            }
+            this._spawnCount = 0;
+            this._fireCount = 0;
+            i = 0;
+            while(i < 50)
+            {
+               this._gunballs[i] = new RAILGUNPROJECTILE_CLIP();
+               this._gunballs[i].x = this._spot.x + this._segment.x;
+               this._gunballs[i].y = this._spot.y + this._segment.y;
+               this._trail[i] = new Shape();
+               this._trail[i].graphics.lineStyle(1,0xffffff,1);
+               this._trail[i].graphics.moveTo(this._spot.x,this._spot.y);
+               this._trail[i].graphics.lineTo(this._spot.x + this._segment.x,this._spot.y + this._segment.y);
+               this._trail[i].filters = [new GlowFilter(0x88bb,1,5 + Math.random() * 2,5 + Math.random() * 2,4,1,false,false)];
+               this._spot = this._spot.add(this._segment);
+               MAP._PROJECTILES.addChild(this._trail[i]);
+               MAP._PROJECTILES.addChild(this._gunballs[i]);
+               ++this._spawnCount;
+               i++;
+            }
+            if(!_targetVacuum)
+            {
+               creeps = MAP.CreepCellFind(origin,1600,-1);
+               length = int(creeps.length);
+               totalDamage = 0;
+               finishPoint = origin.add(new Point(this._segment.x * 50,this._segment.y * 50));
+               j = 0;
+               while(j < length)
+               {
+                  c = creeps[j].creep;
+                  if(this.lineIntersectCircle(origin,finishPoint,c._tmpPoint))
+                  {
+                     totalDamage += _damage * damagebuff * damagepenalty * c._damageMult;
+                     c._health.Add(-(_damage * damagebuff * damagepenalty * c._damageMult));
+                  }
+                  j++;
+               }
+            }
+            ATTACK.Damage(_mc.x,_mc.y + _top,totalDamage);
          }
-         ATTACK.Damage(_mc.x,_mc.y + _top,totalDamage);
       }
       
       private function lineIntersectCircle(param1:Point, param2:Point, param3:Point, param4:Number = 20) : Boolean
@@ -275,7 +300,7 @@ package
             mc.bPost.SetupKey("btn_brag");
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
+            POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
       }
    }

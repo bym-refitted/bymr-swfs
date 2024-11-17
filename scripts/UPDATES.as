@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import flash.display.MovieClip;
    import flash.events.IOErrorEvent;
@@ -50,7 +49,7 @@ package
                   {
                      _lastUpdateID = _loc2_.id;
                   }
-                  _loc3_ = com.adobe.serialization.json.JSON.decode(_loc2_.data);
+                  _loc3_ = JSON.decode(_loc2_.data);
                   for each(_loc4_ in _loc3_)
                   {
                      _updates.push({
@@ -132,7 +131,6 @@ package
             var _loc5_:Point = null;
             var _loc6_:Array = null;
             var _loc7_:int = 0;
-            var _loc8_:Array = null;
             var _loc2_:int = 0;
             while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
             {
@@ -145,7 +143,6 @@ package
                   {
                      CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
                      CREATURES._guardian.Export();
-                     _loc8_ = ["Gorgo","Drull","Fomor"];
                      MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
                      CREATURES._guardian.ModeCage();
                   }
@@ -302,7 +299,7 @@ package
                LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",BASE._yardType);
                return;
             }
-            champArr = com.adobe.serialization.json.JSON.decode(update.data);
+            champArr = JSON.decode(update.data);
             refundType = int(update.data[2]);
             refundLevel = int(update.data[3]);
             refundFeeds = int(update.data[4]);
@@ -333,7 +330,7 @@ package
             if(CREATURES._guardian)
             {
                CREATURES._guardian._health.Set(-10);
-               CREATURES._guardian.Tick();
+               CREATURES._guardian.Tick(1);
                CREATURES._guardian.Clear();
                BASE._guardianData = null;
             }
@@ -341,7 +338,7 @@ package
             {
                if(refundLevel > 0)
                {
-                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
+                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff,0);
                }
                BASE.Save();
             }
@@ -434,7 +431,7 @@ package
                _loc5_ += ", <b>" + KEYS.Get("pop_helped_3a",{"v1":GLOBAL.ToTime(_loc7_,false,false)}) + "</b>";
                _loc8_.tB.htmlText = _loc5_;
                _loc8_.bPost.Setup(KEYS.Get("pop_helped_saythanks_btn",{"v1":_loc3_[0][1]}));
-               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(_loc3_[0][0],KEYS.Get("pop_helped_streamtitle"),KEYS.Get("pop_helped_pl_streambody",{"v1":_loc3_[0][1]}),"quests/build.png"));
+               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(_loc3_[0][0],KEYS.Get("pop_helped_streamtitle"),KEYS.Get("pop_helped_pl_streambody",{"v1":_loc3_[0][1]}),"quests/build.v2.png"));
                _loc8_.bPost.Highlight = true;
             }
             else
@@ -447,13 +444,13 @@ package
                   "v4":GLOBAL.ToTime(_loc7_,false,false)
                });
                _loc8_.bPost.SetupKey("pop_saythanks_btn");
-               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(0,KEYS.Get("pop_helped_streamtitle"),KEYS.Get("pop_helped_pl_streambody",{"v1":GLOBAL.Array2StringB(_loc3_)}),"quests/build.png"));
+               _loc8_.bPost.addEventListener(MouseEvent.CLICK,GiveThanks(0,KEYS.Get("pop_helped_streamtitle"),KEYS.Get("pop_helped_pl_streambody",{"v1":GLOBAL.Array2StringB(_loc3_)}),"quests/build.v2.png"));
                _loc8_.bPost.Highlight = true;
             }
             _loc8_.bPost.y = _loc8_.tB.height - 15;
             _loc8_.mcFrame.height = _loc8_.bPost.y + 110;
             (_loc8_.mcFrame as frame).Setup();
-            POPUPS.Push(_loc8_,null,null,"","build.png");
+            POPUPS.Push(_loc8_,null,null,"","build.v2.png");
             _catchupList = [];
          }
       }
@@ -502,7 +499,7 @@ package
             }
             else
             {
-               LOGGER.Log("err","UPDATES.Create: " + com.adobe.serialization.json.JSON.encode(param1));
+               LOGGER.Log("err","UPDATES.Create: " + JSON.encode(param1));
                GLOBAL.ErrorMessage("UPDATES.Create");
             }
          };
@@ -532,7 +529,7 @@ package
          {
             url = GLOBAL._baseURL2;
          }
-         loadVars = [["baseid",id],["data",com.adobe.serialization.json.JSON.encode([update])],["lastupdate",lastupdate]];
+         loadVars = [["baseid",id],["data",JSON.encode([update])],["lastupdate",lastupdate]];
          new URLLoaderApi().load(url + "saveupdate",loadVars,handleLoadSuccessful,handleLoadError);
       }
       

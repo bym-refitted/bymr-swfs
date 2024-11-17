@@ -14,12 +14,8 @@ package
          SetProps();
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
-         {
-            delete BASE._buildingsCatchup["b" + _id];
-         }
          if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
          {
             _canFunction = false;
@@ -28,7 +24,7 @@ package
          {
             _canFunction = true;
          }
-         super.Tick();
+         super.Tick(param1);
       }
       
       public function Fund() : *

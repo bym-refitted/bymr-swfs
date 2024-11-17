@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
@@ -117,7 +116,12 @@ package
          {
             _loc1_[_loc2_] = _storeInventory[_loc2_].Get();
          }
-         return com.adobe.serialization.json.JSON.encode(_loc1_);
+         return JSON.encode(_loc1_);
+      }
+      
+      public static function GetInstantBuyCost(param1:Object) : int
+      {
+         return GetTimeCost(param1.time) + GetResourceCost([param1.r1,param1.r2,param1.r3,param1.r4]);
       }
       
       public static function GetTimeCost(param1:int, param2:Boolean = true) : int
@@ -131,6 +135,18 @@ package
          _loc3_ = Math.ceil(param1 * 20 / 60 / 60);
          _loc4_ = int(Math.sqrt(param1 * 0.8));
          return Math.min(_loc3_,_loc4_);
+      }
+      
+      public static function GetResourceCost(param1:Array) : int
+      {
+         var _loc2_:Number = 0;
+         var _loc3_:int = 0;
+         while(_loc3_ < param1.length)
+         {
+            _loc2_ += param1[_loc3_];
+            _loc3_++;
+         }
+         return Math.ceil(Math.pow(Math.sqrt(_loc2_ / 2),0.75));
       }
       
       public static function Variables() : *
@@ -147,7 +163,7 @@ package
          var _loc14_:Number = 0;
          var _loc15_:Number = 0;
          var _loc16_:Object = null;
-         var _loc17_:int = 0;
+         var _loc17_:Number = NaN;
          var _loc18_:String = null;
          if(BASE._yardType == BASE.OUTPOST)
          {
@@ -155,11 +171,11 @@ package
          }
          else if(BASE._yardType == BASE.MAIN_YARD)
          {
-            _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP","MUSK"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
+            _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
          }
          else
          {
-            _grouping = [[["BLK2I","BLK3I"]],[["BR11I","BR12I","BR13I","BR21I","BR22I","BR23I","BR31I","BR32I","BR33I","BR41I","BR42I","BR43I","BIP"]],[["SP1","SP2","SP3","SP4","FIX","HODI","HOD2I","HOD3I"]],[["PRO1","PRO2","PRO3","EXHI","TODI"]]];
+            _grouping = [[["ENLI","BLK2I","BLK3I"]],[["BR11I","BR12I","BR13I","BR21I","BR22I","BR23I","BR31I","BR32I","BR33I","BR41I","BR42I","BR43I","BIP"]],[["SP1","SP2","SP3","SP4","FIX","HODI","HOD2I","HOD3I"]],[["PRO1","PRO2","PRO3","EXHI","TODI"]]];
          }
          var _loc1_:int = 1;
          while(_loc1_ <= 4)
@@ -446,10 +462,6 @@ package
             });
             _storeItems.BLK5.t = KEYS.Get("str_blackwalls");
          }
-         if(GLOBAL._bBaiter != null)
-         {
-            _storeItems.MUSK.c = [Math.ceil((MONSTERBAITER._muskLimit - MONSTERBAITER._musk) / 50)];
-         }
          if(BASE.isInferno())
          {
             _storeItems.HODI.d = "Speed up all harvester production for 12 hours.";
@@ -462,10 +474,16 @@ package
             _storeItems.POD.d = KEYS.Get("store_pod_desc");
             _storeItems.POD.t = KEYS.Get("store_pod_title");
          }
-         _storeItems.EXH.d = KEYS.Get(BASE.isInferno() ? "store_exhi_desc" : "store_exh_desc");
-         _storeItems.EXH.t = KEYS.Get("store_exh_title");
-         _storeItems.EXHI.d = KEYS.Get(BASE.isInferno() ? "store_exhi_desc" : "store_exh_desc");
-         _storeItems.EXHI.t = KEYS.Get("store_exc_title");
+         if(BASE.isInferno())
+         {
+            _storeItems.EXHI.d = KEYS.Get(BASE.isInferno() ? "store_exhi_desc" : "store_exh_desc");
+            _storeItems.EXHI.t = KEYS.Get("store_exc_title");
+         }
+         else
+         {
+            _storeItems.EXH.d = KEYS.Get(BASE.isInferno() ? "store_exhi_desc" : "store_exh_desc");
+            _storeItems.EXH.t = KEYS.Get("store_exh_title");
+         }
       }
       
       public static function AddInventory(param1:String) : *
@@ -627,7 +645,7 @@ package
          var _loc4_:String = null;
          var _loc5_:MONSTERLAB = null;
          var _loc6_:String = null;
-         if(GLOBAL._showStreamlinedSpeedUps && TUTORIAL._completed)
+         if(GLOBAL._showStreamlinedSpeedUps && TUTORIAL.hasFinished)
          {
             CalcCost(param1);
             _streamline = null;
@@ -712,7 +730,7 @@ package
                   if(ACADEMY._monsterID != null)
                   {
                      _loc3_ = ACADEMY._upgrades[ACADEMY._monsterID].time.Get() - GLOBAL.Timestamp();
-                     _loc4_ = CREATURELOCKER._creatures[ACADEMY._monsterID].name;
+                     _loc4_ = KEYS.Get(CREATURELOCKER._creatures[ACADEMY._monsterID].name);
                      if(_loc3_ > 0)
                      {
                         if(param1 == "SP1")
@@ -1029,29 +1047,26 @@ package
                {
                   if(_loc9_ != "BIP")
                   {
-                     if(_loc9_ != "MUSK")
+                     if(_loc9_ != "HOD")
                      {
-                        if(_loc9_ != "HOD")
+                        if(_loc9_ != "HOD2")
                         {
-                           if(_loc9_ != "HOD2")
+                           if(_loc9_ != "HOD3")
                            {
-                              if(_loc9_ != "HOD3")
+                              if(_loc9_ != "PRO1")
                               {
-                                 if(_loc9_ != "PRO1")
+                                 if(_loc9_ != "PRO2")
                                  {
-                                    if(_loc9_ != "PRO2")
+                                    if(_loc9_ != "PRO3")
                                     {
-                                       if(_loc9_ != "PRO3")
+                                       if(_loc9_ != "TOD")
                                        {
-                                          if(_loc9_ != "TOD")
+                                          if(_loc9_ != "MOD")
                                           {
-                                             if(_loc9_ != "MOD")
+                                             if(_loc9_ != "MDOD")
                                              {
-                                                if(_loc9_ != "MDOD")
+                                                if(_loc9_ == "MSOD")
                                                 {
-                                                   if(_loc9_ == "MSOD")
-                                                   {
-                                                   }
                                                 }
                                              }
                                           }
@@ -1159,17 +1174,6 @@ package
          if(_loc9_ == "CLOD" && !GLOBAL._bLocker)
          {
             _loc20_ = KEYS.Get("str_prob_nolocker");
-         }
-         if(_loc9_ == "MUSK")
-         {
-            if(GLOBAL._bBaiter == null)
-            {
-               _loc20_ = KEYS.Get("str_prob_nobaiter");
-            }
-            else if(MONSTERBAITER._musk >= MONSTERBAITER._muskLimit)
-            {
-               _loc20_ = KEYS.Get("str_prob_muskfull");
-            }
          }
          if(_loc9_ == "FIX")
          {
@@ -1609,7 +1613,7 @@ package
                      if(ACADEMY._monsterID != null)
                      {
                         _loc24_ = ACADEMY._upgrades[ACADEMY._monsterID].time.Get() - GLOBAL.Timestamp();
-                        _loc25_ = CREATURELOCKER._creatures[ACADEMY._monsterID].name;
+                        _loc25_ = KEYS.Get(CREATURELOCKER._creatures[ACADEMY._monsterID].name);
                         if(_loc24_ > 0)
                         {
                            if(_loc20_ == "SP1")
@@ -1707,7 +1711,7 @@ package
                _loc21_.t = KEYS.Get("str_code_bst_title2");
                _loc21_.d = KEYS.Get("str_code_bst_body2");
             }
-            else if(_loc20_ == "ENL")
+            else if(_loc20_ == "ENL" || _loc20_ == "ENLI")
             {
                _loc21_.t = KEYS.Get("str_code_enl_title2");
                _loc21_.d = KEYS.Get("str_code_enl_body2");
@@ -1715,12 +1719,7 @@ package
             else if(_loc20_ == "BIP")
             {
                _loc21_.t = KEYS.Get("str_code_bip_title");
-               _loc21_.d = KEYS.Get("str_code_bip_body2");
-            }
-            else if(_loc20_ == "MUSK")
-            {
-               _loc21_.t = KEYS.Get("str_code_musk_title");
-               _loc21_.d = KEYS.Get("str_code_musk_body");
+               _loc21_.d = KEYS.Get(BASE.isInferno() ? "str_code_bipi_body2" : "str_code_bip_body2");
             }
             else if(_loc20_ == "HOD")
             {
@@ -1885,17 +1884,6 @@ package
             if(_loc20_ == "CLOD" && !GLOBAL._bLocker)
             {
                _loc32_ = KEYS.Get("str_prob_nolocker");
-            }
-            if(_loc20_ == "MUSK")
-            {
-               if(GLOBAL._bBaiter == null)
-               {
-                  _loc32_ = KEYS.Get("str_prob_nobaiter");
-               }
-               else if(MONSTERBAITER._musk >= MONSTERBAITER._muskLimit)
-               {
-                  _loc32_ = KEYS.Get("str_prob_muskfull");
-               }
             }
             if(_loc20_ == "FIX")
             {
@@ -2253,7 +2241,7 @@ package
          var _loc18_:BFOUNDATION = null;
          var _loc19_:String = null;
          var _loc3_:* = _storeItems[param1];
-         var _loc6_:int = int(_loc3_.quantity);
+         var _loc6_:Number = Number(_loc3_.quantity);
          if(param2)
          {
             _loc7_ = false;
@@ -2284,7 +2272,7 @@ package
          {
             _loc9_ = 1;
          }
-         if(param1.substr(0,2) == "BR" || param1.substr(0,3) == "SP4" || param1 == "MUSK")
+         if(param1.substr(0,2) == "BR" || param1.substr(0,3) == "SP4")
          {
             _loc9_ = _loc4_;
          }
@@ -2347,7 +2335,7 @@ package
          }
          if(param1.substr(0,2) == "BR")
          {
-            BASE.Fund(int(param1.substr(2,1)),int(_loc6_));
+            BASE.Fund(int(param1.substr(2,1)),Math.ceil(_loc6_));
             BASE.PointsAdd(Math.ceil(_loc6_ * 0.3));
          }
          if(param1.substr(0,3) == "HOD")
@@ -2375,7 +2363,7 @@ package
             }
             if(_loc13_._repairing)
             {
-               _loc15_ = _loc13_._lvl.Get() == 0 ? 0 : _loc13_._lvl.Get() - 1;
+               _loc15_ = _loc13_._lvl.Get() == 0 ? 0 : int(_loc13_._lvl.Get() - 1);
                _loc13_._hp.Add(Math.ceil(_loc13_._hpMax.Get() / _loc13_._repairTime) * _loc14_);
                _loc16_ = param1.substr(2,1);
                if(_loc16_ == "4" || _loc16_ == "1" || _loc13_._hp.Get() > _loc13_._hpMax.Get())
@@ -2503,12 +2491,8 @@ package
             }
             if(param2)
             {
-               _loc6_ = int(_storeData[param1].c);
+               _loc6_ = Number(_storeData[param1].c);
             }
-         }
-         if(param1 == "MUSK")
-         {
-            MONSTERBAITER.Fill();
          }
          _loc9_ = 1;
          if(_loc3_.i)
@@ -2536,7 +2520,7 @@ package
          BASE.CalcResources();
          UI2.Update();
          ProcessPurchases();
-         if(param1 == "ENL")
+         if(param1 == "ENL" || param1 == "ENLI")
          {
             MAP.Edge();
          }
@@ -2596,35 +2580,39 @@ package
             switch(itemCode)
             {
                case "BEW":
-                  arr = [KEYS.Get("str_code_bew_title"),KEYS.Get("str_code_bew_body",{"v1":QUEUE._workerCount}),KEYS.Get("str_code_bew_stream"),KEYS.Get("str_code_bew_streambody",{"v1":QUEUE._workerCount}),"purchased-worker.png"];
+                  arr = [KEYS.Get("str_code_bew_title"),KEYS.Get("str_code_bew_body",{"v1":QUEUE._workerCount}),KEYS.Get("str_code_bew_stream"),KEYS.Get("str_code_bew_streambody",{"v1":QUEUE._workerCount}),"purchased-worker.v2.png"];
                   break;
                case "BST":
-                  arr = [KEYS.Get("str_code_bst_title"),KEYS.Get("str_code_bst_body"),KEYS.Get("str_code_bst_stream"),KEYS.Get("str_code_bst_streambody"),"purchased-tools.png"];
+                  arr = [KEYS.Get("str_code_bst_title"),KEYS.Get("str_code_bst_body"),KEYS.Get("str_code_bst_stream"),KEYS.Get("str_code_bst_streambody"),"purchased-tools.v2.png"];
+                  break;
+               case "ENLI":
+                  PLANNER.Update();
+                  arr = [KEYS.Get("str_code_enli_title"),KEYS.Get("str_code_enli_body"),KEYS.Get("str_code_enli_stream"),KEYS.Get("str_code_enli_stream"),"purchased-enlarge.v2.png"];
                   break;
                case "ENL":
                   PLANNER.Update();
-                  arr = [KEYS.Get("str_code_enl_title"),KEYS.Get("str_code_enl_body"),KEYS.Get("str_code_enl_stream"),KEYS.Get("str_code_enl_stream"),"purchased-enlarge.png"];
+                  arr = [KEYS.Get("str_code_enl_title"),KEYS.Get("str_code_enl_body"),KEYS.Get("str_code_enl_stream"),KEYS.Get("str_code_enl_stream"),"purchased-enlarge.v2.png"];
                   break;
                case "BIP":
-                  arr = [KEYS.Get("str_code_bip_title"),KEYS.Get("str_code_bip_body"),KEYS.Get("str_code_bip_stream"),KEYS.Get("str_code_bip_streambody"),"purchased-packing.png"];
+                  arr = [KEYS.Get("str_code_bip_title"),KEYS.Get("str_code_bip_body"),KEYS.Get("str_code_bip_stream"),KEYS.Get("str_code_bip_streambody"),"purchased-packing.v2.png"];
                   break;
                case "HOD":
-                  arr = [KEYS.Get("str_code_hod_title"),KEYS.Get("str_code_hod_body"),KEYS.Get("str_code_hod_stream"),KEYS.Get("str_code_hod_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hod_title"),KEYS.Get("str_code_hod_body"),KEYS.Get("str_code_hod_stream"),KEYS.Get("str_code_hod_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "HOD2":
-                  arr = [KEYS.Get("str_code_hod2_title"),KEYS.Get("str_code_hod2_body"),KEYS.Get("str_code_hod2_stream"),KEYS.Get("str_code_hod2_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hod2_title"),KEYS.Get("str_code_hod2_body"),KEYS.Get("str_code_hod2_stream"),KEYS.Get("str_code_hod2_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "HOD3":
-                  arr = [KEYS.Get("str_code_hod3_title"),KEYS.Get("str_code_hod3_body"),KEYS.Get("str_code_hod3_stream"),KEYS.Get("str_code_hod3_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hod3_title"),KEYS.Get("str_code_hod3_body"),KEYS.Get("str_code_hod3_stream"),KEYS.Get("str_code_hod3_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "HODI":
-                  arr = [KEYS.Get("str_code_hodi_title"),KEYS.Get("str_code_hodi_body"),KEYS.Get("str_code_hodi_stream"),KEYS.Get("str_code_hodi_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hodi_title"),KEYS.Get("str_code_hodi_body"),KEYS.Get("str_code_hodi_stream"),KEYS.Get("str_code_hodi_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "HOD2I":
-                  arr = [KEYS.Get("str_code_hod2i_title"),KEYS.Get("str_code_hod2i_body"),KEYS.Get("str_code_hod2i_stream"),KEYS.Get("str_code_hod2i_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hod2i_title"),KEYS.Get("str_code_hod2i_body"),KEYS.Get("str_code_hod2i_stream"),KEYS.Get("str_code_hod2i_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "HOD3I":
-                  arr = [KEYS.Get("str_code_hod3i_title"),KEYS.Get("str_code_hod3i_body"),KEYS.Get("str_code_hod3i_stream"),KEYS.Get("str_code_hod3i_streambody"),"purchased-hatchery.png"];
+                  arr = [KEYS.Get("str_code_hod3i_title"),KEYS.Get("str_code_hod3i_body"),KEYS.Get("str_code_hod3i_stream"),KEYS.Get("str_code_hod3i_streambody"),"purchased-hatchery.v2.png"];
                   break;
                case "TOD":
                   arr = [KEYS.Get("tod_title2"),KEYS.Get("tod_body"),KEYS.Get("str_code_tod_stream"),KEYS.Get("str_code_tod_streambody"),"purchased-tod3.png"];
@@ -2645,7 +2633,7 @@ package
                   arr = [KEYS.Get("exh_title"),KEYS.Get("exh_body"),KEYS.Get("str_code_exh_stream"),KEYS.Get("str_code_exh_streambody"),"purchased-exh.png"];
                   break;
                case "CLOD":
-                  arr = [KEYS.Get("str_code_clod_title"),KEYS.Get("str_code_clod_body"),KEYS.Get("str_code_clod_stream"),KEYS.Get("str_code_clod_streambody"),"purchased-locker.png"];
+                  arr = [KEYS.Get("str_code_clod_title"),KEYS.Get("str_code_clod_body"),KEYS.Get("str_code_clod_stream"),KEYS.Get("str_code_clod_streambody"),"purchased-locker.v2.png"];
                   break;
                case "PRO1":
                   arr = [KEYS.Get("str_code_pro1_title"),KEYS.Get("str_code_pro1_body"),KEYS.Get("str_code_pro1_stream"),"","purchased-protection1.png"];
@@ -2694,7 +2682,7 @@ package
       
       public static function FacebookCreditPurchaseB(param1:String) : *
       {
-         if(int(com.adobe.serialization.json.JSON.decode(param1).success) == 1)
+         if(int(JSON.decode(param1).success) == 1)
          {
             BuyB(_facebookPurchaseItemCode);
          }
@@ -2703,23 +2691,39 @@ package
       
       public static function ProcessPurchases() : *
       {
+         var ENLobj:Object = null;
+         var i:int = 0;
          var enl:int = 0;
          var c:* = undefined;
          try
          {
             GLOBAL._mapWidth = 1000;
             GLOBAL._mapHeight = 800;
-            if(_storeData.ENL)
+            i = 0;
+            while(i < 2)
             {
-               enl = 0;
-               while(enl < _storeData.ENL.q)
+               ENLobj = null;
+               if(Boolean(i) && Boolean(_storeData.ENLI))
                {
-                  GLOBAL._mapWidth *= 1.1;
-                  GLOBAL._mapHeight *= 1.1;
-                  enl++;
+                  ENLobj = _storeData.ENLI;
                }
-               GLOBAL._mapWidth = Math.ceil(GLOBAL._mapWidth / 20) * 20;
-               GLOBAL._mapHeight = Math.ceil(GLOBAL._mapHeight / 20) * 20;
+               else if(!i && Boolean(_storeData.ENL))
+               {
+                  ENLobj = _storeData.ENL;
+               }
+               if(ENLobj)
+               {
+                  enl = 0;
+                  while(enl < ENLobj.q)
+                  {
+                     GLOBAL._mapWidth *= 1.1;
+                     GLOBAL._mapHeight *= 1.1;
+                     enl++;
+                  }
+                  GLOBAL._mapWidth = Math.ceil(GLOBAL._mapWidth / 20) * 20;
+                  GLOBAL._mapHeight = Math.ceil(GLOBAL._mapHeight / 20) * 20;
+               }
+               i++;
             }
             GLOBAL._hatcheryOverdrive = 0;
             if(Boolean(_storeData.HOD) && _storeData.HOD.e < GLOBAL.Timestamp())
@@ -2939,7 +2943,7 @@ package
       public static function updateCredits(param1:String) : *
       {
          POPUPS.Next();
-         var _loc2_:Object = com.adobe.serialization.json.JSON.decode(param1);
+         var _loc2_:Object = JSON.decode(param1);
          if(_loc2_.error == 0)
          {
             if(LOGIN.checkHash(param1))

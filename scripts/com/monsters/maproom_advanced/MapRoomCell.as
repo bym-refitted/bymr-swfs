@@ -1,6 +1,5 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.alliances.*;
    import flash.display.Bitmap;
@@ -55,7 +54,9 @@ package com.monsters.maproom_advanced
       
       public var _monsterData:Object;
       
-      public var _flinger:SecNum;
+      public var _flingerRange:SecNum;
+      
+      public var _flingerLevel:SecNum;
       
       public var _catapult:SecNum;
       
@@ -105,6 +106,8 @@ package com.monsters.maproom_advanced
       
       private var _frame:int;
       
+      public var depth:int;
+      
       private var inTest:Boolean = false;
       
       private var _inAllianceProps:Object = {
@@ -147,7 +150,6 @@ package com.monsters.maproom_advanced
          mc.mcGlow.mouseEnabled = false;
          mc.mcGlow.mouseChildren = false;
          mc.mcGlow.gotoAndStop(1);
-         mc.mcGlow.cacheAsBitmap = true;
          mc.mcEdges.mouseEnabled = false;
          mc.mcEdges.mouseChildren = false;
          mc.mcPlayer.mcWorker.visible = false;
@@ -211,11 +213,13 @@ package com.monsters.maproom_advanced
          this._mine = param1.mine;
          if(param1.f)
          {
-            this._flinger = new SecNum(param1.f);
+            this._flingerLevel = new SecNum(param1.f);
+            this._flingerRange = new SecNum(BUILDING5.getFlingerRange(param1.f,this.isMainBase));
          }
          else
          {
-            this._flinger = new SecNum(0);
+            this._flingerRange = new SecNum(0);
+            this._flingerLevel = new SecNum(0);
          }
          if(param1.c)
          {
@@ -1022,17 +1026,17 @@ package com.monsters.maproom_advanced
          if(GLOBAL._local)
          {
             _loc2_ = "MapRoomCell.Click - X " + this.X + " Y " + this.Y + " H " + this._height + " B " + this._base + " ID " + this._baseID + " UID " + this._userID + " FBID " + this._facebookID + " Mine " + this._mine + " Name " + this._name + " d " + this._destroyed + " dm " + this._damage + " p " + this._protected + " fr " + this._friend + " busy " + this._workerBusy;
-            if(this._flinger)
+            if(this._flingerRange)
             {
-               _loc2_ += " f " + this._flinger.Get();
+               _loc2_ += " f " + this._flingerRange.Get();
             }
             if(this._hpMonsterData)
             {
-               _loc2_ += " monsterdata " + com.adobe.serialization.json.JSON.encode(this._hpMonsterData);
+               _loc2_ += " monsterdata " + JSON.encode(this._hpMonsterData);
             }
             if(this._hpResources)
             {
-               _loc2_ += " resources " + com.adobe.serialization.json.JSON.encode(this._hpResources);
+               _loc2_ += " resources " + JSON.encode(this._hpResources);
             }
          }
          MapRoom.TransferMonstersB(this);
@@ -1185,6 +1189,11 @@ package com.monsters.maproom_advanced
          {
             this._smokeDO.parent.removeChild(this._smokeDO);
          }
+      }
+      
+      public function get isMainBase() : Boolean
+      {
+         return this._base == 2;
       }
       
       private function SetupAlliance() : *

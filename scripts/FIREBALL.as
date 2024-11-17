@@ -3,16 +3,20 @@ package
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.events.Event;
+   import flash.events.EventDispatcher;
    import flash.filters.GlowFilter;
    import flash.geom.Point;
    
-   public class FIREBALL
+   public class FIREBALL extends EventDispatcher
    {
       public static const TYPE_FIREBALL:String = "fireball";
       
       public static const TYPE_MISSILE:String = "missile";
       
       public static const TYPE_MAGMA:String = "magma";
+      
+      public static const COLLIDED:String = "fireballCollided";
       
       private const DO_ROCKETS_ACCELERATE:Boolean = false;
       
@@ -87,7 +91,7 @@ package
          super();
       }
       
-      public function Setup(param1:String = "fireball") : *
+      public function Setup(param1:String = "fireball") : void
       {
          var _loc2_:Bitmap = null;
          if(this._graphic)
@@ -174,6 +178,7 @@ package
          this._distance -= _loc1_;
          if(this._distance <= this._maxSpeed)
          {
+            dispatchEvent(new Event(COLLIDED));
             if(this._splash > 0)
             {
                this.Splash();
@@ -347,7 +352,7 @@ package
          for(_loc6_ in BASE._buildingsMain)
          {
             _loc5_ = BASE._buildingsMain[_loc6_];
-            if(_loc5_._class != "decoration" && _loc5_._class != "immovable" && _loc5_._hp.Get() > 0 && _loc5_._class != "enemy" && _loc5_._class != "trap")
+            if(_loc5_._class != "decoration" && _loc5_._class != "immovable" && _loc5_._hp.Get() > 0 && _loc5_._class != "enemy" && _loc5_._class != "trap" && !(_loc5_ is BTOWER && (_loc5_ as BTOWER).isJard))
             {
                _loc2_ = new Point(_loc5_._mc.x,_loc5_._mc.y + _loc5_._footprint[0].height / 2);
                _loc3_ = Point.distance(_loc1_,_loc2_);

@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.monsters.ai.*;
    import com.monsters.mailbox.Message;
    import com.monsters.maproom_inferno.DescentMapRoom;
@@ -25,7 +24,7 @@ package
       
       public static var _descentLvl:int = 0;
       
-      public static const _descentLvlMax:int = 14;
+      public static const _descentLvlMax:int = 8;
       
       public static var _bases:Array = [];
       
@@ -261,7 +260,7 @@ package
                }
                else
                {
-                  LOGGER.Log("err","MAPROOM.RequestTruce: " + com.adobe.serialization.json.JSON.encode(param1));
+                  LOGGER.Log("err","MAPROOM.RequestTruce: " + JSON.encode(param1));
                }
             };
             new URLLoaderApi().load(GLOBAL._apiURL + "player/requesttruce",[["baseid",baseid],["duration",14 * 24 * 60 * 60],["message",mc.bMessage.text]],handleLoadSuccessful);
@@ -452,9 +451,16 @@ package
          var _loc1_:int = _descentLvl;
          if(GLOBAL._mode == "build")
          {
-            _loc1_ = WMBASE.CheckDescentProgress();
-            _descentLvl = _loc1_;
-            GLOBAL.StatSet("descentLvl",_descentLvl);
+            if(Boolean(WMBASE._descentBases) && WMBASE._descentBases.length > 0)
+            {
+               _loc1_ = WMBASE.CheckDescentProgress();
+               _descentLvl = _loc1_;
+               GLOBAL.StatSet("descentLvl",_descentLvl);
+            }
+            else
+            {
+               _loc1_ = GLOBAL.StatGet("descentLvl");
+            }
          }
          return _loc1_;
       }

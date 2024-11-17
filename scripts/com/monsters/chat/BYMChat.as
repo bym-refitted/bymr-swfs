@@ -59,7 +59,7 @@ package com.monsters.chat
       
       private var isLoggingOutTimer:Number = 5;
       
-      private var chatBox:ChatBox;
+      public var chatBox:ChatBox;
       
       private var _chatHost:String;
       
@@ -88,8 +88,6 @@ package com.monsters.chat
       private var messageQueueTimer:Timer = null;
       
       private var messageQueueLastCheck:Date = null;
-      
-      private var displayedUnavailable:Boolean = false;
       
       public function BYMChat(param1:ChatBox, param2:String)
       {
@@ -120,11 +118,6 @@ package com.monsters.chat
       public static function get serverInited() : Boolean
       {
          return _serverInited;
-      }
-      
-      override public function set visible(param1:Boolean) : void
-      {
-         super.visible = GLOBAL.flagsShouldChatConnectButStayInvisible() ? false : param1;
       }
       
       public function get IsAnimating() : Boolean
@@ -160,11 +153,10 @@ package com.monsters.chat
             _chat.addEventListener(ChatEvent.USER_ENTER,this.onUserEnter);
             _chat.addEventListener(ChatEvent.USER_EXIT,this.onUserExit);
             _serverInited = true;
-            this.hide();
          }
          catch(e:*)
          {
-            this.hide();
+            displayUnavailable("init failed");
          }
       }
       
@@ -187,12 +179,10 @@ package com.monsters.chat
       {
          if(this.sector_channel == null)
          {
-            LOGGER.Log("err","BYMChat.broadcastDisplayNameUpdate(): No sector has been joined yet");
             return;
          }
          if(_userRecord == null)
          {
-            LOGGER.Log("err","BYMChat.broadcastDisplayNameUpdate(): No user record available");
             return;
          }
          _chat.setDisplayNameUserVar("[" + param1 + "] " + _userRecord.Id);
@@ -279,15 +269,7 @@ package com.monsters.chat
          _userRecord = new UserRecord(param1,param2);
          this._auth = new AS_Login(_userRecord);
          this._auth.authenticate();
-         if(!this._isConnected)
-         {
-            if(!this.displayedUnavailable)
-            {
-               this.system_message("Chat is currently unavailable.");
-               this.displayedUnavailable = true;
-            }
-         }
-         else
+         if(this._isConnected)
          {
             _chat.login(this._auth);
          }
@@ -452,34 +434,32 @@ package com.monsters.chat
       
       public function enter_sector(param1:String, param2:Boolean = false) : void
       {
-         var _loc3_:RegExp = null;
-         var _loc4_:Array = null;
-         var _loc5_:int = 0;
+         var _loc3_:Array = null;
+         var _loc4_:int = 0;
          if(!param2)
          {
             if(this._joinAttempts >= 10)
             {
                LOGGER.Log("err","BYMChat.enter_sector: failed to connect to 10 chat rooms; giving up");
-               this.hide();
+               this.displayUnavailable("unable to find open chat room");
                return;
             }
-            _loc3_ = /(\d+)/;
-            _loc4_ = param1.split(_loc3_);
-            if(_loc4_.length == 0)
+            _loc3_ = param1.split(/(\d+)/);
+            if(_loc3_.length == 0)
             {
                LOGGER.Log("err","BYMChat.enter_sector(): invalid sectorName");
-               this.hide();
+               this.displayUnavailable("invalid chat room");
                return;
             }
-            this._sectorBaseName = _loc4_[0];
-            _loc5_ = int(_loc4_[1]);
+            this._sectorBaseName = _loc3_[0];
+            _loc4_ = int(_loc3_[1]);
             if(this._joinAttempts > 0)
             {
-               _loc5_++;
+               _loc4_++;
             }
             ++this._joinAttempts;
-            _loc5_ %= GLOBAL.NUM_CHAT_ROOMS;
-            param1 = this._sectorBaseName + _loc5_.toString();
+            _loc4_ %= Chat.NUM_CHAT_ROOMS;
+            param1 = this._sectorBaseName + _loc4_.toString();
          }
          if(this.sector_channel != null && this.sector_channel.Name == param1)
          {
@@ -538,42 +518,45 @@ package com.monsters.chat
       
       private function onConnect(param1:ChatEvent) : void
       {
+         var reason:String = null;
          var chatEvent:ChatEvent = param1;
          try
          {
             this._isConnected = chatEvent.Success;
             if(!this._isConnected)
             {
-               if(!this.displayedUnavailable)
-               {
-                  this.system_message("Chat is currently unavailable.");
-                  this.displayedUnavailable = true;
-               }
+               reason = chatEvent.Get("reason") as String;
+               this.displayUnavailable(reason != null ? reason : "connection failed");
             }
-            else if(this._auth != null)
+            else if(this._auth != null && _chat != null)
             {
-               if(_chat)
-               {
-                  _chat.login(this._auth);
-               }
+               _chat.login(this._auth);
+            }
+            else
+            {
+               this.displayUnavailable();
             }
          }
          catch(e:Error)
          {
+            reason = chatEvent.Get("reason") as String;
+            displayUnavailable(reason != null ? reason : "connect failed");
             LOGGER.Log("err","BYMChat.onConnect: " + e.message + "\n" + e.getStackTrace());
          }
       }
       
       private function onLogin(param1:ChatEvent) : void
       {
+         var _loc2_:String = null;
          if(param1.Success)
          {
             this.joinSector();
-            this.displayedUnavailable = false;
             _chat.getIgnore();
          }
          else
          {
+            _loc2_ = param1.Get("reason") as String;
+            this.displayUnavailable(_loc2_ != null ? _loc2_ : "login failed");
             LOGGER.Log("err","onLogin() " + param1.Success + ": \'" + param1.Get("error") + "\'");
          }
       }
@@ -588,7 +571,6 @@ package com.monsters.chat
       {
          if(this.sector_channel != null)
          {
-            this.clearChat();
             this.clearDisplayNameMap();
             _chat.join(this.sector_channel);
             this.default_chat_channel = "sector";
@@ -601,6 +583,7 @@ package com.monsters.chat
          if(param1.Success)
          {
             _loc2_ = param1.Get("channel") as Channel;
+            this.clearChat();
             this.system_message("Joined channel " + _loc2_.Name + ".");
             this.system_message("Type /h for help.");
             _chat.setDisplayNameUserVar("[" + BASE.BaseLevel().level + "] " + _userRecord.Id);
@@ -610,7 +593,8 @@ package com.monsters.chat
          }
          else
          {
-            LOGGER.Log("err","BYMChat.onJoin() " + param1.Success + ": \'" + param1.Get("error") + "\'");
+            this.clearChat();
+            this.system_message("Join attempt " + this._joinAttempts + " failed. Trying again.");
             this.enter_sector(this._sectorBaseName);
          }
       }
@@ -985,6 +969,19 @@ package com.monsters.chat
             return false;
          }
          return true;
+      }
+      
+      public function displayUnavailable(param1:String = null) : *
+      {
+         this.clearChat();
+         if(param1 != null)
+         {
+            this.system_message("Chat is currently unavailable. Reason: " + param1);
+         }
+         else
+         {
+            this.system_message("Chat is currently unavailable.");
+         }
       }
       
       public function get roomNames() : Array

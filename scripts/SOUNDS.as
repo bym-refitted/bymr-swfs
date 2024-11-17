@@ -1,6 +1,8 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.siege.weapons.Decoy;
+   import com.monsters.siege.weapons.Jars;
    import com.monsters.sound.SoundLibrary;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -98,6 +100,12 @@ package
          "ihit6":"sound_ihit6",
          "ihit7":"sound_ihit7",
          "ihit8":"sound_ihit8",
+         "imonster1":"inferno_monster1",
+         "imonster2":"inferno_monster2",
+         "imonster3":"inferno_monster3",
+         "imonster4":"inferno_monster4",
+         "iquestshow":"inferno_questshow",
+         "iquesthide":"inferno_questhide",
          "inf_buildingplace":"sound_infernoplace",
          "ibankfire":"sound_ibankfire",
          "ibankland":"sound_ibankland",
@@ -171,6 +179,7 @@ package
       
       public static function Setup() : void
       {
+         var s:String = null;
          var surl:String = null;
          var i:int = 0;
          if(!_setup)
@@ -225,7 +234,18 @@ package
          {
             if(_muted == 1)
             {
-               UI2._top.mcSound.gotoAndStop(2);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcSound.gotoAndStop(4);
+               }
+               else
+               {
+                  UI2._top.mcSound.gotoAndStop(2);
+               }
+            }
+            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            {
+               UI2._top.mcSound.gotoAndStop(3);
             }
             else
             {
@@ -233,13 +253,39 @@ package
             }
             if(_musicVolume == 0)
             {
-               UI2._top.mcMusic.gotoAndStop(2);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcMusic.gotoAndStop(4);
+               }
+               else
+               {
+                  UI2._top.mcMusic.gotoAndStop(2);
+               }
+            }
+            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            {
+               UI2._top.mcMusic.gotoAndStop(3);
             }
             else
             {
                UI2._top.mcMusic.gotoAndStop(1);
             }
          }
+         for each(s in Jars.CRACKING_SOUNDS)
+         {
+            _sounds[s] = s;
+         }
+         for each(s in Jars.EXPLODE_SOUNDS)
+         {
+            _sounds[s] = s;
+         }
+         for each(s in Jars.LAND_SOUNDS)
+         {
+            _sounds[s] = s;
+         }
+         _sounds[Decoy.LAND_SOUND] = Decoy.LAND_SOUND;
+         _sounds[Decoy.EXPLOSION_SOUND] = Decoy.EXPLOSION_SOUND;
+         _sounds[Decoy.LOOPING_SOUND] = Decoy.LOOPING_SOUND;
       }
       
       public static function PlayMusic(param1:String = "") : void
@@ -253,6 +299,7 @@ package
       
       public static function PlayMusicB(param1:String = "", param2:Number = 0.7, param3:Number = 0, param4:Number = 0) : void
       {
+         var soundLinkName:String = null;
          var s:SoundLibrary = null;
          var sndC:Class = null;
          var sndO:Sound = null;
@@ -273,29 +320,12 @@ package
             if(_concurrent[id] <= 2)
             {
                _concurrent[id] += 1;
+               soundLinkName = id;
                if(_sounds[id] is String)
                {
-                  for each(s in soundLibraries)
-                  {
-                     if(s.loaded)
-                     {
-                        if(s.li.applicationDomain.hasDefinition(_sounds[id]))
-                        {
-                           sndC = s.li.applicationDomain.getDefinition(_sounds[id]) as Class;
-                           sndO = new sndC() as Sound;
-                           if(_musicChannel)
-                           {
-                              _musicChannel.stop();
-                              _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
-                           }
-                           _musicChannel = sndO.play(position,99999,new SoundTransform(volume,pan));
-                           _currentMusic = id;
-                           _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
-                        }
-                     }
-                  }
+                  soundLinkName = _sounds[id];
                }
-               else
+               else if(_sounds[id])
                {
                   if(_musicChannel)
                   {
@@ -306,11 +336,26 @@ package
                   _currentMusic = id;
                   _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
                }
+               for each(s in soundLibraries)
+               {
+                  if(s.loaded && s.li.applicationDomain.hasDefinition(soundLinkName))
+                  {
+                     sndC = s.li.applicationDomain.getDefinition(soundLinkName) as Class;
+                     sndO = new sndC() as Sound;
+                     if(_musicChannel)
+                     {
+                        _musicChannel.stop();
+                        _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
+                     }
+                     _musicChannel = sndO.play(position,99999,new SoundTransform(volume,pan));
+                     _currentMusic = id;
+                     _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
+                  }
+               }
             }
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","SOUNDS.PlayMusic",e.getStackTrace());
          }
       }
       
@@ -321,14 +366,16 @@ package
          PlayMusicB(_queuedMusic);
       }
       
-      public static function Play(param1:String = "", param2:Number = 0.8, param3:Number = 0) : void
+      public static function Play(param1:String = "", param2:Number = 0.8, param3:Number = 0, param4:int = 1) : SoundChannel
       {
+         var soundLinkName:String = null;
          var s:SoundLibrary = null;
          var sndC:Class = null;
          var sndO:Sound = null;
          var id:String = param1;
          var volume:Number = param2;
          var pan:Number = param3;
+         var loops:int = param4;
          if(!GLOBAL._catchup && !_muted)
          {
             try
@@ -340,24 +387,23 @@ package
                if(_concurrent[id] <= 2)
                {
                   _concurrent[id] += 1;
+                  soundLinkName = id;
                   if(_sounds[id] is String)
                   {
-                     for each(s in soundLibraries)
-                     {
-                        if(s.loaded)
-                        {
-                           if(s.li.applicationDomain.hasDefinition(_sounds[id]))
-                           {
-                              sndC = s.li.applicationDomain.getDefinition(_sounds[id]) as Class;
-                              sndO = new sndC() as Sound;
-                              sndO.play(0,1,new SoundTransform(volume,pan));
-                           }
-                        }
-                     }
+                     soundLinkName = _sounds[id];
                   }
-                  else
+                  else if(_sounds[id])
                   {
-                     _sounds[id].play(0,1,new SoundTransform(volume,pan));
+                     return _sounds[id].play(0,loops,new SoundTransform(volume,pan));
+                  }
+                  for each(s in soundLibraries)
+                  {
+                     if(s.loaded && s.li.applicationDomain.hasDefinition(soundLinkName))
+                     {
+                        sndC = s.li.applicationDomain.getDefinition(soundLinkName) as Class;
+                        sndO = new sndC() as Sound;
+                        return sndO.play(0,loops,new SoundTransform(volume,pan));
+                     }
                   }
                }
             }
@@ -366,6 +412,7 @@ package
                LOGGER.Log("err","SOUNDS.Play error",e.getStackTrace());
             }
          }
+         return null;
       }
       
       public static function Tick() : void
@@ -473,12 +520,26 @@ package
          {
             if(param1)
             {
-               UI2._top.mcSound.gotoAndStop(2);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcSound.gotoAndStop(4);
+               }
+               else
+               {
+                  UI2._top.mcSound.gotoAndStop(2);
+               }
                _muted = 1;
             }
             else
             {
-               UI2._top.mcSound.gotoAndStop(1);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcSound.gotoAndStop(3);
+               }
+               else
+               {
+                  UI2._top.mcSound.gotoAndStop(1);
+               }
                _muted = 0;
             }
          }
@@ -487,13 +548,27 @@ package
             _loc3_ = new SoundTransform();
             if(param1)
             {
-               UI2._top.mcMusic.gotoAndStop(2);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcMusic.gotoAndStop(4);
+               }
+               else
+               {
+                  UI2._top.mcMusic.gotoAndStop(2);
+               }
                _musicVolume = 0;
                _mutedMusic = 1;
             }
             else
             {
-               UI2._top.mcMusic.gotoAndStop(1);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcMusic.gotoAndStop(3);
+               }
+               else
+               {
+                  UI2._top.mcMusic.gotoAndStop(1);
+               }
                _musicVolume = 0.7;
                _mutedMusic = 0;
                if(_currentMusic == null && _queuedMusic == null)

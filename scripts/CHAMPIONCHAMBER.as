@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -10,6 +9,8 @@ package
    public class CHAMPIONCHAMBER extends BFOUNDATION
    {
       public static var _popup:CHAMPIONCHAMBERPOPUP;
+      
+      public static const TYPE:uint = 119;
       
       public static var _open:Boolean = false;
       
@@ -54,7 +55,7 @@ package
          }
          if(Boolean(BASE._guardianData) && CREATURES._guardian == null)
          {
-            GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get());
+            GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get(),BASE._guardianData.pl.Get());
          }
          if(!_open)
          {
@@ -143,7 +144,6 @@ package
          var p:Point = null;
          var level:int = 0;
          var target:Point = null;
-         var defaultNames:Array = null;
          var newFrozen:Array = null;
          var j:int = 0;
          var mc:popup_monster = null;
@@ -166,9 +166,8 @@ package
                p = new Point(x,y + 80);
                level = int(this._frozen[i].l.Get());
                target = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
-               CREATURES._guardian = new CHAMPIONMONSTER("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get());
+               CREATURES._guardian = new CHAMPIONMONSTER("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
                CREATURES._guardian.Export();
-               defaultNames = ["Gorgo","Drull","Fomor"];
                MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
                CREATURES._guardian.ModeCage();
                newFrozen = [];
@@ -220,7 +219,7 @@ package
          super.Setup(param1);
          if(param1.fz)
          {
-            _loc2_ = com.adobe.serialization.json.JSON.decode(param1.fz);
+            _loc2_ = JSON.decode(param1.fz) as Array;
             this._frozen = [];
             _loc3_ = 0;
             while(_loc3_ < _loc2_.length)
@@ -267,6 +266,14 @@ package
                else
                {
                   _loc4_.fb = new SecNum(0);
+               }
+               if(_loc5_.pl)
+               {
+                  _loc4_.pl = new SecNum(_loc5_.pl);
+               }
+               else
+               {
+                  _loc4_.pl = new SecNum(0);
                }
                this._frozen.push(_loc4_);
                _loc3_++;
@@ -323,10 +330,25 @@ package
             {
                _loc4_.fb = 0;
             }
+            if(this._frozen[_loc3_].pl)
+            {
+               if(this._frozen[_loc3_].pl is SecNum)
+               {
+                  _loc4_.pl = this._frozen[_loc3_].pl.Get();
+               }
+               else
+               {
+                  _loc4_.pl = this._frozen[_loc3_].pl;
+               }
+            }
+            else
+            {
+               _loc4_.pl = 0;
+            }
             _loc2_.push(_loc4_);
             _loc3_++;
          }
-         _loc1_.fz = com.adobe.serialization.json.JSON.encode(_loc2_);
+         _loc1_.fz = JSON.encode(_loc2_);
          return _loc1_;
       }
    }

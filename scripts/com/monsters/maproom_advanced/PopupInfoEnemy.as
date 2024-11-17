@@ -1,6 +1,5 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.alliances.*;
    import com.monsters.display.ImageCache;
@@ -146,7 +145,7 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:MapRoomCell, param2:Boolean = false) : *
       {
-         var _loc5_:* = undefined;
+         var _loc5_:CellData = null;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:* = null;
@@ -162,14 +161,14 @@ package com.monsters.maproom_advanced
             _loc3_ = true;
             _loc4_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
          }
-         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc4_);
+         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10 + _loc4_);
          MapRoom._flingerInRange = param2;
          this.bAlliance.visible = true;
          for each(_loc5_ in GLOBAL._attackerCellsInRange)
          {
-            _loc10_ = _loc5_["cell"];
-            _loc11_ = int(_loc5_["range"]);
-            if(_loc10_ && _loc10_._mine && _loc10_._flinger.Get() + _loc4_ >= _loc11_)
+            _loc10_ = _loc5_.cell;
+            _loc11_ = _loc5_.range;
+            if(_loc10_ && _loc10_._mine && _loc10_._flingerRange.Get() + _loc4_ >= _loc11_)
             {
                MapRoom._flingerInRange = true;
             }
@@ -587,6 +586,11 @@ package com.monsters.maproom_advanced
          var _loc2_:Number = NaN;
          var _loc3_:int = 0;
          var _loc4_:PopupTakeover = null;
+         if(GLOBAL._flags.attacking == 0)
+         {
+            GLOBAL.Message(KEYS.Get("map_msg_attackingdisabled"));
+            return;
+         }
          if(this._cell._destroyed && !this._cell._protected && (this._cell._locked == 0 || this._cell._locked == LOGIN._playerID) && MapRoom._flingerInRange)
          {
             _loc2_ = _minTakeoverCost.Get();
@@ -677,7 +681,7 @@ package com.monsters.maproom_advanced
                GLOBAL._resources.r4max += GLOBAL._outpostCapacity.Get();
                MapRoom.ClearCells();
                MapRoom.Hide();
-               GLOBAL._attackerCellsInRange = [];
+               GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
                BASE._yardType = BASE.OUTPOST;
@@ -694,7 +698,7 @@ package com.monsters.maproom_advanced
          {
             GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.text);
          };
-         var takeoverVars:Array = [["baseid",this._cell._baseID],["resources",com.adobe.serialization.json.JSON.encode({
+         var takeoverVars:Array = [["baseid",this._cell._baseID],["resources",JSON.encode({
             "r1":_takeoverCost.Get(),
             "r2":_takeoverCost.Get(),
             "r3":_takeoverCost.Get(),
@@ -737,7 +741,7 @@ package com.monsters.maproom_advanced
          MapRoom.Hide();
          if(MapRoom._mc)
          {
-            GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
+            GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10);
          }
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
@@ -912,12 +916,12 @@ package com.monsters.maproom_advanced
       public function Update() : *
       {
          var _loc1_:String = "";
-         _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flinger + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + com.adobe.serialization.json.JSON.encode(this._cell._resources) + "<br>_ticks:" + com.adobe.serialization.json.JSON.encode(this._cell._ticks) + "<br>_monsters:" + com.adobe.serialization.json.JSON.encode(this._cell._monsters);
+         _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange.Get() + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
          if(this._cell._monsterData)
          {
-            _loc1_ += "<br>_monsterData:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData);
-            _loc1_ += "<br>_monsterData.saved:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.saved);
-            _loc1_ += "<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h);
+            _loc1_ += "<br>_monsterData:" + JSON.encode(this._cell._monsterData);
+            _loc1_ += "<br>_monsterData.saved:" + JSON.encode(this._cell._monsterData.saved);
+            _loc1_ += "<br>_monsterData.h:" + JSON.encode(this._cell._monsterData.h);
             _loc1_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
          }
       }

@@ -24,7 +24,7 @@ package com.monsters.effects.particles
          super();
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
          var particle:ParticlesObject = null;
          var g:String = null;
@@ -67,12 +67,12 @@ package com.monsters.effects.particles
          return _loc7_;
       }
       
-      public static function PoolSet(param1:ParticlesObject) : *
+      public static function PoolSet(param1:ParticlesObject) : void
       {
          _pool.push(param1);
       }
       
-      public static function Create(param1:Point, param2:Number, param3:int, param4:int, param5:int = 0) : *
+      public static function Create(param1:Point, param2:Number, param3:int, param4:int, param5:int = 0) : void
       {
          var _loc6_:int = 0;
          var _loc7_:Number = NaN;
@@ -96,7 +96,7 @@ package com.monsters.effects.particles
          }
       }
       
-      public static function Spawn(param1:Point, param2:Number, param3:int, param4:Number, param5:int) : *
+      public static function Spawn(param1:Point, param2:Number, param3:int, param4:Number, param5:int) : void
       {
          var _loc6_:Number = Math.random() * 360;
          var _loc7_:Point = GRID.FromISO(param1.x,param1.y);
@@ -107,7 +107,7 @@ package com.monsters.effects.particles
          _particleCount += 1;
       }
       
-      public static function Remove(param1:*) : *
+      public static function Remove(param1:*) : void
       {
          var id:* = param1;
          var particle:ParticlesObject = _particles[id];
@@ -124,7 +124,7 @@ package com.monsters.effects.particles
          }
       }
       
-      public static function SnapShot(param1:int, param2:int, param3:Number, param4:ParticlesObject) : *
+      public static function SnapShot(param1:int, param2:int, param3:Number, param4:ParticlesObject) : void
       {
          var b:BitmapData = null;
          var m:Matrix = null;

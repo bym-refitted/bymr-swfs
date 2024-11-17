@@ -6,23 +6,13 @@ package
    
    public class GRID
    {
-      public static var _gridBuildings:Object;
+      public static var _grid:Vector.<uint>;
       
-      public static var _floods:Object;
+      public static const _mapWidth:int = 2600;
       
-      public static var _mapWidth:int;
+      public static const _mapHeight:int = 2600;
       
-      public static var _mapHeight:int;
-      
-      public static var _mc:*;
-      
-      public static var _noiseMC:*;
-      
-      public static var _gridMC:*;
-      
-      public static var _floodMC:*;
-      
-      public static var _linePath:*;
+      public static const _rowOffset:int = Math.ceil(_mapWidth / 5);
       
       public function GRID()
       {
@@ -31,61 +21,42 @@ package
       
       public static function CreateGrid() : *
       {
-         var _loc2_:GRIDobject = null;
-         var _loc4_:int = 0;
          var _loc1_:int = getTimer();
-         _mapWidth = 2600;
-         _mapHeight = 2600;
          Cleanup();
-         var _loc3_:int = 0;
-         while(_loc3_ < _mapWidth / 5)
-         {
-            _loc4_ = 0;
-            while(_loc4_ < _mapHeight / 5)
-            {
-               _loc2_ = new GRIDobject();
-               _loc2_.pointX = _loc3_;
-               _loc2_.pointY = _loc4_;
-               _loc2_.blocked = 0;
-               _loc2_.cost = 10;
-               _gridBuildings[_loc3_ + _loc4_ * 10000] = _loc2_;
-               _loc4_++;
-            }
-            _loc3_++;
-         }
       }
       
       public static function Block(param1:Rectangle, param2:Boolean = false) : *
       {
-         var _loc5_:Point = null;
+         var _loc4_:Point = null;
          var _loc6_:int = 0;
-         var _loc8_:int = 0;
+         var _loc7_:int = 0;
          var _loc3_:Point = FromISO(param1.x,param1.y);
-         var _loc4_:int = 0;
-         if(param2)
-         {
-            _loc4_ = 1;
-         }
          param1.x = _loc3_.x;
          param1.y = _loc3_.y;
-         var _loc7_:int = 0;
-         while(_loc7_ < param1.width)
+         var _loc5_:int = 0;
+         while(_loc5_ < param1.width)
          {
-            _loc8_ = 0;
-            while(_loc8_ < param1.height)
+            _loc6_ = 0;
+            while(_loc6_ < param1.height)
             {
-               _loc5_ = GlobalLocal(new Point(_loc7_ + param1.x,_loc8_ + param1.y),5);
-               _loc6_ = _loc5_.x + _loc5_.y * 10000;
-               if(_gridBuildings[_loc6_])
+               _loc4_ = GlobalLocal(new Point(_loc5_ + param1.x,_loc6_ + param1.y),5);
+               _loc7_ = _loc4_.x + _loc4_.y * _rowOffset;
+               if(_loc7_ > 0 && _loc7_ < _grid.length)
                {
-                  _gridBuildings[_loc6_].blocked = _loc4_;
+                  if(param2)
+                  {
+                     _grid[_loc4_.x + _loc4_.y * _rowOffset] |= 1;
+                  }
+                  else
+                  {
+                     _grid[_loc4_.x + _loc4_.y * _rowOffset] &= -2;
+                  }
                }
-               _loc8_ += 5;
+               _loc6_ += 5;
             }
-            _loc7_ += 5;
+            _loc5_ += 5;
          }
          Clear();
-         RenderGrid();
       }
       
       public static function FindSpace(param1:BFOUNDATION) : *
@@ -147,63 +118,27 @@ package
       public static function Blocked(param1:Point, param2:Boolean = false, param3:Boolean = false) : int
       {
          var _loc4_:Point = GlobalLocal(new Point(param1.x,param1.y),5);
-         var _loc5_:* = _loc4_.x + _loc4_.y * 10000;
-         if(!_gridBuildings[_loc5_])
+         if(_loc4_.x < 0 || _loc4_.y < 0 || _loc4_.x >= _mapWidth / 5 || _loc4_.y >= _mapHeight / 5)
          {
             return 3;
          }
-         var _loc6_:int = GLOBAL._mapWidth * 0.5;
-         var _loc7_:int = GLOBAL._mapHeight * 0.5;
-         if(param2 && !param3 && (param1.x < 0 - _loc6_ || param1.x >= _loc6_ || param1.y < 0 - _loc7_ || param1.y >= _loc7_))
+         var _loc5_:int = GLOBAL._mapWidth * 0.5;
+         var _loc6_:int = GLOBAL._mapHeight * 0.5;
+         if(param2 && !param3 && (param1.x < 0 - _loc5_ || param1.x >= _loc5_ || param1.y < 0 - _loc6_ || param1.y >= _loc6_))
          {
             return 2;
          }
-         return _gridBuildings[_loc5_].blocked;
+         return _grid[_loc4_.x + _loc4_.y * _rowOffset] & 1;
       }
       
       public static function Clear() : *
       {
-         _floods = {};
       }
       
       public static function Cleanup() : *
       {
-         var _loc1_:* = null;
-         for each(_loc1_ in _gridBuildings)
-         {
-            delete _gridBuildings[_loc1_];
-         }
-         _gridBuildings = {};
-         _floods = {};
-      }
-      
-      public static function RenderFlood(param1:Point) : *
-      {
-      }
-      
-      public static function RenderGrid() : *
-      {
-         if(GLOBAL._catchup)
-         {
-         }
-      }
-      
-      public static function RenderPath(param1:*) : *
-      {
-      }
-      
-      public static function getNumberAsHexString(param1:uint, param2:uint = 1, param3:Boolean = true) : *
-      {
-         var _loc4_:String = param1.toString(16).toUpperCase();
-         while(param2 > _loc4_.length)
-         {
-            _loc4_ = "0" + _loc4_;
-         }
-         if(param3)
-         {
-            _loc4_ = "0x" + _loc4_;
-         }
-         return _loc4_;
+         var _loc1_:int = Math.ceil(_mapWidth / 5) * Math.ceil(_mapHeight / 5);
+         _grid = new Vector.<uint>(_loc1_,true);
       }
       
       public static function GlobalLocal(param1:Point, param2:int) : Point

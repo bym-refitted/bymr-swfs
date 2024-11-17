@@ -61,6 +61,8 @@ package com.monsters.maproom_advanced
       
       private var _fullScreen:Boolean = false;
       
+      private var _fallbackHomeCell:MapRoomCell;
+      
       public var _popupAttackA:PopupAttackA;
       
       public var _dragged:Boolean;
@@ -69,10 +71,10 @@ package com.monsters.maproom_advanced
       
       public function MapRoomPopup()
       {
+         var w:*;
          var h:*;
          var r:Rectangle;
          var i:int;
-         var w:* = undefined;
          this._sortArray = [];
          super();
          w = GLOBAL._ROOT.stage.stageWidth;
@@ -195,9 +197,9 @@ package com.monsters.maproom_advanced
          i = 0;
          while(i < this._sortArray.length)
          {
-            if(this._cellContainer.getChildIndex(this._sortArray[i].cell) != i)
+            if(this._cellContainer.getChildIndex(this._sortArray[i]) != i)
             {
-               this._cellContainer.setChildIndex(this._sortArray[i].cell,i);
+               this._cellContainer.setChildIndex(this._sortArray[i],i);
             }
             i++;
          }
@@ -326,6 +328,7 @@ package com.monsters.maproom_advanced
             mcInfo.tAlliance.htmlText = "";
             mcInfo.tStatus.htmlText = KEYS.Get("status_water");
             mcInfo.tOwner.htmlText = "";
+            mcInfo.tUserId.visible = false;
          }
          else
          {
@@ -396,6 +399,8 @@ package com.monsters.maproom_advanced
                mcInfo.tStatus.htmlText = KEYS.Get("newmap_re");
             }
             mcInfo.tOwner.htmlText = param1._name;
+            mcInfo.tUserId.text = KEYS.Get("label_userid",{"v1":param1._userID});
+            mcInfo.tUserId.visible = true;
          }
          mcInfo.tLocation.htmlText = param1.X + " x " + param1.Y;
          mcInfo.visible = true;
@@ -484,7 +489,7 @@ package com.monsters.maproom_advanced
       
       public function Hide(param1:MouseEvent = null) : *
       {
-         GLOBAL._attackerCellsInRange = [];
+         GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
          if(BASE._loadedFriendlyBaseID)
          {
             BASE._yardType = BASE._loadedYardType;
@@ -607,11 +612,6 @@ package com.monsters.maproom_advanced
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:String = null;
-         if(GLOBAL._newMapFirstOpen)
-         {
-            this.Help();
-            GLOBAL._newMapFirstOpen = false;
-         }
          var _loc1_:int = MapRoom.BookmarkDataGet("mbms");
          if(_loc1_ > 0)
          {
@@ -649,9 +649,9 @@ package com.monsters.maproom_advanced
          var _loc2_:int = 0;
          while(_loc2_ < this._sortArray.length)
          {
-            if(this._cellContainer.getChildIndex(this._sortArray[_loc2_].cell) != _loc2_)
+            if(this._cellContainer.getChildIndex(this._sortArray[_loc2_]) != _loc2_)
             {
-               this._cellContainer.setChildIndex(this._sortArray[_loc2_].cell,_loc2_);
+               this._cellContainer.setChildIndex(this._sortArray[_loc2_],_loc2_);
             }
             _loc2_++;
          }
@@ -664,9 +664,9 @@ package com.monsters.maproom_advanced
       private function GenerateCells(param1:Point) : *
       {
          var _loc3_:int = 0;
-         var _loc5_:MapRoomCell = null;
+         var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:int = 0;
+         var _loc7_:MapRoomCell = null;
          var _loc2_:* = GLOBAL._ROOT.stage.stageWidth;
          _loc3_ = GLOBAL.GetGameHeight();
          if(_loc2_ > 1024)
@@ -694,12 +694,12 @@ package com.monsters.maproom_advanced
          }
          if(this._cells)
          {
-            _loc6_ = int(this._cells.length - 1);
-            _loc6_ = int(this._cells.length - 1);
-            while(_loc6_ >= 0)
+            _loc5_ = int(this._cells.length - 1);
+            _loc5_ = int(this._cells.length - 1);
+            while(_loc5_ >= 0)
             {
-               delete this._cells[_loc6_];
-               _loc6_--;
+               delete this._cells[_loc5_];
+               _loc5_--;
             }
          }
          this._cells = [];
@@ -718,66 +718,64 @@ package com.monsters.maproom_advanced
          _loc3_ = 0;
          while(_loc3_ < this._cellCountX)
          {
-            _loc7_ = 0;
-            while(_loc7_ < this._cellCountY)
+            _loc6_ = 0;
+            while(_loc6_ < this._cellCountY)
             {
-               _loc5_ = new MapRoomCell();
-               _loc5_.x = int(_loc3_ * (this._cellWidth * 0.75) - this._cellWidth * 0.75 * 4);
-               _loc5_.y = int(_loc7_ * this._cellHeight - this._cellHeight * 5);
-               _loc5_.X = _loc3_;
-               _loc5_.Y = _loc7_;
-               _loc5_.cacheAsBitmap = true;
-               _loc5_.mc.gotoAndStop(1);
-               _loc5_.mc.mcPlayer.visible = false;
+               _loc7_ = new MapRoomCell();
+               _loc7_.x = int(_loc3_ * (this._cellWidth * 0.75) - this._cellWidth * 0.75 * 4);
+               _loc7_.y = int(_loc6_ * this._cellHeight - this._cellHeight * 5);
+               _loc7_.X = _loc3_;
+               _loc7_.Y = _loc6_;
+               _loc7_.cacheAsBitmap = true;
+               _loc7_.mc.gotoAndStop(1);
+               _loc7_.mc.mcPlayer.visible = false;
                if(_loc3_ % 2 == 0)
                {
-                  _loc5_.y += this._cellHeight * 0.5;
+                  _loc7_.y += this._cellHeight * 0.5;
                }
-               this._cells.push(_loc5_);
-               this._sortArray.push({
-                  "depth":_loc5_.y * 1000 + _loc5_.x,
-                  "cell":_loc5_
-               });
-               this._cellContainer.addChild(_loc5_);
-               _loc7_++;
+               this._cells.push(_loc7_);
+               _loc7_.depth = _loc7_.y * 1000 + _loc7_.x;
+               this._sortArray.push(_loc7_);
+               this._cellContainer.addChild(_loc7_);
+               if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+               {
+                  _loc7_.Y += param1.y - 8;
+                  if(param1.x % 2)
+                  {
+                     _loc7_.X += param1.x - 8;
+                     this._cellContainer.x = -125;
+                     this._cellContainer.y = 18;
+                  }
+                  else
+                  {
+                     _loc7_.X += param1.x - 7;
+                     this._cellContainer.x = -9;
+                     this._cellContainer.y = 54;
+                  }
+               }
+               else
+               {
+                  _loc7_.Y += param1.y - 7;
+                  if(param1.x % 2)
+                  {
+                     _loc7_.X += param1.x - 4;
+                     this._cellContainer.x = 209;
+                     this._cellContainer.y = 7;
+                  }
+                  else
+                  {
+                     _loc7_.X += param1.x - 5;
+                     this._cellContainer.x = 101;
+                     this._cellContainer.y = 40;
+                  }
+               }
+               _loc6_++;
             }
             _loc3_++;
          }
-         for each(_loc5_ in this._cells)
-         {
-            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
-            {
-               _loc5_.Y += param1.y - 8;
-               if(param1.x % 2)
-               {
-                  _loc5_.X += param1.x - 8;
-                  this._cellContainer.x = -125;
-                  this._cellContainer.y = 18;
-               }
-               else
-               {
-                  _loc5_.X += param1.x - 7;
-                  this._cellContainer.x = -9;
-                  this._cellContainer.y = 54;
-               }
-            }
-            else
-            {
-               _loc5_.Y += param1.y - 7;
-               if(param1.x % 2)
-               {
-                  _loc5_.X += param1.x - 4;
-                  this._cellContainer.x = 209;
-                  this._cellContainer.y = 7;
-               }
-               else
-               {
-                  _loc5_.X += param1.x - 5;
-                  this._cellContainer.x = 101;
-                  this._cellContainer.y = 40;
-               }
-            }
-         }
+         this._fallbackHomeCell = new MapRoomCell();
+         this._fallbackHomeCell.X = GLOBAL._mapHome.x;
+         this._fallbackHomeCell.Y = GLOBAL._mapHome.y;
          this._cellContainer.addEventListener(MouseEvent.MOUSE_DOWN,this.ContainerClick);
          GLOBAL._ROOT.stage.addEventListener(MouseEvent.MOUSE_UP,this.ContainerRelease);
          this.mcMask.mcBG.addChild(this._cellContainer);
@@ -814,6 +812,7 @@ package com.monsters.maproom_advanced
          try
          {
             this._cellContainer.removeEventListener(MouseEvent.MOUSE_MOVE,this.ContainerMove);
+            this._dragged = false;
          }
          catch(e:Error)
          {
@@ -845,11 +844,12 @@ package com.monsters.maproom_advanced
          var _loc3_:Boolean = false;
          var _loc4_:Boolean = false;
          var _loc5_:MapRoomCell = null;
-         var _loc6_:MapRoomCell = null;
-         var _loc7_:Object = null;
-         var _loc8_:int = 0;
-         var _loc9_:MapRoomCell = null;
-         var _loc10_:Number = NaN;
+         var _loc6_:Object = null;
+         var _loc7_:int = 0;
+         var _loc8_:MapRoomCell = null;
+         var _loc9_:Boolean = false;
+         var _loc10_:MapRoomCell = null;
+         var _loc11_:Number = NaN;
          var _loc2_:int = getTimer();
          if(this._fullScreen && GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
          {
@@ -930,33 +930,36 @@ package com.monsters.maproom_advanced
                _loc5_._dataAge = 0;
                _loc4_ = true;
             }
-            _loc7_ = MapRoom.GetCell(_loc5_.X,_loc5_.Y);
-            if((_loc7_) && _loc5_.X == 10 && _loc5_.Y == 29)
+            if((!_loc5_._updated || param1) && _loc5_._dataAge <= 0)
             {
+               _loc6_ = MapRoom.GetCell(_loc5_.X,_loc5_.Y);
+               if(_loc6_)
+               {
+                  _loc5_.Setup(_loc6_);
+               }
             }
-            if(_loc7_ && _loc5_.X == 10 && _loc5_.Y == 32)
+            _loc5_.depth = _loc5_.y * 1000 + _loc5_.x;
+            this._sortArray.push(_loc5_);
+         }
+         if((!this._fallbackHomeCell._updated || param1) && this._fallbackHomeCell._dataAge <= 0)
+         {
+            _loc6_ = MapRoom.GetCell(this._fallbackHomeCell.X,this._fallbackHomeCell.Y);
+            if(_loc6_)
             {
+               this._fallbackHomeCell.Setup(_loc6_);
             }
-            if(_loc7_ && (!_loc5_._updated || param1) && _loc5_._dataAge <= 0)
-            {
-               _loc5_.Setup(_loc7_);
-            }
-            this._sortArray.push({
-               "depth":_loc5_.y * 1000 + _loc5_.x,
-               "cell":_loc5_
-            });
          }
          if(_loc4_)
          {
             this._sortArray.sortOn("depth",Array.NUMERIC);
-            _loc8_ = 0;
-            while(_loc8_ < this._sortArray.length)
+            _loc7_ = 0;
+            while(_loc7_ < this._sortArray.length)
             {
-               if(this._cellContainer.getChildIndex(this._sortArray[_loc8_].cell) != _loc8_)
+               if(this._cellContainer.getChildIndex(this._sortArray[_loc7_]) != _loc7_)
                {
-                  this._cellContainer.setChildIndex(this._sortArray[_loc8_].cell,_loc8_);
+                  this._cellContainer.setChildIndex(this._sortArray[_loc7_],_loc7_);
                }
-               _loc8_++;
+               _loc7_++;
             }
          }
          if(Boolean(this._popupInfoMine) && Boolean(this._popupInfoMine.parent))
@@ -967,30 +970,39 @@ package com.monsters.maproom_advanced
          {
             this._popupAttackA.Update();
          }
-         for each(_loc6_ in this._cells)
+         if(!this._dragged)
          {
-            if(!_loc6_._over)
+            for each(_loc8_ in this._cells)
             {
-               _loc6_.mc.mcGlow.alpha = 0;
+               if(!_loc8_._over)
+               {
+                  _loc8_.mc.mcGlow.alpha = 0;
+               }
+               else
+               {
+                  _loc8_.mc.mcGlow.alpha = 0.5;
+               }
+               _loc8_._inRange = false;
             }
-            else
-            {
-               _loc6_.mc.mcGlow.alpha = 0.5;
-            }
-            _loc6_._inRange = false;
          }
          if(!MapRoom._viewOnly)
          {
-            for each(_loc9_ in this._cells)
+            _loc9_ = false;
+            for each(_loc10_ in this._cells)
             {
-               if(_loc9_._mine && _loc9_._flinger.Get() > 0 && _loc9_._base > 0)
+               if(_loc10_._mine && _loc10_._flingerRange.Get() > 0 && _loc10_._base > 0)
                {
-                  _loc10_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[_loc9_._flinger.Get()]);
-                  if(_loc9_._over)
+                  _loc11_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[_loc10_._flingerRange.Get()]);
+                  this.ShowRange(_loc10_,_loc11_);
+                  if(_loc10_.X == GLOBAL._mapHome.x && _loc10_.y == GLOBAL._mapHome.y)
                   {
+                     _loc9_ = true;
                   }
-                  this.ShowRange(_loc9_,_loc10_);
                }
+            }
+            if(!_loc9_ && this._fallbackHomeCell._mine && this._fallbackHomeCell._base > 0)
+            {
+               this.ShowRange(this._fallbackHomeCell,POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[this._fallbackHomeCell._flingerRange.Get()]));
             }
          }
          if(MapRoom._bookmarks.length > 0 || MapRoom._viewOnly)
@@ -1018,1100 +1030,428 @@ package com.monsters.maproom_advanced
       
       public function ShowRange(param1:MapRoomCell, param2:int) : *
       {
-         var _loc3_:Object = null;
+         var _loc3_:CellData = null;
          var _loc4_:MapRoomCell = null;
-         if(param1._water == 0)
+         if(!this._dragged)
          {
-            if(!param1._over)
+            if(param1._water == 0)
             {
-               param1.mc.mcGlow.alpha = 0.5;
-            }
-            param1._inRange = true;
-            for each(_loc3_ in this.GetCellsInRange(param1.X,param1.Y,param2))
-            {
-               _loc4_ = _loc3_["cell"];
-               if((Boolean(_loc4_)) && !_loc4_._water)
+               if(!param1._over)
                {
-                  if(!_loc4_._over)
+                  param1.mc.mcGlow.alpha = 0.5;
+               }
+               param1._inRange = true;
+               for each(_loc3_ in this.GetCellsInRange(param1.X,param1.Y,param2))
+               {
+                  _loc4_ = _loc3_.cell;
+                  if((Boolean(_loc4_)) && !_loc4_._water)
                   {
-                     if(_loc3_["range"] <= 4)
+                     if(!_loc4_._over)
                      {
-                        _loc4_.mc.mcGlow.alpha = 0.5;
+                        if(_loc3_.range <= 10)
+                        {
+                           _loc4_.mc.mcGlow.alpha = 0.5;
+                        }
+                        else
+                        {
+                           _loc4_.mc.mcGlow.alpha = Math.max(_loc4_.mc.mcGlow.alpha,0.35);
+                        }
                      }
-                     else
-                     {
-                        _loc4_.mc.mcGlow.alpha = Math.max(_loc4_.mc.mcGlow.alpha,0.35);
-                     }
+                     _loc4_._inRange = true;
                   }
-                  _loc4_._inRange = true;
                }
             }
          }
       }
       
-      public function GetCellsInRange(param1:int, param2:int, param3:int) : Array
+      public function GetCellsInRange(param1:int, param2:int, param3:int) : Vector.<CellData>
       {
-         var _loc4_:Array = [];
-         if(param3 >= 1)
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc4_:Vector.<CellData> = new Vector.<CellData>(3 * param3 * (param3 + 1),true);
+         var _loc5_:int = 0;
+         if(param1 % 2 != 0)
          {
-            if(param1 % 2 != 0)
+            if(param3 >= 1)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2),
-                  "range":1
-               });
+               _loc4_[0] = new CellData(this.GetCell(param1 - 1,param2),1);
+               _loc4_[1] = new CellData(this.GetCell(param1,param2 - 1),1);
+               _loc4_[2] = new CellData(this.GetCell(param1 + 1,param2 + 1),1);
+               _loc4_[3] = new CellData(this.GetCell(param1 - 1,param2 + 1),1);
+               _loc4_[4] = new CellData(this.GetCell(param1,param2 + 1),1);
+               _loc4_[5] = new CellData(this.GetCell(param1 + 1,param2),1);
             }
-            else
+            if(param3 >= 2)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 1),
-                  "range":1
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2),
-                  "range":1
-               });
+               _loc4_[6] = new CellData(this.GetCell(param1,param2 - 2),2);
+               _loc4_[7] = new CellData(this.GetCell(param1 + 1,param2 - 1),2);
+               _loc4_[8] = new CellData(this.GetCell(param1 + 2,param2 - 1),2);
+               _loc4_[9] = new CellData(this.GetCell(param1 + 2,param2),2);
+               _loc4_[10] = new CellData(this.GetCell(param1 + 2,param2 + 1),2);
+               _loc4_[11] = new CellData(this.GetCell(param1 + 1,param2 + 2),2);
+               _loc4_[12] = new CellData(this.GetCell(param1,param2 + 2),2);
+               _loc4_[13] = new CellData(this.GetCell(param1 - 1,param2 + 2),2);
+               _loc4_[14] = new CellData(this.GetCell(param1 - 2,param2 + 1),2);
+               _loc4_[15] = new CellData(this.GetCell(param1 - 2,param2),2);
+               _loc4_[16] = new CellData(this.GetCell(param1 - 2,param2 - 1),2);
+               _loc4_[17] = new CellData(this.GetCell(param1 - 1,param2 - 1),2);
+            }
+            if(param3 >= 3)
+            {
+               _loc4_[18] = new CellData(this.GetCell(param1,param2 - 3),3);
+               _loc4_[19] = new CellData(this.GetCell(param1 + 1,param2 - 2),3);
+               _loc4_[20] = new CellData(this.GetCell(param1 + 2,param2 - 2),3);
+               _loc4_[21] = new CellData(this.GetCell(param1 + 3,param2 - 1),3);
+               _loc4_[22] = new CellData(this.GetCell(param1 + 3,param2),3);
+               _loc4_[23] = new CellData(this.GetCell(param1 + 3,param2 + 1),3);
+               _loc4_[24] = new CellData(this.GetCell(param1 + 3,param2 + 2),3);
+               _loc4_[25] = new CellData(this.GetCell(param1 + 2,param2 + 2),3);
+               _loc4_[26] = new CellData(this.GetCell(param1 + 1,param2 + 3),3);
+               _loc4_[27] = new CellData(this.GetCell(param1,param2 + 3),3);
+               _loc4_[28] = new CellData(this.GetCell(param1 - 1,param2 + 3),3);
+               _loc4_[29] = new CellData(this.GetCell(param1 - 2,param2 + 2),3);
+               _loc4_[30] = new CellData(this.GetCell(param1 - 3,param2 + 2),3);
+               _loc4_[31] = new CellData(this.GetCell(param1 - 3,param2 + 1),3);
+               _loc4_[32] = new CellData(this.GetCell(param1 - 3,param2),3);
+               _loc4_[33] = new CellData(this.GetCell(param1 - 3,param2 - 1),3);
+               _loc4_[34] = new CellData(this.GetCell(param1 - 2,param2 - 2),3);
+               _loc4_[35] = new CellData(this.GetCell(param1 - 1,param2 - 2),3);
+            }
+            if(param3 >= 4)
+            {
+               _loc4_[36] = new CellData(this.GetCell(param1,param2 - 4),4);
+               _loc4_[37] = new CellData(this.GetCell(param1 - 1,param2 - 3),4);
+               _loc4_[38] = new CellData(this.GetCell(param1 - 2,param2 - 3),4);
+               _loc4_[39] = new CellData(this.GetCell(param1 - 3,param2 - 2),4);
+               _loc4_[40] = new CellData(this.GetCell(param1 - 4,param2 - 2),4);
+               _loc4_[41] = new CellData(this.GetCell(param1 - 4,param2 - 1),4);
+               _loc4_[42] = new CellData(this.GetCell(param1 - 4,param2),4);
+               _loc4_[43] = new CellData(this.GetCell(param1 - 4,param2 + 1),4);
+               _loc4_[44] = new CellData(this.GetCell(param1 - 4,param2 + 2),4);
+               _loc4_[45] = new CellData(this.GetCell(param1 - 3,param2 + 3),4);
+               _loc4_[46] = new CellData(this.GetCell(param1 - 2,param2 + 3),4);
+               _loc4_[47] = new CellData(this.GetCell(param1 - 1,param2 + 4),4);
+               _loc4_[48] = new CellData(this.GetCell(param1,param2 + 4),4);
+               _loc4_[49] = new CellData(this.GetCell(param1 + 1,param2 + 4),4);
+               _loc4_[50] = new CellData(this.GetCell(param1 + 2,param2 + 3),4);
+               _loc4_[51] = new CellData(this.GetCell(param1 + 3,param2 + 3),4);
+               _loc4_[52] = new CellData(this.GetCell(param1 + 4,param2 + 2),4);
+               _loc4_[53] = new CellData(this.GetCell(param1 + 4,param2 + 1),4);
+               _loc4_[54] = new CellData(this.GetCell(param1 + 4,param2),4);
+               _loc4_[55] = new CellData(this.GetCell(param1 + 4,param2 - 1),4);
+               _loc4_[56] = new CellData(this.GetCell(param1 + 4,param2 - 2),4);
+               _loc4_[57] = new CellData(this.GetCell(param1 + 3,param2 - 2),4);
+               _loc4_[58] = new CellData(this.GetCell(param1 + 2,param2 - 3),4);
+               _loc4_[59] = new CellData(this.GetCell(param1 + 1,param2 - 3),4);
+            }
+            if(param3 >= 5)
+            {
+               _loc4_[60] = new CellData(this.GetCell(param1 + 0,param2 - 5),5);
+               _loc4_[61] = new CellData(this.GetCell(param1 - 1,param2 - 4),5);
+               _loc4_[62] = new CellData(this.GetCell(param1 - 2,param2 - 4),5);
+               _loc4_[63] = new CellData(this.GetCell(param1 - 3,param2 - 3),5);
+               _loc4_[64] = new CellData(this.GetCell(param1 - 4,param2 - 3),5);
+               _loc4_[65] = new CellData(this.GetCell(param1 - 5,param2 - 2),5);
+               _loc4_[66] = new CellData(this.GetCell(param1 - 5,param2 - 1),5);
+               _loc4_[67] = new CellData(this.GetCell(param1 - 5,param2 + 0),5);
+               _loc4_[68] = new CellData(this.GetCell(param1 - 5,param2 + 1),5);
+               _loc4_[69] = new CellData(this.GetCell(param1 - 5,param2 + 2),5);
+               _loc4_[70] = new CellData(this.GetCell(param1 - 5,param2 + 3),5);
+               _loc4_[71] = new CellData(this.GetCell(param1 - 4,param2 + 3),5);
+               _loc4_[72] = new CellData(this.GetCell(param1 - 3,param2 + 4),5);
+               _loc4_[73] = new CellData(this.GetCell(param1 - 2,param2 + 4),5);
+               _loc4_[74] = new CellData(this.GetCell(param1 - 1,param2 + 5),5);
+               _loc4_[75] = new CellData(this.GetCell(param1 + 0,param2 + 5),5);
+               _loc4_[76] = new CellData(this.GetCell(param1 + 1,param2 + 5),5);
+               _loc4_[77] = new CellData(this.GetCell(param1 + 2,param2 + 4),5);
+               _loc4_[78] = new CellData(this.GetCell(param1 + 3,param2 + 4),5);
+               _loc4_[79] = new CellData(this.GetCell(param1 + 4,param2 + 3),5);
+               _loc4_[80] = new CellData(this.GetCell(param1 + 5,param2 + 3),5);
+               _loc4_[81] = new CellData(this.GetCell(param1 + 5,param2 + 2),5);
+               _loc4_[82] = new CellData(this.GetCell(param1 + 5,param2 + 1),5);
+               _loc4_[83] = new CellData(this.GetCell(param1 + 5,param2 + 0),5);
+               _loc4_[84] = new CellData(this.GetCell(param1 + 5,param2 - 1),5);
+               _loc4_[85] = new CellData(this.GetCell(param1 + 5,param2 - 2),5);
+               _loc4_[86] = new CellData(this.GetCell(param1 + 4,param2 - 3),5);
+               _loc4_[87] = new CellData(this.GetCell(param1 + 3,param2 - 3),5);
+               _loc4_[88] = new CellData(this.GetCell(param1 + 2,param2 - 4),5);
+               _loc4_[89] = new CellData(this.GetCell(param1 + 1,param2 - 4),5);
+            }
+            if(param3 >= 6)
+            {
+               _loc4_[90] = new CellData(this.GetCell(param1 + 0,param2 - 6),6);
+               _loc4_[91] = new CellData(this.GetCell(param1 - 1,param2 - 5),6);
+               _loc4_[92] = new CellData(this.GetCell(param1 - 2,param2 - 5),6);
+               _loc4_[93] = new CellData(this.GetCell(param1 - 3,param2 - 4),6);
+               _loc4_[94] = new CellData(this.GetCell(param1 - 4,param2 - 4),6);
+               _loc4_[95] = new CellData(this.GetCell(param1 - 5,param2 - 3),6);
+               _loc4_[96] = new CellData(this.GetCell(param1 - 6,param2 - 3),6);
+               _loc4_[97] = new CellData(this.GetCell(param1 - 6,param2 - 2),6);
+               _loc4_[98] = new CellData(this.GetCell(param1 - 6,param2 - 1),6);
+               _loc4_[99] = new CellData(this.GetCell(param1 - 6,param2 + 0),6);
+               _loc4_[100] = new CellData(this.GetCell(param1 - 6,param2 + 1),6);
+               _loc4_[101] = new CellData(this.GetCell(param1 - 6,param2 + 2),6);
+               _loc4_[102] = new CellData(this.GetCell(param1 - 6,param2 + 3),6);
+               _loc4_[103] = new CellData(this.GetCell(param1 - 5,param2 + 4),6);
+               _loc4_[104] = new CellData(this.GetCell(param1 - 4,param2 + 4),6);
+               _loc4_[105] = new CellData(this.GetCell(param1 - 3,param2 + 5),6);
+               _loc4_[106] = new CellData(this.GetCell(param1 - 2,param2 + 5),6);
+               _loc4_[107] = new CellData(this.GetCell(param1 - 1,param2 + 6),6);
+               _loc4_[108] = new CellData(this.GetCell(param1 + 0,param2 + 6),6);
+               _loc4_[109] = new CellData(this.GetCell(param1 + 1,param2 + 6),6);
+               _loc4_[110] = new CellData(this.GetCell(param1 + 2,param2 + 5),6);
+               _loc4_[111] = new CellData(this.GetCell(param1 + 3,param2 + 5),6);
+               _loc4_[112] = new CellData(this.GetCell(param1 + 4,param2 + 4),6);
+               _loc4_[113] = new CellData(this.GetCell(param1 + 5,param2 + 4),6);
+               _loc4_[114] = new CellData(this.GetCell(param1 + 6,param2 + 3),6);
+               _loc4_[115] = new CellData(this.GetCell(param1 + 6,param2 + 2),6);
+               _loc4_[116] = new CellData(this.GetCell(param1 + 6,param2 + 1),6);
+               _loc4_[117] = new CellData(this.GetCell(param1 + 6,param2 + 0),6);
+               _loc4_[118] = new CellData(this.GetCell(param1 + 6,param2 - 1),6);
+               _loc4_[119] = new CellData(this.GetCell(param1 + 6,param2 - 2),6);
+               _loc4_[2 * 60] = new CellData(this.GetCell(param1 + 6,param2 - 3),6);
+               _loc4_[121] = new CellData(this.GetCell(param1 + 5,param2 - 3),6);
+               _loc4_[122] = new CellData(this.GetCell(param1 + 4,param2 - 4),6);
+               _loc4_[123] = new CellData(this.GetCell(param1 + 3,param2 - 4),6);
+               _loc4_[124] = new CellData(this.GetCell(param1 + 2,param2 - 5),6);
+               _loc4_[125] = new CellData(this.GetCell(param1 + 1,param2 - 5),6);
+            }
+            _loc6_ = 7;
+            _loc5_ = 126;
+            while(_loc6_ <= param3)
+            {
+               _loc7_ = param2 + Math.ceil(-_loc6_ / 2);
+               _loc8_ = _loc7_ + _loc6_;
+               while(_loc7_ < _loc8_)
+               {
+                  var _loc9_:*;
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc6_,_loc7_),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = param2 + Math.ceil(_loc6_ / 2);
+               _loc8_ = _loc7_ - _loc6_;
+               while(_loc7_ > _loc8_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc6_,_loc7_),_loc6_);
+                  _loc7_--;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc6_ + _loc7_,param2 + Math.ceil(-(_loc6_ + _loc7_) / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc7_,param2 - _loc6_ + Math.ceil(_loc7_ / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc6_ - _loc7_,param2 + Math.ceil((_loc6_ + _loc7_) / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc7_,param2 + _loc6_ + Math.ceil(-_loc7_ / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc6_++;
             }
          }
-         if(param3 >= 2)
+         else
          {
-            if(param1 % 2 != 0)
+            if(param3 >= 1)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 1),
-                  "range":2
-               });
+               _loc4_[0] = new CellData(this.GetCell(param1 - 1,param2 - 1),1);
+               _loc4_[1] = new CellData(this.GetCell(param1,param2 - 1),1);
+               _loc4_[2] = new CellData(this.GetCell(param1 + 1,param2 - 1),1);
+               _loc4_[3] = new CellData(this.GetCell(param1 - 1,param2),1);
+               _loc4_[4] = new CellData(this.GetCell(param1,param2 + 1),1);
+               _loc4_[5] = new CellData(this.GetCell(param1 + 1,param2),1);
             }
-            else
+            if(param3 >= 2)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 1),
-                  "range":2
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 2),
-                  "range":2
-               });
+               _loc4_[6] = new CellData(this.GetCell(param1,param2 - 2),2);
+               _loc4_[7] = new CellData(this.GetCell(param1 + 1,param2 - 2),2);
+               _loc4_[8] = new CellData(this.GetCell(param1 + 2,param2 - 1),2);
+               _loc4_[9] = new CellData(this.GetCell(param1 + 2,param2),2);
+               _loc4_[10] = new CellData(this.GetCell(param1 + 2,param2 + 1),2);
+               _loc4_[11] = new CellData(this.GetCell(param1 + 1,param2 + 1),2);
+               _loc4_[12] = new CellData(this.GetCell(param1,param2 + 2),2);
+               _loc4_[13] = new CellData(this.GetCell(param1 - 1,param2 + 1),2);
+               _loc4_[14] = new CellData(this.GetCell(param1 - 2,param2 + 1),2);
+               _loc4_[15] = new CellData(this.GetCell(param1 - 2,param2),2);
+               _loc4_[16] = new CellData(this.GetCell(param1 - 2,param2 - 1),2);
+               _loc4_[17] = new CellData(this.GetCell(param1 - 1,param2 - 2),2);
             }
-         }
-         if(param3 >= 3)
-         {
-            if(param1 % 2 != 0)
+            if(param3 >= 3)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 2),
-                  "range":3
-               });
+               _loc4_[18] = new CellData(this.GetCell(param1,param2 - 3),3);
+               _loc4_[19] = new CellData(this.GetCell(param1 + 1,param2 - 3),3);
+               _loc4_[20] = new CellData(this.GetCell(param1 + 2,param2 - 2),3);
+               _loc4_[21] = new CellData(this.GetCell(param1 + 3,param2 - 2),3);
+               _loc4_[22] = new CellData(this.GetCell(param1 + 3,param2 - 1),3);
+               _loc4_[23] = new CellData(this.GetCell(param1 + 3,param2),3);
+               _loc4_[24] = new CellData(this.GetCell(param1 + 3,param2 + 1),3);
+               _loc4_[25] = new CellData(this.GetCell(param1 + 2,param2 + 2),3);
+               _loc4_[26] = new CellData(this.GetCell(param1 + 1,param2 + 2),3);
+               _loc4_[27] = new CellData(this.GetCell(param1,param2 + 3),3);
+               _loc4_[28] = new CellData(this.GetCell(param1 - 1,param2 + 2),3);
+               _loc4_[29] = new CellData(this.GetCell(param1 - 2,param2 + 2),3);
+               _loc4_[30] = new CellData(this.GetCell(param1 - 3,param2 + 1),3);
+               _loc4_[31] = new CellData(this.GetCell(param1 - 3,param2),3);
+               _loc4_[32] = new CellData(this.GetCell(param1 - 3,param2 - 1),3);
+               _loc4_[33] = new CellData(this.GetCell(param1 - 3,param2 - 2),3);
+               _loc4_[34] = new CellData(this.GetCell(param1 - 2,param2 - 2),3);
+               _loc4_[35] = new CellData(this.GetCell(param1 - 1,param2 - 3),3);
             }
-            else
+            if(param3 >= 4)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 3),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 1),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 2),
-                  "range":3
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 3),
-                  "range":3
-               });
+               _loc4_[36] = new CellData(this.GetCell(param1,param2 - 4),4);
+               _loc4_[37] = new CellData(this.GetCell(param1 - 1,param2 - 4),4);
+               _loc4_[38] = new CellData(this.GetCell(param1 - 2,param2 - 3),4);
+               _loc4_[39] = new CellData(this.GetCell(param1 - 3,param2 - 3),4);
+               _loc4_[40] = new CellData(this.GetCell(param1 - 4,param2 - 2),4);
+               _loc4_[41] = new CellData(this.GetCell(param1 - 4,param2 - 1),4);
+               _loc4_[42] = new CellData(this.GetCell(param1 - 4,param2 - 0),4);
+               _loc4_[43] = new CellData(this.GetCell(param1 - 4,param2 + 1),4);
+               _loc4_[44] = new CellData(this.GetCell(param1 - 4,param2 + 2),4);
+               _loc4_[45] = new CellData(this.GetCell(param1 - 3,param2 + 2),4);
+               _loc4_[46] = new CellData(this.GetCell(param1 - 2,param2 + 3),4);
+               _loc4_[47] = new CellData(this.GetCell(param1 - 1,param2 + 3),4);
+               _loc4_[48] = new CellData(this.GetCell(param1,param2 + 4),4);
+               _loc4_[49] = new CellData(this.GetCell(param1 + 1,param2 + 3),4);
+               _loc4_[50] = new CellData(this.GetCell(param1 + 2,param2 + 3),4);
+               _loc4_[51] = new CellData(this.GetCell(param1 + 3,param2 + 2),4);
+               _loc4_[52] = new CellData(this.GetCell(param1 + 4,param2 + 2),4);
+               _loc4_[53] = new CellData(this.GetCell(param1 + 4,param2 + 1),4);
+               _loc4_[54] = new CellData(this.GetCell(param1 + 4,param2),4);
+               _loc4_[55] = new CellData(this.GetCell(param1 + 4,param2 - 1),4);
+               _loc4_[56] = new CellData(this.GetCell(param1 + 4,param2 - 2),4);
+               _loc4_[57] = new CellData(this.GetCell(param1 + 3,param2 - 3),4);
+               _loc4_[58] = new CellData(this.GetCell(param1 + 2,param2 - 3),4);
+               _loc4_[59] = new CellData(this.GetCell(param1 + 1,param2 - 4),4);
             }
-         }
-         if(param3 >= 4)
-         {
-            if(param1 % 2 != 0)
+            if(param3 >= 5)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 3),
-                  "range":4
-               });
+               _loc4_[60] = new CellData(this.GetCell(param1 + 0,param2 - 5),5);
+               _loc4_[61] = new CellData(this.GetCell(param1 - 1,param2 - 5),5);
+               _loc4_[62] = new CellData(this.GetCell(param1 - 2,param2 - 4),5);
+               _loc4_[63] = new CellData(this.GetCell(param1 - 3,param2 - 4),5);
+               _loc4_[64] = new CellData(this.GetCell(param1 - 4,param2 - 3),5);
+               _loc4_[65] = new CellData(this.GetCell(param1 - 5,param2 - 3),5);
+               _loc4_[66] = new CellData(this.GetCell(param1 - 5,param2 - 2),5);
+               _loc4_[67] = new CellData(this.GetCell(param1 - 5,param2 - 1),5);
+               _loc4_[68] = new CellData(this.GetCell(param1 - 5,param2 + 0),5);
+               _loc4_[69] = new CellData(this.GetCell(param1 - 5,param2 + 1),5);
+               _loc4_[70] = new CellData(this.GetCell(param1 - 5,param2 + 2),5);
+               _loc4_[71] = new CellData(this.GetCell(param1 - 4,param2 + 3),5);
+               _loc4_[72] = new CellData(this.GetCell(param1 - 3,param2 + 3),5);
+               _loc4_[73] = new CellData(this.GetCell(param1 - 2,param2 + 4),5);
+               _loc4_[74] = new CellData(this.GetCell(param1 - 1,param2 + 4),5);
+               _loc4_[75] = new CellData(this.GetCell(param1 + 0,param2 + 5),5);
+               _loc4_[76] = new CellData(this.GetCell(param1 + 1,param2 + 4),5);
+               _loc4_[77] = new CellData(this.GetCell(param1 + 2,param2 + 4),5);
+               _loc4_[78] = new CellData(this.GetCell(param1 + 3,param2 + 3),5);
+               _loc4_[79] = new CellData(this.GetCell(param1 + 4,param2 + 3),5);
+               _loc4_[80] = new CellData(this.GetCell(param1 + 5,param2 + 2),5);
+               _loc4_[81] = new CellData(this.GetCell(param1 + 5,param2 + 1),5);
+               _loc4_[82] = new CellData(this.GetCell(param1 + 5,param2 + 0),5);
+               _loc4_[83] = new CellData(this.GetCell(param1 + 5,param2 - 1),5);
+               _loc4_[84] = new CellData(this.GetCell(param1 + 5,param2 - 2),5);
+               _loc4_[85] = new CellData(this.GetCell(param1 + 5,param2 - 3),5);
+               _loc4_[86] = new CellData(this.GetCell(param1 + 4,param2 - 3),5);
+               _loc4_[87] = new CellData(this.GetCell(param1 + 3,param2 - 4),5);
+               _loc4_[88] = new CellData(this.GetCell(param1 + 2,param2 - 4),5);
+               _loc4_[89] = new CellData(this.GetCell(param1 + 1,param2 - 5),5);
             }
-            else
+            if(param3 >= 6)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 - 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 0),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1,param2 + 4),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 1),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 2),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 3),
-                  "range":4
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 4),
-                  "range":4
-               });
+               _loc4_[90] = new CellData(this.GetCell(param1 + 0,param2 - 6),6);
+               _loc4_[91] = new CellData(this.GetCell(param1 - 1,param2 - 6),6);
+               _loc4_[92] = new CellData(this.GetCell(param1 - 2,param2 - 5),6);
+               _loc4_[93] = new CellData(this.GetCell(param1 - 3,param2 - 5),6);
+               _loc4_[94] = new CellData(this.GetCell(param1 - 4,param2 - 4),6);
+               _loc4_[95] = new CellData(this.GetCell(param1 - 5,param2 - 4),6);
+               _loc4_[96] = new CellData(this.GetCell(param1 - 6,param2 - 3),6);
+               _loc4_[97] = new CellData(this.GetCell(param1 - 6,param2 - 2),6);
+               _loc4_[98] = new CellData(this.GetCell(param1 - 6,param2 - 1),6);
+               _loc4_[99] = new CellData(this.GetCell(param1 - 6,param2 + 0),6);
+               _loc4_[100] = new CellData(this.GetCell(param1 - 6,param2 + 1),6);
+               _loc4_[101] = new CellData(this.GetCell(param1 - 6,param2 + 2),6);
+               _loc4_[102] = new CellData(this.GetCell(param1 - 6,param2 + 3),6);
+               _loc4_[103] = new CellData(this.GetCell(param1 - 5,param2 + 3),6);
+               _loc4_[104] = new CellData(this.GetCell(param1 - 4,param2 + 4),6);
+               _loc4_[105] = new CellData(this.GetCell(param1 - 3,param2 + 4),6);
+               _loc4_[106] = new CellData(this.GetCell(param1 - 2,param2 + 5),6);
+               _loc4_[107] = new CellData(this.GetCell(param1 - 1,param2 + 5),6);
+               _loc4_[108] = new CellData(this.GetCell(param1 + 0,param2 + 6),6);
+               _loc4_[109] = new CellData(this.GetCell(param1 + 1,param2 + 5),6);
+               _loc4_[110] = new CellData(this.GetCell(param1 + 2,param2 + 5),6);
+               _loc4_[111] = new CellData(this.GetCell(param1 + 3,param2 + 4),6);
+               _loc4_[112] = new CellData(this.GetCell(param1 + 4,param2 + 4),6);
+               _loc4_[113] = new CellData(this.GetCell(param1 + 5,param2 + 3),6);
+               _loc4_[114] = new CellData(this.GetCell(param1 + 6,param2 + 3),6);
+               _loc4_[115] = new CellData(this.GetCell(param1 + 6,param2 + 2),6);
+               _loc4_[116] = new CellData(this.GetCell(param1 + 6,param2 + 1),6);
+               _loc4_[117] = new CellData(this.GetCell(param1 + 6,param2 + 0),6);
+               _loc4_[118] = new CellData(this.GetCell(param1 + 6,param2 - 1),6);
+               _loc4_[119] = new CellData(this.GetCell(param1 + 6,param2 - 2),6);
+               _loc4_[2 * 60] = new CellData(this.GetCell(param1 + 6,param2 - 3),6);
+               _loc4_[121] = new CellData(this.GetCell(param1 + 5,param2 - 4),6);
+               _loc4_[122] = new CellData(this.GetCell(param1 + 4,param2 - 4),6);
+               _loc4_[123] = new CellData(this.GetCell(param1 + 3,param2 - 5),6);
+               _loc4_[124] = new CellData(this.GetCell(param1 + 2,param2 - 5),6);
+               _loc4_[125] = new CellData(this.GetCell(param1 + 1,param2 - 6),6);
             }
-         }
-         if(param3 >= 5)
-         {
-            if(param1 % 2 != 0)
+            _loc6_ = 7;
+            _loc5_ = 126;
+            while(_loc6_ <= param3)
             {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 - 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 0),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 + 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 0),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 4),
-                  "range":5
-               });
-            }
-            else
-            {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 - 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 0),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 + 5),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 0),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 1),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 2),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 3),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 4),
-                  "range":5
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 5),
-                  "range":5
-               });
-            }
-         }
-         if(param3 >= 6)
-         {
-            if(param1 % 2 != 0)
-            {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 - 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 0),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 + 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 0),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 5),
-                  "range":6
-               });
-            }
-            else
-            {
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 - 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 - 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 - 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 0),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 6,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 5,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 4,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 3,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 2,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 - 1,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 0,param2 + 6),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 + 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 + 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 + 0),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 1),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 2),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 6,param2 - 3),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 5,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 4,param2 - 4),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 3,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 2,param2 - 5),
-                  "range":6
-               });
-               _loc4_.push({
-                  "cell":this.GetCell(param1 + 1,param2 - 6),
-                  "range":6
-               });
+               _loc7_ = param2 + Math.floor(-_loc6_ / 2);
+               _loc8_ = _loc7_ + _loc6_;
+               while(_loc7_ < _loc8_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc6_,_loc7_),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = param2 + Math.floor(_loc6_ / 2);
+               _loc8_ = _loc7_ - _loc6_;
+               while(_loc7_ > _loc8_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc6_,_loc7_),_loc6_);
+                  _loc7_--;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc6_ + _loc7_,param2 + Math.floor(-(_loc6_ + _loc7_) / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc7_,param2 - _loc6_ + Math.floor(_loc7_ / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 + _loc6_ - _loc7_,param2 + Math.floor((_loc6_ + _loc7_) / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
+               {
+                  _loc4_[_loc9_ = _loc5_++] = new CellData(this.GetCell(param1 - _loc7_,param2 + _loc6_ + Math.floor(-_loc7_ / 2)),_loc6_);
+                  _loc7_++;
+               }
+               _loc6_++;
             }
          }
          return _loc4_;
@@ -2142,6 +1482,10 @@ package com.monsters.maproom_advanced
             {
                return _loc3_;
             }
+         }
+         if(this._fallbackHomeCell.X == param1 && this._fallbackHomeCell.Y == param2)
+         {
+            return this._fallbackHomeCell;
          }
          return null;
       }
@@ -2608,6 +1952,11 @@ package com.monsters.maproom_advanced
          this.BuffHide(null);
       }
       
+      public function Help() : void
+      {
+         Tutorial.ForceShowAll();
+      }
+      
       public function FullScreen() : *
       {
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
@@ -2639,12 +1988,6 @@ package com.monsters.maproom_advanced
          {
             MapRoom.ResizeHandler();
          }
-      }
-      
-      public function Help(param1:MouseEvent = null) : *
-      {
-         GLOBAL.BlockerAdd(this);
-         this.addChild(new MapRoomGuide());
       }
    }
 }

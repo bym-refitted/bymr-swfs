@@ -154,11 +154,21 @@ package com.monsters.maproom
          else
          {
             this.player.helpBtn.SetupKey("map_view_btn");
-            this.player.helpBtn.addEventListener(MouseEvent.CLICK,this.onView);
+            if(TUTORIAL._stage < 110)
+            {
+               this.player.helpBtn.Enabled = false;
+            }
+            else
+            {
+               this.player.helpBtn.addEventListener(MouseEvent.CLICK,this.onView);
+            }
             this.player.attackBtn.SetupKey("map_attack_btn");
             this.player.attackBtn.addEventListener(MouseEvent.CLICK,this.onAttack);
             this.player.attackBtn.Enabled = true;
-            this.player.helpBtn.Enabled = true;
+            if(TUTORIAL._stage > 110)
+            {
+               this.player.helpBtn.Enabled = true;
+            }
          }
          return {
             "OKattack":_loc2_,
@@ -217,7 +227,10 @@ package com.monsters.maproom
          }
          var _loc3_:String = _loc2_.wm.Get() == 1 ? "wmview" : "view";
          MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.MAIN_YARD);
-         MAPROOM._mc.Hide();
+         if(Boolean(MAPROOM) && MAPROOM._mc)
+         {
+            MAPROOM._mc.Hide();
+         }
       }
       
       private function onTruce(param1:MouseEvent) : void
@@ -397,7 +410,10 @@ package com.monsters.maproom
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
          MapRoom.BRIDGE.BASE.LoadBase(null,null,param1,param2,false,BASE.MAIN_YARD);
-         MAPROOM._mc.Hide();
+         if(MapRoom.BRIDGE && MapRoom.BRIDGE.MAPROOM && Boolean(MapRoom.BRIDGE.MAPROOM._mc))
+         {
+            MapRoom.BRIDGE.MAPROOM._mc.Hide();
+         }
       }
    }
 }

@@ -1,26 +1,32 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.ai.TRIBES;
    import com.monsters.ai.WMBASE;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.chat.Chat;
+   import com.monsters.debug.Console;
    import com.monsters.display.BuildingOverlay;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.particles.ParticleText;
    import com.monsters.effects.smoke.Smoke;
-   import com.monsters.maproom_advanced.MapRoom;
-   import com.monsters.maproom_advanced.PopupLostMainBase;
+   import com.monsters.frontPage.FrontPageHandler;
+   import com.monsters.interfaces.IHandler;
+   import com.monsters.maproom_advanced.*;
    import com.monsters.pathing.PATHING;
    import com.monsters.radio.RADIO;
-   import flash.display.DisplayObject;
-   import flash.display.Loader;
-   import flash.display.MovieClip;
+   import com.monsters.replayableEvents.ReplayableEventHandler;
+   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.rewarding.RewardHandler;
+   import com.monsters.siege.*;
+   import com.monsters.siege.weapons.*;
+   import flash.display.*;
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.geom.Point;
    import flash.net.*;
+   import flash.text.TextField;
    import flash.utils.getTimer;
    import gs.*;
    import gs.easing.*;
@@ -35,7 +41,7 @@ package
       
       public static var _hpResources:Object;
       
-      public static var _bankedValue:int;
+      public static var _bankedValue:Number;
       
       public static var _bankedTime:int;
       
@@ -52,6 +58,14 @@ package
       public static var _hpDeltaResources:Object;
       
       public static var _savedDeltaResources:Object;
+      
+      public static var _GIP:Object;
+      
+      public static var _processedGIP:Object;
+      
+      public static var _rawGIP:Object;
+      
+      public static var _lastProcessedGIP:Number;
       
       public static var _credits:SecNum;
       
@@ -117,8 +131,6 @@ package
       
       public static var _buildingsMain:Object;
       
-      public static var _buildingsCatchup:Object;
-      
       public static var _buildingsMushrooms:Object;
       
       public static var _buildingsGifts:Object;
@@ -143,7 +155,7 @@ package
       
       public static var _baseLevel:int;
       
-      public static var _baseValue:uint;
+      public static var _baseValue:Number;
       
       public static var _basePoints:Number;
       
@@ -211,6 +223,16 @@ package
       
       private static var _tmpPercent:Number;
       
+      private static var _oldSiegeData:Object;
+      
+      public static var loadObject:Object;
+      
+      public static var _ideltaResources:Object = null;
+      
+      public static var _iresources:Object = null;
+      
+      public static var _autobankCounter:int = 10;
+      
       public static var _allianceArmamentTime:SecNum = new SecNum(0);
       
       public static var _loadedYardType:int = 0;
@@ -237,6 +259,8 @@ package
       
       private static var _loadedSomething:Boolean = false;
       
+      public static const HANDLERS:Vector.<IHandler> = Vector.<IHandler>([RewardHandler.instance]);
+      
       public function BASE()
       {
          super();
@@ -245,7 +269,7 @@ package
          Load();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _buildingsHousing = [];
          _buildingsBunkers = {};
@@ -274,6 +298,27 @@ package
          _isFan = 0;
          _isBookmarked = 0;
          _installsGenerated = 0;
+         _ideltaResources = {
+            "dirty":false,
+            "r1":new SecNum(0),
+            "r2":new SecNum(0),
+            "r3":new SecNum(0),
+            "r4":new SecNum(0),
+            "r1max":0,
+            "r2max":0,
+            "r3max":0,
+            "r4max":0
+         };
+         _iresources = {
+            "r1":new SecNum(0),
+            "r2":new SecNum(0),
+            "r3":new SecNum(0),
+            "r4":new SecNum(0),
+            "r1max":0,
+            "r2max":0,
+            "r3max":0,
+            "r4max":0
+         };
          _deltaResources = {
             "dirty":false,
             "r1":new SecNum(0),
@@ -283,10 +328,10 @@ package
          };
          _hpDeltaResources = {
             "dirty":false,
-            "r1":0,
-            "r2":0,
-            "r3":0,
-            "r4":0
+            "r1":Number(0),
+            "r2":Number(0),
+            "r3":Number(0),
+            "r4":Number(0)
          };
          _savedDeltaResources = {
             "r1":new SecNum(0),
@@ -298,10 +343,9 @@ package
          GLOBAL.Clear();
       }
       
-      public static function Cleanup() : *
+      public static function Cleanup() : void
       {
          var _loc1_:BFOUNDATION = null;
-         SPECIALEVENT.ClearWildMonsterPowerups();
          CREATURES.Clear();
          CREEPS.Clear();
          GLOBAL._ROOT.removeChild(GLOBAL._layerMap);
@@ -309,11 +353,16 @@ package
          GLOBAL._ROOT.removeChild(GLOBAL._layerWindows);
          GLOBAL._ROOT.removeChild(GLOBAL._layerMessages);
          GLOBAL._ROOT.removeChild(GLOBAL._layerTop);
-         GLOBAL._layerMap = GLOBAL._ROOT.addChild(new MovieClip());
-         GLOBAL._layerUI = GLOBAL._ROOT.addChild(new MovieClip());
-         GLOBAL._layerWindows = GLOBAL._ROOT.addChild(new MovieClip());
-         GLOBAL._layerMessages = GLOBAL._ROOT.addChild(new MovieClip());
-         GLOBAL._layerTop = GLOBAL._ROOT.addChild(new MovieClip());
+         GLOBAL._layerMap = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerUI = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerWindows = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerMessages = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerTop = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerMap.mouseEnabled = false;
+         GLOBAL._layerUI.mouseEnabled = false;
+         GLOBAL._layerWindows.mouseEnabled = false;
+         GLOBAL._layerMessages.mouseEnabled = false;
+         GLOBAL._layerTop.mouseEnabled = false;
          GLOBAL._bProspectorCount = 0;
          GLOBAL._bMinerCount = 0;
          GLOBAL._bStoreCount = 0;
@@ -330,7 +379,6 @@ package
          _buildingsWalls = {};
          _buildingsTowers = {};
          _buildingsMain = {};
-         _buildingsCatchup = {};
          _buildingsMushrooms = {};
          _buildingsGifts = {};
          _buildingsStored = {};
@@ -384,15 +432,23 @@ package
          };
       }
       
-      public static function LoadBase(param1:String = null, param2:int = 0, param3:int = 0, param4:String = "build", param5:Boolean = false, param6:int = -1) : *
+      public static function LoadBase(param1:String = null, param2:int = 0, param3:int = 0, param4:String = "build", param5:Boolean = false, param6:int = -1) : Boolean
       {
          if(Boolean(GLOBAL._advancedMap) && MapRoom._open)
          {
             MapRoom.Hide();
          }
+         if(MAPROOM_INFERNO._open)
+         {
+            MAPROOM_INFERNO.Hide();
+         }
+         if(MAPROOM._open)
+         {
+            MAPROOM.Hide();
+         }
          if(!GLOBAL._advancedMap && (param4 == "attack" || param4 == "iattack") && (GLOBAL._mode != "build" && GLOBAL._mode != "ibuild"))
          {
-            return;
+            return false;
          }
          if(MAPROOM_DESCENT._inDescent && (param6 == MAIN_YARD || param6 == OUTPOST))
          {
@@ -422,17 +478,15 @@ package
             }
             else if(!_saving)
             {
-               if(param4 == "attack" || param4 == "wmattack" || param4 == "iattack" || param4 == "iwmattack")
-               {
-               }
                LoadBaseB();
             }
          }
+         return true;
       }
       
-      public static function LoadBaseB() : *
+      public static function LoadBaseB() : void
       {
-         GLOBAL.Message("LoadBaseB vars:" + com.adobe.serialization.json.JSON.encode(_loadBase));
+         GLOBAL.Message("LoadBaseB vars:" + JSON.encode(_loadBase));
          GLOBAL._baseURL2 = _loadBase[0];
          var _loc1_:int = int(_loadBase[1]);
          var _loc2_:int = int(_loadBase[2]);
@@ -443,7 +497,7 @@ package
          Load(GLOBAL._baseURL2,_loc1_,_loc2_,_loc4_);
       }
       
-      public static function Load(param1:String = null, param2:int = 0, param3:int = 0, param4:int = -1) : *
+      public static function Load(param1:String = null, param2:int = 0, param3:int = 0, param4:int = -1) : void
       {
          var t:*;
          var tmpMode:String;
@@ -460,16 +514,23 @@ package
          var userid:int = param2;
          var baseid:int = param3;
          var yardtype:int = param4;
-         handleLoadSuccessful = function(param1:Object):*
+         handleLoadSuccessful = function(param1:Object):void
          {
             var TauntB:Function;
             var onImageLoad:Function;
             var LoadImageError:Function;
+            var firstLoad:Boolean = false;
             var idstr:String = null;
             var ix:int = 0;
             var r:Object = null;
             var bd:Object = null;
             var i:String = null;
+            var ir:Object = null;
+            var opKey:String = null;
+            var op:Object = null;
+            var height:int = 0;
+            var opbd:Object = null;
+            var value:int = 0;
             var kx:int = 0;
             var id:String = null;
             var ooo:Object = null;
@@ -488,19 +549,27 @@ package
             var obj:Object = param1;
             if(obj.error == 0)
             {
-               if(!_loadedSomething && ExternalInterface.available)
+               loadObject = obj;
+               firstLoad = false;
+               if(!_loadedSomething)
                {
-                  ExternalInterface.call("cc.recordStats","baseend");
+                  if(ExternalInterface.available)
+                  {
+                     ExternalInterface.call("cc.recordStats","baseend");
+                  }
+                  firstLoad = true;
                   _loadedSomething = true;
+                  GAME._firstLoadComplete = true;
                }
                if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
                   GLOBAL._openBase = null;
                }
+               MapRoom._worldID = obj.worldid;
                GLOBAL.SetFlags(obj.flags);
                QUESTS.Setup();
                GLOBAL._reloadonerror = false;
-               _isProtected = int(obj.name_1);
+               _isProtected = int(obj["protected"]);
                _isFan = int(obj.fan);
                _isBookmarked = int(obj.bookmarked);
                _installsGenerated = int(obj.installsgenerated);
@@ -526,11 +595,11 @@ package
                }
                if(obj.chatservers != null)
                {
-                  GLOBAL._chatServers = obj.chatservers;
+                  Chat._chatServers = obj.chatservers;
                }
                else
                {
-                  GLOBAL._chatServers = new Array();
+                  Chat._chatServers = new Array();
                }
                _lastSaveID = obj.id;
                _baseSeed = obj.baseseed;
@@ -639,14 +708,26 @@ package
                GLOBAL._unreadMessages = obj.unreadmessages;
                r = obj.resources;
                _resources = {};
-               _resources.r1 = new SecNum(int(r.r1));
-               _resources.r2 = new SecNum(int(r.r2));
-               _resources.r3 = new SecNum(int(r.r3));
-               _resources.r4 = new SecNum(int(r.r4));
+               _resources.r1 = new SecNum(Math.floor(r.r1));
+               _resources.r2 = new SecNum(Math.floor(r.r2));
+               _resources.r3 = new SecNum(Math.floor(r.r3));
+               _resources.r4 = new SecNum(Math.floor(r.r4));
                _resources.r1bonus = r.r1bonus;
                _resources.r2bonus = r.r2bonus;
                _resources.r3bonus = r.r3bonus;
                _resources.r4bonus = r.r4bonus;
+               if(obj.iresources)
+               {
+                  ir = obj.iresources;
+                  _iresources.r1 = new SecNum(Math.floor(ir.r1));
+                  _iresources.r2 = new SecNum(Math.floor(ir.r2));
+                  _iresources.r3 = new SecNum(Math.floor(ir.r3));
+                  _iresources.r4 = new SecNum(Math.floor(ir.r4));
+                  _iresources.r1max = int(ir.r1max);
+                  _iresources.r2max = int(ir.r2max);
+                  _iresources.r3max = int(ir.r3max);
+                  _iresources.r4max = int(ir.r4max);
+               }
                if(Boolean(obj.updates) && obj.updates.length > 0)
                {
                   UPDATES.Process(obj.updates);
@@ -687,6 +768,106 @@ package
                         GLOBAL.ErrorMessage("BASE.Process yard w outpost");
                      }
                      break;
+                  }
+               }
+               _rawGIP = obj.buildingresources;
+               _processedGIP = {};
+               _GIP = {
+                  "r1":new SecNum(0),
+                  "r2":new SecNum(0),
+                  "r3":new SecNum(0),
+                  "r4":new SecNum(0)
+               };
+               if(_rawGIP)
+               {
+                  if(_rawGIP["b" + GLOBAL._homeBaseID])
+                  {
+                     delete _rawGIP["b" + GLOBAL._homeBaseID];
+                  }
+                  if(Boolean(_rawGIP["t"]) && GLOBAL._mode != "attack")
+                  {
+                     _lastProcessedGIP = _rawGIP["t"];
+                     delete _rawGIP["t"];
+                  }
+                  else
+                  {
+                     _lastProcessedGIP = _lastProcessed;
+                  }
+                  if(GLOBAL.Timestamp() - _lastProcessedGIP > 172800)
+                  {
+                     _lastProcessedGIP = GLOBAL.Timestamp() - 172800;
+                  }
+                  if(GLOBAL._mode == "build" || GLOBAL._mode == "attack")
+                  {
+                     for(opKey in _rawGIP)
+                     {
+                        op = _rawGIP[opKey];
+                        if(opKey == "t")
+                        {
+                           _lastProcessedGIP = _rawGIP[opKey];
+                        }
+                        else
+                        {
+                           if(op is String)
+                           {
+                              break;
+                           }
+                           if(op["r1"] != undefined)
+                           {
+                              _processedGIP[opKey] = {
+                                 "r1":new SecNum(op["r1"]),
+                                 "r2":new SecNum(op["r2"]),
+                                 "r3":new SecNum(op["r3"]),
+                                 "r4":new SecNum(op["r4"])
+                              };
+                           }
+                           else
+                           {
+                              height = int(_rawGIP[opKey]["height"]);
+                              if(height)
+                              {
+                                 delete op["height"];
+                              }
+                              else
+                              {
+                                 height = 100;
+                              }
+                              _processedGIP[opKey] = {
+                                 "r1":new SecNum(0),
+                                 "r2":new SecNum(0),
+                                 "r3":new SecNum(0),
+                                 "r4":new SecNum(0)
+                              };
+                              for each(opbd in op)
+                              {
+                                 if(opbd.t >= 1 && opbd.t <= 4)
+                                 {
+                                    if(opbd.l)
+                                    {
+                                       value = int(OUTPOST_YARD_PROPS._outpostProps[opbd.t - 1].produce[opbd.l - 1]);
+                                    }
+                                    else
+                                    {
+                                       value = int(OUTPOST_YARD_PROPS._outpostProps[opbd.t - 1].produce[0]);
+                                    }
+                                    value = Math.max(int(value * GLOBAL._averageAltitude.Get() / height),1);
+                                    _processedGIP[opKey]["r" + opbd.t].Add(value);
+                                 }
+                              }
+                              _rawGIP[opKey] = {
+                                 "r1":_processedGIP[opKey].r1.Get(),
+                                 "r2":_processedGIP[opKey].r2.Get(),
+                                 "r3":_processedGIP[opKey].r3.Get(),
+                                 "r4":_processedGIP[opKey].r4.Get()
+                              };
+                           }
+                           _GIP["r1"].Add(_processedGIP[opKey]["r1"].Get());
+                           _GIP["r2"].Add(_processedGIP[opKey]["r2"].Get());
+                           _GIP["r3"].Add(_processedGIP[opKey]["r3"].Get());
+                           _GIP["r4"].Add(_processedGIP[opKey]["r4"].Get());
+                        }
+                     }
+                     _processedGIP["t"] = _lastProcessedGIP;
                   }
                }
                _baseName = obj.basename;
@@ -745,14 +926,31 @@ package
                {
                   QUESTS._global.gift_accept = obj.stats.moga;
                }
+               NewPopupSystem.instance.Setup(obj.stats.popupdata);
                if(obj.stats.updateid)
                {
                   GLOBAL._whatsnewid = obj.stats.updateid;
+               }
+               if(obj.stats.updateid_mr2 != null)
+               {
+                  GLOBAL._mr2TutorialId = Math.max(GLOBAL._mr2TutorialId,obj.stats.updateid_mr2);
+               }
+               else
+               {
+                  GLOBAL._mr2TutorialId = Math.max(GLOBAL._mr2TutorialId,!!GLOBAL._advancedMap ? 1 : 0);
                }
                GLOBAL._otherStats = {"s":1};
                if(obj.stats.other)
                {
                   GLOBAL._otherStats = obj.stats.other;
+               }
+               if(GLOBAL.StatGet(BUILDING11.CHANGED_TO_MR2) == 1)
+               {
+                  LOGGER.StatB({
+                     "st1":"world_map",
+                     "st2":"enter"
+                  },MapRoom._worldID);
+                  GLOBAL.StatSet(BUILDING11.CHANGED_TO_MR2,2);
                }
                if(obj.wmid)
                {
@@ -776,7 +974,7 @@ package
                ACADEMY.Data(obj.academy);
                if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD)
                {
-                  GLOBAL._playerCreatureUpgrades = com.adobe.serialization.json.JSON.decode("{\"C1\":{\"level\":1},\"C2\":{\"level\":1}}");
+                  GLOBAL._playerCreatureUpgrades = JSON.decode("{\"C1\":{\"level\":1},\"C2\":{\"level\":1}}");
                   for(id in ACADEMY._upgrades)
                   {
                      GLOBAL._playerCreatureUpgrades[id] = {"level":ACADEMY._upgrades[id].level};
@@ -785,6 +983,14 @@ package
                         GLOBAL._playerCreatureUpgrades[id].powerup = ACADEMY._upgrades[id].powerup;
                      }
                   }
+               }
+               if(GLOBAL._mode == "build" && (_yardType == MAIN_YARD || _yardType == INFERNO_YARD))
+               {
+                  SiegeWeapons.importWeapons(obj.siege);
+               }
+               else
+               {
+                  _oldSiegeData = obj.siege;
                }
                EFFECTS.Setup(obj.effects);
                if(Boolean(obj.monsters) && Boolean(obj.monsters.housed))
@@ -824,15 +1030,16 @@ package
                MONSTERBAITER.Setup(obj.monsterbaiter);
                if(obj.chatenabled != null)
                {
-                  GLOBAL._chatEnabled = obj.chatenabled;
-                  if(GLOBAL.flagsShouldChatExist())
+                  Chat._chatEnabled = obj.chatenabled;
+                  if(Chat.flagsShouldChatExist())
                   {
-                     GLOBAL.initChat();
+                     Chat.initChat();
                   }
                }
                if(obj.stats.achievements)
                {
                   ACHIEVEMENTS.Data(obj.stats.achievements);
+                  ACHIEVEMENTS.CheckRetroactiveAchievments();
                }
                else if(obj.quests)
                {
@@ -858,7 +1065,7 @@ package
                {
                   if(obj.champion != "\"null\"" && obj.champion != "null")
                   {
-                     ooo = com.adobe.serialization.json.JSON.decode(obj.champion);
+                     ooo = JSON.decode(obj.champion);
                      try
                      {
                         if(ooo.t)
@@ -905,12 +1112,20 @@ package
                            {
                               _guardianData.fb = new SecNum(0);
                            }
+                           if(ooo.pl)
+                           {
+                              _guardianData.pl = new SecNum(ooo.pl);
+                           }
+                           else
+                           {
+                              _guardianData.pl = new SecNum(0);
+                           }
                         }
                      }
                      catch(e:Error)
                      {
-                        st = com.adobe.serialization.json.JSON.decode(obj.champion);
-                        _guardianData = com.adobe.serialization.json.JSON.decode(st);
+                        st = JSON.decode(obj.champion) as String;
+                        _guardianData = JSON.decode(st);
                      }
                      if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && Boolean(_guardianData))
                      {
@@ -958,6 +1173,14 @@ package
                         else
                         {
                            GLOBAL._playerGuardianData.fb = new SecNum(0);
+                        }
+                        if(_guardianData.pl)
+                        {
+                           GLOBAL._playerGuardianData.pl = new SecNum(_guardianData.pl.Get());
+                        }
+                        else
+                        {
+                           GLOBAL._playerGuardianData.pl = new SecNum(0);
                         }
                      }
                   }
@@ -1132,10 +1355,6 @@ package
                {
                   _tempSentGifts = obj.sentgifts;
                }
-               else
-               {
-                  _tempSentGifts = [];
-               }
                if(obj.sentinvites)
                {
                   _tempSentInvites = obj.sentinvites;
@@ -1164,12 +1383,12 @@ package
                      GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
                      break;
                   case 2:
-                     if(GLOBAL._baseURL == "http://bm-kg-web2.dev.casualcollective.com/base/")
+                     if(GLOBAL._baseURL == "http://bym-ko-halbvip1.dc.kixeye.com/base/")
                      {
-                        GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/api/bm/base/";
+                        GLOBAL._baseURL = "http://bym-ko-halbvip1.dc.kixeye.com/api/bm/base/";
                         break;
                      }
-                     GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
+                     GLOBAL._baseURL = "http://bym-ko-halbvip1.dc.kixeye.com/base/";
                      break;
                   case 3:
                      if(GLOBAL._baseURL == "http://bmdev.vx.casualcollective.com/base/")
@@ -1227,6 +1446,22 @@ package
                      }
                      GLOBAL._baseURL = "http://bym-fb-nmoore.dev.kixeye.com/base/";
                      break;
+                  case 10:
+                     if(GLOBAL._baseURL == "http://bm-kg-web2.dev.casualcollective.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
+                     break;
+                  case 11:
+                     if(GLOBAL._baseURL == "http://bym-ko-web1.stage.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-ko-web1.stage.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-ko-web1.stage.kixeye.com/api/bm/base/";
+                     break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
                      {
@@ -1262,6 +1497,7 @@ package
          _loading = true;
          _baseID = baseid;
          _baseLevel = 0;
+         _autobankCounter = 10;
          if(yardtype >= MAIN_YARD)
          {
             _yardType = yardtype;
@@ -1309,6 +1545,14 @@ package
             {
                tmpMode = "view";
             }
+         }
+         if(MAPROOM_INFERNO._open)
+         {
+            MAPROOM_INFERNO.Hide();
+         }
+         if(MAPROOM._open)
+         {
+            MAPROOM.Hide();
          }
          loadVars = [["userid",userid > 0 ? userid : ""],["baseid",_baseID],["type",tmpMode]];
          if(MapRoom._viewOnly && (GLOBAL._mode == "view" || GLOBAL._mode == "wmview"))
@@ -1392,6 +1636,14 @@ package
          var i:* = undefined;
          var building:BFOUNDATION = null;
          PLEASEWAIT.Update(KEYS.Get("msg_building"));
+         if(MAPROOM_INFERNO._open)
+         {
+            MAPROOM_INFERNO.Hide();
+         }
+         if(MAPROOM._open)
+         {
+            MAPROOM.Hide();
+         }
          try
          {
             lm = 0;
@@ -1531,7 +1783,7 @@ package
          catch(e:Error)
          {
             GLOBAL.ErrorMessage("BASE.Build C: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _yardType + " BObj " + com.adobe.serialization.json.JSON.encode(buildingobject));
+            LOGGER.Log("err","BASE.Build building/monster processing.  ID: " + _loadedBaseID + " Outpost: " + _yardType + " BObj " + JSON.encode(buildingobject));
          }
          try
          {
@@ -1796,22 +2048,22 @@ package
                   if(_tempLoot.r1)
                   {
                      LOGGER.Stat([17,1,int(_tempLoot.r1)]);
-                     LOGGER.Stat([18,1,Math.ceil(100 / _resources.r1max * int(_tempLoot.r1))]);
+                     LOGGER.Stat([18,1,Math.floor(100 / _resources.r1max * int(_tempLoot.r1))]);
                   }
                   if(_tempLoot.r2)
                   {
                      LOGGER.Stat([17,2,int(_tempLoot.r2)]);
-                     LOGGER.Stat([18,2,Math.ceil(100 / _resources.r2max * int(_tempLoot.r2))]);
+                     LOGGER.Stat([18,2,Math.floor(100 / _resources.r2max * int(_tempLoot.r2))]);
                   }
                   if(_tempLoot.r3)
                   {
                      LOGGER.Stat([17,3,int(_tempLoot.r3)]);
-                     LOGGER.Stat([18,3,Math.ceil(100 / _resources.r3max * int(_tempLoot.r3))]);
+                     LOGGER.Stat([18,3,Math.floor(100 / _resources.r3max * int(_tempLoot.r3))]);
                   }
                   if(_tempLoot.r4)
                   {
                      LOGGER.Stat([17,4,int(_tempLoot.r4)]);
-                     LOGGER.Stat([18,4,Math.ceil(100 / _resources.r4max * int(_tempLoot.r4))]);
+                     LOGGER.Stat([18,4,Math.floor(100 / _resources.r4max * int(_tempLoot.r4))]);
                   }
                }
             }
@@ -1820,6 +2072,10 @@ package
             GLOBAL.t = _lastProcessed;
             _lastProcessedB = _lastProcessed;
             _catchupTime = _currentTime - _lastProcessed;
+            if(_yardType != INFERNO_YARD)
+            {
+               BASE.Autobank(_currentTime - _lastProcessedGIP);
+            }
             hatqueue2 = [];
             hatcount2 = 0;
             for each(building in _buildingsAll)
@@ -1847,152 +2103,116 @@ package
       
       public static function ProcessB(param1:Event) : *
       {
-         var _loc3_:Number = NaN;
-         var _loc4_:int = 0;
-         var _loc2_:int = _lastProcessed + 10 * 60;
-         if(CREEPS._creepCount > 0)
+         var _loc2_:int = getTimer();
+         while(getTimer() - _loc2_ < 10)
          {
-            _loc2_ = _lastProcessed + 1;
+            ProcessC(_currentTime + (getTimer() - _timer) / 1000);
          }
-         if(_loc2_ > _currentTime)
+         if(_lastProcessed >= _currentTime)
          {
-            _loc2_ = _currentTime;
-         }
-         _loc2_ = ProcessC(_loc2_);
-         if(_loc2_ >= _currentTime)
-         {
+            _currentTime += (getTimer() - _timer) / 1000;
             GLOBAL._ROOT.removeEventListener(Event.ENTER_FRAME,ProcessB);
-            _loc3_ = (getTimer() - _timer) / 1000;
-            _currentTime += int(_loc3_);
-            _loc4_ = 0;
-            while(_loc4_ < int(_loc3_))
-            {
-               ProcessC(_loc2_);
-               _loc4_++;
-            }
             GLOBAL.t = _currentTime;
             ProcessD();
          }
       }
       
-      public static function ProcessC(param1:int) : int
+      public static function ProcessC(param1:int) : void
       {
+         var change:int = 0;
+         var i:int = 0;
          var building:BFOUNDATION = null;
-         var s:String = null;
+         var lowestBuilding:BFOUNDATION = null;
+         var buildingMaxChange:int = 0;
          var f:int = 0;
          var tower:BFOUNDATION = null;
+         var ratio:Number = NaN;
          var targetTime:int = param1;
          var p:int = 0;
          var itemCount:int = 0;
-         var t:* = getTimer();
-         var time:int = _lastProcessed;
-         while(time < targetTime)
+         if(_lastProcessed < targetTime)
          {
-            try
+            GLOBAL.t = _lastProcessed;
+            change = targetTime - _lastProcessed;
+            if(CREEPS._creepCount > 0)
             {
-               GLOBAL.t = time;
-               if(p == 60)
+               change = 1;
+            }
+            else
+            {
+               for each(building in _buildingsAll)
                {
-                  STORE.ProcessPurchases();
-                  p = 0;
+                  buildingMaxChange = building.tickLimit;
+                  if(buildingMaxChange < change)
+                  {
+                     change = buildingMaxChange;
+                  }
+                  if(buildingMaxChange <= 1)
+                  {
+                  }
                }
-               else
-               {
-                  p++;
-               }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 1: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BASE.ProcessC 1");
-            }
-            try
-            {
-               itemCount = 0;
-               s = "";
-               for each(building in _buildingsCatchup)
-               {
-                  s += building._type + ", ";
-                  building.Tick();
-                  itemCount++;
-               }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 2.1: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BASE.ProcessC 2.1");
-            }
-            try
-            {
-               if(_yardType == MAIN_YARD)
-               {
-                  CREATURELOCKER.Tick();
-                  ACADEMY.Tick();
-               }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 2.2: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BASE.ProcessC 2.2");
-            }
-            try
-            {
-               WMATTACK.Tick();
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 2.3: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BASE.ProcessC 2.3");
-            }
-            try
-            {
                if(CREATURES._guardian)
                {
-                  if(CREATURES._guardian.Tick())
-                  {
-                     MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
-                     CREATURES._guardian.Clear();
-                     CREATURES._guardian = null;
-                  }
+                  change = Math.min(change,CREATURES._guardian.tickLimit);
                }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 2.4: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-               GLOBAL.ErrorMessage("BASE.ProcessC 2.4");
-            }
-            try
-            {
-               if(CREEPS._creepCount > 0)
+               if(change < 1)
                {
-                  GLOBAL._render = true;
-                  PATHING.Tick();
-                  itemCount++;
-                  if(targetTime - time > 1)
-                  {
-                     _lastProcessed = time;
-                     return _lastProcessed;
-                  }
-                  f = 0;
-                  while(f < 80)
-                  {
-                     CREEPS.Tick();
-                     CREATURES.Tick();
-                     for each(tower in BASE._buildingsTowers)
-                     {
-                        tower.TickAttack();
-                     }
-                     PROJECTILES.Tick();
-                     FIREBALLS.Tick();
-                     f++;
-                  }
+                  change = 1;
+               }
+               if(change > 50 * 60)
+               {
+                  change = 50 * 60;
                }
             }
-            catch(e:Error)
+            WMATTACK.Tick();
+            if(WMATTACK._inProgress)
             {
-               LOGGER.Log("err","BASE.ProcessC 3: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
+               change = 1;
             }
-            try
+            i = int(_lastProcessed / 60) - int((_lastProcessed + change) / 60);
+            while(i >= 0)
+            {
+               STORE.ProcessPurchases();
+               i--;
+            }
+            itemCount = 0;
+            for each(building in _buildingsAll)
+            {
+               building.Tick(change);
+               itemCount++;
+            }
+            if(Boolean(CREATURES._guardian) && CREATURES._guardian.Tick(change))
+            {
+               MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
+               CREATURES._guardian.Clear();
+               CREATURES._guardian = null;
+            }
+            if(_yardType == MAIN_YARD)
+            {
+               CREATURELOCKER.Tick();
+               ACADEMY.Tick();
+            }
+            if(CREEPS._creepCount > 0)
+            {
+               GLOBAL._render = true;
+               PATHING.Tick();
+               itemCount++;
+               f = 0;
+               while(f < 80)
+               {
+                  CREEPS.Tick();
+                  CREATURES.Tick();
+                  for each(tower in BASE._buildingsTowers)
+                  {
+                     tower.TickAttack();
+                  }
+                  PROJECTILES.Tick();
+                  FIREBALLS.Tick();
+                  f++;
+               }
+            }
+            i = 0;
+            while(i < change)
             {
                EFFECTS.Tick();
                UPDATES.Check();
@@ -2000,30 +2220,20 @@ package
                {
                   MONSTERBAITER.Tick();
                }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 4: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-            }
-            try
-            {
                if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview")
                {
                   WMBASE.Tick();
                }
+               i++;
             }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","BASE.ProcessC 5: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
-            }
-            time++;
+            _lastProcessed += change;
          }
          try
          {
             if(CREEPS._creepCount == 0)
             {
-               p = int(100 / (_currentTime - _lastProcessedB) * (_lastProcessed - _lastProcessedB));
-               PLEASEWAIT.Update(KEYS.Get("msg_rendering") + p + "% ");
+               ratio = (_lastProcessed - _lastProcessedB) / (targetTime - _lastProcessedB);
+               PLEASEWAIT.Update(KEYS.Get("msg_rendering") + int(100 * ratio) + "% ");
             }
             else
             {
@@ -2033,50 +2243,33 @@ package
                }
                PLEASEWAIT.Update("Crunching " + int(_tmpPercent) + "%");
             }
-            _lastProcessed = targetTime;
-            if(itemCount == 0)
-            {
-               _lastProcessed = _currentTime;
-            }
          }
          catch(e:Error)
          {
             LOGGER.Log("err","BASE.ProcessC 5: " + GLOBAL._mode + " | " + _baseID + " | " + e.getStackTrace());
          }
-         return targetTime;
       }
       
       public static function ProcessD() : *
       {
-         var WhatsNewAction41:Function;
-         var WhatsNewAction42:Function;
-         var WhatsNewAction43:Function;
-         var WhatsNewAction44:Function;
-         var WhatsNewAction45:Function;
-         var WhatsNewAction47:Function;
-         var WhatsNewAction48:Function;
-         var WhatsNewAction49:Function;
-         var WhatsNewAction50:Function;
-         var popupWhatsNewDisplayed:Function;
+         var damageCount:int;
+         var j:int;
          var MoreInfo711:Function;
          var Action:Function;
          var BragA:Function;
          var BragB:Function;
          var building:BFOUNDATION = null;
          var bb:int = 0;
-         var upgradeCount:int = 0;
-         var helpedCount:int = 0;
-         var damageCount:int = 0;
-         var popupWhatsNew:MovieClip = null;
-         var display:Boolean = false;
-         var newWhatsnewid:int = 0;
-         var hasBigGulp:Boolean = false;
-         var fbPromoTimer:Number = NaN;
-         var fbPromoPopup:MovieClip = null;
          var helper:int = 0;
          var popupMCDamaged:popup_damaged = null;
          var RepairAll:Function = null;
          var RepairNow:Function = null;
+         var handler:IHandler = null;
+         var upgradeCount:int = 0;
+         var helpedCount:int = 0;
+         var hasBigGulp:Boolean = false;
+         var fbPromoTimer:Number = NaN;
+         var fbPromoPopup:MovieClip = null;
          var promptSPost:Boolean = false;
          var b:* = undefined;
          var popupMCdamaged:MovieClip = null;
@@ -2133,6 +2326,90 @@ package
          {
             LOGGER.Log("err","BASE.ProcessD A: " + e.message + " | " + e.getStackTrace());
          }
+         damageCount = 0;
+         for each(building in _buildingsAll)
+         {
+            building.Update(true);
+            if(building._hp.Get() < building._hpMax.Get() && building._repairing == 0)
+            {
+               damageCount++;
+            }
+            if(building._countdownBuild.Get() + building._countdownUpgrade.Get() + building._countdownFortify.Get() > 0)
+            {
+               upgradeCount++;
+               for each(helper in building._helpList)
+               {
+                  if(helper == LOGIN._playerID)
+                  {
+                     helpedCount++;
+                  }
+               }
+            }
+         }
+         if(damageCount > 0 && GLOBAL._mode == "build" && !WMATTACK._inProgress)
+         {
+            RepairAll = function(param1:MouseEvent = null):*
+            {
+               var _loc2_:* = undefined;
+               popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+               popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
+               for each(_loc2_ in _buildingsAll)
+               {
+                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                  {
+                     _loc2_.Repair();
+                  }
+               }
+               SOUNDS.Play("repair1",0.25);
+               POPUPS.Next();
+            };
+            RepairNow = function(param1:MouseEvent = null):*
+            {
+               var _loc2_:BFOUNDATION = null;
+               popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
+               popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
+               for each(_loc2_ in BASE._buildingsAll)
+               {
+                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                  {
+                     _loc2_.Repair();
+                  }
+               }
+               STORE.ShowB(3,1,["FIX"],true);
+               POPUPS.Next();
+            };
+            popupMCDamaged = new popup_damaged();
+            (popupMCDamaged.mcFrame as frame).Setup(false);
+            popupMCDamaged.title.htmlText = "<b>" + KEYS.Get("pop_damaged_title") + "</b>";
+            popupMCDamaged.tA.htmlText = KEYS.Get("pop_damaged",{"v1":damageCount});
+            popupMCDamaged.bAction.SetupKey("pop_damaged_repairall_btn");
+            popupMCDamaged.bAction.addEventListener(MouseEvent.CLICK,RepairAll);
+            popupMCDamaged.bAction2.SetupKey("pop_damaged_repairnow_btn");
+            popupMCDamaged.bAction2.addEventListener(MouseEvent.CLICK,RepairNow);
+            popupMCDamaged.bAction2.Highlight = true;
+            POPUPS.Push(popupMCDamaged,null,null,null,"duct-tape.png");
+            if(damageCount > 30)
+            {
+               MARKETING.Show("catapult");
+            }
+         }
+         INFERNO_EMERGENCE_EVENT.Initialize();
+         if(INFERNO_DESCENT_POPUPS.isInDescent() && MAPROOM_DESCENT._descentLvl < MAPROOM_DESCENT._descentLvlMax && MAPROOM_DESCENT._descentLvl > 0)
+         {
+            INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
+         }
+         MonsterMadness.initialize();
+         FrontPageHandler.initialize();
+         j = 0;
+         while(j < HANDLERS.length)
+         {
+            handler = HANDLERS[j];
+            handler.initialize(loadObject[handler.name]);
+            j++;
+         }
+         ReplayableEventHandler.initialize(loadObject["events"]);
+         FrontPageHandler.setup(loadObject["frontpage"]);
+         FrontPageHandler.showPopup();
          bb = 0;
          try
          {
@@ -2140,190 +2417,6 @@ package
             helpedCount = 0;
             if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
             {
-               if(!GLOBAL._displayedWhatsNew && BASE._yardType == MAIN_YARD && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
-               {
-                  GLOBAL._displayedWhatsNew = true;
-                  display = false;
-                  newWhatsnewid = GLOBAL._whatsnewid;
-                  if(GLOBAL._whatsnewid < 1041)
-                  {
-                     WhatsNewAction41 = function(param1:MouseEvent):void
-                     {
-                        CHAMPIONCAGE.Show();
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew41();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew41_body");
-                     newWhatsnewid = 1041;
-                     if(GLOBAL._bCage)
-                     {
-                        popupWhatsNew.bAction.SetupKey("btn_feednow");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction41);
-                     }
-                     else
-                     {
-                        popupWhatsNew.bAction.visible = false;
-                     }
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1042)
-                  {
-                     WhatsNewAction42 = function(param1:MouseEvent):void
-                     {
-                        POPUPS.Next();
-                        STORE.ShowB(5,1,null);
-                     };
-                     popupWhatsNew = new popup_whatsnew42();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew42_body");
-                     newWhatsnewid = 1042;
-                     popupWhatsNew.bAction.SetupKey("btn_viewmerchandise");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction42);
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1043)
-                  {
-                     WhatsNewAction43 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-                        BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"fortify");
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew43();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew43_body");
-                     newWhatsnewid = 1043;
-                     if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() > 4)
-                     {
-                        popupWhatsNew.bAction.SetupKey("btn_buildnow");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction43);
-                     }
-                     else
-                     {
-                        popupWhatsNew.bAction.visible = false;
-                     }
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1044 && Boolean(GLOBAL._advancedMap))
-                  {
-                     WhatsNewAction44 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL.ShowMap();
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew44();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew44_body");
-                     newWhatsnewid = 1044;
-                     popupWhatsNew.bAction.SetupKey("btn_openmap");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction44);
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1045 && Boolean(GLOBAL._advancedMap))
-                  {
-                     WhatsNewAction45 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL.ShowMap();
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew45();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew45_body");
-                     newWhatsnewid = 1045;
-                     popupWhatsNew.bAction.SetupKey("btn_openmap");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction45);
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1046 && Boolean(GLOBAL._advancedMap))
-                  {
-                     popupWhatsNew = new popup_whatsnew46();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew46_body");
-                     newWhatsnewid = 1046;
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1047)
-                  {
-                     WhatsNewAction47 = function(param1:MouseEvent):void
-                     {
-                        BUILDINGS._buildingID = 119;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,1);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew47();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew47_body");
-                     newWhatsnewid = 1047;
-                     display = true;
-                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction47);
-                  }
-                  else if(GLOBAL._whatsnewid < 1048)
-                  {
-                     WhatsNewAction48 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-                        BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew48();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew48_body");
-                     newWhatsnewid = 1048;
-                     display = true;
-                     popupWhatsNew.bAction.SetupKey("btn_upgradenow");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction48);
-                  }
-                  else if(GLOBAL._whatsnewid < 1049 && Boolean(GLOBAL._advancedMap))
-                  {
-                     WhatsNewAction49 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL.ShowMap();
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew49();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew49_body");
-                     newWhatsnewid = 1049;
-                     display = true;
-                     popupWhatsNew.bAction.SetupKey("btn_openmap");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction49);
-                  }
-                  else if(GLOBAL._whatsnewid < 1050)
-                  {
-                     WhatsNewAction50 = function(param1:MouseEvent):void
-                     {
-                        BUILDINGS._buildingID = 118;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,0);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew49();
-                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
-                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew49_body");
-                     newWhatsnewid = 1050;
-                     display = true;
-                     popupWhatsNew.bAction.SetupKey("btn_buildnow");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction50);
-                  }
-                  if(display)
-                  {
-                     popupWhatsNewDisplayed = function():*
-                     {
-                        GLOBAL._whatsnewid = newWhatsnewid;
-                     };
-                     _showingWhatsNew = true;
-                     LOGGER.Stat([23]);
-                     POPUPS.Push(popupWhatsNew,popupWhatsNewDisplayed,null,"","",true);
-                  }
-               }
-            }
-            INFERNO_EMERGENCE_EVENT.Initialize();
-            if(INFERNO_DESCENT_POPUPS.isInDescent() && MAPROOM_DESCENT._descentLvl <= 13 && MAPROOM_DESCENT._descentLvl > 0)
-            {
-               INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
             }
             if(is711Valid())
             {
@@ -2381,72 +2474,9 @@ package
                   }
                }
             }
-            damageCount = 0;
-            for each(building in _buildingsAll)
+            if(GLOBAL._flags && GLOBAL._flags.fbcncpshow == 2 && GLOBAL._fbcncp > 0)
             {
-               building.Update(true);
-               if(building._hp.Get() < building._hpMax.Get() && building._repairing == 0)
-               {
-                  damageCount++;
-               }
-               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() + building._countdownFortify.Get() > 0)
-               {
-                  upgradeCount++;
-                  for each(helper in building._helpList)
-                  {
-                     if(helper == LOGIN._playerID)
-                     {
-                        helpedCount++;
-                     }
-                  }
-               }
-            }
-            if(damageCount > 0 && GLOBAL._mode == "build" && !WMATTACK._inProgress)
-            {
-               RepairAll = function(param1:MouseEvent = null):*
-               {
-                  var _loc2_:* = undefined;
-                  popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
-                  popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
-                  for each(_loc2_ in _buildingsAll)
-                  {
-                     if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
-                     {
-                        _loc2_.Repair();
-                     }
-                  }
-                  SOUNDS.Play("repair1",0.25);
-                  POPUPS.Next();
-               };
-               RepairNow = function(param1:MouseEvent = null):*
-               {
-                  var _loc2_:BFOUNDATION = null;
-                  popupMCDamaged.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
-                  popupMCDamaged.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
-                  for each(_loc2_ in BASE._buildingsAll)
-                  {
-                     if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
-                     {
-                        _loc2_.Repair();
-                     }
-                  }
-                  STORE.ShowB(3,1,["FIX"],true);
-                  POPUPS.Next();
-               };
-               popupMCDamaged = new popup_damaged();
-               (popupMCDamaged.mcFrame as frame).Setup(false);
-               popupMCDamaged.title.htmlText = "<b>" + KEYS.Get("pop_damaged_title") + "</b>";
-               popupMCDamaged.tA.htmlText = KEYS.Get("pop_damaged",{"v1":damageCount});
-               popupMCDamaged.bAction.SetupKey("pop_damaged_repairall_btn");
-               popupMCDamaged.bAction.addEventListener(MouseEvent.CLICK,RepairAll);
-               popupMCDamaged.bAction2.SetupKey("pop_damaged_repairnow_btn");
-               popupMCDamaged.bAction2.addEventListener(MouseEvent.CLICK,RepairNow);
-               popupMCDamaged.bAction2.Highlight = true;
-               POPUPS.Push(popupMCDamaged,null,null,null,"duct-tape.png");
-               if(damageCount > 30)
-               {
-                  MARKETING.Show("catapult");
-               }
+               BUY.FBCNcpCheckEligibility();
             }
             if(GLOBAL._mode == "help")
             {
@@ -2466,14 +2496,6 @@ package
                   GLOBAL.Message(KEYS.Get("base_nohelpneeded"));
                }
             }
-            if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
-            {
-               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._countryCode != "ph")
-               {
-                  SPECIALEVENT.FlagChanged();
-               }
-            }
-            SPECIALEVENT._whatsNewComplete = true;
          }
          catch(e:Error)
          {
@@ -2536,6 +2558,7 @@ package
          PATHING.ResetCosts();
          TUTORIAL.Process();
          MUSHROOMS.Setup();
+         NewPopupSystem.instance.CheckAll(true);
          try
          {
             if(GLOBAL._mode == "help")
@@ -2631,6 +2654,10 @@ package
             else
             {
                MARKETING.Process();
+               if(GLOBAL._flags.trialpayDealspot == 1 && (TUTORIAL._stage > 200 && GLOBAL._sessionCount > 10))
+               {
+                  UI2._top.InitDealspot();
+               }
                hp = 0;
                hpMax = 0;
                for(i in BASE._buildingsAll)
@@ -2670,6 +2697,41 @@ package
          }
       }
       
+      public static function ShowSiegeWeaponWhatsNew(param1:MovieClip, param2:String) : void
+      {
+         var ShowLab:Function;
+         var popup:MovieClip = param1;
+         var weaponID:String = param2;
+         popup.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+         if(isInferno() || !INFERNOPORTAL.isAboveMaxLevel() || !MAPROOM_DESCENT.DescentPassed)
+         {
+            popup.bAction.visible = false;
+         }
+         else if(GLOBAL._bSiegeLab)
+         {
+            ShowLab = function(param1:MouseEvent):void
+            {
+               BUILDINGS._buildingID = SiegeLab.ID;
+               SiegeBuilding.Show("lab",weaponID);
+               POPUPS.Next();
+            };
+            popup.bAction.SetupKey("btn_unlocknow");
+            popup.bAction.addEventListener(MouseEvent.CLICK,ShowLab);
+         }
+         else
+         {
+            popup.bAction.SetupKey("btn_buildnow");
+            popup.bAction.addEventListener(MouseEvent.CLICK,ShowBuildLab);
+         }
+      }
+      
+      private static function ShowBuildLab(param1:MouseEvent) : void
+      {
+         BUILDINGS._buildingID = SiegeLab.ID;
+         BUILDINGS.Show();
+         POPUPS.Next();
+      }
+      
       public static function Tick() : *
       {
          var savedelay:int = 0;
@@ -2701,7 +2763,18 @@ package
                {
                   SaveB();
                }
-               UI2._top.mcSave.gotoAndStop(2);
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  UI2._top.mcSave.gotoAndStop(4);
+               }
+               else
+               {
+                  UI2._top.mcSave.gotoAndStop(2);
+               }
+            }
+            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            {
+               UI2._top.mcSave.gotoAndStop(3);
             }
             else
             {
@@ -2710,6 +2783,10 @@ package
             if(GLOBAL.Timestamp() % 10 == 0)
             {
                CHECKER.Check();
+               if(_yardType != INFERNO_YARD)
+               {
+                  Autobank();
+               }
             }
             pageInterval = int(Math.random() * 10) + 25;
             if(GLOBAL._flags.pageinterval)
@@ -2771,6 +2848,14 @@ package
          if(Boolean(UI2._top) && Boolean(UI2._top.mcSave))
          {
             UI2._top.mcSave.gotoAndStop(2);
+            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            {
+               UI2._top.mcSave.gotoAndStop(4);
+            }
+            else
+            {
+               UI2._top.mcSave.gotoAndStop(2);
+            }
          }
          if(param1 > 0)
          {
@@ -2795,6 +2880,7 @@ package
       public static function SaveB() : *
       {
          var saveOrder:Array;
+         var k:int;
          var loadVars:Array;
          var so:int;
          var tmpExport:Object = null;
@@ -2825,16 +2911,31 @@ package
          var tmpM:String = null;
          var tmpQ:String = null;
          var _bn:String = null;
+         var siegeData:Object = null;
+         var atackerSiegeData:Object = null;
          var loadObjects:Object = null;
+         var saveObject:Object = null;
+         var j:int = 0;
+         var ir:Object = null;
+         var tmpIR:String = null;
          var hatchery:BUILDING13 = null;
+         var handler:IHandler = null;
+         var saveData:Object = null;
+         var localGIP:Object = null;
+         var opKey:String = null;
+         var thisOp:Object = null;
+         var harvester:BFOUNDATION = null;
+         var level:int = 0;
+         var value:int = 0;
          var guardObj:Object = null;
          var attackresources:Object = null;
          var lootreport:Object = null;
          var guardAttObj:Object = null;
          var monsterUpdate:Array = null;
          var loot:Object = null;
-         var cellContainer:Object = null;
-         var cell:* = undefined;
+         var cellContainer:CellData = null;
+         var cell:MapRoomCell = null;
+         var range:Number = NaN;
          var creatureID:String = null;
          var cellObject:Object = null;
          var homeCellObject:* = undefined;
@@ -2878,11 +2979,11 @@ package
                         if(param1.resources["r" + _loc2_])
                         {
                            _resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
-                           _hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
+                           _hpResources["r" + _loc2_] = _resources["r" + _loc2_].Get();
                            if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                            {
                               GLOBAL._resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
-                              GLOBAL._hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
+                              GLOBAL._hpResources["r" + _loc2_] = GLOBAL._resources["r" + _loc2_].Get();
                            }
                         }
                         _loc2_++;
@@ -2895,7 +2996,7 @@ package
                   }
                   CleanDeltaResources();
                }
-               _isProtected = int(param1.name_1);
+               _isProtected = int(param1["protected"]);
                _isFan = int(param1.fan);
                _isBookmarked = int(param1.bookmarked);
                _installsGenerated = int(param1.installsgenerated);
@@ -2918,7 +3019,7 @@ package
             }
             else
             {
-               LOGGER.Log("err","Base.Save: " + com.adobe.serialization.json.JSON.encode(param1));
+               LOGGER.Log("err","Base.Save: " + JSON.encode(param1));
                GLOBAL.ErrorMessage("BASE.SaveB 2: " + param1.error);
             }
             _saving = false;
@@ -2957,22 +3058,22 @@ package
          _saveCounterB = _saveCounterA;
          if(_resources.r1.Get() < 0)
          {
-            LOGGER.Log("err","Negative twigs reset");
+            LOGGER.Log("err","Negative twigs reset: " + _resources.r1.Get());
             Fund(1,_resources.r1.Get() * -1,true);
          }
          if(_resources.r2.Get() < 0)
          {
-            LOGGER.Log("err","Negative pebbles reset");
+            LOGGER.Log("err","Negative pebbles reset: " + _resources.r2.Get());
             Fund(2,_resources.r2.Get() * -1,true);
          }
          if(_resources.r3.Get() < 0)
          {
-            LOGGER.Log("err","Negative putty reset");
+            LOGGER.Log("err","Negative putty reset: " + _resources.r3.Get());
             Fund(3,_resources.r3.Get() * -1,true);
          }
          if(_resources.r4.Get() < 0)
          {
-            LOGGER.Log("err","Negative goo reset");
+            LOGGER.Log("err","Negative goo reset: " + _resources.r4.Get());
             Fund(4,_resources.r4.Get() * -1,true);
          }
          CalcBaseValue();
@@ -2990,7 +3091,11 @@ package
             for(i in _buildingsAll)
             {
                building = _buildingsAll[i];
-               if(!(building._class == "trap" && building._fired || building._type == 53 && building._expireTime < GLOBAL.Timestamp()))
+               if(building._class == "trap" && building._fired || building._type == 53 && building._expireTime < GLOBAL.Timestamp())
+               {
+                  Console.warning("Ignored Building" + building + building._type + building._expireTime);
+               }
+               else
                {
                   if(building._class != "wall")
                   {
@@ -3012,7 +3117,11 @@ package
                }
             }
             _percentDamaged = 100 - 100 / hpMax * hp;
-            buildingString = com.adobe.serialization.json.JSON.encode(o);
+            buildingString = JSON.encode(o);
+            if(GLOBAL.getDerps(o) <= 0)
+            {
+               LOGGER.Log("err","Empty Base object.");
+            }
             stats = {};
             stats.mp = int(QUESTS._global.mushroomspicked);
             stats.mg = int(QUESTS._global.goldmushroomspicked);
@@ -3020,9 +3129,11 @@ package
             stats.mobg = int(QUESTS._global.monstersblendedgoo);
             stats.moga = int(QUESTS._global.gift_accept);
             stats.updateid = GLOBAL._whatsnewid;
+            stats.updateid_mr2 = GLOBAL._mr2TutorialId;
             stats.other = GLOBAL._otherStats;
             stats.achievements = ACHIEVEMENTS.Export();
-            if(BASE.isInferno() && GLOBAL._otherStats.descentLvl >= 14)
+            stats.popupdata = NewPopupSystem.instance.Export();
+            if(BASE.isInferno() && GLOBAL._otherStats.descentLvl >= MAPROOM_DESCENT._descentLvlMax)
             {
                stats.inferno = 1;
             }
@@ -3042,7 +3153,7 @@ package
                "r3max":_resources.r3max,
                "r4max":_resources.r4max
             };
-            tmpR = com.adobe.serialization.json.JSON.encode(r);
+            tmpR = JSON.encode(r);
             creatures = {};
             hatcount = 0;
             hatqueue = [];
@@ -3070,7 +3181,7 @@ package
                }
                if(building._type == 5)
                {
-                  flinger = building._lvl.Get();
+                  flinger = (building as BUILDING5)._lvl.Get();
                }
             }
             for(s in HOUSING._creatures)
@@ -3122,115 +3233,271 @@ package
                   o[i] = _buildingsStored[i].Get();
                }
             }
-            storageString = com.adobe.serialization.json.JSON.encode(o);
-            t = getTimer();
+            storageString = JSON.encode(o);
             attackResults = [];
-            attackString = com.adobe.serialization.json.JSON.encode(attackResults);
-            t = getTimer();
+            attackString = JSON.encode(attackResults);
             _mushroomList = [];
             for each(building in _buildingsMushrooms)
             {
                tmpExport = building.Export();
                _mushroomList.push([tmpExport.frame,tmpExport.X,tmpExport.Y]);
             }
-            tmpM = com.adobe.serialization.json.JSON.encode({
+            tmpM = JSON.encode({
                "l":_mushroomList,
                "s":int(_lastSpawnedMushroom)
             });
-            t = getTimer();
-            tmpQ = com.adobe.serialization.json.JSON.encode(QUESTS._completed);
-            t = getTimer();
+            tmpQ = JSON.encode(QUESTS._completed);
             _bn = GLOBAL._mode == "wmattack" ? TRIBES.TribeForBaseID(_wmID).name : _baseName;
+            if(GLOBAL._mode == "build" && (_yardType == MAIN_YARD || _yardType == INFERNO_YARD))
+            {
+               siegeData = SiegeWeapons.exportWeapons();
+            }
+            else
+            {
+               atackerSiegeData = SiegeWeapons.exportWeapons();
+               siegeData = _oldSiegeData;
+            }
             loadObjects = {
                "baseid":_baseID,
                "lastupdate":(isNaN(UPDATES._lastUpdateID) ? 0 : UPDATES._lastUpdateID),
                "resources":tmpR,
-               "academy":com.adobe.serialization.json.JSON.encode(ACADEMY.Export()),
-               "stats":com.adobe.serialization.json.JSON.encode(stats),
+               "academy":JSON.encode(ACADEMY.Export()),
+               "stats":JSON.encode(stats),
                "mushrooms":tmpM,
                "basename":_bn,
                "baseseed":_baseSeed,
                "buildingdata":buildingString,
                "researchdata":storageString,
-               "lockerdata":com.adobe.serialization.json.JSON.encode(CREATURELOCKER._lockerData),
+               "lockerdata":JSON.encode(CREATURELOCKER._lockerData),
                "quests":tmpQ,
                "basevalue":_baseValue,
                "points":_basePoints,
                "tutorialstage":TUTORIAL._stage,
                "basesaveid":_lastSaveID,
                "clienttime":GLOBAL.Timestamp(),
-               "monsters":com.adobe.serialization.json.JSON.encode(mm),
+               "monsters":JSON.encode(mm),
                "attacks":attackString,
-               "monsterbaiter":com.adobe.serialization.json.JSON.encode(MONSTERBAITER.Export()),
+               "monsterbaiter":JSON.encode(MONSTERBAITER.Export()),
                "version":GLOBAL._version.Get(),
-               "aiattacks":com.adobe.serialization.json.JSON.encode(WMATTACK.Export()),
+               "aiattacks":JSON.encode(WMATTACK.Export()),
                "effects":EFFECTS._effectsJSON,
                "catapult":catapult,
                "flinger":flinger,
                "empirevalue":CalcBaseValue(),
                "inventory":STORE.InventoryExport(),
-               "achieved":com.adobe.serialization.json.JSON.encode(ACHIEVEMENTS.Report())
+               "achieved":JSON.encode(ACHIEVEMENTS.Report()),
+               "siege":JSON.encode(siegeData),
+               "attackersiege":JSON.encode(atackerSiegeData)
             };
+            saveObject = FrontPageHandler.export();
+            if(saveObject)
+            {
+               loadObjects["frontpage"] = JSON.encode(saveObject);
+            }
+            saveObject = ReplayableEventHandler.exportData();
+            if(saveObject)
+            {
+               loadObjects["events"] = JSON.encode(saveObject);
+            }
+            j = 0;
+            while(j < HANDLERS.length)
+            {
+               handler = HANDLERS[j];
+               saveData = handler.exportData();
+               if(saveData)
+               {
+                  loadObjects[handler.name] = JSON.encode(saveData);
+               }
+               j++;
+            }
+            ir = {
+               "r1":_ideltaResources.r1.Get(),
+               "r2":_ideltaResources.r2.Get(),
+               "r3":_ideltaResources.r3.Get(),
+               "r4":_ideltaResources.r4.Get(),
+               "r1max":_iresources.r1max,
+               "r2max":_iresources.r2max,
+               "r3max":_iresources.r3max,
+               "r4max":_iresources.r4max
+            };
+            for(s in ir)
+            {
+               if(!ir[s])
+               {
+                  delete ir[s];
+               }
+            }
+            tmpIR = JSON.encode(ir);
+            if(Boolean(ir.r1) || Boolean(ir.r2) || Boolean(ir.r3) || Boolean(ir.r4))
+            {
+               loadObjects.iresources = tmpIR;
+            }
             if(GLOBAL._advancedMap)
             {
-               loadObjects.monsters = com.adobe.serialization.json.JSON.encode(mm);
+               loadObjects.monsters = JSON.encode(mm);
+               localGIP = {};
+               for(opKey in _processedGIP)
+               {
+                  if(opKey == "t")
+                  {
+                     if(_yardType != INFERNO_YARD)
+                     {
+                        localGIP[opKey] = GLOBAL.Timestamp();
+                     }
+                     else
+                     {
+                        localGIP[opKey] = _lastProcessedGIP;
+                     }
+                  }
+                  else
+                  {
+                     localGIP[opKey] = {
+                        "r1":_processedGIP[opKey]["r1"].Get(),
+                        "r2":_processedGIP[opKey]["r2"].Get(),
+                        "r3":_processedGIP[opKey]["r3"].Get(),
+                        "r4":_processedGIP[opKey]["r4"].Get()
+                     };
+                  }
+               }
+               if(BASE._yardType == BASE.OUTPOST)
+               {
+                  thisOp = {
+                     "r1":0,
+                     "r2":0,
+                     "r3":0,
+                     "r4":0
+                  };
+                  for each(harvester in BASE._buildingsMain)
+                  {
+                     if(harvester._type >= 1 && harvester._type <= 4)
+                     {
+                        if(harvester._hp.Get() > 0)
+                        {
+                           level = harvester._lvl.Get();
+                           value = 0;
+                           if(harvester._countdownUpgrade.Get() > 0)
+                           {
+                              level++;
+                           }
+                           value = int(harvester._buildingProps.produce[level - 1]);
+                           value = Math.max(int(value * GLOBAL._averageAltitude.Get() / GLOBAL._currentCell._height),1);
+                           thisOp["r" + harvester._type] += value;
+                        }
+                     }
+                  }
+                  if(_processedGIP["b" + _baseID])
+                  {
+                     _GIP["r1"].Add(-_processedGIP["b" + _baseID]["r1"].Get());
+                     _GIP["r2"].Add(-_processedGIP["b" + _baseID]["r2"].Get());
+                     _GIP["r3"].Add(-_processedGIP["b" + _baseID]["r3"].Get());
+                     _GIP["r4"].Add(-_processedGIP["b" + _baseID]["r4"].Get());
+                     _processedGIP["b" + _baseID]["r1"].Set(thisOp["r1"]);
+                     _processedGIP["b" + _baseID]["r2"].Set(thisOp["r2"]);
+                     _processedGIP["b" + _baseID]["r3"].Set(thisOp["r3"]);
+                     _processedGIP["b" + _baseID]["r4"].Set(thisOp["r4"]);
+                     _rawGIP["b" + _baseID]["r1"] = thisOp["r1"];
+                     _rawGIP["b" + _baseID]["r2"] = thisOp["r2"];
+                     _rawGIP["b" + _baseID]["r3"] = thisOp["r3"];
+                     _rawGIP["b" + _baseID]["r4"] = thisOp["r4"];
+                  }
+                  else
+                  {
+                     _processedGIP["b" + _baseID] = {
+                        "r1":new SecNum(thisOp["r1"]),
+                        "r2":new SecNum(thisOp["r2"]),
+                        "r3":new SecNum(thisOp["r3"]),
+                        "r4":new SecNum(thisOp["r4"])
+                     };
+                     _rawGIP["b" + _baseID] = {
+                        "r1":thisOp["r1"],
+                        "r2":thisOp["r2"],
+                        "r3":thisOp["r3"],
+                        "r4":thisOp["r4"]
+                     };
+                  }
+                  _GIP["r1"].Add(thisOp["r1"]);
+                  _GIP["r2"].Add(thisOp["r2"]);
+                  _GIP["r3"].Add(thisOp["r3"]);
+                  _GIP["r4"].Add(thisOp["r4"]);
+                  localGIP["b" + _baseID] = thisOp;
+               }
+               localGIP["t"] = GLOBAL.Timestamp();
+               loadObjects.buildingresources = JSON.encode(localGIP);
             }
             else
             {
-               loadObjects.monsters = com.adobe.serialization.json.JSON.encode(HOUSING.Export());
+               loadObjects.monsters = JSON.encode(HOUSING.Export());
             }
             if(_saveOver)
             {
                loadObjects.over = _saveOver;
             }
-            if(_guardianData)
+            if(BASE._yardType != BASE.OUTPOST)
             {
-               guardObj = {};
-               if(_guardianData.nm)
+               if(_guardianData)
                {
-                  guardObj.nm = _guardianData.nm;
-               }
-               if(_guardianData.t)
-               {
-                  guardObj.t = _guardianData.t;
-               }
-               if(_guardianData.hp)
-               {
-                  guardObj.hp = _guardianData.hp.Get();
+                  guardObj = {};
+                  if(_guardianData.nm)
+                  {
+                     guardObj.nm = _guardianData.nm;
+                  }
+                  if(_guardianData.t)
+                  {
+                     guardObj.t = _guardianData.t;
+                  }
+                  if(_guardianData.hp)
+                  {
+                     guardObj.hp = _guardianData.hp.Get();
+                  }
+                  else
+                  {
+                     guardObj.hp = 0;
+                  }
+                  if(_guardianData.l)
+                  {
+                     guardObj.l = _guardianData.l.Get();
+                  }
+                  if(_guardianData.ft)
+                  {
+                     guardObj.ft = _guardianData.ft;
+                  }
+                  if(_guardianData.fd)
+                  {
+                     guardObj.fd = _guardianData.fd;
+                  }
+                  else
+                  {
+                     guardObj.fd = 0;
+                  }
+                  if(_guardianData.fb)
+                  {
+                     guardObj.fb = _guardianData.fb.Get();
+                  }
+                  else
+                  {
+                     guardObj.fb = 0;
+                  }
+                  if(_guardianData.pl)
+                  {
+                     if(_guardianData.pl is SecNum)
+                     {
+                        guardObj.pl = _guardianData.pl.Get();
+                     }
+                     else
+                     {
+                        guardObj.pl = _guardianData.pl;
+                     }
+                  }
+                  else
+                  {
+                     guardObj.pl = 0;
+                  }
+                  loadObjects.champion = JSON.encode(guardObj);
                }
                else
                {
-                  guardObj.hp = 0;
+                  loadObjects.champion = JSON.encode(null);
                }
-               if(_guardianData.l)
-               {
-                  guardObj.l = _guardianData.l.Get();
-               }
-               if(_guardianData.ft)
-               {
-                  guardObj.ft = _guardianData.ft;
-               }
-               if(_guardianData.fd)
-               {
-                  guardObj.fd = _guardianData.fd;
-               }
-               else
-               {
-                  guardObj.fd = 0;
-               }
-               if(_guardianData.fb)
-               {
-                  guardObj.fb = _guardianData.fb.Get();
-               }
-               else
-               {
-                  guardObj.fb = 0;
-               }
-               loadObjects.champion = com.adobe.serialization.json.JSON.encode(guardObj);
-            }
-            else
-            {
-               loadObjects.champion = com.adobe.serialization.json.JSON.encode(null);
             }
             t = getTimer();
             if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
@@ -3238,11 +3505,11 @@ package
                _saveProtect = 0;
                if(BASE._yardType % 2 == MAIN_YARD)
                {
-                  if(hp < hpMax * 0.5)
+                  if(hp < hpMax * 0.65)
                   {
                      _saveProtect = 1;
                   }
-                  if(hp < hpMax * 0.25)
+                  if(hp < hpMax * 0.45)
                   {
                      _saveProtect = 2;
                   }
@@ -3267,12 +3534,12 @@ package
                loadObjects.attackreport = ATTACK.LogRead();
                loadObjects.protect = _saveProtect;
                loadObjects.attackid = _attackID;
-               loadObjects.lootreport = com.adobe.serialization.json.JSON.encode(lootreport);
+               loadObjects.lootreport = JSON.encode(lootreport);
                if(GLOBAL._advancedMap == 0)
                {
-                  loadObjects.attackcreatures = com.adobe.serialization.json.JSON.encode(AttackerCreaturesExport());
+                  loadObjects.attackcreatures = JSON.encode(AttackerCreaturesExport());
                }
-               loadObjects.attackloot = com.adobe.serialization.json.JSON.encode(attackresources);
+               loadObjects.attackloot = JSON.encode(attackresources);
                if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.t > 0)
                {
                   guardAttObj = {};
@@ -3312,11 +3579,19 @@ package
                   {
                      guardAttObj.fb = 0;
                   }
-                  loadObjects.attackerchampion = com.adobe.serialization.json.JSON.encode(guardAttObj);
+                  if(GLOBAL._playerGuardianData.pl)
+                  {
+                     guardAttObj.pl = GLOBAL._playerGuardianData.pl.Get();
+                  }
+                  else
+                  {
+                     guardAttObj.pl = 0;
+                  }
+                  loadObjects.attackerchampion = JSON.encode(guardAttObj);
                }
                t = getTimer();
             }
-            if(Boolean(GLOBAL._advancedMap) && GLOBAL._loadmode == GLOBAL._mode)
+            if(Boolean(GLOBAL._advancedMap) && !GLOBAL.InfernoMode(GLOBAL._loadmode))
             {
                monsterUpdate = [];
                loot = {
@@ -3327,32 +3602,36 @@ package
                };
                for each(cellContainer in GLOBAL._attackerCellsInRange)
                {
-                  cell = cellContainer["cell"];
-                  if(cell && Boolean(cell._mine) && Boolean(cell._resources))
+                  cell = cellContainer.cell;
+                  if(cell && cell._mine && Boolean(cell._resources))
                   {
-                     if(Boolean(cell._flinger) && cell._flinger.Get() >= cellContainer["range"])
+                     if(cell._flingerRange)
                      {
-                        for(creatureID in GLOBAL._attackerMapCreaturesStart)
+                        range = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[cell._flingerRange.Get()]);
+                        if(range >= cellContainer.range)
                         {
-                           if(Boolean(cell._monsters[creatureID]) && cell._monsters[creatureID].Get() > 0)
+                           for(creatureID in GLOBAL._attackerMapCreaturesStart)
                            {
-                              if(GLOBAL._attackerMapCreaturesStart[creatureID].Get() > GLOBAL._attackerMapCreatures[creatureID].Get())
+                              if(Boolean(cell._monsters[creatureID]) && cell._monsters[creatureID].Get() > 0)
                               {
-                                 if(GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get() >= cell._monsters[creatureID].Get())
+                                 if(GLOBAL._attackerMapCreaturesStart[creatureID].Get() > GLOBAL._attackerMapCreatures[creatureID].Get())
                                  {
-                                    GLOBAL._attackerMapCreaturesStart[creatureID].Add(-cell._monsters[creatureID].Get());
-                                    cell._monsterData.saved = GLOBAL.Timestamp();
-                                    delete cell._monsters[creatureID];
-                                    delete cell._hpMonsters[creatureID];
-                                    cell._dirty = true;
-                                 }
-                                 else
-                                 {
-                                    cell._monsters[creatureID].Add(-1 * (GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get()));
-                                    cell._hpMonsters[creatureID] -= GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get();
-                                    cell._monsterData.saved = GLOBAL.Timestamp();
-                                    GLOBAL._attackerMapCreaturesStart[creatureID].Set(GLOBAL._attackerMapCreatures[creatureID].Get());
-                                    cell._dirty = true;
+                                    if(GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get() >= cell._monsters[creatureID].Get())
+                                    {
+                                       GLOBAL._attackerMapCreaturesStart[creatureID].Add(-cell._monsters[creatureID].Get());
+                                       cell._monsterData.saved = GLOBAL.Timestamp();
+                                       delete cell._monsters[creatureID];
+                                       delete cell._hpMonsters[creatureID];
+                                       cell._dirty = true;
+                                    }
+                                    else
+                                    {
+                                       cell._monsters[creatureID].Add(-1 * (GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get()));
+                                       cell._hpMonsters[creatureID] -= GLOBAL._attackerMapCreaturesStart[creatureID].Get() - GLOBAL._attackerMapCreatures[creatureID].Get();
+                                       cell._monsterData.saved = GLOBAL.Timestamp();
+                                       GLOBAL._attackerMapCreaturesStart[creatureID].Set(GLOBAL._attackerMapCreatures[creatureID].Get());
+                                       cell._dirty = true;
+                                    }
                                  }
                               }
                            }
@@ -3380,12 +3659,12 @@ package
                         }
                         else
                         {
-                           LOGGER.Log("err","BASE.Save:  Dirty Cell " + cell.X + "," + cell.Y + "does not check out before doing map update!  " + com.adobe.serialization.json.JSON.encode(cell._hpResources));
+                           LOGGER.Log("err","BASE.Save:  Dirty Cell " + cell.X + "," + cell.Y + "does not check out before doing map update!  " + JSON.encode(cell._hpResources));
                         }
                      }
                   }
                }
-               if(MapRoom._homeCell && MapRoom._homeCell._protected && CREEPS._flungGuardian)
+               if(MapRoom._homeCell && MapRoom._homeCell._protected && (CREEPS._flungGuardian || SiegeWeapons.didActivatWeapon))
                {
                   homeCellObject = {
                      "baseid":GLOBAL._homeBaseID,
@@ -3395,19 +3674,19 @@ package
                   MapRoom._homeCell._protected = 0;
                   monsterUpdate.push(homeCellObject);
                }
-               loadObjects.monsterupdate = com.adobe.serialization.json.JSON.encode(monsterUpdate);
+               loadObjects.monsterupdate = JSON.encode(monsterUpdate);
             }
             if(GIFTS._giftsAccepted.length > 0)
             {
-               loadObjects.gifts = com.adobe.serialization.json.JSON.encode(GIFTS._giftsAccepted);
+               loadObjects.gifts = JSON.encode(GIFTS._giftsAccepted);
             }
             if(GIFTS._sentGiftsAccepted.length > 0)
             {
-               loadObjects.sentgifts = com.adobe.serialization.json.JSON.encode(GIFTS._sentGiftsAccepted);
+               loadObjects.sentgifts = JSON.encode(GIFTS._sentGiftsAccepted);
             }
             if(GIFTS._sentInvitesAccepted.length > 0)
             {
-               loadObjects.sentinvites = com.adobe.serialization.json.JSON.encode(GIFTS._sentInvitesAccepted);
+               loadObjects.sentinvites = JSON.encode(GIFTS._sentInvitesAccepted);
             }
             if(_pendingPurchase.length > 0)
             {
@@ -3439,7 +3718,7 @@ package
                {
                   purchaseArray.push("inv=1");
                }
-               loadObjects.purchase = com.adobe.serialization.json.JSON.encode(purchaseArray);
+               loadObjects.purchase = JSON.encode(purchaseArray);
                _pendingPurchase = [];
             }
             loadObjects.timeplayed = int(GLOBAL._timePlayed);
@@ -3489,7 +3768,7 @@ package
             }
             if(_pendingFBPromo)
             {
-               loadObjects.fbpromos = com.adobe.serialization.json.JSON.encode(_pendingFBPromoIDs);
+               loadObjects.fbpromos = JSON.encode(_pendingFBPromoIDs);
                _pendingFBPromo = 0;
                GLOBAL._displayedPromoNew = true;
                GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
@@ -3501,7 +3780,13 @@ package
             LOGGER.Log("err","BASE.SaveB " + e.errorID + " | " + e.getStackTrace);
             GLOBAL.ErrorMessage("BASE.SaveB 1");
          }
-         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved","fbpromos"];
+         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","attackersiege","purchasecomplete","achieved","fbpromos","iresources","siege","buildingresources","frontpage","events"];
+         k = 0;
+         while(k < HANDLERS.length)
+         {
+            saveOrder.push(HANDLERS[k].name);
+            k++;
+         }
          loadVars = [];
          so = 0;
          while(so < saveOrder.length)
@@ -3546,6 +3831,12 @@ package
          handleLoadSuccessful = function(param1:Object):*
          {
             var _loc2_:int = 0;
+            var _loc3_:int = 0;
+            var _loc4_:String = null;
+            var _loc5_:Object = null;
+            var _loc6_:int = 0;
+            var _loc7_:Object = null;
+            var _loc8_:int = 0;
             _lastPaged = int(Math.random() * 5);
             if(param1.error == 0)
             {
@@ -3556,7 +3847,7 @@ package
                _credits.Set(int(param1.credits));
                _hpCredits = int(param1.credits);
                GLOBAL._credits.Set(int(param1.credits));
-               _isProtected = int(param1.name_1);
+               _isProtected = int(param1["protected"]);
                _isFan = int(param1.fan);
                _isBookmarked = int(param1.bookmarked);
                _installsGenerated = int(param1.installsgenerated);
@@ -3570,10 +3861,15 @@ package
                   {
                      if(param1.resources["r" + _loc2_])
                      {
-                        _resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
-                        _hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
-                        GLOBAL._resources["r" + _loc2_].Set(param1.resources["r" + _loc2_]);
-                        GLOBAL._hpResources["r" + _loc2_] = param1.resources["r" + _loc2_];
+                        _loc3_ = 0;
+                        if(BASE._deltaResources && BASE._deltaResources["r" + _loc2_] && BASE._deltaResources["r" + _loc2_].Get() > 0)
+                        {
+                           _loc3_ = int(BASE._deltaResources["r" + _loc2_].Get());
+                        }
+                        _resources["r" + _loc2_].Set(param1.resources["r" + _loc2_] + _loc3_);
+                        _hpResources["r" + _loc2_] = _resources["r" + _loc2_].Get();
+                        GLOBAL._resources["r" + _loc2_].Set(param1.resources["r" + _loc2_] + _loc3_);
+                        GLOBAL._hpResources["r" + _loc2_] = GLOBAL._resources["r" + _loc2_].Get();
                      }
                      _loc2_++;
                   }
@@ -3593,6 +3889,109 @@ package
                if(Boolean(param1.updates) && param1.updates.length > 0)
                {
                   UPDATES.Process(param1.updates);
+               }
+               if(param1.buildingresources)
+               {
+                  _rawGIP = param1.buildingresources;
+                  _processedGIP = {};
+                  _GIP = {
+                     "r1":new SecNum(0),
+                     "r2":new SecNum(0),
+                     "r3":new SecNum(0),
+                     "r4":new SecNum(0)
+                  };
+                  if(_rawGIP)
+                  {
+                     if(_rawGIP["b" + GLOBAL._homeBaseID])
+                     {
+                        delete _rawGIP["b" + GLOBAL._homeBaseID];
+                     }
+                     if(_rawGIP["t"])
+                     {
+                        _lastProcessedGIP = _rawGIP["t"];
+                        delete _rawGIP["t"];
+                     }
+                     if(GLOBAL._mode == "build" || GLOBAL._mode == "attack")
+                     {
+                        for(_loc4_ in _rawGIP)
+                        {
+                           _loc5_ = _rawGIP[_loc4_];
+                           if(_loc4_ == "t")
+                           {
+                              _lastProcessedGIP = _rawGIP[_loc4_];
+                           }
+                           else
+                           {
+                              if(_loc5_ is String)
+                              {
+                                 break;
+                              }
+                              if(_loc5_["r1"] != undefined)
+                              {
+                                 _processedGIP[_loc4_] = {
+                                    "r1":new SecNum(_loc5_["r1"]),
+                                    "r2":new SecNum(_loc5_["r2"]),
+                                    "r3":new SecNum(_loc5_["r3"]),
+                                    "r4":new SecNum(_loc5_["r4"])
+                                 };
+                              }
+                              else
+                              {
+                                 _loc6_ = int(_rawGIP[_loc4_]["height"]);
+                                 if(_loc6_)
+                                 {
+                                    delete _loc5_["height"];
+                                 }
+                                 else
+                                 {
+                                    _loc6_ = 100;
+                                 }
+                                 _processedGIP[_loc4_] = {
+                                    "r1":new SecNum(0),
+                                    "r2":new SecNum(0),
+                                    "r3":new SecNum(0),
+                                    "r4":new SecNum(0)
+                                 };
+                                 for each(_loc7_ in _loc5_)
+                                 {
+                                    if(_loc7_.t >= 1 && _loc7_.t <= 4)
+                                    {
+                                       if(_loc7_.l)
+                                       {
+                                          _loc8_ = int(OUTPOST_YARD_PROPS._outpostProps[_loc7_.t - 1].produce[_loc7_.l - 1]);
+                                       }
+                                       else
+                                       {
+                                          _loc8_ = int(OUTPOST_YARD_PROPS._outpostProps[_loc7_.t - 1].produce[0]);
+                                       }
+                                       _loc8_ = Math.max(int(_loc8_ * GLOBAL._averageAltitude.Get() / _loc6_),1);
+                                       _processedGIP[_loc4_]["r" + _loc7_.t].Add(_loc8_);
+                                    }
+                                 }
+                                 _rawGIP[_loc4_] = {
+                                    "r1":_processedGIP[_loc4_].r1.Get(),
+                                    "r2":_processedGIP[_loc4_].r2.Get(),
+                                    "r3":_processedGIP[_loc4_].r3.Get(),
+                                    "r4":_processedGIP[_loc4_].r4.Get()
+                                 };
+                              }
+                              _GIP["r1"].Add(_processedGIP[_loc4_]["r1"].Get());
+                              _GIP["r2"].Add(_processedGIP[_loc4_]["r2"].Get());
+                              _GIP["r3"].Add(_processedGIP[_loc4_]["r3"].Get());
+                              _GIP["r4"].Add(_processedGIP[_loc4_]["r4"].Get());
+                           }
+                        }
+                        if(!_rawGIP["t"])
+                        {
+                           _lastProcessedGIP = _lastProcessed;
+                        }
+                        if(GLOBAL.Timestamp() - _lastProcessedGIP > 86400)
+                        {
+                           _lastProcessedGIP = GLOBAL.Timestamp() - 86400;
+                        }
+                        _processedGIP["t"] = _lastProcessedGIP;
+                     }
+                  }
                }
                if(GLOBAL._loadmode == "build" && _yardType == MAIN_YARD)
                {
@@ -3623,7 +4022,7 @@ package
             }
             else
             {
-               LOGGER.Log("err","Base.Page: " + com.adobe.serialization.json.JSON.encode(param1));
+               LOGGER.Log("err","Base.Page: " + JSON.encode(param1));
                GLOBAL.ErrorMessage("Base.Page: " + param1.error);
             }
          };
@@ -3631,6 +4030,7 @@ package
          {
             ++_pageErrors;
             _paging = false;
+            Console.warning("BASE.Page ERROR",_pageErrors);
             _lastPaged = int(10 + int(Math.random() * 5));
             if(_pageErrors >= 6)
             {
@@ -3714,19 +4114,23 @@ package
          var _loc7_:String = null;
          var _loc8_:* = undefined;
          var _loc9_:int = 0;
-         var _loc10_:int = 0;
+         var _loc10_:Boolean = false;
          var _loc11_:int = 0;
          var _loc12_:int = 0;
-         var _loc13_:BFOUNDATION = null;
-         var _loc14_:Array = null;
-         var _loc15_:int = 0;
+         var _loc13_:int = 0;
+         var _loc14_:BFOUNDATION = null;
+         var _loc15_:Array = null;
          var _loc16_:int = 0;
          var _loc17_:int = 0;
          var _loc18_:int = 0;
          var _loc19_:int = 0;
          var _loc20_:int = 0;
-         var _loc21_:* = undefined;
-         var _loc22_:int = 0;
+         var _loc21_:int = 0;
+         var _loc22_:* = undefined;
+         var _loc23_:int = 0;
+         var _loc24_:Boolean = false;
+         var _loc25_:Object = null;
+         var _loc26_:Array = null;
          var _loc3_:Object = {};
          var _loc4_:Boolean = false;
          var _loc5_:String = "";
@@ -3762,83 +4166,117 @@ package
          {
             _loc8_ = _loc3_.quantity;
             _loc9_ = 0;
+            _loc10_ = isInferno();
             if(GLOBAL._bTownhall)
             {
                _loc9_ = GLOBAL._bTownhall._lvl.Get();
+               if(Boolean(_loc3_.costs[0].re[0]) && _loc3_.costs[0].re[0][0] == INFERNOQUAKETOWER.UNDERHALL_ID)
+               {
+                  if(!MAPROOM_DESCENT.DescentPassed)
+                  {
+                     _loc4_ = true;
+                     _loc5_ = KEYS.Get("inferno_building_requirement");
+                     return {
+                        "error":_loc4_,
+                        "errorMessage":_loc5_
+                     };
+                  }
+                  _loc9_ = GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL);
+                  _loc10_ = true;
+                  if(!_loc9_)
+                  {
+                     _loc4_ = true;
+                     _loc5_ = KEYS.Get("base_builderr_noinfstate",{"v1":_loc9_});
+                     return {
+                        "error":_loc4_,
+                        "errorMessage":_loc5_
+                     };
+                  }
+               }
             }
-            _loc10_ = int(_loc8_[_loc9_]);
+            _loc11_ = int(_loc8_[_loc9_]);
             if(_loc3_.type == "decoration")
             {
-               _loc11_ = _loc10_ = int(_loc8_[0]);
+               _loc12_ = _loc11_ = int(_loc8_[0]);
             }
             else
             {
-               _loc11_ = _loc10_;
+               _loc12_ = _loc11_;
                if(_loc8_.length > _loc9_)
                {
-                  _loc11_ = int(_loc8_[_loc9_ + 1]);
+                  _loc12_ = int(_loc8_[_loc9_ + 1]);
                }
             }
-            if(_loc10_ == 0)
+            if(_loc11_ == 0)
             {
-               _loc12_ = 0;
-               while(_loc12_ < _loc8_.length)
+               _loc13_ = 0;
+               while(_loc13_ < _loc8_.length)
                {
-                  if(_loc8_[_loc12_] > 0)
+                  if(_loc8_[_loc13_] > 0)
                   {
                      _loc4_ = true;
-                     _loc5_ = KEYS.Get("base_builderr_thlevelreqd",{"v1":_loc12_});
+                     _loc5_ = KEYS.Get(_loc10_ ? "base_builderr_uhlevelreqd" : "base_builderr_thlevelreqd",{"v1":_loc13_});
                      break;
                   }
-                  _loc12_++;
+                  _loc13_++;
                }
             }
             else if(_loc3_.type != "decoration" || _loc3_.type == "decoration" && _loc3_.quantity[0] != 0)
             {
                _loc6_ = 0;
-               for each(_loc13_ in BASE._buildingsAll)
+               for each(_loc14_ in BASE._buildingsAll)
                {
-                  if(_loc13_._type == param1)
+                  if(_loc14_._type == param1)
                   {
                      _loc6_++;
                   }
                }
-               if(_loc6_ >= _loc10_)
+               if(_loc6_ >= _loc11_)
                {
                   _loc4_ = true;
-                  if(_loc11_ > _loc10_)
+                  if(_loc12_ > _loc11_)
                   {
-                     _loc5_ = KEYS.Get("base_builderr_uth");
+                     _loc5_ = KEYS.Get(isInfernoBuilding(param1) || isInferno() ? "base_builderr_uuh" : "base_builderr_uth");
                   }
                   else
                   {
-                     _loc5_ = KEYS.Get("base_builderr_onlybuildx",{"v1":_loc10_});
+                     _loc5_ = KEYS.Get("base_builderr_onlybuildx",{"v1":_loc11_});
                   }
                }
             }
          }
          if(!_loc4_)
          {
-            _loc14_ = _loc3_.costs[0].re;
-            _loc15_ = 0;
-            _loc12_ = 0;
-            while(_loc12_ < _loc14_.length)
+            _loc15_ = _loc3_.costs[0].re;
+            _loc16_ = 0;
+            _loc13_ = 0;
+            while(_loc13_ < _loc15_.length)
             {
                _loc6_ = 0;
-               for each(_loc13_ in BASE._buildingsAll)
+               if(_loc15_[_loc13_][0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
-                  if(_loc13_._type == _loc14_[_loc12_][0] && _loc13_._lvl.Get() >= _loc14_[_loc12_][2])
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc15_[_loc13_][2])
                   {
                      _loc6_++;
                   }
                }
-               if(_loc6_ >= _loc14_[_loc12_][1])
+               else
                {
-                  _loc15_++;
+                  for each(_loc14_ in BASE._buildingsAll)
+                  {
+                     if(_loc14_._type == _loc15_[_loc13_][0] && _loc14_._lvl.Get() >= _loc15_[_loc13_][2])
+                     {
+                        _loc6_++;
+                     }
+                  }
                }
-               _loc12_++;
+               if(_loc6_ >= _loc15_[_loc13_][1])
+               {
+                  _loc16_++;
+               }
+               _loc13_++;
             }
-            if(_loc15_ < _loc14_.length)
+            if(_loc16_ < _loc15_.length)
             {
                _loc4_ = true;
                _loc5_ = "Requirements not met.";
@@ -3846,45 +4284,48 @@ package
          }
          if(!_loc4_ && !param2)
          {
-            _loc16_ = int(_loc3_.costs[0].r1);
-            _loc17_ = int(_loc3_.costs[0].r2);
-            _loc18_ = int(_loc3_.costs[0].r3);
-            _loc19_ = int(_loc3_.costs[0].r4);
-            _loc20_ = 0;
-            _loc22_ = 0;
+            _loc17_ = int(_loc3_.costs[0].r1);
+            _loc18_ = int(_loc3_.costs[0].r2);
+            _loc19_ = int(_loc3_.costs[0].r3);
+            _loc20_ = int(_loc3_.costs[0].r4);
+            _loc21_ = 0;
+            _loc23_ = 0;
             if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
             {
-               if(_loc16_ > BASE._resources.r1.Get())
+               _loc24_ = isInfernoBuilding(param1);
+               _loc25_ = _loc24_ ? BASE._iresources : BASE._resources;
+               if(_loc17_ > _loc25_.r1.Get())
                {
-                  _loc21_ = 1;
-                  _loc22_ = _loc16_ - BASE._resources.r1.Get();
+                  _loc22_ = 1;
+                  _loc23_ = _loc17_ - _loc25_.r1.Get();
                }
-               if(_loc17_ > BASE._resources.r2.Get())
+               if(_loc18_ > _loc25_.r2.Get())
                {
-                  _loc21_ = 2;
-                  _loc22_ = _loc17_ - BASE._resources.r2.Get();
+                  _loc22_ = 2;
+                  _loc23_ = _loc18_ - _loc25_.r2.Get();
                }
-               if(_loc18_ > BASE._resources.r3.Get())
+               if(_loc19_ > _loc25_.r3.Get())
                {
-                  _loc21_ = 3;
-                  _loc22_ = _loc18_ - BASE._resources.r3.Get();
+                  _loc22_ = 3;
+                  _loc23_ = _loc19_ - _loc25_.r3.Get();
                }
-               if(_loc19_ > BASE._resources.r4.Get())
+               if(_loc20_ > _loc25_.r4.Get())
                {
-                  _loc21_ = 4;
-                  _loc22_ = _loc19_ - BASE._resources.r4.Get();
+                  _loc22_ = 4;
+                  _loc23_ = _loc20_ - _loc25_.r4.Get();
                }
-               if(_loc21_ > 0)
+               if(_loc22_ > 0)
                {
                   _loc4_ = true;
-                  _loc5_ = "You need " + GLOBAL.FormatNumber(_loc22_) + " more " + KEYS.Get(GLOBAL._resourceNames[_loc21_ - 1]);
+                  _loc26_ = _loc24_ ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
+                  _loc5_ = "You need " + GLOBAL.FormatNumber(_loc23_) + " more " + KEYS.Get(_loc26_[_loc22_ - 1]);
                }
             }
          }
          return {
             "error":_loc4_,
             "errorMessage":_loc5_,
-            "needResource":_loc21_
+            "needResource":_loc22_
          };
       }
       
@@ -3895,9 +4336,13 @@ package
          var _loc9_:Array = null;
          var _loc10_:Array = null;
          var _loc11_:int = 0;
-         var _loc12_:BFOUNDATION = null;
-         var _loc13_:* = undefined;
-         var _loc14_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:BFOUNDATION = null;
+         var _loc14_:Array = null;
+         var _loc15_:* = undefined;
+         var _loc16_:int = 0;
+         var _loc17_:Boolean = false;
+         var _loc18_:Object = null;
          if(param1._class == "mushroom")
          {
             return {"error":false};
@@ -3953,11 +4398,23 @@ package
             for each(_loc10_ in _loc8_[_loc6_].re)
             {
                _loc11_ = 0;
-               for each(_loc12_ in BASE._buildingsAll)
+               if(_loc10_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
-                  if(_loc12_._type == _loc10_[0] && _loc12_._lvl.Get() >= _loc10_[2])
+                  _loc12_ = "#bi_townhall#";
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc10_[2])
                   {
                      _loc11_++;
+                  }
+               }
+               else
+               {
+                  _loc12_ = GLOBAL._buildingProps[_loc10_[0] - 1].name;
+                  for each(_loc13_ in BASE._buildingsAll)
+                  {
+                     if(_loc13_._type == _loc10_[0] && _loc13_._lvl.Get() >= _loc10_[2])
+                     {
+                        _loc11_++;
+                     }
                   }
                }
                if(_loc11_ < _loc10_[1])
@@ -3966,20 +4423,20 @@ package
                   {
                      if(_loc10_[2] == 1)
                      {
-                        _loc9_.push([0,KEYS.Get("base_uperr_bdgpart1",{"v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)})]);
+                        _loc9_.push([0,KEYS.Get("base_uperr_bdgpart1",{"v1":KEYS.Get(_loc12_)})]);
                      }
                      else
                      {
                         _loc9_.push([0,KEYS.Get("base_uperr_bdgpart2",{
                            "v1":_loc10_[2],
-                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)
+                           "v2":KEYS.Get(_loc12_)
                         })]);
                      }
                   }
                   else if(_loc10_[2] == 1)
                   {
                      _loc9_.push([0,KEYS.Get("base_uperr_bdgpart3",{
-                        "v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v1":KEYS.Get(_loc12_),
                         "v2":_loc10_[1]
                      })]);
                   }
@@ -3987,7 +4444,7 @@ package
                   {
                      _loc9_.push([0,KEYS.Get("base_uperr_bdgpart4",{
                         "v1":_loc10_[2],
-                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v2":KEYS.Get(_loc12_),
                         "v3":_loc10_[1]
                      })]);
                   }
@@ -3998,6 +4455,12 @@ package
                _loc4_ = true;
                _loc5_ = KEYS.Get("base_uperr_buildings",{"v1":GLOBAL.Array2StringB(_loc9_)});
             }
+            if(_loc15_ > 0)
+            {
+               _loc4_ = true;
+               _loc14_ = !!isInfernoBuilding ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
+               _loc5_ = "You need " + GLOBAL.FormatNumber(_loc16_) + " more " + KEYS.Get(_loc14_[_loc15_ - 1]);
+            }
             if(!_loc4_)
             {
                if(_loc6_ < _loc8_.length)
@@ -4005,33 +4468,35 @@ package
                   _loc3_ = _loc8_[_loc6_];
                   if(!_loc4_)
                   {
-                     _loc14_ = 0;
-                     if(_loc3_.r1 > BASE._resources.r1.Get())
+                     _loc16_ = 0;
+                     _loc17_ = isInfernoBuilding(param1._type);
+                     _loc18_ = _loc17_ ? BASE._iresources : BASE._resources;
+                     if(_loc3_.r1 > _loc18_.r1.Get())
                      {
-                        _loc13_ = 1;
-                        _loc14_ = _loc3_.r1 - BASE._resources.r1.Get();
+                        _loc15_ = 1;
+                        _loc16_ = _loc3_.r1 - _loc18_.r1.Get();
                      }
-                     if(_loc3_.r2 > BASE._resources.r2.Get())
+                     if(_loc3_.r2 > _loc18_.r2.Get())
                      {
-                        _loc13_ = 2;
-                        _loc14_ = _loc3_.r2 - BASE._resources.r2.Get();
+                        _loc15_ = 2;
+                        _loc16_ = _loc3_.r2 - _loc18_.r2.Get();
                      }
-                     if(_loc3_.r3 > BASE._resources.r3.Get())
+                     if(_loc3_.r3 > _loc18_.r3.Get())
                      {
-                        _loc13_ = 3;
-                        _loc14_ = _loc3_.r3 - BASE._resources.r3.Get();
+                        _loc15_ = 3;
+                        _loc16_ = _loc3_.r3 - _loc18_.r3.Get();
                      }
-                     if(_loc3_.r4 > BASE._resources.r4.Get())
+                     if(_loc3_.r4 > _loc18_.r4.Get())
                      {
-                        _loc13_ = 4;
-                        _loc14_ = _loc3_.r4 - BASE._resources.r4.Get();
+                        _loc15_ = 4;
+                        _loc16_ = _loc3_.r4 - _loc18_.r4.Get();
                      }
-                     if(_loc13_ > 0)
+                     if(_loc15_ > 0)
                      {
                         _loc4_ = true;
                         _loc5_ = KEYS.Get("base_uperr_resources",{
-                           "v1":GLOBAL.FormatNumber(_loc14_),
-                           "v2":KEYS.Get(GLOBAL._resourceNames[_loc13_ - 1])
+                           "v1":GLOBAL.FormatNumber(_loc16_),
+                           "v2":KEYS.Get(GLOBAL._resourceNames[_loc15_ - 1])
                         });
                      }
                   }
@@ -4042,7 +4507,7 @@ package
             "error":_loc4_,
             "errorMessage":_loc5_,
             "costs":_loc3_,
-            "needResource":_loc13_
+            "needResource":_loc15_
          };
       }
       
@@ -4279,7 +4744,9 @@ package
       public static function addBuildingC(param1:int) : BFOUNDATION
       {
          var _loc2_:BFOUNDATION = null;
-         if(GLOBAL._buildingProps[param1 - 1].type == "decoration")
+         var _loc3_:Object = null;
+         _loc3_ = GLOBAL._buildingProps[param1 - 1] || {};
+         if(_loc3_.type == "decoration")
          {
             if(BTOTEM.IsTotem2(param1))
             {
@@ -4458,7 +4925,7 @@ package
          {
             _loc2_ = new INFERNO_MAGMA_TOWER();
          }
-         return _loc2_;
+         return !!_loc3_.cls ? new _loc3_.cls() : _loc2_;
       }
       
       public static function ShowFootprints() : *
@@ -4511,7 +4978,14 @@ package
                param1.Update();
                if(!param2)
                {
-                  BUILDINGINFO.Show(param1);
+                  if(param1._type == 127 && GLOBAL.StatGet("p_id") != 1 && !MAPROOM_DESCENT.DescentPassed && !BASE.isInferno())
+                  {
+                     INFERNO_DESCENT_POPUPS.ShowEnticePopup();
+                  }
+                  else
+                  {
+                     BUILDINGINFO.Show(param1);
+                  }
                }
             }
          }
@@ -4572,45 +5046,71 @@ package
          }
       }
       
-      public static function Charge(param1:int, param2:int, param3:Boolean = false) : int
+      public static function Charge(param1:int, param2:Number, param3:Boolean = false, param4:Boolean = false) : int
       {
-         if(param3)
+         var _loc5_:Object = null;
+         var _loc6_:Object = null;
+         var _loc7_:Object = null;
+         param2 = Math.floor(param2);
+         if(param4 && isInferno())
          {
+            param4 = false;
          }
-         var _loc4_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _resources : GLOBAL._attackersResources;
-         var _loc5_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
-         if(param2 <= _loc4_["r" + param1].Get())
+         _loc5_ = param4 ? _ideltaResources : _deltaResources;
+         _loc6_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? (param4 ? _iresources : _resources) : GLOBAL._attackersResources;
+         _loc7_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
+         if(param2 <= _loc6_["r" + param1].Get())
          {
             if(!param3)
             {
-               _loc4_["r" + param1].Add(-param2);
-               _loc5_["r" + param1] -= param2;
+               _loc6_["r" + param1].Add(-param2);
+               if(!param4)
+               {
+                  _loc7_["r" + param1] -= param2;
+               }
                if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                {
-                  if(_deltaResources["r" + param1])
+                  if(param4)
                   {
-                     _deltaResources["r" + param1].Add(int(-param2));
-                     _hpDeltaResources["r" + param1] += int(-param2);
+                     if(_loc5_["r" + param1])
+                     {
+                        _loc5_["r" + param1].Add(Math.floor(-param2));
+                     }
+                     else
+                     {
+                        _loc5_["r" + param1] = new SecNum(Math.floor(-param2));
+                     }
+                     _loc5_.dirty = true;
+                     GLOBAL._resources["r" + param1].Add(-param2);
+                     GLOBAL._hpResources["r" + param1] -= param2;
                   }
                   else
                   {
-                     _deltaResources["r" + param1] = new SecNum(int(-param2));
-                     _hpDeltaResources["r" + param1] = int(-param2);
+                     if(_loc5_["r" + param1])
+                     {
+                        _loc5_["r" + param1].Add(Math.floor(-param2));
+                        _hpDeltaResources["r" + param1] += Math.floor(-param2);
+                     }
+                     else
+                     {
+                        _loc5_["r" + param1] = new SecNum(Math.floor(-param2));
+                        _hpDeltaResources["r" + param1] = Math.floor(-param2);
+                     }
+                     _loc5_.dirty = true;
+                     _hpDeltaResources.dirty = true;
+                     GLOBAL._resources["r" + param1].Add(-param2);
+                     GLOBAL._hpResources["r" + param1] -= param2;
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
-                  GLOBAL._resources["r" + param1].Add(-param2);
-                  GLOBAL._hpResources["r" + param1] -= param2;
                }
                else
                {
                   if(GLOBAL._attackersDeltaResources["r" + param1])
                   {
-                     GLOBAL._attackersDeltaResources["r" + param1].Add(int(-param2));
+                     GLOBAL._attackersDeltaResources["r" + param1].Add(Math.floor(-param2));
                   }
                   else
                   {
-                     GLOBAL._attackersDeltaResources["r" + param1] = new SecNum(int(-param2));
+                     GLOBAL._attackersDeltaResources["r" + param1] = new SecNum(Math.floor(-param2));
                   }
                   GLOBAL._attackersDeltaResources.dirty = true;
                }
@@ -4624,95 +5124,150 @@ package
          return 0;
       }
       
-      public static function Fund(param1:int, param2:int, param3:Boolean = false, param4:* = null) : *
+      public static function Fund(param1:int, param2:Number, param3:Boolean = false, param4:* = null, param5:Boolean = false, param6:Boolean = true) : *
       {
-         var _loc5_:String = null;
-         var _loc6_:* = null;
-         var _loc7_:int = 0;
+         var _loc7_:Object = null;
+         var _loc8_:Object = null;
+         var _loc9_:Object = null;
+         var _loc10_:String = null;
+         var _loc11_:* = null;
+         var _loc12_:Number = NaN;
+         param2 = Math.floor(param2);
+         if(param5 && isInferno())
+         {
+            param5 = false;
+         }
          if(param1 < 5)
          {
-            _loc5_ = "r" + param1;
-            _loc6_ = "r" + param1 + "max";
-            _loc7_ = 0;
-            if(_resources[_loc5_].Get() < _resources[_loc6_] || param3)
+            _loc7_ = param5 ? _iresources : _resources;
+            _loc8_ = param5 ? _ideltaResources : _deltaResources;
+            _loc9_ = param5 ? {} : _hpDeltaResources;
+            _loc10_ = "r" + param1;
+            _loc11_ = "r" + param1 + "max";
+            _loc12_ = 0;
+            if(_loc7_[_loc10_].Get() < _loc7_[_loc11_] || param3)
             {
-               if(_resources[_loc5_].Get() + param2 < _resources[_loc6_] || param3)
+               if(_loc7_[_loc10_].Get() + param2 < _loc7_[_loc11_] || param3)
                {
-                  _resources[_loc5_].Add(int(param2));
-                  _hpResources[_loc5_] += int(param2);
-                  if(_deltaResources[_loc5_])
+                  _loc7_[_loc10_].Add(param2);
+                  if(!param5)
                   {
-                     _deltaResources[_loc5_].Add(int(param2));
-                     _hpDeltaResources[_loc5_] += int(param2);
+                     _hpResources[_loc10_] += param2;
+                  }
+                  if(_loc8_[_loc10_])
+                  {
+                     _loc8_[_loc10_].Add(param2);
+                     _loc9_[_loc10_] += param2;
                   }
                   else
                   {
-                     _deltaResources[_loc5_] = new SecNum(int(param2));
-                     _hpDeltaResources[_loc5_] = int(param2);
+                     _loc8_[_loc10_] = new SecNum(param2);
+                     _loc9_[_loc10_] = param2;
                   }
                   if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
-                     GLOBAL._resources[_loc5_].Add(int(param2));
-                     GLOBAL._hpResources[_loc5_] += int(param2);
+                     GLOBAL._resources[_loc10_].Add(param2);
+                     GLOBAL._hpResources[_loc10_] += param2;
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
-                  _loc7_ = param2;
+                  _loc8_.dirty = true;
+                  _loc9_.dirty = true;
+                  _loc12_ = param2;
                }
                else
                {
-                  _loc7_ = _resources[_loc6_] - _resources[_loc5_].Get();
-                  _resources[_loc5_].Set(_resources[_loc6_]);
-                  _hpResources[_loc5_] = _resources[_loc6_];
-                  if(_deltaResources[_loc5_])
+                  _loc12_ = _loc7_[_loc11_] - _loc7_[_loc10_].Get();
+                  _loc7_[_loc10_].Set(_loc7_[_loc11_]);
+                  if(!param5)
                   {
-                     _deltaResources[_loc5_].Add(int(_loc7_));
-                     _hpDeltaResources[_loc5_] += int(_loc7_);
+                     _hpResources[_loc10_] = _loc7_[_loc11_];
+                  }
+                  if(_loc8_[_loc10_])
+                  {
+                     _loc8_[_loc10_].Add(Math.floor(_loc12_));
+                     _loc9_[_loc10_] += Math.floor(_loc12_);
                   }
                   else
                   {
-                     _deltaResources[_loc5_] = new SecNum(int(_loc7_));
-                     _hpDeltaResources[_loc5_] = int(_loc7_);
+                     _loc8_[_loc10_] = new SecNum(Math.floor(_loc12_));
+                     _loc9_[_loc10_] = Math.floor(_loc12_);
                   }
                   if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
                   {
-                     GLOBAL._resources[_loc5_].Add(int(_loc7_));
-                     GLOBAL._hpResources[_loc5_] += int(_loc7_);
+                     GLOBAL._resources[_loc10_].Add(Math.floor(_loc12_));
+                     GLOBAL._hpResources[_loc10_] += Math.floor(_loc12_);
                   }
-                  _deltaResources.dirty = true;
-                  _hpDeltaResources.dirty = true;
+                  _loc8_.dirty = true;
+                  _loc9_.dirty = true;
                }
-               _bankedValue += _loc7_;
+               _bankedValue += _loc12_;
                _bankedTime = GLOBAL.Timestamp();
-               if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+               if((GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && !param5)
                {
-                  UI2._top.mc["mcR" + param1].x = -15;
-                  TweenLite.to(UI2._top.mc["mcR" + param1],0.6,{
-                     "x":0,
-                     "ease":Elastic.easeOut
-                  });
                }
             }
-            else if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+            else if((GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && !param5 && !WMATTACK._inProgress && param6)
             {
                UI2._top.OverchargeShow(param1);
             }
             if(param4)
             {
-               param4._stored.Add(-_loc7_);
+               param4._stored.Add(-_loc12_);
                if(!param4._producing)
                {
                   param4.StartProduction();
                }
                param4.Update();
             }
-            if(_loc7_ > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
+            if(_loc12_ > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild") && param6)
             {
                Save();
             }
          }
          UI2.Update();
-         return _loc7_;
+         return _loc12_;
+      }
+      
+      private static function JiggleResource(param1:int, param2:Number) : void
+      {
+         var _loc3_:MovieClip = null;
+         var _loc4_:TextField = null;
+         var _loc5_:String = null;
+         var _loc6_:String = null;
+         if(param2 == 0)
+         {
+            return;
+         }
+         _loc3_ = UI2._top.mc["mcR" + param1];
+         _loc3_.x = -15;
+         TweenLite.to(_loc3_,0.6,{
+            "x":0,
+            "ease":Elastic.easeOut
+         });
+         if(BASE.isInferno())
+         {
+            return;
+         }
+         _loc4_ = _loc3_.mcPoints.txt;
+         if(param2 >= 0)
+         {
+            _loc5_ = "00FF00";
+            _loc6_ = "+";
+         }
+         else
+         {
+            _loc5_ = "FF0000";
+            _loc6_ = "-";
+         }
+         _loc4_.y = 0;
+         _loc4_.x = 0;
+         _loc3_.mcPoints.alpha = 1;
+         _loc4_.alpha = 1;
+         _loc4_.htmlText = "<font color=\"#" + _loc5_ + "\">" + _loc6_ + GLOBAL.FormatNumber(param2) + "</font>";
+         TweenLite.to(_loc4_,3 + Math.random(),{
+            "y":_loc4_.y - (15 + Math.random() * 10),
+            "x":Math.random() * 10,
+            "alpha":0
+         });
       }
       
       public static function SaveDeltaResources() : *
@@ -4754,6 +5309,10 @@ package
             "r3":new SecNum(0),
             "r4":new SecNum(0)
          };
+         _ideltaResources.r1.Set(0);
+         _ideltaResources.r2.Set(0);
+         _ideltaResources.r3.Set(0);
+         _ideltaResources.r4.Set(0);
       }
       
       public static function BuildBlockers(param1:BFOUNDATION, param2:Boolean = false) : String
@@ -4788,6 +5347,7 @@ package
          var _loc3_:int = 0;
          if(_saving || _loading || BASE._saveCounterA != BASE._saveCounterB)
          {
+            GLOBAL._nextOutpostWaiting = 1;
             return;
          }
          if(GLOBAL._advancedMap)
@@ -4843,11 +5403,12 @@ package
       
       public static function CalcResources() : *
       {
-         var capacity:int = 0;
+         var capacity:Number = NaN;
          var rM:String = null;
          var i:* = undefined;
          var building:BFOUNDATION = null;
          var bT:int = 0;
+         var lvl:int = 0;
          var n:int = 0;
          var j:int = 0;
          try
@@ -4880,48 +5441,56 @@ package
                bT = building._type;
                if(bT < 5)
                {
+                  lvl = building._lvl.Get();
+                  if(_yardType == OUTPOST && GLOBAL._currentCell)
+                  {
+                     if(Boolean(building._countdownUpgrade) && building._countdownUpgrade.Get() > 0)
+                     {
+                        lvl++;
+                     }
+                  }
                   if(bT == 1)
                   {
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
-                        _resources.r1Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r1Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                      else
                      {
-                        _resources.r1Rate += int(GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r1Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                   }
                   else if(bT == 2)
                   {
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
-                        _resources.r2Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r2Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                      else
                      {
-                        _resources.r2Rate += int(GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r2Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                   }
                   else if(bT == 3)
                   {
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
-                        _resources.r3Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r3Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                      else
                      {
-                        _resources.r3Rate += int(GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r3Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                   }
                   else if(bT == 4)
                   {
                      if(_yardType == OUTPOST && GLOBAL._currentCell)
                      {
-                        _resources.r4Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r4Rate += int(BRESOURCE.AdjustProduction(GLOBAL._currentCell,GLOBAL._buildingProps[bT - 1].produce[lvl - 1]) / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                      else
                      {
-                        _resources.r4Rate += int(GLOBAL._buildingProps[bT - 1].produce[building._lvl.Get() - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[building._lvl.Get() - 1] * 60 * 60);
+                        _resources.r4Rate += int(GLOBAL._buildingProps[bT - 1].produce[lvl - 1] / GLOBAL._buildingProps[bT - 1].cycleTime[lvl - 1] * 60 * 60);
                      }
                   }
                }
@@ -4946,10 +5515,11 @@ package
                while(n < 5)
                {
                   _resources["r" + n + "max"] *= GLOBAL._upgradePacking;
-                  _resources["r" + n + "max"] = Math.ceil(_resources["r" + n + "max"]);
+                  _resources["r" + n + "max"] = Math.floor(_resources["r" + n + "max"]);
                   if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD)
                   {
                      GLOBAL._yardResources["r" + n + "max"] = _resources["r" + n + "max"];
+                     GLOBAL._yardResources["r" + n + "Rate"] = _resources["r" + n + "Rate"];
                   }
                   n++;
                }
@@ -4979,9 +5549,9 @@ package
          UI2.Update();
       }
       
-      public static function CalcBaseValue() : uint
+      public static function CalcBaseValue() : Number
       {
-         var baseValue:uint = 0;
+         var baseValue:Number = NaN;
          var i:* = undefined;
          var building:* = undefined;
          var buildingLvl:* = undefined;
@@ -4992,7 +5562,7 @@ package
             try
             {
                building = _buildingsAll[i];
-               if(building._class != "decoration" && building._class != "enemy" && building._class != "immovable" && building._class != "trap" && building._countdownBuild.Get() <= 0)
+               if(building._class != "decoration" && building._class != "enemy" && building._class != "immovable" && building._class != "trap" && (isOutpost || building._countdownBuild.Get() <= 0))
                {
                   buildingLvl = building._lvl.Get();
                   if(buildingLvl <= 0)
@@ -5062,7 +5632,7 @@ package
                {
                   StreamPost = function(param1:MouseEvent):*
                   {
-                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get(title,{"v1":lvl.level}),KEYS.Get(body),"levelup/levelup" + lvl.level + ".png"]);
+                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get(title,{"v1":lvl.level}),KEYS.Get(body),"levelup/levelup" + lvl.level + ".v2.png"]);
                      POPUPS.Next();
                   };
                   mc = new popup_levelup();
@@ -5079,7 +5649,7 @@ package
                   mc.bPost.SetupKey("btn_brag");
                   mc.bPost.addEventListener(MouseEvent.CLICK,StreamPost);
                   mc.bPost.Highlight = true;
-                  POPUPS.Push(mc,null,null,"levelup","levelup.png");
+                  POPUPS.Push(mc,null,null,"levelup","levelup.v2.png");
                }
             }
             _baseLevel = lvl.level;
@@ -5088,9 +5658,9 @@ package
          if(lvl.leveled)
          {
             BASE.Save();
-            if(GLOBAL._bymChat)
+            if(Chat._bymChat)
             {
-               GLOBAL._bymChat.broadcastDisplayNameUpdate(lvl.level);
+               Chat._bymChat.broadcastDisplayNameUpdate(lvl.level);
             }
          }
          if(GLOBAL._mode == "build")
@@ -5100,8 +5670,80 @@ package
          return lvl;
       }
       
-      public static function BuildingOverlap(param1:Point, param2:int, param3:Boolean, param4:Boolean = false, param5:Boolean = false) : Boolean
+      public static function Autobank(param1:int = 10) : void
       {
+         var _loc2_:int = 0;
+         var _loc3_:SecNum = null;
+         var _loc4_:Array = null;
+         var _loc5_:SecNum = null;
+         var _loc6_:Number = NaN;
+         if(GLOBAL._advancedMap)
+         {
+            _loc3_ = new SecNum(0);
+            _loc4_ = [new SecNum(0),new SecNum(0),new SecNum(0),new SecNum(0)];
+            if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && Boolean(GLOBAL._harvesterOverdrivePower.Get()))
+            {
+               _loc5_ = GLOBAL._harvesterOverdrivePower;
+            }
+            else
+            {
+               _loc5_ = new SecNum(1);
+            }
+            if(Boolean(_GIP["r1"]) && Boolean(_GIP["r1"].Get()))
+            {
+               _loc4_[0].Set(BASE.Fund(1,_GIP["r1"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
+               _loc3_.Add(_loc4_[0].Get());
+            }
+            if(Boolean(_GIP["r2"]) && Boolean(_GIP["r2"].Get()))
+            {
+               _loc4_[1].Set(BASE.Fund(2,_GIP["r2"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
+               _loc3_.Add(_loc4_[1].Get());
+            }
+            if(Boolean(_GIP["r3"]) && Boolean(_GIP["r3"].Get()))
+            {
+               _loc4_[2].Set(BASE.Fund(3,_GIP["r3"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
+               _loc3_.Add(_loc4_[2].Get());
+            }
+            if(Boolean(_GIP["r4"]) && Boolean(_GIP["r4"].Get()))
+            {
+               _loc4_[3].Set(BASE.Fund(4,_GIP["r4"].Get() * _loc5_.Get() * param1 / 10,false,null,false,false));
+               _loc3_.Add(_loc4_[3].Get());
+            }
+            --_autobankCounter;
+            _loc6_ = _GIP["r1"].Get() + _GIP["r2"].Get() + _GIP["r3"].Get() + _GIP["r4"].Get();
+            BASE.PointsAdd(Math.ceil(_loc3_.Get() * 0.375));
+            if(param1 > 10)
+            {
+               _loc2_ = 1;
+               while(_loc2_ < 5)
+               {
+                  if(_loc4_[_loc2_ - 1].Get() > 0)
+                  {
+                     LOGGER.Stat([96,_loc2_,_loc4_[_loc2_ - 1].Get()]);
+                  }
+                  _loc2_++;
+               }
+               _autobankCounter = 10;
+            }
+            else if(_autobankCounter == 0)
+            {
+               _loc2_ = 1;
+               while(_loc2_ < 5)
+               {
+                  if(_loc4_[_loc2_ - 1].Get() > 0)
+                  {
+                     LOGGER.Stat([96,_loc2_,_loc4_[_loc2_ - 1].Get() * 10]);
+                  }
+                  _loc2_++;
+               }
+               _autobankCounter = 10;
+            }
+         }
+      }
+      
+      public static function GetBuildingOverlap(param1:Number, param2:Number, param3:Number, param4:Vector.<BFOUNDATION>) : void
+      {
+         var _loc5_:Point = null;
          var _loc6_:* = undefined;
          var _loc7_:BFOUNDATION = null;
          var _loc8_:Point = null;
@@ -5111,20 +5753,50 @@ package
          var _loc12_:* = undefined;
          var _loc13_:* = undefined;
          var _loc14_:* = undefined;
+         _loc5_ = new Point(param1,param2);
          for(_loc6_ in _buildingsAll)
          {
             _loc7_ = BASE._buildingsAll[_loc6_];
             _loc8_ = new Point(_loc7_._mc.x,_loc7_._mc.y + _loc7_._middle);
-            if(!(param3 && _loc7_._class == "trap" || param4 && _loc7_._hp.Get() <= 0 || param5 && _loc7_._class == "decoration"))
+            _loc9_ = Math.atan2(_loc5_.y - _loc8_.y,_loc5_.x - _loc8_.x);
+            _loc10_ = EllipseEdgeDistance(_loc9_,param3,param3 * _angle);
+            _loc9_ = Math.atan2(_loc8_.y - _loc5_.y,_loc8_.x - _loc5_.x);
+            _loc11_ = EllipseEdgeDistance(_loc9_,_loc7_._size * 0.5,_loc7_._size * 0.5 * _angle);
+            _loc12_ = _loc5_.x - _loc8_.x;
+            _loc13_ = _loc5_.y - _loc8_.y;
+            _loc14_ = int(Math.sqrt(_loc12_ * _loc12_ + _loc13_ * _loc13_));
+            if(_loc14_ < _loc10_ + _loc11_)
             {
-               _loc9_ = Math.atan2(param1.y - _loc8_.y,param1.x - _loc8_.x);
-               _loc10_ = EllipseEdgeDistance(_loc9_,param2,param2 * _angle);
-               _loc9_ = Math.atan2(_loc8_.y - param1.y,_loc8_.x - param1.x);
-               _loc11_ = EllipseEdgeDistance(_loc9_,_loc7_._size * 0.5,_loc7_._size * 0.5 * _angle);
-               _loc12_ = param1.x - _loc8_.x;
-               _loc13_ = param1.y - _loc8_.y;
-               _loc14_ = int(Math.sqrt(_loc12_ * _loc12_ + _loc13_ * _loc13_));
-               if(_loc14_ < _loc10_ + _loc11_)
+               param4.push(_loc7_);
+            }
+         }
+      }
+      
+      public static function BuildingOverlap(param1:Point, param2:int, param3:Boolean, param4:Boolean = false, param5:Boolean = false, param6:Boolean = false) : Boolean
+      {
+         var _loc7_:* = undefined;
+         var _loc8_:BFOUNDATION = null;
+         var _loc9_:Point = null;
+         var _loc10_:* = undefined;
+         var _loc11_:* = undefined;
+         var _loc12_:* = undefined;
+         var _loc13_:* = undefined;
+         var _loc14_:* = undefined;
+         var _loc15_:* = undefined;
+         for(_loc7_ in _buildingsAll)
+         {
+            _loc8_ = BASE._buildingsAll[_loc7_];
+            _loc9_ = new Point(_loc8_._mc.x,_loc8_._mc.y + _loc8_._middle);
+            if(!(param3 && _loc8_._class == "trap" || param4 && _loc8_._hp.Get() <= 0 || param5 && _loc8_._class == "decoration" || param6 && (_loc8_._class == "immovable" || _loc8_._class == "enemy")))
+            {
+               _loc10_ = Math.atan2(param1.y - _loc9_.y,param1.x - _loc9_.x);
+               _loc11_ = EllipseEdgeDistance(_loc10_,param2,param2 * _angle);
+               _loc10_ = Math.atan2(_loc9_.y - param1.y,_loc9_.x - param1.x);
+               _loc12_ = EllipseEdgeDistance(_loc10_,_loc8_._size * 0.5,_loc8_._size * 0.5 * _angle);
+               _loc13_ = param1.x - _loc9_.x;
+               _loc14_ = param1.y - _loc9_.y;
+               _loc15_ = int(Math.sqrt(_loc13_ * _loc13_ + _loc14_ * _loc14_));
+               if(_loc15_ < _loc11_ + _loc12_)
                {
                   return true;
                }
@@ -5308,6 +5980,100 @@ package
       public static function isInferno() : Boolean
       {
          return BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
+      }
+      
+      public static function get isOutpost() : Boolean
+      {
+         return _yardType == OUTPOST;
+      }
+      
+      public static function getEmpireResources(param1:int) : Number
+      {
+         var _loc2_:* = undefined;
+         _loc2_ = 1;
+         if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
+         {
+            _loc2_ = GLOBAL._harvesterOverdrivePower.Get();
+         }
+         return _GIP["r" + param1].Get() * 360 * _loc2_;
+      }
+      
+      public static function HasRequirements(param1:Object) : Boolean
+      {
+         var _loc2_:Array = null;
+         var _loc3_:int = 0;
+         var _loc4_:* = undefined;
+         for each(_loc2_ in param1.re)
+         {
+            _loc3_ = 0;
+            if(_loc2_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
+            {
+               if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc2_[2] && MAPROOM_DESCENT.DescentPassed)
+               {
+                  _loc3_ = 1;
+               }
+            }
+            else
+            {
+               for each(_loc4_ in _buildingsAll)
+               {
+                  if(_loc4_._type == _loc2_[0] && _loc4_._lvl.Get() >= _loc2_[2])
+                  {
+                     _loc3_++;
+                  }
+               }
+            }
+            if(_loc3_ < _loc2_[1])
+            {
+               return false;
+            }
+         }
+         return true;
+      }
+      
+      public static function isInfernoBuilding(param1:uint) : Boolean
+      {
+         return (param1 == INFERNOQUAKETOWER.TYPE || param1 == INFERNO_MAGMA_TOWER.ID || param1 == SiegeFactory.ID || param1 == SiegeLab.ID) && !BASE.isInferno();
+      }
+      
+      public static function hasNumBuildings(param1:int, param2:int = 0, param3:Boolean = false) : int
+      {
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:BFOUNDATION = null;
+         _loc4_ = param1;
+         _loc5_ = param2;
+         _loc6_ = 0;
+         for each(_loc7_ in _buildingsAll)
+         {
+            if(_loc7_._type == _loc4_ && _loc7_._lvl.Get() >= _loc5_)
+            {
+               _loc6_++;
+               if(param3)
+               {
+                  break;
+               }
+            }
+         }
+         return _loc6_;
+      }
+      
+      public static function findBuilding(param1:int) : BFOUNDATION
+      {
+         var _loc2_:int = 0;
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:BFOUNDATION = null;
+         _loc2_ = param1;
+         for each(_loc4_ in _buildingsAll)
+         {
+            if(_loc4_._type == _loc2_)
+            {
+               _loc3_ = _loc4_;
+               break;
+            }
+         }
+         return _loc3_;
       }
    }
 }

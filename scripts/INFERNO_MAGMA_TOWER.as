@@ -6,6 +6,8 @@ package
    
    public class INFERNO_MAGMA_TOWER extends BTOWER
    {
+      public static const ID:int = 132;
+      
       public var _animMC:*;
       
       public var _animBitmap:BitmapData;
@@ -17,6 +19,8 @@ package
       public var _fireStage:int = 1;
       
       public var _targetArray:Array = [4,4,6,8,10,12];
+      
+      protected var _projectile:FIREBALL;
       
       public function INFERNO_MAGMA_TOWER()
       {
@@ -40,7 +44,8 @@ package
       {
          if(_animLoaded && GLOBAL._render)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(_animRect.width * _animTick,0,_animRect.width,_animRect.height),new Point(0,0));
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
          super.AnimFrame(false);
       }
@@ -62,7 +67,7 @@ package
          {
             _loc3_ = 1.25;
          }
-         FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),_splash,FIREBALLS.TYPE_MAGMA);
+         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),_splash,FIREBALLS.TYPE_MAGMA);
       }
       
       override public function Description() : *

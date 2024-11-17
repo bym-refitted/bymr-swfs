@@ -21,7 +21,7 @@ package
          super();
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
          var giblet:GIBLET = null;
          var g:String = null;
@@ -48,7 +48,7 @@ package
          }
       }
       
-      public static function PoolGet(param1:int, param2:Point, param3:Point, param4:int, param5:Number, param6:Number) : *
+      public static function PoolGet(param1:int, param2:Point, param3:Point, param4:int, param5:Number, param6:Number) : GIBLET
       {
          var _loc7_:GIBLET = null;
          if(_pool.length)
@@ -63,12 +63,12 @@ package
          return _loc7_;
       }
       
-      public static function PoolSet(param1:GIBLET) : *
+      public static function PoolSet(param1:GIBLET) : void
       {
          _pool.push(param1);
       }
       
-      public static function Create(param1:Point, param2:Number, param3:int, param4:int, param5:int = 0) : *
+      public static function Create(param1:Point, param2:Number, param3:int, param4:int, param5:int = 0) : void
       {
          var _loc6_:int = 0;
          var _loc7_:Number = NaN;
@@ -92,7 +92,7 @@ package
          }
       }
       
-      public static function Spawn(param1:Point, param2:Number, param3:int, param4:Number, param5:int) : *
+      public static function Spawn(param1:Point, param2:Number, param3:int, param4:Number, param5:int) : void
       {
          var _loc6_:Number = Math.random() * 360;
          var _loc7_:Point = GRID.FromISO(param1.x,param1.y);
@@ -103,7 +103,7 @@ package
          ++_gibletCount;
       }
       
-      public static function Remove(param1:*) : *
+      public static function Remove(param1:*) : void
       {
          var id:* = param1;
          var giblet:GIBLET = _giblets[id];

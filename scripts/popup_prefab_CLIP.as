@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1627")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1674")]
    public dynamic class popup_prefab_CLIP extends MovieClip
    {
       public var tCol1:TextField;
@@ -21,6 +21,8 @@ package
       public var tCol3:TextField;
       
       public var t2:TextField;
+      
+      public var tInstantNotice:TextField;
       
       public var tCol4:TextField;
       

@@ -1,5 +1,7 @@
 package
 {
+   import com.monsters.siege.SiegeFactory;
+   import com.monsters.siege.SiegeLab;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
@@ -9,6 +11,7 @@ package
          "id":1,
          "group":1,
          "order":1,
+         "buildStatus":0,
          "type":"resource",
          "name":"#bi_boneharvester#",
          "size":100,
@@ -98,19 +101,24 @@ package
                "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-51,5)],
                "topdestroyed":["top.1.destroyed.v2.png",new Point(-45,0)],
                "shadowdestroyed":["shadow.1.destroyed.v4.jpg",new Point(-46,4)]
+            },
+            "3":{
+               "anim":["anim.2.png",new Rectangle(-44,-38,90,97),50],
+               "top":["top.2.png",new Point(-44,25)],
+               "shadow":["shadow.2.jpg",new Point(-39,16)],
+               "topdamaged":["top.2.damaged.png",new Point(-37,-27)],
+               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-39,19)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-57,8)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-60,19)]
             }
          },
-         "buildingbuttons":["bone_crusher"],
+         "buildingbuttons":["bone_crusher.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"bone_crusher.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"1.1.png"},
-            "3":{"img":"1.3.png"},
-            "6":{"img":"1.6.png"},
-            "10":{"img":"1.10.png"}
+            "1":{
+               "img":"bone_crusher.v2.jpg",
+               "silhouette_img":"bone_crusher.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,2,4,5,6,6,6,6,6],
          "produce":[2,4,7,11,16,22,29,37,46,56],
@@ -122,6 +130,7 @@ package
          "id":2,
          "group":1,
          "order":2,
+         "buildStatus":0,
          "type":"resource",
          "name":"#bi_coalharvester#",
          "size":100,
@@ -213,19 +222,24 @@ package
                "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-64,4)],
                "topdestroyed":["top.1.destroyed.v2.png",new Point(-44,-4)],
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-50,-2)]
+            },
+            "3":{
+               "anim":["anim.1.2.png",new Rectangle(-40,-52,74,105),45],
+               "top":["top.2.png",new Point(-40,-50)],
+               "shadow":["shadow.2.jpg",new Point(-42,7)],
+               "topdamaged":["top.2.damaged.png",new Point(-39,-52)],
+               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-43,5)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-43,-9)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-46,17)]
             }
          },
-         "buildingbuttons":["coal_producer"],
+         "buildingbuttons":["coal_producer.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"coal_producer.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"2.1.png"},
-            "3":{"img":"2.3.png"},
-            "6":{"img":"2.6.png"},
-            "10":{"img":"2.10.png"}
+            "1":{
+               "img":"coal_producer.v2.jpg",
+               "silhouette_img":"coal_producer.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,2,4,5,6,6,6,6,6],
          "produce":[2,4,7,11,16,22,29,37,46,56],
@@ -237,6 +251,7 @@ package
          "id":3,
          "group":1,
          "order":3,
+         "buildStatus":0,
          "type":"resource",
          "name":"#bi_sulfurharvester#",
          "size":100,
@@ -328,19 +343,24 @@ package
                "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-49,17)],
                "topdestroyed":["top.1.destroyed.v2.png",new Point(-34,4)],
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-34,15)]
+            },
+            "3":{
+               "anim":["anim1.2.png",new Rectangle(-36,-60,60,118),45],
+               "top":["top.2.png",new Point(0,-15)],
+               "shadow":["shadow.2.jpg",new Point(-25,27)],
+               "topdamaged":["top.2.damaged.png",new Point(-38,-62)],
+               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-28,30)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-45,-6)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-42,12)]
             }
          },
-         "buildingbuttons":["sulfur"],
+         "buildingbuttons":["sulfur.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"sulfur.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"3.1.png"},
-            "3":{"img":"3.3.png"},
-            "6":{"img":"3.6.png"},
-            "10":{"img":"3.10.png"}
+            "1":{
+               "img":"sulfur.v2.jpg",
+               "silhouette_img":"sulfur.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,2,4,5,6,6,6,6,6],
          "produce":[2,4,7,11,16,22,29,37,46,56],
@@ -352,6 +372,7 @@ package
          "id":4,
          "group":1,
          "order":4,
+         "buildStatus":0,
          "type":"resource",
          "name":"#bi_magmaharverster#",
          "size":100,
@@ -443,19 +464,25 @@ package
                "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-49,2)],
                "topdestroyed":["top.1.destroyed.v2.png",new Point(-37,-2)],
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-41,6)]
+            },
+            "3":{
+               "anim":["anim.1.2.png",new Rectangle(-37,-66,59,52),49],
+               "anim2":["anim.2.2.png",new Rectangle(-1,-4,40,63),49],
+               "top":["top.2.png",new Point(-40,-15)],
+               "shadow":["shadow.2.jpg",new Point(-36,4)],
+               "topdamaged":["top.2.damaged.png",new Point(-48,-35)],
+               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-38,23)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-67,-8)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-70,18)]
             }
          },
-         "buildingbuttons":["magma_producer"],
+         "buildingbuttons":["magma_producer.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"magma_producer.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"4.1.png"},
-            "3":{"img":"4.3.png"},
-            "6":{"img":"4.6.png"},
-            "10":{"img":"4.10.png"}
+            "1":{
+               "img":"magma_producer.v2.jpg",
+               "silhouette_img":"magma_producer.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,2,4,5,6,6,6,6,6],
          "produce":[2,4,7,11,16,22,29,37,46,56],
@@ -467,6 +494,7 @@ package
          "id":5,
          "group":2,
          "order":9,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_flinger#",
          "size":190,
@@ -554,13 +582,14 @@ package
             "4":{"img":"5.4.png"}
          },
          "quantity":[0,1,1,1,1,1,1,1,1,1],
-         "capacity":[200,5 * 60,520,640,19 * 60],
+         "capacity":[200,5 * 60,520,640,19 * 60,1820],
          "hp":[0xfa0,0x1f40,16000,28000],
          "repairTime":[100,5 * 60,10 * 60,15 * 60]
       },{
          "id":6,
          "group":1,
          "order":5,
+         "buildStatus":0,
          "type":"special",
          "name":"#bi_storagesilo#",
          "size":2 * 60,
@@ -631,6 +660,13 @@ package
             "r4":0,
             "time":30754,
             "re":[[14,1,5]]
+         },{
+            "r1":1900000,
+            "r2":950000,
+            "r3":0,
+            "r4":0,
+            "time":46132,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":59375,
@@ -672,42 +708,23 @@ package
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-54,12)]
             }
          },
-         "buildingbuttons":["sillo"],
+         "buildingbuttons":["sillo.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"sillo.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"6.png"}
-         },
-         "fortImgData":{
-            "baseurl":"buildings/fortifications/",
             "1":{
-               "front":["fort70_F1.png",new Point(-73,28)],
-               "back":["fort70_B1.png",new Point(-71,-4)]
-            },
-            "2":{
-               "front":["fort70_F2.png",new Point(-69,26)],
-               "back":["fort70_B2.png",new Point(-65,-7)]
-            },
-            "3":{
-               "front":["fort70_F3.png",new Point(-73,17)],
-               "back":["fort70_B3.png",new Point(-69,-5)]
-            },
-            "4":{
-               "front":["fort70_F4.png",new Point(-70,-3)],
-               "back":["fort70_B4.png",new Point(-62,-31)]
+               "img":"sillo.v2.jpg",
+               "silhouette_img":"sillo.v2.silhouette.jpg"
             }
          },
-         "quantity":[0,2,2,3,4,5],
-         "capacity":[125 * 60,250 * 60,500 * 60,60 * 1000,2 * 60 * 1000,4 * 60 * 1000,8 * 60 * 1000,16 * 60 * 1000,32 * 60 * 1000],
+         "quantity":[0,2,2,3,4,5,5],
+         "capacity":[125 * 60,250 * 60,500 * 60,60 * 1000,2 * 60 * 1000,4 * 60 * 1000,8 * 60 * 1000,16 * 60 * 1000,32 * 60 * 1000,64 * 60 * 1000],
          "hp":[750,1400,2550,4750,8800,16250,500 * 60,55600,105000,190000],
          "repairTime":[30,60,2 * 60,4 * 60,8 * 60,16 * 60,32 * 60,0xf00,128 * 60,256 * 60]
       },{
          "id":7,
          "group":999,
          "order":1,
+         "buildStatus":0,
          "type":"mushroom",
          "name":"#b_mushroom#",
          "size":10,
@@ -727,6 +744,7 @@ package
          "id":8,
          "group":2,
          "order":3,
+         "buildStatus":0,
          "type":"special",
          "name":"#bi_monsterlocker#",
          "size":2 * 60,
@@ -776,17 +794,13 @@ package
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-83,13)]
             }
          },
-         "buildingbuttons":["monster_locker"],
+         "buildingbuttons":["monster_locker.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"monster_locker.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"8.1.png"},
-            "2":{"img":"8.2.png"},
-            "3":{"img":"8.3.png"},
-            "4":{"img":"8.4.png"}
+            "1":{
+               "img":"monster_locker.v2.jpg",
+               "silhouette_img":"monster_locker.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,1,1,1,1,1,1,1,1],
          "hp":[0xfa0,16000,32000,64000],
@@ -795,6 +809,7 @@ package
          "id":9,
          "group":2,
          "order":14,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_monsterjuicer#",
          "size":2 * 60,
@@ -852,6 +867,7 @@ package
          "id":10,
          "group":2,
          "order":13,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_yardplanner#",
          "size":2 * 60,
@@ -895,6 +911,7 @@ package
          "id":11,
          "group":2,
          "order":11,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_maproom#",
          "size":2 * 60,
@@ -910,13 +927,6 @@ package
             "r4":0,
             "time":15 * 60,
             "re":[[14,1,1]]
-         },{
-            "r1":1000000,
-            "r2":1000000,
-            "r3":0,
-            "r4":0,
-            "time":4 * 24 * 60 * 60,
-            "re":[[14,1,6]]
          }],
          "imageData":{
             "baseurl":"buildings/maproom/",
@@ -944,6 +954,7 @@ package
          "id":12,
          "group":2,
          "order":2,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_generalstore#",
          "size":80,
@@ -986,6 +997,7 @@ package
          "id":13,
          "group":2,
          "order":7,
+         "buildStatus":0,
          "type":"special",
          "name":"#bi_hatchery#",
          "size":2 * 60,
@@ -1028,16 +1040,13 @@ package
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-58,18)]
             }
          },
-         "buildingbuttons":["hatchery"],
+         "buildingbuttons":["hatchery.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"hatchery.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"13.1.png"},
-            "2":{"img":"13.2.png"},
-            "3":{"img":"13.3.png"}
+            "1":{
+               "img":"hatchery.v2.jpg",
+               "silhouette_img":"hatchery.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,1,2,3,4,5,5,5,5,5],
          "hp":[0xfa0,16000,32000],
@@ -1046,6 +1055,7 @@ package
          "id":14,
          "group":2,
          "order":1,
+         "buildStatus":0,
          "type":"special",
          "name":"#bi_townhall#",
          "size":190,
@@ -1089,6 +1099,13 @@ package
             "r4":0,
             "time":2 * 24 * 60 * 60,
             "re":[[14,1,4]]
+         },{
+            "r1":7560000,
+            "r2":7560000,
+            "r3":0,
+            "r4":0,
+            "time":4 * 24 * 60 * 60,
+            "re":[[14,1,5]]
          }],
          "fortify_costs":[{
             "r1":500000,
@@ -1146,23 +1163,15 @@ package
                "shadowdestroyed":["shadow.3.destroyed.v2.jpg",new Point(-75,29)]
             }
          },
-         "buildingbuttons":["townhall_L1"],
+         "buildingbuttons":["townhall_L1.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"townhall_L1.jpg"},
-            "2":{"img":"townhall_L2.jpg"},
-            "3":{"img":"townhall_L3.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"14.1.png"},
-            "2":{"img":"14.2.png"},
-            "3":{"img":"14.3.png"},
-            "4":{"img":"14.4.png"},
-            "5":{"img":"14.5.png"},
-            "6":{"img":"14.6.png"},
-            "7":{"img":"14.7.png"},
-            "8":{"img":"14.8.png"}
+            "1":{
+               "img":"townhall_L1.v2.jpg",
+               "silhouette_img":"townhall_L1.v2.silhouette.jpg"
+            },
+            "2":{"img":"townhall_L2.v2.jpg"},
+            "3":{"img":"townhall_L3.v2.jpg"}
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -1184,12 +1193,13 @@ package
             }
          },
          "quantity":[1,1,1,1,1,1,1,1,1,1],
-         "hp":[0xfa0,8800,20000,700 * 60,94000],
-         "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60]
+         "hp":[0xfa0,8800,20000,700 * 60,94000,200000],
+         "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60,512 * 60]
       },{
          "id":15,
          "group":2,
          "order":6,
+         "buildStatus":0,
          "type":"special",
          "name":"#bi_housing#",
          "size":200,
@@ -1254,11 +1264,10 @@ package
          },
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"monster_housing.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"15.png"}
+            "1":{
+               "img":"monster_housing.v2.jpg",
+               "silhouette_img":"monster_housing.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,0,0,0,0,0],
          "capacity":[200,260,320,380,450,9 * 60],
@@ -1268,6 +1277,7 @@ package
          "id":16,
          "group":2,
          "order":8,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_hcc#",
          "size":2 * 60,
@@ -1310,6 +1320,7 @@ package
          "id":17,
          "group":3,
          "order":7,
+         "buildStatus":0,
          "type":"wall",
          "name":"#b_woodenblock#",
          "size":50,
@@ -1366,26 +1377,24 @@ package
                "shadowdestroyed":["shadow.3.v2.jpg",new Point(-20,-1)]
             }
          },
-         "buildingbuttons":["coal_wall.v2","iron_wall.v2","steel_wall.v2"],
+         "buildingbuttons":["coal_wall.v3","iron_wall.v3","steel_wall.v3"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"coal_wall.v2.jpg"},
-            "2":{"img":"iron_wall.v2.jpg"},
-            "3":{"img":"steel_wall.v2.jpg"}
+            "1":{
+               "img":"coal_wall.v3.jpg",
+               "silhouette_img":"coal_wall.v3.silhouette.jpg"
+            },
+            "2":{"img":"iron_wall.v3.jpg"},
+            "3":{"img":"steel_wall.v3.jpg"}
          },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"coal_wall.png"},
-            "2":{"img":"iron_wall.png"},
-            "3":{"img":"steel_wall.png"}
-         },
-         "quantity":[0,0,30,60,2 * 60,200],
+         "quantity":[0,0,30,60,2 * 60,200,220],
          "hp":[1000,2300,5750,5 * 60 * 60,450 * 60],
          "repairTime":[5,5,5,5,5]
       },{
          "id":18,
          "group":3,
          "order":7,
+         "buildStatus":0,
          "type":"wall",
          "name":"#b_stoneblock#",
          "size":50,
@@ -1417,10 +1426,6 @@ package
             "baseurl":"buildingbuttons/",
             "1":{"img":"18.jpg"}
          },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"18.png"}
-         },
          "quantity":[0,0,10,20,40,60,70,90,90,90],
          "hp":[60 * 60],
          "repairTime":[20]
@@ -1428,6 +1433,7 @@ package
          "id":19,
          "group":2,
          "order":12,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_wildmonsterbaiter#",
          "size":2 * 60,
@@ -1515,6 +1521,7 @@ package
          "id":20,
          "group":3,
          "order":2,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_cannontower#",
          "size":64,
@@ -1559,6 +1566,12 @@ package
             "rate":40,
             "speed":8,
             "splash":55
+         },{
+            "range":220,
+            "damage":140,
+            "rate":40,
+            "speed":8,
+            "splash":60
          }],
          "costs":[{
             "r1":2000,
@@ -1602,6 +1615,13 @@ package
             "r4":0,
             "time":72900,
             "re":[[14,1,5]]
+         },{
+            "r1":9375000,
+            "r2":7000000,
+            "r3":1562500,
+            "r4":0,
+            "time":2 * 24 * 60 * 60,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":50000,
@@ -1647,11 +1667,10 @@ package
          },
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"cannon_tower.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"20.png"}
+            "1":{
+               "img":"cannon_tower.v2.jpg",
+               "silhouette_img":"cannon_tower.v2.silhouette.jpg"
+            }
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -1672,13 +1691,14 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,3,4,4],
+         "quantity":[0,0,0,0,0,0],
          "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
          "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,18 * 60 * 60,24 * 60 * 60]
       },{
          "id":21,
          "group":3,
          "order":1,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_snipertower#",
          "size":64,
@@ -1721,6 +1741,12 @@ package
             "damage":650,
             "rate":80,
             "speed":17,
+            "splash":0
+         },{
+            "range":348,
+            "damage":760,
+            "rate":80,
+            "speed":18,
             "splash":0
          }],
          "costs":[{
@@ -1765,6 +1791,13 @@ package
             "r4":0,
             "time":24 * 60 * 60,
             "re":[[14,1,5]]
+         },{
+            "r1":7031250,
+            "r2":9375000,
+            "r3":2343750,
+            "r4":0,
+            "time":2 * 24 * 60 * 60,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":625 * 60,
@@ -1808,14 +1841,13 @@ package
                "shadowdestroyed":["shadow.1.v2.jpg",new Point(-54,2)]
             }
          },
-         "buildingbuttons":["sniper_tower"],
+         "buildingbuttons":["sniper_tower.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"sniper_tower.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"21.png"}
+            "1":{
+               "img":"sniper_tower.v2.jpg",
+               "silhouette_img":"sniper_tower.v2.silhouette.jpg"
+            }
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -1836,13 +1868,14 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,3,4,4],
-         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400],
-         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60]
+         "quantity":[0,2,3,3,4,4,6],
+         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60],
+         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000]
       },{
          "id":22,
          "group":3,
          "order":5,
+         "buildStatus":0,
          "type":"tower",
          "name":"#b_monsterbunker#",
          "size":2 * 60,
@@ -1896,10 +1929,6 @@ package
             "baseurl":"buildingbuttons/",
             "1":{"img":"22.jpg"}
          },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"22.png"}
-         },
          "quantity":[0,0,0,0,0,0],
          "capacity":[380,450,9 * 60,640],
          "hp":[10000,24500,52000,75000],
@@ -1908,6 +1937,7 @@ package
          "id":23,
          "group":3,
          "order":4,
+         "buildStatus":0,
          "type":"tower",
          "name":"#b_lasertower#",
          "tutstage":200,
@@ -2071,6 +2101,7 @@ package
          "id":24,
          "group":3,
          "order":6,
+         "buildStatus":0,
          "type":"trap",
          "name":"#b_boobytrap#",
          "size":50,
@@ -2095,15 +2126,19 @@ package
                "shadowdestroyed":["shadow.1.jpg",new Point(-13,3)]
             }
          },
+         "buildingbuttons":["booby_trap.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"24.jpg"}
+            "1":{
+               "img":"booby_trap.v2.jpg",
+               "silhouette_img":"booby_trap.v2.silhouette.jpg"
+            }
          },
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
             "1":{"img":"24.png"}
          },
-         "quantity":[0,0,8,15,20,28],
+         "quantity":[0,0,8,15,20,28,35],
          "damage":[1000],
          "hp":[10],
          "repairTime":[1]
@@ -2111,6 +2146,7 @@ package
          "id":25,
          "group":3,
          "order":3,
+         "buildStatus":0,
          "type":"tower",
          "name":"#b_teslatower#",
          "tutstage":200,
@@ -2274,12 +2310,12 @@ package
          "id":26,
          "group":2,
          "order":5,
+         "buildStatus":0,
          "type":"special",
-         "name":"#b_monsteracademy#",
+         "name":"#bi_academy#",
          "tutstage":200,
          "sale":0,
-         "description":"monsteracademy_desc",
-         "block":true,
+         "description":"bi_academy_desc",
          "costs":[{
             "r1":100000,
             "r2":100000,
@@ -2300,82 +2336,55 @@ package
             "r3":0,
             "r4":0,
             "time":12 * 60 * 60,
-            "re":[[14,1,5],[8,1,3]]
+            "re":[[14,1,5],[8,1,4]]
          },{
-            "r1":10 * 60 * 1000,
-            "r2":10 * 60 * 1000,
+            "r1":800000,
+            "r2":800000,
             "r3":0,
             "r4":0,
             "time":24 * 60 * 60,
             "re":[[14,1,6],[8,1,4]]
-         },{
-            "r1":250 * 60 * 60,
-            "r2":250 * 60 * 60,
-            "r3":0,
-            "r4":0,
-            "time":24 * 60 * 60,
-            "re":[[14,1,7],[8,1,4]]
          }],
          "imageData":{
-            "baseurl":"buildings/academy/",
+            "baseurl":"buildings/iacademy/",
             "1":{
-               "anim":["anim.1.v2.png",new Rectangle(-22,-13,48,26),21],
-               "top":["top.1.png",new Point(-42,-12)],
-               "shadow":["shadow.1.jpg",new Point(-47,27)],
-               "topdamaged":["top.1.damaged.png",new Point(-50,-12)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-47,20)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-50,11)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-48,26)]
+               "anim":["anim1.1.png",new Rectangle(11,-2,22,17),44],
+               "anim2":["anim2.1.png",new Rectangle(-32,-49,53,84),44],
+               "top":["top.1.png",new Point(-50,-27)],
+               "shadow":["shadow.1.jpg",new Point(-50,23)],
+               "topdamaged":["top.1.damaged.png",new Point(-48,-49)],
+               "shadowdamaged":["shadow.1.jpg",new Point(-50,23)],
+               "topdestroyed":["top.1.destroyed.png",new Point(-59,-10)],
+               "shadowdestroyed":["shadow.1.jpg",new Point(-50,23)]
             },
             "2":{
-               "anim":["anim.2.png",new Rectangle(-22,-11,47,24),21],
-               "top":["top.2.png",new Point(-43,-14)],
-               "shadow":["shadow.2.jpg",new Point(-48,27)],
-               "topdamaged":["top.2.damaged.png",new Point(-46,-15)],
-               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-35,27)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-50,11)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-48,26)]
-            },
-            "3":{
-               "anim":["anim.3.png",new Rectangle(-24,-17,48,24),21],
-               "top":["top.3.png",new Point(-53,-18)],
-               "shadow":["shadow.3.jpg",new Point(-53,27)],
-               "topdamaged":["top.3.damaged.png",new Point(-53,-17)],
-               "shadowdamaged":["shadow.3.damaged.jpg",new Point(-57,26)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-50,11)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-48,26)]
-            },
-            "4":{
-               "anim":["anim.3.png",new Rectangle(-24,-36,48,24),21],
-               "top":["top.4.png",new Point(-53,-37)],
-               "shadow":["shadow.4.jpg",new Point(-53,27)],
-               "topdamaged":["top.4.damaged.png",new Point(-71,-35)],
-               "shadowdamaged":["shadow.4.damaged.jpg",new Point(-69,22)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-50,11)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-48,26)]
+               "anim":["anim1.2.png",new Rectangle(1,-18,44,26),47],
+               "anim2":["anim2.2.png",new Rectangle(-39,-96,67,117),47],
+               "top":["top.2.png",new Point(-56,-43)],
+               "shadow":["shadow.2.jpg",new Point(-60,10)],
+               "topdamaged":["top.2.damaged.png",new Point(-61,-91)],
+               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-58,8)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-71,-56)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-73,-17)]
             }
          },
+         "buildingbuttons":["inferno_monster_academy"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"26.1.jpg"},
-            "2":{"img":"26.2.jpg"},
-            "3":{"img":"26.3.jpg"},
-            "4":{"img":"26.4.jpg"}
+            "1":{
+               "img":"inferno_monster_academy.jpg",
+               "silhouette_img":"inferno_monster_academy.silhouette.jpg"
+            },
+            "2":{"img":"inferno_monster_academy.jpg"}
          },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"26.1.png"},
-            "2":{"img":"26.2.png"},
-            "3":{"img":"26.3.png"},
-            "4":{"img":"26.4.png"}
-         },
-         "quantity":[0,0,0,0,0,0],
-         "hp":[100 * 60,10000,14000,20000,500 * 60],
-         "repairTime":[3800,128 * 60,10640,260 * 60,380 * 60]
+         "quantity":[1,1,1,1,2,2,2],
+         "hp":[100 * 60,10000,14000,20000],
+         "repairTime":[3800,128 * 60,10640,21280]
       },{
          "id":27,
          "group":999,
          "order":0,
+         "buildStatus":0,
          "type":"enemy",
          "name":"#b_trojanhorse#",
          "size":100,
@@ -2409,6 +2418,7 @@ package
          "group":4,
          "subgroup":3,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_americanflag#",
          "size":20,
@@ -2442,6 +2452,7 @@ package
          "group":4,
          "subgroup":3,
          "order":6,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_britishflag#",
          "size":20,
@@ -2475,6 +2486,7 @@ package
          "group":4,
          "subgroup":3,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_australianflag#",
          "size":20,
@@ -2508,6 +2520,7 @@ package
          "group":4,
          "subgroup":3,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_brazilianflag#",
          "size":20,
@@ -2541,6 +2554,7 @@ package
          "group":4,
          "subgroup":3,
          "order":25,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_europeanflag#",
          "size":20,
@@ -2575,6 +2589,7 @@ package
          "group":4,
          "subgroup":3,
          "order":9,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_frenchflag#",
          "size":20,
@@ -2608,6 +2623,7 @@ package
          "group":4,
          "subgroup":3,
          "order":10,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_indonesianflag#",
          "size":20,
@@ -2641,6 +2657,7 @@ package
          "group":4,
          "subgroup":3,
          "order":11,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_italianflag#",
          "size":20,
@@ -2674,6 +2691,7 @@ package
          "group":4,
          "subgroup":3,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_malaysianflag#",
          "size":20,
@@ -2707,6 +2725,7 @@ package
          "group":4,
          "subgroup":3,
          "order":13,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_dutchflag#",
          "size":20,
@@ -2740,6 +2759,7 @@ package
          "group":4,
          "subgroup":3,
          "order":14,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_newzealandflag#",
          "size":20,
@@ -2773,6 +2793,7 @@ package
          "group":4,
          "subgroup":3,
          "order":15,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_norwegianflag#",
          "size":20,
@@ -2806,6 +2827,7 @@ package
          "group":4,
          "subgroup":3,
          "order":16,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_polishflag#",
          "size":20,
@@ -2839,6 +2861,7 @@ package
          "group":4,
          "subgroup":3,
          "order":17,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_swedishflag#",
          "size":20,
@@ -2872,6 +2895,7 @@ package
          "group":4,
          "subgroup":3,
          "order":18,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_turkishflag#",
          "size":20,
@@ -2905,6 +2929,7 @@ package
          "group":4,
          "subgroup":3,
          "order":19,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_canadianflag#",
          "size":20,
@@ -2938,6 +2963,7 @@ package
          "group":4,
          "subgroup":3,
          "order":20,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_danishflag#",
          "size":20,
@@ -2971,6 +2997,7 @@ package
          "group":4,
          "subgroup":3,
          "order":21,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_germanflag#",
          "size":20,
@@ -3004,6 +3031,7 @@ package
          "group":4,
          "subgroup":3,
          "order":22,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_filipinoflag#",
          "size":20,
@@ -3037,6 +3065,7 @@ package
          "group":4,
          "subgroup":3,
          "order":23,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_singaporeanflag#",
          "size":20,
@@ -3070,6 +3099,7 @@ package
          "group":4,
          "subgroup":3,
          "order":24,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_austrianflag#",
          "size":20,
@@ -3103,6 +3133,7 @@ package
          "group":4,
          "subgroup":3,
          "order":-1,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_pirateflag#",
          "size":20,
@@ -3137,6 +3168,7 @@ package
          "group":4,
          "subgroup":3,
          "order":0,
+         "buildStatus":0,
          "type":"decoration",
          "name":"#b_peaceflag#",
          "size":20,
@@ -3170,6 +3202,7 @@ package
          "id":51,
          "group":2,
          "order":10,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_catapult#",
          "size":190,
@@ -3254,6 +3287,7 @@ package
          "group":999,
          "subgroup":5,
          "order":1,
+         "buildStatus":0,
          "type":"taunt",
          "name":"Simple Sign",
          "lifespan":2 * 24 * 60 * 60,
@@ -3287,6 +3321,7 @@ package
          "id":53,
          "group":999,
          "order":1,
+         "buildStatus":0,
          "type":"immovable",
          "name":"hwn_pumpkin",
          "size":10,
@@ -3309,6 +3344,7 @@ package
          "id":54,
          "group":999,
          "order":1,
+         "buildStatus":0,
          "type":"immovable",
          "name":"hwn_massivepumpkin",
          "size":10,
@@ -3333,6 +3369,7 @@ package
          "group":4,
          "subgroup":1,
          "order":1,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_acorn",
          "size":30,
@@ -3365,6 +3402,7 @@ package
          "group":4,
          "subgroup":1,
          "order":11,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_beehive",
          "size":40,
@@ -3397,6 +3435,7 @@ package
          "group":4,
          "subgroup":2,
          "order":2,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_birdhous",
          "size":30,
@@ -3429,6 +3468,7 @@ package
          "group":4,
          "subgroup":2,
          "order":3,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_tent",
          "size":40,
@@ -3461,6 +3501,7 @@ package
          "group":4,
          "subgroup":1,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_jax",
          "size":20,
@@ -3493,6 +3534,7 @@ package
          "group":4,
          "subgroup":2,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_redgnome",
          "size":20,
@@ -3525,6 +3567,7 @@ package
          "group":4,
          "subgroup":2,
          "order":10,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_bluegnome",
          "size":20,
@@ -3557,6 +3600,7 @@ package
          "group":4,
          "subgroup":2,
          "order":11,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_greengnome",
          "size":20,
@@ -3589,6 +3633,7 @@ package
          "group":4,
          "subgroup":2,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_hammock",
          "size":40,
@@ -3621,6 +3666,7 @@ package
          "group":4,
          "subgroup":2,
          "order":6,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_lawnchair",
          "size":40,
@@ -3653,6 +3699,7 @@ package
          "group":4,
          "subgroup":2,
          "order":4,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_outhouse",
          "size":30,
@@ -3685,6 +3732,7 @@ package
          "group":4,
          "subgroup":1,
          "order":2,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_pinecone",
          "size":30,
@@ -3717,6 +3765,7 @@ package
          "group":4,
          "subgroup":1,
          "order":4,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_rock",
          "size":30,
@@ -3749,6 +3798,7 @@ package
          "group":4,
          "subgroup":2,
          "order":15,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_scaleelectric",
          "size":100,
@@ -3781,6 +3831,7 @@ package
          "group":4,
          "subgroup":1,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_scarecrow",
          "size":40,
@@ -3813,6 +3864,7 @@ package
          "group":4,
          "subgroup":2,
          "order":1,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_sundial",
          "size":40,
@@ -3845,6 +3897,7 @@ package
          "group":4,
          "subgroup":2,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_tikitorch",
          "size":20,
@@ -3878,6 +3931,7 @@ package
          "group":4,
          "subgroup":1,
          "order":3,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_walnut",
          "size":30,
@@ -3910,6 +3964,7 @@ package
          "group":4,
          "subgroup":0,
          "order":15,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_tombstone",
          "size":40,
@@ -3942,6 +3997,7 @@ package
          "group":4,
          "subgroup":0,
          "order":3,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_pokeyhead",
          "size":20,
@@ -3974,6 +4030,7 @@ package
          "group":4,
          "subgroup":0,
          "order":4,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_octohead",
          "size":20,
@@ -4006,6 +4063,7 @@ package
          "group":4,
          "subgroup":0,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_bolthead",
          "size":20,
@@ -4038,6 +4096,7 @@ package
          "group":4,
          "subgroup":0,
          "order":6,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_banditohead",
          "size":20,
@@ -4070,6 +4129,7 @@ package
          "group":4,
          "subgroup":0,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_brainhead",
          "size":20,
@@ -4102,6 +4162,7 @@ package
          "group":4,
          "subgroup":0,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_crabhead",
          "size":20,
@@ -4134,6 +4195,7 @@ package
          "group":4,
          "subgroup":0,
          "order":14,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_davehead",
          "size":20,
@@ -4166,6 +4228,7 @@ package
          "group":4,
          "subgroup":0,
          "order":9,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_eyerahead",
          "size":20,
@@ -4198,6 +4261,7 @@ package
          "group":4,
          "subgroup":0,
          "order":10,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_fanghead",
          "size":20,
@@ -4230,6 +4294,7 @@ package
          "group":4,
          "subgroup":0,
          "order":11,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_finkhead",
          "size":20,
@@ -4262,6 +4327,7 @@ package
          "group":4,
          "subgroup":0,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_ichihead",
          "size":20,
@@ -4294,6 +4360,7 @@ package
          "group":4,
          "subgroup":0,
          "order":13,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_projectxhead",
          "size":20,
@@ -4326,6 +4393,7 @@ package
          "group":4,
          "subgroup":1,
          "order":13,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_blackberrybush",
          "size":40,
@@ -4355,6 +4423,7 @@ package
          "group":4,
          "subgroup":1,
          "order":16,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_bonsaitree",
          "size":40,
@@ -4387,6 +4456,7 @@ package
          "group":4,
          "subgroup":1,
          "order":14,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_cactus",
          "size":20,
@@ -4419,6 +4489,7 @@ package
          "group":4,
          "subgroup":1,
          "order":15,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_flytrap",
          "size":70,
@@ -4451,6 +4522,7 @@ package
          "group":4,
          "subgroup":1,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_thorns",
          "size":40,
@@ -4483,6 +4555,7 @@ package
          "group":4,
          "subgroup":1,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_pinkflowers",
          "size":20,
@@ -4515,6 +4588,7 @@ package
          "group":4,
          "subgroup":1,
          "order":6,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_purpleflowers",
          "size":20,
@@ -4547,6 +4621,7 @@ package
          "group":4,
          "subgroup":1,
          "order":9,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_redflowers",
          "size":20,
@@ -4579,6 +4654,7 @@ package
          "group":4,
          "subgroup":1,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_whiteflowers",
          "size":20,
@@ -4611,6 +4687,7 @@ package
          "group":4,
          "subgroup":1,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_yellowflowers",
          "size":20,
@@ -4643,6 +4720,7 @@ package
          "group":4,
          "subgroup":4,
          "order":5,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_baseballstatue",
          "size":40,
@@ -4675,6 +4753,7 @@ package
          "group":4,
          "subgroup":4,
          "order":6,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_footballstatue",
          "size":40,
@@ -4707,6 +4786,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_soccerstatue",
          "size":40,
@@ -4739,6 +4819,7 @@ package
          "group":4,
          "subgroup":4,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_libertystatue",
          "size":70,
@@ -4771,6 +4852,7 @@ package
          "group":4,
          "subgroup":4,
          "order":9,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_eiffelstatue",
          "size":70,
@@ -4803,6 +4885,7 @@ package
          "group":4,
          "subgroup":4,
          "order":10,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_bigben",
          "size":70,
@@ -4835,6 +4918,7 @@ package
          "group":4,
          "subgroup":2,
          "order":13,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_pool",
          "size":100,
@@ -4867,6 +4951,7 @@ package
          "group":4,
          "subgroup":2,
          "order":14,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_pond",
          "size":100,
@@ -4896,6 +4981,7 @@ package
          "group":4,
          "subgroup":2,
          "order":16,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_zengarden",
          "size":100,
@@ -4928,6 +5014,7 @@ package
          "group":4,
          "subgroup":2,
          "order":17,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_fountain",
          "size":70,
@@ -4960,6 +5047,7 @@ package
          "group":4,
          "subgroup":2,
          "order":18,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_teagarden",
          "size":100,
@@ -4992,6 +5080,7 @@ package
          "group":4,
          "subgroup":0,
          "order":1,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_monsterskull",
          "size":20,
@@ -5024,6 +5113,7 @@ package
          "group":4,
          "subgroup":2,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_rubikunsolved",
          "size":20,
@@ -5056,6 +5146,7 @@ package
          "group":4,
          "subgroup":2,
          "order":9,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_rubiksolved",
          "size":20,
@@ -5088,6 +5179,7 @@ package
          "group":4,
          "subgroup":4,
          "order":11,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_halloween",
          "size":40,
@@ -5120,6 +5212,7 @@ package
          "group":4,
          "subgroup":4,
          "order":12,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_halloween_small",
          "size":20,
@@ -5151,6 +5244,7 @@ package
          "id":112,
          "group":2,
          "order":1,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_outpost#",
          "size":190,
@@ -5164,6 +5258,7 @@ package
          "id":113,
          "group":2,
          "order":15,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_radio#",
          "size":80,
@@ -5199,6 +5294,7 @@ package
          "id":114,
          "group":3,
          "order":6,
+         "buildStatus":0,
          "type":"cage",
          "name":"#b_monstercage#",
          "size":200,
@@ -5231,6 +5327,7 @@ package
          "id":115,
          "group":3,
          "order":5,
+         "buildStatus":0,
          "type":"tower",
          "name":"#b_flaktower#",
          "attackgroup":2,
@@ -5391,6 +5488,7 @@ package
          "id":116,
          "group":2,
          "order":12,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_monsterlab#",
          "attackgroup":1,
@@ -5445,6 +5543,7 @@ package
          "id":117,
          "group":3,
          "order":10,
+         "buildStatus":0,
          "type":"trap",
          "name":"#b_heavytrap#",
          "size":90,
@@ -5470,9 +5569,13 @@ package
                "shadowdestroyed":["shadow.1.jpg",new Point(-18,1)]
             }
          },
+         "buildingbuttons":["booby_trap.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"117.jpg"}
+            "1":{
+               "img":"booby_trap.v2.jpg",
+               "silhouette_img":"booby_trap.v2.silhouette.jpg"
+            }
          },
          "quantity":[0,0,0,0,0,0],
          "damage":[10000],
@@ -5482,6 +5585,7 @@ package
          "id":118,
          "group":3,
          "order":5,
+         "buildStatus":0,
          "type":"tower",
          "name":"#b_railguntower#",
          "size":64,
@@ -5647,6 +5751,7 @@ package
          "id":119,
          "group":3,
          "order":10,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_championchamber#",
          "size":64,
@@ -5674,13 +5779,21 @@ package
                "shadowdestroyed":["shadow.3.jpg",new Point(-67,14)]
             }
          },
-         "quantity":[0,0,0,0,1,1,1,1,1,1],
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{
+               "img":"119.jpg",
+               "silhouette_img":"119.silhouette.jpg"
+            }
+         },
+         "quantity":[0,0,0,0,0,0,0,0,0,0],
          "hp":[16000],
          "repairTime":[60 * 60]
       },{
          "id":2 * 60,
          "group":3,
          "order":10,
+         "buildStatus":0,
          "type":"special",
          "name":"#b_championchamber#",
          "size":64,
@@ -5695,6 +5808,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem1",
          "size":40,
@@ -5709,6 +5823,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem2",
          "size":40,
@@ -5723,6 +5838,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem3",
          "size":40,
@@ -5737,6 +5853,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem4",
          "size":40,
@@ -5751,6 +5868,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem5",
          "size":40,
@@ -5765,6 +5883,7 @@ package
          "group":4,
          "subgroup":4,
          "order":7,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmitotem6",
          "size":40,
@@ -5778,6 +5897,7 @@ package
          "id":127,
          "group":999,
          "order":0,
+         "buildStatus":0,
          "type":"enemy",
          "name":"#b_infernoentrance#",
          "size":100,
@@ -5852,6 +5972,7 @@ package
          "id":128,
          "group":2,
          "order":6,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_housing#",
          "size":200,
@@ -5895,6 +6016,13 @@ package
             "r4":0,
             "time":20 * 60 * 60,
             "re":[[14,1,5]]
+         },{
+            "r1":2211840,
+            "r2":2211840,
+            "r3":0,
+            "r4":0,
+            "time":40 * 60 * 60,
+            "re":[[14,1,6],[8,1,1]]
          }],
          "imageData":{
             "baseurl":"buildings/ihousingbunker/",
@@ -5907,23 +6035,20 @@ package
                "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-96,8)]
             }
          },
-         "buildingbuttons":["monster_housing"],
+         "buildingbuttons":["monster_housing.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"monster_housing.jpg"}
+            "1":{"img":"monster_housing.v2.jpg"}
          },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"15.png"}
-         },
-         "quantity":[0,1,1,1,1,1],
-         "capacity":[200,5 * 60,520,640,19 * 60],
+         "quantity":[0,1,1,1,1,1,1],
+         "capacity":[200,5 * 60,520,13 * 60,19 * 60,1820],
          "hp":[0xfa0,14000,25000,43000,75000,130000],
          "repairTime":[100,200,5 * 60,400,500,10 * 60]
       },{
          "id":129,
          "group":3,
          "order":2,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_quaketower#",
          "size":64,
@@ -5931,7 +6056,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_quaketower_desc",
-         "block":true,
+         "block":false,
          "stats":[{
             "range":160,
             "damage":1100,
@@ -5951,6 +6076,10 @@ package
          },{
             "range":200,
             "damage":3640,
+            "rate":15
+         },{
+            "range":210,
+            "damage":4400,
             "rate":15
          }],
          "costs":[{
@@ -5980,14 +6109,21 @@ package
             "r3":2875000,
             "r4":0,
             "time":3 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
          },{
-            "r1":250 * 60 * 1000,
+            "r1":200 * 60 * 1000,
             "r2":9000000,
             "r3":100 * 60 * 1000,
             "r4":0,
             "time":108 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
+         },{
+            "r1":275 * 60 * 1000,
+            "r2":12687500,
+            "r3":7562500,
+            "r4":0,
+            "time":132 * 60 * 60,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":50000,
@@ -6024,19 +6160,19 @@ package
                "anim":["anim.1.png",new Rectangle(-37,-75,75,132),33],
                "shadow":["shadow.1.v2.jpg",new Point(-37,17)],
                "topdamaged":["top.1.damaged.png",new Point(-40,-75)],
+               "animdamaged":["anim.1.damaged.png",new Rectangle(-40,-75,84,133),33],
                "shadowdamaged":["shadow.1.v2.jpg",new Point(-40,16)],
                "topdestroyed":["top.1.destroyed.png",new Point(-42,-8)],
                "shadowdestroyed":["shadow.1.v2.jpg",new Point(-44,10)]
             }
          },
-         "buildingbuttons":["quake_tower"],
+         "buildingbuttons":["quake_tower.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"quake_tower.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"20.png"}
+            "1":{
+               "img":"quake_tower.v2.jpg",
+               "silhouette_img":"quake_tower.v2.silhouette.jpg"
+            }
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -6057,13 +6193,14 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,0,0,0],
-         "hp":[10000,16000,22000,28000,34000],
-         "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
+         "quantity":[0,0,0,2,2,4,4],
+         "hp":[10000,16000,22000,28000,34000,800 * 60],
+         "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
       },{
          "id":130,
          "group":3,
          "order":2,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_cannontower#",
          "size":64,
@@ -6107,6 +6244,12 @@ package
             "rate":40,
             "speed":8,
             "splash":55
+         },{
+            "range":220,
+            "damage":140,
+            "rate":40,
+            "speed":8,
+            "splash":60
          }],
          "costs":[{
             "r1":2000,
@@ -6150,6 +6293,13 @@ package
             "r4":0,
             "time":72900,
             "re":[[14,1,5]]
+         },{
+            "r1":9375000,
+            "r2":7000000,
+            "r3":1562500,
+            "r4":0,
+            "time":2 * 24 * 60 * 60,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":50000,
@@ -6193,14 +6343,10 @@ package
                "shadowdestroyed":["shadow.1.v2.jpg",new Point(-48,11)]
             }
          },
-         "buildingbuttons":["cannon_tower"],
+         "buildingbuttons":["canon_tower.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"cannon_tower.jpg"}
-         },
-         "thumbImgData":{
-            "baseurl":"buildingthumbs/",
-            "1":{"img":"20.png"}
+            "1":{"img":"canon_tower.v2.jpg"}
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -6221,14 +6367,15 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,3,4,4],
-         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400],
-         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60]
+         "quantity":[0,2,3,3,4,4,6],
+         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60],
+         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000]
       },{
          "id":131,
          "group":4,
          "subgroup":4,
          "order":8,
+         "buildStatus":0,
          "type":"decoration",
          "name":"bdg_wmi2totem",
          "size":40,
@@ -6323,13 +6470,14 @@ package
          "id":132,
          "group":3,
          "order":5,
+         "buildStatus":0,
          "type":"tower",
          "name":"#bi_magmatower#",
          "attackgroup":2,
          "tutstage":200,
          "sale":0,
          "description":"bi_magmatower_desc",
-         "block":true,
+         "block":false,
          "stats":[{
             "range":3 * 60,
             "damage":3 * 60,
@@ -6360,12 +6508,18 @@ package
             "rate":20,
             "speed":18,
             "splash":0
+         },{
+            "range":230,
+            "damage":8 * 60,
+            "rate":20,
+            "speed":19,
+            "splash":0
          }],
          "costs":[{
             "r1":187500,
             "r2":250000,
             "r3":62500,
-            "r4":1,
+            "r4":0,
             "time":5 * 60 * 60,
             "re":[[14,1,3]]
          },{
@@ -6388,14 +6542,21 @@ package
             "r3":1250000,
             "r4":0,
             "time":4 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,5]]
          },{
             "r1":200 * 60 * 1000,
             "r2":10000000,
             "r3":2000000,
             "r4":0,
-            "time":60 * 24 * 60 * 60,
-            "re":[[14,1,4]]
+            "time":6 * 24 * 60 * 60,
+            "re":[[14,1,5]]
+         },{
+            "r1":16000000,
+            "r2":250 * 60 * 1000,
+            "r3":50 * 60 * 1000,
+            "r4":0,
+            "time":791200,
+            "re":[[14,1,6]]
          }],
          "fortify_costs":[{
             "r1":215000,
@@ -6441,10 +6602,13 @@ package
                "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-36,22)]
             }
          },
-         "buildingbuttons":["magma_tower"],
+         "buildingbuttons":["magma_tower.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"magma_tower.jpg"}
+            "1":{
+               "img":"magma_tower.v2.jpg",
+               "silhouette_img":"magma_tower.v2.silhouette.jpg"
+            }
          },
          "fortImgData":{
             "baseurl":"buildings/fortifications/",
@@ -6465,9 +6629,163 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,0,0,0,0],
-         "hp":[250 * 60,22000,500 * 60,49000,59000],
-         "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
+         "quantity":[0,0,0,1,2,2,3],
+         "hp":[250 * 60,22000,500 * 60,49000,59000,70000],
+         "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,92000]
+      },{
+         "id":133,
+         "group":2,
+         "order":8,
+         "buildStatus":0,
+         "type":"special",
+         "name":"#b_siegefactory#",
+         "size":90,
+         "attackgroup":2,
+         "tutstage":200,
+         "sale":0,
+         "description":"b_siegefactory_desc",
+         "block":true,
+         "cls":SiegeFactory,
+         "hitCls":siegeFactoryHit,
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "r5":0,
+            "time":0,
+            "re":[]
+         }],
+         "imageData":{
+            "baseurl":"buildings/siegefactory/",
+            "1":{
+               "top":["top.1.png",new Point(-75,-23)],
+               "topdamaged":["top.1.damaged.png",new Point(-75,-96)],
+               "topdestroyed":["top.1.destroyed.png",new Point(-75,-48)],
+               "anim":["anim.1.png",new Rectangle(-76,-101,154,80),34]
+            }
+         },
+         "stats":[{
+            "range":200,
+            "duration":380,
+            "radius":200
+         },{
+            "range":210,
+            "duration":390,
+            "radius":210
+         },{
+            "range":235,
+            "duration":400,
+            "radius":235
+         },{
+            "range":335,
+            "duration":410,
+            "radius":335
+         },{
+            "range":6 * 60,
+            "duration":200,
+            "radius":6 * 60
+         },{
+            "range":370,
+            "duration":210,
+            "radius":370
+         },{
+            "range":380,
+            "duration":235,
+            "radius":380
+         },{
+            "range":390,
+            "duration":335,
+            "radius":390
+         },{
+            "range":400,
+            "duration":6 * 60,
+            "radius":400
+         },{
+            "range":410,
+            "duration":370,
+            "radius":410
+         }],
+         "quantity":[1,1,1,1,1,1,1,1,1,1],
+         "hp":[100,100,100,100,100,100],
+         "repairTime":[1,1,1,1,1,1,1]
+      },{
+         "id":134,
+         "group":2,
+         "order":8,
+         "buildStatus":0,
+         "type":"special",
+         "name":"#b_siegeworks#",
+         "size":90,
+         "attackgroup":2,
+         "tutstage":200,
+         "sale":0,
+         "description":"b_siegeworks_desc",
+         "block":true,
+         "cls":SiegeLab,
+         "hitCls":siegeLabHit,
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "r5":0,
+            "time":0,
+            "re":[]
+         }],
+         "imageData":{
+            "baseurl":"buildings/siegelab/",
+            "1":{
+               "top":["top.1.png",new Point(-68,-66)],
+               "topdamaged":["top.1.damaged.png",new Point(-69,-111)],
+               "topdestroyed":["top.1.destroyed.png",new Point(-68,-47)],
+               "anim":["anim.1.png",new Rectangle(-70,-106,118,166),60]
+            }
+         },
+         "stats":[{
+            "range":200,
+            "duration":380,
+            "radius":200
+         },{
+            "range":210,
+            "duration":390,
+            "radius":210
+         },{
+            "range":235,
+            "duration":400,
+            "radius":235
+         },{
+            "range":335,
+            "duration":410,
+            "radius":335
+         },{
+            "range":6 * 60,
+            "duration":200,
+            "radius":6 * 60
+         },{
+            "range":370,
+            "duration":210,
+            "radius":370
+         },{
+            "range":380,
+            "duration":235,
+            "radius":380
+         },{
+            "range":390,
+            "duration":335,
+            "radius":390
+         },{
+            "range":400,
+            "duration":6 * 60,
+            "radius":400
+         },{
+            "range":410,
+            "duration":370,
+            "radius":410
+         }],
+         "quantity":[1,1,1,1,1,1,1,1,1,1],
+         "hp":[100,100,100,100,100,100],
+         "repairTime":[1,1,1,1,1,1,1]
       }];
       
       public function INFERNOYARDPROPS()

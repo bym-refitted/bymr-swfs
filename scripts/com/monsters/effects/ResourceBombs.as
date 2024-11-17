@@ -1,7 +1,5 @@
 package com.monsters.effects
 {
-   import com.adobe.crypto.MD5;
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ImageCache;
@@ -208,7 +206,7 @@ package com.monsters.effects
                "particles":50,
                "name":KEYS.Get("bomb_pu3_name"),
                "description":"bomb_pu_description",
-               "damageMult":0,
+               "damageMult":0.1,
                "radius":500,
                "damage":0,
                "speed":2,
@@ -438,7 +436,7 @@ package com.monsters.effects
                _loc1_.push(_bombs[_loc3_].speedlength);
             }
          }
-         return MD5.hash(com.adobe.serialization.json.JSON.encode(_loc1_));
+         return md5(JSON.encode(_loc1_));
       }
    }
 }

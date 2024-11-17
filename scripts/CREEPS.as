@@ -12,6 +12,8 @@ package
       
       public static var _creepCount:int;
       
+      public static var _flungCount:int;
+      
       public static var _mcBody:*;
       
       public static var _mcLegs:*;
@@ -31,6 +33,7 @@ package
          super();
          _creeps = {};
          _creepID = 0;
+         _flungCount = 0;
          _creepCount = 0;
          _ticks = 0;
          _creepOverlap = {};
@@ -76,13 +79,13 @@ package
             {
                c += 1;
             }
-            if(tmpMonster.Tick())
+            if(tmpMonster.Tick(1))
             {
                if(tmpMonster._health.Get() <= 0)
                {
                   try
                   {
-                     if(tmpMonster._creatureID.substr(0,1) != "G" || SPECIALEVENT.active)
+                     if(tmpMonster._creatureID.substr(0,1) != "G")
                      {
                         SOUNDS.Play("splat" + (int(Math.random() * 3) + 1));
                         EFFECTS.CreepSplat(tmpMonster._creatureID,tmpMonster._tmpPoint.x,tmpMonster._tmpPoint.y);
@@ -95,8 +98,9 @@ package
                tmpMonster.Clear();
                MAP._BUILDINGTOPS.removeChild(tmpMonster);
                --_creepCount;
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(tmpMonster._creatureID.substr(0,1) == "G" || (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && !CREATURELOCKER._creatures[tmpMonster._creatureID].fake)
                {
+                  --_flungCount;
                   ATTACK._creaturesFlung.Add(-1);
                }
                delete _creeps[m];
@@ -104,11 +108,11 @@ package
          }
          if(_creepCount <= 0)
          {
-            _creepCount = 0;
+            _flungCount = _creepCount = 0;
          }
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
-            if(ATTACK._creaturesFlung.Get() < _creepCount && ATTACK._creaturesFlung.Get() > 0)
+            if(ATTACK._creaturesFlung.Get() < _flungCount && ATTACK._creaturesFlung.Get() > 0)
             {
                LOGGER.Log("log","More creeps than flung creatures");
                GLOBAL.ErrorMessage();
@@ -120,6 +124,10 @@ package
       {
          var _loc8_:* = undefined;
          ++_creepID;
+         if(!CREATURELOCKER._creatures[param1].fake)
+         {
+            ++_flungCount;
+         }
          ++_creepCount;
          if(param1.substr(0,1) == "I")
          {
@@ -133,17 +141,18 @@ package
          return _loc8_;
       }
       
-      public static function SpawnGuardian(param1:int, param2:*, param3:String, param4:int, param5:Point, param6:Number, param7:int = 20000, param8:int = 0, param9:Boolean = false) : CHAMPIONMONSTER
+      public static function SpawnGuardian(param1:int, param2:*, param3:String, param4:int, param5:Point, param6:Number, param7:int = 20000, param8:int = 0, param9:int = 0, param10:Boolean = false) : CHAMPIONMONSTER
       {
          ++_creepID;
          ++_creepCount;
-         if(param9)
+         ++_flungCount;
+         if(param10)
          {
-            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,0,0,param1,param7,param8);
+            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,0,0,param1,param7,param8,param9);
          }
          else
          {
-            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData.fd,GLOBAL._playerGuardianData.ft,param1,param7,param8);
+            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData.fd,GLOBAL._playerGuardianData.ft,param1,param7,param8,param9);
          }
          _creeps[_creepID] = _guardian;
          param2.addChild(_guardian);
@@ -207,7 +216,7 @@ package
             MAP._BUILDINGTOPS.removeChild(_loc1_);
          }
          _creeps = {};
-         _creepCount = 0;
+         _creepCount = _flungCount = 0;
          _flungGuardian = false;
          if(_guardian)
          {

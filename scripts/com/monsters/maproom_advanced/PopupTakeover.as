@@ -1,8 +1,8 @@
 package com.monsters.maproom_advanced
 {
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
+   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
    import flash.display.*;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
@@ -10,6 +10,8 @@ package com.monsters.maproom_advanced
    
    public class PopupTakeover extends MapRoomPopup_takeover_CLIP
    {
+      public static const TAKEOVER_CAP:* = 20000000;
+      
       private var _resourceCost:SecNum;
       
       private var _shinyCost:SecNum;
@@ -38,14 +40,11 @@ package com.monsters.maproom_advanced
          this.Center();
          ImageCache.GetImageWithCallBack("popups/outpost-takeover.png",ImageLoaded,true,1);
          this._costGap = 0;
-         this._resourceCost = new SecNum(2000000);
+         this._resourceCost = new SecNum(1000000);
          if(GLOBAL._mapOutpost)
          {
             numPosts = int(GLOBAL._mapOutpost.length);
-            if(numPosts >= 5)
-            {
-               this._resourceCost.Set(2000000 + 2000000 * (numPosts - 4));
-            }
+            this._resourceCost.Set(Math.min(this._resourceCost.Get() * (Math.min(numPosts + 1,160) * 0.125),TAKEOVER_CAP));
          }
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))
          {
@@ -125,6 +124,9 @@ package com.monsters.maproom_advanced
          var useShiny:Boolean = param1;
          takeoverSuccessful = function(param1:Object):*
          {
+            var _loc2_:int = 0;
+            var _loc3_:int = 0;
+            var _loc4_:int = 0;
             PLEASEWAIT.Hide();
             if(param1.error == 0)
             {
@@ -138,12 +140,20 @@ package com.monsters.maproom_advanced
                GLOBAL._resources.r4max += GLOBAL._outpostCapacity.Get();
                MapRoom.ClearCells();
                MapRoom.Hide();
-               GLOBAL._attackerCellsInRange = [];
+               GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
                BASE._yardType = BASE.OUTPOST;
                BASE.LoadBase(null,null,_cell._baseID,"build",false,BASE.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
+               if(param1.event_score)
+               {
+                  _loc2_ = int(MonsterMadness.points);
+                  _loc3_ = int(param1.event_score);
+                  _loc4_ = _loc3_ - _loc2_;
+                  LOGGER.Stat([97,_loc3_]);
+                  LOGGER.Stat([98,_loc4_]);
+               }
             }
             else
             {
@@ -172,7 +182,7 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("newmap_take4"));
                return;
             }
-            takeoverVars = [["baseid",this._cell._baseID],["resources",com.adobe.serialization.json.JSON.encode({
+            takeoverVars = [["baseid",this._cell._baseID],["resources",JSON.encode({
                "r1":this._resourceCost.Get(),
                "r2":this._resourceCost.Get(),
                "r3":this._resourceCost.Get(),

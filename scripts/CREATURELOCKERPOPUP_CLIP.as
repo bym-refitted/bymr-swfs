@@ -3,18 +3,18 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1268")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol993")]
    public dynamic class CREATURELOCKERPOPUP_CLIP extends MovieClip
    {
       public var bNext:Button_CLIP;
       
       public var tTime:TextField;
       
-      public var bSpeed:MovieClip;
+      public var bSpeed:creatureBar;
       
       public var time_txt:TextField;
       
-      public var bResource:MovieClip;
+      public var bResource:creatureBar;
       
       public var bInstant:Button_CLIP;
       
@@ -22,7 +22,7 @@ package
       
       public var tResource:TextField;
       
-      public var bDamage:MovieClip;
+      public var bDamage:creatureBar;
       
       public var title_txt:TextField;
       
@@ -40,9 +40,9 @@ package
       
       public var tSpeed:TextField;
       
-      public var bTime:MovieClip;
+      public var bTime:creatureBar;
       
-      public var bStorage:MovieClip;
+      public var bStorage:creatureBar;
       
       public var tCosts:TextField;
       
@@ -66,7 +66,7 @@ package
       
       public var speed_txt:TextField;
       
-      public var bHealth:MovieClip;
+      public var bHealth:creatureBar;
       
       public function CREATURELOCKERPOPUP_CLIP()
       {

@@ -108,10 +108,6 @@ package
          var _loc2_:MovieClip = null;
          if(GLOBAL._mode == "build")
          {
-            if(SPECIALEVENT.active)
-            {
-               return;
-            }
             if(INFERNO_EMERGENCE_EVENT.isAttackActive)
             {
                return;
@@ -132,7 +128,12 @@ package
          }
       }
       
-      override public function Tick() : *
+      override public function get tickLimit() : int
+      {
+         return int.MAX_VALUE;
+      }
+      
+      override public function Tick(param1:int) : void
       {
       }
       

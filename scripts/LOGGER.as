@@ -1,6 +1,5 @@
 package
 {
-   import com.adobe.serialization.json.JSON;
    import flash.events.IOErrorEvent;
    
    public class LOGGER
@@ -31,11 +30,17 @@ package
                {
                   _logged[param1 + param2] = 1;
                }
-               param2 = "" + GLOBAL._softversion + " " + param2;
+               param2 = "[v" + GLOBAL._version.Get() + "" + "r" + GLOBAL._softversion + "] " + param2 + " [mode: " + GLOBAL._loadmode + " baseid:" + BASE._baseID + "]";
                _loc4_ = [["key",param1],["value",param2],["saveid",BASE._lastSaveID]];
+               print(_loc4_.toString());
                new URLLoaderApi().load(GLOBAL._apiURL + "player/recorddebugdata",_loc4_,handleLoadSuccessful,handleLoadError);
             }
          }
+      }
+      
+      public static function info(param1:String) : void
+      {
+         LOGGER.Log("info",param1);
       }
       
       public static function Stat(param1:Array) : void
@@ -364,8 +369,7 @@ package
                   {
                      st1 = "monsters";
                      st2 = "train";
-                     monsterID = BASE.isInferno() ? "IC" : "C";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[data[1]].name);
                      name = "instant";
                      val = int(data[2]);
                   }
@@ -470,7 +474,14 @@ package
                   }
                   else if(data[0] == 61)
                   {
-                     st1 = "store";
+                     if(BASE.isInferno())
+                     {
+                        st1 = "storeinf";
+                     }
+                     else
+                     {
+                        st1 = "store";
+                     }
                      st2 = data[1];
                      name = "cost-var";
                      val = int(data[2]);
@@ -649,6 +660,96 @@ package
                      }
                      st2 = yardType;
                   }
+                  else if(data[0] == 89)
+                  {
+                     st1 = "attackpref";
+                     st2 = "inferno";
+                     name = data[1];
+                  }
+                  else if(data[0] == 90)
+                  {
+                     st1 = "siege-weapon";
+                     st2 = "unlock";
+                     st3 = data[1] + data[2];
+                     name = data[3];
+                     if(data[4])
+                     {
+                        val = int(data[4]);
+                     }
+                  }
+                  else if(data[0] == 91)
+                  {
+                     st1 = "siege-weapon";
+                     st2 = "upgrade";
+                     st3 = data[1] + data[2];
+                     name = data[3];
+                     if(data[4])
+                     {
+                        val = int(data[4]);
+                     }
+                  }
+                  else if(data[0] == 92)
+                  {
+                     st1 = "siege-weapon";
+                     st2 = "build";
+                     st3 = data[1] + data[2];
+                     name = data[3];
+                     if(data[4])
+                     {
+                        val = int(data[4]);
+                     }
+                  }
+                  else if(data[0] == 93)
+                  {
+                     st1 = "siege-weapon";
+                     st2 = "used_in_battle";
+                     name = data[1] + data[2];
+                  }
+                  else if(data[0] == 94)
+                  {
+                     st1 = "siege-weapon";
+                     st2 = "vacuumloot";
+                     st3 = "defender";
+                     name = data[1] + data[2];
+                  }
+                  else if(data[0] == 95)
+                  {
+                     st1 = "video";
+                     val = 1;
+                     name = "showed";
+                  }
+                  else if(data[0] == 96)
+                  {
+                     st1 = "banking";
+                     st2 = "autobank";
+                     switch(data[1])
+                     {
+                        case 1:
+                           name = "Twigs";
+                           break;
+                        case 2:
+                           name = "Pebbles";
+                           break;
+                        case 3:
+                           name = "Putty";
+                           break;
+                        case 4:
+                           name = "Goo";
+                     }
+                     val = int(data[2]);
+                  }
+                  else if(data[0] == 97)
+                  {
+                     st1 = "Monster_Madness";
+                     val = int(data[1]);
+                     name = "EV_current";
+                  }
+                  else if(data[0] == 98)
+                  {
+                     st1 = "video";
+                     val = int(data[1]);
+                     name = "EV_taken";
+                  }
                }
             }
             if(st1)
@@ -682,14 +783,23 @@ package
                {
                   o.n2 = n2;
                }
-               o.level = BASE.BaseLevel().level;
-               GLOBAL.CallJS("cc.recordEvent",[name,o],false);
+               StatB(o,name);
             }
          }
          catch(e:Error)
          {
             LOGGER.Log("err","LOGGER.Stat " + data);
          }
+      }
+      
+      public static function StatB(param1:Object, param2:*) : void
+      {
+         if(!GLOBAL._flags.gamestatsb)
+         {
+            return;
+         }
+         param1.level = BASE.BaseLevel().level;
+         GLOBAL.CallJS("cc.recordEvent",[param2,param1],false);
       }
       
       public static function KongStat(param1:Array) : *
@@ -730,8 +840,8 @@ package
                   arg = {};
                   arg["train_" + monsternames[data[1] - 1]] = 1;
             }
-            arrArg = [com.adobe.serialization.json.JSON.encode(arg)];
-            GLOBAL.CallJS("cc.kg_statsUpdate",[arg]);
+            arrArg = [JSON.encode(arg)];
+            GLOBAL.CallJS("cc.kg_statsUpdate",[arg],false);
          }
          catch(e:Error)
          {

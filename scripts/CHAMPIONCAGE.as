@@ -1,7 +1,5 @@
 package
 {
-   import com.adobe.crypto.MD5;
-   import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -19,10 +17,19 @@ package
       
       public static var _namepopup:CHAMPIONNAMEPOPUP;
       
+      public static const TYPE:uint = 114;
+      
+      public static var STARVETIMER:uint = 86400;
+      
+      public static var _open:Boolean = false;
+      
       public static var _guardians:Object = {
+         "length":4,
          "G1":{
             "name":"Gorgo",
             "description":"mon_gorgodesc",
+            "title":"mon_gorgotitle",
+            "selectGraphic":"popups/guardian_select_gorgo.png",
             "props":{
                "speed":[1,1.2,1.4,1.6,1.8,2],
                "health":[40000,80000,2 * 60 * 1000,140000,160000,200000],
@@ -52,6 +59,7 @@ package
                "bonusDamage":[150,330,10 * 60],
                "bonusBuffs":[0,0,0],
                "bonusFeeds":[{"C10":20},{"C10":20},{"C10":20}],
+               "powerLevel":1,
                "bonusFeedShiny":[136,136,136],
                "bonusFeedTime":[86400]
             }
@@ -59,6 +67,8 @@ package
          "G2":{
             "name":"Drull",
             "description":"mon_drulldesc",
+            "title":"mon_drulltitle",
+            "selectGraphic":"popups/guardian_select_drull.png",
             "props":{
                "speed":[2,2.2,2.5,2.8,3.2,3.6],
                "health":[200 * 60,20000,10 * 60 * 60,700 * 60,52000,60 * 1000],
@@ -88,6 +98,7 @@ package
                "bonusDamage":[400,880,1600],
                "bonusBuffs":[0,0,0],
                "bonusFeeds":[{"C8":30},{"C8":30},{"C8":30}],
+               "powerLevel":1,
                "bonusFeedShiny":[131,131,131],
                "bonusFeedTime":[86400]
             }
@@ -95,6 +106,8 @@ package
          "G3":{
             "name":"Fomor",
             "description":"mon_fomordesc",
+            "title":"mon_fomortitle",
+            "selectGraphic":"popups/guardian_select_fomor.png",
             "props":{
                "speed":[1.2,1.4,2,2.1,2.2,2.3],
                "health":[250 * 60,17500,20000,375 * 60,25000,40000],
@@ -127,13 +140,53 @@ package
                "bonusDamage":[3,6,10],
                "bonusBuffs":[0.03,0.06,0.15],
                "bonusFeeds":[{"C9":20},{"C9":20},{"C9":20}],
+               "powerLevel":1,
+               "bonusFeedShiny":[96,96,96],
+               "bonusFeedTime":[86400]
+            }
+         },
+         "G4":{
+            "name":"Korath",
+            "description":"mon_korathdesc",
+            "title":"mon_korathtitle",
+            "selectGraphic":"popups/guardian_select_korath.v2.png",
+            "powerLevel2Desc":"mon_korathdesc_fireball",
+            "powerLevel3Desc":"mon_korathdesc_stomp",
+            "props":{
+               "speed":[1.4,1.6,1.8,2,2.3,2.5],
+               "health":[28000,62000,96000,2 * 60 * 1000,40 * 60 * 60,175000],
+               "healtime":[60 * 60,2 * 60 * 60,4 * 60 * 60,0x7080,16 * 60 * 60,32 * 60 * 60],
+               "range":[35,45,55,60,65,65],
+               "damage":[2000,40 * 60,50 * 60,3800,5000,6500],
+               "feeds":[{
+                  "IC1":20,
+                  "IC2":10
+               },{
+                  "IC2":10,
+                  "IC7":2
+               },{"IC7":6},{"IC7":10},{"IC8":3}],
+               "feedShiny":[26,44,75,111,136],
+               "evolveShiny":[158,530,1358,2664,4076],
+               "feedCount":[3,6,9,12,15],
+               "feedTime":[82800],
+               "buffs":[0],
+               "movement":["ground"],
+               "attack":["melee"],
+               "bucket":[200],
+               "offset_x":[-36,-61,-52,-62,-81,-70],
+               "offset_y":[-35,-49,-70,-95,-126,-130],
+               "bonusSpeed":[0.1,0.2,0.4],
+               "bonusHealth":[1000,2200,0xfa0],
+               "bonusRange":[0,0,0],
+               "bonusDamage":[5 * 60,10 * 60,1000],
+               "bonusBuffs":[0],
+               "bonusFeeds":[{"IC8":3},{"IC8":3},{"IC8":3}],
+               "powerLevel":0,
                "bonusFeedShiny":[96,96,96],
                "bonusFeedTime":[86400]
             }
          }
       };
-      
-      public static var _open:Boolean = false;
       
       public function CHAMPIONCAGE()
       {
@@ -197,7 +250,7 @@ package
             {
                if(CREATURES._guardian == null)
                {
-                  GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get());
+                  GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get(),BASE._guardianData.pl.Get());
                }
                _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP());
                _popup.Center();
@@ -301,7 +354,58 @@ package
             Push(i);
             i++;
          }
-         return MD5.hash(com.adobe.serialization.json.JSON.encode(tmpArray));
+         return md5(JSON.encode(tmpArray));
+      }
+      
+      public static function CanTrainGuardian(param1:int) : Boolean
+      {
+         return _guardians["G" + param1].props.powerLevel > 0;
+      }
+      
+      public static function GetAllGuardianData() : Object
+      {
+         var _loc2_:Array = null;
+         var _loc3_:int = 0;
+         var _loc1_:Object = {};
+         if(BASE._guardianData)
+         {
+            _loc1_[BASE._guardianData.t] = BASE._guardianData;
+         }
+         if(Boolean(GLOBAL._bChamber) && Boolean(CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen))
+         {
+            _loc2_ = CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen;
+            _loc3_ = 0;
+            while(_loc3_ < _loc2_.length)
+            {
+               _loc1_[_loc2_[_loc3_].t] = _loc2_[_loc3_];
+               _loc3_++;
+            }
+         }
+         return _loc1_;
+      }
+      
+      public static function GetGuardianData(param1:int) : Object
+      {
+         var _loc2_:Array = null;
+         var _loc3_:int = 0;
+         if(Boolean(BASE._guardianData) && BASE._guardianData.t == param1)
+         {
+            return BASE._guardianData;
+         }
+         if(Boolean(GLOBAL._bChamber) && Boolean(CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen))
+         {
+            _loc2_ = CHAMPIONCHAMBER(GLOBAL._bChamber)._frozen;
+            _loc3_ = 0;
+            while(_loc3_ < _loc2_.length)
+            {
+               if(_loc2_[_loc3_].t == param1)
+               {
+                  return _loc2_[_loc3_];
+               }
+               _loc3_++;
+            }
+         }
+         return null;
       }
       
       override public function StopMoveB() : *
@@ -319,7 +423,7 @@ package
          super.Setup(param1);
          if(Boolean(BASE._guardianData) && Boolean(BASE._guardianData.t))
          {
-            this.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get());
+            this.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get(),BASE._guardianData.pl.Get());
             if(BASE._guardianData.l.Get() == 6)
             {
                ACHIEVEMENTS.Check("upgrade_champ" + CREATURES._guardian._type,1);
@@ -327,9 +431,9 @@ package
          }
       }
       
-      override public function Tick() : *
+      override public function Tick(param1:int) : void
       {
-         super.Tick();
+         super.Tick(param1);
          if(!GLOBAL._catchup)
          {
             if(GLOBAL._mode == "build" && (WMATTACK._inProgress || MONSTERBAITER._attacking) || GLOBAL._mode != "build")
@@ -347,23 +451,18 @@ package
          }
       }
       
-      public function SpawnGuardian(param1:int, param2:int, param3:int = 0, param4:int = 1, param5:int = 1000000000, param6:String = "", param7:int = 0) : *
+      public function SpawnGuardian(param1:int, param2:int, param3:int = 0, param4:int = 1, param5:int = 1000000000, param6:String = "", param7:int = 0, param8:int = 0) : *
       {
-         var _loc8_:Point = GRID.FromISO(x,y + 20);
+         var _loc9_:Point = GRID.FromISO(x,y + 20);
          if(param3 == 0)
          {
             param3 = GLOBAL.Timestamp() + GetGuardianProperty("G" + param4,param1,"feedTime");
          }
-         CREATURES._guardian = new CHAMPIONMONSTER("pen",PointInCage(_loc8_),0,_loc8_,true,this,param1,param2,param3,param4,param5,param7);
+         CREATURES._guardian = new CHAMPIONMONSTER("pen",PointInCage(_loc9_),0,_loc9_,true,this,param1,param2,param3,param4,param5,param7,param8);
          CREATURES._guardian.Export();
-         var _loc9_:Array = ["Gorgo","Drull","Fomor"];
          if(param6 != "")
          {
             CREATURES._guardian._name = param6;
-         }
-         else
-         {
-            CREATURES._guardian._name = _loc9_[param4 - 1];
          }
          MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
          QUESTS.Check("hatch_champ" + param4,1);
@@ -378,7 +477,7 @@ package
          var _loc10_:BFOUNDATION = null;
          var _loc11_:Array = null;
          var _loc12_:String = null;
-         var _loc13_:CREEP = null;
+         var _loc13_:* = undefined;
          var _loc14_:int = 0;
          if(_guardians[param1] == null)
          {
@@ -405,6 +504,10 @@ package
                }
                BASE.Purchase("IFD",GetGuardianProperty(param1,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny"),"cage");
                CREATURES._guardian._foodBonus.Add(1);
+               if(CREATURES._guardian._foodBonus.Get() > 3)
+               {
+                  CREATURES._guardian._foodBonus.Set(3);
+               }
                _loc6_ = CREATURES._guardian._health.Get();
                if(CREATURES._guardian._foodBonus.Get() > 0 && CREATURES._guardian._foodBonus.Get() <= 3)
                {
@@ -620,7 +723,6 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = KEYS.Get("building_monstercage_upgrade");
       }
       
       override public function Constructed() : *

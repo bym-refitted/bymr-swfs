@@ -3,9 +3,11 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2103")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2238")]
    public dynamic class PopupInfoMine_CLIP extends MovieClip
    {
+      public var mMonstersMask:MovieClip;
+      
       public var mcArrow:MovieClip;
       
       public var tName:TextField;
@@ -33,6 +35,8 @@ package
       public var tLabel4:TextField;
       
       public var tLocation:TextField;
+      
+      public var scroll:MovieClip;
       
       public var mcFrame:frame_CLIP;
       

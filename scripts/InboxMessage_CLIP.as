@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2399")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2561")]
    public dynamic class InboxMessage_CLIP extends MovieClip
    {
       public var subject_txt:TextField;
@@ -13,6 +13,8 @@ package
       public var placeholder:MovieClip;
       
       public var b1:Button_CLIP;
+      
+      public var userid_txt:TextField;
       
       public var replies_txt:TextField;
       

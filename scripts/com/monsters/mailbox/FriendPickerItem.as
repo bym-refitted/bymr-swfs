@@ -25,6 +25,7 @@ package com.monsters.mailbox
          var _loc2_:String = param1.lastname.length > 2 ? " " + param1.lastname.charAt(0).toUpperCase() + "." : "";
          this.name_str = param1.firstname.toUpperCase() + _loc2_;
          name_txt.htmlText = "<b>" + this.name_str;
+         userid_txt.text = KEYS.Get("label_userid",{"v1":param1.userid});
          this.idleFrameLabel = param1.friend ? "green" : "gray";
          background.gotoAndStop(this.idleFrameLabel);
          this.addEventListener(MouseEvent.MOUSE_OVER,this.thisOver);

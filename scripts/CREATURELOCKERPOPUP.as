@@ -35,8 +35,9 @@ package
       {
          var _loc1_:int = 0;
          var _loc2_:* = undefined;
-         var _loc3_:String = null;
-         var _loc4_:int = 0;
+         var _loc3_:* = false;
+         var _loc4_:String = null;
+         var _loc5_:int = 0;
          super();
          bPrevious.SetupKey("btn_previous");
          bPrevious.addEventListener(MouseEvent.CLICK,this.PagePrevious);
@@ -49,6 +50,11 @@ package
          }
          this._maxPages = 4;
          this.List();
+         _loc3_ = false;
+         if(CREATURELOCKER._unlocking != null)
+         {
+            _loc3_ = CREATURELOCKER._unlocking.substring(0,2) == "IC";
+         }
          if(CREATURELOCKER._unlocking != null)
          {
             CREATURELOCKER._page = CREATURELOCKER._creatures[CREATURELOCKER._unlocking].page;
@@ -56,8 +62,8 @@ package
          }
          else
          {
-            _loc3_ = CREATURELOCKER._popupCreatureID;
-            _loc4_ = CREATURELOCKER._page;
+            _loc4_ = CREATURELOCKER._popupCreatureID;
+            _loc5_ = CREATURELOCKER._page;
             CREATURELOCKER._page = CREATURELOCKER._creatures[CREATURELOCKER._popupCreatureID].page;
             this.ShowB(CREATURELOCKER._popupCreatureID);
          }
@@ -266,7 +272,7 @@ package
             {
                str += "<font color=\"#CC0000\">";
             }
-            str += KEYS.Get("mon_infolockerlevelrequired",{"v1":data.level});
+            str += KEYS.Get(BASE.isInferno() ? "mon_strongboxlevelrequired" : "mon_infolockerlevelrequired",{"v1":data.level});
             if(GLOBAL._bLocker._lvl.Get() < data.level)
             {
                str += "</font>";
@@ -490,18 +496,25 @@ package
             };
             mc = new popup_monster();
             mc.bSpeedup.SetupKey("btn_warnyourfriends");
+            if(!creature.stream[0])
+            {
+               mc.bSpeedup.visible = false;
+            }
             _body = "";
-            if(creature.stream.length > 1)
+            if(creature.stream[1])
             {
                _body = KEYS.Get(creature.stream[1]);
             }
             mc.bSpeedup.addEventListener(MouseEvent.CLICK,StreamPost(KEYS.Get(creature.stream[0]),_body,img));
             mc.bSpeedup.Highlight = true;
             mc.bAction.visible = false;
-            mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
-               "v1":KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name),
-               "v2":GLOBAL._bHatchery._buildingProps.name
-            });
+            if(CREATURELOCKER._creatures)
+            {
+               mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
+                  "v1":KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name),
+                  "v2":GLOBAL._bHatchery._buildingProps.name
+               });
+            }
             image = this._creatureID + "-150.png";
             POPUPS.Push(mc,null,null,null,image);
          }

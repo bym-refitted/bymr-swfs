@@ -2,6 +2,7 @@ package com.monsters.display
 {
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObjectContainer;
    import flash.events.Event;
    import flash.events.IOErrorEvent;
    import flash.events.TimerEvent;
@@ -179,6 +180,16 @@ package com.monsters.display
          }
       }
       
+      public static function loadImageAndAddChild(param1:String, param2:DisplayObjectContainer) : void
+      {
+         GetImageWithCallBack(param1,onImageLoad,true,4,"",[param2]);
+      }
+      
+      private static function onImageLoad(param1:String, param2:BitmapData, param3:Array) : void
+      {
+         DisplayObjectContainer(param3[0]).addChild(new Bitmap(param2));
+      }
+      
       private function checkQueue(param1:TimerEvent = null) : void
       {
          var _loc2_:int = 0;
@@ -227,6 +238,7 @@ package com.monsters.display
                {
                   param1.loadState = GAVE_UP;
                   load.splice(_loc2_,1);
+                  print("ImageCache.onError Failed" + param1);
                }
                return;
             }

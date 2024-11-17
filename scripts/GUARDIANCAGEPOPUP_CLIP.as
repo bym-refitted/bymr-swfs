@@ -3,12 +3,12 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1607")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1653")]
    public dynamic class GUARDIANCAGEPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
       
-      public var bSpeed:MovieClip;
+      public var bSpeed:creatureBarGuardian;
       
       public var tBuffDesc:TextField;
       
@@ -26,11 +26,11 @@ package
       
       public var day3:MovieClip;
       
-      public var bBuff:MovieClip;
+      public var bBuff:creatureBarGuardian;
       
       public var tNextFeedTitle:TextField;
       
-      public var bDamage:MovieClip;
+      public var bDamage:creatureBarGuardian;
       
       public var bEvolve:Button_CLIP;
       
@@ -56,7 +56,7 @@ package
       
       public var tHealth:TextField;
       
-      public var bDamage2:MovieClip;
+      public var bDamage2:creatureBarGuardian;
       
       public var mcFeed1:MapRoomPopupInfoMonster_CLIP;
       
@@ -78,7 +78,7 @@ package
       
       public var speed_txt2:TextField;
       
-      public var bHealth2:MovieClip;
+      public var bHealth2:creatureBarGuardian;
       
       public var mcFrame:frame_CLIP;
       
@@ -94,7 +94,7 @@ package
       
       public var tDamage:TextField;
       
-      public var bSpeed2:MovieClip;
+      public var bSpeed2:creatureBarGuardian;
       
       public var gFeedBG:MovieClip;
       
@@ -102,13 +102,13 @@ package
       
       public var speed_txt:TextField;
       
-      public var bHealth:MovieClip;
+      public var bHealth:creatureBarGuardian;
       
       public var tNextFeed:TextField;
       
       public var tDamage2:TextField;
       
-      public var bBuff2:MovieClip;
+      public var bBuff2:creatureBarGuardian;
       
       public var barDNA_bg:GuardianCage_DNABar;
       
