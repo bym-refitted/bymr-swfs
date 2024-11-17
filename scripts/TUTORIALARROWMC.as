@@ -40,7 +40,6 @@ package
          else
          {
             this.mouseEnabled = false;
-            this.mouseChildren = false;
          }
          this.addEventListener(Event.ENTER_FRAME,this.Wobble);
          this.ResizeParams = new Array();

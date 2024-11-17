@@ -1102,18 +1102,10 @@ package
                   case 1:
                      if(GLOBAL._baseURL == "http://bym-fb-trunk.dev.kixeye.com/base/")
                      {
-                        GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base/";
+                        GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base";
                         break;
                      }
-                     GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
-                     break;
-                  case 2:
-                     if(GLOBAL._baseURL == "http://bm-kg-web2.dev.casualcollective.com/base/")
-                     {
-                        GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/api/bm/base/";
-                        break;
-                     }
-                     GLOBAL._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
+                     GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base";
                      break;
                   case 3:
                      if(GLOBAL._baseURL == "http://bmdev.vx.casualcollective.com/base/")
@@ -1130,22 +1122,6 @@ package
                         break;
                      }
                      GLOBAL._baseURL = "http://bym-vx2-vip.sjc.kixeye.com/base/";
-                     break;
-                  case 5:
-                     if(GLOBAL._baseURL == "http://bym-fb-inferno.dev.kixeye.com/base/")
-                     {
-                        GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/api/bm/base/";
-                        break;
-                     }
-                     GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
-                     break;
-                  case 6:
-                     if(GLOBAL._baseURL == "https://bym-fb-lbns.dc.kixeye.com/base/")
-                     {
-                        GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/api/bm/base/";
-                        break;
-                     }
-                     GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
                      break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
@@ -1297,6 +1273,9 @@ package
          var length1:int = 0;
          var length2:int = 0;
          var ijx:int = 0;
+         var lastDigit:int = 0;
+         var secondDigit:int = 0;
+         var sum:int = 0;
          var thl:int = 0;
          var tmpcount:int = 0;
          var hp:int = 0;
@@ -1488,6 +1467,38 @@ package
                      "t":2,
                      "l":1
                   });
+                  if(GLOBAL._flags.split2 && LOGIN._playerID >= GLOBAL._flags.splituserid2 && LOGIN._playerID <= GLOBAL._flags.splituserid3)
+                  {
+                     if(GLOBAL.GetABTestHash("tutorial") < 14)
+                     {
+                        b = addBuildingC(3);
+                        b.Setup({
+                           "X":60,
+                           "Y":140,
+                           "id":count++,
+                           "t":3,
+                           "l":1
+                        });
+                     }
+                  }
+                  else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+                  {
+                     lastDigit = int(LOGIN._digits[LOGIN._digits.length - 1]);
+                     secondDigit = int(LOGIN._digits[LOGIN._digits.length - 2]);
+                     sum = lastDigit + secondDigit;
+                     sum %= 10;
+                     if(sum < 2)
+                     {
+                        b = addBuildingC(3);
+                        b.Setup({
+                           "X":60,
+                           "Y":140,
+                           "id":count++,
+                           "t":3,
+                           "l":1
+                        });
+                     }
+                  }
                   b = addBuildingC(12);
                   b.Setup({
                      "X":60,
@@ -2189,34 +2200,35 @@ package
                      fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
                      if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
                      {
-                        if(GLOBAL._countryCode == "us")
+                        MoreInfo711 = function(param1:MouseEvent):void
                         {
-                           MoreInfo711 = function(param1:MouseEvent):void
-                           {
-                              GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
-                              POPUPS.Next();
-                           };
-                           fbPromoPopup = new FBPROMO_711_CLIP();
-                           fbPromoPopup.bAction3.buttonMode = true;
-                           fbPromoPopup.bAction3.useHandCursor = true;
-                           fbPromoPopup.bAction3.mouseChildren = false;
-                           fbPromoPopup.bAction3.txt.htmlText = KEYS.Get("btn_goldenbiggulp");
-                           fbPromoPopup.bAction3.bg.visible = false;
-                           fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                           fbPromoPopup.bAction4.buttonMode = true;
-                           fbPromoPopup.bAction4.useHandCursor = true;
-                           fbPromoPopup.bAction4.mouseChildren = false;
-                           fbPromoPopup.bAction4.txt.htmlText = KEYS.Get("btn_hatcheryoverdrives");
-                           fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                           fbPromoPopup.bAction4.bg.visible = false;
-                           fbPromoPopup.bInfo.useHandCursor = true;
-                           fbPromoPopup.bInfo.buttonMode = true;
-                           fbPromoPopup.bInfo.mouseChildren = false;
-                           fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                           POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
-                           GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
-                           GLOBAL._displayedPromoNew = true;
+                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
+                           POPUPS.Next();
+                        };
+                        if(GLOBAL._displayedPromoNew)
+                        {
+                           return;
                         }
+                        fbPromoPopup = new FBPROMO_711_CLIP();
+                        fbPromoPopup.bAction3.buttonMode = true;
+                        fbPromoPopup.bAction3.useHandCursor = true;
+                        fbPromoPopup.bAction3.mouseChildren = false;
+                        fbPromoPopup.bAction3.txt.htmlText = "Golden<br>Big Gulp";
+                        fbPromoPopup.bAction3.bg.visible = false;
+                        fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        fbPromoPopup.bAction4.buttonMode = true;
+                        fbPromoPopup.bAction4.useHandCursor = true;
+                        fbPromoPopup.bAction4.mouseChildren = false;
+                        fbPromoPopup.bAction4.txt.htmlText = "Hatchery<br>Overdrives";
+                        fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        fbPromoPopup.bAction4.bg.visible = false;
+                        fbPromoPopup.bInfo.useHandCursor = true;
+                        fbPromoPopup.bInfo.buttonMode = true;
+                        fbPromoPopup.bInfo.mouseChildren = false;
+                        fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                        POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
+                        GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                        GLOBAL._displayedPromoNew = true;
                      }
                   }
                }

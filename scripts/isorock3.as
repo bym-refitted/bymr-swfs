@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/2003_isorock3_isorock3.jpg")]
+   [Embed(source="/_assets/2002_isorock3_isorock3.jpg")]
    public dynamic class isorock3 extends BitmapData
    {
       public function isorock3(param1:int = 200, param2:int = 101)

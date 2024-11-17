@@ -553,7 +553,7 @@ package
                if(this.bAction3)
                {
                   this.bAction3.visible = true;
-                  this.bAction3.txt.htmlText = KEYS.Get("tut_continue");
+                  this.bAction3.txt.htmlText = "Continue<br>Tutorial";
                }
                if(this.bAction4)
                {

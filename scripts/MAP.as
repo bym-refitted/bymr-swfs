@@ -182,10 +182,7 @@ package
             _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
-            if(!GLOBAL._local)
-            {
-               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
-            }
+            GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
             GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
             _EDGE = null;
          }

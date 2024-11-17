@@ -16,7 +16,6 @@ package
       
       private function Next(param1:MouseEvent = null) : *
       {
-         b1.removeEventListener(MouseEvent.CLICK,this.Next);
          POPUPS.Next();
          POPUPS.Push(new popup_prefab());
       }

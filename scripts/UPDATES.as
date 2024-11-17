@@ -98,13 +98,12 @@ package
          var length:int = 0;
          var i:int = 0;
          var monsterdata:Object = null;
-         var champArr:* = undefined;
+         var refundName:String = null;
          var refundType:int = 0;
-         var refundLevel:int = 0;
          var refundFeeds:int = 0;
+         var refundLevel:int = 0;
          var refundBuff:int = 0;
          var refundID:String = null;
-         var refundName:String = null;
          var refundHealth:int = 0;
          var refundFeedtime:int = 0;
          var update:Object = param1;
@@ -131,8 +130,8 @@ package
             var _loc4_:int = 0;
             var _loc5_:Point = null;
             var _loc6_:Array = null;
-            var _loc7_:int = 0;
-            var _loc8_:Array = null;
+            var _loc7_:Array = null;
+            var _loc8_:int = 0;
             var _loc2_:int = 0;
             while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
             {
@@ -141,25 +140,22 @@ package
                   _loc3_ = new Point(GLOBAL._bChamber.x,GLOBAL._bChamber.y + 80);
                   _loc4_ = int((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get());
                   _loc5_ = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
-                  if(refundLevel > 0)
+                  CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
+                  CREATURES._guardian.Export();
+                  _loc6_ = ["Gorgo","Drull","Fomor"];
+                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                  CREATURES._guardian.ModeCage();
+                  _loc7_ = [];
+                  _loc8_ = 0;
+                  while(_loc8_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
                   {
-                     CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
-                     CREATURES._guardian.Export();
-                     _loc8_ = ["Gorgo","Drull","Fomor"];
-                     MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
-                     CREATURES._guardian.ModeCage();
-                  }
-                  _loc6_ = [];
-                  _loc7_ = 0;
-                  while(_loc7_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
-                  {
-                     if(_loc2_ != _loc7_)
+                     if(_loc2_ != _loc8_)
                      {
-                        _loc6_.push((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc7_]);
+                        _loc7_.push((GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc8_]);
                      }
-                     _loc7_++;
+                     _loc8_++;
                   }
-                  (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen = _loc6_;
+                  (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen = _loc7_;
                   break;
                }
                _loc2_++;
@@ -293,19 +289,14 @@ package
          }
          if(update.data[1] == "CMR")
          {
-            champArr = com.adobe.serialization.json.JSON.decode(update.data);
-            refundType = int(update.data[2]);
-            refundLevel = int(update.data[3]);
+            refundName = update.data[2];
+            refundType = int(update.data[3]);
             refundFeeds = int(update.data[4]);
-            refundBuff = 0;
+            refundLevel = int(update.data[5]);
+            refundBuff = int(update.data[6]);
             refundID = "G" + refundType;
-            refundName = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"name");
             refundHealth = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"health");
             refundFeedtime = GLOBAL.Timestamp();
-            if(CREATURES._guardian)
-            {
-               MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
-            }
             if(Boolean(CREATURES._guardian) && CREATURES._guardian._creatureID == refundID)
             {
                CREATURES._guardian.Clear();
@@ -320,22 +311,10 @@ package
                {
                   thawChamp(refundType);
                }
-            }
-            if(CREATURES._guardian)
-            {
-               CREATURES._guardian._health.Set(-10);
-               CREATURES._guardian.Tick();
                CREATURES._guardian.Clear();
-               BASE._guardianData = null;
             }
-            if(GLOBAL._bCage)
-            {
-               if(refundLevel > 0)
-               {
-                  GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
-               }
-               BASE.Save();
-            }
+            GLOBAL._bCage.SpawnGuardian(refundLevel,refundFeeds,refundFeedtime,refundType,refundHealth,refundName,refundBuff);
+            BASE.Save();
          }
       }
       

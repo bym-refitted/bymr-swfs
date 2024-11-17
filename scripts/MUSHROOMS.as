@@ -281,7 +281,7 @@ package
                _loc3_ = KEYS.Get("pop_mushroom_msg1",{"v1":_loc6_});
                _loc7_ = new popup_mushroomshiny();
                _loc7_.tTitle.htmlText = "<b>" + KEYS.Get("pop_goldenmushroom_title") + "</b>";
-               _loc7_.tMessage.htmlText = KEYS.Get("pop_goldenmushroom_desc",{"v1":_loc6_});
+               _loc7_.tMessage.htmlText = "You\'ve picked a golden mushroom worth " + _loc6_ + " Shiny. <b>Mushrooms grow back every day.</b>";
                POPUPS.Push(_loc7_,null,null,"chaching","goldmushroom.png");
             }
             else

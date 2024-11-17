@@ -17,10 +17,6 @@ package
       {
          param1.x = GLOBAL._SCREENCENTER.x;
          param1.y = GLOBAL._SCREENCENTER.y - _BOTTOM_PADDING;
-         if(GAME._isSmallSize)
-         {
-            param1.y = GLOBAL._SCREENCENTER.y - _BOTTOM_PADDING / 2;
-         }
       }
       
       public static function AlignToUpperLeft(param1:DisplayObject) : *

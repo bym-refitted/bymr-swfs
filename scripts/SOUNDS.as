@@ -231,64 +231,53 @@ package
       
       public static function PlayMusicB(param1:String = "", param2:Number = 0.7, param3:Number = 0, param4:Number = 0) : void
       {
-         var s:SoundLibrary = null;
-         var sndC:Class = null;
-         var sndO:Sound = null;
-         var id:String = param1;
-         var volume:Number = param2;
-         var pan:Number = param3;
-         var position:Number = param4;
-         if(_currentMusic == id)
+         var _loc5_:SoundLibrary = null;
+         var _loc6_:Class = null;
+         var _loc7_:Sound = null;
+         if(_currentMusic == param1)
          {
             return;
          }
-         try
+         if(!_concurrent[param1])
          {
-            if(!_concurrent[id])
+            _concurrent[param1] = 1;
+         }
+         if(_concurrent[param1] <= 2)
+         {
+            _concurrent[param1] += 1;
+            if(_sounds[param1] is String)
             {
-               _concurrent[id] = 1;
-            }
-            if(_concurrent[id] <= 2)
-            {
-               _concurrent[id] += 1;
-               if(_sounds[id] is String)
+               for each(_loc5_ in soundLibraries)
                {
-                  for each(s in soundLibraries)
+                  if(_loc5_.loaded)
                   {
-                     if(s.loaded)
+                     if(_loc5_.li.applicationDomain.hasDefinition(_sounds[param1]))
                      {
-                        if(s.li.applicationDomain.hasDefinition(_sounds[id]))
+                        _loc6_ = _loc5_.li.applicationDomain.getDefinition(_sounds[param1]) as Class;
+                        _loc7_ = new _loc6_() as Sound;
+                        if(_musicChannel)
                         {
-                           sndC = s.li.applicationDomain.getDefinition(_sounds[id]) as Class;
-                           sndO = new sndC() as Sound;
-                           if(_musicChannel)
-                           {
-                              _musicChannel.stop();
-                              _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
-                           }
-                           _musicChannel = sndO.play(position,99999,new SoundTransform(volume,pan));
-                           _currentMusic = id;
-                           _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
+                           _musicChannel.stop();
+                           _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
                         }
+                        _musicChannel = _loc7_.play(param4,99999,new SoundTransform(param2,param3));
+                        _currentMusic = param1;
+                        _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
                      }
                   }
                }
-               else
-               {
-                  if(_musicChannel)
-                  {
-                     _musicChannel.stop();
-                     _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
-                  }
-                  _musicChannel = _sounds[id].play(position,99999,new SoundTransform(volume,pan));
-                  _currentMusic = id;
-                  _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
-               }
             }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","SOUNDS.PlayMusic",e.getStackTrace());
+            else
+            {
+               if(_musicChannel)
+               {
+                  _musicChannel.stop();
+                  _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
+               }
+               _musicChannel = _sounds[param1].play(param4,99999,new SoundTransform(param2,param3));
+               _currentMusic = param1;
+               _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
+            }
          }
       }
       
@@ -301,47 +290,37 @@ package
       
       public static function Play(param1:String = "", param2:Number = 0.8, param3:Number = 0) : void
       {
-         var s:SoundLibrary = null;
-         var sndC:Class = null;
-         var sndO:Sound = null;
-         var id:String = param1;
-         var volume:Number = param2;
-         var pan:Number = param3;
+         var _loc4_:SoundLibrary = null;
+         var _loc5_:Class = null;
+         var _loc6_:Sound = null;
          if(!GLOBAL._catchup && !_muted)
          {
-            try
+            if(!_concurrent[param1])
             {
-               if(!_concurrent[id])
+               _concurrent[param1] = 1;
+            }
+            if(_concurrent[param1] <= 2)
+            {
+               _concurrent[param1] += 1;
+               if(_sounds[param1] is String)
                {
-                  _concurrent[id] = 1;
-               }
-               if(_concurrent[id] <= 2)
-               {
-                  _concurrent[id] += 1;
-                  if(_sounds[id] is String)
+                  for each(_loc4_ in soundLibraries)
                   {
-                     for each(s in soundLibraries)
+                     if(_loc4_.loaded)
                      {
-                        if(s.loaded)
+                        if(_loc4_.li.applicationDomain.hasDefinition(_sounds[param1]))
                         {
-                           if(s.li.applicationDomain.hasDefinition(_sounds[id]))
-                           {
-                              sndC = s.li.applicationDomain.getDefinition(_sounds[id]) as Class;
-                              sndO = new sndC() as Sound;
-                              sndO.play(0,1,new SoundTransform(volume,pan));
-                           }
+                           _loc5_ = _loc4_.li.applicationDomain.getDefinition(_sounds[param1]) as Class;
+                           _loc6_ = new _loc5_() as Sound;
+                           _loc6_.play(0,1,new SoundTransform(param2,param3));
                         }
                      }
                   }
-                  else
-                  {
-                     _sounds[id].play(0,1,new SoundTransform(volume,pan));
-                  }
                }
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","SOUNDS.Play error",e.getStackTrace());
+               else
+               {
+                  _sounds[param1].play(0,1,new SoundTransform(param2,param3));
+               }
             }
          }
       }

@@ -79,7 +79,7 @@ package
          var _loc2_:String = "C" + param1;
          var _loc3_:* = CREATURELOCKER._creatures[_loc2_];
          ImageCache.GetImageWithCallBack("monsters/C" + param1 + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
-         var _loc4_:Number = 0;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;

@@ -1142,13 +1142,6 @@ package
       
       public static function ShowTShirtPopup(param1:String) : void
       {
-         var _loc2_:MovieClip = null;
-         if(!DEFENSEEVENTPOPUP.open && !_active)
-         {
-            _loc2_ = new DEFENSEEVENTPOPUP(5);
-            POPUPS.Push(_loc2_,null,null,null,null,false,param1);
-            GLOBAL.StatSet("lasttdpopup",6);
-         }
       }
       
       public static function ShowEventEndPopup() : void
@@ -1164,7 +1157,11 @@ package
       
       public static function EventActive() : Boolean
       {
-         return false;
+         if(BASE._isOutpost)
+         {
+            return false;
+         }
+         return SPECIALEVENT.invasionpop == 4 || SPECIALEVENT.invasionpop == 5;
       }
       
       public static function get invasionpop() : Number
@@ -1251,10 +1248,7 @@ package
          {
             case -1:
             case 0:
-               if(GLOBAL.StatGet("lasttdpopup") != 0)
-               {
-                  GLOBAL.StatSet("lasttdpopup",0);
-               }
+               GLOBAL.StatSet("lasttdpopup",0);
                break;
             case 1:
             case 2:

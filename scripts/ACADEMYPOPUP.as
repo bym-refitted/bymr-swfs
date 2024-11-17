@@ -172,7 +172,7 @@ package
          {
             if(!_loc3_.error)
             {
-               bA.tDescription.htmlText = KEYS.Get("academy_traininstantly");
+               bA.tDescription.htmlText = "<b>Keep your resources and train instantly!</b>";
                this.CalculateInstantCost();
                bA.gArrow.visible = true;
                bA.tDescription.visible = true;
@@ -201,7 +201,7 @@ package
                bA.tDescription.visible = true;
                bA.gArrow.visible = true;
                bA.gCoin.visible = true;
-               bA.tDescription.htmlText = KEYS.Get("academy_traininstantly");
+               bA.tDescription.htmlText = "<b>Keep your resources and train instantly!</b>";
                bB.mcR1.visible = true;
                bB.mcR2.visible = true;
                bB.mcR3.visible = true;

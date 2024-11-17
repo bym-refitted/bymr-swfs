@@ -158,9 +158,9 @@ package
             GLOBAL.StatSet("mrp",n);
             GLOBAL._selectedBuilding = GLOBAL._bMap;
             popupMC = new popup_generic();
-            popupMC.tA.htmlText = KEYS.Get("popup_upgrademaproomtitle");
-            popupMC.tB.htmlText = KEYS.Get("popup_upgrademaproom");
-            popupMC.bAction.SetupKey("btn_speedup");
+            popupMC.tA.htmlText = "<b>Backyard Domination</b>";
+            popupMC.tB.htmlText = "Speed-up your Map Room upgrade and get a head start on building your backyard empire!";
+            popupMC.bAction.Setup("Speed-Up");
             popupMC.bAction.addEventListener(MouseEvent.CLICK,Speedup);
             popupMC.mcImage.x = -200;
             popupMC.mcImage.y = -95;
