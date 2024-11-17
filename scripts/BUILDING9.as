@@ -13,7 +13,7 @@ package
    {
       public static const TYPE:uint = 9;
       
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _field:BitmapData;
       
@@ -45,7 +45,7 @@ package
          SetProps();
       }
       
-      public function Prep(param1:String) : *
+      public function Prep(param1:String) : void
       {
          this._bank.Add(Math.ceil(CREATURES.GetProperty(param1,"cResource") * 0.7));
          ++QUESTS._global.monstersblended;
@@ -58,7 +58,7 @@ package
          }
       }
       
-      public function Blend(param1:int, param2:String) : *
+      public function Blend(param1:int, param2:String) : void
       {
          this._blend += param1;
          var _loc3_:Number = 0.6;
@@ -76,13 +76,13 @@ package
          ResourcePackages.Create(4,this,Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc3_));
       }
       
-      public function BlendGuardian(param1:int) : *
+      public function BlendGuardian(param1:int) : void
       {
          this._blend += param1;
          this._guardian = 1;
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(_animLoaded && !GLOBAL._catchup && (this._blend > 0 || _animTick > 2) && this._frameNumber % 2 == 0)
@@ -108,45 +108,40 @@ package
          ++this._frameNumber;
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
-         var q:int = 0;
-         var increment:Boolean = param1;
-         try
+         if(_animContainerBMD)
          {
             _animContainerBMD.copyPixels(_animBMD,new Rectangle(60 * _animTick,0,60,39),new Point(0,0));
-            ++_animTick;
-            q = this._blend;
-            if(q > 70)
-            {
-               q = 70;
-            }
-            if(_lvl.Get() == 2)
-            {
-               q *= 1.2;
-            }
-            else if(_lvl.Get() == 3)
-            {
-               q *= 1.4;
-            }
-            if(_animTick == 15)
-            {
-               if(this._guardian == 0)
-               {
-                  GIBLETS.Create(_spoutPoint.add(new Point(_mc.x,_mc.y)),0.8,100,q,_spoutHeight);
-               }
-               else
-               {
-                  GIBLETS.Create(_spoutPoint.add(new Point(_mc.x,_mc.y)),2,1000,q,_spoutHeight);
-               }
-            }
          }
-         catch(e:Error)
+         ++_animTick;
+         var _loc2_:int = this._blend;
+         if(_loc2_ > 70)
          {
+            _loc2_ = 70;
+         }
+         if(_lvl.Get() == 2)
+         {
+            _loc2_ *= 1.2;
+         }
+         else if(_lvl.Get() == 3)
+         {
+            _loc2_ *= 1.4;
+         }
+         if(_animTick == 15)
+         {
+            if(this._guardian == 0)
+            {
+               GIBLETS.Create(_spoutPoint.add(new Point(_mc.x,_mc.y)),0.8,100,_loc2_,_spoutHeight);
+            }
+            else
+            {
+               GIBLETS.Create(_spoutPoint.add(new Point(_mc.x,_mc.y)),2,1000,_loc2_,_spoutHeight);
+            }
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          if(_lvl.Get() == 1)
@@ -171,7 +166,7 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -179,7 +174,7 @@ package
          GLOBAL._bJuicer = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-mjl",KEYS.Get("pop_juicerbuilt_streamtitle"),KEYS.Get("pop_juicerbuilt_streambody"),"build-monsterjuiceloosener.png"]);
                POPUPS.Next();
@@ -194,7 +189,7 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var percent:int = 0;
@@ -202,7 +197,7 @@ package
          super.Upgraded();
          if(GLOBAL._mode == "build")
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-fl-" + _lvl.Get(),KEYS.Get("pop_juicerupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_juicerupgraded_streambody"),"upgrade-monsterjuiceloosener.png"]);
                POPUPS.Next();
@@ -229,13 +224,13 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bJuicer = null;
          super.RecycleC();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() == 0)
@@ -254,7 +249,7 @@ package
          _animTick = 2;
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          return super.Export();
       }

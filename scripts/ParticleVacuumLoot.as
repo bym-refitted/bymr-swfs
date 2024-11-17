@@ -1,7 +1,7 @@
 package
 {
-   import gs.*;
-   import gs.easing.*;
+   import gs.TweenLite;
+   import gs.easing.Sine;
    
    public class ParticleVacuumLoot
    {
@@ -46,7 +46,7 @@ package
          });
       }
       
-      public function Remove() : *
+      public function Remove() : void
       {
          try
          {

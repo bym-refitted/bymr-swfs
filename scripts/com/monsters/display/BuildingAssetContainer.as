@@ -1,8 +1,8 @@
 package com.monsters.display
 {
-   import flash.display.Sprite;
+   import flash.display.MovieClip;
    
-   public class BuildingAssetContainer extends Sprite
+   public class BuildingAssetContainer extends MovieClip
    {
       public function BuildingAssetContainer()
       {
@@ -10,7 +10,7 @@ package com.monsters.display
          this.Clear();
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
          while(this.numChildren > 0)
          {

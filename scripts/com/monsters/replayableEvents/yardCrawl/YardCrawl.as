@@ -82,7 +82,7 @@ package com.monsters.replayableEvents.yardCrawl
             "value":_loc3_
          },"Attack_Start");
          GLOBAL.eventDispatcher.addEventListener(AttackEvent.ATTACK_OVER,this.finishedAttack);
-         BASE.LoadBase(_loc2_,null,_loc3_,"wmattack");
+         BASE.LoadBase(_loc2_,0,_loc3_,"wmattack");
       }
       
       protected function finishedAttack(param1:AttackEvent) : void

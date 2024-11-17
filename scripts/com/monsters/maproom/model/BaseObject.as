@@ -158,7 +158,7 @@ package com.monsters.maproom.model
          {
             try
             {
-               LoadImageError = function(param1:IOErrorEvent):*
+               LoadImageError = function(param1:IOErrorEvent):void
                {
                };
                this.loader = new Loader();

@@ -276,7 +276,7 @@ package com.monsters.effects.fire
          this._fire.unlock();
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
          this._clearBmd.dispose();
          this._greyBmd.dispose();

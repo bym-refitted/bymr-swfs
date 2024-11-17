@@ -22,7 +22,7 @@ package
          super();
       }
       
-      public function Show(param1:String = null, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : *
+      public function Show(param1:String = null, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : void
       {
          this._action = param3;
          this._action2 = param6;
@@ -57,12 +57,12 @@ package
          bAction.y = mcBG.y + mcBG.height - 45;
          bAction2.y = mcBG.y + mcBG.height - 45;
          GLOBAL.BlockerAdd(GLOBAL._layerTop);
-         this._mc = GLOBAL._layerTop.addChild(this);
+         this._mc = GLOBAL._layerTop.addChild(this) as MESSAGE_CLIP;
          this._mc.Center();
          this._mc.ScaleUp();
       }
       
-      public function Action(param1:MouseEvent) : *
+      public function Action(param1:MouseEvent) : void
       {
          this.Hide();
          if(Boolean(this._action))
@@ -86,7 +86,7 @@ package
          }
       }
       
-      public function Action2(param1:MouseEvent) : *
+      public function Action2(param1:MouseEvent) : void
       {
          this.Hide();
          if(Boolean(this._action2))
@@ -110,7 +110,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          GLOBAL.BlockerRemove();
          SOUNDS.Play("close");

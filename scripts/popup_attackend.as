@@ -103,7 +103,7 @@ package
          this.addEventListener(Event.ENTER_FRAME,this.Tick);
       }
       
-      private function Tick(param1:Event) : *
+      private function Tick(param1:Event) : void
       {
          if(BASE._saveCounterA == BASE._saveCounterB)
          {
@@ -114,7 +114,7 @@ package
          }
       }
       
-      private function End(param1:MouseEvent) : *
+      private function End(param1:MouseEvent) : void
       {
          if(GLOBAL._advancedMap)
          {
@@ -127,12 +127,12 @@ package
          }
          else if(GLOBAL._loadmode == GLOBAL._mode)
          {
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
          else if(MAPROOM_DESCENT._inDescent)
          {
             MAPROOM_DESCENT.ExitDescent();
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
          else
          {

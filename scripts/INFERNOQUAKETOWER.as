@@ -26,25 +26,25 @@ package
          Props();
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
          _origin = new Point(_mc.x,_mc.y);
       }
       
-      override public function FollowMouseB(param1:Event = null) : *
+      override public function FollowMouseB(param1:Event = null) : void
       {
          super.FollowMouseB(param1);
          _origin = new Point(_mc.x,_mc.y);
       }
       
-      override public function StopMoveB() : *
+      override public function StopMoveB() : void
       {
          super.StopMoveB();
          _origin = new Point(_mc.x,_mc.y);
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(_shake > 0)
@@ -64,20 +64,20 @@ package
          }
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
-         var _loc4_:Array = null;
+         var _loc3_:Array = null;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:int = 0;
          if(GLOBAL._render || param1)
          {
-            _loc4_ = [];
+            _loc3_ = [];
             if(_repairing == 1)
             {
-               _loc5_ = 0;
-               _loc6_ = _lvl.Get() == 0 ? 0 : int(_lvl.Get() - 1);
-               _loc5_ = Math.ceil(_hpMax.Get() / Math.min(60 * 60,_buildingProps.repairTime[_loc6_]));
-               _repairTime = int(_hpMax.Get() - _hp.Get()) / _loc5_;
+               _loc4_ = 0;
+               _loc5_ = _lvl.Get() == 0 ? 0 : int(_lvl.Get() - 1);
+               _loc4_ = Math.ceil(_hpMax.Get() / Math.min(60 * 60,_buildingProps.repairTime[_loc5_]));
+               _repairTime = int(_hpMax.Get() - _hp.Get()) / _loc4_;
                QUEUE.Update("building" + _id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(_repairTime,true));
             }
             else if(_countdownBuild.Get() > 0)
@@ -111,7 +111,7 @@ package
          }
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          if(_hp.Get() <= 0)
          {
@@ -145,7 +145,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          if(_hp.Get() <= 0)
          {
@@ -225,7 +225,7 @@ package
          return MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),_range,-1);
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var _loc1_:MovieClip = null;
          super.Upgraded();
@@ -244,13 +244,13 @@ package
          }
       }
       
-      private function UpgradedBrag(param1:MouseEvent) : *
+      private function UpgradedBrag(param1:MouseEvent) : void
       {
          GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("upgrade_quaketower_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("upgrade_quaketower_streambody"),"quests/quake_tower.png"]);
          POPUPS.Next();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var _loc1_:MovieClip = null;
          super.Constructed();
@@ -269,13 +269,13 @@ package
          }
       }
       
-      private function ConstructedBrag(param1:MouseEvent) : *
+      private function ConstructedBrag(param1:MouseEvent) : void
       {
          GLOBAL.CallJS("sendFeed",["build-" + String(_buildingProps.name).toLowerCase(),KEYS.Get("build_quaketower_streamtitle"),KEYS.Get("build_quaketower_streambody"),"quests/quake_tower.png"]);
          POPUPS.Next();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          param1.t = _type;
          super.Setup(param1);
@@ -283,7 +283,7 @@ package
          _animRandomStart = false;
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc1_:Object = super.Export();
          var _loc2_:Point = GRID.FromISO(_origin.x,_origin.y);

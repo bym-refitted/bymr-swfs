@@ -4,10 +4,6 @@ package com.monsters.effects
    
    public class LASERS
    {
-      public static var _root:*;
-      
-      public static var _mc:*;
-      
       public static var _distance:int;
       
       public static var _angle:Number;
@@ -29,7 +25,7 @@ package com.monsters.effects
          super();
       }
       
-      public static function Fire(param1:int, param2:int, param3:int, param4:int, param5:int = 0, param6:Number = 0, param7:Number = 0, param8:Function = null) : *
+      public static function Fire(param1:int, param2:int, param3:int, param4:int, param5:int = 0, param6:Number = 0, param7:Number = 0, param8:Function = null) : void
       {
          var _loc9_:LASER = new LASER();
          _loc9_.Fire(MAP._PROJECTILES,new Point(param1,param2),new Point(param3,param4),param5,param6,param7,param8);
@@ -37,9 +33,9 @@ package com.monsters.effects
          ++_laserCount;
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:String = null;
          for(_loc1_ in _lasers)
          {
             if(_lasers[_loc1_].Tick())

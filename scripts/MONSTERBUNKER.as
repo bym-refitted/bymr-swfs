@@ -38,17 +38,17 @@ package
          }
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function Show(param1:MouseEvent = null) : void
       {
          Hide(param1);
          _open = true;
          GLOBAL.BlockerAdd();
-         _mc = GLOBAL._layerWindows.addChild(new MONSTERBUNKERPOPUP());
+         _mc = GLOBAL._layerWindows.addChild(new MONSTERBUNKERPOPUP()) as MONSTERBUNKERPOPUP;
          _mc.Center();
          _mc.ScaleUp();
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -60,19 +60,19 @@ package
          }
       }
       
-      public static function BunkerStore(param1:String, param2:*, param3:Boolean = false) : *
+      public static function BunkerStore(param1:String, param2:*, param3:Boolean = false) : Boolean
       {
          var _loc6_:* = undefined;
          var _loc7_:Array = null;
          var _loc8_:BFOUNDATION = null;
-         var _loc9_:* = undefined;
-         var _loc10_:* = undefined;
-         var _loc11_:* = undefined;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:int = 0;
          if(param1 == "C100")
          {
             param1 = "C12";
          }
-         var _loc4_:* = CREATURES.GetProperty(param1,"cStorage");
+         var _loc4_:int = CREATURES.GetProperty(param1,"cStorage");
          var _loc5_:Boolean = (GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview") && TRIBES.TribeForID(BASE._wmID).behaviour == "juice";
          if(_bunkerSpace < _loc4_ && !_loc5_)
          {
@@ -127,7 +127,7 @@ package
          return true;
       }
       
-      public static function Cull() : *
+      public static function Cull() : void
       {
          _bunkerCapacity = 0;
          _bunkerUsed = 0;
@@ -136,12 +136,12 @@ package
       
       public static function Populate() : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:BFOUNDATION = null;
          var _loc8_:Point = null;
          var _loc1_:Array = [];
          for each(_loc2_ in BASE._buildingsHousing)
@@ -155,7 +155,7 @@ package
          {
             for(_loc3_ in _creatures)
             {
-               _loc4_ = _creatures[_loc3_];
+               _loc4_ = int(_creatures[_loc3_]);
                if(_loc4_ > 50)
                {
                   _loc4_ = 50;

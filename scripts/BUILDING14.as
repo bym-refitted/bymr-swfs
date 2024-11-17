@@ -73,12 +73,12 @@ package
          SPRITES.SetupSprite("vacuum_end");
       }
       
-      override public function Repair() : *
+      override public function Repair() : void
       {
          super.Repair();
       }
       
-      public function VacuumLoot(param1:int) : *
+      public function VacuumLoot(param1:int) : void
       {
          var _loc6_:Object = null;
          var _loc7_:int = 0;
@@ -156,7 +156,7 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -179,7 +179,7 @@ package
          }
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          if(!MAP._dragged)
          {
@@ -188,37 +188,45 @@ package
          }
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bTownhall = null;
          super.Cancel();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
-      override public function RecycleB(param1:MouseEvent = null) : *
+      override public function RecycleB(param1:MouseEvent = null) : void
       {
          GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
          if(GLOBAL._advancedMap == 0 && GLOBAL._mode == "wmattack")
          {
             WMBASE._destroyed = true;
          }
+         if(this._vacuum)
+         {
+            this.RemoveVacuum(false);
+         }
+         if(UI2._top)
+         {
+            UI2._top.validateSiegeWeapon();
+         }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:Array = null;
          var _loc2_:Array = null;
@@ -227,8 +235,12 @@ package
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:Object = null;
-         var _loc9_:Array = null;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:Object = null;
+         var _loc13_:Array = null;
          super.Description();
          _buildingDescription = KEYS.Get("th_upgradedesc");
          if(_lvl.Get() == 1)
@@ -244,37 +256,41 @@ package
             {
                if(_loc4_.id != 14)
                {
-                  _loc5_ = int(_loc4_.quantity[_lvl.Get()]);
-                  _loc6_ = int(_loc4_.quantity[_lvl.Get() + 1]);
-                  _loc7_ = _loc6_ - _loc5_;
-                  if(_loc5_ == 0 && _loc6_ > 0 && !_loc4_.block)
+                  _loc5_ = _loc4_.quantity.length - 1;
+                  _loc6_ = _lvl.Get();
+                  _loc7_ = Math.min(_loc6_,_loc5_);
+                  _loc8_ = Math.min(_loc6_ + 1,_loc5_);
+                  _loc9_ = int(_loc4_.quantity[_loc7_]);
+                  _loc10_ = int(_loc4_.quantity[_loc8_]);
+                  _loc11_ = _loc10_ - _loc9_;
+                  if(_loc9_ == 0 && _loc10_ > 0 && !_loc4_.block)
                   {
                      _loc1_.push([0,KEYS.Get(_loc4_.name)]);
                   }
-                  else if(_loc7_ > 0 && !_loc4_.block)
+                  else if(_loc11_ > 0 && !_loc4_.block)
                   {
                      _loc2_.push([0,KEYS.Get(_loc4_.name) + "s"]);
                   }
-                  _loc5_ = 0;
-                  _loc6_ = 0;
-                  for each(_loc8_ in _loc4_.costs)
+                  _loc9_ = 0;
+                  _loc10_ = 0;
+                  for each(_loc12_ in _loc4_.costs)
                   {
-                     for each(_loc9_ in _loc8_.re)
+                     for each(_loc13_ in _loc12_.re)
                      {
-                        if(_loc9_[0] == 14)
+                        if(_loc13_[0] == 14)
                         {
-                           if(_loc9_[2] <= _lvl.Get())
+                           if(_loc13_[2] <= _lvl.Get())
                            {
-                              _loc5_ = 1;
+                              _loc9_ = 1;
                            }
-                           if(_loc9_[2] == _lvl.Get() + 1)
+                           if(_loc13_[2] == _lvl.Get() + 1)
                            {
-                              _loc6_ = 1;
+                              _loc10_ = 1;
                            }
                         }
                      }
                   }
-                  if(_loc5_ > 0 && _loc6_ > 0 && !_loc4_.block)
+                  if(_loc9_ > 0 && _loc10_ > 0 && !_loc4_.block)
                   {
                      _loc3_.push([0,KEYS.Get(_loc4_.name)]);
                   }
@@ -292,15 +308,19 @@ package
             {
                _upgradeDescription += "<b>" + KEYS.Get("th_willupgrade") + "</b><br>" + GLOBAL.Array2StringB(_loc3_);
             }
+            if(Boolean(GLOBAL._buildingProps[_type - 1].additionalUpgradeInfo) && Boolean(GLOBAL._buildingProps[_type - 1].additionalUpgradeInfo[_lvl.Get() - 1]))
+            {
+               _upgradeDescription += "<br><br><b>" + KEYS.Get(GLOBAL._buildingProps[_type - 1].additionalUpgradeInfo[_lvl.Get() - 1]) + "</b>";
+            }
          }
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          GLOBAL._bTownhall = this;
          ACHIEVEMENTS.Check("thlevel",_lvl.Get());
@@ -308,7 +328,7 @@ package
          super.Constructed();
       }
       
-      override public function UpgradeB() : *
+      override public function UpgradeB() : void
       {
          super.UpgradeB();
          if(_lvl.Get() >= 2 && _countdownUpgrade.Get() > 0 && _countdownUpgrade.Get() * 0.005555555555555555 > BASE._credits.Get())
@@ -317,7 +337,7 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          LOGGER.KongStat([2,_lvl.Get()]);
          ACHIEVEMENTS.Check("thlevel",_lvl.Get());
@@ -328,12 +348,15 @@ package
       
       public function ApplyVacuum(param1:int, param2:int) : void
       {
-         var _loc3_:Bitmap = null;
          var _loc6_:Bitmap = null;
+         if(_destroyed)
+         {
+            return;
+         }
          this._vacuum = new MovieClip();
          this._vacuumEndSource = new BitmapData(END_WIDTH,END_HEIGHT,true,0);
          this._vacuumPipeSource = new BitmapData(PIPE_WIDTH,PIPE_HEIGHT,true,0);
-         _loc3_ = new Bitmap(this._vacuumEndSource);
+         var _loc3_:Bitmap = new Bitmap(this._vacuumEndSource);
          this._vacuum.addChild(_loc3_);
          MAP._EFFECTSTOP.addChild(this._vacuum);
          this._vacuumSound = SOUNDS.Play("vacuumstart");
@@ -425,10 +448,14 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          GLOBAL._bTownhall = this;
+         if(_destroyed && Boolean(UI2._top))
+         {
+            UI2._top.validateSiegeWeapon();
+         }
          this.UnlockBuildings();
          ACHIEVEMENTS.Check("thlevel",_lvl.Get());
          ACHIEVEMENTS.Check(ACHIEVEMENTS.UNDERHALL_LEVEL,_lvl.Get());

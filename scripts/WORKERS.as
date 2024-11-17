@@ -17,7 +17,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _workers = [];
          if(BASE.isInferno())
@@ -42,7 +42,7 @@ package
          }
       }
       
-      public static function Spawn() : *
+      public static function Spawn() : Object
       {
          var _loc2_:Point = null;
          if(TUTORIAL._stage < 10)
@@ -53,7 +53,7 @@ package
          {
             _loc2_ = new Point(GLOBAL._mapWidth / 2 - Math.random() * GLOBAL._mapWidth,GLOBAL._mapHeight / 2 - Math.random() * GLOBAL._mapHeight);
          }
-         var _loc1_:* = MAP._BUILDINGTOPS.addChild(new WORKER(MAP._BUILDINGTOPS,_loc2_,Math.random() * 360));
+         var _loc1_:WORKER = MAP._BUILDINGTOPS.addChild(new WORKER(MAP._BUILDINGTOPS,_loc2_,Math.random() * 360)) as WORKER;
          _workers.push({
             "mc":_loc1_,
             "task":null
@@ -62,10 +62,10 @@ package
          return {"mc":_loc1_};
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
+         var _loc1_:Object = null;
+         var _loc2_:Object = null;
          if(GLOBAL._render)
          {
             for(_loc1_ in _workers)
@@ -76,12 +76,12 @@ package
          }
       }
       
-      public static function Assign(param1:*) : *
+      public static function Assign(param1:BFOUNDATION) : Object
       {
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
+         var _loc4_:Object = null;
+         var _loc5_:Object = null;
          var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:String = null;
          var _loc2_:int = 50 * 60;
          var _loc3_:Object = null;
          for(_loc4_ in _workers)
@@ -121,14 +121,14 @@ package
                "say":_loc7_
             };
          }
-         return false;
+         return null;
       }
       
-      public static function Remove(param1:*, param2:Boolean = true, param3:String = "Construct") : MovieClip
+      public static function Remove(param1:BFOUNDATION, param2:Boolean = true, param3:String = "Construct") : MovieClip
       {
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
+         var _loc4_:Object = null;
+         var _loc5_:Object = null;
+         var _loc6_:Array = null;
          var _loc7_:Point = null;
          for(_loc4_ in _workers)
          {
@@ -165,7 +165,7 @@ package
          return null;
       }
       
-      public static function Say(param1:String, param2:MovieClip = null, param3:int = 2000) : *
+      public static function Say(param1:String, param2:MovieClip = null, param3:int = 2000) : void
       {
          if(!param2)
          {

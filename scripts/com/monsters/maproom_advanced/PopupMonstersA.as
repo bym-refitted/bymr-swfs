@@ -12,7 +12,7 @@ package com.monsters.maproom_advanced
       
       private var _transfer:Object;
       
-      private var _mc:*;
+      private var _mc:PopupMonstersA;
       
       private var _mcMonsters:MovieClip;
       
@@ -49,7 +49,7 @@ package com.monsters.maproom_advanced
          this.bTransfer.addEventListener(MouseEvent.CLICK,this.Transfer);
       }
       
-      public function Setup(param1:MapRoomCell, param2:Boolean = false) : *
+      public function Setup(param1:MapRoomCell, param2:Boolean = false) : void
       {
          var _loc3_:String = null;
          var _loc4_:int = 0;
@@ -157,7 +157,7 @@ package com.monsters.maproom_advanced
          this.bTransfer.removeEventListener(MouseEvent.CLICK,this.Transfer);
       }
       
-      private function Update() : *
+      private function Update() : void
       {
          var _loc2_:MonsterTransferBar = null;
          var _loc3_:String = null;
@@ -179,10 +179,10 @@ package com.monsters.maproom_advanced
          }
       }
       
-      private function Add(param1:int) : *
+      private function Add(param1:int) : Function
       {
          var i:int = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             if(_cell._monsters[_transferBars[i].monster].Get() > 0)
             {
@@ -196,7 +196,7 @@ package com.monsters.maproom_advanced
          };
       }
       
-      private function AddTick(param1:Event = null) : *
+      private function AddTick(param1:Event = null) : void
       {
          if(this._monstersLeft[this._tempMonsterID].Get() > 0 && this._cell._monsters[this._tempMonsterID].Get() - this._transferMonsters[this._tempMonsterID].Get() > 0 && this._tickDelay <= 0)
          {
@@ -207,10 +207,10 @@ package com.monsters.maproom_advanced
          --this._tickDelay;
       }
       
-      private function Subtract(param1:int) : *
+      private function Subtract(param1:int) : Function
       {
          var i:int = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             if(Boolean(_transferMonsters) && _transferMonsters[_transferBars[i].monster].Get() >= 1)
             {
@@ -224,7 +224,7 @@ package com.monsters.maproom_advanced
          };
       }
       
-      private function SubtractTick(param1:Event = null) : *
+      private function SubtractTick(param1:Event = null) : void
       {
          if(this._transferMonsters[this._tempMonsterID].Get() >= 1 && this._tickDelay <= 0)
          {
@@ -235,14 +235,14 @@ package com.monsters.maproom_advanced
          --this._tickDelay;
       }
       
-      private function TickRemove(param1:MouseEvent) : *
+      private function TickRemove(param1:MouseEvent) : void
       {
          this._mc.removeEventListener(Event.ENTER_FRAME,this.AddTick);
          this._mc.removeEventListener(Event.ENTER_FRAME,this.SubtractTick);
          this._mc.removeEventListener(MouseEvent.MOUSE_UP,this.TickRemove);
       }
       
-      private function Transfer(param1:MouseEvent) : *
+      private function Transfer(param1:MouseEvent) : void
       {
          var _loc3_:int = 0;
          MapRoom.TransferMonstersA(this._cell,this._transferMonsters);

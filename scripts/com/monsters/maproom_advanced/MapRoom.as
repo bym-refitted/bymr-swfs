@@ -371,7 +371,7 @@ package com.monsters.maproom_advanced
          }
          if(Boolean(_migrateThread) && _inviteBaseID != 0)
          {
-            handleAcceptSuccessful = function(param1:Object):*
+            handleAcceptSuccessful = function(param1:Object):void
             {
                PLEASEWAIT.Hide();
                if(param1.error == 0)
@@ -415,7 +415,7 @@ package com.monsters.maproom_advanced
                   GLOBAL.Message(param1.error);
                }
             };
-            handleAcceptError = function(param1:IOErrorEvent):*
+            handleAcceptError = function(param1:IOErrorEvent):void
             {
                LOGGER.Log("err","MapRoom.AcceptInvitation HTTP");
             };
@@ -466,7 +466,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function ReturnFromFailedInvite() : *
+      public static function ReturnFromFailedInvite() : void
       {
          Hide();
          BASE.Load();
@@ -492,7 +492,7 @@ package com.monsters.maproom_advanced
                      Hide();
                      ClearCells();
                      Setup(GLOBAL._mapHome);
-                     BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
+                     BASE.LoadBase(null,0,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
                   }
                   else
                   {
@@ -622,14 +622,14 @@ package com.monsters.maproom_advanced
       {
          var handleBMSaveSuccessful:Function = null;
          var handleBMSaveError:Function = null;
-         handleBMSaveSuccessful = function(param1:Object):*
+         handleBMSaveSuccessful = function(param1:Object):void
          {
             if(param1.error != 0)
             {
                LOGGER.Log("err","MapRoom.BookmarksSave",param1.error);
             }
          };
-         handleBMSaveError = function(param1:IOErrorEvent):*
+         handleBMSaveError = function(param1:IOErrorEvent):void
          {
             LOGGER.Log("err","MapRoom.BookmarksSave HTTP");
          };
@@ -843,7 +843,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function GetCell(param1:int, param2:int, param3:Boolean = false) : *
+      public static function GetCell(param1:int, param2:int, param3:Boolean = false) : Object
       {
          var _loc4_:Point = new Point(int(param1 / _zoneWidth) * _zoneWidth,int(param2 / _zoneHeight) * _zoneHeight);
          var _loc5_:int = _loc4_.x * 10000 + _loc4_.y;
@@ -938,19 +938,19 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function TransferMonstersC(param1:MapRoomCell) : *
+      public static function TransferMonstersC(param1:MapRoomCell) : String
       {
          var transferSuccessful:Function;
          var transferError:Function;
          var actualTransfer:Object = null;
          var finalMonsters:Object = null;
          var finalSrcMonsters:Object = null;
-         var dst:* = undefined;
+         var dst:String = null;
          var src:String = null;
          var spaceRemaining:int = 0;
          var baseUpdateFrom:Array = null;
          var baseUpdateTo:Array = null;
-         var srcMonsterData:* = undefined;
+         var srcMonsterData:Object = null;
          var targetMonsterData:Object = null;
          var transferVars:Array = null;
          var cost:int = 0;
@@ -1106,7 +1106,7 @@ package com.monsters.maproom_advanced
                   };
                   transferVars = [["frombaseid",_monsterSource._baseID],["tobaseid",targetCell._baseID],["monsters",JSON.encode([srcMonsterData,targetMonsterData])]];
                   new URLLoaderApi().load(GLOBAL._mapURL + "transferassets",transferVars,transferSuccessful,transferError);
-                  return;
+                  return "";
                }
                if(targetCell._monsterData.space.Get() == 0)
                {
@@ -1171,7 +1171,7 @@ package com.monsters.maproom_advanced
          _smokeBMD = null;
       }
       
-      public static function SmokeTick(param1:Event = null) : *
+      public static function SmokeTick(param1:Event = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:Object = null;

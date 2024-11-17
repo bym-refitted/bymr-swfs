@@ -105,16 +105,15 @@ package
       
       public static function Remove(param1:*) : void
       {
-         var id:* = param1;
-         var giblet:GIBLET = _giblets[id];
+         var _loc2_:GIBLET = _giblets[param1];
          --_tmpGibCount;
          try
          {
-            EFFECTS.SplatParticle(20,giblet.x,giblet.y,0,0);
-            MAP._RESOURCES.removeChild(giblet);
-            giblet.Clear();
-            PoolSet(giblet);
-            delete _giblets[id];
+            EFFECTS.SplatParticle(20,_loc2_.x,_loc2_.y,0,0);
+            MAP._RESOURCES.removeChild(_loc2_);
+            _loc2_.Clear();
+            PoolSet(_loc2_);
+            delete _giblets[param1];
          }
          catch(e:Error)
          {

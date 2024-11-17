@@ -7,29 +7,29 @@ package com.monsters.baseplanner.components
    
    public class DashedLine extends Sprite
    {
-      internal var lengthsArray:Array = new Array();
+      private var lengthsArray:Array = new Array();
       
-      internal var lineColor:uint;
+      private var lineColor:uint;
       
-      internal var lineWeight:Number;
+      private var lineWeight:Number;
       
-      internal var lineAlpha:Number = 1;
+      private var lineAlpha:Number = 1;
       
-      internal var curX:Number = 0;
+      private var curX:Number = 0;
       
-      internal var curY:Number = 0;
+      private var curY:Number = 0;
       
-      internal var remainingDist:Number = 0;
+      private var remainingDist:Number = 0;
       
-      internal var curIndex:int;
+      private var curIndex:int;
       
-      internal var arraySum:Number = 0;
+      private var arraySum:Number = 0;
       
-      internal var startIndex:int = 0;
+      private var startIndex:int = 0;
       
-      internal var fill:Shape = new Shape();
+      private var fill:Shape = new Shape();
       
-      internal var stroke:Shape = new Shape();
+      private var stroke:Shape = new Shape();
       
       public function DashedLine(param1:Number = 0, param2:Number = 0, param3:Array = null)
       {

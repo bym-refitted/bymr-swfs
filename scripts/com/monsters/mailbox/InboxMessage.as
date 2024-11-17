@@ -119,8 +119,8 @@ package com.monsters.mailbox
       
       public function shouldLoadImage() : void
       {
-         var c:Contact = null;
-         var ic:Class = null;
+         var _loc1_:Contact = null;
+         var _loc2_:Class = null;
          if(!this.image && !this.isAdmin)
          {
             this.image = new Loader();
@@ -128,17 +128,17 @@ package com.monsters.mailbox
             this.image.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,this.onErr);
             if(this.data.userid == LOGIN._playerID)
             {
-               c = Contact.contactWithUserId(this.data.targetid,true);
+               _loc1_ = Contact.contactWithUserId(this.data.targetid,true);
             }
             else
             {
-               c = Contact.contactWithUserId(this.data.userid,true);
+               _loc1_ = Contact.contactWithUserId(this.data.userid,true);
             }
-            if(c)
+            if(_loc1_)
             {
                try
                {
-                  this.image.load(new URLRequest(c.pic),new LoaderContext(true));
+                  this.image.load(new URLRequest(_loc1_.pic),new LoaderContext(true));
                }
                catch(e:*)
                {
@@ -147,8 +147,8 @@ package com.monsters.mailbox
          }
          else if(this.isAdmin && !this.image)
          {
-            ic = Contact.contactWithUserId(this.data.userid,true).picClass;
-            this.image = new ic();
+            _loc2_ = Contact.contactWithUserId(this.data.userid,true).picClass;
+            this.image = new _loc2_();
             this.onImgComplete();
          }
       }

@@ -24,9 +24,9 @@ package com.monsters.maproom_advanced
          super();
       }
       
-      public function Setup(param1:MapRoomCell, param2:String = "outpost") : *
+      public function Setup(param1:MapRoomCell, param2:String = "outpost") : void
       {
-         var i:*;
+         var i:int;
          var resource:MovieClip = null;
          var cell:MapRoomCell = param1;
          var mode:String = param2;
@@ -45,7 +45,7 @@ package com.monsters.maproom_advanced
          this.tTitle.htmlText = "<b>" + KEYS.Get("map_relocate") + "</b>";
          if(mode == "invite")
          {
-            this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                if(this.parent)
                {
@@ -59,7 +59,7 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                RelocateConfirm(true);
             });
@@ -82,7 +82,7 @@ package com.monsters.maproom_advanced
          this.mcResources.bAction.SetupKey("btn_useresources");
          if(mode == "invite")
          {
-            this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                if(this.parent)
                {
@@ -93,18 +93,18 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                RelocateConfirm(false);
             });
          }
       }
       
-      public function Cleanup() : *
+      public function Cleanup() : void
       {
          if(this._mode == "invite")
          {
-            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                if(this.parent)
                {
@@ -112,7 +112,7 @@ package com.monsters.maproom_advanced
                }
                MapRoom.AcceptInvitation(true);
             });
-            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                if(this.parent)
                {
@@ -123,18 +123,18 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcInstant.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                RelocateConfirm(true);
             });
-            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.mcResources.bAction.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                RelocateConfirm(false);
             });
          }
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          GLOBAL.BlockerRemove();
          if(this.parent)
@@ -143,12 +143,12 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function RelocateConfirm(param1:Boolean) : *
+      public function RelocateConfirm(param1:Boolean) : void
       {
          var RelocateSuccess:Function = null;
          var RelocateFail:Function = null;
          var useShiny:Boolean = param1;
-         RelocateSuccess = function(param1:Object):*
+         RelocateSuccess = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.error == 0)
@@ -208,7 +208,7 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("msg_err_relocate") + param1.error);
             }
          };
-         RelocateFail = function(param1:IOErrorEvent):*
+         RelocateFail = function(param1:IOErrorEvent):void
          {
             Hide();
             GLOBAL.Message(KEYS.Get("msg_err_relocate") + param1.text);
@@ -243,7 +243,7 @@ package com.monsters.maproom_advanced
          new URLLoaderApi().load(GLOBAL._baseURL + "migrate",relocateVars,RelocateSuccess,RelocateFail);
       }
       
-      private function RelocateComplete(param1:Event) : *
+      private function RelocateComplete(param1:Event) : void
       {
          if(this._cell._updated && this._oldCell._updated)
          {

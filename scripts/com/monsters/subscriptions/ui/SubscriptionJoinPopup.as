@@ -12,7 +12,7 @@ package com.monsters.subscriptions.ui
    {
       private const _DAVECLUB_IMAGEURL:String = "subscriptions/";
       
-      private const _DAVECLUB_BENEFIT_IMAGEURL:Array = ["daveClub_slot01.png","daveClub_slot02.png","daveClub_slot03.png","daveClub_slot04.png","daveClub_slot05.png"];
+      private const _DAVECLUB_BENEFIT_IMAGEURL:Array = ["daveClub_slot01.png","daveClub_slot02.png","daveClub_slot03.png","daveClub_slot04.png","daveClub_slot05.png","daveClub_slot06.v2.png"];
       
       public var rewardIndex:int = 0;
       
@@ -22,9 +22,8 @@ package com.monsters.subscriptions.ui
       {
          super();
          POPUPSETTINGS.AlignToCenter(this);
-         this.circleNavigation = [mcCircle1,mcCircle2,mcCircle3,mcCircle4,mcCircle5];
+         this.circleNavigation = [mcCircle1,mcCircle2,mcCircle3,mcCircle4,mcCircle5,mcCircle6];
          this.visible = false;
-         mcCircle6.visible = false;
          this.setup();
       }
       
@@ -110,7 +109,7 @@ package com.monsters.subscriptions.ui
       
       private function daveClubImageLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:Bitmap = null;
          var _loc4_:MovieClip = param3[0];
          if(_loc4_)
          {

@@ -18,12 +18,12 @@ package
          SetProps();
       }
       
-      override public function Repair() : *
+      override public function Repair() : void
       {
          super.Repair();
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          if(!MAP._dragged)
          {
@@ -32,28 +32,28 @@ package
          }
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bTownhall = null;
          super.Cancel();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
-      override public function RecycleB(param1:MouseEvent = null) : *
+      override public function RecycleB(param1:MouseEvent = null) : void
       {
          GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL.Message(KEYS.Get("msg_recycleoutpost"));
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
          if(GLOBAL._advancedMap == 0 && GLOBAL._mode == "wmattack")
@@ -62,25 +62,25 @@ package
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _buildingDescription = KEYS.Get("outpost_upgradedesc");
          _recycleDescription = KEYS.Get("th_recycledesc");
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          GLOBAL._bTownhall = this;
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          GLOBAL._bTownhall = this;

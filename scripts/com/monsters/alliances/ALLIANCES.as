@@ -185,7 +185,7 @@ package com.monsters.alliances
       
       public static function AllianceInvite(param1:*) : void
       {
-         var r:*;
+         var r:URLLoaderApi;
          var alliancevars:Array;
          var onAllianceInviteSuccess:Function = null;
          var onAllianceInviteFail:Function = null;

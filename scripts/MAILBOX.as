@@ -47,7 +47,6 @@ package
       
       public static function Hide(param1:MouseEvent = null) : void
       {
-         var e:MouseEvent = param1;
          try
          {
             SOUNDS.Play("close");

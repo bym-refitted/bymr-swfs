@@ -61,7 +61,7 @@ package com.monsters.subscriptions.ui.controlPanel
       
       private function subscriptionActive() : Boolean
       {
-         return SubscriptionHandler.instance.renewalDate;
+         return Boolean(SubscriptionHandler.instance.renewalDate);
       }
       
       private function clickedChange(param1:MouseEvent = null) : void
@@ -97,7 +97,7 @@ package com.monsters.subscriptions.ui.controlPanel
          POPUPS.Remove(this._cancelConfirm);
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          if(this._cancelConfirm)
          {

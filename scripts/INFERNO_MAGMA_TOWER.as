@@ -1,6 +1,10 @@
 package
 {
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.components.statusEffects.FlameEffect;
    import flash.display.BitmapData;
+   import flash.display.MovieClip;
+   import flash.events.Event;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
@@ -8,11 +12,9 @@ package
    {
       public static const ID:int = 132;
       
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _animBitmap:BitmapData;
-      
-      public var _shotsFired:int;
       
       public var _lostCreep:Boolean = false;
       
@@ -22,6 +24,8 @@ package
       
       protected var _projectile:FIREBALL;
       
+      protected var _projectileType:String;
+      
       public function INFERNO_MAGMA_TOWER()
       {
          super();
@@ -30,17 +34,18 @@ package
          _top = -30;
          _footprint = [new Rectangle(0,0,70,70)];
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
+         this._projectileType = FIREBALLS.TYPE_MAGMA;
          this._fireStage = 1;
          SetProps();
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          super.TickAttack();
          Rotate();
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          if(_animLoaded && GLOBAL._render)
          {
@@ -50,7 +55,7 @@ package
          super.AnimFrame(false);
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          if(Math.random() * 2 <= 1)
@@ -67,10 +72,23 @@ package
          {
             _loc3_ = 1.25;
          }
-         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),_splash,FIREBALLS.TYPE_MAGMA);
+         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),new Point(param1.x,param1.y),param1,_speed,int(_damage * _loc2_ * _loc3_),_splash,this._projectileType,1);
       }
       
-      override public function Description() : *
+      protected function onProjectileCollision(param1:Event) : void
+      {
+         var _loc2_:FIREBALL = param1.target as FIREBALL;
+         _loc2_.removeEventListener(FIREBALL.COLLIDED,this.onProjectileCollision);
+         var _loc3_:Array = MAP.CreepCellFind(new Point(_loc2_._targetCreep.x,_loc2_._targetCreep.y),_splash);
+         var _loc4_:int = 0;
+         while(_loc4_ < _loc3_.length)
+         {
+            MonsterBase(_loc3_[_loc4_].creep).addStatusEffect(new FlameEffect(MonsterBase(_loc3_[_loc4_].creep),_damage * 0.5));
+            _loc4_++;
+         }
+      }
+      
+      override public function Description() : void
       {
          var _loc1_:Object = null;
          var _loc2_:Object = null;
@@ -113,7 +131,7 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          param1.t = _type;
          super.Setup(param1);

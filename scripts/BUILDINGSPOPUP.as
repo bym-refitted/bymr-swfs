@@ -5,11 +5,11 @@ package
    
    public class BUILDINGSPOPUP extends BUILDINGSPOPUP_CLIP
    {
-      public var _subButtonsMC:*;
+      public var _subButtonsMC:MovieClip;
       
-      public var _thumbnailsMC:*;
+      public var _thumbnailsMC:MovieClip;
       
-      public var _buildingInfoMC:*;
+      public var _buildingInfoMC:BUILDINGOPTIONSPOPUP;
       
       public var _pageCount:int;
       
@@ -55,12 +55,12 @@ package
          }
       }
       
-      public function Switch(param1:int, param2:int, param3:int) : *
+      public function Switch(param1:int, param2:int, param3:int) : Function
       {
          var a:int = param1;
          var b:int = param2;
          var p:int = param3;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             if(param1.target.Enabled)
             {
@@ -100,7 +100,7 @@ package
          this._excluded = param1;
       }
       
-      public function SwitchB(param1:int, param2:int, param3:int) : *
+      public function SwitchB(param1:int, param2:int, param3:int) : void
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
@@ -128,7 +128,7 @@ package
          {
             this.removeChild(this._thumbnailsMC);
          }
-         this._thumbnailsMC = this.addChild(new MovieClip());
+         this._thumbnailsMC = this.addChild(new MovieClip()) as MovieClip;
          this._thumbnailsMC.x = 60;
          this._thumbnailsMC.y = 140;
          _loc5_ = 0;
@@ -151,7 +151,7 @@ package
             {
                if(_loc8_ >= 10 * BUILDINGS._page && _loc8_ < 10 + 10 * BUILDINGS._page)
                {
-                  _loc11_ = this._thumbnailsMC.addChild(new BUILDINGBUTTON());
+                  _loc11_ = this._thumbnailsMC.addChild(new BUILDINGBUTTON()) as BUILDINGBUTTON;
                   _loc11_.x = _loc5_ * 130;
                   _loc11_.y = _loc6_ * 170;
                   _loc11_.Setup(_loc10_.id);
@@ -204,7 +204,7 @@ package
          var _loc7_:int = 0;
          var _loc8_:String = null;
          var _loc9_:int = 0;
-         var _loc10_:* = undefined;
+         var _loc10_:BFOUNDATION = null;
          var _loc11_:int = 0;
          var _loc12_:String = null;
          var _loc3_:int = 0;
@@ -217,7 +217,7 @@ package
                if(_loc2_.type != "decoration")
                {
                   _loc5_ = GLOBAL.GetBuildingTownHallLevel(_loc2_);
-                  _loc6_ = int(_loc2_.quantity[_loc5_]);
+                  _loc6_ = _loc5_ < _loc2_.quantity.length ? int(_loc2_.quantity[_loc5_]) : int(_loc2_.quantity[_loc2_.quantity.length - 1]);
                   _loc7_ = 0;
                   _loc2_.buildStatus = 1;
                   for(_loc8_ in BASE._buildingsAll)
@@ -259,20 +259,19 @@ package
          param1.sortOn(["buildStatus","order"],Array.NUMERIC);
       }
       
-      public function SubMenu(param1:Array) : *
+      public function SubMenu(param1:Array) : void
       {
-         var _loc3_:int = 0;
          var _loc4_:Button = null;
          if(this._subButtonsMC)
          {
             this.removeChild(this._subButtonsMC);
          }
-         this._subButtonsMC = this.addChild(new MovieClip());
-         var _loc2_:* = [];
-         _loc3_ = 0;
+         this._subButtonsMC = this.addChild(new MovieClip()) as MovieClip;
+         var _loc2_:Array = [];
+         var _loc3_:int = 0;
          while(_loc3_ < param1.length)
          {
-            _loc4_ = this._subButtonsMC.addChild(new Button_CLIP());
+            _loc4_ = this._subButtonsMC.addChild(new Button_CLIP()) as Button_CLIP;
             _loc4_.x = _loc3_ * 110;
             _loc4_.width = 105;
             _loc4_.Setup(param1[_loc3_]);
@@ -296,12 +295,12 @@ package
             this._buildingInfoMC.parent.removeChild(this._buildingInfoMC);
          }
          GLOBAL.BlockerAdd();
-         this._buildingInfoMC = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP("build",param1));
+         this._buildingInfoMC = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP("build",param1)) as BUILDINGOPTIONSPOPUP;
          this._buildingInfoMC.x = GLOBAL._SCREENCENTER.x;
          this._buildingInfoMC.y = GLOBAL._SCREENCENTER.y;
       }
       
-      public function HideInfo() : *
+      public function HideInfo() : void
       {
          if(this._buildingInfoMC)
          {
@@ -312,12 +311,12 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          BUILDINGS.Hide();
       }
       
-      public function Previous(param1:MouseEvent = null) : *
+      public function Previous(param1:MouseEvent = null) : void
       {
          if(BUILDINGS._page > 0)
          {
@@ -327,7 +326,7 @@ package
          }
       }
       
-      public function Next(param1:MouseEvent = null) : *
+      public function Next(param1:MouseEvent = null) : void
       {
          if(BUILDINGS._page < this._pageCount - 1)
          {

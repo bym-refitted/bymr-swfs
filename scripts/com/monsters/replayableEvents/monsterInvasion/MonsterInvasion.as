@@ -1,17 +1,11 @@
 package com.monsters.replayableEvents.monsterInvasion
 {
    import com.monsters.replayableEvents.ReplayableEvent;
+   import com.monsters.replayableEvents.attackDefend.AttackDefend;
    import flash.events.Event;
    
    public class MonsterInvasion extends ReplayableEvent
    {
-      protected static const DIR:Object = {
-         "N":270,
-         "S":90,
-         "E":0,
-         "W":3 * 60
-      };
-      
       protected static const TYPE_CREEP:int = 0;
       
       protected static const TYPE_GUARDIAN:int = 1;
@@ -24,7 +18,7 @@ package com.monsters.replayableEvents.monsterInvasion
       
       protected var _wavesTotal:uint;
       
-      protected var _wavesDestroyed:uint;
+      protected var _wavesDestroyed:uint = 0;
       
       protected var _waitTimer:int = 0;
       
@@ -51,7 +45,7 @@ package com.monsters.replayableEvents.monsterInvasion
          progress = this._wavesDestroyed / this._wavesTotal;
       }
       
-      private function set wavesDestroyed(param1:uint) : void
+      protected function set wavesDestroyed(param1:uint) : void
       {
          this._wavesDestroyed = param1;
          progress = this._wavesDestroyed / this._wavesTotal;
@@ -62,6 +56,7 @@ package com.monsters.replayableEvents.monsterInvasion
          var _loc3_:int = 0;
          var _loc4_:Object = null;
          var _loc5_:BFOUNDATION = null;
+         WMATTACK.setEnd(WMATTACK.CleanUp);
          var _loc1_:int = 0;
          var _loc2_:int = 0;
          for(_loc4_ in BASE._buildingsAll)
@@ -85,7 +80,11 @@ package com.monsters.replayableEvents.monsterInvasion
                "st3":"Wave_Num_" + this._wavesDestroyed,
                "value":this._numAttempts
             },"Attack_Success");
-            this.score = this._wavesDestroyed + 1;
+            if(_score < 0)
+            {
+               _score = 0;
+            }
+            this.score = _score + 1;
             this._numAttempts = 0;
          }
          else
@@ -144,7 +143,7 @@ package com.monsters.replayableEvents.monsterInvasion
          {
             this._isActive = true;
             _loc1_ = this.getWaveArray();
-            this._curSend = _loc1_[this._wavesDestroyed];
+            this._curSend = _loc1_[this._wavesDestroyed % _loc1_.length];
             this._internalWaveIndex = 0;
             this._randDir = Math.random() * 360;
             this._currentAttackers = [];
@@ -164,7 +163,7 @@ package com.monsters.replayableEvents.monsterInvasion
          {
             if(!(this._curSend[this._internalWaveIndex] is Number))
             {
-               _loc1_ = _loc1_.concat(WMATTACK.SpawnWave(this._curSend[this._internalWaveIndex].wave,this._randDir));
+               _loc1_ = _loc1_.concat(WMATTACK.SpawnWave(this._curSend[this._internalWaveIndex],this._randDir));
             }
             else
             {
@@ -211,6 +210,7 @@ package com.monsters.replayableEvents.monsterInvasion
       {
          var _loc2_:Array = null;
          var _loc3_:Number = 0;
+         WMATTACK.setEnd(WMATTACK.CleanUp);
          this._retreatAllMonsters = true;
          for each(_loc2_ in this._currentAttackers)
          {
@@ -246,7 +246,10 @@ package com.monsters.replayableEvents.monsterInvasion
       override protected function onInitialize() : void
       {
          super.onInitialize();
-         this.score = this._wavesDestroyed;
+         if(this is AttackDefend === false)
+         {
+            this.score = this._wavesDestroyed;
+         }
          WMATTACK.enabled = false;
          this._isActive = false;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)

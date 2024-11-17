@@ -60,58 +60,58 @@ package com.monsters.maproom_advanced
          this.bAttack.Highlight = true;
          this.bAttack.Enabled = true;
          this.bAttack.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
          this.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
          this.bView.SetupKey("map_view_btn");
          this.bView.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bView.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             View();
          });
          this.bSendMessage.SetupKey("map_message_btn");
          this.bSendMessage.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bSendMessage.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bSendMessage.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowMessage();
          });
          this.bTruce.SetupKey("newmap_truce_btn");
          this.bTruce.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bTruce.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bTruce.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowTruce();
          });
          this.bAlliance.SetupKey("btn_invitetoalliance");
          this.bAlliance.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bAlliance.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bAlliance.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowAllianceInvite();
          });
          this.bBookmark.SetupKey("newmap_bookmark_btn");
          this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bBookmark.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bBookmark.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             if(!_bookmarked)
             {
@@ -128,7 +128,7 @@ package com.monsters.maproom_advanced
          (mcFrame as frame).Setup();
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          if(Boolean(this._profilePic) && Boolean(this._profilePic.parent))
          {
@@ -143,7 +143,7 @@ package com.monsters.maproom_advanced
          MapRoom._mc.HideInfoEnemy();
       }
       
-      public function Setup(param1:MapRoomCell, param2:Boolean = false) : *
+      public function Setup(param1:MapRoomCell, param2:Boolean = false) : void
       {
          var _loc5_:CellData = null;
          var _loc6_:int = 0;
@@ -392,56 +392,56 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
-      public function Cleanup() : *
+      public function Cleanup() : void
       {
          this.bAttack.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bAttack.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
          this.bAttack.removeEventListener(MouseEvent.CLICK,this.Attack);
          this.bView.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             View();
          });
          this.bSendMessage.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bSendMessage.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bSendMessage.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bSendMessage.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowMessage();
          });
          this.bTruce.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bTruce.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bTruce.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bTruce.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowTruce();
          });
          this.bAlliance.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bAlliance.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bAlliance.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bAlliance.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowAllianceInvite();
          });
          this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfo);
-         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):*
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OUT,function(param1:MouseEvent):void
          {
             PopupHide();
          });
-         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             if(!_bookmarked)
             {
@@ -455,10 +455,14 @@ package com.monsters.maproom_advanced
          _minTakeoverCost = null;
          _takeoverCoeff1 = null;
          _takeoverCoeff2 = null;
-         mcFrame = null;
+         if(mcFrame)
+         {
+            mcFrame.Clear();
+            mcFrame = null;
+         }
       }
       
-      private function ProfilePic() : *
+      private function ProfilePic() : void
       {
          var onImageLoad:Function = null;
          var imageComplete:Function = null;
@@ -476,7 +480,7 @@ package com.monsters.maproom_advanced
             _profileBmp = new Bitmap(param2);
             mcProfilePic.mcBG.addChild(_profileBmp);
          };
-         LoadImageError = function(param1:IOErrorEvent):*
+         LoadImageError = function(param1:IOErrorEvent):void
          {
          };
          if(!this._cell._facebookID && this._cell._base != 1 && !this._cell._pic_square)
@@ -523,7 +527,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : *
+      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
       {
          var k:int = 0;
          var allyinfo:AllyInfo = null;
@@ -531,7 +535,7 @@ package com.monsters.maproom_advanced
          var container:MovieClip = param2;
          var containerBG:MovieClip = param3;
          var showRel:Boolean = param4;
-         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):void
          {
             var _loc4_:Bitmap = new Bitmap(param2);
             if(param3[0])
@@ -544,7 +548,7 @@ package com.monsters.maproom_advanced
                }
             }
          };
-         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):void
          {
             var _loc4_:Bitmap = new Bitmap(param2);
             if(param3[0])
@@ -581,7 +585,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Attack(param1:MouseEvent) : *
+      public function Attack(param1:MouseEvent) : void
       {
          var _loc2_:Number = NaN;
          var _loc3_:int = 0;
@@ -656,17 +660,17 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function DoAttack() : *
+      public function DoAttack() : void
       {
          MapRoom._mc.ShowAttack(this._cell);
       }
       
-      public function TakeOverConfirm() : *
+      public function TakeOverConfirm() : void
       {
          var empire:Object = null;
          var takeoverSuccessful:Function = null;
          var takeoverError:Function = null;
-         takeoverSuccessful = function(param1:Object):*
+         takeoverSuccessful = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.error == 0)
@@ -686,7 +690,7 @@ package com.monsters.maproom_advanced
                GLOBAL._currentCell._base = 3;
                BASE._yardType = BASE.OUTPOST;
                GLOBAL.BlockerRemove();
-               BASE.LoadBase(null,null,_cell._baseID,"build",false,BASE.OUTPOST);
+               BASE.LoadBase(null,0,_cell._baseID,"build",false,BASE.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
             else
@@ -694,7 +698,7 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.error);
             }
          };
-         takeoverError = function(param1:IOErrorEvent):*
+         takeoverError = function(param1:IOErrorEvent):void
          {
             GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.text);
          };
@@ -734,7 +738,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function View() : *
+      public function View() : void
       {
          var _loc1_:int = 0;
          MapRoom._mc.HideInfoEnemy();
@@ -746,23 +750,23 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE.LoadBase(null,null,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
          }
          else
          {
             _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
             if(this._cell._friend)
             {
-               BASE.LoadBase(null,null,this._cell._baseID,"help",false,_loc1_);
+               BASE.LoadBase(null,0,this._cell._baseID,"help",false,_loc1_);
             }
             else
             {
-               BASE.LoadBase(null,null,this._cell._baseID,"view",false,_loc1_);
+               BASE.LoadBase(null,0,this._cell._baseID,"view",false,_loc1_);
             }
          }
       }
       
-      public function ShowMessage() : *
+      public function ShowMessage() : void
       {
          if(this._cell._base < 2)
          {
@@ -789,7 +793,7 @@ package com.monsters.maproom_advanced
          (this.parent as MovieClip).addChild(this._message);
       }
       
-      public function ShowTruce() : *
+      public function ShowTruce() : void
       {
          if(this._cell._base < 2)
          {
@@ -817,7 +821,7 @@ package com.monsters.maproom_advanced
          (this.parent as MovieClip).addChild(this._message);
       }
       
-      public function ShowAllianceInvite() : *
+      public function ShowAllianceInvite() : void
       {
          if(this._cell._base < 2)
          {
@@ -827,7 +831,7 @@ package com.monsters.maproom_advanced
          ALLIANCES.AllianceInvite(this._cell);
       }
       
-      public function ButtonInfo(param1:MouseEvent) : *
+      public function ButtonInfo(param1:MouseEvent) : void
       {
          var _loc2_:String = "";
          var _loc3_:int = 0;
@@ -880,7 +884,7 @@ package com.monsters.maproom_advanced
          this.PopupShow(_loc3_,_loc4_,_loc2_);
       }
       
-      public function PopupShow(param1:int, param2:int, param3:String) : *
+      public function PopupShow(param1:int, param2:int, param3:String) : void
       {
          this.PopupHide();
          _popupmc = new bubblepopupRight();
@@ -893,7 +897,7 @@ package com.monsters.maproom_advanced
          _popupdo = this.parent.addChild(_popupmc);
       }
       
-      public function PopupUpdate(param1:String) : *
+      public function PopupUpdate(param1:String) : void
       {
          if(_popupmc)
          {
@@ -901,7 +905,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function PopupHide() : *
+      public function PopupHide() : void
       {
          if(_popupdo)
          {
@@ -913,7 +917,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:String = "";
          _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange.Get() + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);

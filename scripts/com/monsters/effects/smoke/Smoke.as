@@ -42,7 +42,7 @@ package com.monsters.effects.smoke
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          var tmpSpriteSheet:BitmapData = null;
          var i:int = 0;
@@ -88,7 +88,7 @@ package com.monsters.effects.smoke
          }
       }
       
-      public static function CreatePoof(param1:Point, param2:int, param3:Number) : *
+      public static function CreatePoof(param1:Point, param2:int, param3:Number) : void
       {
          if(!_enabled)
          {
@@ -101,7 +101,7 @@ package com.monsters.effects.smoke
          Add(param1,5,100 * param3,param2,2);
       }
       
-      public static function CreateStream(param1:Point) : *
+      public static function CreateStream(param1:Point) : void
       {
          if(!_enabled)
          {
@@ -163,7 +163,7 @@ package com.monsters.effects.smoke
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc2_:int = 0;
          var _loc4_:int = 0;

@@ -12,7 +12,7 @@ package
          this.mouseChildren = false;
       }
       
-      public function Wobble() : *
+      public function Wobble() : void
       {
          alpha = 1;
          TweenLite.to(this,0.6,{
@@ -22,7 +22,7 @@ package
          });
       }
       
-      public function Delay() : *
+      public function Delay() : void
       {
          TweenLite.to(this,0.5,{
             "alpha":0,
@@ -31,7 +31,7 @@ package
          });
       }
       
-      public function Remove() : *
+      public function Remove() : void
       {
          try
          {

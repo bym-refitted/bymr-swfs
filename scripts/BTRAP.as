@@ -1,19 +1,18 @@
 package
 {
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.rendering.RasterData;
    import flash.events.*;
    import flash.geom.Point;
    
    public class BTRAP extends BFOUNDATION
    {
-      internal var f:*;
+      private var creeps:Array;
       
-      internal var i:*;
+      private var maxDist:int;
       
-      internal var creeps:Array;
-      
-      internal var maxDist:int;
-      
-      internal var minDist:int;
+      private var minDist:int;
       
       public var _hasTargets:Boolean;
       
@@ -29,17 +28,28 @@ package
          _range = 20;
       }
       
-      override public function SetProps() : *
+      override public function SetProps() : void
       {
+         var _loc1_:RasterData = null;
          super.SetProps();
          if(GLOBAL._mode != "build")
          {
             _mc.visible = false;
             _mcBase.visible = false;
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               for each(_loc1_ in _rasterData)
+               {
+                  if(_loc1_)
+                  {
+                     _loc1_.visible = false;
+                  }
+               }
+            }
          }
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          if(_countdownBuild.Get() == 0 && !_fired)
          {
@@ -59,13 +69,13 @@ package
          }
       }
       
-      public function FindTargets() : *
+      public function FindTargets() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Point = null;
          this.creeps = MAP.CreepCellFind(_position,_range,-1);
          this._hasTargets = false;
          this._targetCreeps = [];
@@ -75,7 +85,7 @@ package
          {
             _loc1_ = this.creeps[_loc3_];
             _loc2_ = _loc1_.creep;
-            _loc4_ = _loc1_.dist;
+            _loc4_ = Number(_loc1_.dist);
             _loc5_ = _loc1_.pos;
             this._targetCreeps.push({
                "creep":_loc2_,
@@ -86,17 +96,18 @@ package
          }
       }
       
-      public function Explode() : *
+      public function Explode() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc10_:Number = NaN;
-         var _loc7_:* = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Point = null;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
+         var _loc10_:RasterData = null;
+         var _loc11_:Number = NaN;
+         var _loc7_:Array = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
          for(_loc3_ in _loc7_)
          {
             _loc1_ = _loc7_[_loc3_];
@@ -104,12 +115,12 @@ package
             if(_loc2_._health.Get() > 0)
             {
                _loc8_++;
-               _loc4_ = _loc1_.dist;
+               _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
                if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
                {
-                  _loc10_ = POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[null,_buildingProps.damage[0]]);
-                  _loc2_._health.Add(-(_loc2_._damageMult * (_loc10_ / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
+                  _loc11_ = POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[null,_buildingProps.damage[0]]);
+                  _loc2_._health.Add(-(_loc2_._damageMult * (_loc11_ / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
                }
                else
                {
@@ -152,6 +163,16 @@ package
          this._hasTargets = false;
          _mc.gotoAndStop(2);
          _mc.visible = true;
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            for each(_loc10_ in _rasterData)
+            {
+               if(_loc10_)
+               {
+                  _loc10_.visible = false;
+               }
+            }
+         }
          _hp.Set(0);
          SOUNDS.Play("trap");
          if(GLOBAL._mode == "build")

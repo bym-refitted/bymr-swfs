@@ -32,11 +32,11 @@ package
          SetProps();
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:int = 0;
          if(GLOBAL._render || param1)
          {
             _loc4_ = 1;
@@ -51,7 +51,7 @@ package
          super.Update(param1);
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(_animLoaded && _countdownBuild.Get() == 0 && this._frameNumber % 3 == 0)
@@ -65,26 +65,22 @@ package
          ++this._frameNumber;
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
-         var increment:Boolean = param1;
-         try
+         if(_animContainerBMD)
          {
             _animContainerBMD.copyPixels(_animBMD,new Rectangle(74 * _animTick,0,74,121),new Point(0,0));
          }
-         catch(e:Error)
-         {
-         }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-st-" + _lvl.Get(),KEYS.Get("pop_siloupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_siloupgraded_streambody"),"upgrade-storage.png"]);
                POPUPS.Next();
@@ -99,17 +95,17 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          super.Click(param1);
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _specialDescription = KEYS.Get("building_silo_upgrade_desc1",{"v1":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1])});

@@ -25,7 +25,7 @@ package
          }
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          if(!this._createTime)
          {
@@ -34,14 +34,14 @@ package
          super.Place(param1);
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc1_:Object = super.Export();
          _loc1_.cT = this._createTime;
          return _loc1_;
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          this._createTime = param1.cT;

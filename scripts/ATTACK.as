@@ -3,11 +3,11 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.ai.*;
    import com.monsters.alliances.ALLIANCES;
-   import com.monsters.champions.KOTHChampion;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.ParticleText;
    import com.monsters.events.AttackEvent;
+   import com.monsters.monsters.champions.KOTHChampion;
    import com.monsters.siege.SiegeWeapons;
    import flash.display.*;
    import flash.events.*;
@@ -90,7 +90,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          var _loc3_:BFOUNDATION = null;
          _flingerCooldown = 5;
@@ -351,15 +351,15 @@ package
          var onClose:Function = null;
          var onShare:Function = null;
          var e:MouseEvent = param1;
-         var Switch:Function = function(param1:int):*
+         var Switch:Function = function(param1:int):Function
          {
             var n:int = param1;
-            return function(param1:MouseEvent = null):*
+            return function(param1:MouseEvent = null):void
             {
                SwitchB(n);
             };
          };
-         var SwitchB:Function = function(param1:int):*
+         var SwitchB:Function = function(param1:int):void
          {
             imgNumber = param1;
             i = 1;
@@ -418,7 +418,7 @@ package
       {
          if(!_dropZone)
          {
-            _dropZone = MAP._BUILDINGBASES.addChild(new DROPZONE(param1,param2));
+            _dropZone = MAP._BUILDINGBASES.addChild(new DROPZONE(param1,param2)) as DROPZONE;
          }
          else
          {
@@ -581,8 +581,8 @@ package
       
       public static function BucketAdd(param1:String) : Boolean
       {
-         var _loc3_:int = 0;
-         var _loc4_:String = null;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
          var _loc2_:int = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
          if(MAPROOM_DESCENT.InDescent)
          {
@@ -594,8 +594,8 @@ package
          }
          if(param1.substr(0,1) == "G")
          {
-            _loc3_ = GLOBAL.getPlayerGuardianIndex(int(param1.substr(1)));
-            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData[_loc3_].l.Get(),"bucket");
+            _loc4_ = GLOBAL.getPlayerGuardianIndex(int(param1.substr(1)));
+            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData[_loc4_].l.Get(),"bucket");
             ATTACK._flingerBucket[param1] = new SecNum(1);
             _creaturesLoaded.Add(1);
             SOUNDS.Play("click1");
@@ -604,9 +604,9 @@ package
          {
             if(GLOBAL._attackerMapCreatures[param1].Get() > 0)
             {
-               for(_loc4_ in _flingerBucket)
+               for(_loc3_ in _flingerBucket)
                {
-                  _loc2_ -= CREATURES.GetProperty(_loc4_,"bucket") * ATTACK._flingerBucket[_loc4_].Get();
+                  _loc2_ -= CREATURES.GetProperty(_loc3_,"bucket") * ATTACK._flingerBucket[_loc3_].Get();
                }
                if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
                {
@@ -623,9 +623,9 @@ package
          }
          else if(GLOBAL._attackerCreatures[param1].Get() > 0)
          {
-            for(_loc4_ in _flingerBucket)
+            for(_loc3_ in _flingerBucket)
             {
-               _loc2_ -= CREATURES.GetProperty(_loc4_,"bucket") * ATTACK._flingerBucket[_loc4_].Get();
+               _loc2_ -= CREATURES.GetProperty(_loc3_,"bucket") * ATTACK._flingerBucket[_loc3_].Get();
             }
             if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
             {
@@ -693,7 +693,7 @@ package
             }
          }
          ResourceBombs.BombRemove();
-         if(UI2._top._siegeweapon)
+         if(Boolean(UI2._top) && Boolean(UI2._top._siegeweapon))
          {
             UI2._top._siegeweapon.Cancel();
          }
@@ -833,6 +833,10 @@ package
       
       public static function Damage(param1:Number, param2:Number, param3:int, param4:Boolean = true, param5:Boolean = false) : void
       {
+         if(param3 == 0)
+         {
+            param4 = false;
+         }
          var _loc6_:uint = ParticleText.TYPE_DAMAGE;
          if(param5)
          {
@@ -1023,11 +1027,11 @@ package
          }
          else if(GLOBAL._loadmode == GLOBAL._mode)
          {
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
          else if(MAPROOM_DESCENT.InDescent)
          {
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
          else
          {
@@ -1035,14 +1039,14 @@ package
          }
       }
       
-      public static function WellDefended(param1:Boolean = true, param2:String = "") : *
+      public static function WellDefended(param1:Boolean = true, param2:String = "") : void
       {
          var Post:Function = null;
          var popupMC:popup_defense = null;
          var tribe:Object = null;
          var wildMonsters:Boolean = param1;
          var attackersName:String = param2;
-         Post = function():*
+         Post = function():void
          {
             if(wildMonsters)
             {
@@ -1082,9 +1086,9 @@ package
          }
       }
       
-      public static function PoorDefense() : *
+      public static function PoorDefense() : void
       {
-         var mc:* = undefined;
+         var mc:popup_damaged_ai = null;
          var RepairAll:Function = null;
          var RepairNow:Function = null;
          if(INFERNO_EMERGENCE_EVENT.isAttackActive)
@@ -1094,7 +1098,7 @@ package
          }
          if(TUTORIAL._stage > 40)
          {
-            RepairAll = function(param1:MouseEvent = null):*
+            RepairAll = function(param1:MouseEvent = null):void
             {
                var _loc2_:BFOUNDATION = null;
                mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
@@ -1109,7 +1113,7 @@ package
                SOUNDS.Play("repair1",0.25);
                POPUPS.Next();
             };
-            RepairNow = function(param1:MouseEvent = null):*
+            RepairNow = function(param1:MouseEvent = null):void
             {
                var _loc2_:BFOUNDATION = null;
                mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);

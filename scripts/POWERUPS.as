@@ -40,7 +40,7 @@ package
       
       public static function Setup(param1:Array = null, param2:Array = null, param3:Boolean = false) : void
       {
-         var _loc4_:* = undefined;
+         var _loc4_:int = 0;
          var _loc5_:SecNum = null;
          if(!_powerupProps)
          {
@@ -435,7 +435,7 @@ package
          return rest[0] + 2;
       }
       
-      public static function Clear(param1:Boolean = false) : *
+      public static function Clear(param1:Boolean = false) : void
       {
          if(_updateOnPage || param1)
          {

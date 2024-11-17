@@ -1,8 +1,10 @@
 package
 {
    import com.cc.utils.SecNum;
-   import com.monsters.champions.KOTHChampion;
-   import com.monsters.components.abilities.ProximityLootBuff;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.champions.KOTHChampion;
+   import com.monsters.monsters.components.abilities.ProximityLootBuff;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -41,7 +43,7 @@ package
             "title":"mon_gorgotitle",
             "selectGraphic":"popups/guardian_select_gorgo.png",
             "classType":CLASS_TYPE_BASIC,
-            "spawnClass":CHAMPIONMONSTER,
+            "spawnClass":ChampionBase,
             "props":{
                "speed":[1,1.2,1.4,1.6,1.8,2],
                "health":[40000,80000,2 * 60 * 1000,140000,160000,200000],
@@ -84,7 +86,7 @@ package
             "title":"mon_drulltitle",
             "selectGraphic":"popups/guardian_select_drull.png",
             "classType":CLASS_TYPE_BASIC,
-            "spawnClass":CHAMPIONMONSTER,
+            "spawnClass":ChampionBase,
             "props":{
                "speed":[2,2.2,2.5,2.8,3.2,3.6],
                "health":[200 * 60,20000,10 * 60 * 60,700 * 60,52000,60 * 1000],
@@ -127,7 +129,7 @@ package
             "title":"mon_fomortitle",
             "selectGraphic":"popups/guardian_select_fomor.png",
             "classType":CLASS_TYPE_BASIC,
-            "spawnClass":CHAMPIONMONSTER,
+            "spawnClass":ChampionBase,
             "props":{
                "speed":[1.2,1.4,2,2.1,2.2,2.3],
                "health":[250 * 60,17500,20000,375 * 60,25000,40000],
@@ -173,7 +175,7 @@ package
             "title":"mon_korathtitle",
             "selectGraphic":"popups/guardian_select_korath.v2.png",
             "classType":CLASS_TYPE_BASIC,
-            "spawnClass":CHAMPIONMONSTER,
+            "spawnClass":ChampionBase,
             "powerLevel2Desc":"mon_korathdesc_fireball",
             "powerLevel3Desc":"mon_korathdesc_stomp",
             "props":{
@@ -224,7 +226,7 @@ package
             "props":{
                "speed":[2.2,2.3,2.4,2.5,2.6],
                "health":[50000,52000,15 * 60 * 60,58000,62000],
-               "healtime":[0x7080,16 * 60 * 60,32 * 60 * 60,64 * 60 * 60,128 * 60 * 60],
+               "healtime":[2 * 60 * 60,4 * 60 * 60,0x7080,16 * 60 * 60,32 * 60 * 60],
                "range":[35,45,55,60,65],
                "damage":[800,850,15 * 60,1000,20 * 60],
                "feeds":[{
@@ -293,12 +295,12 @@ package
          return 0;
       }
       
-      public static function ShowJuice() : *
+      public static function ShowJuice() : void
       {
          GLOBAL.Message(KEYS.Get("msg_juicechampion_confirm"),KEYS.Get("msg_juicechampion_yes"),JuiceChampion);
       }
       
-      public static function JuiceChampion() : *
+      public static function JuiceChampion() : void
       {
          if(CREATURES._guardian)
          {
@@ -320,7 +322,7 @@ package
          return false;
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(!_open)
          {
@@ -328,7 +330,7 @@ package
             GLOBAL.BlockerAdd();
             if(!hasBasicChampion())
             {
-               _select = GLOBAL._layerWindows.addChild(new CHAMPIONSELECTPOPUP());
+               _select = GLOBAL._layerWindows.addChild(new CHAMPIONSELECTPOPUP()) as CHAMPIONSELECTPOPUP;
                _select.Center();
                _select.ScaleUp();
             }
@@ -338,7 +340,7 @@ package
                {
                   spawnAllGuardians();
                }
-               _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP());
+               _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP()) as CHAMPIONCAGEPOPUP;
                _popup.Center();
                _popup.ScaleUp();
             }
@@ -367,7 +369,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -381,7 +383,7 @@ package
                _select = null;
                if(CREATURES._guardian)
                {
-                  _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP());
+                  _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP()) as CHAMPIONCAGEPOPUP;
                   _popup.scaleY = 0.8;
                   _popup.scaleX = 0.8;
                   _popup.x = GLOBAL._SCREENCENTER.x;
@@ -451,17 +453,17 @@ package
          }
       }
       
-      public static function Check() : *
+      public static function Check() : String
       {
          var tmpArray:Array = null;
-         var Push:Function = function(param1:int):*
+         var Push:Function = function(param1:int):void
          {
             var _loc2_:Object = _guardians["G" + param1];
             var _loc3_:Object = _loc2_.props;
             tmpArray.push([_loc3_.movement,_loc3_.attack,_loc3_.speed,_loc3_.health,_loc3_.damage,_loc3_.healtime,_loc3_.feedCount,_loc3_.feedShiny,_loc3_.evolveShiny,_loc3_.feedTime,_loc3_.bucket,_loc3_.buffs,_loc3_.range,_loc3_.bonusSpeed,_loc3_.bonusHealth,_loc3_.bonusRange,_loc3_.bonusDamage,_loc3_.bonusFeedShiny,_loc3_.bonusFeedTime,_loc3_.bonusBuffs]);
          };
          tmpArray = [];
-         var i:* = 1;
+         var i:int = 1;
          while(i <= 3)
          {
             Push(i);
@@ -555,7 +557,7 @@ package
          {
             _open = true;
             GLOBAL.BlockerAdd();
-            _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP());
+            _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCAGEPOPUP()) as CHAMPIONCAGEPOPUP;
             _popup.Center();
             _popup.ScaleUp();
             _popup.Setup(2);
@@ -569,7 +571,7 @@ package
          }
       }
       
-      override public function StopMoveB() : *
+      override public function StopMoveB() : void
       {
          super.StopMoveB();
          var _loc1_:int = 0;
@@ -584,7 +586,7 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          var _loc2_:int = 0;
@@ -624,7 +626,7 @@ package
       
       public function SpawnGuardian(param1:int, param2:int, param3:int = 0, param4:int = 1, param5:int = 1000000000, param6:String = "", param7:int = 0, param8:int = 0) : void
       {
-         var _loc11_:CHAMPIONMONSTER = null;
+         var _loc11_:ChampionBase = null;
          var _loc12_:Boolean = false;
          var _loc9_:Point = GRID.FromISO(x - 20 + Math.random() * 40,y - 20 + Math.random() * 40);
          var _loc10_:Class = getGuardianSpawnClass(param4);
@@ -662,57 +664,63 @@ package
          QUESTS.Check("hatch_champ" + param4,1);
       }
       
-      public function FeedGuardian(param1:String, param2:int, param3:Boolean) : *
+      public function FeedGuardian(param1:String, param2:int, param3:Boolean, param4:Boolean = false) : void
       {
-         var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:Boolean = false;
-         var _loc9_:String = null;
-         var _loc10_:BFOUNDATION = null;
-         var _loc11_:Array = null;
-         var _loc12_:String = null;
-         var _loc13_:* = undefined;
-         var _loc14_:int = 0;
+         var _loc8_:int = 0;
+         var _loc10_:String = null;
+         var _loc11_:MonsterBase = null;
+         var _loc12_:Array = null;
+         var _loc13_:BFOUNDATION = null;
+         var _loc14_:String = null;
+         var _loc15_:int = 0;
+         var _loc16_:int = 0;
          if(_guardians[param1] == null)
          {
             return;
          }
-         var _loc4_:Object = _guardians[param1].props.feeds[param2 - 1];
-         var _loc5_:Object = {};
+         var _loc5_:Object = _guardians[param1].props.feeds[param2 - 1];
+         var _loc6_:Object = {};
          if(param2 == 6)
          {
-            _loc4_ = _guardians[param1].props.bonusFeeds[CREATURES._guardian._foodBonus.Get()];
+            _loc5_ = _guardians[param1].props.bonusFeeds[CREATURES._guardian._foodBonus.Get()];
             if(CREATURES._guardian._foodBonus.Get() == 3)
             {
-               _loc4_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusFeeds");
+               _loc5_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,3,"bonusFeeds");
             }
          }
+         var _loc9_:Boolean = true;
          if(param2 == 6)
          {
             if(param3)
             {
-               if(BASE._credits.Get() < GetGuardianProperty(param1,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny"))
+               _loc16_ = GetGuardianProperty(param1,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny");
+               if(param4)
+               {
+                  _loc16_ *= 2;
+               }
+               if(BASE._credits.Get() < _loc16_)
                {
                   POPUPS.DisplayGetShiny();
                   return;
                }
-               BASE.Purchase("IFD",GetGuardianProperty(param1,CREATURES._guardian._foodBonus.Get() + 1,"bonusFeedShiny"),"cage");
+               BASE.Purchase("IFD",_loc16_,"cage");
                CREATURES._guardian._foodBonus.Add(1);
                if(CREATURES._guardian._foodBonus.Get() > 3)
                {
                   CREATURES._guardian._foodBonus.Set(3);
                }
-               _loc6_ = CREATURES._guardian._health.Get();
+               _loc7_ = CREATURES._guardian._health.Get();
                if(CREATURES._guardian._foodBonus.Get() > 0 && CREATURES._guardian._foodBonus.Get() <= 3)
                {
-                  _loc6_ += CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
+                  _loc7_ += CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
                }
-               _loc7_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
-               if(_loc6_ >= _loc7_)
+               _loc8_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
+               if(_loc7_ >= _loc8_)
                {
-                  _loc6_ = _loc7_;
+                  _loc7_ = _loc8_;
                }
-               CREATURES._guardian._health.Set(_loc6_);
+               CREATURES._guardian._health.Set(_loc7_);
                GLOBAL.Message(KEYS.Get("msg_champion_fed",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
                CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
                CREATURES._guardian.Export();
@@ -720,45 +728,44 @@ package
                LOGGER.Stat([60,CREATURES._guardian._creatureID,GetGuardianProperty(param1,CREATURES._guardian._foodBonus.Get(),"bonusFeedShiny"),CREATURES._guardian._foodBonus.Get()]);
                BASE.Save();
             }
-            else if(_loc4_)
+            else if(_loc5_)
             {
-               _loc8_ = true;
-               for(_loc9_ in _loc4_)
+               for(_loc10_ in _loc5_)
                {
-                  if(HOUSING._creatures[_loc9_] == null || HOUSING._creatures[_loc9_] && HOUSING._creatures[_loc9_].Get() < _loc4_[_loc9_])
+                  if(HOUSING._creatures[_loc10_] == null || HOUSING._creatures[_loc10_] && HOUSING._creatures[_loc10_].Get() < _loc5_[_loc10_])
                   {
-                     _loc8_ = false;
+                     _loc9_ = false;
                      break;
                   }
-                  _loc5_[_loc9_] = _loc4_[_loc9_];
+                  _loc6_[_loc10_] = _loc5_[_loc10_];
                }
-               if(_loc8_)
+               if(_loc9_)
                {
-                  _loc11_ = BASE._buildingsHousing.splice();
-                  for(_loc12_ in _loc5_)
+                  _loc12_ = BASE._buildingsHousing.splice();
+                  for(_loc14_ in _loc6_)
                   {
-                     HOUSING._creatures[_loc12_].Add(-_loc5_[_loc12_]);
-                     for each(_loc13_ in CREATURES._creatures)
+                     HOUSING._creatures[_loc14_].Add(-_loc6_[_loc14_]);
+                     for each(_loc11_ in CREATURES._creatures)
                      {
-                        if(_loc5_[_loc12_] > 0)
+                        if(_loc6_[_loc14_] > 0)
                         {
-                           if(_loc13_._creatureID == _loc12_ && _loc13_._behaviour != "feed" && _loc13_._behaviour != "juice")
+                           if(_loc11_._creatureID == _loc14_ && _loc11_._behaviour != "feed" && _loc11_._behaviour != "juice")
                            {
-                              _loc13_.ModeFeed();
-                              --_loc5_[_loc12_];
+                              _loc11_.ModeFeed();
+                              --_loc6_[_loc14_];
                            }
                         }
                      }
-                     _loc14_ = 0;
-                     while(_loc14_ < _loc5_[_loc12_])
+                     _loc15_ = 0;
+                     while(_loc15_ < _loc6_[_loc14_])
                      {
-                        _loc10_ = _loc11_[int(Math.random() * _loc11_.length)];
-                        CREATURES.Spawn(_loc12_,MAP._BUILDINGTOPS,"feed",new Point(_loc10_.x,_loc10_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
-                        _loc14_++;
+                        _loc13_ = _loc12_[int(Math.random() * _loc12_.length)];
+                        CREATURES.Spawn(_loc14_,MAP._BUILDINGTOPS,"feed",new Point(_loc13_.x,_loc13_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
+                        _loc15_++;
                      }
-                     if(HOUSING._creatures[_loc12_].Get() < 0)
+                     if(HOUSING._creatures[_loc14_].Get() < 0)
                      {
-                        HOUSING._creatures[_loc12_].Set(0);
+                        HOUSING._creatures[_loc14_].Set(0);
                      }
                   }
                   HOUSING.HousingSpace();
@@ -767,17 +774,17 @@ package
                   {
                      CREATURES._guardian._foodBonus.Set(3);
                   }
-                  _loc6_ = CREATURES._guardian._health.Get();
+                  _loc7_ = CREATURES._guardian._health.Get();
                   if(CREATURES._guardian._foodBonus.Get() > 0 && CREATURES._guardian._foodBonus.Get() <= 3)
                   {
-                     _loc6_ += CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
+                     _loc7_ += CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
                   }
-                  _loc7_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
-                  if(_loc6_ >= _loc7_)
+                  _loc8_ = CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._foodBonus.Get(),"bonusHealth");
+                  if(_loc7_ >= _loc8_)
                   {
-                     _loc6_ = _loc7_;
+                     _loc7_ = _loc8_;
                   }
-                  CREATURES._guardian._health.Set(_loc6_);
+                  CREATURES._guardian._health.Set(_loc7_);
                   GLOBAL.Message(KEYS.Get("msg_champion_feeding",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
                   CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
                   CREATURES._guardian.Export();
@@ -829,45 +836,45 @@ package
             LOGGER.Stat([58,CREATURES._guardian._creatureID,GetGuardianProperty(param1,param2,"feedShiny"),CREATURES._guardian._level.Get()]);
             BASE.Save();
          }
-         else if(_loc4_)
+         else if(_loc5_)
          {
-            _loc8_ = true;
-            for(_loc9_ in _loc4_)
+            _loc9_ = true;
+            for(_loc10_ in _loc5_)
             {
-               if(HOUSING._creatures[_loc9_] == null || HOUSING._creatures[_loc9_] && HOUSING._creatures[_loc9_].Get() < _loc4_[_loc9_])
+               if(HOUSING._creatures[_loc10_] == null || HOUSING._creatures[_loc10_] && HOUSING._creatures[_loc10_].Get() < _loc5_[_loc10_])
                {
-                  _loc8_ = false;
+                  _loc9_ = false;
                   break;
                }
-               _loc5_[_loc9_] = _loc4_[_loc9_];
+               _loc6_[_loc10_] = _loc5_[_loc10_];
             }
-            if(_loc8_)
+            if(_loc9_)
             {
-               _loc11_ = BASE._buildingsHousing.splice();
-               for(_loc12_ in _loc5_)
+               _loc12_ = BASE._buildingsHousing.splice();
+               for(_loc14_ in _loc6_)
                {
-                  HOUSING._creatures[_loc12_].Add(-_loc5_[_loc12_]);
-                  for each(_loc13_ in CREATURES._creatures)
+                  HOUSING._creatures[_loc14_].Add(-_loc6_[_loc14_]);
+                  for each(_loc11_ in CREATURES._creatures)
                   {
-                     if(_loc5_[_loc12_] > 0)
+                     if(_loc6_[_loc14_] > 0)
                      {
-                        if(_loc13_._creatureID == _loc12_ && _loc13_._behaviour != "feed" && _loc13_._behaviour != "juice")
+                        if(_loc11_._creatureID == _loc14_ && _loc11_._behaviour != "feed" && _loc11_._behaviour != "juice")
                         {
-                           _loc13_.ModeFeed();
-                           --_loc5_[_loc12_];
+                           _loc11_.ModeFeed();
+                           --_loc6_[_loc14_];
                         }
                      }
                   }
-                  _loc14_ = 0;
-                  while(_loc14_ < _loc5_[_loc12_])
+                  _loc15_ = 0;
+                  while(_loc15_ < _loc6_[_loc14_])
                   {
-                     _loc10_ = _loc11_[int(Math.random() * _loc11_.length)];
-                     CREATURES.Spawn(_loc12_,MAP._BUILDINGTOPS,"feed",new Point(_loc10_.x,_loc10_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
-                     _loc14_++;
+                     _loc13_ = _loc12_[int(Math.random() * _loc12_.length)];
+                     CREATURES.Spawn(_loc14_,MAP._BUILDINGTOPS,"feed",new Point(_loc13_.x,_loc13_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
+                     _loc15_++;
                   }
-                  if(HOUSING._creatures[_loc12_].Get() < 0)
+                  if(HOUSING._creatures[_loc14_].Get() < 0)
                   {
-                     HOUSING._creatures[_loc12_].Set(0);
+                     HOUSING._creatures[_loc14_].Set(0);
                   }
                }
                HOUSING.HousingSpace();
@@ -908,29 +915,29 @@ package
          }
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
          GLOBAL._bCage = this;
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          GLOBAL._bCage = this;
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(CREATURES._guardianList.length)
          {
@@ -943,13 +950,14 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          return super.Export();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
+         return 0;
       }
       
       public function RemoveGuardian(param1:uint) : void

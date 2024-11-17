@@ -18,7 +18,7 @@ package
          super();
       }
       
-      public static function Show(param1:BFOUNDATION, param2:String = "info") : *
+      public static function Show(param1:BFOUNDATION, param2:String = "info") : void
       {
          if(!_open)
          {
@@ -27,13 +27,13 @@ package
             BASE.BuildingDeselect();
             _building = param1;
             _open = true;
-            _do = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP(param2));
+            _do = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP(param2)) as BUILDINGOPTIONSPOPUP;
             _do.Center();
             _do.ScaleUp();
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {

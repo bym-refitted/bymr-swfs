@@ -6,7 +6,7 @@ package
    
    public class BUILDING15 extends BFOUNDATION
    {
-      public var _capacity:*;
+      public var _capacity:int;
       
       public var _space:int;
       
@@ -23,13 +23,13 @@ package
          SetProps();
       }
       
-      override public function StopMoveB() : *
+      override public function StopMoveB() : void
       {
          super.StopMoveB();
          UpdateHousedCreatureTargets();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _upgradeDescription = KEYS.Get("bdg_housing_capacitydesc",{
@@ -54,13 +54,13 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          HOUSING.AddHouse(this);
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -68,7 +68,7 @@ package
          HOUSING.HousingSpace();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-ho-" + _lvl.Get(),KEYS.Get("pop_housingupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_housingupgraded_streambody"),"upgrade-housing.png"]);
                POPUPS.Next();
@@ -83,12 +83,12 @@ package
          }
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          super.RecycleC();
          HOUSING.HousingSpace();
@@ -96,7 +96,7 @@ package
          RelocateHousedCreatures();
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
          var _loc2_:int = 0;
@@ -109,7 +109,7 @@ package
          HOUSING.RemoveHouse(this);
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_hp.Get() > 10 && _hp.Get() < _hpMax.Get() && _hp.Get() % 1000 == 0)

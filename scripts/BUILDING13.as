@@ -5,19 +5,12 @@ package
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    
-   public class BUILDING13 extends BFOUNDATION
+   public class BUILDING13 extends HatcheryBase
    {
       public var _frameNumber:int;
       
       public var _timeStamp:int;
-      
-      public var _finishCost:SecNum;
-      
-      public var _finishQueue:Object = {};
-      
-      public var _finishAll:Boolean = true;
       
       public function BUILDING13()
       {
@@ -25,14 +18,10 @@ package
          this._frameNumber = 0;
          _type = 13;
          _inProduction = "";
-         _monsterQueue = [];
          _productionStage.Set(0);
-         _footprint = [new Rectangle(0,0,100,100)];
-         _gridCost = [[new Rectangle(0,0,100,100),10],[new Rectangle(10,10,80,80),200]];
          _spoutPoint = new Point(-28,-58);
          _spoutHeight = 97;
          _taken = new SecNum(0);
-         this._finishCost = new SecNum(0);
          if(BASE.isInferno())
          {
             _animRandomStart = false;
@@ -40,12 +29,12 @@ package
          SetProps();
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _inProduction != "" && _productionStage.Get() == 1 && _canFunction)
          {
@@ -69,7 +58,7 @@ package
          ++this._frameNumber;
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          super.AnimFrame(param1);
          if(GLOBAL._hatcheryOverdrivePower.Get() == 10)
@@ -90,7 +79,7 @@ package
          }
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
@@ -136,7 +125,7 @@ package
          _loc3_ = 0;
          while(_loc3_ < _loc2_.length)
          {
-            BASE.Fund(4,Math.ceil(_loc2_[_loc3_].Get() * 0.75),false,null,_loc3_);
+            BASE.Fund(4,Math.ceil(_loc2_[_loc3_].Get() * 0.75),false,null,Boolean(_loc3_));
             _loc4_ = 0;
             if(_loc2_[_loc3_].Get() > 20000)
             {
@@ -181,7 +170,7 @@ package
          super.Destroyed(param1);
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -263,7 +252,7 @@ package
          }
       }
       
-      public function ResetProduction() : *
+      public function ResetProduction() : void
       {
          if(_taken.Get() > 0)
          {
@@ -283,7 +272,7 @@ package
          }
       }
       
-      public function StartProduction() : *
+      override public function StartProduction() : void
       {
          _inProduction = "";
          _productionStage.Set(0);
@@ -349,13 +338,13 @@ package
             if(!GLOBAL._bHatcheryCC)
             {
                _loc2_ = HOUSING._housingSpace.Get();
-               this._finishQueue = {};
-               this._finishAll = true;
+               _finishQueue = {};
+               _finishAll = true;
                _loc3_ = 0;
                if(_inProduction != "" && _loc2_ >= CREATURES.GetProperty(_inProduction,"cStorage"))
                {
                   _loc2_ -= CREATURES.GetProperty(_inProduction,"cStorage");
-                  this._finishQueue[_inProduction] = 1;
+                  _finishQueue[_inProduction] = 1;
                   _loc3_ = _countdownProduce.Get();
                   if(_monsterQueue.length > 0)
                   {
@@ -368,37 +357,37 @@ package
                         {
                            _loc3_ += CREATURES.GetProperty(_loc6_,"cTime") * _monsterQueue[_loc5_][1];
                            _loc2_ -= CREATURES.GetProperty(_loc6_,"cStorage") * _monsterQueue[_loc5_][1];
-                           if(this._finishQueue[_loc6_])
+                           if(_finishQueue[_loc6_])
                            {
-                              this._finishQueue[_loc6_] += _monsterQueue[_loc5_][1];
+                              _finishQueue[_loc6_] += _monsterQueue[_loc5_][1];
                            }
                            else
                            {
-                              this._finishQueue[_loc6_] = _monsterQueue[_loc5_][1];
+                              _finishQueue[_loc6_] = _monsterQueue[_loc5_][1];
                            }
                         }
                         else if(_loc2_ >= CREATURES.GetProperty(_loc6_,"cStorage"))
                         {
                            _loc3_ += CREATURES.GetProperty(_loc6_,"cTime") * (_loc2_ / CREATURES.GetProperty(_loc6_,"cStorage"));
-                           if(this._finishQueue[_loc6_])
+                           if(_finishQueue[_loc6_])
                            {
-                              this._finishQueue[_loc6_] += _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
+                              _finishQueue[_loc6_] += _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
                            }
                            else
                            {
-                              this._finishQueue[_loc6_] = _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
+                              _finishQueue[_loc6_] = _loc2_ / CREATURES.GetProperty(_loc6_,"cStorage");
                            }
-                           this._finishAll = false;
+                           _finishAll = false;
                            break;
                         }
                         _loc5_++;
                      }
                   }
-                  this._finishCost.Set(STORE.GetTimeCost(_loc3_,false) * 4);
+                  _finishCost.Set(STORE.GetTimeCost(_loc3_,false) * 4);
                }
                else
                {
-                  this._finishCost.Set(0);
+                  _finishCost.Set(0);
                }
             }
             if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _hp.Get() > 10)
@@ -446,7 +435,7 @@ package
          }
       }
       
-      public function FinishNow() : *
+      public function FinishNow() : void
       {
          var _loc1_:Array = null;
          var _loc2_:int = 0;
@@ -459,7 +448,7 @@ package
             GLOBAL.Message(KEYS.Get("building_hcc_cantfunction"));
             return;
          }
-         if(BASE._credits.Get() >= this._finishCost.Get())
+         if(BASE._credits.Get() >= _finishCost.Get())
          {
             _loc1_ = [];
             _loc2_ = HOUSING._housingSpace.Get();
@@ -516,7 +505,7 @@ package
             {
                _productionStage.Set(0);
             }
-            BASE.Purchase("FQ",this._finishCost.Get(),"BUILDING13.FinishNow");
+            BASE.Purchase("FQ",_finishCost.Get(),"BUILDING13.FinishNow");
             HATCHERY.Tick();
             this.Tick(1);
          }
@@ -526,7 +515,7 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -534,7 +523,7 @@ package
          GLOBAL._bHatchery = this;
          if(GLOBAL._mode == "build" && TUTORIAL._stage > 200 && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-ha",KEYS.Get("pop_hatbuilt_streamtitle"),KEYS.Get("pop_hatbuilt_body"),"build-hatchery.png"]);
                POPUPS.Next();
@@ -549,26 +538,26 @@ package
          }
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bHatchery = null;
          super.Cancel();
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bHatchery = null;
          super.RecycleC();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          if(GLOBAL._mode == "build" && !BASE.isInferno())
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-ha-" + _lvl.Get(),KEYS.Get("pop_hatupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_hatupgraded_body",{"v1":_lvl.Get()}),"upgrade-hatchery.png"]);
                POPUPS.Next();
@@ -583,8 +572,9 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
+         var _loc2_:int = 0;
          _monsterQueue = [];
          if(param1.mq)
          {
@@ -598,14 +588,18 @@ package
          {
             this._timeStamp = 0;
          }
-         var _loc2_:int = 0;
-         while(_loc2_ < _monsterQueue.length)
+         _loc2_ = int(_monsterQueue.length - 1);
+         while(_loc2_ >= 0)
          {
-            if(_monsterQueue[_loc2_][0] == "C100")
+            if(!_monsterQueue[_loc2_][0])
+            {
+               _monsterQueue.splice(_loc2_);
+            }
+            else if(_monsterQueue[_loc2_][0] == "C100")
             {
                _monsterQueue[_loc2_][0] = "C12";
             }
-            _loc2_++;
+            _loc2_--;
          }
          super.Setup(param1);
          if(_countdownBuild.Get() == 0 || TUTORIAL._stage < 200)
@@ -614,9 +608,9 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          if(_monsterQueue.length > 0)
          {
             _loc1_.mq = _monsterQueue;

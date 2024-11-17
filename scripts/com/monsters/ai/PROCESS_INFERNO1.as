@@ -126,7 +126,7 @@ package com.monsters.ai
          var _loc11_:Number = NaN;
          var _loc12_:Number = NaN;
          var _loc13_:Number = NaN;
-         var _loc26_:* = undefined;
+         var _loc26_:BFOUNDATION = null;
          var _loc2_:Object = {};
          var _loc3_:int = 0;
          while(_loc3_ < WMATTACK._monsterKeys.length)

@@ -27,19 +27,19 @@ package com.monsters.siege
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          GLOBAL._bSiegeLab = this;
          return super.Setup(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          GLOBAL._bSiegeLab = this;
          return super.Constructed();
       }
       
-      override public function Upgrade() : *
+      override public function Upgrade() : Boolean
       {
          if(upgradingWeapon)
          {
@@ -51,12 +51,12 @@ package com.monsters.siege
             {
                GLOBAL.Message(KEYS.Get("msg_sworks_cantupgrade1"));
             }
-            return;
+            return false;
          }
          return super.Upgrade();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(upgradingWeapon)
          {
@@ -73,10 +73,10 @@ package com.monsters.siege
          return super.Recycle();
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bSiegeLab = null;
-         return super.RecycleC();
+         super.RecycleC();
       }
       
       override protected function UpgradeWeapon(param1:String) : void

@@ -8,9 +8,9 @@ package
    
    public class PLANNERPOPUP extends PLANNERPOPUP_CLIP
    {
-      public var _thumbnailsMC:*;
+      public var _thumbnailsMC:MovieClip;
       
-      public var _buildingInfoMC:*;
+      public var _buildingInfoMC:MovieClip;
       
       public var _windowRect:Rectangle = new Rectangle(35,65,565,425);
       
@@ -22,9 +22,9 @@ package
       
       public var _dragged:Boolean = false;
       
-      public var _buildings:*;
+      public var _buildings:MovieClip;
       
-      public var _ranges:*;
+      public var _ranges:MovieClip;
       
       public var _zoom:Number = 0.3;
       
@@ -38,8 +38,8 @@ package
          tName.visible = false;
          mcNameBG.visible = false;
          tName.autoSize = "left";
-         this._buildings = mcMap.addChild(new MovieClip());
-         this._ranges = mcMap.addChild(new MovieClip());
+         this._buildings = mcMap.addChild(new MovieClip()) as MovieClip;
+         this._ranges = mcMap.addChild(new MovieClip()) as MovieClip;
          this._buildings.mouseEnabled = false;
          this._ranges.mouseEnabled = false;
          this._ranges.visible = false;
@@ -47,10 +47,10 @@ package
          title_txt.htmlText = KEYS.Get("planner_title");
       }
       
-      public function Setup() : *
+      public function Setup() : void
       {
-         var _loc1_:* = undefined;
-         var _loc3_:* = undefined;
+         var _loc1_:plannerBuilding = null;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:BFOUNDATION = null;
          mcMap.x = this._windowRect.x + this._windowRect.width / 2;
          mcMap.y = this._windowRect.y + this._windowRect.height / 2;
@@ -59,11 +59,11 @@ package
          mcMap.scaleX = mcMap.scaleY = this._zoom;
          for each(_loc3_ in BASE._buildingsMushrooms)
          {
-            _loc1_ = this._buildings.addChild(new plannerBuilding(_loc3_,this._ranges));
+            _loc1_ = this._buildings.addChild(new plannerBuilding(_loc3_,this._ranges)) as plannerBuilding;
          }
          for each(_loc4_ in BASE._buildingsAll)
          {
-            _loc1_ = this._buildings.addChild(new plannerBuilding(_loc4_,this._ranges));
+            _loc1_ = this._buildings.addChild(new plannerBuilding(_loc4_,this._ranges)) as plannerBuilding;
          }
          bZoom1.SetupKey("planner_zoomout_btn");
          bZoom1.addEventListener(MouseEvent.CLICK,this.ToggleZoom);
@@ -75,16 +75,20 @@ package
          bExpand.SetupKey("planner_expand_btn");
          if(BASE._yardType % 2 == BASE.MAIN_YARD)
          {
-            bExpand.addEventListener(MouseEvent.CLICK,STORE.Show(1,1,["ENL"]));
+            if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 6)
+            {
+               bExpand.Enabled = false;
+            }
+            else
+            {
+               bExpand.Enabled = true;
+               bExpand.addEventListener(MouseEvent.CLICK,STORE.Show(1,1,["ENL"]));
+            }
             bExpand.visible = true;
          }
          else
          {
             bExpand.visible = false;
-         }
-         if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 5)
-         {
-            bExpand.Enabled = false;
          }
          var _loc5_:int = 1;
          if(STORE._storeData.ENL)
@@ -92,7 +96,7 @@ package
             _loc5_ = STORE._storeData.ENL.q + 1;
          }
          var _loc6_:int = _loc5_ + 2;
-         while(_loc6_ < 7)
+         while(_loc6_ < 8)
          {
             mcMap["mc" + _loc6_].visible = false;
             _loc6_++;
@@ -103,23 +107,23 @@ package
             mcMap["mc" + _loc6_].visible = false;
             _loc6_++;
          }
-         if(_loc5_ < 6)
+         if(_loc5_ < 7)
          {
             mcMap["mc" + (_loc5_ + 1)].alpha = 0.5;
          }
       }
       
-      public function Remove() : *
+      public function Remove() : void
       {
          var _loc1_:int = 0;
          while(_loc1_ < this._buildings.numChildren)
          {
-            this._buildings.getChildAt(_loc1_).Remove();
+            (this._buildings.getChildAt(_loc1_) as plannerBuilding).Remove();
             _loc1_++;
          }
       }
       
-      public function DragStart(param1:MouseEvent = null) : *
+      public function DragStart(param1:MouseEvent = null) : void
       {
          this._dragging = true;
          this._dragged = false;
@@ -128,7 +132,7 @@ package
          this.addEventListener(Event.ENTER_FRAME,this.Drag);
       }
       
-      public function Drag(param1:Event = null) : *
+      public function Drag(param1:Event = null) : void
       {
          if(Math.abs(mcMap.x - (mouseX + this._dragOffset.x)) > 10 || Math.abs(mcMap.y - (mouseY + this._dragOffset.y)) > 10)
          {
@@ -139,7 +143,7 @@ package
          }
       }
       
-      public function Bounds() : *
+      public function Bounds() : void
       {
          if(GLOBAL._mapWidth * this._zoom > this._windowRect.width)
          {
@@ -167,13 +171,13 @@ package
          }
       }
       
-      public function DragStop(param1:MouseEvent = null) : *
+      public function DragStop(param1:MouseEvent = null) : void
       {
          this._dragging = false;
          this.removeEventListener(Event.ENTER_FRAME,this.Drag);
       }
       
-      public function ToggleRanges(param1:MouseEvent = null) : *
+      public function ToggleRanges(param1:MouseEvent = null) : void
       {
          if(this._toggleRanges)
          {
@@ -188,7 +192,7 @@ package
          this._ranges.visible = this._toggleRanges;
       }
       
-      public function ToggleZoom(param1:MouseEvent = null) : *
+      public function ToggleZoom(param1:MouseEvent = null) : void
       {
          if(param1.target.labelKey == "planner_zoomout_btn")
          {
@@ -251,7 +255,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          PLANNER.Hide();
       }

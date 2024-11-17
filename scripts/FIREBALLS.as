@@ -1,5 +1,6 @@
 package
 {
+   import flash.display.MovieClip;
    import flash.geom.Point;
    
    public class FIREBALLS
@@ -70,79 +71,84 @@ package
          ++_fireballCount;
       }
       
-      public static function Spawn2(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0, param7:* = "fireball") : FIREBALL
+      public static function Spawn2(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0, param7:String = "fireball", param8:int = 1) : FIREBALL
       {
+         var _loc10_:MovieClip = null;
          if(!param7)
          {
             param7 = FIREBALL.TYPE_FIREBALL;
          }
          _type = param7;
-         var _loc8_:FIREBALL = PoolGet();
+         var _loc9_:FIREBALL = PoolGet();
          if(!GLOBAL._catchup)
          {
-            MAP._FIREBALLS.addChild(_loc8_._graphic);
+            MAP._FIREBALLS.addChild(_loc9_._graphic);
          }
          if(param5 > 0)
          {
-            _loc8_._graphic.gotoAndStop(1);
+            _loc9_._graphic.gotoAndStop(1);
          }
          else
          {
-            _loc8_._graphic.gotoAndStop(2);
+            _loc9_._graphic.gotoAndStop(2);
          }
-         _loc8_._type = param7;
-         _loc8_._id = _id;
-         _loc8_._startPoint = param1;
-         _loc8_._targetType = 1;
-         _loc8_._targetCreep = param3;
-         _loc8_._maxSpeed = param4;
-         _loc8_._damage = param5;
-         _loc8_._glaves = 0;
-         if(param3._movement != "fly")
+         _loc9_._type = param7;
+         _loc9_._id = _id;
+         _loc9_._startPoint = param1;
+         if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall is BUILDING14)
          {
-            _loc8_._splash = param6;
+            _loc10_ = BUILDING14(GLOBAL._bTownhall)._vacuum;
+         }
+         _loc9_._targetType = Boolean(_loc10_) && param3 == _loc10_ ? 4 : param8;
+         _loc9_._targetPoint = param2;
+         _loc9_._targetCreep = param3;
+         _loc9_._maxSpeed = param4;
+         _loc9_._damage = param5;
+         _loc9_._glaves = 0;
+         if(param3 && param3._movement != "fly")
+         {
+            _loc9_._splash = param6;
          }
          else
          {
-            _loc8_._splash = 0;
+            _loc9_._splash = 0;
          }
-         _loc8_._tmpX = param1.x;
-         _loc8_._tmpY = param1.y;
-         _loc8_._speed = param4;
-         _loc8_._startDistance = 0;
+         _loc9_._tmpX = param1.x;
+         _loc9_._tmpY = param1.y;
+         _loc9_._speed = param4;
+         _loc9_._startDistance = 0;
          if(!_fireballs)
          {
             _fireballs = {};
          }
-         _fireballs[_id] = _loc8_;
+         _fireballs[_id] = _loc9_;
          ++_id;
          ++_fireballCount;
-         return _loc8_;
+         return _loc9_;
       }
       
-      public static function Spawn3(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0) : *
+      public static function Spawn3(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0) : void
       {
          Spawn2(param1,param2,param3,param4,param5,param6);
       }
       
-      public static function Remove(param1:int) : *
+      public static function Remove(param1:int) : void
       {
-         var id:int = param1;
-         var fireball:FIREBALL = _fireballs[id];
+         var _loc2_:FIREBALL = _fireballs[param1];
          try
          {
-            fireball._graphic.filters = [];
-            MAP._FIREBALLS.removeChild(fireball._graphic);
+            _loc2_._graphic.filters = [];
+            MAP._FIREBALLS.removeChild(_loc2_._graphic);
          }
          catch(e:Error)
          {
          }
-         PoolSet(fireball);
-         delete _fireballs[id];
+         PoolSet(_loc2_);
+         delete _fireballs[param1];
          --_fireballCount;
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc2_:FIREBALL = null;
          for each(_loc2_ in _fireballs)
@@ -151,16 +157,16 @@ package
          }
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
-         var p:String = null;
-         var tmpFireball:FIREBALL = null;
-         for(p in _fireballs)
+         var _loc1_:String = null;
+         var _loc2_:FIREBALL = null;
+         for(_loc1_ in _fireballs)
          {
-            tmpFireball = _fireballs[p];
+            _loc2_ = _fireballs[_loc1_];
             try
             {
-               MAP._FIREBALLS.removeChild(tmpFireball._graphic);
+               MAP._FIREBALLS.removeChild(_loc2_._graphic);
             }
             catch(e:Error)
             {
@@ -171,12 +177,12 @@ package
          _fireballCount = 0;
       }
       
-      public static function PoolSet(param1:FIREBALL) : *
+      public static function PoolSet(param1:FIREBALL) : void
       {
          _pool.push(param1);
       }
       
-      public static function PoolGet() : *
+      public static function PoolGet() : FIREBALL
       {
          var _loc1_:FIREBALL = null;
          if(_pool.length)

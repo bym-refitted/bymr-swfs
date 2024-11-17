@@ -39,7 +39,7 @@ package
          this.SetProps();
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -83,7 +83,7 @@ package
          return _loc3_ + _loc4_;
       }
       
-      override public function SetProps() : *
+      override public function SetProps() : void
       {
          super.SetProps();
          _powerupProps = {
@@ -200,7 +200,7 @@ package
          };
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          if(Boolean(_upgrading) && (!this._upgradeFinishTime || this._upgradeFinishTime.Get() == 0))
          {
@@ -222,7 +222,7 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(_upgrading && GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
@@ -239,7 +239,7 @@ package
          ++this._frameNumber;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -247,7 +247,7 @@ package
          GLOBAL._bLab = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function():*
+            Brag = function():void
             {
                GLOBAL.CallJS("sendFeed",["monsterlab-construct",KEYS.Get("pop_labbuilt_streamtitle"),KEYS.Get("pop_labbuilt_streambody"),"build-monsterlab.png"]);
                POPUPS.Next();
@@ -262,7 +262,7 @@ package
          }
       }
       
-      override public function Upgrade() : *
+      override public function Upgrade() : Boolean
       {
          if(_upgrading)
          {
@@ -272,7 +272,7 @@ package
          return super.Upgrade();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(_upgrading)
          {
@@ -285,13 +285,13 @@ package
          }
       }
       
-      public function Show() : *
+      public function Show() : void
       {
          if(!_open)
          {
             _open = true;
             GLOBAL.BlockerAdd();
-            _mcPopup = GLOBAL._layerWindows.addChild(new MONSTERLABPOPUP());
+            _mcPopup = GLOBAL._layerWindows.addChild(new MONSTERLABPOPUP()) as MONSTERLABPOPUP;
             _mcPopup.Center();
             _mcPopup.ScaleUp();
          }
@@ -351,7 +351,7 @@ package
          return {"error":false};
       }
       
-      public function StartMonsterPowerup(param1:String, param2:int) : *
+      public function StartMonsterPowerup(param1:String, param2:int) : void
       {
          if(this.CanPowerup(param1,param2).error)
          {
@@ -365,7 +365,7 @@ package
          LOGGER.Stat([49,param1.substr(1),param2]);
       }
       
-      public function FinishMonsterPowerup() : *
+      public function FinishMonsterPowerup() : void
       {
          var Post:Function;
          var monsterName:String = null;
@@ -381,7 +381,7 @@ package
          LOGGER.Stat([50,_upgrading.substr(1),this._upgradeLevel]);
          if(GLOBAL._mode == "build")
          {
-            Post = function():*
+            Post = function():void
             {
                if(_upgradeLevel == 1)
                {
@@ -415,7 +415,7 @@ package
          BASE.Save();
       }
       
-      public function CancelMonsterPowerup(param1:MouseEvent) : *
+      public function CancelMonsterPowerup(param1:MouseEvent) : void
       {
          if(_upgrading)
          {
@@ -426,7 +426,7 @@ package
          }
       }
       
-      public function CancelMonsterPowerupB() : *
+      public function CancelMonsterPowerupB() : void
       {
          POPUPS.Next();
          BASE.Charge(3,GetPuttyCost(_upgrading,this._upgradeLevel) * -1);
@@ -438,7 +438,7 @@ package
          BASE.Save();
       }
       
-      public function InstantMonsterPowerup(param1:String, param2:int) : *
+      public function InstantMonsterPowerup(param1:String, param2:int) : void
       {
          var Post:Function;
          var powerName:String = null;
@@ -460,7 +460,7 @@ package
          LOGGER.Stat([48,id.substr(1),level]);
          if(GLOBAL._mode == "build")
          {
-            Post = function():*
+            Post = function():void
             {
                if(_upgradeLevel == 1)
                {
@@ -492,7 +492,7 @@ package
          BASE.Purchase("IPU",instantCost,"monsterlab");
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(param1.upg)
@@ -513,9 +513,9 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          if(_upgrading)
          {
             _loc1_.upg = _upgrading;

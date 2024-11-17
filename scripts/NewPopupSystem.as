@@ -47,7 +47,7 @@ package
                "minTimeBetweenDisplays":432000,
                "requirementsFn":function(param1:String):Boolean
                {
-                  return GLOBAL._bMap;
+                  return Boolean(GLOBAL._bMap);
                }
             }]
          }];

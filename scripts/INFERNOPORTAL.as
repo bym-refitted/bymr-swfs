@@ -153,7 +153,7 @@ package
          GLOBAL._advancedMap = 0;
          if(BASE.isInferno())
          {
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
          else
          {
@@ -184,7 +184,7 @@ package
          return Boolean(building) && building._lvl.Get() >= GetMaxLevel();
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          if(isAboveMaxLevel() && (BASE.isInferno() || GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT))
          {
@@ -241,7 +241,7 @@ package
          _mcBase.visible = true;
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          return false;
       }

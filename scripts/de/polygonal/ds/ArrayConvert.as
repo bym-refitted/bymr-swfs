@@ -139,7 +139,7 @@ package de.polygonal.ds
          {
             _loc5_ = _loc3_++;
             _loc6_ = param1[_loc5_];
-            _loc7_ = _loc2_._reservedSize == 0 || _loc2_._poolSize == 0 ? new DLLNode(_loc6_,_loc2_) : (_loc8_ = _loc2_._headPool, _loc2_._headPool = _loc2_._headPool.next, --_loc2_._poolSize, _loc8_.next = null, _loc8_.val = _loc6_, _loc8_);
+            _loc7_ = _loc2_._reservedSize == 0 || _loc2_._poolSize == 0 ? new DLLNode(_loc6_,_loc2_) : (_loc8_ = _loc2_._headPool, null, _loc2_._headPool = _loc2_._headPool.next, --_loc2_._poolSize, _loc8_.next = null, _loc8_.val = _loc6_, _loc8_);
             if(_loc2_.tail != null)
             {
                _loc2_.tail.next = _loc7_;

@@ -3,6 +3,7 @@ package com.monsters.dealspot
    import flash.display.Loader;
    import flash.display.MovieClip;
    import flash.events.Event;
+   import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    import flash.net.URLRequest;
@@ -51,6 +52,7 @@ package com.monsters.dealspot
          this._top = param1;
          this._loader = new Loader();
          this._req = new URLRequest("" + this._reqURL + this._reqAppID + this._appIDVal + this._reqSID + this._sidVal + this._reqCurrID + this._currIDVal + this._tp2);
+         this._loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
          this._loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onLoaderFinish);
          this._loader.addEventListener("trialpayClick",this.trialpayClick);
          this._loader.addEventListener("onOfferUnavailable",this.trialpayOfferUnavailable);
@@ -62,17 +64,18 @@ package com.monsters.dealspot
          }
       }
       
-      public function onLoaderFinish(param1:Event) : *
+      public function onLoaderFinish(param1:Event) : void
       {
          addChild(this._loader.content);
          this._loader.contentLoaderInfo.removeEventListener(Event.COMPLETE,this.onLoaderFinish);
+         this._loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
          addEventListener(MouseEvent.MOUSE_OVER,this.onRollOver);
          addEventListener(MouseEvent.MOUSE_OUT,this.onRollOut);
          this._loader.removeEventListener("trialpayClick",this.trialpayClick);
          this._loader.removeEventListener("onOfferUnavailable",this.trialpayOfferUnavailable);
       }
       
-      public function onRollOver(param1:MouseEvent) : *
+      public function onRollOver(param1:MouseEvent) : void
       {
          if(this._top._bubbleDo)
          {
@@ -84,7 +87,7 @@ package com.monsters.dealspot
          this._top.BubbleShow(_loc3_,_loc4_,_loc2_);
       }
       
-      public function onRollOut(param1:MouseEvent) : *
+      public function onRollOut(param1:MouseEvent) : void
       {
          this._top.BubbleHide();
       }

@@ -1,86 +1,102 @@
 package
 {
-   import com.cc.screenshot.screenshot;
-   import com.monsters.chat.Chat;
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.input.KeyboardInputHandler;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
+   import com.monsters.rendering.RasterData;
+   import com.monsters.rendering.Renderer;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
+   import flash.display.Sprite;
+   import flash.display.Stage;
    import flash.events.*;
    import flash.geom.*;
+   import flash.utils.getQualifiedClassName;
    import gs.*;
    import gs.easing.*;
    
    public class MAP
    {
-      public static var _dragX:*;
+      public static var _dragX:Number;
       
-      public static var _dragY:*;
+      public static var _dragY:Number;
       
-      public static var tx:*;
+      public static var tx:Number;
       
-      public static var ty:*;
+      public static var ty:Number;
       
-      public static var targX:*;
+      public static var targX:Number;
       
-      public static var targY:*;
+      public static var targY:Number;
       
-      public static var d:*;
+      public static var d:Number;
       
-      public static var _startX:*;
+      public static var _startX:Number;
       
-      public static var _startY:*;
+      public static var _startY:Number;
       
       public static var _autoScroll:Boolean;
       
-      public static var _dragging:*;
+      public static var _dragging:Boolean;
       
-      public static var _dragged:*;
+      public static var _dragged:Boolean;
       
-      public static var _dragDistance:*;
+      public static var _dragDistance:Number;
       
       public static var _EFFECTSBMP:BitmapData;
       
-      public static var _GROUND:*;
+      public static var _GROUND:Sprite;
       
-      public static var _EDGE:*;
+      public static var _EDGE:MovieClip;
       
-      public static var _UNDERLAY:*;
+      public static var _UNDERLAY:MovieClip;
       
-      public static var _RESOURCES:*;
+      public static var _RESOURCES:MovieClip;
       
-      public static var _BUILDINGBASES:*;
+      public static var _BUILDINGBASES:MovieClip;
       
-      public static var _WORKERS:*;
+      public static var _WORKERS:MovieClip;
       
-      public static var _WALLS:*;
+      public static var _WALLS:MovieClip;
       
-      public static var _EFFECTS:*;
+      public static var _EFFECTS:Sprite;
       
-      public static var _CREEPSMC:*;
+      public static var _CREEPSMC:MovieClip;
       
-      public static var _BUILDINGFOOTPRINTS:*;
+      public static var _BUILDINGFOOTPRINTS:MovieClip;
       
-      public static var _BUILDINGINFO:*;
+      public static var _BUILDINGINFO:MovieClip;
       
-      public static var _PROJECTILES:*;
+      public static var _PROJECTILES:MovieClip;
       
-      public static var _FIREBALLS:*;
+      public static var _FIREBALLS:MovieClip;
       
-      public static var _EFFECTSTOP:*;
+      public static var _EFFECTSTOP:MovieClip;
       
-      public static var _BGTILES:*;
+      public static var _BGTILES:MovieClip;
       
-      public static var _BUILDINGTOPS:*;
+      public static var _BUILDINGTOPS:Sprite;
       
       public static var _damageGrid:Object;
       
       public static var _following:Boolean;
       
+      protected static var _bmdTile:BitmapData;
+      
+      private static var _instance:MAP;
+      
+      private static var _canvas:BitmapData;
+      
+      private static var _canvasContainer:Bitmap;
+      
+      protected static var _effectsRasterData:RasterData;
+      
       public static var _inited:Boolean = false;
       
-      public static var stage:* = GLOBAL._ROOT.stage;
+      public static var stage:Stage = GLOBAL._ROOT.stage;
       
       public static var _creepCells:Object = {};
       
@@ -88,40 +104,60 @@ package
       
       public static var _canScroll:Boolean = true;
       
-      private static var _catapultsSetup:Boolean = false;
+      public static const MAP_TYPE_GRASS:int = 0;
       
-      public static var debugGoEasy:Number = 0;
+      public static const MAP_TYPE_ROCK:int = 1;
       
-      public static const MAP_TYPE_GRASS:* = 0;
+      public static const MAP_TYPE_SAND:int = 2;
       
-      public static const MAP_TYPE_ROCK:* = 1;
+      public static const MAP_TYPE_CRATER:int = 3;
       
-      public static const MAP_TYPE_SAND:* = 2;
+      public static const MAP_TYPE_LAVA:int = 4;
       
-      public static const MAP_TYPE_CRATER:* = 3;
+      public static const DEPTH_SHADOW:uint = 1;
       
-      public static const MAP_TYPE_LAVA:* = 4;
+      public static const MAP_WIDTH:uint = 3994;
+      
+      public static const MAP_HEIGHT:uint = 1994;
+      
+      private static const _viewRect:Rectangle = new Rectangle();
       
       public static var vol:Number = 1;
       
-      private static var keyunlock:int = 0;
+      protected var _renderer:Renderer;
       
-      private static var _championLevel:Number = 4;
-      
-      private static var _creepType:String = BASE.isInferno() ? "IC" : "C";
+      protected const _point:Point;
       
       public function MAP(param1:String)
       {
-         var efxbmp:* = undefined;
+         var rect:Rectangle = null;
+         var efxbmp:Bitmap = null;
          var texture:String = param1;
+         this._point = new Point();
          super();
+         _instance = this;
          try
          {
             tx = GLOBAL._SCREENINIT.width / 2;
             ty = GLOBAL._SCREENINIT.height / 2;
-            _GROUND = GLOBAL._layerMap.addChild(new MovieClip());
-            _BGTILES = _GROUND.addChild(new MovieClip());
-            swapBG(texture);
+            rect = GLOBAL._SCREEN;
+            _viewRect.x = GLOBAL._SCREEN.x + MAP_WIDTH / 2;
+            _viewRect.y = GLOBAL._SCREEN.y + MAP_HEIGHT / 2;
+            _viewRect.width = GLOBAL._SCREEN.width;
+            _viewRect.height = GLOBAL._SCREEN.height;
+            _GROUND = GLOBAL._layerMap.addChild(new Sprite()) as Sprite;
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               _BGTILES = _GROUND.addChild(new MovieClip()) as MovieClip;
+            }
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _canvas = new BitmapData(MAP_WIDTH,MAP_HEIGHT,false,0);
+               _canvasContainer = new Bitmap(_canvas);
+               _canvasContainer.x -= _canvasContainer.width / 2;
+               _canvasContainer.y -= _canvasContainer.height / 2;
+               _GROUND.addChild(_canvasContainer);
+            }
          }
          catch(e:Error)
          {
@@ -131,48 +167,57 @@ package
          {
             _GROUND.x = tx;
             _GROUND.y = ty;
-            _UNDERLAY = _GROUND.addChild(new MovieClip());
-            _EFFECTSBMP = new BitmapData(3200,30 * 60,true,0);
-            efxbmp = _GROUND.addChild(new Bitmap(_EFFECTSBMP));
-            efxbmp.x = 0 - _EFFECTSBMP.width * 0.5;
-            efxbmp.y = 0 - _EFFECTSBMP.height * 0.5;
-            _EFFECTS = _GROUND.addChild(new MovieClip());
+            _UNDERLAY = _GROUND.addChild(new MovieClip()) as MovieClip;
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _EFFECTSBMP = new BitmapData(_canvas.width,_canvas.height,false,0);
+               _effectsRasterData = new RasterData(_EFFECTSBMP,new Point((_canvas.width - _EFFECTSBMP.width) * 0.5,(_canvas.height - _EFFECTSBMP.height) * 0.5),0);
+            }
+            else
+            {
+               _EFFECTSBMP = new BitmapData(3200,30 * 60,true,0);
+               efxbmp = _GROUND.addChild(new Bitmap(_EFFECTSBMP)) as Bitmap;
+               efxbmp.x = -_EFFECTSBMP.width * 0.5;
+               efxbmp.y = -_EFFECTSBMP.height * 0.5;
+            }
+            swapBG(texture);
+            _EFFECTS = _GROUND.addChild(new MovieClip()) as MovieClip;
             _EFFECTS.mouseEnabled = false;
             _EFFECTS.mouseChildren = false;
             _EFFECTS.tabChildren = false;
-            _BUILDINGBASES = _GROUND.addChild(new MovieClip());
+            _BUILDINGBASES = _GROUND.addChild(new MovieClip()) as MovieClip;
             _BUILDINGBASES.mouseEnabled = false;
             _BUILDINGBASES.mouseChildren = true;
             _BUILDINGBASES.tabChildren = false;
-            _BUILDINGFOOTPRINTS = _GROUND.addChild(new MovieClip());
+            _BUILDINGFOOTPRINTS = _GROUND.addChild(new MovieClip()) as MovieClip;
             _BUILDINGFOOTPRINTS.mouseEnabled = false;
             _BUILDINGFOOTPRINTS.mouseChildren = false;
             _BUILDINGFOOTPRINTS.tabChildren = false;
-            _CREEPSMC = _GROUND.addChild(new MovieClip());
+            _CREEPSMC = BYMConfig.instance.RENDERER_ON ? new MovieClip() : _GROUND.addChild(new MovieClip()) as MovieClip;
             _CREEPSMC.mouseEnabled = false;
             _CREEPSMC.mouseChildren = true;
             _CREEPSMC.tabChildren = false;
-            _BUILDINGTOPS = _GROUND.addChild(new MovieClip());
+            _BUILDINGTOPS = _GROUND.addChild(new Sprite()) as Sprite;
             _BUILDINGTOPS.mouseEnabled = false;
             _BUILDINGTOPS.mouseChildren = true;
             _BUILDINGTOPS.tabChildren = false;
-            _RESOURCES = _GROUND.addChild(new MovieClip());
+            _RESOURCES = _GROUND.addChild(new MovieClip()) as MovieClip;
             _RESOURCES.mouseEnabled = false;
             _RESOURCES.mouseChildren = false;
             _RESOURCES.tabChildren = false;
-            _BUILDINGINFO = _GROUND.addChild(new MovieClip());
+            _BUILDINGINFO = _GROUND.addChild(new MovieClip()) as MovieClip;
             _BUILDINGINFO.mouseEnabled = false;
             _BUILDINGINFO.mouseChildren = true;
             _BUILDINGINFO.tabChildren = false;
-            _PROJECTILES = _GROUND.addChild(new MovieClip());
+            _PROJECTILES = _GROUND.addChild(new MovieClip()) as MovieClip;
             _PROJECTILES.mouseEnabled = false;
             _PROJECTILES.mouseChildren = false;
             _PROJECTILES.tabChildren = false;
-            _FIREBALLS = _GROUND.addChild(new MovieClip());
+            _FIREBALLS = _GROUND.addChild(new MovieClip()) as MovieClip;
             _FIREBALLS.mouseEnabled = false;
             _FIREBALLS.mouseChildren = false;
             _FIREBALLS.tabChildren = false;
-            _EFFECTSTOP = _GROUND.addChild(new MovieClip());
+            _EFFECTSTOP = _GROUND.addChild(new MovieClip()) as MovieClip;
             _EFFECTSTOP.mouseEnabled = false;
             _EFFECTSTOP.mouseChildren = false;
             _EFFECTSTOP.tabChildren = false;
@@ -180,10 +225,7 @@ package
             _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
-            if(!GLOBAL._aiDesignMode)
-            {
-               _GROUND.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
-            }
+            _GROUND.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyboardInputHandler.instance.OnKeyDown);
             if(GLOBAL.DOES_USE_SCROLL)
             {
                _GROUND.stage.addEventListener(MouseEvent.MOUSE_WHEEL,onMouseScroll);
@@ -195,32 +237,77 @@ package
          {
             LOGGER.Log("err","MAP.Setup B: " + e.message + " | " + e.getStackTrace());
          }
-         Edge();
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            Edge();
+         }
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            this._renderer = new Renderer(_canvas,_viewRect);
+            GLOBAL._ROOT.addEventListener(Event.RENDER,this.render);
+         }
          _inited = true;
+      }
+      
+      public static function get effectsBMD() : BitmapData
+      {
+         return _EFFECTSBMP;
+      }
+      
+      public static function get instance() : MAP
+      {
+         return _instance;
       }
       
       public static function swapBG(param1:String) : void
       {
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         while(_BGTILES.numChildren)
+         var _loc3_:DisplayObject = null;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         if(!BYMConfig.instance.RENDERER_ON)
          {
-            _BGTILES.removeChildAt(0);
-         }
-         var _loc3_:* = MAPBG.MakeTile(param1);
-         var _loc4_:* = -2;
-         while(_loc4_ < 2)
-         {
-            _loc5_ = -2;
-            while(_loc5_ < 2)
+            while(_BGTILES.numChildren)
             {
-               _loc6_ = _BGTILES.addChild(new Bitmap(_loc3_));
-               _loc6_.x = _loc4_ * 998;
-               _loc6_.y = _loc5_ * 498;
-               _loc6_.cacheAsBitmap = true;
-               _loc5_++;
+               _BGTILES.removeChildAt(0);
             }
-            _loc4_++;
+         }
+         _bmdTile = MAPBG.MakeTile(param1);
+         var _loc6_:Point = new Point();
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            _loc4_ = 0;
+            while(_loc4_ < 4)
+            {
+               _loc5_ = 0;
+               while(_loc5_ < 4)
+               {
+                  _loc6_.x = _loc4_ * 1000;
+                  _loc6_.y = _loc5_ * 500;
+                  _EFFECTSBMP.copyPixels(_bmdTile,_bmdTile.rect,_loc6_);
+                  _loc5_++;
+               }
+               _loc4_++;
+            }
+            _bmdTile.dispose();
+            _bmdTile = null;
+            Edge();
+         }
+         else
+         {
+            _loc4_ = -2;
+            while(_loc4_ < 2)
+            {
+               _loc5_ = -2;
+               while(_loc5_ < 2)
+               {
+                  _loc3_ = _BGTILES.addChild(new Bitmap(_bmdTile));
+                  _loc3_.x = _loc4_ * 998;
+                  _loc3_.y = _loc5_ * 498;
+                  _loc3_.cacheAsBitmap = true;
+                  _loc5_++;
+               }
+               _loc4_++;
+            }
          }
       }
       
@@ -254,6 +341,14 @@ package
          {
             _GROUND.removeEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.removeEventListener(Event.ENTER_FRAME,Scroll);
+            while(_GROUND.numChildren > 0)
+            {
+               _GROUND.removeChildAt(0);
+            }
+         }
+         if(BYMConfig.instance.RENDERER_ON && GLOBAL._ROOT.hasEventListener(Event.RENDER))
+         {
+            GLOBAL._ROOT.removeEventListener(Event.RENDER,_instance.render);
          }
          _BGTILES = null;
          _BUILDINGBASES = null;
@@ -265,24 +360,39 @@ package
          _EFFECTS = null;
          _EFFECTSTOP = null;
          _GROUND = null;
+         if(_effectsRasterData)
+         {
+            _effectsRasterData.clear();
+         }
+         if(_bmdTile)
+         {
+            _bmdTile.dispose();
+         }
+         if(_canvas)
+         {
+            _canvas.dispose();
+         }
          if(_EFFECTSBMP)
          {
             _EFFECTSBMP.dispose();
          }
+         _effectsRasterData = null;
+         _bmdTile = null;
+         _canvas = null;
          _EFFECTSBMP = null;
          _inited = false;
       }
       
-      public static function Edge() : *
+      public static function Edge() : void
       {
          var iso:Point = null;
          try
          {
-            if(_EDGE)
+            if(Boolean(_EDGE) && _EDGE.parent == _UNDERLAY)
             {
                _UNDERLAY.removeChild(_EDGE);
             }
-            _EDGE = _UNDERLAY.addChild(new MovieClip());
+            _EDGE = BYMConfig.instance.RENDERER_ON ? new MovieClip() : _UNDERLAY.addChild(new MovieClip()) as MovieClip;
             _EDGE.graphics.lineStyle(2,0xffffff,0.5);
             iso = GRID.ToISO((0 - GLOBAL._mapWidth) / 2,(0 - GLOBAL._mapHeight) / 2,0);
             _EDGE.graphics.moveTo(iso.x,iso.y);
@@ -294,7 +404,14 @@ package
             _EDGE.graphics.lineTo(iso.x,iso.y);
             iso = GRID.ToISO((0 - GLOBAL._mapWidth) / 2,(0 - GLOBAL._mapHeight) / 2,0);
             _EDGE.graphics.lineTo(iso.x,iso.y);
-            _EDGE.cacheAsBitmap = true;
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _EFFECTSBMP.draw(_EDGE,new Matrix(1,0,0,1,_EFFECTSBMP.width * 0.5,_EFFECTSBMP.height * 0.5));
+            }
+            else
+            {
+               _EDGE.cacheAsBitmap = true;
+            }
          }
          catch(e:Error)
          {
@@ -302,11 +419,15 @@ package
          }
       }
       
-      public static function SortDepth(param1:Boolean = false, param2:Boolean = false) : *
+      public static function SortDepth(param1:Boolean = false, param2:Boolean = false) : void
       {
          var _loc3_:DisplayObject = null;
          var _loc6_:int = 0;
-         var _loc4_:* = [];
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            return;
+         }
+         var _loc4_:Array = [];
          var _loc5_:int = _BUILDINGTOPS.numChildren - 1;
          while(_loc5_ >= 0)
          {
@@ -314,7 +435,7 @@ package
             _loc6_ = _loc3_.height * 0.5;
             if(_loc3_ is MovieClip)
             {
-               _loc6_ = int(MovieClip(_loc3_)._middle);
+               _loc6_ = int((_loc3_ as MovieClip)._middle);
             }
             _loc4_.push({
                "depth":(_loc3_.y + _loc6_) * 1000 + _loc3_.x,
@@ -339,95 +460,11 @@ package
          GLOBAL.magnification += param1.delta * 0.05;
       }
       
-      public static function KeyDownPublic(param1:KeyboardEvent) : *
-      {
-         if(param1.shiftKey)
-         {
-            if(keyunlock == 0 && param1.keyCode == 38)
-            {
-               keyunlock = 1;
-            }
-            else if(keyunlock == 1 && param1.keyCode == 40)
-            {
-               keyunlock = 2;
-            }
-            else if(keyunlock == 2 && param1.keyCode == 37)
-            {
-               keyunlock = 3;
-            }
-            else if(keyunlock == 3 && param1.keyCode == 39)
-            {
-               screenshot.Show();
-            }
-            else
-            {
-               keyunlock = 0;
-            }
-         }
-      }
-      
-      public static function KeyDownLocal(param1:KeyboardEvent) : void
-      {
-         if(param1.shiftKey)
-         {
-            if(keyunlock == 0 && param1.keyCode == 38)
-            {
-               keyunlock = 1;
-            }
-            else if(keyunlock == 1 && param1.keyCode == 40)
-            {
-               keyunlock = 2;
-            }
-            else if(keyunlock == 2 && param1.keyCode == 37)
-            {
-               keyunlock = 3;
-            }
-            else if(keyunlock == 3 && param1.keyCode == 39)
-            {
-               screenshot.Show();
-            }
-            else
-            {
-               keyunlock = 0;
-            }
-         }
-         if(!GLOBAL._flags.viximo && Chat._bymChat && Chat._bymChat.chatInputHasFocus() && !GLOBAL._aiDesignMode)
-         {
-            return;
-         }
-      }
-      
-      private static function ToggleCreepType() : void
-      {
-         _creepType = _creepType == "C" ? "IC" : "C";
-      }
-      
-      private static function UpgradeCreatureAbility(param1:uint) : void
-      {
-         var _loc2_:String = null;
-         for(_loc2_ in ACADEMY._upgrades)
-         {
-            GLOBAL._wmCreaturePowerups[_loc2_] = param1;
-         }
-      }
-      
-      private static function UpgradeCreatureLevel(param1:uint) : void
-      {
-         var _loc2_:String = null;
-         for(_loc2_ in CREATURELOCKER._creatures)
-         {
-            if(!(_loc2_.substr(0,1) == "I" || _loc2_ == "C200"))
-            {
-               ACADEMY._upgrades[_loc2_] = {"level":param1};
-            }
-         }
-      }
-      
-      public static function KeyUp(param1:KeyboardEvent) : *
+      public static function KeyUp(param1:KeyboardEvent) : void
       {
       }
       
-      public static function Click(param1:MouseEvent = null) : *
+      public static function Click(param1:MouseEvent = null) : void
       {
          if(UI2._scrollMap)
          {
@@ -440,14 +477,14 @@ package
          }
       }
       
-      public static function Release(param1:MouseEvent) : *
+      public static function Release(param1:MouseEvent) : void
       {
          _dragging = false;
          _dragged = false;
          stage.removeEventListener(MouseEvent.MOUSE_UP,Release);
       }
       
-      public static function Focus(param1:*, param2:*) : *
+      public static function Focus(param1:Number, param2:Number) : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
@@ -462,7 +499,7 @@ package
          }
       }
       
-      public static function FocusTo(param1:int, param2:int, param3:Number, param4:Number = 0, param5:Number = 0, param6:Boolean = true, param7:Function = null) : *
+      public static function FocusTo(param1:int, param2:int, param3:Number, param4:Number = 0, param5:Number = 0, param6:Boolean = true, param7:Function = null) : void
       {
          var FocusToDone:Function;
          var w:int = 0;
@@ -476,7 +513,7 @@ package
          var callback:Function = param7;
          if(!GLOBAL._catchup)
          {
-            FocusToDone = function():*
+            FocusToDone = function():void
             {
                tx = _GROUND.x;
                ty = _GROUND.y;
@@ -494,7 +531,7 @@ package
             _autoScroll = true;
             tx = 0 - (X - 380);
             ty = 0 - (Y - 340);
-            w = int(stage.stageWidth);
+            w = stage.stageWidth;
             h = GLOBAL.GetGameHeight();
             if(ease)
             {
@@ -521,41 +558,41 @@ package
          }
       }
       
-      public static function FollowStart() : *
+      public static function FollowStart() : void
       {
          UI2.Hide("top");
          UI2.Hide("bottom");
          _following = true;
       }
       
-      public static function FollowStop() : *
+      public static function FollowStop() : void
       {
          UI2.Show("top");
          UI2.Show("bottom");
          _following = false;
       }
       
-      public static function Scroll(param1:Event = null) : *
+      public static function Scroll(param1:Event = null) : void
       {
-         var _loc12_:int = 0;
-         var _loc13_:MovieClip = null;
-         var _loc14_:* = undefined;
-         var _loc15_:* = undefined;
+         var _loc13_:int = 0;
+         var _loc14_:MovieClip = null;
+         var _loc15_:Number = NaN;
+         var _loc16_:Number = NaN;
          if(_following)
          {
             tx = 0;
             ty = 0;
-            _loc12_ = 0;
-            for each(_loc13_ in CREEPS._creeps)
+            _loc13_ = 0;
+            for each(_loc14_ in CREEPS._creeps)
             {
-               if(_loc13_._behaviour == "attack" || _loc13_._behaviour == "loot")
+               if(_loc14_._behaviour == "attack" || _loc14_._behaviour == "loot")
                {
-                  _loc12_++;
-                  tx += _loc13_.x;
-                  ty += _loc13_.y;
+                  _loc13_++;
+                  tx += _loc14_.x;
+                  ty += _loc14_.y;
                }
             }
-            if(_loc12_ <= 0)
+            if(_loc13_ <= 0)
             {
                tx = _dragX;
                ty = _dragY;
@@ -565,8 +602,8 @@ package
                }
                return;
             }
-            tx /= _loc12_;
-            ty /= _loc12_;
+            tx /= _loc13_;
+            ty /= _loc13_;
             tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth / 2;
             ty = 0 - ty + GLOBAL.GetGameHeight() / 2;
             _dragX = tx;
@@ -576,9 +613,9 @@ package
          {
             tx = int(stage.mouseX - _dragX);
             ty = int(stage.mouseY - _dragY);
-            _loc14_ = stage.mouseX - (_dragX + _startX);
-            _loc15_ = stage.mouseY - (_dragY + _startY);
-            _dragDistance = Math.abs(Math.sqrt(_loc14_ * _loc14_ + _loc15_ * _loc15_));
+            _loc15_ = stage.mouseX - (_dragX + _startX);
+            _loc16_ = stage.mouseY - (_dragY + _startY);
+            _dragDistance = Math.abs(Math.sqrt(_loc15_ * _loc15_ + _loc16_ * _loc16_));
             if(_dragDistance > 10)
             {
                _dragged = true;
@@ -656,9 +693,14 @@ package
             _GROUND.x = int(targX);
             _GROUND.y = int(targY);
          }
+         var _loc12_:Rectangle = GLOBAL._SCREEN;
+         _viewRect.x = -(targX >> 0) + (MAP_WIDTH >> 1) + _loc12_.x;
+         _viewRect.y = -(targY >> 0) + (MAP_HEIGHT >> 1) + _loc12_.y;
+         _viewRect.width = _loc12_.width;
+         _viewRect.height = _loc12_.height;
       }
       
-      public static function CreepCellAdd(param1:Point, param2:String, param3:MovieClip) : *
+      public static function CreepCellAdd(param1:Point, param2:String, param3:MovieClip) : String
       {
          param1 = GRID.FromISO(param1.x,param1.y);
          var _loc4_:String = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
@@ -670,18 +712,19 @@ package
          return _loc4_;
       }
       
-      public static function CreepCellMove(param1:Point, param2:String, param3:MovieClip, param4:String) : *
+      public static function CreepCellMove(param1:Point, param2:String, param3:MovieClip, param4:String) : String
       {
          param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc5_:* = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
+         var _loc5_:String = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
          if(_loc5_ != param4)
          {
             CreepCellDelete(param2,param4);
             return CreepCellAdd(GRID.ToISO(param1.x,param1.y,0),param2,param3);
          }
+         return "";
       }
       
-      public static function CreepCellDelete(param1:String, param2:String) : *
+      public static function CreepCellDelete(param1:String, param2:String) : void
       {
          if(_creepCells[param2])
          {
@@ -763,6 +806,10 @@ package
          }
          for each(_loc10_ in param4)
          {
+            if(getQualifiedClassName(_loc10_) == "Object")
+            {
+               _loc10_ = _loc10_.creep;
+            }
             _loc6_ = GLOBAL.QuickDistance(param1,new Point(_loc10_.x,_loc10_.y));
             if(param2 >= _loc6_)
             {
@@ -800,12 +847,12 @@ package
       public static function CreepCellFind(param1:Point, param2:Number, param3:int = 0, param4:* = null) : Array
       {
          var _loc11_:int = 0;
-         var _loc12_:* = undefined;
-         var _loc13_:* = undefined;
-         var _loc14_:* = undefined;
-         var _loc15_:* = undefined;
-         var _loc16_:* = undefined;
-         var _loc17_:* = undefined;
+         var _loc12_:String = null;
+         var _loc13_:String = null;
+         var _loc14_:MonsterBase = null;
+         var _loc15_:Number = NaN;
+         var _loc16_:Point = null;
+         var _loc17_:int = 0;
          param1 = PATHING.FromISO(param1);
          var _loc5_:int = int(param1.x / 100);
          var _loc6_:int = int(param1.y / 100);
@@ -848,9 +895,43 @@ package
          return _loc8_;
       }
       
-      public static function OnLand(param1:int, param2:int, param3:int) : *
+      public function get canvas() : BitmapData
       {
-         return true;
+         return _canvas;
+      }
+      
+      public function get offset() : Point
+      {
+         this._point.x = _canvasContainer.x;
+         this._point.y = _canvasContainer.y;
+         return this._point;
+      }
+      
+      public function get canvasContainer() : Bitmap
+      {
+         return _canvasContainer;
+      }
+      
+      public function get viewRect() : Rectangle
+      {
+         return _viewRect;
+      }
+      
+      public function resizeCanvas() : void
+      {
+         if(_inited && _canvas.width !== GLOBAL._SCREEN.width || _canvas.height !== GLOBAL._SCREEN.height)
+         {
+            _canvas = new BitmapData(GLOBAL._SCREEN.width,GLOBAL._SCREEN.height,true,4278255360);
+            _canvasContainer.bitmapData = _canvas;
+            _canvasContainer.x = GLOBAL._SCREEN.x;
+            _canvasContainer.y = GLOBAL._SCREEN.y;
+            this._renderer.canvas = _canvas;
+         }
+      }
+      
+      private function render(param1:Event) : void
+      {
+         this._renderer.render(RasterData.visibleData);
       }
    }
 }

@@ -12,11 +12,11 @@ package
    
    public class QUESTSPOPUP extends QUESTSPOPUP_CLIP
    {
-      public var _groupsMC:*;
+      public var _groupsMC:MovieClip;
       
-      public var _questsMC:*;
+      public var _questsMC:MovieClip;
       
-      public var _infoMC:*;
+      public var _infoMC:QUESTINFO;
       
       public var _monsterRewardMC:MapRoomPopupInfoMonster;
       
@@ -48,25 +48,25 @@ package
          }
       }
       
-      public function ListGroups() : *
+      public function ListGroups() : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
+         var _loc2_:Object = null;
+         var _loc3_:QUESTGROUP = null;
          var _loc4_:int = 0;
          var _loc5_:Object = null;
          if(this._groupsMC)
          {
             this.removeChild(this._groupsMC);
-            this._groupsMC = false;
+            this._groupsMC = null;
          }
-         this._groupsMC = this.addChild(new MovieClip());
+         this._groupsMC = this.addChild(new MovieClip()) as MovieClip;
          this._groupsMC.x = -337;
          this._groupsMC.y = -195;
          var _loc1_:int = 0;
          while(_loc1_ < QUESTS._questGroups.length)
          {
             _loc2_ = QUESTS._questGroups[_loc1_];
-            _loc3_ = this._groupsMC.addChild(new QUESTGROUP());
+            _loc3_ = this._groupsMC.addChild(new QUESTGROUP()) as QUESTGROUP;
             _loc3_.tLabel.htmlText = KEYS.Get(_loc2_.name);
             _loc3_.name = _loc1_.toString();
             _loc3_.x = 10;
@@ -93,7 +93,7 @@ package
          }
       }
       
-      public function ListQuests(param1:MouseEvent = null) : *
+      public function ListQuests(param1:MouseEvent = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:Object = null;
@@ -122,7 +122,7 @@ package
          }
       }
       
-      public function ListQuestsB(param1:int) : *
+      public function ListQuestsB(param1:int) : void
       {
          var c:int;
          var i:int = 0;
@@ -131,7 +131,7 @@ package
          var groupID:int = param1;
          var AddItem:Function = function(param1:Object, param2:int):int
          {
-            var _loc3_:* = undefined;
+            var _loc3_:QUESTITEM = null;
             if(!param1.block)
             {
                if(param1.id == "BOOKMARK" && !GLOBAL._flags.fanfriendbookmarkquests)
@@ -146,7 +146,7 @@ package
                {
                   return 0;
                }
-               _loc3_ = _questsMC.addChild(new QUESTITEM());
+               _loc3_ = _questsMC.addChild(new QUESTITEM()) as QUESTITEM;
                _loc3_.tLabel.htmlText = KEYS.Get(param1.name,param1.keyvars);
                _loc3_.y = 10 + 30 * param2;
                _loc3_.x = 10;
@@ -175,14 +175,14 @@ package
          if(this._questsMC)
          {
             this.removeChild(this._questsMC);
-            this._questsMC = false;
+            this._questsMC = null;
          }
          if(this._infoMC)
          {
             this.removeChild(this._infoMC);
-            this._infoMC = false;
+            this._infoMC = null;
          }
-         this._questsMC = this.addChild(new MovieClip());
+         this._questsMC = this.addChild(new MovieClip()) as MovieClip;
          this._questsMC.x = -188;
          this._questsMC.y = -195;
          c = 0;
@@ -218,16 +218,16 @@ package
          }
       }
       
-      public function ShowQuest(param1:String) : *
+      public function ShowQuest(param1:String) : Function
       {
          var questID:String = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             ShowQuestB(questID);
          };
       }
       
-      public function ShowQuestB(param1:String) : *
+      public function ShowQuestB(param1:String) : void
       {
          var i:int;
          var ImageLoaded:Function;
@@ -243,10 +243,10 @@ package
          if(this._infoMC)
          {
             this.removeChild(this._infoMC);
-            this._infoMC = false;
+            this._infoMC = null;
          }
          this.ListQuestsB(this._groupID);
-         this._infoMC = this.addChild(new QUESTINFO());
+         this._infoMC = this.addChild(new QUESTINFO()) as QUESTINFO;
          this._infoMC.x = 8;
          this._infoMC.y = -195;
          this._infoMC.tReward.htmlText = "<b>" + KEYS.Get("popup_label_reward") + "</b>";
@@ -285,11 +285,9 @@ package
                {
                   ImageLoaded = function(param1:String, param2:BitmapData):void
                   {
-                     var key:String = param1;
-                     var bmd:BitmapData = param2;
                      try
                      {
-                        _infoMC.mcImage.addChild(new Bitmap(bmd));
+                        _infoMC.mcImage.addChild(new Bitmap(param2));
                      }
                      catch(e:Error)
                      {
@@ -372,10 +370,10 @@ package
          }
       }
       
-      public function Collect(param1:String) : *
+      public function Collect(param1:String) : Function
       {
          var questID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc3_:* = undefined;
             _infoMC.bCollect.enabled = false;
@@ -399,7 +397,7 @@ package
          };
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          QUESTS.Hide();
       }

@@ -27,28 +27,28 @@ package
          super.Tick(param1);
       }
       
-      public function Fund() : *
+      public function Fund() : void
       {
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          super.Place(param1);
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bStore = null;
          super.Cancel();
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bStore = null;
-         super.RecycleC();
+         return super.RecycleC();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _buildingTitle = KEYS.Get("#b_generalstore#");
@@ -56,23 +56,23 @@ package
          _specialDescription = KEYS.Get("building_generalstore_desc2",{"v1":GLOBAL._resourceNames[4]});
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          GLOBAL._bStore = this;
          super.Constructed();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() <= 0)

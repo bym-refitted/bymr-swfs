@@ -93,7 +93,7 @@ package com.monsters.display
          }
       }
       
-      public static function GroupImageLoaded(param1:String, param2:String = null, param3:BitmapData = null) : *
+      public static function GroupImageLoaded(param1:String, param2:String = null, param3:BitmapData = null) : void
       {
          var _loc4_:Object = null;
          var _loc5_:String = null;
@@ -207,15 +207,15 @@ package com.monsters.display
          l.loadState = LOADING;
          req_str = l.shouldPrepend ? prependImagePath + l.key : l.key;
          l.loader.load(new URLRequest(req_str));
-         l.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(param1:Event):*
+         l.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(param1:Event):void
          {
             onAssetComplete(l);
          });
-         l.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,function(param1:IOErrorEvent):*
+         l.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,function(param1:IOErrorEvent):void
          {
             onError(l);
          });
-         l.loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR,function(param1:IOErrorEvent):*
+         l.loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR,function(param1:IOErrorEvent):void
          {
             onError(l);
          });

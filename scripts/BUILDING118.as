@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -12,7 +13,7 @@ package
    
    public class BUILDING118 extends BTOWER
    {
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _animBitmap:BitmapData;
       
@@ -40,9 +41,9 @@ package
          this.Props();
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:MonsterBase = null;
          var _loc2_:Point = null;
          var _loc3_:Point = null;
          var _loc4_:int = 0;
@@ -73,40 +74,45 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
-         var length:int = 0;
-         var i:int = 0;
-         var da:Number = NaN;
-         var e:Event = param1;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:Number = NaN;
          super.TickFast();
          if(this._gunballs.length > 0)
          {
             ++this._fireCount;
             if(this._fireCount > 10)
             {
-               try
+               _loc2_ = int(this._gunballs.length);
+               _loc3_ = 0;
+               while(_loc3_ < _loc2_)
                {
-                  length = int(this._gunballs.length);
-                  i = 0;
-                  while(i < length)
+                  if(this._fireCount > 15)
                   {
-                     if(this._fireCount > 15)
+                     if(Boolean(this._gunballs[0]) && Boolean(this._gunballs[0].parent))
                      {
-                        MAP._PROJECTILES.removeChild(this._gunballs[i]);
-                        MAP._PROJECTILES.removeChild(this._trail[i]);
+                        MAP._PROJECTILES.removeChild(this._gunballs[0]);
                      }
-                     else
+                     if(Boolean(this._trail[0]) && Boolean(this._trail[0].parent))
                      {
-                        da = 1 - (this._fireCount - 10) * 0.2;
-                        this._gunballs[i].alpha = da;
-                        this._trail[i].alpha = da;
+                        MAP._PROJECTILES.removeChild(this._trail[0]);
                      }
-                     i++;
                   }
-               }
-               catch(e:Error)
-               {
+                  else
+                  {
+                     _loc4_ = 1 - (this._fireCount - 10) * 0.2;
+                     if(Boolean(this._gunballs[0]) && Boolean(this._gunballs[0].parent))
+                     {
+                        this._gunballs[_loc3_].alpha = _loc4_;
+                     }
+                     if(Boolean(this._trail[0]) && Boolean(this._trail[0].parent))
+                     {
+                        this._trail[_loc3_].alpha = _loc4_;
+                     }
+                  }
+                  _loc3_++;
                }
             }
          }
@@ -117,7 +123,7 @@ package
          }
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          if(_animLoaded && GLOBAL._render)
          {
@@ -126,33 +132,30 @@ package
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
-         var damagepenalty:Number;
-         var damagebuff:Number;
-         var origin:Point = null;
-         var yd:Number = NaN;
-         var xd:Number = NaN;
-         var i:int = 0;
-         var creeps:Array = null;
-         var length:int = 0;
-         var totalDamage:int = 0;
-         var finishPoint:Point = null;
-         var j:int = 0;
-         var c:* = undefined;
-         var target:* = param1;
-         super.Fire(target);
+         var _loc4_:Point = null;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc7_:int = 0;
+         var _loc8_:Array = null;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:Point = null;
+         var _loc12_:int = 0;
+         var _loc13_:* = undefined;
+         super.Fire(param1);
          SOUNDS.Play("railgun1",!isJard ? 0.8 : 0.4);
-         damagepenalty = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
-         damagebuff = 1;
+         var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
-            damagebuff = 1.25;
+            _loc3_ = 1.25;
          }
          if(isJard)
          {
-            _jarHealth.Add(-int(_damage * 3 * damagepenalty * damagebuff));
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * damagepenalty * damagebuff);
+            _jarHealth.Add(-int(_damage * 3 * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * _loc2_ * _loc3_);
             if(_jarHealth.Get() <= 0)
             {
                KillJar();
@@ -160,71 +163,71 @@ package
          }
          else
          {
-            origin = new Point(_mc.x,_mc.y + _top);
-            this._spot = new Point(origin.x,origin.y);
+            _loc4_ = new Point(_mc.x,_mc.y + _top);
+            this._spot = new Point(_loc4_.x,_loc4_.y);
             if(_targetVacuum)
             {
-               xd = GLOBAL._bTownhall._mc.x - origin.x;
-               yd = GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height - origin.y;
-               (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 3 * damagepenalty * damagebuff));
+               _loc6_ = GLOBAL._bTownhall._mc.x - _loc4_.x;
+               _loc5_ = GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height - _loc4_.y;
+               (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 3 * _loc2_ * _loc3_));
             }
             else
             {
-               yd = target._tmpPoint.y - origin.y;
-               xd = target._tmpPoint.x - origin.x;
+               _loc5_ = param1._tmpPoint.y - _loc4_.y;
+               _loc6_ = param1._tmpPoint.x - _loc4_.x;
             }
-            this._segment = new Point(Math.cos(Math.atan2(yd,xd)) * 32,Math.sin(Math.atan2(yd,xd)) * 32);
+            this._segment = new Point(Math.cos(Math.atan2(_loc5_,_loc6_)) * 32,Math.sin(Math.atan2(_loc5_,_loc6_)) * 32);
             while(this._gunballs.length > 0)
             {
-               try
+               if(Boolean(this._gunballs[0]) && Boolean(this._gunballs[0].parent))
                {
                   MAP._PROJECTILES.removeChild(this._gunballs[0]);
-                  MAP._PROJECTILES.removeChild(this._trail[0]);
                }
-               catch(e:Error)
+               if(Boolean(this._trail[0]) && Boolean(this._trail[0].parent))
                {
+                  MAP._PROJECTILES.removeChild(this._trail[0]);
                }
                this._gunballs.shift();
                this._trail.shift();
             }
             this._spawnCount = 0;
             this._fireCount = 0;
-            i = 0;
-            while(i < 50)
+            _loc7_ = 0;
+            while(_loc7_ < 50)
             {
-               this._gunballs[i] = new RAILGUNPROJECTILE_CLIP();
-               this._gunballs[i].x = this._spot.x + this._segment.x;
-               this._gunballs[i].y = this._spot.y + this._segment.y;
-               this._trail[i] = new Shape();
-               this._trail[i].graphics.lineStyle(1,0xffffff,1);
-               this._trail[i].graphics.moveTo(this._spot.x,this._spot.y);
-               this._trail[i].graphics.lineTo(this._spot.x + this._segment.x,this._spot.y + this._segment.y);
-               this._trail[i].filters = [new GlowFilter(0x88bb,1,5 + Math.random() * 2,5 + Math.random() * 2,4,1,false,false)];
+               this._gunballs[_loc7_] = new RAILGUNPROJECTILE_CLIP();
+               this._gunballs[_loc7_].x = this._spot.x + this._segment.x;
+               this._gunballs[_loc7_].y = this._spot.y + this._segment.y;
+               this._trail[_loc7_] = new Shape();
+               this._trail[_loc7_].graphics.lineStyle(1,0xffffff,1);
+               this._trail[_loc7_].graphics.moveTo(this._spot.x,this._spot.y);
+               this._trail[_loc7_].graphics.lineTo(this._spot.x + this._segment.x,this._spot.y + this._segment.y);
+               this._trail[_loc7_].filters = [new GlowFilter(0x88bb,1,5 + Math.random() * 2,5 + Math.random() * 2,4,1,false,false)];
                this._spot = this._spot.add(this._segment);
-               MAP._PROJECTILES.addChild(this._trail[i]);
-               MAP._PROJECTILES.addChild(this._gunballs[i]);
+               MAP._PROJECTILES.addChild(this._trail[_loc7_]);
+               MAP._PROJECTILES.addChild(this._gunballs[_loc7_]);
                ++this._spawnCount;
-               i++;
+               _loc7_++;
             }
             if(!_targetVacuum)
             {
-               creeps = MAP.CreepCellFind(origin,1600,-1);
-               length = int(creeps.length);
-               totalDamage = 0;
-               finishPoint = origin.add(new Point(this._segment.x * 50,this._segment.y * 50));
-               j = 0;
-               while(j < length)
+               _loc8_ = MAP.CreepCellFind(_loc4_,1600,-1);
+               _loc9_ = int(_loc8_.length);
+               _loc10_ = 0;
+               _loc11_ = _loc4_.add(new Point(this._segment.x * 50,this._segment.y * 50));
+               _loc12_ = 0;
+               while(_loc12_ < _loc9_)
                {
-                  c = creeps[j].creep;
-                  if(this.lineIntersectCircle(origin,finishPoint,c._tmpPoint))
+                  _loc13_ = _loc8_[_loc12_].creep;
+                  if(this.lineIntersectCircle(_loc4_,_loc11_,_loc13_._tmpPoint))
                   {
-                     totalDamage += _damage * damagebuff * damagepenalty * c._damageMult;
-                     c._health.Add(-(_damage * damagebuff * damagepenalty * c._damageMult));
+                     _loc10_ += _damage * _loc3_ * _loc2_ * _loc13_._damageMult;
+                     _loc13_._health.Add(-(_damage * _loc3_ * _loc2_ * _loc13_._damageMult));
                   }
-                  j++;
+                  _loc12_++;
                }
             }
-            ATTACK.Damage(_mc.x,_mc.y + _top,totalDamage);
+            ATTACK.Damage(_mc.x,_mc.y + _top,_loc10_);
          }
       }
       
@@ -251,29 +254,28 @@ package
          return true;
       }
       
-      override public function Props() : *
+      override public function Props() : void
       {
          super.Props();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
-         var loot:Boolean = param1;
-         super.Destroyed(loot);
+         super.Destroyed(param1);
          while(this._gunballs.length > 0)
          {
-            try
+            if(Boolean(this._gunballs[0]) && Boolean(this._gunballs[0].parent))
             {
                MAP._PROJECTILES.removeChild(this._gunballs[0]);
-               MAP._PROJECTILES.removeChild(this._trail[0]);
             }
-            catch(e:Error)
+            if(Boolean(this._trail[0]) && Boolean(this._trail[0].parent))
             {
+               MAP._PROJECTILES.removeChild(this._trail[0]);
             }
             this._gunballs.shift();
             this._trail.shift();
@@ -282,14 +284,14 @@ package
          this._fireCount = 0;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_railgunbuilt_streamtitle"),KEYS.Get("pop_railgunbuilt_streambody"),"build_railgun.png"]);
                POPUPS.Next();

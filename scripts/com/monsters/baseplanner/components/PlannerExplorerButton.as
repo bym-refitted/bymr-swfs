@@ -65,7 +65,7 @@ package com.monsters.baseplanner.components
          mc.mcLevel.tLabel.htmlText = this._nodeList.length - 1;
          if(this._nodeList.length - 1 > 0 && param1)
          {
-            dispatchEvent(new BasePlannerNodeEvent(PlannerExplorer.EXPLORER_ITEM_CLICK,this._nodeList[this._nodeList.length - 2]));
+            PLANNER.basePlanner.popup.designView.addInventoryItem(this._nodeList[this._nodeList.length - 2]);
          }
          else
          {

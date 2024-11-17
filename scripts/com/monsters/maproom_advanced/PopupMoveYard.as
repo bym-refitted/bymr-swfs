@@ -5,7 +5,7 @@ package com.monsters.maproom_advanced
    
    public class PopupMoveYard extends PopupMoveYard_CLIP
    {
-      internal var _cell:MapRoomCell;
+      private var _cell:MapRoomCell;
       
       public function PopupMoveYard()
       {
@@ -18,21 +18,21 @@ package com.monsters.maproom_advanced
          this.bMoveRes.buttonMode = true;
       }
       
-      public function Setup(param1:MapRoomCell) : *
+      public function Setup(param1:MapRoomCell) : void
       {
          this._cell = param1;
          tTitle.htmlText = "<b>" + KEYS.Get("popup_title_moveyard") + "</b>";
          tDesc.htmlText = KEYS.Get("popup_desc_moveyard");
       }
       
-      public function MoveYardResources(param1:MouseEvent) : *
+      public function MoveYardResources(param1:MouseEvent) : void
       {
          var loadVars:Object;
          var url:String;
          var handleMoveYardSuccessful:Function = null;
          var handleMoveYardError:Function = null;
          var e:MouseEvent = param1;
-         handleMoveYardSuccessful = function(param1:Object):*
+         handleMoveYardSuccessful = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.error != 0)
@@ -40,7 +40,7 @@ package com.monsters.maproom_advanced
                LOGGER.Log("err","PopupMoveYard.MoveYardResources",param1.error);
             }
          };
-         handleMoveYardError = function(param1:IOErrorEvent):*
+         handleMoveYardError = function(param1:IOErrorEvent):void
          {
             PLEASEWAIT.Hide();
             LOGGER.Log("err","PopupMoveYard.MoveYardResources HTTP");
@@ -51,14 +51,14 @@ package com.monsters.maproom_advanced
          this.Hide();
       }
       
-      public function MoveYardShiny(param1:MouseEvent) : *
+      public function MoveYardShiny(param1:MouseEvent) : void
       {
          var loadVars:Object;
          var url:String;
          var handleMoveYardSuccessful:Function = null;
          var handleMoveYardError:Function = null;
          var e:MouseEvent = param1;
-         handleMoveYardSuccessful = function(param1:Object):*
+         handleMoveYardSuccessful = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.error != 0)
@@ -66,7 +66,7 @@ package com.monsters.maproom_advanced
                LOGGER.Log("err","PopupInfoMine.MoveYard",param1.error);
             }
          };
-         handleMoveYardError = function(param1:IOErrorEvent):*
+         handleMoveYardError = function(param1:IOErrorEvent):void
          {
             PLEASEWAIT.Hide();
             LOGGER.Log("err","PopupMoveYard.MoveYardShiny HTTP");
@@ -74,7 +74,7 @@ package com.monsters.maproom_advanced
          this.Hide();
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          if(this.parent)
          {

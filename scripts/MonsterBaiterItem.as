@@ -43,7 +43,7 @@ package
          incr_btn.addEventListener(MouseEvent.MOUSE_DOWN,this.incrDownB);
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -184,7 +184,7 @@ package
          }
       }
       
-      private function Stop(param1:MouseEvent) : *
+      private function Stop(param1:MouseEvent) : void
       {
          removeEventListener(Event.ENTER_FRAME,this.lessTick);
          removeEventListener(Event.ENTER_FRAME,this.moreTick);

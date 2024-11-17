@@ -121,7 +121,7 @@ package
       {
          param1.bRemove.addEventListener(MouseEvent.CLICK,this.BunkerJuiceID);
          var _loc2_:* = param1.id.substring(0,2) == "IC";
-         if(GLOBAL._bJuicer && !_loc2_)
+         if(Boolean(GLOBAL._bJuicer) && !_loc2_)
          {
             param1.bRemove.SetupKey("bunker_btn_juice");
          }
@@ -151,7 +151,7 @@ package
          param1.bRemove.removeEventListener(MouseEvent.CLICK,this.SelectRemove);
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -159,17 +159,17 @@ package
          param3[0].mcLoading.visible = false;
       }
       
-      private function Switch(param1:String) : *
+      private function Switch(param1:String) : Function
       {
          var mode:String = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             SwitchB(mode);
             UpdateScrollers(true);
          };
       }
       
-      private function SwitchB(param1:String) : *
+      private function SwitchB(param1:String) : void
       {
          SOUNDS.Play("click1");
          this._mode = param1;
@@ -267,7 +267,7 @@ package
          }
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var monsterID:String = null;
          var c:String = null;
@@ -279,20 +279,20 @@ package
          var barMC:MovieClip = null;
          var p:int = 0;
          var housedMonsters:Array = null;
-         var transferBtnA:* = undefined;
+         var transferBtnA:MonsterBunkerPopup_TransferBtnA_CLIP = null;
          var name:String = null;
          var availableMonsters:Array = null;
-         var quantity:* = undefined;
-         var transferBtnB:* = undefined;
+         var quantity:int = 0;
+         var transferBtnB:MonsterBunkerPopup_TransferBtnB_CLIP = null;
          var count:int = 0;
          var usedA:int = 0;
          var usedB:int = 0;
-         var currX:* = 0;
-         var currY:* = 0;
-         var offsetX:* = 0;
-         var offsetY:* = 0;
-         var spacingX:* = 0;
-         var spacingY:* = 0;
+         var currX:Number = 0;
+         var currY:Number = 0;
+         var offsetX:Number = 0;
+         var offsetY:Number = 0;
+         var spacingX:Number = 0;
+         var spacingY:Number = 0;
          try
          {
             this.ClearTransferCanvas(transferCanvasA);
@@ -488,7 +488,7 @@ package
             n = 1;
             for(c in this._bunker._monsters)
             {
-               quantity = this._bunker._monsters[c];
+               quantity = int(this._bunker._monsters[c]);
                if(quantity > 0)
                {
                   creatureProps = CREATURELOCKER._creatures[c];
@@ -549,7 +549,7 @@ package
          return this.BUYABLE_MONSTERS[param1] * param2;
       }
       
-      private function SelectAdd(param1:MouseEvent = null) : *
+      private function SelectAdd(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("click1");
          var _loc2_:String = param1.target.parent.id;
@@ -567,7 +567,7 @@ package
          }
       }
       
-      private function SelectRemove(param1:MouseEvent = null) : *
+      private function SelectRemove(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("click1");
          var _loc2_:String = param1.target.parent.id;
@@ -582,7 +582,7 @@ package
          this.Update();
       }
       
-      private function Transfer(param1:MouseEvent) : *
+      private function Transfer(param1:MouseEvent) : void
       {
          var _loc2_:String = null;
          var _loc5_:int = 0;
@@ -654,7 +654,7 @@ package
          this.UpdateScrollers(true);
       }
       
-      private function Check(param1:int) : *
+      private function Check(param1:int) : Boolean
       {
          var _loc5_:String = null;
          var _loc2_:int = 0;
@@ -699,7 +699,7 @@ package
          return false;
       }
       
-      private function CheckID(param1:String) : *
+      private function CheckID(param1:String) : Boolean
       {
          var _loc6_:String = null;
          var _loc2_:* = param1.substring(0,2) == "IC";
@@ -759,7 +759,7 @@ package
          return false;
       }
       
-      private function BunkerStore(param1:String) : *
+      private function BunkerStore(param1:String) : void
       {
          var _loc3_:BFOUNDATION = null;
          var _loc4_:int = 0;
@@ -817,26 +817,26 @@ package
          }
       }
       
-      private function BunkerJuice(param1:MouseEvent = null) : *
+      private function BunkerJuice(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("click1");
          this.BunkerJuiceById(param1.target.parent._id);
       }
       
-      private function BunkerJuiceID(param1:MouseEvent = null) : *
+      private function BunkerJuiceID(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("click1");
          this.BunkerJuiceById(param1.target.parent.id);
       }
       
-      private function BunkerJuiceById(param1:String) : *
+      private function BunkerJuiceById(param1:String) : void
       {
          var _loc3_:Boolean = false;
          var _loc4_:* = undefined;
          var _loc2_:* = param1.substring(0,2) == "IC";
-         if(GLOBAL._bJuicer && !_loc2_)
+         if(Boolean(GLOBAL._bJuicer) && !_loc2_)
          {
-            if(GLOBAL._bJuicer && GLOBAL._bJuicer._countdownUpgrade.Get() == 0)
+            if(Boolean(GLOBAL._bJuicer) && GLOBAL._bJuicer._countdownUpgrade.Get() == 0)
             {
                if(GLOBAL._bJuicer._hp.Get() > GLOBAL._bJuicer._hpMax.Get() * 0.5)
                {
@@ -896,7 +896,7 @@ package
          var _loc10_:Object = null;
          var _loc11_:String = null;
          var _loc12_:Object = null;
-         var _loc1_:* = {};
+         var _loc1_:Object = {};
          var _loc2_:Array = [];
          var _loc3_:Array = [];
          var _loc4_:Array = [];
@@ -964,7 +964,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          MONSTERBUNKER.Hide(param1);
       }

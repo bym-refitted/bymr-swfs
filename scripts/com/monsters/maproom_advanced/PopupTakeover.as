@@ -10,7 +10,7 @@ package com.monsters.maproom_advanced
    
    public class PopupTakeover extends MapRoomPopup_takeover_CLIP
    {
-      public static const TAKEOVER_CAP:* = 65000000;
+      public static const TAKEOVER_CAP:int = 65000000;
       
       private var _resourceCost:SecNum;
       
@@ -39,7 +39,7 @@ package com.monsters.maproom_advanced
          var colorString:String = null;
          var cell:MapRoomCell = param1;
          super();
-         ImageLoaded = function(param1:String, param2:BitmapData):*
+         ImageLoaded = function(param1:String, param2:BitmapData):void
          {
             mcImage.addChild(new Bitmap(param2));
          };
@@ -129,25 +129,25 @@ package com.monsters.maproom_advanced
          this.tDescription.htmlText = "<b>" + KEYS.Get("takeover_expand") + (!!bonusStr ? " " + bonusStr : "") + "</b>";
          this.mcResources.mcTime.visible = false;
          this.mcResources.bAction.SetupKey("btn_useresources");
-         this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             TakeOverConfirm(false);
          });
          this.mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._shinyCost.Get()}));
          this.mcInstant.tDescription.htmlText = KEYS.Get("takeover_instant");
-         this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             TakeOverConfirm(true);
          });
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          GLOBAL.BlockerRemove();
          this.parent.removeChild(this);
       }
       
-      public function TakeOverConfirm(param1:Boolean) : *
+      public function TakeOverConfirm(param1:Boolean) : void
       {
          var mapIndex:int;
          var r1:int;
@@ -158,7 +158,7 @@ package com.monsters.maproom_advanced
          var takeoverSuccessful:Function = null;
          var takeoverError:Function = null;
          var useShiny:Boolean = param1;
-         takeoverSuccessful = function(param1:Object):*
+         takeoverSuccessful = function(param1:Object):void
          {
             var _loc2_:int = 0;
             var _loc3_:int = 0;
@@ -180,7 +180,7 @@ package com.monsters.maproom_advanced
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
                BASE._yardType = BASE.OUTPOST;
-               BASE.LoadBase(null,null,_cell._baseID,"build",false,BASE.OUTPOST);
+               BASE.LoadBase(null,0,_cell._baseID,"build",false,BASE.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
                if(param1.event_score)
                {
@@ -197,7 +197,7 @@ package com.monsters.maproom_advanced
             }
             Hide();
          };
-         takeoverError = function(param1:IOErrorEvent):*
+         takeoverError = function(param1:IOErrorEvent):void
          {
             Hide();
             GLOBAL.Message(KEYS.Get("err_takeoverproblem") + param1.text);

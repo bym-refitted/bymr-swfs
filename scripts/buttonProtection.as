@@ -13,7 +13,7 @@ package
          buttonMode = true;
       }
       
-      public function Show(param1:MouseEvent = null) : *
+      public function Show(param1:MouseEvent = null) : void
       {
          var _loc2_:popup_protected = new popup_protected();
          _loc2_.tA.htmlText = "<b>" + KEYS.Get("pop_protection_title") + "</b>";

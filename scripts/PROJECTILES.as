@@ -19,9 +19,10 @@ package
          Clear();
       }
       
-      public static function Spawn(param1:Point, param2:Point, param3:MovieClip, param4:Number, param5:int, param6:Boolean = false, param7:int = 0, param8:int = 0) : *
+      public static function Spawn(param1:Point, param2:Point, param3:MovieClip, param4:Number, param5:int, param6:Boolean = false, param7:int = 0, param8:int = 0) : void
       {
-         var _loc9_:* = PoolGet();
+         var _loc9_:PROJECTILE = null;
+         _loc9_ = PoolGet();
          if(!GLOBAL._catchup)
          {
             MAP._PROJECTILES.addChild(_loc9_);
@@ -65,23 +66,22 @@ package
          ++_projectileCount;
       }
       
-      public static function Remove(param1:int) : *
+      public static function Remove(param1:int) : void
       {
-         var id:int = param1;
-         var projectile:PROJECTILE = _projectiles[id];
+         var _loc2_:PROJECTILE = _projectiles[param1];
          try
          {
-            MAP._PROJECTILES.removeChild(projectile);
+            MAP._PROJECTILES.removeChild(_loc2_);
          }
          catch(e:Error)
          {
          }
-         PoolSet(projectile);
-         delete _projectiles[id];
+         PoolSet(_loc2_);
+         delete _projectiles[param1];
          --_projectileCount;
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc2_:PROJECTILE = null;
          for each(_loc2_ in _projectiles)
@@ -90,16 +90,16 @@ package
          }
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
-         var p:String = null;
-         var tmpProjectile:PROJECTILE = null;
-         for(p in _projectiles)
+         var _loc1_:String = null;
+         var _loc2_:PROJECTILE = null;
+         for(_loc1_ in _projectiles)
          {
-            tmpProjectile = _projectiles[p];
+            _loc2_ = _projectiles[_loc1_];
             try
             {
-               MAP._PROJECTILES.removeChild(tmpProjectile);
+               MAP._PROJECTILES.removeChild(_loc2_);
             }
             catch(e:Error)
             {
@@ -110,12 +110,12 @@ package
          _projectileCount = 0;
       }
       
-      public static function PoolSet(param1:PROJECTILE) : *
+      public static function PoolSet(param1:PROJECTILE) : void
       {
          _pool.push(param1);
       }
       
-      public static function PoolGet() : *
+      public static function PoolGet() : PROJECTILE
       {
          var _loc1_:PROJECTILE = null;
          if(_pool.length)

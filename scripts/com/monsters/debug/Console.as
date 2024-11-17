@@ -104,23 +104,33 @@ package com.monsters.debug
          _commands[param1.toLowerCase()] = param2;
       }
       
-      private static function getSource(param1:uint = 4) : String
+      public static function getSource(param1:uint = 4) : String
       {
+         var lineNumber:String;
+         var stackTrace:String = null;
+         var depth:uint = param1;
          if(ExternalInterface.available)
          {
             return "";
          }
-         var _loc2_:String = new Error().getStackTrace();
-         _loc2_ = _loc2_.split("at ")[param1];
-         var _loc3_:String = _loc2_.substring(_loc2_.lastIndexOf(":"),_loc2_.indexOf("]"));
-         _loc2_ = _loc2_.substring(0,_loc2_.indexOf("()") + 2);
-         _loc2_ = _loc2_.replace("Function","");
-         _loc2_ = _loc2_.replace("$","");
-         while(_loc2_.search("/") != -1)
+         try
          {
-            _loc2_ = _loc2_.replace("/",".");
+            throw new Error();
          }
-         return _loc2_ + _loc3_;
+         catch(e:Error)
+         {
+            stackTrace = e.getStackTrace();
+         }
+         stackTrace = stackTrace.split("at ")[depth];
+         lineNumber = stackTrace.substring(stackTrace.lastIndexOf(":"),stackTrace.indexOf("]"));
+         stackTrace = stackTrace.substring(0,stackTrace.indexOf("()") + 2);
+         stackTrace = stackTrace.replace("Function","");
+         stackTrace = stackTrace.replace("$","");
+         while(stackTrace.search("/") != -1)
+         {
+            stackTrace = stackTrace.replace("/",".");
+         }
+         return stackTrace + lineNumber;
       }
       
       public static function isKey(param1:uint) : Boolean

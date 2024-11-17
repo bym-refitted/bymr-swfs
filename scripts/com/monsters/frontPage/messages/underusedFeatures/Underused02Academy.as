@@ -32,7 +32,7 @@ package com.monsters.frontPage.messages.underusedFeatures
          var _loc5_:Object = null;
          var _loc6_:int = 0;
          var _loc1_:Object = CREATURELOCKER.GetAppropriateCreatures();
-         var _loc2_:* = GLOBAL._bAcademy._lvl.Get();
+         var _loc2_:int = GLOBAL._bAcademy._lvl.Get();
          var _loc3_:* = _loc2_ >= GLOBAL._buildingProps[ACADEMY.ID - 1].costs.length;
          for(_loc4_ in _loc1_)
          {

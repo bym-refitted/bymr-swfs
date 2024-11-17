@@ -9,13 +9,13 @@ package
    
    public class TUTORIALARROWMC extends TUTORIALARROWMC_CLIP
    {
-      internal var offsetX:*;
+      private var offsetX:Number;
       
-      internal var offsetY:*;
+      private var offsetY:Number;
       
-      internal var dragging:Boolean = false;
+      private var dragging:Boolean = false;
       
-      internal var wobbleCountdown:int = 0;
+      private var wobbleCountdown:int = 0;
       
       public var posX:Number;
       
@@ -50,7 +50,7 @@ package
          {
             var _loc4_:int = 0;
             var _loc5_:int = 0;
-            var _loc6_:* = undefined;
+            var _loc6_:Object = null;
             var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
             var _loc3_:Point = new Point();
             if(ResizeParams)
@@ -93,7 +93,7 @@ package
          };
       }
       
-      public function DragStart(param1:MouseEvent) : *
+      public function DragStart(param1:MouseEvent) : void
       {
          this.dragging = true;
          this.offsetX = GLOBAL._ROOT.mouseX - this.x;
@@ -101,7 +101,7 @@ package
          this.addEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      public function DragStop(param1:MouseEvent) : *
+      public function DragStop(param1:MouseEvent) : void
       {
          this.removeEventListener(Event.ENTER_FRAME,this.Move);
          if(this.dragging)
@@ -110,14 +110,14 @@ package
          this.dragging = false;
       }
       
-      public function Move(param1:Event = null) : *
+      public function Move(param1:Event = null) : void
       {
          this.x = GLOBAL._ROOT.mouseX - this.offsetX;
          this.y = GLOBAL._ROOT.mouseY - this.offsetY;
          this.Rotate();
       }
       
-      public function Rotate() : *
+      public function Rotate() : void
       {
          if(this.ResizeParams && this.ResizeParams[3] && this.ResizeParams[3] is int)
          {
@@ -152,7 +152,7 @@ package
          }
       }
       
-      public function Wobble(param1:Event) : *
+      public function Wobble(param1:Event) : void
       {
          if(this.wobbleCountdown == 0)
          {
@@ -167,7 +167,7 @@ package
          --this.wobbleCountdown;
       }
       
-      public function WobbleB() : *
+      public function WobbleB() : void
       {
          TweenLite.to(mcArrow.mcArrow,0.6,{
             "y":-60,

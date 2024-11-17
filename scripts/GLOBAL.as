@@ -5,14 +5,15 @@ package
    import com.gskinner.utils.Rndm;
    import com.monsters.ai.WMBASE;
    import com.monsters.chat.Chat;
-   import com.monsters.components.ITickable;
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.debug.Console;
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
-   import com.monsters.interfaces.IHandler;
    import com.monsters.maproom_advanced.CellData;
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.pathing.PATHING;
+   import com.monsters.player.Player;
    import com.monsters.siege.SiegeFactory;
    import com.monsters.siege.SiegeLab;
    import com.monsters.siege.SiegeWeapons;
@@ -30,6 +31,8 @@ package
    public class GLOBAL
    {
       public static var _softversion:int;
+      
+      public static var _aiDesignMode:Boolean;
       
       public static var _mapVersion:int;
       
@@ -53,29 +56,17 @@ package
       
       public static var _ROOT:MovieClip;
       
-      public static var _BASESELECT:MovieClip;
+      public static var _layerMap:Sprite;
       
-      public static var _MAP:MovieClip;
+      public static var _layerUI:Sprite;
       
-      public static var _UI:MovieClip;
+      public static var _layerWindows:Sprite;
       
-      public static var _hashes:Object;
+      public static var _layerMessages:Sprite;
       
-      public static var _layerMap:*;
+      public static var _layerProjectiles:Sprite;
       
-      public static var _layerUI:*;
-      
-      public static var _layerWindows:*;
-      
-      public static var _layerMessages:*;
-      
-      public static var _layerProjectiles:*;
-      
-      public static var _layerTop:*;
-      
-      public static var _layerTicker:Sprite;
-      
-      public static var _layerArr:Array;
+      public static var _layerTop:Sprite;
       
       public static var _SCREEN:Rectangle;
       
@@ -86,8 +77,6 @@ package
       public static var _SCREENHUDLEFT:Point;
       
       public static var t:int;
-      
-      public static var eventURL:String;
       
       public static var _baseURL:String;
       
@@ -119,25 +108,11 @@ package
       
       public static var _fbdata:Object;
       
-      public static var _selectedBuilding:*;
+      public static var _selectedBuilding:BFOUNDATION;
       
-      public static var _newBuilding:*;
+      public static var _newBuilding:BFOUNDATION;
       
-      public static var _DROPZONE:*;
-      
-      public static var _render:*;
-      
-      public static var _matter:*;
-      
-      public static var _matterMax:*;
-      
-      public static var _myCreatures:*;
-      
-      public static var _myBaseID:*;
-      
-      public static var _creatureParts:Array;
-      
-      public static var _running:*;
+      public static var _render:Boolean;
       
       public static var _mode:String;
       
@@ -147,37 +122,13 @@ package
       
       public static var _mapHeight:int;
       
-      public static var _pleaseWait:*;
-      
       public static var _resourceNames:Array;
-      
-      public static var _bProspectorCount:int;
-      
-      public static var _bMinerCount:int;
-      
-      public static var _bStoreCount:int;
-      
-      public static var _bResearchCount:int;
-      
-      public static var _bCreatureCount:int;
-      
-      public static var _bMapCount:int;
-      
-      public static var _bPowerCount:int;
-      
-      public static var _bProspector:*;
-      
-      public static var _bMassivePumpkin:BFOUNDATION;
       
       public static var _bTownhall:BFOUNDATION;
       
       public static var _bRadio:BFOUNDATION;
       
       public static var _bStore:BFOUNDATION;
-      
-      public static var _bResearch:BFOUNDATION;
-      
-      public static var _bDesign:BFOUNDATION;
       
       public static var _bMap:BFOUNDATION;
       
@@ -187,19 +138,19 @@ package
       
       public static var _bHousing:BFOUNDATION;
       
-      public static var _bHatchery:*;
+      public static var _bHatchery:BFOUNDATION;
       
       public static var _bFlinger:BUILDING5;
       
-      public static var _bCatapult:*;
+      public static var _bCatapult:BFOUNDATION;
       
-      public static var _bHatcheryCC:*;
+      public static var _bHatcheryCC:BUILDING16;
       
-      public static var _bJuicer:*;
+      public static var _bJuicer:BUILDING9;
       
-      public static var _bBaiter:*;
+      public static var _bBaiter:BFOUNDATION;
       
-      public static var _bYardPlanner:*;
+      public static var _bYardPlanner:BFOUNDATION;
       
       public static var _bSiegeLab:SiegeLab;
       
@@ -211,21 +162,15 @@ package
       
       public static var _bCage:CHAMPIONCAGE;
       
-      public static var _bTower:*;
+      public static var _bTower:BFOUNDATION;
       
       public static var _bTowerCount:int;
-      
-      public static var _decoy:*;
-      
-      public static var _mineCount:int;
       
       public static var _catchup:Boolean;
       
       public static var _researchTime:Number;
       
       public static var _buildTime:Number;
-      
-      public static var _autoRebuild:Boolean;
       
       public static var _upgradePacking:Number;
       
@@ -241,15 +186,9 @@ package
       
       public static var _creepCount:int;
       
-      public static var _fullScreen:Boolean;
-      
       public static var _timekeeper:Timekeeper;
       
       public static var _buildingProps:Array;
-      
-      public static var _infernoYardProps:Array;
-      
-      public static var _infernoOutpostProps:Array;
       
       public static var _fps:int;
       
@@ -285,11 +224,7 @@ package
       
       public static var _unreadMessages:int;
       
-      public static var _globalticks:int;
-      
       public static var _outpostCapacity:SecNum;
-      
-      public static var _displayedWhatsNew:Boolean;
       
       public static var _displayedPromoNew:Boolean;
       
@@ -297,15 +232,17 @@ package
       
       public static var _credits:SecNum;
       
+      private static var _player:Player;
+      
+      private static var _attackingPlayer:Player;
+      
       public static var _local:Boolean = false;
       
       public static var _save:Boolean = true;
       
-      public static var _localMode:int = URLLoaderApi.k_sLOCAL_MODE_TRUNK;
+      public static var _localMode:int = BYMConfig.k_sLOCAL_MODE_TRUNK;
       
       public static var _version:SecNum = new SecNum(128);
-      
-      public static var _aiDesignMode:Boolean = false;
       
       public static const DOES_USE_SCROLL:Boolean = false;
       
@@ -327,19 +264,15 @@ package
       
       public static var _allianceConquestTime:SecNum = new SecNum(0);
       
-      public static var _allianceDeclareWarTime:SecNum = new SecNum(0);
-      
       public static var _openBase:Object = null;
       
-      public static const _degtorad:* = 0.0174532925;
+      public static const _degtorad:Number = 0.0174532925;
       
-      public static const _radtodeg:* = 57.2957795;
+      public static const _radtodeg:Number = 57.2957795;
       
       public static const MODE_ATTACK:String = "attack";
       
       public static var iresourceNames:Array = ["#r_bone#","#r_coal#","#r_sulfur#","#r_magma#","#r_shiny#","#r_time#"];
-      
-      public static var _muted:Boolean = false;
       
       public static var _newThings:Boolean = false;
       
@@ -391,8 +324,6 @@ package
       
       public static var _playerCatapultLevel:SecNum = new SecNum(0);
       
-      public static var _myMapRoom:int = 0;
-      
       public static var _empireDestroyed:int = 0;
       
       public static var _empireDestroyedShown:Boolean = false;
@@ -404,8 +335,6 @@ package
       public static var _attackerCellsInRange:Vector.<CellData> = new Vector.<CellData>(0,true);
       
       public static var _attackerMapCreaturesStart:Object = {};
-      
-      public static var _attackerMapResourcesStart:Object = {};
       
       public static var _showMapWaiting:int = 0;
       
@@ -433,10 +362,6 @@ package
       
       public static var _promptedAFK:Boolean = false;
       
-      public static var _pointedInvite:Boolean = false;
-      
-      public static var _pointedGift:Boolean = false;
-      
       public static var _canInvite:Boolean = false;
       
       public static var _canGift:Boolean = false;
@@ -457,9 +382,7 @@ package
       
       public static var _averageAltitude:SecNum = new SecNum(125);
       
-      public static var _fbPromoTimer:Number = 604800;
-      
-      public static var _inInferno:int = 0;
+      public static const _fbPromoTimer:Number = 604800;
       
       public static const ERROR_OOPS_ONLY:int = 0;
       
@@ -488,7 +411,27 @@ package
          super();
       }
       
-      public static function SetBuildingProps() : *
+      public static function get player() : Player
+      {
+         return _player;
+      }
+      
+      public static function set player(param1:Player) : void
+      {
+         _player = param1;
+      }
+      
+      public static function get attackingPlayer() : Player
+      {
+         return _player;
+      }
+      
+      public static function set attackingPlayer(param1:Player) : void
+      {
+         _player = param1;
+      }
+      
+      public static function SetBuildingProps() : void
       {
          switch(BASE._yardType)
          {
@@ -508,9 +451,14 @@ package
          }
       }
       
-      public static function Setup(param1:String = "build") : *
+      public static function Setup(param1:String = "build") : void
       {
          var _loc3_:String = null;
+         if(param1 != "build")
+         {
+            attackingPlayer = player;
+         }
+         player = new Player();
          _loadmode = param1;
          var _loc2_:String = param1;
          if(_loc2_ == "build" || _loc2_ == "view" || _loc2_ == "attack" || _loc2_ == "help" || _loc2_ == "wmview" || _loc2_ == "wmattack")
@@ -554,7 +502,6 @@ package
          _halt = false;
          _mapWidth = 800;
          _mapHeight = 800;
-         _globalticks = 0;
          _zoomed = false;
          _averageAltitude = new SecNum(125);
          _outpostCapacity = new SecNum(2000000);
@@ -617,14 +564,6 @@ package
                }
             }
          }
-         if(_mode == "help" || _mode == "ihelp")
-         {
-            _myMapRoom = 0;
-            if(_bMap)
-            {
-               _myMapRoom = _bMap._lvl.Get();
-            }
-         }
          switch(_loadmode)
          {
             case "iattack":
@@ -657,23 +596,6 @@ package
          {
             _resourceNames = iresourceNames;
          }
-         _creatureParts = [{
-            "part":"torso",
-            "costs":[0,7200,14400,21600],
-            "matter":[10,20,30,40]
-         },{
-            "part":"head",
-            "costs":[0,7200,14400,21600],
-            "matter":[10,20,30,40]
-         },{
-            "part":"arm",
-            "costs":[0,7200,14400,21600],
-            "matter":[10,20,30,40]
-         },{
-            "part":"leg",
-            "costs":[0,7200,14400,21600],
-            "matter":[10,20,30,40]
-         }];
          BASE.Setup();
       }
       
@@ -760,17 +682,17 @@ package
          _bCage = null;
       }
       
-      public static function WaitShow(param1:String = "") : *
+      public static function WaitShow(param1:String = "") : void
       {
          PLEASEWAIT.Show(KEYS.Get("wait_processing"));
       }
       
-      public static function WaitHide() : *
+      public static function WaitHide() : void
       {
          PLEASEWAIT.Hide();
       }
       
-      public static function goFullScreen(param1:MouseEvent = null) : *
+      public static function goFullScreen(param1:MouseEvent = null) : void
       {
          if(_ROOT.stage.displayState == StageDisplayState.NORMAL)
          {
@@ -783,6 +705,8 @@ package
             {
                UI2._top.mcZoom.gotoAndStop(3);
             }
+            MAP._GROUND.scaleY = 1;
+            MAP._GROUND.scaleX = 1;
          }
          else
          {
@@ -801,7 +725,7 @@ package
          magnification = 1;
       }
       
-      public static function Zoom(param1:MouseEvent = null) : *
+      public static function Zoom(param1:MouseEvent = null) : void
       {
          if(_ROOT.stage.displayState != StageDisplayState.FULL_SCREEN)
          {
@@ -818,7 +742,7 @@ package
                {
                   UI2._top.mcZoom.gotoAndStop(1);
                }
-               TweenLite.to(MAP._GROUND,0.4,{
+               TweenLite.to(MAP._GROUND,0.1,{
                   "scaleX":1,
                   "scaleY":1,
                   "ease":Cubic.easeInOut,
@@ -848,132 +772,68 @@ package
       
       public static function Tick() : void
       {
-         var buildingsAll:Object = null;
-         var b:BFOUNDATION = null;
-         var tmpStored:int = 0;
-         var tmpCountdown:int = 0;
-         var whichmap:int = 0;
-         var isOutpost:int = 0;
+         var _loc1_:Object = null;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          if(!_halt && !GLOBAL._catchup)
          {
             t += 1;
             if(MapRoom._open)
             {
-               try
-               {
-                  MapRoom.Tick();
-                  LOGGER.Tick();
-                  MAILBOX.Tick();
-                  AFK();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick A: " + e.message + " | " + e.getStackTrace());
-               }
+               MapRoom.Tick();
+               LOGGER.Tick();
+               MAILBOX.Tick();
+               AFK();
             }
             else
             {
                ++_timePlayed;
-               ++_globalticks;
-               try
+               _loc1_ = BASE._buildingsAll;
+               _loc3_ = 0;
+               _loc4_ = 0;
+               for each(_loc2_ in _loc1_)
                {
-                  buildingsAll = BASE._buildingsAll;
-                  tmpStored = 0;
-                  tmpCountdown = 0;
-                  for each(b in buildingsAll)
+                  if(_loc2_._class == "resource")
                   {
-                     if(b._class == "resource")
+                     _loc3_ = _loc2_._stored.Get();
+                     _loc4_ = _loc2_._countdownProduce.Get();
+                  }
+                  _loc2_.Tick(1);
+                  if(_loc2_._class == "resource")
+                  {
+                     if(_loc4_ > 1 && _loc3_ != _loc2_._stored.Get())
                      {
-                        tmpStored = b._stored.Get();
-                        tmpCountdown = b._countdownProduce.Get();
-                     }
-                     b.Tick(1);
-                     if(b._class == "resource")
-                     {
-                        if(tmpCountdown > 1 && tmpStored != b._stored.Get())
-                        {
-                           LOGGER.Log("log","BRESOURCE.StoredB " + tmpStored + " - " + b._stored.Get());
-                           GLOBAL.ErrorMessage("BRESOURCE.StoredB");
-                           return;
-                        }
+                        LOGGER.Log("log","BRESOURCE.StoredB " + _loc3_ + " - " + _loc2_._stored.Get());
+                        GLOBAL.ErrorMessage("BRESOURCE.StoredB");
+                        return;
                      }
                   }
                }
-               catch(e:Error)
+               UPDATES.Check();
+               CREATURELOCKER.Tick();
+               HATCHERY.Tick();
+               HATCHERYCC.Tick();
+               STORE.ProcessPurchases();
+               BASE.Tick();
+               HOUSING.Update();
+               ACADEMY.Tick();
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
                {
-                  LOGGER.Log("err","Global.Tick B: " + e.message + " | " + e.getStackTrace());
+                  ATTACK.Tick();
                }
-               try
+               QUEUE.Tick();
+               UI2.Update();
+               LOGGER.Tick();
+               MAILBOX.Tick();
+               AFK();
+               MONSTERBAITER.Tick();
+               MONSTERBUNKER.Tick();
+               if(_mode == "wmattack" || _mode == "wmview")
                {
-                  UPDATES.Check();
-                  CREATURELOCKER.Tick();
-                  HATCHERY.Tick();
-                  HATCHERYCC.Tick();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick C: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  STORE.ProcessPurchases();
-                  BASE.Tick();
-                  HOUSING.Update();
-                  ACADEMY.Tick();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick D: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
-                  {
-                     ATTACK.Tick();
-                  }
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick E: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  QUEUE.Tick();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick F: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  UI2.Update();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick G: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  LOGGER.Tick();
-                  MAILBOX.Tick();
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick H: " + e.message + " | " + e.getStackTrace());
-               }
-               try
-               {
-                  AFK();
-                  MONSTERBAITER.Tick();
-                  MONSTERBUNKER.Tick();
-                  if(_mode == "wmattack" || _mode == "wmview")
-                  {
-                     WMBASE.Tick();
-                  }
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","Global.Tick I: " + e.message + " | " + e.getStackTrace());
+                  WMBASE.Tick();
                }
             }
             if(_toggleYardWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
@@ -992,7 +852,7 @@ package
                }
                if(BASE.isInferno())
                {
-                  BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+                  BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
                }
                else
                {
@@ -1007,7 +867,7 @@ package
             }
             else if(_showMapWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading)
             {
-               whichmap = _showMapWaiting;
+               _loc5_ = _showMapWaiting;
                _showMapWaiting = 0;
                PLEASEWAIT.Hide();
                MapRoom.ShowDelayed();
@@ -1016,13 +876,13 @@ package
             {
                PLEASEWAIT.Hide();
                BASE._needCurrentCell = false;
-               isOutpost = GLOBAL._currentCell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-               BASE.LoadBase(null,null,GLOBAL._currentCell._baseID,"build",false,isOutpost);
+               _loc6_ = GLOBAL._currentCell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+               BASE.LoadBase(null,0,GLOBAL._currentCell._baseID,"build",false,_loc6_);
             }
          }
       }
       
-      public static function TickFast(param1:Event) : *
+      public static function TickFast(param1:Event) : void
       {
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
@@ -1031,9 +891,12 @@ package
          var _loc6_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:BFOUNDATION = null;
-         var _loc9_:IHandler = null;
          if(!_halt)
          {
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _ROOT.stage.invalidate();
+            }
             _loc2_ = getTimer();
             SOUNDS.Tick();
             if(_render)
@@ -1067,11 +930,11 @@ package
                _loc5_ = getTimer();
                if(!MapRoom._open)
                {
-                  _loc6_ = 0;
-                  while(_loc6_ < _loops)
+                  _loc7_ = 0;
+                  while(_loc7_ < _loops)
                   {
                      _render = false;
-                     if(_loc6_ == _loops - 1)
+                     if(_loc7_ == _loops - 1)
                      {
                         _render = true;
                      }
@@ -1084,27 +947,28 @@ package
                         }
                      }
                      CREATURES.Tick();
-                     _loc7_ = 0;
-                     while(_loc7_ < CREATURES._guardianList.length)
+                     _loc6_ = 0;
+                     while(_loc6_ < CREATURES._guardianList.length)
                      {
-                        if(Boolean(CREATURES._guardianList[_loc7_]) && CREATURES._guardianList[_loc7_].Tick(1))
+                        if(Boolean(CREATURES._guardianList[_loc6_]) && CREATURES._guardianList[_loc6_].Tick(1))
                         {
-                           MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc7_]);
-                           if(CREATURES._guardianList[_loc7_] == CREATURES._guardian)
+                           MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc6_]);
+                           CREATURES._guardianList[_loc6_].clearRasterData();
+                           if(CREATURES._guardianList[_loc6_] == CREATURES._guardian)
                            {
                               CREATURES._guardian = null;
                            }
                            else
                            {
-                              CREATURES._guardianList.splice(_loc7_,1);
+                              CREATURES._guardianList.splice(_loc6_,1);
                            }
-                           _loc7_--;
+                           _loc6_--;
                         }
-                        _loc7_++;
+                        _loc6_++;
                      }
                      PROJECTILES.Tick();
                      FIREBALLS.Tick();
-                     _loc6_++;
+                     _loc7_++;
                   }
                }
                ++_frameNumber;
@@ -1120,16 +984,7 @@ package
                   Smoke.Tick();
                   Fire.Tick();
                   BASE.ShakeB();
-                  _loc7_ = 0;
-                  while(_loc7_ < BASE.HANDLERS.length)
-                  {
-                     _loc9_ = BASE.HANDLERS[_loc7_];
-                     if(_loc9_ is ITickable)
-                     {
-                        ITickable(_loc9_).tick();
-                     }
-                     _loc7_++;
-                  }
+                  _player.tick();
                }
                if(_flags.logfps)
                {
@@ -1153,7 +1008,7 @@ package
                   _FPStimestamp = _loc2_;
                }
                _FPSframecount += 1;
-               if(_frameNumber % 3 == 0)
+               if(_frameNumber % 3 == 0 && !BYMConfig.instance.RENDERER_ON)
                {
                   MAP.SortDepth();
                }
@@ -1170,24 +1025,18 @@ package
          }
       }
       
-      public static function LogFPS() : *
+      public static function LogFPS() : void
       {
-         var min:int = 0;
-         var max:int = 0;
-         var average:int = 0;
-         try
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         if(_flags.logfps)
          {
-            if(_flags.logfps)
-            {
-               _FPSarray.sortOn("fps",Array.NUMERIC);
-               min = int(_FPSarray[0].fps);
-               max = int(_FPSarray[_FPSarray.length - 1].fps);
-               average = int(_FPSarray[_FPSarray.length * 0.5].fps);
-               LOGGER.Log("fr" + GLOBAL._mode.substr(0,1),GLOBAL.dd(min).toString() + "," + GLOBAL.dd(max).toString() + "," + GLOBAL.dd(average).toString());
-            }
-         }
-         catch(e:Error)
-         {
+            _FPSarray.sortOn("fps",Array.NUMERIC);
+            _loc1_ = int(_FPSarray[0].fps);
+            _loc2_ = int(_FPSarray[_FPSarray.length - 1].fps);
+            _loc3_ = int(_FPSarray[_FPSarray.length * 0.5].fps);
+            LOGGER.Log("fr" + GLOBAL._mode.substr(0,1),GLOBAL.dd(_loc1_) + "," + GLOBAL.dd(_loc2_) + "," + GLOBAL.dd(_loc3_));
          }
       }
       
@@ -1196,7 +1045,7 @@ package
          return t;
       }
       
-      public static function ShowMap(param1:MouseEvent = null) : *
+      public static function ShowMap(param1:MouseEvent = null) : void
       {
          if(!BASE._loading)
          {
@@ -1245,7 +1094,7 @@ package
          }
       }
       
-      public static function ToTime(param1:int, param2:Boolean = false, param3:Boolean = true, param4:Boolean = true, param5:Boolean = false) : *
+      public static function ToTime(param1:int, param2:Boolean = false, param3:Boolean = true, param4:Boolean = true, param5:Boolean = false) : String
       {
          var _loc6_:int = 0;
          var _loc7_:int = 0;
@@ -1362,38 +1211,38 @@ package
          return _loc4_;
       }
       
-      public static function dd(param1:*) : *
+      public static function dd(param1:int) : String
       {
          if(param1 < 10)
          {
             return "0" + param1;
          }
-         return param1;
+         return param1.toString();
       }
       
-      public static function ErrorMessage(param1:String = "", param2:int = 0) : *
+      public static function ErrorMessage(param1:String = "", param2:int = 0) : Function
       {
-         var em:*;
+         var em:ERRORMESSAGE;
          var err:String = param1;
          var errortype:int = param2;
-         print(err);
+         print(err + "@ " + Console.getSource(3));
          em = new ERRORMESSAGE();
          em.Show(err,errortype);
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
          };
       }
       
-      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : *
+      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : void
       {
-         var _loc9_:* = new MESSAGE();
+         var _loc9_:MESSAGE = new MESSAGE();
          _loc9_.Show(param1,param2,param3,param4,param5,param6,param7,param8);
       }
       
-      public static function Confirm(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:int = 1) : *
+      public static function Confirm(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:int = 1) : void
       {
-         var _loc6_:* = new MESSAGE();
-         _loc6_.Show(param1,param2,param3,param4,param5);
+         var _loc6_:MESSAGE = new MESSAGE();
+         _loc6_.Show(param1,param2,param3,param4,param5.toString());
       }
       
       public static function FormatNumber(param1:Number) : String
@@ -1412,7 +1261,7 @@ package
          return _loc3_.join(",");
       }
       
-      public static function DoubleDigit(param1:int) : *
+      public static function DoubleDigit(param1:int) : String
       {
          if(param1 < 10)
          {
@@ -1421,47 +1270,37 @@ package
          return param1.toString();
       }
       
-      public static function NextCreepID() : *
+      public static function NextCreepID() : int
       {
          ++_creepCount;
          return _creepCount;
       }
       
-      public static function DataCheck(param1:*) : *
+      public static function DataCheck(param1:String) : Boolean
       {
-         var h:String;
-         var hid:int;
-         var hash:String;
-         var o:Object = null;
-         var str:* = param1;
-         var s:String = str;
-         try
-         {
-            o = JSON.decode(s);
-         }
-         catch(e:Error)
-         {
-            o = {"error":"json error: " + e};
-         }
-         h = o.h;
-         hid = int(o.hid);
-         s = s.split(",\"h\":\"" + h + "\"").join("");
-         s = s.split(",\"hid\":" + hid).join("");
-         hash = md5("ilevbioghv890347ho3nrkljebv" + s + hid * (hid % 11));
-         if(hash == h)
+         var _loc3_:Object = null;
+         var _loc2_:String = param1;
+         _loc3_ = JSON.decode(_loc2_);
+         var _loc4_:String = _loc3_.h;
+         var _loc5_:int = int(_loc3_.hid);
+         _loc2_ = _loc2_.split(",\"h\":\"" + _loc4_ + "\"").join("");
+         _loc2_ = _loc2_.split(",\"hid\":" + _loc5_).join("");
+         var _loc6_:String = md5("ilevbioghv890347ho3nrkljebv" + _loc2_ + _loc5_ * (_loc5_ % 11));
+         if(_loc6_ == _loc4_)
          {
             return true;
          }
          GLOBAL.ErrorMessage("Hash in Fail");
+         return false;
       }
       
-      public static function Check() : *
+      public static function Check() : String
       {
          var tmpArray:Array = null;
-         var Push:Function = function(param1:int):*
+         var Push:Function = function(param1:int):void
          {
-            var _loc3_:Array = null;
-            var _loc4_:int = 0;
+            var _loc3_:int = 0;
+            var _loc4_:Array = null;
             var _loc5_:Array = null;
             var _loc2_:Object = _buildingProps[param1];
             if(_loc2_.group != 999)
@@ -1473,40 +1312,40 @@ package
                }
                if(_loc2_.costs)
                {
-                  _loc3_ = _loc2_.costs;
-                  _loc4_ = 0;
-                  while(_loc4_ < _loc3_.length)
+                  _loc4_ = _loc2_.costs;
+                  _loc3_ = 0;
+                  while(_loc3_ < _loc4_.length)
                   {
-                     tmpArray.push(_loc3_[_loc4_].r1);
-                     tmpArray.push(_loc3_[_loc4_].r2);
-                     tmpArray.push(_loc3_[_loc4_].r3);
-                     tmpArray.push(_loc3_[_loc4_].r4);
-                     tmpArray.push(_loc3_[_loc4_].r5);
-                     tmpArray.push(_loc3_[_loc4_].time);
-                     tmpArray.push(_loc3_[_loc4_].re);
-                     _loc4_++;
+                     tmpArray.push(_loc4_[_loc3_].r1);
+                     tmpArray.push(_loc4_[_loc3_].r2);
+                     tmpArray.push(_loc4_[_loc3_].r3);
+                     tmpArray.push(_loc4_[_loc3_].r4);
+                     tmpArray.push(_loc4_[_loc3_].r5);
+                     tmpArray.push(_loc4_[_loc3_].time);
+                     tmpArray.push(_loc4_[_loc3_].re);
+                     _loc3_++;
                   }
                }
                if(_loc2_.fortify_costs)
                {
                   _loc5_ = _loc2_.fortify_costs;
-                  _loc4_ = 0;
-                  while(_loc4_ < _loc5_.length)
+                  _loc3_ = 0;
+                  while(_loc3_ < _loc5_.length)
                   {
-                     tmpArray.push(_loc5_[_loc4_].r1);
-                     tmpArray.push(_loc5_[_loc4_].r2);
-                     tmpArray.push(_loc5_[_loc4_].r3);
-                     tmpArray.push(_loc5_[_loc4_].r4);
-                     tmpArray.push(_loc5_[_loc4_].r5);
-                     tmpArray.push(_loc5_[_loc4_].time);
-                     tmpArray.push(_loc5_[_loc4_].re);
-                     _loc4_++;
+                     tmpArray.push(_loc5_[_loc3_].r1);
+                     tmpArray.push(_loc5_[_loc3_].r2);
+                     tmpArray.push(_loc5_[_loc3_].r3);
+                     tmpArray.push(_loc5_[_loc3_].r4);
+                     tmpArray.push(_loc5_[_loc3_].r5);
+                     tmpArray.push(_loc5_[_loc3_].time);
+                     tmpArray.push(_loc5_[_loc3_].re);
+                     _loc3_++;
                   }
                }
             }
          };
          tmpArray = [];
-         var i:* = 0;
+         var i:int = 0;
          while(i < _buildingProps.length)
          {
             Push(i);
@@ -1515,16 +1354,18 @@ package
          return md5(JSON.encode(tmpArray));
       }
       
-      public static function CallJS(param1:String, param2:Array = null, param3:Boolean = true) : *
+      public static function Brag(param1:String, param2:String, param3:String, param4:String) : void
       {
-         var func:String = param1;
-         var args:Array = param2;
-         var exitFullScreen:Boolean = param3;
+         GLOBAL.CallJS("sendFeed",[param1,KEYS.Get(param2),KEYS.Get(param3),param4]);
+      }
+      
+      public static function CallJS(param1:String, param2:Array = null, param3:Boolean = true) : void
+      {
          if(debugLogJSCalls)
          {
-            print("CallJS> func: " + func + " \n     args: " + JSON.encode(args) + " \n     exitFS: " + exitFullScreen);
+            print("CallJS> func: " + param1 + " \n     args: " + JSON.encode(param2) + " \n     exitFS: " + param3);
          }
-         if(exitFullScreen)
+         if(param3)
          {
             ThrowStackTrace("CallJS dropping out of full screen");
          }
@@ -1532,24 +1373,51 @@ package
          {
             return;
          }
-         try
+         if(param3 && _ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
-            if(exitFullScreen && _ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+            GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
+         }
+         if(ExternalInterface.available)
+         {
+            if(param2 == null)
             {
-               GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
-            }
-            if(args == null)
-            {
-               ExternalInterface.call("callFunc",func);
+               ExternalInterface.call("callFunc",param1);
             }
             else
             {
-               ExternalInterface.call("callFunc",func,args);
+               ExternalInterface.call("callFunc",param1,param2);
             }
          }
-         catch(e:Error)
+      }
+      
+      public static function CallJSWithClient(param1:String, param2:String = "", param3:Array = null, param4:Boolean = true) : void
+      {
+         if(debugLogJSCalls)
          {
-            LOGGER.Log("err","CallJS C " + func + " - " + JSON.encode(args));
+            print("CallJS> func: " + param1 + " \n     args: " + JSON.encode(param3) + " \n     exitFS: " + param4);
+         }
+         if(param4)
+         {
+            ThrowStackTrace("CallJS dropping out of full screen");
+         }
+         if(GLOBAL._local)
+         {
+            return;
+         }
+         if(param4 && _ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+         {
+            GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
+         }
+         if(ExternalInterface.available)
+         {
+            if(param3 == null)
+            {
+               ExternalInterface.call("clientCallWithCallback",param1,param2);
+            }
+            else
+            {
+               ExternalInterface.call("clientCallWithCallback",param1,param2,param3);
+            }
          }
       }
       
@@ -1598,7 +1466,7 @@ package
          return _ROOT.stage.stageHeight;
       }
       
-      public static function AFK() : *
+      public static function AFK() : void
       {
          if(!_catchup)
          {
@@ -1710,7 +1578,7 @@ package
          }
       }
       
-      public static function BlockerAdd(param1:Sprite = null) : *
+      public static function BlockerAdd(param1:Sprite = null) : void
       {
          var _loc2_:DisplayObject = null;
          RefreshScreen();
@@ -1726,20 +1594,20 @@ package
          _blockerList.push(_loc2_);
       }
       
-      public static function BlockerRemove() : *
+      public static function BlockerRemove() : void
       {
-         var lastBlocker:DisplayObject = null;
-         try
+         var _loc1_:DisplayObject = null;
+         if(_blockerList)
          {
-            lastBlocker = _blockerList.pop();
-            lastBlocker.parent.removeChild(lastBlocker);
-         }
-         catch(e:Error)
-         {
+            _loc1_ = _blockerList.pop();
+            if(_loc1_)
+            {
+               _loc1_.parent.removeChild(_loc1_);
+            }
          }
       }
       
-      public static function SaveAttackersDeltaResources() : *
+      public static function SaveAttackersDeltaResources() : void
       {
          var _loc1_:int = 0;
          if(_attackersDeltaResources.dirty)
@@ -1764,7 +1632,7 @@ package
          _attackersDeltaResources = {"dirty":false};
       }
       
-      public static function CleanAttackersDeltaResources() : *
+      public static function CleanAttackersDeltaResources() : void
       {
          _savedAttackersDeltaResources = {
             "r1":new SecNum(0),
@@ -1820,8 +1688,8 @@ package
       
       public static function RefreshScreen() : void
       {
-         var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
-         var _loc2_:* = GLOBAL.GetGameHeight();
+         var _loc1_:int = GLOBAL._ROOT.stage.stageWidth;
+         var _loc2_:int = GLOBAL.GetGameHeight();
          var _loc4_:int = UI2._wildMonsterBar != null ? 40 : 0;
          if(!_SCREEN || !_SCREEN.x || !_SCREEN.y || !_SCREEN.width || !_SCREEN.height)
          {
@@ -1857,9 +1725,9 @@ package
       
       public static function ResizeLayer(param1:Sprite) : void
       {
-         var _loc3_:* = undefined;
+         var _loc3_:Object = null;
          var _loc4_:int = 0;
-         var _loc2_:* = param1.numChildren;
+         var _loc2_:int = param1.numChildren;
          while(_loc2_--)
          {
             _loc3_ = param1.getChildAt(_loc2_);
@@ -1906,7 +1774,7 @@ package
       {
          var _loc2_:int = param1.x;
          var _loc3_:int = param1.y;
-         var _loc4_:* = param1.parent;
+         var _loc4_:DisplayObjectContainer = param1.parent;
          while(_loc4_.parent)
          {
             _loc2_ += _loc4_.x;
@@ -1920,45 +1788,35 @@ package
          return new Point(_loc2_,_loc3_);
       }
       
-      public static function ThrowStackTrace(param1:String) : *
+      public static function ThrowStackTrace(param1:String) : void
       {
       }
       
       public static function gotoURL(param1:String, param2:URLVariables = null, param3:Boolean = true, param4:Array = null) : void
       {
-         var targetURL:String = null;
-         var url:String = param1;
-         var urlVars:URLVariables = param2;
-         var inNewWindow:Boolean = param3;
-         var logData:Array = param4;
-         var targetVars:URLVariables = new URLVariables();
-         var request:URLRequest = new URLRequest(url);
-         var windowScope:String = "_blank";
-         if(url)
+         var _loc5_:String = null;
+         var _loc6_:URLVariables = new URLVariables();
+         var _loc7_:URLRequest = new URLRequest(param1);
+         var _loc8_:String = "_blank";
+         if(param1)
          {
-            targetURL = url;
-            if(urlVars)
+            _loc5_ = param1;
+            if(param2)
             {
-               request.data = urlVars;
+               _loc7_.data = param2;
             }
-            if(inNewWindow)
+            if(param3)
             {
-               windowScope = "_blank";
+               _loc8_ = "_blank";
             }
             else
             {
-               windowScope = "_parent";
+               _loc8_ = "_parent";
             }
-            try
+            navigateToURL(_loc7_,_loc8_);
+            if(param4)
             {
-               navigateToURL(request,windowScope);
-            }
-            catch(e:Error)
-            {
-            }
-            if(logData)
-            {
-               LOGGER.Stat(logData);
+               LOGGER.Stat(param4);
             }
             return;
          }
@@ -2015,7 +1873,7 @@ package
          return _loc3_ * _loc3_ + _loc4_ * _loc4_;
       }
       
-      public static function UpdateAFKTimer() : *
+      public static function UpdateAFKTimer() : void
       {
          _afktimer.Set(Timestamp());
       }
@@ -2116,7 +1974,7 @@ package
       
       public static function getDerps(param1:Object) : int
       {
-         var _loc3_:* = undefined;
+         var _loc3_:Object = null;
          var _loc2_:int = 0;
          for(_loc3_ in param1)
          {
@@ -2136,7 +1994,7 @@ package
          {
             return;
          }
-         print("zoom" + param1);
+         print("zoom " + param1);
          param1 = Math.max(_MAGNIFICATION_BOUNDS.x,param1);
          param1 = Math.min(_MAGNIFICATION_BOUNDS.y,param1);
          TweenLite.to(GLOBAL,0.25,{
@@ -2173,9 +2031,22 @@ package
          return _mode == "build" && BASE._yardType == BASE.MAIN_YARD;
       }
       
+      public static function isAtHomeOrInOutpost() : Boolean
+      {
+         return _mode == "build" && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.OUTPOST);
+      }
+      
       public static function isNoob() : Boolean
       {
          return TUTORIAL._stage <= 200 && _sessionCount < 5;
+      }
+      
+      public static function handleLoadError(param1:IOErrorEvent) : void
+      {
+         IEventDispatcher(param1.target).removeEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
+         var _loc2_:String = "Error loading: " + param1.text;
+         LOGGER.Log("log",_loc2_);
+         Console.warning(_loc2_,true);
       }
    }
 }

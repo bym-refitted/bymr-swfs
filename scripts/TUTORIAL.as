@@ -82,7 +82,7 @@ package
          return _stage >= _endstage;
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _container = GLOBAL._layerMessages;
          _doBob = null;
@@ -98,7 +98,7 @@ package
          }
       }
       
-      public static function Process() : *
+      public static function Process() : void
       {
          var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
@@ -165,7 +165,7 @@ package
                      _stage = _endstage;
                   }
                }
-               if(_stage < 150 && GLOBAL._bHatchery)
+               if(_stage < 150 && Boolean(GLOBAL._bHatchery))
                {
                   if(GLOBAL._bHatchery._countdownBuild.Get() > 0)
                   {
@@ -184,7 +184,7 @@ package
          }
       }
       
-      public static function Advance(param1:MouseEvent = null) : *
+      public static function Advance(param1:MouseEvent = null) : void
       {
          if(Boolean(_doBob) && Boolean(_doBob.parent))
          {
@@ -205,7 +205,7 @@ package
          Tick();
       }
       
-      private static function Rewind() : *
+      private static function Rewind() : void
       {
          if(Boolean(_doBob) && Boolean(_doBob.parent))
          {
@@ -221,7 +221,7 @@ package
          Tick();
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          if(GLOBAL._mode == "build" || GLOBAL._mode == "wmattack")
          {
@@ -252,12 +252,12 @@ package
          }
       }
       
-      private static function Show() : *
+      private static function Show() : void
       {
          var _loc2_:BFOUNDATION = null;
          var _loc3_:int = 0;
          var _loc5_:Point = null;
-         var _loc6_:* = undefined;
+         var _loc6_:Number = NaN;
          var _loc7_:BFOUNDATION = null;
          var _loc8_:Boolean = false;
          var _loc9_:int = 0;
@@ -1173,7 +1173,7 @@ package
       {
       }
       
-      private static function Add(param1:int, param2:Point, param3:String, param4:Point = null, param5:Array = null, param6:Boolean = false, param7:Boolean = false, param8:Function = null, param9:Function = null) : *
+      private static function Add(param1:int, param2:Point, param3:String, param4:Point = null, param5:Array = null, param6:Boolean = false, param7:Boolean = false, param8:Function = null, param9:Function = null) : void
       {
          param2 = AdjustPoint(param2,"bob");
          _mcBob.SetPos(param2.x,param2.y);
@@ -1266,7 +1266,7 @@ package
          _mcBob.Resize();
       }
       
-      private static function ConditionScroll() : *
+      private static function ConditionScroll() : void
       {
          if(MAP._dragDistance > 100)
          {
@@ -1274,19 +1274,19 @@ package
          }
       }
       
-      private static function ConditionSelectTwig() : *
+      private static function ConditionSelectTwig() : void
       {
-         if(GLOBAL._selectedBuilding && GLOBAL._selectedBuilding._type != 1)
+         if(Boolean(GLOBAL._selectedBuilding) && GLOBAL._selectedBuilding._type != 1)
          {
             BASE.BuildingDeselect();
          }
-         if(GLOBAL._selectedBuilding && GLOBAL._selectedBuilding._type == 1)
+         if(Boolean(GLOBAL._selectedBuilding) && GLOBAL._selectedBuilding._type == 1)
          {
             Advance();
          }
       }
       
-      private static function ConditionBank() : *
+      private static function ConditionBank() : void
       {
          if(BASE._bankedValue > 0)
          {
@@ -1294,7 +1294,7 @@ package
          }
       }
       
-      private static function ConditionDeselectTwig() : *
+      private static function ConditionDeselectTwig() : void
       {
          if(!GLOBAL._selectedBuilding || GLOBAL._selectedBuilding._type != 1)
          {
@@ -1302,7 +1302,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectQ1() : *
+      private static function ConditionQuestCollectQ1() : void
       {
          if(QUESTS._completed.Q1 == 2)
          {
@@ -1310,7 +1310,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectQ2() : *
+      private static function ConditionQuestCollectQ2() : void
       {
          if(QUESTS._completed.Q2 == 2)
          {
@@ -1318,7 +1318,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectU1() : *
+      private static function ConditionQuestCollectU1() : void
       {
          if(QUESTS._completed.U1 == 2)
          {
@@ -1326,7 +1326,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectT1() : *
+      private static function ConditionQuestCollectT1() : void
       {
          if(QUESTS._completed.T1 == 2)
          {
@@ -1334,7 +1334,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectD1() : *
+      private static function ConditionQuestCollectD1() : void
       {
          if(QUESTS._completed.D1 == 2)
          {
@@ -1342,7 +1342,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectWM1() : *
+      private static function ConditionQuestCollectWM1() : void
       {
          if(QUESTS._completed.WM1 == 2)
          {
@@ -1350,7 +1350,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectCR3() : *
+      private static function ConditionQuestCollectCR3() : void
       {
          if(QUESTS._completed.CR3 == 2)
          {
@@ -1358,7 +1358,7 @@ package
          }
       }
       
-      private static function ConditionQuestCollectBunch() : *
+      private static function ConditionQuestCollectBunch() : void
       {
          if(QUESTS._completed.C17 == 2 && QUESTS._completed.C18 == 2)
          {
@@ -1366,7 +1366,7 @@ package
          }
       }
       
-      private static function ConditionPopupOpen() : *
+      private static function ConditionPopupOpen() : void
       {
          if(POPUPS._open)
          {
@@ -1374,7 +1374,7 @@ package
          }
       }
       
-      private static function ConditionPopupClose() : *
+      private static function ConditionPopupClose() : void
       {
          if(!POPUPS._open)
          {
@@ -1382,7 +1382,7 @@ package
          }
       }
       
-      private static function ConditionBuildingOptionsOpen() : *
+      private static function ConditionBuildingOptionsOpen() : void
       {
          if(BUILDINGOPTIONS._open)
          {
@@ -1390,7 +1390,7 @@ package
          }
       }
       
-      private static function ConditionBuildingOptionsClose() : *
+      private static function ConditionBuildingOptionsClose() : void
       {
          if(!BUILDINGOPTIONS._open)
          {
@@ -1398,7 +1398,7 @@ package
          }
       }
       
-      private static function ConditionStoreOpen() : *
+      private static function ConditionStoreOpen() : void
       {
          if(STORE._open)
          {
@@ -1406,7 +1406,7 @@ package
          }
       }
       
-      private static function ConditionStoreClose() : *
+      private static function ConditionStoreClose() : void
       {
          if(!STORE._open)
          {
@@ -1414,7 +1414,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsOpen() : *
+      private static function ConditionBuildingsOpen() : void
       {
          if(BUILDINGS._open)
          {
@@ -1422,7 +1422,7 @@ package
          }
       }
       
-      private static function ConditionMapRoomOpen() : *
+      private static function ConditionMapRoomOpen() : void
       {
          if(MAPROOM._open)
          {
@@ -1430,7 +1430,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsDefense() : *
+      private static function ConditionBuildingsDefense() : void
       {
          if(BUILDINGS._open && BUILDINGS._menuA == 3)
          {
@@ -1438,7 +1438,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsBuildings() : *
+      private static function ConditionBuildingsBuildings() : void
       {
          if(BUILDINGS._open && BUILDINGS._menuA == 2)
          {
@@ -1446,7 +1446,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsResources() : *
+      private static function ConditionBuildingsResources() : void
       {
          if(BUILDINGS._open && BUILDINGS._menuA == 1)
          {
@@ -1454,7 +1454,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsSniper() : *
+      private static function ConditionBuildingsSniper() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 21)
          {
@@ -1462,7 +1462,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsHatchery() : *
+      private static function ConditionBuildingsHatchery() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 13)
          {
@@ -1470,7 +1470,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsHousing() : *
+      private static function ConditionBuildingsHousing() : void
       {
          if(BUILDINGS._open && HOUSING.isHousingBuilding(BUILDINGS._buildingID))
          {
@@ -1478,7 +1478,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsPutty() : *
+      private static function ConditionBuildingsPutty() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 3)
          {
@@ -1486,7 +1486,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsGoo() : *
+      private static function ConditionBuildingsGoo() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 4)
          {
@@ -1494,7 +1494,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsFlinger() : *
+      private static function ConditionBuildingsFlinger() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 5)
          {
@@ -1502,7 +1502,7 @@ package
          }
       }
       
-      private static function ConditionBuildingsMapRoom() : *
+      private static function ConditionBuildingsMapRoom() : void
       {
          if(BUILDINGS._open && BUILDINGS._buildingID == 11)
          {
@@ -1510,7 +1510,7 @@ package
          }
       }
       
-      private static function ConditionHatcheryProducing() : *
+      private static function ConditionHatcheryProducing() : void
       {
          ++_timer;
          if(Boolean((GLOBAL._bHatchery as BUILDING13)._inProduction) && _timer > 160)
@@ -1519,7 +1519,7 @@ package
          }
       }
       
-      private static function ConditionNewBuilding() : *
+      private static function ConditionNewBuilding() : void
       {
          if(GLOBAL._newBuilding)
          {
@@ -1527,7 +1527,7 @@ package
          }
       }
       
-      private static function ConditionPlacedBuilding() : *
+      private static function ConditionPlacedBuilding() : void
       {
          if(QUEUE._placed > 0)
          {
@@ -1535,7 +1535,7 @@ package
          }
       }
       
-      private static function ConditionWorkerBusy() : *
+      private static function ConditionWorkerBusy() : void
       {
          if(QUEUE._workingCount > 0)
          {
@@ -1543,7 +1543,7 @@ package
          }
       }
       
-      private static function ConditionConstructed21() : *
+      private static function ConditionConstructed21() : void
       {
          if(QUESTS._global.b21lvl > 0)
          {
@@ -1551,7 +1551,7 @@ package
          }
       }
       
-      private static function ConditionConstructed15() : *
+      private static function ConditionConstructed15() : void
       {
          if(QUESTS._global.b15lvl > 0)
          {
@@ -1559,7 +1559,7 @@ package
          }
       }
       
-      private static function ConditionConstructed5() : *
+      private static function ConditionConstructed5() : void
       {
          if(QUESTS._global.b5lvl > 0)
          {
@@ -1567,7 +1567,7 @@ package
          }
       }
       
-      private static function ConditionConstructed11() : *
+      private static function ConditionConstructed11() : void
       {
          if(QUESTS._global.b11lvl > 0)
          {
@@ -1575,7 +1575,7 @@ package
          }
       }
       
-      private static function ConditionConstructed13() : *
+      private static function ConditionConstructed13() : void
       {
          if(QUESTS._global.b13lvl > 0)
          {
@@ -1583,7 +1583,7 @@ package
          }
       }
       
-      private static function ConditionAttackOver() : *
+      private static function ConditionAttackOver() : void
       {
          if(CREEPS._creepCount == 2)
          {
@@ -1595,7 +1595,7 @@ package
          }
       }
       
-      private static function Condition2Workers() : *
+      private static function Condition2Workers() : void
       {
          if(QUEUE._workerCount > 1)
          {
@@ -1603,7 +1603,7 @@ package
          }
       }
       
-      private static function ConditionBuildingFlinger() : *
+      private static function ConditionBuildingFlinger() : void
       {
          if(GLOBAL._bFlinger)
          {
@@ -1611,7 +1611,7 @@ package
          }
       }
       
-      private static function ConditionBuildingMapRoom() : *
+      private static function ConditionBuildingMapRoom() : void
       {
          if(GLOBAL._bMap)
          {
@@ -1619,7 +1619,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingOptionsClose() : *
+      private static function ConditionRewindBuildingOptionsClose() : void
       {
          if(!BUILDINGOPTIONS._open)
          {
@@ -1627,7 +1627,7 @@ package
          }
       }
       
-      private static function ConditionRewindNotUpgrading() : *
+      private static function ConditionRewindNotUpgrading() : void
       {
          if(QUEUE._workingCount == 0)
          {
@@ -1636,7 +1636,7 @@ package
          }
       }
       
-      private static function ConditionRewindNotLevel2() : *
+      private static function ConditionRewindNotLevel2() : void
       {
          if(QUESTS._global.blvl < 2)
          {
@@ -1645,7 +1645,7 @@ package
          }
       }
       
-      private static function ConditionTimer5() : *
+      private static function ConditionTimer5() : void
       {
          ++_timer;
          if(_timer == 200)
@@ -1654,7 +1654,7 @@ package
          }
       }
       
-      private static function ConditionTimer10() : *
+      private static function ConditionTimer10() : void
       {
          ++_timer;
          if(_timer == 400)
@@ -1663,7 +1663,7 @@ package
          }
       }
       
-      private static function ConditionFightBack() : *
+      private static function ConditionFightBack() : void
       {
          if(GLOBAL._mode == "wmattack")
          {
@@ -1671,7 +1671,7 @@ package
          }
       }
       
-      private static function ConditionReturnToYard() : *
+      private static function ConditionReturnToYard() : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -1679,7 +1679,7 @@ package
          }
       }
       
-      private static function ConditionFlingerAdd15() : *
+      private static function ConditionFlingerAdd15() : void
       {
          var _loc2_:SecNum = null;
          var _loc1_:int = 0;
@@ -1693,7 +1693,7 @@ package
          }
       }
       
-      private static function ConditionFlung() : *
+      private static function ConditionFlung() : void
       {
          if(CREEPS._creepCount > 0)
          {
@@ -1701,7 +1701,7 @@ package
          }
       }
       
-      private static function ConditionCrushedEnemy() : *
+      private static function ConditionCrushedEnemy() : void
       {
          var _loc3_:BFOUNDATION = null;
          var _loc1_:int = 0;
@@ -1720,7 +1720,7 @@ package
          }
       }
       
-      private static function ConditionQuestsOpen() : *
+      private static function ConditionQuestsOpen() : void
       {
          if(QUESTS._open)
          {
@@ -1728,7 +1728,7 @@ package
          }
       }
       
-      private static function ConditionHatcheryOpen() : *
+      private static function ConditionHatcheryOpen() : void
       {
          if(HATCHERY._open)
          {
@@ -1736,7 +1736,7 @@ package
          }
       }
       
-      private static function ConditionHatcheryClose() : *
+      private static function ConditionHatcheryClose() : void
       {
          if(!HATCHERY._open)
          {
@@ -1744,7 +1744,7 @@ package
          }
       }
       
-      private static function ConditionRewindDeselect() : *
+      private static function ConditionRewindDeselect() : void
       {
          if(!GLOBAL._selectedBuilding)
          {
@@ -1752,7 +1752,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosed() : *
+      private static function ConditionRewindBuildingsClosed() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1761,7 +1761,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedB() : *
+      private static function ConditionRewindBuildingsClosedB() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1770,7 +1770,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedC() : *
+      private static function ConditionRewindBuildingsClosedC() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1779,7 +1779,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedD() : *
+      private static function ConditionRewindBuildingsClosedD() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1788,7 +1788,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedE() : *
+      private static function ConditionRewindBuildingsClosedE() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1797,7 +1797,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedF() : *
+      private static function ConditionRewindBuildingsClosedF() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1806,7 +1806,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsClosedG() : *
+      private static function ConditionRewindBuildingsClosedG() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1815,7 +1815,7 @@ package
          }
       }
       
-      private static function ConditionRewindQuestsClose() : *
+      private static function ConditionRewindQuestsClose() : void
       {
          if(!QUESTS._open)
          {
@@ -1823,7 +1823,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuilding() : *
+      private static function ConditionRewindNoNewBuilding() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1832,7 +1832,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingB() : *
+      private static function ConditionRewindNoNewBuildingB() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1841,7 +1841,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingC() : *
+      private static function ConditionRewindNoNewBuildingC() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1850,7 +1850,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingD() : *
+      private static function ConditionRewindNoNewBuildingD() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1859,7 +1859,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingE() : *
+      private static function ConditionRewindNoNewBuildingE() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1868,7 +1868,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingF() : *
+      private static function ConditionRewindNoNewBuildingF() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1877,7 +1877,7 @@ package
          }
       }
       
-      private static function ConditionRewindNoNewBuildingG() : *
+      private static function ConditionRewindNoNewBuildingG() : void
       {
          if(!GLOBAL._newBuilding)
          {
@@ -1886,7 +1886,7 @@ package
          }
       }
       
-      private static function ConditionRewindHatcheryClose() : *
+      private static function ConditionRewindHatcheryClose() : void
       {
          if(!HATCHERY._open)
          {
@@ -1894,7 +1894,7 @@ package
          }
       }
       
-      private static function ConditionRewindStoreClosed() : *
+      private static function ConditionRewindStoreClosed() : void
       {
          if(!STORE._open)
          {
@@ -1902,7 +1902,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect21() : *
+      private static function ConditionRewindBuildingsDeselect21() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1915,7 +1915,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect3() : *
+      private static function ConditionRewindBuildingsDeselect3() : void
       {
          ConditionRewindBuildingsClosedF();
          if(BUILDINGS._buildingID == 0)
@@ -1924,7 +1924,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect4() : *
+      private static function ConditionRewindBuildingsDeselect4() : void
       {
          ConditionRewindBuildingsClosedG();
          if(BUILDINGS._buildingID == 0)
@@ -1933,7 +1933,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect5() : *
+      private static function ConditionRewindBuildingsDeselect5() : void
       {
          ConditionRewindBuildingsClosedC();
          if(BUILDINGS._buildingID == 0)
@@ -1942,7 +1942,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect11() : *
+      private static function ConditionRewindBuildingsDeselect11() : void
       {
          ConditionRewindBuildingsClosedD();
          if(BUILDINGS._buildingID == 0)
@@ -1951,7 +1951,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect13() : *
+      private static function ConditionRewindBuildingsDeselect13() : void
       {
          ConditionRewindBuildingsClosedE();
          if(BUILDINGS._buildingID == 0)
@@ -1960,7 +1960,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselect15() : *
+      private static function ConditionRewindBuildingsDeselect15() : void
       {
          ConditionRewindBuildingsClosedB();
          if(BUILDINGS._buildingID == 0)
@@ -1969,7 +1969,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselectBuildingsC() : *
+      private static function ConditionRewindBuildingsDeselectBuildingsC() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1982,7 +1982,7 @@ package
          }
       }
       
-      private static function ConditionRewindBuildingsDeselectBuildingsD() : *
+      private static function ConditionRewindBuildingsDeselectBuildingsD() : void
       {
          if(!BUILDINGS._open)
          {
@@ -1995,7 +1995,7 @@ package
          }
       }
       
-      private static function ConditionRewindMapClosed() : *
+      private static function ConditionRewindMapClosed() : void
       {
          if(!MAPROOM._open)
          {
@@ -2009,7 +2009,7 @@ package
          var _loc5_:int = 0;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
-         var _loc11_:* = undefined;
+         var _loc11_:DisplayObject = null;
          var _loc6_:int = GLOBAL._ROOT.stage.stageWidth;
          var _loc7_:Point = param1;
          var _loc8_:Point = param4;

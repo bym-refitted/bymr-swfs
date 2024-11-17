@@ -21,15 +21,13 @@ package
    {
       public static const CREATUREBUTTONOVER:String = "creatureButtonOver";
       
-      public var _popup:*;
+      public var _popupWarning:bubblepopup4;
       
-      public var _popupWarning:*;
-      
-      public var _popupBuff:*;
+      public var _popupBuff:bubblepopupBuff;
       
       public var _creatureButtons:Array;
       
-      public var _creatureButtonsMC:*;
+      public var _creatureButtonsMC:flingerLevel;
       
       public var _bubbleDo:DisplayObject;
       
@@ -66,12 +64,13 @@ package
          var _loc1_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:String = null;
-         var _loc6_:SiegeWeapon = null;
-         var _loc7_:MovieClip = null;
-         var _loc8_:int = 0;
-         var _loc9_:String = null;
+         var _loc5_:int = 0;
+         var _loc6_:String = null;
+         var _loc7_:SiegeWeapon = null;
+         var _loc8_:MovieClip = null;
+         var _loc9_:int = 0;
          var _loc10_:MovieClip = null;
+         var _loc11_:String = null;
          super();
          var _loc2_:String = GLOBAL._mode;
          switch(GLOBAL._mode)
@@ -197,71 +196,113 @@ package
          }
          else if(GLOBAL._loadmode == "attack" || GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "iattack" || GLOBAL._loadmode == "iwmattack")
          {
-            this._creatureButtonsMC = mc.addChild(new flingerLevel());
+            this._creatureButtonsMC = mc.addChild(new flingerLevel()) as flingerLevel;
             this._creatureButtonsMC.tA.htmlText = BASE.isInferno() ? KEYS.Get("monster_limit") : KEYS.Get("attack_flingerbar");
             this._creatureButtonsMC.y = 84;
             _loc3_ = 0;
-            this._creatureButtons = [];
             _loc4_ = 0;
-            while(_loc4_ < GLOBAL._playerGuardianData.length)
+            this._creatureButtons = [];
+            _loc5_ = 0;
+            while(_loc5_ < GLOBAL._playerGuardianData.length)
             {
-               if(Boolean(GLOBAL._playerGuardianData[_loc4_]) && GLOBAL._playerGuardianData[_loc4_].hp.Get() > 0)
+               if(Boolean(GLOBAL._playerGuardianData[_loc5_]) && GLOBAL._playerGuardianData[_loc5_].hp.Get() > 0)
                {
                   if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
                   {
-                     _loc7_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc4_].t,GLOBAL._playerGuardianData[_loc4_].l.Get(),_loc4_));
-                     _loc7_.y = 25 + 60 * _loc3_;
-                     _loc7_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
-                     this._creatureButtons.push(_loc7_);
+                     _loc8_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc5_].t,GLOBAL._playerGuardianData[_loc5_].l.Get(),_loc5_)) as CHAMPIONBUTTON;
+                     _loc8_.y = 25 + 60 * _loc3_;
+                     _loc8_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
+                     this._creatureButtons.push(_loc8_);
                      _loc3_++;
+                     _loc4_++;
                   }
                }
-               _loc4_++;
+               _loc5_++;
             }
-            for(_loc5_ in CREATURELOCKER._creatures)
+            for(_loc6_ in CREATURELOCKER._creatures)
             {
-               _loc8_ = int(_loc5_.substr(_loc5_.length - 1));
-               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[_loc5_] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[_loc5_])
+               _loc9_ = int(_loc6_.substr(_loc6_.length - 1));
+               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[_loc6_] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[_loc6_])
                {
-                  _loc9_ = _loc5_;
+                  _loc11_ = _loc6_;
                   if(GLOBAL._advancedMap)
                   {
-                     if(GLOBAL._attackerMapCreatures[_loc9_].Get() > 0)
+                     if(GLOBAL._attackerMapCreatures[_loc11_].Get() > 0)
                      {
-                        _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc9_));
+                        _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc11_)) as CREATUREBUTTON;
                         _loc10_.y = 25 + _loc3_ * 60;
                         _loc10_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
-                        if(_loc3_ > 5)
+                        if(_loc3_ > 7)
                         {
-                           if(this.HasChampionButton())
-                           {
-                              _loc10_.y -= 300;
-                           }
-                           else
-                           {
-                              _loc10_.y -= 360;
-                           }
                            _loc10_.x += 136;
+                           switch(_loc4_)
+                           {
+                              case 0:
+                                 _loc10_.y -= 480;
+                                 break;
+                              case 1:
+                                 _loc10_.y -= 420;
+                                 break;
+                              case 2:
+                                 _loc10_.y -= 360;
+                           }
+                        }
+                        if(_loc3_ > 17 - _loc4_)
+                        {
+                           _loc10_.x += 136;
+                           switch(_loc4_)
+                           {
+                              case 0:
+                                 _loc10_.y -= 480;
+                                 break;
+                              case 1:
+                                 _loc10_.y -= 420;
+                                 break;
+                              case 2:
+                                 _loc10_.y -= 360;
+                           }
                         }
                         this._creatureButtons.push(_loc10_);
                         _loc3_++;
                      }
                   }
-                  else if(GLOBAL._attackerCreatures[_loc9_].Get() > 0)
+                  else if(GLOBAL._attackerCreatures[_loc11_].Get() > 0)
                   {
-                     _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc9_));
+                     _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc11_)) as CREATUREBUTTON;
                      _loc10_.y = 25 + _loc3_ * 60;
-                     if(_loc3_ > 5)
+                     if(GLOBAL._advancedMap)
                      {
-                        if(this.HasChampionButton())
-                        {
-                           _loc10_.y -= 300;
-                        }
-                        else
-                        {
-                           _loc10_.y -= 360;
-                        }
+                        _loc10_.addEventListener(UI_TOP.CREATUREBUTTONOVER,this.sortCreatureButtons);
+                     }
+                     if(_loc3_ > 7)
+                     {
                         _loc10_.x += 136;
+                        switch(_loc4_)
+                        {
+                           case 0:
+                              _loc10_.y -= 480;
+                              break;
+                           case 1:
+                              _loc10_.y -= 420;
+                              break;
+                           case 2:
+                              _loc10_.y -= 360;
+                        }
+                     }
+                     if(_loc3_ > 15 - _loc4_)
+                     {
+                        _loc10_.x += 136;
+                        switch(_loc4_)
+                        {
+                           case 0:
+                              _loc10_.y -= 480;
+                              break;
+                           case 1:
+                              _loc10_.y -= 420;
+                              break;
+                           case 2:
+                              _loc10_.y -= 360;
+                        }
                      }
                      this._creatureButtons.push(_loc10_);
                      _loc3_++;
@@ -276,8 +317,8 @@ package
                this._catapult.y = 4;
                this._catapult.Setup();
             }
-            _loc6_ = SiegeWeapons.availableWeapon;
-            if(_loc6_ != null && !BASE.isInferno())
+            _loc7_ = SiegeWeapons.availableWeapon;
+            if(_loc7_ != null && !BASE.isInferno())
             {
                this._siegeweapon = new SIEGEWEAPONPOPUP();
                mc.addChild(this._siegeweapon);
@@ -295,10 +336,10 @@ package
       
       private function sortCreatureButtons(param1:Event = null) : void
       {
-         this._creatureButtonsMC.addChild(param1.target);
+         this._creatureButtonsMC.addChild(param1.target as DisplayObject);
       }
       
-      private function InfoShow(param1:MouseEvent) : *
+      private function InfoShow(param1:MouseEvent) : void
       {
          mc.mcPoints.gotoAndStop(2);
          var _loc2_:Object = BASE.BaseLevel();
@@ -309,23 +350,9 @@ package
          });
       }
       
-      private function InfoHide(param1:MouseEvent) : *
+      private function InfoHide(param1:MouseEvent) : void
       {
          mc.mcPoints.gotoAndStop(1);
-      }
-      
-      private function HasChampionButton() : Boolean
-      {
-         var _loc1_:int = 0;
-         while(_loc1_ < this._creatureButtons.length)
-         {
-            if(this._creatureButtons[_loc1_] is CHAMPIONBUTTON)
-            {
-               return true;
-            }
-            _loc1_++;
-         }
-         return false;
       }
       
       public function Clear() : void
@@ -416,10 +443,10 @@ package
          }
       }
       
-      public function Topup(param1:int) : *
+      public function Topup(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc2_:* = Math.min((n - 1) * 0.4,1);
             if(BASE.isInferno())
@@ -433,13 +460,25 @@ package
          };
       }
       
-      public function Setup() : *
+      public function Setup() : void
       {
          var onImageLoad:Function;
          var LoadImageError:Function;
          var loader:Loader = null;
          if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
          {
+            onImageLoad = function(param1:Event):void
+            {
+               mc.mcPic.mcBG.addChild(loader);
+               if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  loader.height = 50;
+                  loader.width = 50;
+               }
+            };
+            LoadImageError = function(param1:IOErrorEvent):void
+            {
+            };
             if(BASE._ownerName)
             {
                if(BASE._ownerName.toLowerCase().charAt(BASE._ownerName.length - 1) == "s")
@@ -459,38 +498,20 @@ package
             {
                mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonstersinferno");
             }
-            try
+            loader = new Loader();
+            loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
+            loader.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
+            if(GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "wmview" || GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iwmview")
             {
-               onImageLoad = function(param1:Event):void
-               {
-                  mc.mcPic.mcBG.addChild(loader);
-                  if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
-                  {
-                     loader.height = 50;
-                     loader.width = 50;
-                  }
-               };
-               LoadImageError = function(param1:IOErrorEvent):*
-               {
-               };
-               loader = new Loader();
-               loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
-               loader.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
-               if(GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "wmview" || GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iwmview")
-               {
-                  loader.load(new URLRequest(GLOBAL._storageURL + BASE._ownerPic));
-               }
-               else if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
-               {
-                  loader.load(new URLRequest(BASE._ownerPic));
-               }
-               else
-               {
-                  loader.load(new URLRequest("http://graph.facebook.com/" + BASE._loadedFBID + "/picture"));
-               }
+               loader.load(new URLRequest(GLOBAL._storageURL + BASE._ownerPic));
             }
-            catch(e:Error)
+            else if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
             {
+               loader.load(new URLRequest(BASE._ownerPic));
+            }
+            else
+            {
+               loader.load(new URLRequest("http://graph.facebook.com/" + BASE._loadedFBID + "/picture"));
             }
          }
          else if(GLOBAL._mode == GLOBAL._loadmode)
@@ -593,21 +614,21 @@ package
          this.Update();
       }
       
-      public function BombSelect(param1:int) : *
+      public function BombSelect(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             MonsterDeselect();
             BombDeselect();
          };
       }
       
-      public function BombDeselect() : *
+      public function BombDeselect() : void
       {
       }
       
-      public function MonsterDeselect() : *
+      public function MonsterDeselect() : void
       {
          var _loc1_:String = null;
          var _loc2_:int = 0;
@@ -635,11 +656,11 @@ package
          }
       }
       
-      public function StatsShow(param1:int, param2:Boolean) : *
+      public function StatsShow(param1:int, param2:Boolean) : Function
       {
          var n:int = param1;
          var topup:Boolean = param2;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             var _loc2_:* = undefined;
             var _loc3_:* = undefined;
@@ -679,7 +700,7 @@ package
          };
       }
       
-      public function StatsHide(param1:MouseEvent) : *
+      public function StatsHide(param1:MouseEvent) : void
       {
          this.BubbleHide();
       }
@@ -688,7 +709,7 @@ package
       {
          if(!this._popupWarning)
          {
-            this._popupWarning = addChild(new bubblepopup4());
+            this._popupWarning = addChild(new bubblepopup4()) as bubblepopup4;
          }
          this._popupWarning.tA.htmlText = BASE.isInferno() ? KEYS.Get("inf_ui_needmoreroom") : KEYS.Get("ui_needmoreroom");
          this._popupWarning.x = 150;
@@ -696,7 +717,7 @@ package
          this._popupWarning.Wobble();
       }
       
-      public function OverchargeHide() : *
+      public function OverchargeHide() : void
       {
          if(this._popupWarning)
          {
@@ -708,7 +729,7 @@ package
       public function UpdateTweenResourceText(param1:Number) : void
       {
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:MovieClip = null;
          var _loc5_:Number = NaN;
          var _loc6_:Number = NaN;
          var _loc2_:int = param1;
@@ -723,10 +744,10 @@ package
          _loc4_.mcBar.width = _loc3_;
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:int = 0;
-         var _loc2_:* = undefined;
+         var _loc2_:MovieClip = null;
          var _loc3_:Object = null;
          var _loc4_:Number = NaN;
          var _loc5_:Number = NaN;
@@ -1004,8 +1025,8 @@ package
       
       public function SortButtonIcons(param1:int = 2, param2:int = 4, param3:int = 0) : void
       {
-         var _loc6_:* = param1;
-         var _loc7_:* = param2;
+         var _loc6_:int = param1;
+         var _loc7_:int = param2;
          var _loc10_:int = param3;
          var _loc11_:int = 0;
          var _loc12_:int = 0;
@@ -1035,7 +1056,7 @@ package
          }
       }
       
-      public function InitDealspot() : *
+      public function InitDealspot() : void
       {
          if(mc.bDealSpot)
          {
@@ -1059,10 +1080,10 @@ package
          }
       }
       
-      public function ButtonClick(param1:String) : *
+      public function ButtonClick(param1:String) : Function
       {
          var label:String = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             if(label == "gift")
             {
@@ -1129,10 +1150,10 @@ package
       
       public function DisplayBuffs() : void
       {
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
@@ -1227,7 +1248,7 @@ package
          if(!this._popupBuff)
          {
             _loc7_ = new bubblepopupBuff();
-            this._popupBuff = addChild(_loc7_);
+            this._popupBuff = addChild(_loc7_) as bubblepopupBuff;
             _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
             _loc7_.x = this.mcBuffHolder.x + (_loc2_.x + _loc2_.width / 2);
             _loc7_.y = this.mcBuffHolder.y + (_loc2_.y + _loc2_.height + 4);
@@ -1238,7 +1259,7 @@ package
          }
       }
       
-      public function BuffHide(param1:MouseEvent) : *
+      public function BuffHide(param1:MouseEvent) : void
       {
          if(this._popupBuff)
          {
@@ -1255,7 +1276,7 @@ package
          this.BuffHide(null);
       }
       
-      public function ButtonInfoShow(param1:MouseEvent) : *
+      public function ButtonInfoShow(param1:MouseEvent) : void
       {
          var _loc4_:String = null;
          var _loc2_:int = param1.target.x + 50;
@@ -1317,50 +1338,38 @@ package
          }
       }
       
-      public function ButtonInfoHide(param1:MouseEvent) : *
+      public function ButtonInfoHide(param1:MouseEvent) : void
       {
          this.BubbleHide();
       }
       
-      internal function SetPoints(param1:Number, param2:Number, param3:Number, param4:Number, param5:uint, param6:Boolean) : *
+      private function SetPoints(param1:Number, param2:Number, param3:Number, param4:Number, param5:uint, param6:Boolean) : void
       {
-         var p:int = 0;
-         var pointsMin:Number = param1;
-         var pointsMax:Number = param2;
-         var pointsNeeded:Number = param3;
-         var points:Number = param4;
-         var level:uint = param5;
-         var newLevel:Boolean = param6;
-         try
+         var _loc7_:int = 0;
+         if(GLOBAL._mode == "build")
          {
-            if(GLOBAL._mode == "build")
+            mc.mcPoints.mcLevel.text = param5.toString();
+            _loc7_ = 200 / (param2 - param1) * (param4 - param1);
+            TweenLite.to(mc.mcPoints.mcBar,0.6,{
+               "width":_loc7_,
+               "ease":Elastic.easeInOut
+            });
+            if(param6)
             {
-               mc.mcPoints.mcLevel.text = level.toString();
-               p = 200 / (pointsMax - pointsMin) * (points - pointsMin);
-               TweenLite.to(mc.mcPoints.mcBar,0.6,{
-                  "width":p,
-                  "ease":Elastic.easeInOut
+               mc.mcPoints.mcStar.scaleY = 0.8;
+               mc.mcPoints.mcStar.scaleX = 0.8;
+               mc.mcPoints.mcStar.rotation = 3 * 60;
+               TweenLite.to(mc.mcPoints.mcStar,1,{
+                  "scaleX":1,
+                  "scaleY":1,
+                  "rotation":0,
+                  "ease":Elastic.easeOut
                });
-               if(newLevel)
-               {
-                  mc.mcPoints.mcStar.scaleX = mc.mcPoints.mcStar.scaleY = 0.8;
-                  mc.mcPoints.mcStar.rotation = 3 * 60;
-                  TweenLite.to(mc.mcPoints.mcStar,1,{
-                     "scaleX":1,
-                     "scaleY":1,
-                     "rotation":0,
-                     "ease":Elastic.easeOut
-                  });
-               }
             }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","" + pointsMin + ", " + pointsMax + ", " + pointsNeeded + ", " + points + ", " + level + ", " + newLevel);
          }
       }
       
-      public function BubbleShow(param1:int, param2:int, param3:String, param4:int = 3) : *
+      public function BubbleShow(param1:int, param2:int, param3:String, param4:int = 3) : void
       {
          var _loc5_:bubblepopup3 = new bubblepopup3();
          _loc5_.Setup(param1,param2,param3,param4);
@@ -1368,12 +1377,26 @@ package
          this._bubbleDo = this.addChild(_loc5_);
       }
       
-      public function BubbleHide() : *
+      public function BubbleHide() : void
       {
          if(Boolean(this._bubbleDo) && Boolean(this._bubbleDo.parent))
          {
             this.removeChild(this._bubbleDo);
          }
+      }
+      
+      public function validateSiegeWeapon() : Boolean
+      {
+         if(this._siegeweapon == null)
+         {
+            return false;
+         }
+         var _loc1_:Boolean = this._siegeweapon.validate();
+         if(!_loc1_)
+         {
+            this.ClearSiegeWeapon();
+         }
+         return _loc1_;
       }
    }
 }

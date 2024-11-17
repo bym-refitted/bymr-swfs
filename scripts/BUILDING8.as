@@ -9,7 +9,7 @@ package
    
    public class BUILDING8 extends BFOUNDATION
    {
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _field:BitmapData;
       
@@ -28,7 +28,7 @@ package
          SetProps();
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && CREATURELOCKER._unlocking != null)
@@ -45,7 +45,7 @@ package
          ++this._frameNumber;
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          if(GLOBAL._lockerOverdrive > 0)
@@ -58,7 +58,7 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -66,7 +66,7 @@ package
          GLOBAL._bLocker = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-ml",KEYS.Get("pop_clocbuilt_streamtitle"),KEYS.Get("pop_clocbuilt_streambody"),"build-monsterlocker.png"]);
                POPUPS.Next();
@@ -81,14 +81,14 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-ml-",KEYS.Get("cloc_upgrade_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("cloc_upgrade_streambody"),"upgrade-monsterlocker.png"]);
                POPUPS.Next();
@@ -103,13 +103,13 @@ package
          }
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bLocker = null;
          super.Cancel();
       }
       
-      override public function Upgrade() : *
+      override public function Upgrade() : Boolean
       {
          if(CREATURELOCKER._unlocking != null)
          {
@@ -119,7 +119,7 @@ package
          return super.Upgrade();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(CREATURELOCKER._unlocking != null)
          {
@@ -131,7 +131,7 @@ package
          }
       }
       
-      override public function RecycleB(param1:MouseEvent = null) : *
+      override public function RecycleB(param1:MouseEvent = null) : void
       {
          if(CREATURELOCKER._unlocking != null)
          {
@@ -140,13 +140,13 @@ package
          super.RecycleB(param1);
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bLocker = null;
          super.RecycleC();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() == 0)

@@ -19,13 +19,13 @@ package
          super();
       }
       
-      public static function CreateGrid() : *
+      public static function CreateGrid() : void
       {
          var _loc1_:int = getTimer();
          Cleanup();
       }
       
-      public static function Block(param1:Rectangle, param2:Boolean = false) : *
+      public static function Block(param1:Rectangle, param2:Boolean = false) : void
       {
          var _loc4_:Point = null;
          var _loc6_:int = 0;
@@ -59,7 +59,7 @@ package
          Clear();
       }
       
-      public static function FindSpace(param1:BFOUNDATION) : *
+      public static function FindSpace(param1:BFOUNDATION) : void
       {
          var _loc4_:Point = null;
          var _loc9_:int = 0;
@@ -92,8 +92,8 @@ package
       public static function FootprintBlocked(param1:Array, param2:Point, param3:Boolean = false, param4:Boolean = false) : Boolean
       {
          var _loc5_:Rectangle = null;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
          param2 = FromISO(param2.x,param2.y);
          for each(_loc5_ in param1)
          {
@@ -131,11 +131,11 @@ package
          return _grid[_loc4_.x + _loc4_.y * _rowOffset] & 1;
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
       }
       
-      public static function Cleanup() : *
+      public static function Cleanup() : void
       {
          var _loc1_:int = Math.ceil(_mapWidth / 5) * Math.ceil(_mapHeight / 5);
          _grid = new Vector.<uint>(_loc1_,true);
@@ -143,30 +143,30 @@ package
       
       public static function GlobalLocal(param1:Point, param2:int) : Point
       {
-         var _loc3_:* = int((param1.x + _mapWidth * 0.5) / param2);
-         var _loc4_:* = int((param1.y + _mapHeight * 0.5) / param2);
+         var _loc3_:Number = int((param1.x + _mapWidth * 0.5) / param2);
+         var _loc4_:Number = int((param1.y + _mapHeight * 0.5) / param2);
          return new Point(_loc3_,_loc4_);
       }
       
       public static function LocalGlobal(param1:Point, param2:int) : Point
       {
-         var _loc3_:* = int(param1.x * param2 - _mapWidth * 0.5) + param2 * 0.5;
-         var _loc4_:* = int(param1.y * param2 - _mapHeight * 0.5) + param2 * 0.5;
+         var _loc3_:Number = int(param1.x * param2 - _mapWidth * 0.5) + param2 * 0.5;
+         var _loc4_:Number = int(param1.y * param2 - _mapHeight * 0.5) + param2 * 0.5;
          return new Point(_loc3_,_loc4_);
       }
       
-      public static function ToISO(param1:*, param2:*, param3:*) : *
+      public static function ToISO(param1:Number, param2:Number, param3:Number) : Point
       {
          var _loc5_:Number = (param1 + param2) * 0.5 - param3;
          var _loc6_:Number = param1 - param2;
-         return new Point(_loc6_,_loc5_);
+         return new Point(Math.floor(_loc6_),Math.floor(_loc5_));
       }
       
-      public static function FromISO(param1:*, param2:*) : *
+      public static function FromISO(param1:Number, param2:Number) : Point
       {
          var _loc3_:Number = param2 - param1 * 0.5;
          var _loc4_:Number = param1 * 0.5 + param2;
-         return new Point(_loc4_,_loc3_);
+         return new Point(Math.ceil(_loc4_),Math.ceil(_loc3_));
       }
    }
 }

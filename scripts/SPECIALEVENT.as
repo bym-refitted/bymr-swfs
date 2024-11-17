@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
@@ -1470,7 +1471,7 @@ package
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:String = null;
          var _loc8_:BFOUNDATION = null;
          if(param1)
          {
@@ -1543,10 +1544,10 @@ package
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:Array = null;
-         var _loc7_:* = undefined;
+         var _loc7_:Object = null;
          var _loc8_:Number = NaN;
          var _loc9_:Point = null;
-         var _loc10_:CHAMPIONMONSTER = null;
+         var _loc10_:ChampionBase = null;
          if(_wave.Get() >= WAVES.length)
          {
             return;
@@ -1591,7 +1592,7 @@ package
                _currentAttackers.push([_loc10_]);
          }
          _timeOfNextWave = GLOBAL.Timestamp();
-         while(++_group < WAVES[_wave.Get()].length && WAVES[_wave.Get()][_group] instanceof Number)
+         while(++_group < WAVES[_wave.Get()].length && Boolean(WAVES[_wave.Get()][_group] as Number))
          {
             _timeOfNextWave += WAVES[_wave.Get()][_group];
          }
@@ -1635,15 +1636,15 @@ package
       
       public static function ClearWildMonsterPowerups() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
          for each(_loc1_ in GLOBAL._wmCreaturePowerups)
          {
-            _loc1_ = null;
+            _loc1_ = 0;
          }
          for each(_loc2_ in GLOBAL._wmCreatureLevels)
          {
-            _loc2_ = null;
+            _loc2_ = 0;
          }
       }
       
@@ -1841,7 +1842,7 @@ package
       {
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
-         var _loc4_:* = undefined;
+         var _loc4_:* = null;
          ClearWildMonsterPowerups();
          switch(param1)
          {

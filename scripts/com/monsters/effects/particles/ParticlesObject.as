@@ -7,30 +7,30 @@ package com.monsters.effects.particles
    
    public class ParticlesObject extends ParticlesObject_CLIP
    {
-      internal var _frame:int = 0;
+      private var _frame:int = 0;
       
-      internal var _id:int;
+      private var _id:int;
       
-      internal var _targetPoint:Point;
+      private var _targetPoint:Point;
       
-      internal var _target:MovieClip;
+      private var _target:MovieClip;
       
       public var _cleared:Boolean;
       
-      internal var xd:*;
+      private var xd:Number;
       
-      internal var yd:*;
+      private var yd:Number;
       
-      internal var _targetRotation:*;
+      private var _targetRotation:Number;
       
-      internal var _speed:Number;
+      private var _speed:Number;
       
       public function ParticlesObject()
       {
          super();
       }
       
-      internal function init(param1:int, param2:Point, param3:Point, param4:Number, param5:Number, param6:Number) : *
+      public function init(param1:int, param2:Point, param3:Point, param4:Number, param5:Number, param6:Number) : void
       {
          this._id = param1;
          visible = false;
@@ -67,7 +67,7 @@ package com.monsters.effects.particles
          cacheAsBitmap = true;
       }
       
-      internal function Arrived() : *
+      private function Arrived() : void
       {
          if(!this._cleared)
          {
@@ -76,7 +76,7 @@ package com.monsters.effects.particles
          }
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
          this._cleared = true;
       }

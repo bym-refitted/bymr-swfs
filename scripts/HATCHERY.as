@@ -15,20 +15,20 @@ package
          super();
       }
       
-      public static function Show(param1:BUILDING13) : *
+      public static function Show(param1:BUILDING13) : void
       {
          if(!_open)
          {
             _open = true;
             GLOBAL.BlockerAdd();
-            _mc = GLOBAL._layerWindows.addChild(new HATCHERYPOPUP());
+            _mc = GLOBAL._layerWindows.addChild(new HATCHERYPOPUP()) as HATCHERYPOPUP;
             _mc.Setup(param1);
             _mc.Center();
             _mc.ScaleUp();
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -41,18 +41,11 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
-         try
+         if(_mc)
          {
-            if(_mc)
-            {
-               _mc.Update();
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","Hatchery.Tick: " + e.message + " | " + e.getStackTrace());
+            _mc.Update();
          }
       }
    }

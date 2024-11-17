@@ -2,6 +2,7 @@ package
 {
    import com.monsters.display.ImageCache;
    import com.monsters.kingOfTheHill.KOTHHandler;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    import com.monsters.utils.VideoUtils;
    import flash.display.Bitmap;
@@ -65,7 +66,7 @@ package
       
       public static var _useBonusIndicators:Boolean = false;
       
-      private var guard:CHAMPIONMONSTER;
+      private var guard:ChampionBase;
       
       private var guardType:int;
       
@@ -79,7 +80,7 @@ package
       
       private var currFeeds:Number;
       
-      private var koth:CHAMPIONMONSTER;
+      private var koth:ChampionBase;
       
       private var kothType:int;
       
@@ -110,10 +111,6 @@ package
       public var kothLootMax:Number;
       
       public var kothLootThresholds:Array;
-      
-      public var kothLastLootTotal:Number;
-      
-      public var kothLastLootThresholds:Array = [1000000,10000000];
       
       private var _timer:Timer = new Timer(1000);
       
@@ -167,22 +164,8 @@ package
          mcCurrGuardian.stop();
          mcNextGuardian.stop();
          this.kothLootThresholds = [];
-         if(GLOBAL._flags.krallen_award_threshold)
-         {
-            this.kothLootThresholds.push(int(GLOBAL._flags.krallen_award_threshold));
-         }
-         else
-         {
-            this.kothLootThresholds.push(this._KOTH_AWARD_GOAL);
-         }
-         if(GLOBAL._flags.krallen_special1_award_threshold)
-         {
-            this.kothLootThresholds.push(int(GLOBAL._flags.krallen_special1_award_threshold));
-         }
-         else
-         {
-            this.kothLootThresholds.push(this._KOTH_AWARD_ABILITY1);
-         }
+         this.kothLootThresholds.push(int(KOTHHandler.instance.lootThresholds[1]));
+         this.kothLootThresholds.push(int(KOTHHandler.instance.lootThresholds[0]));
          this.kothLootCurrent = 0;
          this.kothLootMax = this.kothLootThresholds[this.kothLootThresholds.length - 1];
          this.kothTimeEnd = KOTHHandler.instance.timeToReset + ReplayableEventHandler.currentTime;
@@ -190,13 +173,13 @@ package
          this.kothTimeLeft = this.kothTimeEnd - ReplayableEventHandler.currentTime;
       }
       
-      public static function FeedClick(param1:MouseEvent) : *
+      public static function FeedClick(param1:MouseEvent) : void
       {
          _bCage.FeedGuardian(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),false);
          CHAMPIONCAGE.Hide(param1);
       }
       
-      public function Setup(param1:int = 0) : *
+      public function Setup(param1:int = 0) : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -420,11 +403,10 @@ package
          }
       }
       
-      public function Switch(param1:int = 0) : *
+      public function Switch(param1:int = 0) : void
       {
-         var _loc2_:int = 0;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
          var _loc6_:* = false;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
@@ -437,7 +419,7 @@ package
          mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.EvolveClick);
          bEvolve.removeEventListener(MouseEvent.CLICK,FeedClick);
          bHeal.removeEventListener(MouseEvent.CLICK,this.HealClick);
-         _loc2_ = 0;
+         var _loc2_:int = 0;
          while(_loc2_ < pagesArr.length)
          {
             if(_loc2_ == param1)
@@ -686,6 +668,7 @@ package
             p3_timeleft_txt.htmlText = "<b>" + KEYS.Get("krallen_remaining") + "</b>";
             p3_tDescription.htmlText = KEYS.Get("mon_krallendesc");
             p3_tDescription2.htmlText = KEYS.Get("krallen_desc");
+            p3_mcLootMark1.visible = !KOTHHandler.instance.hasWonPermanantly;
             if(this.kothPowerLevel >= 2)
             {
                p3_mcAbility1.gotoAndStop("loot_on");
@@ -732,28 +715,9 @@ package
          return _loc1_;
       }
       
-      private function getKothRank() : Number
-      {
-         return 10;
-      }
-      
-      private function getKothLevel() : Number
-      {
-         return 3;
-      }
-      
       private function getKothThreshold(param1:int = 1) : Number
       {
          return int(this.kothLootThresholds[Math.min(Math.max(param1 - 1,0),this.kothLootThresholds.length - 1)]);
-      }
-      
-      private function getKothTimeleft() : void
-      {
-      }
-      
-      private function getKothLootTotal() : Number
-      {
-         return 1000000;
       }
       
       private function addVideo() : void
@@ -798,7 +762,7 @@ package
       
       private function onPreviewImageLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:Bitmap = null;
          if(param1 != this._currentPreviewUrl)
          {
             return;
@@ -829,12 +793,12 @@ package
          }
       }
       
-      private function UpdatePortrait() : *
+      private function UpdatePortrait() : void
       {
          var UpdatePortraitIcon:Function;
          if(CREATURES._guardian)
          {
-            UpdatePortraitIcon = function(param1:String, param2:BitmapData):*
+            UpdatePortraitIcon = function(param1:String, param2:BitmapData):void
             {
                mcImage.addChild(new Bitmap(param2));
             };
@@ -880,14 +844,14 @@ package
          }
       }
       
-      private function FeedIconLoaded(param1:String, param2:BitmapData) : *
+      private function FeedIconLoaded(param1:String, param2:BitmapData) : void
       {
          feedIcons[0].mcImage.addChild(new Bitmap(param2));
          feedIcons[0].mcImage.width = 30;
          feedIcons[0].mcImage.height = 27;
       }
       
-      private function FeedIconLoaded2(param1:String, param2:BitmapData) : *
+      private function FeedIconLoaded2(param1:String, param2:BitmapData) : void
       {
          feedIcons[1].mcImage.addChild(new Bitmap(param2));
          feedIcons[1].mcImage.width = 30;
@@ -900,12 +864,12 @@ package
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
          var _loc5_:int = 0;
-         var _loc6_:* = undefined;
+         var _loc6_:Object = null;
          var _loc7_:int = 0;
          var _loc8_:String = null;
          var _loc9_:int = 0;
-         var _loc10_:* = undefined;
-         var _loc11_:* = undefined;
+         var _loc10_:String = null;
+         var _loc11_:* = null;
          if(CREATURES._guardian)
          {
             if(mcCurrGuardian.numChildren == 0)
@@ -964,7 +928,7 @@ package
          }
       }
       
-      private function UpdateStats() : *
+      private function UpdateStats() : void
       {
          var _loc1_:Number = NaN;
          var _loc2_:Number = NaN;
@@ -1214,6 +1178,7 @@ package
             _loc18_ = GLOBAL.FormatNumber(KOTHHandler.instance.totalLoot);
             p3_tTimeleft.htmlText = "<b>" + _loc17_ + " " + KEYS.Get("koth_bardesc_time") + "</b>";
             p3_tLootLeft.htmlText = "<b>" + _loc18_ + " " + KEYS.Get("koth_bardesc_loot") + "</b>";
+            p3_mcLootMark1.visible = !KOTHHandler.instance.hasWonPermanantly;
             p3_mcLootMark1.check.visible = KOTHHandler.instance.totalLoot >= this.kothLootThresholds[0];
             p3_mcLootMark2.check.visible = KOTHHandler.instance.totalLoot >= this.kothLootThresholds[1];
             p3_mcLootMark1.x = p3_bLootLeft.x + p3_bLootLeft.mcBG.width / this.kothLootMax * this.kothLootThresholds[0] - p3_mcLootMark1.width / 2;
@@ -1224,7 +1189,14 @@ package
             }
             else if(!p3_mcLootMark1.check.visible && !p3_mcLootMark2.check.visible)
             {
-               this.addKothTooltip(p3_mcLootMark1);
+               if(p3_mcLootMark1.visible)
+               {
+                  this.addKothTooltip(p3_mcLootMark1);
+               }
+               else
+               {
+                  this.addKothTooltip(p3_mcLootMark2);
+               }
             }
             if(CREATURES._krallen)
             {
@@ -1346,8 +1318,12 @@ package
          }
       }
       
-      public function Tick() : *
+      public function Tick() : void
       {
+         if(!CREATURES._guardian)
+         {
+            return;
+         }
          var _loc1_:int = CREATURES._guardian._feedTime.Get();
          if(_loc1_ < GLOBAL.Timestamp())
          {
@@ -1373,16 +1349,16 @@ package
          }
       }
       
-      public function SwitchClick(param1:int) : *
+      public function SwitchClick(param1:int) : Function
       {
          var page:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             Switch(page);
          };
       }
       
-      public function HealClick(param1:MouseEvent) : *
+      public function HealClick(param1:MouseEvent) : void
       {
          if(CREATURES._guardian._health.Get() < CREATURES._guardian._maxHealth)
          {
@@ -1408,7 +1384,7 @@ package
          }
       }
       
-      public function EvolveClick(param1:MouseEvent) : *
+      public function EvolveClick(param1:MouseEvent) : void
       {
          var _loc2_:int = 0;
          if(CREATURES._guardian._level.Get() < 6)
@@ -1426,7 +1402,7 @@ package
          }
       }
       
-      public function EvolveClickB() : *
+      public function EvolveClickB() : void
       {
          var _loc1_:int = 0;
          if(CREATURES._guardian._level.Get() < 6)
@@ -1446,21 +1422,17 @@ package
          }
       }
       
-      public function InstantClick(param1:MouseEvent) : *
+      public function InstantClick(param1:MouseEvent) : void
       {
-         if(CREATURES._guardian._level.Get() < 6)
+         var _loc2_:* = CREATURES._guardian._feedTime.Get() < GLOBAL.Timestamp();
+         if(CREATURES._guardian._level.Get() <= 6)
          {
-            _bCage.FeedGuardian(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),true);
-            CHAMPIONCAGE.Hide(param1);
-         }
-         else if(CREATURES._guardian._level.Get() == 6)
-         {
-            _bCage.FeedGuardian(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),true);
+            _bCage.FeedGuardian(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),true,!_loc2_);
             CHAMPIONCAGE.Hide(param1);
          }
       }
       
-      public function CantFeedClick(param1:MouseEvent) : *
+      public function CantFeedClick(param1:MouseEvent) : void
       {
          if(CREATURES._guardian._level.Get() <= 6 && CREATURES._guardian._foodBonus.Get() < 3)
          {
@@ -1472,12 +1444,12 @@ package
          }
       }
       
-      public function CantInstantClick(param1:MouseEvent) : *
+      public function CantInstantClick(param1:MouseEvent) : void
       {
          GLOBAL.Message(KEYS.Get("gcage_msgFullBuff"));
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          CHAMPIONCAGE.Hide(param1);
       }

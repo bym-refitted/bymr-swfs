@@ -109,15 +109,14 @@ package com.monsters.effects.particles
       
       public static function Remove(param1:*) : void
       {
-         var id:* = param1;
-         var particle:ParticlesObject = _particles[id];
+         var _loc2_:ParticlesObject = _particles[param1];
          --_tmpParticleCount;
          try
          {
-            MAP._GROUND.removeChild(particle);
-            particle.Clear();
-            PoolSet(particle);
-            delete _particles[id];
+            MAP._GROUND.removeChild(_loc2_);
+            _loc2_.Clear();
+            PoolSet(_loc2_);
+            delete _particles[param1];
          }
          catch(e:Error)
          {
@@ -126,26 +125,21 @@ package com.monsters.effects.particles
       
       public static function SnapShot(param1:int, param2:int, param3:Number, param4:ParticlesObject) : void
       {
-         var b:BitmapData = null;
-         var m:Matrix = null;
-         var p:* = undefined;
-         var width:int = 0;
-         var height:int = 0;
-         var x:int = param1;
-         var y:int = param2;
-         var scale:Number = param3;
-         var object:ParticlesObject = param4;
+         var _loc5_:BitmapData = null;
+         var _loc6_:Matrix = null;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
          try
          {
-            m = new Matrix();
-            width = 26;
-            height = 26;
-            b = new BitmapData(width,height,true,0);
-            m.scale(scale,scale);
-            m.tx = width * 0.5;
-            m.ty = height * 0.5;
-            b.draw(object,m);
-            MAP._EFFECTSBMP.copyPixels(b,new Rectangle(0,0,width,height),new Point(x + MAP._EFFECTSBMP.width * 0.5 - width / 2,y + MAP._EFFECTSBMP.height * 0.5 - height * 0.5),null,null,true);
+            _loc6_ = new Matrix();
+            _loc7_ = 26;
+            _loc8_ = 26;
+            _loc5_ = new BitmapData(_loc7_,_loc8_,true,0);
+            _loc6_.scale(param3,param3);
+            _loc6_.tx = _loc7_ * 0.5;
+            _loc6_.ty = _loc8_ * 0.5;
+            _loc5_.draw(param4,_loc6_);
+            MAP.effectsBMD.copyPixels(_loc5_,new Rectangle(0,0,_loc7_,_loc8_),new Point(param1 + MAP.effectsBMD.width * 0.5 - _loc7_ / 2,param2 + MAP.effectsBMD.height * 0.5 - _loc8_ * 0.5),null,null,true);
          }
          catch(e:Error)
          {

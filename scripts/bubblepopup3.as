@@ -27,7 +27,7 @@ package
          mcText.autoSize = TextFieldAutoSize.CENTER;
       }
       
-      public function Setup(param1:int, param2:int, param3:String, param4:int = 0) : *
+      public function Setup(param1:int, param2:int, param3:String, param4:int = 0) : void
       {
          this._fixedrowcount = param4;
          this.mouseEnabled = false;
@@ -37,7 +37,7 @@ package
          this.Update(param3);
       }
       
-      public function Update(param1:*) : *
+      public function Update(param1:*) : void
       {
          mcText.autoSize = TextFieldAutoSize.LEFT;
          mcText.htmlText = param1;
@@ -55,7 +55,7 @@ package
          mcText.y = mcBG.y + 5;
       }
       
-      public function Wobble() : *
+      public function Wobble() : void
       {
          rotation += 3;
          TweenLite.to(this,0.6,{
@@ -64,7 +64,7 @@ package
          });
       }
       
-      public function Nudge(param1:String) : *
+      public function Nudge(param1:String) : void
       {
          if(param1 == "up")
          {

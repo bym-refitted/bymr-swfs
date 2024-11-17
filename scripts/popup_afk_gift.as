@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol78")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol260")]
    public dynamic class popup_afk_gift extends MovieClip
    {
       public var tA:TextField;

@@ -51,7 +51,7 @@ package
          _effectDuration = 2 * 24 * 60 * 60;
       }
       
-      public static function CreepSplat(param1:String, param2:int, param3:int) : *
+      public static function CreepSplat(param1:String, param2:int, param3:int) : void
       {
          var _loc4_:int = 0;
          var _loc5_:int = 0;
@@ -84,10 +84,12 @@ package
          GIBLETS.Create(new Point(param2,param3 + 3),0.8,75,_loc4_);
       }
       
-      public static function SplatParticle(param1:Number, param2:Number, param3:Number, param4:Number, param5:Number) : *
+      public static function SplatParticle(param1:Number, param2:Number, param3:Number, param4:Number, param5:Number) : void
       {
-         var _loc6_:* = MAP._EFFECTS.addChild(new ParticleSplat());
-         var _loc7_:int = 1 + int(Math.random() * 5);
+         var _loc6_:ParticleSplat = null;
+         var _loc7_:int = 0;
+         _loc6_ = MAP._EFFECTS.addChild(new ParticleSplat()) as ParticleSplat;
+         _loc7_ = 1 + int(Math.random() * 5);
          _loc6_.gotoAndStop(_loc7_);
          _loc6_.x = param2;
          _loc6_.y = param3;
@@ -105,16 +107,16 @@ package
          ++_itemCount;
       }
       
-      public static function Scorch(param1:Point, param2:int = 0) : *
+      public static function Scorch(param1:Point, param2:int = 0) : void
       {
          SnapShotB(param1.x,param1.y,"b" + param2,0);
          Push([param1.x,param1.y,"b" + param2,0]);
       }
       
-      public static function Burn(param1:int, param2:int) : *
+      public static function Burn(param1:int, param2:int) : void
       {
          var _loc3_:int = 80 * int(Math.random() * 4) - 80;
-         MAP._EFFECTSBMP.copyPixels(_burns,new Rectangle(_loc3_,0,80,40),new Point(param1 + MAP._EFFECTSBMP.width * 0.5 - 40,param2 + MAP._EFFECTSBMP.height * 0.5 - 20),null,null,true);
+         MAP.effectsBMD.copyPixels(_burns,new Rectangle(_loc3_,0,80,40),new Point(param1 + MAP.effectsBMD.width * 0.5 - 40,param2 + MAP.effectsBMD.height * 0.5 - 20),null,null,true);
       }
       
       public static function Lightning(param1:int, param2:int, param3:int, param4:int) : void
@@ -124,7 +126,7 @@ package
          var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc5_:int = Point.distance(new Point(param1,param2),new Point(param3,param4));
-         var _loc6_:MovieClip = MAP._PROJECTILES.addChild(new MovieClip());
+         var _loc6_:MovieClip = MAP._PROJECTILES.addChild(new MovieClip()) as MovieClip;
          _loc6_.graphics.lineStyle(1,3197178,1);
          _loc6_.graphics.moveTo(param1,param2);
          var _loc11_:int = 0;
@@ -213,11 +215,9 @@ package
       
       public static function Remove(param1:*, param2:*) : void
       {
-         var container:* = param1;
-         var item:* = param2;
          try
          {
-            container.removeChild(item);
+            param1.removeChild(param2);
          }
          catch(e:Error)
          {
@@ -257,44 +257,39 @@ package
       
       public static function SnapShotB(param1:int, param2:int, param3:String, param4:int, param5:Number = 0) : void
       {
-         var b:BitmapData = null;
-         var m:Matrix = null;
-         var p:* = undefined;
-         var width:int = 0;
-         var height:int = 0;
-         var x:int = param1;
-         var y:int = param2;
-         var code:String = param3;
-         var age:int = param4;
-         var scale:Number = param5;
+         var _loc6_:BitmapData = null;
+         var _loc7_:Matrix = null;
+         var _loc8_:ParticleSplat = null;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
          try
          {
-            m = new Matrix();
-            if(scale == 0)
+            _loc7_ = new Matrix();
+            if(param5 == 0)
             {
-               scale = 1 + Math.random() * 10 / 10;
+               param5 = 1 + Math.random() * 10 / 10;
             }
-            if(code.substr(0,1) == "s")
+            if(param3.substr(0,1) == "s")
             {
-               width = 100;
-               height = 100;
-               b = new BitmapData(100,100,true,0);
-               m.scale(scale,scale);
-               m.tx = 50;
-               m.ty = 50;
-               p = _splats[0];
-               p.gotoAndStop(code.substr(1,1));
-               b.draw(p,m,new ColorTransform(1,1,1,1 - age / _effectDuration));
+               _loc9_ = 100;
+               _loc10_ = 100;
+               _loc6_ = new BitmapData(100,100,true,0);
+               _loc7_.scale(param5,param5);
+               _loc7_.tx = 50;
+               _loc7_.ty = 50;
+               _loc8_ = _splats[0];
+               _loc8_.gotoAndStop(param3.substr(1,1));
+               _loc6_.draw(_loc8_,_loc7_,new ColorTransform(1,1,1,1 - param4 / _effectDuration));
             }
-            else if(code.substr(0,1) == "b")
+            else if(param3.substr(0,1) == "b")
             {
-               width = 200;
-               height = 100;
-               b = _scorches[code.substr(1,1)];
-               m.tx = 100;
-               m.ty = 50;
+               _loc9_ = 200;
+               _loc10_ = 100;
+               _loc6_ = _scorches[param3.substr(1,1)];
+               _loc7_.tx = 100;
+               _loc7_.ty = 50;
             }
-            MAP._EFFECTSBMP.copyPixels(b,new Rectangle(0,0,width,height),new Point(x + MAP._EFFECTSBMP.width * 0.5 - width / 2,y + MAP._EFFECTSBMP.height * 0.5 - height / 2),null,null,true);
+            MAP.effectsBMD.copyPixels(_loc6_,new Rectangle(0,0,_loc9_,_loc10_),new Point(param1 + MAP.effectsBMD.width * 0.5 - _loc9_ / 2,param2 + MAP.effectsBMD.height * 0.5 - _loc10_ / 2),null,null,true);
          }
          catch(e:Error)
          {

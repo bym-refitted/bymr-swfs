@@ -6,17 +6,7 @@ package
    
    public class PLEASEWAIT extends MovieClip
    {
-      public static var _mc:*;
-      
-      public static var _intervalA:*;
-      
-      public static var _intervalB:*;
-      
-      public static var _intervalC:*;
-      
-      public static var _intervalD:*;
-      
-      public static var _active:*;
+      public static var _mc:PLEASEWAITMC;
       
       public static var _mcTips:MovieClip;
       
@@ -45,18 +35,18 @@ package
          super();
       }
       
-      public static function Show(param1:String) : *
+      public static function Show(param1:String) : void
       {
          if(!_mc)
          {
-            _mc = GLOBAL._layerTop.addChild(new PLEASEWAITMC());
+            _mc = GLOBAL._layerTop.addChild(new PLEASEWAITMC()) as PLEASEWAITMC;
             _mc.tMessage.htmlText = "<b>" + param1 + "</b>";
             _mc.mcFrame.Setup(false);
             POPUPSETTINGS.AlignToCenter(_mc);
          }
       }
       
-      public static function Update(param1:String = "Processing...") : *
+      public static function Update(param1:String = "Processing...") : void
       {
          if(_mc)
          {
@@ -65,7 +55,7 @@ package
          }
       }
       
-      public static function Hide() : *
+      public static function Hide() : void
       {
          try
          {
@@ -81,7 +71,7 @@ package
          }
       }
       
-      public static function MessageChange(... rest) : *
+      public static function MessageChange(... rest) : void
       {
          _mc.tMessage.text = rest[0];
       }

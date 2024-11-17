@@ -299,56 +299,52 @@ package
       
       public static function PlayMusicB(param1:String = "", param2:Number = 0.7, param3:Number = 0, param4:Number = 0) : void
       {
-         var soundLinkName:String = null;
-         var s:SoundLibrary = null;
-         var sndC:Class = null;
-         var sndO:Sound = null;
-         var id:String = param1;
-         var volume:Number = param2;
-         var pan:Number = param3;
-         var position:Number = param4;
-         if(_currentMusic == id)
+         var _loc5_:String = null;
+         var _loc6_:SoundLibrary = null;
+         var _loc7_:Class = null;
+         var _loc8_:Sound = null;
+         if(_currentMusic == param1)
          {
             return;
          }
          try
          {
-            if(!_concurrent[id])
+            if(!_concurrent[param1])
             {
-               _concurrent[id] = 1;
+               _concurrent[param1] = 1;
             }
-            if(_concurrent[id] <= 2)
+            if(_concurrent[param1] <= 2)
             {
-               _concurrent[id] += 1;
-               soundLinkName = id;
-               if(_sounds[id] is String)
+               _concurrent[param1] += 1;
+               _loc5_ = param1;
+               if(_sounds[param1] is String)
                {
-                  soundLinkName = _sounds[id];
+                  _loc5_ = _sounds[param1];
                }
-               else if(_sounds[id])
+               else if(_sounds[param1])
                {
                   if(_musicChannel)
                   {
                      _musicChannel.stop();
                      _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
                   }
-                  _musicChannel = _sounds[id].play(position,99999,new SoundTransform(volume,pan));
-                  _currentMusic = id;
+                  _musicChannel = _sounds[param1].play(param4,99999,new SoundTransform(param2,param3));
+                  _currentMusic = param1;
                   _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
                }
-               for each(s in soundLibraries)
+               for each(_loc6_ in soundLibraries)
                {
-                  if(s.loaded && s.li.applicationDomain.hasDefinition(soundLinkName))
+                  if(Boolean(_loc6_.loaded) && _loc6_.li.applicationDomain.hasDefinition(_loc5_))
                   {
-                     sndC = s.li.applicationDomain.getDefinition(soundLinkName) as Class;
-                     sndO = new sndC() as Sound;
+                     _loc7_ = _loc6_.li.applicationDomain.getDefinition(_loc5_) as Class;
+                     _loc8_ = new _loc7_() as Sound;
                      if(_musicChannel)
                      {
                         _musicChannel.stop();
                         _musicChannel.removeEventListener(Event.SOUND_COMPLETE,replayMusic);
                      }
-                     _musicChannel = sndO.play(position,99999,new SoundTransform(volume,pan));
-                     _currentMusic = id;
+                     _musicChannel = _loc8_.play(param4,99999,new SoundTransform(param2,param3));
+                     _currentMusic = param1;
                      _musicChannel.addEventListener(Event.SOUND_COMPLETE,replayMusic);
                   }
                }
@@ -409,7 +405,7 @@ package
             }
             catch(e:Error)
             {
-               LOGGER.Log("err","SOUNDS.Play error",e.getStackTrace());
+               LOGGER.Log("err","SOUNDS.Play error",Boolean(e.getStackTrace()));
             }
          }
          return null;

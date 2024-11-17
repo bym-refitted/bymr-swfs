@@ -71,7 +71,8 @@ package com.monsters.ai
          {
             return;
          }
-         if(TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice")
+         var _loc3_:Object = TRIBES.TribeForBaseID(BASE._wmID);
+         if(Boolean(_loc3_) && _loc3_.behaviour == "juice")
          {
             GLOBAL._hatcheryOverdrivePower = new SecNum(10);
          }
@@ -171,7 +172,7 @@ package com.monsters.ai
                repairing = true;
             }
          }
-         if(!GLOBAL._catchup && GLOBAL._bJuicer)
+         if(!GLOBAL._catchup && Boolean(GLOBAL._bJuicer))
          {
             if(tick % juiceQ == 0 && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice" && GLOBAL._bJuicer._hp.Get() > 0.5 * GLOBAL._bJuicer._hpMax.Get() && GLOBAL._bTownhall._hp.Get() > 0)
             {
@@ -388,7 +389,7 @@ package com.monsters.ai
          else
          {
             _mc = new popup_aibase_failure() as MovieClip;
-            _mc.Resize = function():*
+            _mc.Resize = function():void
             {
                _mc.x = 0;
                _mc.y = 0;

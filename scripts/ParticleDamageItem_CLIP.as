@@ -3,7 +3,7 @@ package
    import flash.display.Sprite;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1543")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1597")]
    public dynamic class ParticleDamageItem_CLIP extends Sprite
    {
       public var tLootA:TextField;

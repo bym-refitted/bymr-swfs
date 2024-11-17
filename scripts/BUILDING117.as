@@ -12,7 +12,7 @@ package
          SetProps();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          ++ACHIEVEMENTS._stats["heavytraps"];
          ACHIEVEMENTS.Check();

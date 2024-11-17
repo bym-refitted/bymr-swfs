@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.subscriptions.SubscriptionHandler;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
@@ -19,9 +20,9 @@ package
       
       public static var _popupCreatureID:String;
       
-      public static const NUM_CREEP_TYPE:* = 18;
+      public static const NUM_CREEP_TYPE:int = 18;
       
-      public static const NUM_ICREEP_TYPE:* = 8;
+      public static const NUM_ICREEP_TYPE:int = 8;
       
       public function CREATURELOCKER()
       {
@@ -82,7 +83,7 @@ package
          }
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _page = 1;
          _popupCreatureID = getFirstCreatureID();
@@ -493,6 +494,7 @@ package
                "stream":["","",""],
                "blocked":true,
                "fake":true,
+               "dependent":"C17",
                "props":{
                   "speed":[1.5,1.6,1.7,1.8,1.9,2],
                   "health":[250],
@@ -706,7 +708,7 @@ package
          };
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var StreamPost:Function;
          var i:String = null;
@@ -715,98 +717,84 @@ package
          var img:String = null;
          var mc:popup_monster = null;
          var _body:String = null;
-         try
+         _unlocking = null;
+         for(i in _lockerData)
          {
-            _unlocking = null;
-            for(i in _lockerData)
+            if(_lockerData[i].t == 1)
             {
-               if(_lockerData[i].t == 1)
+               isInfernoType = i.substring(0,2) == "IC";
+               if(BASE.isInferno() && isInfernoType || !BASE.isInferno() && !isInfernoType)
                {
-                  isInfernoType = i.substring(0,2) == "IC";
-                  if(BASE.isInferno() && isInfernoType || !BASE.isInferno() && !isInfernoType)
-                  {
-                     _unlocking = i;
-                     break;
-                  }
+                  _unlocking = i;
+                  break;
                }
             }
          }
-         catch(e:Error)
+         if(_unlocking != null)
          {
-            LOGGER.Log("err","CreatureLocker.Tick A: " + _unlocking + " | " + e.message + " | " + e.getStackTrace());
-         }
-         try
-         {
-            if(_unlocking != null)
+            if(GLOBAL._lockerOverdrive > 0)
             {
-               if(GLOBAL._lockerOverdrive > 0)
+               _lockerData[_unlocking].e -= 4;
+            }
+            if(_lockerData[_unlocking].e - GLOBAL.Timestamp() <= 0)
+            {
+               _lockerData[_unlocking].t = 2;
+               ACADEMY._upgrades[_unlocking] = {"level":1};
+               GLOBAL._playerCreatureUpgrades[_unlocking] = {"level":1};
+               ACHIEVEMENTS.Check("unlock_monster",1);
+               delete _lockerData[_unlocking].s;
+               delete _lockerData[_unlocking].e;
+               creature = _creatures[_unlocking];
+               img = "quests/monster" + _unlocking.substr(1) + ".v2.png";
+               if(creature.stream[2])
                {
-                  _lockerData[_unlocking].e -= 4;
+                  img = creature.stream[2];
                }
-               if(_lockerData[_unlocking].e - GLOBAL.Timestamp() <= 0)
+               LOGGER.Stat([10,int(_unlocking.substr(1))]);
+               if(GLOBAL._mode == "build")
                {
-                  _lockerData[_unlocking].t = 2;
-                  ACADEMY._upgrades[_unlocking] = {"level":1};
-                  GLOBAL._playerCreatureUpgrades[_unlocking] = {"level":1};
-                  ACHIEVEMENTS.Check("unlock_monster",1);
-                  delete _lockerData[_unlocking].s;
-                  delete _lockerData[_unlocking].e;
-                  creature = _creatures[_unlocking];
-                  img = "quests/monster" + _unlocking.substr(1) + ".v2.png";
-                  if(creature.stream[2])
+                  StreamPost = function(param1:String, param2:String, param3:String):Function
                   {
-                     img = creature.stream[2];
-                  }
-                  LOGGER.Stat([10,int(_unlocking.substr(1))]);
-                  if(GLOBAL._mode == "build")
-                  {
-                     StreamPost = function(param1:String, param2:String, param3:String):*
+                     var st:String = param1;
+                     var sd:String = param2;
+                     var im:String = param3;
+                     return function(param1:MouseEvent = null):void
                      {
-                        var st:String = param1;
-                        var sd:String = param2;
-                        var im:String = param3;
-                        return function(param1:MouseEvent = null):*
-                        {
-                           GLOBAL.CallJS("sendFeed",["unlock-end",st,sd,im,0]);
-                           POPUPS.Next();
-                        };
+                        GLOBAL.CallJS("sendFeed",["unlock-end",st,sd,im,0]);
+                        POPUPS.Next();
                      };
-                     mc = new popup_monster();
-                     mc.bSpeedup.SetupKey("btn_warnyourfriends");
-                     if(!creature.stream[0])
-                     {
-                        mc.bSpeedup.visible = false;
-                     }
-                     _body = "";
-                     if(creature.stream[1])
-                     {
-                        _body = KEYS.Get(creature.stream[1]);
-                     }
-                     mc.bSpeedup.addEventListener(MouseEvent.CLICK,StreamPost(KEYS.Get(creature.stream[0]),_body,img));
-                     mc.bSpeedup.Highlight = true;
-                     mc.bAction.visible = false;
-                     mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
-                        "v1":KEYS.Get(CREATURELOCKER._creatures[_unlocking].name),
-                        "v2":GLOBAL._bHatchery._buildingProps.name
-                     });
-                     POPUPS.Push(mc,null,null,null,_unlocking + "-150.png");
-                  }
-                  if(_mc)
+                  };
+                  mc = new popup_monster();
+                  mc.bSpeedup.SetupKey("btn_warnyourfriends");
+                  if(!creature.stream[0])
                   {
-                     _mc.Update();
+                     mc.bSpeedup.visible = false;
                   }
-                  _unlocking = null;
-                  QUESTS.Check();
+                  _body = "";
+                  if(creature.stream[1])
+                  {
+                     _body = KEYS.Get(creature.stream[1]);
+                  }
+                  mc.bSpeedup.addEventListener(MouseEvent.CLICK,StreamPost(KEYS.Get(creature.stream[0]),_body,img));
+                  mc.bSpeedup.Highlight = true;
+                  mc.bAction.visible = false;
+                  mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
+                     "v1":KEYS.Get(CREATURELOCKER._creatures[_unlocking].name),
+                     "v2":GLOBAL._bHatchery._buildingProps.name
+                  });
+                  POPUPS.Push(mc,null,null,null,_unlocking + "-150.png");
                }
-            }
-            if(_mc)
-            {
-               _mc.Tick();
+               if(_mc)
+               {
+                  _mc.Update();
+               }
+               _unlocking = null;
+               QUESTS.Check();
             }
          }
-         catch(e:Error)
+         if(_mc)
          {
-            LOGGER.Log("err","CreatureLocker.Tick B: " + _unlocking + " | " + e.message + " | " + e.getStackTrace());
+            _mc.Tick();
          }
       }
       
@@ -837,7 +825,7 @@ package
          }
          if(BASE.Charge(3,creature.resource))
          {
-            StreamPost = function(param1:MouseEvent = null):*
+            StreamPost = function(param1:MouseEvent = null):void
             {
                GLOBAL.CallJS("sendFeed",["unlock-start",KEYS.Get("mon_unlockstart",{
                   "v1":KEYS.Get(creature.name),
@@ -845,7 +833,7 @@ package
                }),KEYS.Get("mon_unlockstart_streambody",{"v1":KEYS.Get(creature.name)}),CREATURELOCKER._creatures[creatureID].stream[2],0]);
                POPUPS.Next();
             };
-            SpeedUp = function(param1:MouseEvent = null):*
+            SpeedUp = function(param1:MouseEvent = null):void
             {
                POPUPS.Next();
                STORE.SpeedUp("SP4");
@@ -886,7 +874,7 @@ package
          return false;
       }
       
-      public static function Cancel() : *
+      public static function Cancel() : void
       {
          if(_unlocking)
          {
@@ -898,7 +886,7 @@ package
          BASE.Save();
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(Boolean(GLOBAL._bLocker) && GLOBAL._bLocker._lvl.Get() >= 1)
          {
@@ -906,7 +894,7 @@ package
             {
                _open = true;
                GLOBAL.BlockerAdd();
-               _mc = GLOBAL._layerWindows.addChild(new CREATURELOCKERPOPUP());
+               _mc = GLOBAL._layerWindows.addChild(new CREATURELOCKERPOPUP()) as CREATURELOCKERPOPUP;
                _mc.Center();
                _mc.ScaleUp();
             }
@@ -917,7 +905,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -930,7 +918,7 @@ package
          }
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          if(_mc)
          {
@@ -938,17 +926,17 @@ package
          }
       }
       
-      public static function Check() : *
+      public static function Check() : String
       {
          var tmpArray:Array = null;
-         var Push:Function = function(param1:String):*
+         var Push:Function = function(param1:String):void
          {
             var _loc2_:Object = _creatures[param1];
             var _loc3_:Object = _loc2_.props;
             tmpArray.push([_loc2_.page,_loc2_.resource,_loc2_.time,_loc2_.level,_loc2_.trainingCosts,_loc3_.speed,_loc3_.health,_loc3_.damage,_loc3_.armor,_loc3_.accuracy,_loc3_.cTime,_loc3_.cResource,_loc3_.cStorage,_loc3_.bucket,_loc3_.size]);
          };
          tmpArray = [];
-         var i:* = 1;
+         var i:int = 1;
          while(i <= 16)
          {
             Push("C" + i);
@@ -1147,7 +1135,7 @@ package
             }
             _loc3_.sortOn(["index"],Array.NUMERIC);
          }
-         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && (BASE.isInferno() || HATCHERYCC.doesShowInfernoCreeps);
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && (BASE.isInferno() || SubscriptionHandler.isEnabledForAll || HATCHERYCC.doesShowInfernoCreeps);
          if(_loc7_)
          {
             _loc12_ = CREATURELOCKER.GetCreatures("inferno");

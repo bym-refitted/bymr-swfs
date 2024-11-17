@@ -1,5 +1,7 @@
 package com.monsters.baseplanner
 {
+   import flash.geom.Point;
+   
    public class PlannerTemplate
    {
       public static const _DECORATION_ID:int = 1000000;
@@ -32,7 +34,10 @@ package com.monsters.baseplanner
          while(_loc3_ < this.displayData.length)
          {
             _loc4_ = this.displayData[_loc3_];
-            _loc2_.push(new BaseTemplateNode(_loc4_.x,_loc4_.y,_loc4_.id,_loc4_.type));
+            if(!BASE.isBuildingIgnoredInYardPlannerSave(_loc4_.building))
+            {
+               _loc2_.push(new BaseTemplateNode(_loc4_.x,_loc4_.y,_loc4_.id,_loc4_.type));
+            }
             _loc3_++;
          }
          _loc1_.nodes = _loc2_;
@@ -53,6 +58,11 @@ package com.monsters.baseplanner
          var _loc6_:BaseTemplateNode = null;
          var _loc7_:BFOUNDATION = null;
          var _loc8_:PlannerNode = null;
+         var _loc9_:PlannerNode = null;
+         var _loc10_:Point = null;
+         var _loc11_:Number = 0;
+         var _loc12_:Boolean = false;
+         var _loc13_:* = 0;
          this.displayData.length = 0;
          this.inventoryData.length = 0;
          var _loc2_:Vector.<BaseTemplateNode> = new Vector.<BaseTemplateNode>();
@@ -76,14 +86,48 @@ package com.monsters.baseplanner
          _loc3_ = 0;
          while(_loc3_ < _loc4_.length)
          {
-            this.inventoryData.push(_loc4_[_loc3_]);
+            _loc9_ = _loc4_[_loc3_];
+            if(_loc9_.category == "misc")
+            {
+               _loc10_ = GRID.FromISO(_loc9_.building.x,_loc9_.building.y);
+               _loc9_.x = _loc10_.x;
+               _loc9_.y = _loc10_.y;
+               this.displayData.push(_loc9_);
+            }
+            else
+            {
+               this.inventoryData.push(_loc9_);
+            }
             _loc3_++;
          }
          var _loc5_:Vector.<PlannerNode> = this.getNodesFromStoredBuildings();
          _loc3_ = 0;
          while(_loc3_ < _loc5_.length)
          {
-            this.inventoryData.push(_loc5_[_loc3_]);
+            _loc11_ = 0;
+            _loc12_ = false;
+            _loc13_ = _loc2_.length;
+            _loc11_ = 0;
+            while(_loc11_ < _loc13_)
+            {
+               if(_loc5_[_loc3_].type == _loc2_[_loc11_].type)
+               {
+                  _loc5_[_loc3_].x = _loc2_[_loc11_].x;
+                  _loc5_[_loc3_].y = _loc2_[_loc11_].y;
+                  _loc2_.splice(_loc11_,1);
+                  _loc12_ = true;
+                  break;
+               }
+               _loc11_++;
+            }
+            if(_loc12_)
+            {
+               this.displayData.push(_loc5_[_loc3_]);
+            }
+            else
+            {
+               this.inventoryData.push(_loc5_[_loc3_]);
+            }
             _loc3_++;
          }
       }
@@ -99,7 +143,7 @@ package com.monsters.baseplanner
          var _loc2_:Vector.<PlannerNode> = new Vector.<PlannerNode>();
          for each(_loc3_ in BASE._buildingsAll)
          {
-            if(!BASE.isBuildingIgnoredInYardPlanner(_loc3_) && !param1.getNodeFromBuildingID(_loc3_._id) && _loc3_._class != "decoration")
+            if(!param1.getNodeFromBuildingID(_loc3_._id))
             {
                _loc2_.push(new PlannerNode(_loc3_));
             }

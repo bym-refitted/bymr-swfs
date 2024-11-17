@@ -796,7 +796,7 @@ package com.monsters.chat
          return _displayNameMap[param1];
       }
       
-      public function toggleMinimizedStat(param1:Boolean = true) : *
+      public function toggleMinimizedStat(param1:Boolean = true) : void
       {
          if(param1 == true)
          {
@@ -905,8 +905,8 @@ package com.monsters.chat
       {
          var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
-         var _loc2_:* = GLOBAL._ROOT.stage.stageHeight;
+         var _loc1_:int = GLOBAL._ROOT.stage.stageWidth;
+         var _loc2_:int = GLOBAL._ROOT.stage.stageHeight;
          var _loc5_:Rectangle = new Rectangle(0 - (_loc1_ - GLOBAL._SCREENINIT.width) / 2 + 0,0 - (_loc2_ - GLOBAL._SCREENINIT.height) / 2 + 0,_loc1_,_loc2_);
          this._hideX = _loc5_.x;
          this._showX = _loc5_.x;
@@ -971,7 +971,7 @@ package com.monsters.chat
          return true;
       }
       
-      public function displayUnavailable(param1:String = null) : *
+      public function displayUnavailable(param1:String = null) : void
       {
          this.clearChat();
          if(param1 != null)

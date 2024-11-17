@@ -114,12 +114,11 @@ package
       
       private function onSuccess(param1:Object) : void
       {
-         var data:Object = param1;
-         if(data.error != undefined && data.error != 0)
+         if(param1.error != undefined && param1.error != 0)
          {
             try
             {
-               LOGGER.Log("err","mailbox-" + data.error);
+               LOGGER.Log("err","mailbox-" + param1.error);
             }
             catch(e:*)
             {
@@ -128,7 +127,7 @@ package
          }
          else
          {
-            this._sign.SetGiftingProps(data.threadid,this._subject,this._senderid,this._senderName,this._senderPic);
+            this._sign.SetGiftingProps(param1.threadid,this._subject,this._senderid,this._senderName,this._senderPic);
             SIGNS.Hide();
          }
       }

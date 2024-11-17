@@ -384,7 +384,7 @@ package com.monsters.maproom_inferno
             this._BRIDGE.setVisitingFriend(false);
          }
          GLOBAL._advancedMap = 0;
-         BASE.LoadBase(null,null,Number(param1),param2,false,BASE.INFERNO_YARD);
+         BASE.LoadBase(null,0,Number(param1),param2,false,BASE.INFERNO_YARD);
          if(!MAPROOM_DESCENT.DescentPassed && param2 == "iwmattack")
          {
             LOGGER.Stat([87,_loc3_.level.Get(),"Attacked"]);

@@ -11,7 +11,7 @@ package com.monsters.maproom_advanced
          super();
       }
       
-      public function Setup() : *
+      public function Setup() : void
       {
          tTitle.htmlText = KEYS.Get("empiredestroyed_title");
          bYes.SetupKey("empiredestroyed_btnflee");
@@ -38,12 +38,12 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Relocate(param1:MouseEvent = null) : *
+      public function Relocate(param1:MouseEvent = null) : void
       {
          var RelocateSuccess:Function = null;
          var RelocateFail:Function = null;
          var e:MouseEvent = param1;
-         RelocateSuccess = function(param1:Object):*
+         RelocateSuccess = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
             if(param1.error == 0)
@@ -73,7 +73,7 @@ package com.monsters.maproom_advanced
                LOGGER.Log("err","PopupLostMainBase.Relocate non-zero error " + param1.error);
             }
          };
-         RelocateFail = function(param1:IOErrorEvent):*
+         RelocateFail = function(param1:IOErrorEvent):void
          {
             PLEASEWAIT.Hide();
             GLOBAL.ErrorMessage("PopupLostMainBase.Relocate 2");
@@ -85,7 +85,7 @@ package com.monsters.maproom_advanced
          new URLLoaderApi().load(GLOBAL._baseURL + "migrate",relocateVars,RelocateSuccess,RelocateFail);
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          POPUPS.Next();
       }

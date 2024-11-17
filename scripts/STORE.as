@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.utils.MovieClipUtils;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -79,7 +80,7 @@ package
          super();
       }
       
-      public static function Data(param1:Object, param2:Object, param3:Object = null) : *
+      public static function Data(param1:Object, param2:Object, param3:Object = null) : void
       {
          _storeItems = {};
          _storeData = {};
@@ -129,7 +130,7 @@ package
       
       public static function GetTimeCost(param1:int, param2:Boolean = true) : int
       {
-         var _loc3_:* = undefined;
+         var _loc3_:int = 0;
          var _loc4_:int = 0;
          if(param2 && param1 <= 5 * 60)
          {
@@ -152,12 +153,12 @@ package
          return Math.ceil(Math.pow(Math.sqrt(_loc2_ / 2),0.75));
       }
       
-      public static function Variables() : *
+      public static function Variables() : void
       {
          var _loc2_:int = 0;
          var _loc6_:BFOUNDATION = null;
          var _loc7_:int = 0;
-         var _loc8_:* = undefined;
+         var _loc8_:int = 0;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc11_:BFOUNDATION = null;
@@ -575,7 +576,7 @@ package
          }
       }
       
-      public static function AddInventory(param1:String) : *
+      public static function AddInventory(param1:String) : void
       {
          var _loc4_:int = 0;
          var _loc5_:int = 0;
@@ -641,19 +642,19 @@ package
          return 0;
       }
       
-      public static function Show(param1:int = 1, param2:int = 1, param3:Array = null, param4:Boolean = false) : *
+      public static function Show(param1:int = 1, param2:int = 1, param3:Array = null, param4:Boolean = false) : Function
       {
          var tab:int = param1;
          var page:int = param2;
          var customPage:Array = param3;
          var force:Boolean = param4;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             ShowB(tab,page,customPage,force);
          };
       }
       
-      public static function ShowB(param1:int, param2:Number = 0, param3:Array = null, param4:Boolean = false) : *
+      public static function ShowB(param1:int, param2:Number = 0, param3:Array = null, param4:Boolean = false) : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -729,8 +730,8 @@ package
       
       public static function SpeedUp(param1:String) : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:int = 0;
          var _loc4_:String = null;
          var _loc5_:MONSTERLAB = null;
          var _loc6_:String = null;
@@ -744,7 +745,7 @@ package
             {
                _loc3_ = _loc2_._repairTime;
             }
-            if(GLOBAL._mode == "build" && _loc2_)
+            if(GLOBAL._mode == "build" && Boolean(_loc2_))
             {
                _streamline = new STREAMLINESPEEDUP_CLIP();
                if(_loc3_ > 0)
@@ -948,29 +949,28 @@ package
          }
       }
       
-      public static function SwitchClick(param1:int, param2:int, param3:Boolean = false) : *
+      public static function SwitchClick(param1:int, param2:int, param3:Boolean = false) : Function
       {
          var tab:int = param1;
          var page:int = param2;
          var click:Boolean = param3;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             _customPage = null;
             Switch(tab,page,null,click);
-            _scroller.ScrollTo(0,0);
+            _scroller.ScrollTo(0,false);
          };
       }
       
       public static function CalcCost(param1:String, param2:Boolean = false) : *
       {
-         var _loc4_:* = undefined;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc6_:String = null;
+         var _loc7_:* = null;
          var _loc13_:String = null;
          var _loc14_:String = null;
          var _loc15_:String = null;
-         var _loc19_:String = null;
          var _loc21_:* = null;
          var _loc24_:MONSTERLAB = null;
          var _loc25_:String = null;
@@ -984,10 +984,10 @@ package
          var _loc10_:Object = _storeItems[_loc9_];
          var _loc11_:Object = _storeData[_loc9_];
          var _loc12_:int = 0;
-         var _loc16_:* = GLOBAL._selectedBuilding;
+         var _loc16_:BFOUNDATION = GLOBAL._selectedBuilding;
          var _loc17_:Boolean = false;
          var _loc18_:Array = _loc10_.c;
-         _loc19_ = _loc9_;
+         var _loc19_:String = _loc9_;
          Variables();
          if(_loc19_.substr(0,2) == "SP")
          {
@@ -1020,7 +1020,7 @@ package
                _loc12_ = _loc16_._countdownUpgrade.Get() + _loc16_._countdownBuild.Get() + _loc16_._countdownFortify.Get();
                if(_loc16_._repairing)
                {
-                  _loc12_ = int(_loc16_._repairTime);
+                  _loc12_ = _loc16_._repairTime;
                }
                if(_loc12_ > 0)
                {
@@ -1174,7 +1174,7 @@ package
          _loc5_ = int(_loc10_.c.length);
          if(_loc11_)
          {
-            _loc4_ = _loc11_.q;
+            _loc4_ = int(_loc11_.q);
          }
          if(_loc10_.i)
          {
@@ -1209,7 +1209,7 @@ package
                _loc12_ = 0;
                if(_loc16_._repairing)
                {
-                  _loc12_ = int(_loc16_._repairTime);
+                  _loc12_ = _loc16_._repairTime;
                }
                else if(_loc16_._countdownUpgrade.Get() + _loc16_._countdownBuild.Get() + _loc16_._countdownFortify.Get() > 0)
                {
@@ -1418,23 +1418,23 @@ package
          return _loc7_;
       }
       
-      public static function Switch(param1:int, param2:Number, param3:Array = null, param4:Boolean = false) : *
+      public static function Switch(param1:int, param2:Number, param3:Array = null, param4:Boolean = false) : void
       {
-         var _loc6_:* = undefined;
+         var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:* = undefined;
-         var _loc9_:* = undefined;
+         var _loc8_:String = null;
+         var _loc9_:* = null;
          var _loc10_:* = null;
          var _loc13_:Array = null;
          var _loc20_:String = null;
          var _loc21_:Object = null;
          var _loc22_:Object = null;
-         var _loc23_:* = undefined;
+         var _loc23_:STOREITEM = null;
          var _loc24_:int = 0;
          var _loc25_:String = null;
          var _loc26_:String = null;
          var _loc27_:String = null;
-         var _loc28_:* = undefined;
+         var _loc28_:BFOUNDATION = null;
          var _loc29_:Boolean = false;
          var _loc30_:Array = null;
          var _loc31_:String = null;
@@ -1596,7 +1596,7 @@ package
                   _loc24_ = _loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() + _loc28_._countdownFortify.Get();
                   if(_loc28_._repairing)
                   {
-                     _loc24_ = int(_loc28_._repairTime);
+                     _loc24_ = _loc28_._repairTime;
                   }
                   if(_loc24_ > 0)
                   {
@@ -1884,7 +1884,7 @@ package
             _loc7_ = int(_loc21_.c.length);
             if(_loc22_)
             {
-               _loc6_ = _loc22_.q;
+               _loc6_ = int(_loc22_.q);
             }
             if(_loc21_.i)
             {
@@ -1919,7 +1919,7 @@ package
                   _loc24_ = 0;
                   if(_loc28_._repairing)
                   {
-                     _loc24_ = int(_loc28_._repairTime);
+                     _loc24_ = _loc28_._repairTime;
                   }
                   else if(_loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() + _loc28_._countdownFortify.Get() > 0)
                   {
@@ -2229,12 +2229,12 @@ package
             _scroller.Init(_mc.window.content as Sprite,_mc.window.msk as MovieClip,0,0,391,30);
             if(_scrollPosUpdate)
             {
-               _scroller.ScrollTo(0,0);
+               _scroller.ScrollTo(0,false);
             }
          }
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          if(_open)
          {
@@ -2243,7 +2243,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -2257,10 +2257,10 @@ package
          }
       }
       
-      public static function Buy(param1:String) : *
+      public static function Buy(param1:String) : Function
       {
          var itemCode:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc2_:* = undefined;
             var _loc3_:* = undefined;
@@ -2318,22 +2318,22 @@ package
          };
       }
       
-      public static function BuyB(param1:String, param2:Boolean = false) : *
+      public static function BuyB(param1:String, param2:Boolean = false) : void
       {
          var _loc4_:int = 0;
          var _loc5_:Array = null;
          var _loc7_:Boolean = false;
          var _loc8_:int = 0;
-         var _loc11_:BFOUNDATION = null;
-         var _loc12_:int = 0;
-         var _loc13_:BFOUNDATION = null;
-         var _loc14_:int = 0;
+         var _loc9_:String = null;
+         var _loc12_:BFOUNDATION = null;
+         var _loc13_:int = 0;
+         var _loc14_:BFOUNDATION = null;
          var _loc15_:int = 0;
-         var _loc16_:String = null;
-         var _loc17_:MONSTERLAB = null;
-         var _loc18_:BFOUNDATION = null;
-         var _loc19_:String = null;
-         var _loc3_:* = _storeItems[param1];
+         var _loc16_:int = 0;
+         var _loc17_:String = null;
+         var _loc18_:MONSTERLAB = null;
+         var _loc19_:BFOUNDATION = null;
+         var _loc3_:Object = _storeItems[param1];
          var _loc6_:Number = Number(_loc3_.quantity);
          if(param2)
          {
@@ -2358,18 +2358,18 @@ package
          if(_storeData[param1] && _storeData[param1].q >= _loc3_.c.length && !_loc3_.i)
          {
             GLOBAL.Message(KEYS.Get("str_prob_alreadyhave"));
-            return false;
+            return;
          }
-         var _loc9_:int = int(_loc3_.quantity);
-         if(_loc9_ == 0)
+         var _loc10_:int = int(_loc3_.quantity);
+         if(_loc10_ == 0)
          {
-            _loc9_ = 1;
+            _loc10_ = 1;
          }
          if(param1.substr(0,2) == "BR" || param1.substr(0,3) == "SP4")
          {
-            _loc9_ = _loc4_;
+            _loc10_ = _loc4_;
          }
-         var _loc10_:int = _loc9_;
+         var _loc11_:int = _loc10_;
          if(!_loc7_ && !param2)
          {
             BASE._credits.Add(-_loc4_);
@@ -2381,47 +2381,47 @@ package
          }
          if(param1.substr(0,3) == "BLK")
          {
-            _loc12_ = int(param1.substr(3,1));
-            for each(_loc11_ in BASE._buildingsWalls)
+            _loc13_ = int(param1.substr(3,1));
+            for each(_loc12_ in BASE._buildingsWalls)
             {
-               if(_loc11_._countdownBuild.Get() > 0)
+               if(_loc12_._countdownBuild.Get() > 0)
                {
-                  _loc11_.Constructed();
+                  _loc12_.Constructed();
                }
-               if(_loc11_._countdownUpgrade.Get() > 0)
+               if(_loc12_._countdownUpgrade.Get() > 0)
                {
-                  _loc11_.Upgraded();
+                  _loc12_.Upgraded();
                }
-               while(_loc11_._lvl.Get() < _loc12_)
+               while(_loc12_._lvl.Get() < _loc13_)
                {
-                  _loc11_.Upgraded();
+                  _loc12_.Upgraded();
                }
             }
-            _loc10_ = _loc4_;
+            _loc11_ = _loc4_;
             if(BASE.isInferno())
             {
-               if(_loc12_ == 2)
+               if(_loc13_ == 2)
                {
                   GLOBAL.Message("<b>" + KEYS.Get("msg_wallsgranite") + "</b>");
                }
-               else if(_loc12_ == 3)
+               else if(_loc13_ == 3)
                {
                   GLOBAL.Message("<b>" + KEYS.Get("msg_wallsforgedsteel") + "</b>");
                }
             }
-            else if(_loc12_ == 2)
+            else if(_loc13_ == 2)
             {
                GLOBAL.Message("<b>" + KEYS.Get("msg_wallsstone") + "</b>");
             }
-            else if(_loc12_ == 3)
+            else if(_loc13_ == 3)
             {
                GLOBAL.Message("<b>" + KEYS.Get("msg_wallsmetal") + "</b>");
             }
-            else if(_loc12_ == 4)
+            else if(_loc13_ == 4)
             {
                GLOBAL.Message("<b>" + KEYS.Get("msg_wallsgold") + "</b>");
             }
-            else if(_loc12_ == 5)
+            else if(_loc13_ == 5)
             {
                GLOBAL.Message("<b>" + KEYS.Get("msg_wallsblackdiamond") + "</b>");
             }
@@ -2448,88 +2448,88 @@ package
          }
          if(param1.substr(0,2) == "SP")
          {
-            _loc13_ = GLOBAL._selectedBuilding;
-            _loc14_ = 0;
+            _loc14_ = GLOBAL._selectedBuilding;
+            _loc15_ = 0;
             if(param1.substr(2,1) == "1")
             {
-               _loc14_ = 5 * 60;
+               _loc15_ = 5 * 60;
             }
             if(param1.substr(2,1) == "2")
             {
-               _loc14_ = 60 * 60;
+               _loc15_ = 60 * 60;
             }
             if(param1.substr(2,1) == "3")
             {
-               _loc14_ = 2 * 60 * 60;
+               _loc15_ = 2 * 60 * 60;
             }
-            if(_loc13_._repairing)
+            if(_loc14_._repairing)
             {
-               _loc15_ = _loc13_._lvl.Get() == 0 ? 0 : int(_loc13_._lvl.Get() - 1);
-               _loc13_._hp.Add(Math.ceil(_loc13_._hpMax.Get() / _loc13_._repairTime) * _loc14_);
-               _loc16_ = param1.substr(2,1);
-               if(_loc16_ == "4" || _loc16_ == "1" || _loc13_._hp.Get() > _loc13_._hpMax.Get())
+               _loc16_ = _loc14_._lvl.Get() == 0 ? 0 : int(_loc14_._lvl.Get() - 1);
+               _loc14_._hp.Add(Math.ceil(_loc14_._hpMax.Get() / _loc14_._repairTime) * _loc15_);
+               _loc17_ = param1.substr(2,1);
+               if(_loc17_ == "4" || _loc17_ == "1" || _loc14_._hp.Get() > _loc14_._hpMax.Get())
                {
-                  _loc13_._hp.Set(_loc13_._hpMax.Get());
-                  LOGGER.Stat([26,_loc13_._type,0,1,_loc4_]);
+                  _loc14_._hp.Set(_loc14_._hpMax.Get());
+                  LOGGER.Stat([26,_loc14_._type,0,1,_loc4_]);
                }
                else
                {
-                  LOGGER.Stat([26,_loc13_._type,0,0,_loc4_]);
+                  LOGGER.Stat([26,_loc14_._type,0,0,_loc4_]);
                }
             }
-            else if(_loc13_._countdownBuild.Get())
+            else if(_loc14_._countdownBuild.Get())
             {
-               _loc13_._countdownBuild.Add(-_loc14_);
+               _loc14_._countdownBuild.Add(-_loc15_);
                _loc8_ = 0;
-               if(_loc13_._countdownBuild.Get() <= 0 || param1.substr(2,1) == "4")
+               if(_loc14_._countdownBuild.Get() <= 0 || param1.substr(2,1) == "4")
                {
                   _loc8_ = 1;
-                  _loc13_._countdownBuild.Set(0);
-                  _loc13_.Constructed();
-                  _loc13_.Update();
+                  _loc14_._countdownBuild.Set(0);
+                  _loc14_.Constructed();
+                  _loc14_.Update();
                }
-               LOGGER.Stat([1,_loc13_._type,0,_loc8_,_loc4_]);
+               LOGGER.Stat([1,_loc14_._type,0,_loc8_,_loc4_]);
             }
-            else if(_loc13_._countdownUpgrade.Get())
+            else if(_loc14_._countdownUpgrade.Get())
             {
-               _loc13_._countdownUpgrade.Add(-_loc14_);
+               _loc14_._countdownUpgrade.Add(-_loc15_);
                _loc8_ = 0;
-               if(_loc13_._countdownUpgrade.Get() <= 0 || param1.substr(2,1) == "4")
+               if(_loc14_._countdownUpgrade.Get() <= 0 || param1.substr(2,1) == "4")
                {
                   _loc8_ = 1;
-                  _loc13_._countdownUpgrade.Set(0);
-                  _loc13_.Upgraded();
-                  _loc13_.Update();
-                  LOGGER.Stat([2,_loc13_._type,_loc13_._lvl.Get(),1,_loc4_]);
+                  _loc14_._countdownUpgrade.Set(0);
+                  _loc14_.Upgraded();
+                  _loc14_.Update();
+                  LOGGER.Stat([2,_loc14_._type,_loc14_._lvl.Get(),1,_loc4_]);
                }
                else
                {
-                  LOGGER.Stat([2,_loc13_._type,_loc13_._lvl.Get() + 1,0,_loc4_]);
+                  LOGGER.Stat([2,_loc14_._type,_loc14_._lvl.Get() + 1,0,_loc4_]);
                }
             }
-            else if(_loc13_._countdownFortify.Get())
+            else if(_loc14_._countdownFortify.Get())
             {
-               _loc13_._countdownFortify.Add(-_loc14_);
+               _loc14_._countdownFortify.Add(-_loc15_);
                _loc8_ = 0;
-               if(_loc13_._countdownFortify.Get() <= 0 || param1.substr(2,1) == "4")
+               if(_loc14_._countdownFortify.Get() <= 0 || param1.substr(2,1) == "4")
                {
                   _loc8_ = 1;
-                  _loc13_._countdownFortify.Set(0);
-                  _loc13_.Fortified();
-                  _loc13_.Update();
-                  LOGGER.Stat([67,_loc13_._type,_loc13_._lvl.Get(),1,_loc4_]);
+                  _loc14_._countdownFortify.Set(0);
+                  _loc14_.Fortified();
+                  _loc14_.Update();
+                  LOGGER.Stat([67,_loc14_._type,_loc14_._lvl.Get(),1,_loc4_]);
                }
                else
                {
-                  LOGGER.Stat([67,_loc13_._type,_loc13_._lvl.Get() + 1,0,_loc4_]);
+                  LOGGER.Stat([67,_loc14_._type,_loc14_._lvl.Get() + 1,0,_loc4_]);
                }
             }
-            else if(_loc13_._type == 8)
+            else if(_loc14_._type == 8)
             {
                _loc8_ = 0;
                if(CREATURELOCKER._unlocking != null && CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].t == 1)
                {
-                  CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e -= _loc14_;
+                  CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e -= _loc15_;
                   if(param1.substr(2,1) == "4" || CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e < GLOBAL.Timestamp())
                   {
                      _loc8_ = 1;
@@ -2539,12 +2539,12 @@ package
                LOGGER.Stat([3,int(CREATURELOCKER._unlocking.substr(1)),0,_loc8_,_loc4_]);
                CREATURELOCKER.Update();
             }
-            else if(_loc13_._type == 26)
+            else if(_loc14_._type == 26)
             {
                _loc8_ = 0;
                if(ACADEMY._monsterID != null)
                {
-                  ACADEMY._upgrades[ACADEMY._monsterID].time.Add(-_loc14_);
+                  ACADEMY._upgrades[ACADEMY._monsterID].time.Add(-_loc15_);
                   if(param1.substr(2,1) == "4" || ACADEMY._upgrades[ACADEMY._monsterID].time.Get() < GLOBAL.Timestamp())
                   {
                      _loc8_ = 1;
@@ -2558,22 +2558,22 @@ package
                }
                ACADEMY.Update();
             }
-            else if(_loc13_._type == 116)
+            else if(_loc14_._type == 116)
             {
                _loc8_ = 0;
-               _loc17_ = GLOBAL._bLab as MONSTERLAB;
-               if((Boolean(_loc17_)) && _loc17_._upgrading != null)
+               _loc18_ = GLOBAL._bLab as MONSTERLAB;
+               if((Boolean(_loc18_)) && _loc18_._upgrading != null)
                {
-                  _loc17_._upgradeFinishTime.Add(-_loc14_);
-                  if(param1.substr(2,1) == "4" || _loc17_._upgradeFinishTime.Get() < GLOBAL.Timestamp())
+                  _loc18_._upgradeFinishTime.Add(-_loc15_);
+                  if(param1.substr(2,1) == "4" || _loc18_._upgradeFinishTime.Get() < GLOBAL.Timestamp())
                   {
                      _loc8_ = 1;
-                     _loc17_._upgradeFinishTime.Set(GLOBAL.Timestamp() + 1);
-                     LOGGER.Stat([51,_loc17_._upgrading.substr(1),_loc17_._upgradeLevel,1,_loc4_]);
+                     _loc18_._upgradeFinishTime.Set(GLOBAL.Timestamp() + 1);
+                     LOGGER.Stat([51,_loc18_._upgrading.substr(1),_loc18_._upgradeLevel,1,_loc4_]);
                   }
                   else
                   {
-                     LOGGER.Stat([51,_loc17_._upgrading.substr(1),_loc17_._upgradeLevel,0,_loc4_]);
+                     LOGGER.Stat([51,_loc18_._upgrading.substr(1),_loc18_._upgradeLevel,0,_loc4_]);
                   }
                }
             }
@@ -2581,13 +2581,13 @@ package
          }
          if(param1 == "FIX")
          {
-            _loc10_ = int(_storeItems.FIX.c);
-            for each(_loc18_ in BASE._buildingsAll)
+            _loc11_ = int(_storeItems.FIX.c);
+            for each(_loc19_ in BASE._buildingsAll)
             {
-               if(_loc18_._hp.Get() < _loc18_._hpMax.Get())
+               if(_loc19_._hp.Get() < _loc19_._hpMax.Get())
                {
-                  _loc18_._hp.Set(_loc18_._hpMax.Get());
-                  _loc18_.Repaired();
+                  _loc19_._hp.Set(_loc19_._hpMax.Get());
+                  _loc19_.Repaired();
                }
             }
             if(param2)
@@ -2595,14 +2595,14 @@ package
                _loc6_ = Number(_storeData[param1].c);
             }
          }
-         _loc9_ = 1;
+         _loc10_ = 1;
          if(_loc3_.i)
          {
-            _loc9_ = _loc6_;
+            _loc10_ = _loc6_;
          }
          if(_storeData[param1])
          {
-            _storeData[param1].q += _loc9_;
+            _storeData[param1].q += _loc10_;
             if(_loc3_.du > 0)
             {
                _storeData[param1].s = GLOBAL.Timestamp();
@@ -2611,7 +2611,7 @@ package
          }
          else
          {
-            _storeData[param1] = {"q":_loc9_};
+            _storeData[param1] = {"q":_loc10_};
             if(_loc3_.du > 0)
             {
                _storeData[param1].s = GLOBAL.Timestamp();
@@ -2637,16 +2637,16 @@ package
          {
             if(param2)
             {
-               _loc19_ = param1;
-               if(_loc19_.substr(0,2) == "SP")
+               _loc9_ = param1;
+               if(_loc9_.substr(0,2) == "SP")
                {
-                  _loc19_ = _loc19_.substr(0,3);
+                  _loc9_ = _loc9_.substr(0,3);
                }
-               BASE.Purchase(_loc19_,1,"store",true);
+               BASE.Purchase(_loc9_,1,"store",true);
             }
             else
             {
-               BASE.Purchase(param1,_loc10_,"store");
+               BASE.Purchase(param1,_loc11_,"store");
             }
          }
          else
@@ -2668,10 +2668,10 @@ package
          }
       }
       
-      public static function BuyC(param1:String, param2:int) : *
+      public static function BuyC(param1:String, param2:int) : void
       {
          var Brag:Function;
-         var arr:* = undefined;
+         var arr:Array = null;
          var mc:MovieClip = null;
          var itemCode:String = param1;
          var cost:int = param2;
@@ -2747,7 +2747,7 @@ package
             }
             if(arr.length > 0)
             {
-               Brag = function(param1:MouseEvent):*
+               Brag = function(param1:MouseEvent):void
                {
                   GLOBAL.CallJS("sendFeed",["store-" + itemCode,arr[2],arr[3],arr[4]]);
                   POPUPS.Next();
@@ -2768,7 +2768,7 @@ package
          }
       }
       
-      public static function FacebookCreditPurchase(param1:String) : *
+      public static function FacebookCreditPurchase(param1:String) : void
       {
          var _loc2_:Object = _storeItems[param1];
          var _loc3_:int = int(_loc2_.fbc_cost[0]);
@@ -2781,7 +2781,7 @@ package
          PLEASEWAIT.Show(KEYS.Get("msg_openingfb"));
       }
       
-      public static function FacebookCreditPurchaseB(param1:String) : *
+      public static function FacebookCreditPurchaseB(param1:String) : void
       {
          if(int(JSON.decode(param1).success) == 1)
          {
@@ -2790,12 +2790,12 @@ package
          PLEASEWAIT.Hide();
       }
       
-      public static function ProcessPurchases() : *
+      public static function ProcessPurchases() : void
       {
          var ENLobj:Object = null;
          var i:int = 0;
+         var c:MonsterBase = null;
          var enl:int = 0;
-         var c:* = undefined;
          try
          {
             GLOBAL._mapWidth = 1000;
@@ -3036,12 +3036,12 @@ package
          }
       }
       
-      public static function CheckUpgrade(param1:String) : *
+      public static function CheckUpgrade(param1:String) : Object
       {
          return _storeData[param1];
       }
       
-      public static function updateCredits(param1:String) : *
+      public static function updateCredits(param1:String) : void
       {
          POPUPS.Next();
          var _loc2_:Object = JSON.decode(param1);
@@ -3066,7 +3066,7 @@ package
       
       public static function ZazzleAdd() : void
       {
-         var img:*;
+         var img:String;
          var ZazzleImageLoaded:Function = null;
          ZazzleImageLoaded = function(param1:String, param2:BitmapData):void
          {
@@ -3079,7 +3079,7 @@ package
                   _zazzleMC.removeChildAt(_loc4_);
                }
             }
-            var _loc3_:* = new Bitmap(param2);
+            var _loc3_:Bitmap = new Bitmap(param2);
             _loc3_.x = (670 - _loc3_.width) / 2;
             _loc3_.y = (390 - _loc3_.height) / 2;
             _zazzleMC.addChild(_loc3_);

@@ -14,7 +14,7 @@ package
          tMessage.htmlText = KEYS.Get("newmap_sk_hlp");
       }
       
-      private function Next(param1:MouseEvent = null) : *
+      private function Next(param1:MouseEvent = null) : void
       {
          b1.removeEventListener(MouseEvent.CLICK,this.Next);
          POPUPS.Next();

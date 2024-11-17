@@ -1,6 +1,7 @@
 package com.monsters.maproom_inferno
 {
    import com.monsters.maproom_inferno.views.*;
+   import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -9,7 +10,7 @@ package com.monsters.maproom_inferno
    {
       public static var top:Sprite;
       
-      public static var currentView:*;
+      public static var currentView:MovieClip;
       
       public static var _useMailBoxForTruces:Boolean = true;
       
@@ -103,13 +104,13 @@ package com.monsters.maproom_inferno
          mvBtn.Highlight = false;
       }
       
-      public function setView(param1:*) : void
+      public function setView(param1:MovieClip) : void
       {
          if(!this.firstRun)
          {
             SOUNDS.Play("click1");
          }
-         if(currentView && Boolean(currentView.parent))
+         if(Boolean(currentView) && Boolean(currentView.parent))
          {
             currentView.parent.removeChild(currentView);
             currentView = null;

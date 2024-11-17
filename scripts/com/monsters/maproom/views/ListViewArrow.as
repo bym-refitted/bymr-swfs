@@ -7,9 +7,9 @@ package com.monsters.maproom.views
    
    public class ListViewArrow extends ListViewArrow_CLIP
    {
-      public var offsetX:*;
+      public var offsetX:Number;
       
-      public var offsetY:*;
+      public var offsetY:Number;
       
       public var wobbleCountdown:int = 0;
       
@@ -21,7 +21,7 @@ package com.monsters.maproom.views
          this.addEventListener(Event.ENTER_FRAME,this.Wobble);
       }
       
-      public function Trigger(param1:Boolean = false) : *
+      public function Trigger(param1:Boolean = false) : void
       {
          this.active = param1;
          if(this.active)
@@ -36,7 +36,7 @@ package com.monsters.maproom.views
          }
       }
       
-      public function Wobble(param1:Event) : *
+      public function Wobble(param1:Event) : void
       {
          if(this.active)
          {
@@ -54,7 +54,7 @@ package com.monsters.maproom.views
          }
       }
       
-      private function WobbleB() : *
+      private function WobbleB() : void
       {
          TweenLite.to(mcArrow,0.6,{
             "x":-15,

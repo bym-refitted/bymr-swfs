@@ -105,7 +105,7 @@ package com.monsters.maproom_inferno.views
       {
          var i:int;
          var imageLoaded:Function = null;
-         imageLoaded = function(param1:String, param2:BitmapData):*
+         imageLoaded = function(param1:String, param2:BitmapData):void
          {
             var key:String = param1;
             var bmd:BitmapData = param2;

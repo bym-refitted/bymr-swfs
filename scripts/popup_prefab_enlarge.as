@@ -12,17 +12,17 @@ package
          super();
       }
       
-      public function Setup(param1:int) : *
+      public function Setup(param1:int) : void
       {
          ImageCache.GetImageWithCallBack("ui/prefab-large-" + (param1 + 1) + ".v5.jpg",this.ShowImage,true,1);
       }
       
-      public function ShowImage(param1:String, param2:BitmapData) : *
+      public function ShowImage(param1:String, param2:BitmapData) : void
       {
          this.mcImage.addChild(new Bitmap(param2));
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          GLOBAL.BlockerRemove();
          this.parent.removeChild(this);

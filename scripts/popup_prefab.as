@@ -120,7 +120,7 @@ package
          };
       }
       
-      public function ThumbnailLoaded(param1:String, param2:BitmapData, param3:Array) : *
+      public function ThumbnailLoaded(param1:String, param2:BitmapData, param3:Array) : void
       {
          if(param3[0] == 1)
          {
@@ -136,11 +136,11 @@ package
          }
       }
       
-      public function PreBuyOutright(param1:int, param2:int) : *
+      public function PreBuyOutright(param1:int, param2:int) : Function
       {
          var kitID:int = param1;
          var shinyCost:int = param2;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc3_:* = undefined;
             var _loc2_:* = 0;
@@ -163,7 +163,7 @@ package
          };
       }
       
-      public function BuyOutright(param1:int, param2:int) : *
+      public function BuyOutright(param1:int, param2:int) : void
       {
          if(BASE._credits.Get() < param2)
          {
@@ -186,10 +186,10 @@ package
          }
       }
       
-      public function PreSelect(param1:int) : *
+      public function PreSelect(param1:int) : Function
       {
          var kitID:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc3_:* = undefined;
             var _loc2_:* = 0;
@@ -212,7 +212,7 @@ package
          };
       }
       
-      public function Select(param1:int) : *
+      public function Select(param1:int) : void
       {
          var _loc6_:int = 0;
          var _loc8_:int = 0;
@@ -271,7 +271,7 @@ package
          GLOBAL.Message(KEYS.Get("newmap_sk_res"));
       }
       
-      private function PayForKit(param1:int, param2:int) : *
+      private function PayForKit(param1:int, param2:int) : void
       {
          var _loc5_:int = 0;
          if(BASE._credits.Get() < param2)
@@ -303,7 +303,7 @@ package
          }
       }
       
-      private function BuildKit(param1:int, param2:Boolean = false) : *
+      private function BuildKit(param1:int, param2:Boolean = false) : void
       {
          var _loc4_:BFOUNDATION = null;
          var _loc5_:Object = null;

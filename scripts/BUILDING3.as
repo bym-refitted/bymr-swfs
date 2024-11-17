@@ -28,7 +28,7 @@ package
          SetProps();
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _producing && _canFunction)
@@ -45,12 +45,12 @@ package
          ++this._frameNumber;
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
       }

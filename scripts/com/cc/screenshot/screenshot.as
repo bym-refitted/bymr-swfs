@@ -20,7 +20,7 @@ package com.cc.screenshot
          super();
       }
       
-      public static function Take(param1:*, param2:*) : void
+      public static function Take(param1:Number, param2:Number) : void
       {
          _rawImage = new BitmapData(700,460,false,0);
          var _loc3_:Matrix = new Matrix();

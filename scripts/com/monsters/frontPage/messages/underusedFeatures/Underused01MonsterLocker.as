@@ -4,7 +4,7 @@ package com.monsters.frontPage.messages.underusedFeatures
    
    public class Underused01MonsterLocker extends KeywordMessage
    {
-      internal var _creatureID:String;
+      private var _creatureID:String;
       
       public function Underused01MonsterLocker()
       {

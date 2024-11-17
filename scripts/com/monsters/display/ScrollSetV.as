@@ -25,6 +25,7 @@ package com.monsters.display
          this._mask = param2;
          this._scroller = mcScroller;
          this._defaultScrollHeight = this._scroller.height;
+         this._scroller.y = 0;
          this._track = mcBG;
          this._track.height = param2.height;
          addEventListener(MouseEvent.MOUSE_DOWN,this.onMouseDown);
@@ -69,6 +70,11 @@ package com.monsters.display
       {
          this._scroller.height = this._defaultScrollHeight * (this._mask.height / this._content.height);
          this._track.height = this._mask.height;
+         if(this._content.y < -this._content.height)
+         {
+            this._content.y = 0;
+            this._scroller.y = 0;
+         }
       }
    }
 }

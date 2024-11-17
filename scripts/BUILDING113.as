@@ -17,24 +17,24 @@ package
          SetProps();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _buildingDescription = KEYS.Get("radio_upgradedesc");
          _recycleDescription = KEYS.Get("radio_recycledesc");
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          super.Recycle();
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          super.RecycleC();
          RADIO.TwitterRemoveName();
@@ -42,13 +42,13 @@ package
          GLOBAL._bRadio = null;
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
          GLOBAL._bRadio = this;
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() == 0)

@@ -42,7 +42,7 @@ package
          this.Update(this._size,param2);
       }
       
-      public function Update(param1:int, param2:int) : *
+      public function Update(param1:int, param2:int) : void
       {
          this._size = param1;
          this._dropTarget = param2;
@@ -50,7 +50,7 @@ package
          ring1.height = this._size * 1.2 * 0.5;
       }
       
-      public function Place(param1:MouseEvent) : *
+      public function Place(param1:MouseEvent) : void
       {
          if(!MAP._dragged && ATTACK._countdown >= 0)
          {
@@ -58,7 +58,7 @@ package
          }
       }
       
-      public function Follow(param1:Event = null) : *
+      public function Follow(param1:Event = null) : void
       {
          if(MAP._GROUND)
          {
@@ -120,7 +120,7 @@ package
          }
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
          while(this._targetedBuildings.length)
          {
@@ -176,7 +176,7 @@ package
          }
       }
       
-      public function Drop() : *
+      public function Drop() : void
       {
          var _loc1_:SIEGEWEAPONPOPUP = null;
          switch(this._dropTarget)

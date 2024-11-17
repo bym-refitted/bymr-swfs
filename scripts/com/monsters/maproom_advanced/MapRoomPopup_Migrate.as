@@ -14,7 +14,7 @@ package com.monsters.maproom_advanced
       
       public function MapRoomPopup_Migrate(param1:Function = null)
       {
-         var _loc6_:icon_costs = null;
+         var _loc5_:icon_costs = null;
          super();
          this._closeHandler = param1;
          var _loc2_:int = GLOBAL._bMap.InstantUpgradeCost();
@@ -31,23 +31,23 @@ package com.monsters.maproom_advanced
          mcResources.bAction.SetupKey("buildoptions_resources");
          mcResources.bAction.addEventListener(MouseEvent.CLICK,this.Upgrade,false,0,true);
          var _loc4_:Array = GLOBAL._resourceNames;
-         var _loc5_:int = 1;
-         while(_loc5_ < 5)
+         var _loc6_:int = 1;
+         while(_loc6_ < 5)
          {
-            _loc6_ = mcResources["mcR" + _loc5_] as icon_costs;
-            _loc6_.tTitle.htmlText = "<b>" + KEYS.Get(_loc4_[_loc5_ - 1]) + "</b>";
-            _loc6_.tValue.htmlText = "<b>" + GLOBAL.FormatNumber(_loc3_["r" + _loc5_]) + "</b>";
-            if(Boolean(BASE._resources["r" + _loc5_]) && BASE._resources["r" + _loc5_].Get() < _loc3_["r" + _loc5_])
+            _loc5_ = mcResources["mcR" + _loc6_] as icon_costs;
+            _loc5_.tTitle.htmlText = "<b>" + KEYS.Get(_loc4_[_loc6_ - 1]) + "</b>";
+            _loc5_.tValue.htmlText = "<b>" + GLOBAL.FormatNumber(_loc3_["r" + _loc6_]) + "</b>";
+            if(Boolean(BASE._resources["r" + _loc6_]) && BASE._resources["r" + _loc6_].Get() < _loc3_["r" + _loc6_])
             {
-               _loc6_.tValue.htmlText = "<font color=\"#FF0000\">" + _loc6_.tValue.htmlText + "</font>";
+               _loc5_.tValue.htmlText = "<font color=\"#FF0000\">" + _loc5_.tValue.htmlText + "</font>";
             }
-            _loc6_.gotoAndStop(_loc5_);
-            _loc5_++;
+            _loc5_.gotoAndStop(_loc6_);
+            _loc6_++;
          }
-         _loc6_ = mcResources.mcTime;
+         _loc5_ = mcResources.mcTime;
          mcResources.mcTime.tTitle.htmlText = "<b>" + KEYS.Get(_loc4_[5]) + "</b>";
          mcResources.mcTime.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc3_.time,true,false) + "</b>";
-         mcResources.mcTime.gotoAndStop(_loc5_);
+         mcResources.mcTime.gotoAndStop(_loc6_);
       }
       
       public static function Show(param1:Function = null) : void

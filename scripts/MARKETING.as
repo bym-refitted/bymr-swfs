@@ -26,6 +26,7 @@ package
          var tmpCountB:int = 0;
          var hatCount:int = 0;
          var siloCount:int = 0;
+         var quantityIndex:int = 0;
          var canbuild:Boolean = false;
          var tmpr1:Boolean = false;
          var tmpr2:Boolean = false;
@@ -61,7 +62,7 @@ package
                      pImage = "building-catapult.png";
                      pImagePosition = new Point(-270,-65);
                      pButton = KEYS.Get("mkting_upgradeapult_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGOPTIONS.Show(GLOBAL._bCatapult,"upgrade");
                         POPUPS.Next();
@@ -78,7 +79,7 @@ package
                      pImage = "building-catapult.png";
                      pImagePosition = new Point(-270,-65);
                      pButton = KEYS.Get("mkting_fillapult_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         if(!BASE.isInferno())
                         {
@@ -117,7 +118,7 @@ package
                      pImage = "building-hatchery.png";
                      pImagePosition = new Point(-270,-65);
                      pButton = KEYS.Get("mkting_overdrive_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         if(!BASE.isInferno())
                         {
@@ -151,7 +152,7 @@ package
                      pImage = "building-hcc.png";
                      pImagePosition = new Point(-270,-65);
                      pButton = KEYS.Get("mkting_hcc_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGS._menuA = 2;
                         BUILDINGS._menuB = 1;
@@ -172,7 +173,8 @@ package
                         siloCount++;
                      }
                   }
-                  canbuild = siloCount < GLOBAL._buildingProps[5].quantity[GLOBAL._bTownhall._lvl.Get() - 1];
+                  quantityIndex = GLOBAL._bTownhall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL._bTownhall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
+                  canbuild = siloCount < GLOBAL._buildingProps[5].quantity[quantityIndex];
                   tmpr1 = BASE._resources.r1.Get() >= 0.8 * BASE._resources.r1max;
                   tmpr2 = BASE._resources.r2.Get() >= 0.8 * BASE._resources.r2max;
                   tmpr3 = BASE._resources.r3.Get() >= 0.8 * BASE._resources.r3max;
@@ -184,7 +186,7 @@ package
                      pBody = BASE.isInferno() ? KEYS.Get("inf_mkting_silo_body") : KEYS.Get("mkting_silo_body");
                      pImage = "building-storage.png";
                      pButton = KEYS.Get("mkting_silo_btn");
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGS._menuA = 1;
                         BUILDINGS._menuB = 1;
@@ -210,7 +212,8 @@ package
                         }
                      }
                   }
-                  canbuild = sc < GLOBAL._buildingProps[5].quantity[GLOBAL._bTownhall._lvl.Get() - 1];
+                  quantityIndex = GLOBAL._bTownhall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL._bTownhall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
+                  canbuild = sc < GLOBAL._buildingProps[5].quantity[quantityIndex];
                   tmpr1 = BASE._resources.r1.Get() >= 0.8 * BASE._resources.r1max;
                   tmpr2 = BASE._resources.r2.Get() >= 0.8 * BASE._resources.r2max;
                   tmpr3 = BASE._resources.r3.Get() >= 0.8 * BASE._resources.r3max;
@@ -222,7 +225,7 @@ package
                      pBody = KEYS.Get("mkting_siloupgrade_body");
                      pButton = KEYS.Get("mkting_siloupgrade_btn");
                      pImage = "building-storage.png";
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGOPTIONS.Show(tgtb,"upgrade");
                         POPUPS.Next();
@@ -248,7 +251,7 @@ package
                      pBody = KEYS.Get("mkting_laser_body");
                      pButton = KEYS.Get("mkting_laser_btn");
                      pImage = "building-laser.png";
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGS._menuA = 3;
                         BUILDINGS._menuB = 1;
@@ -276,7 +279,7 @@ package
                      pBody = KEYS.Get("mkting_tesla_body");
                      pButton = KEYS.Get("mkting_tesla_btn");
                      pImage = "building-tesla.png";
-                     pAction = function fcatapult(param1:MouseEvent):*
+                     pAction = function fcatapult(param1:MouseEvent):void
                      {
                         BUILDINGS._menuA = 3;
                         BUILDINGS._menuB = 1;
@@ -303,7 +306,7 @@ package
          return found;
       }
       
-      public static function Process() : *
+      public static function Process() : void
       {
          var done:Boolean = false;
          try

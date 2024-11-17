@@ -163,7 +163,7 @@ package com.monsters.mailbox
       
       private function reportThread(... rest) : void
       {
-         var popup:* = undefined;
+         var popup:popup_report = null;
          var reportSendDown:Function = null;
          var reportCloseDown:Function = null;
          var onSuccessfulReport:Function = null;
@@ -293,7 +293,8 @@ package com.monsters.mailbox
       
       private function onMsgFocusOut(param1:FocusEvent = null) : void
       {
-         var _loc2_:Object = this.viewMode;
+         var _loc2_:Object = null;
+         _loc2_ = this.viewMode;
          outline_mc.visible = _loc2_["smallOutlineVisible"];
          largeOutline_mc.visible = _loc2_["largeOutlineVisible"];
          msg_txt.height = _loc2_["textHeight"];
@@ -345,7 +346,7 @@ package com.monsters.mailbox
          if(!this._wide)
          {
             this.scroller.visible = false;
-            this.scroller.ScrollTo(0,0);
+            this.scroller.ScrollTo(0,false);
          }
          else
          {
@@ -519,7 +520,7 @@ package com.monsters.mailbox
          }
          if(this._wide)
          {
-            this.scroller.ScrollTo(1,0);
+            this.scroller.ScrollTo(1,false);
          }
       }
       

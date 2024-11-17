@@ -466,7 +466,7 @@ package com.monsters.mailbox
          {
             param1.target.sorter_mc.gotoAndStop(2);
          }
-         var _loc5_:* = this.activeBox.sortOn(_loc2_,_loc4_);
+         var _loc5_:Array = this.activeBox.sortOn(_loc2_,_loc4_);
          this.currentSort = _loc2_;
          this.currentSorter = param1.target as MovieClip;
          this.currentSorter.gotoAndStop(2);

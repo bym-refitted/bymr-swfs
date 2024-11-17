@@ -6,7 +6,7 @@ package
    
    public class PLANNER
    {
-      public static var _mc:*;
+      public static var _mc:PLANNERPOPUP;
       
       public static var basePlanner:BasePlanner;
       
@@ -24,7 +24,7 @@ package
          _open = false;
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function Show(param1:MouseEvent = null) : void
       {
          if(GLOBAL._selectedBuilding)
          {
@@ -59,7 +59,7 @@ package
                {
                   GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
                }
-               _mc = GLOBAL._layerWindows.addChild(new PLANNERPOPUP());
+               _mc = GLOBAL._layerWindows.addChild(new PLANNERPOPUP()) as PLANNERPOPUP;
             }
             else if(basePlanner)
             {
@@ -73,10 +73,10 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          GLOBAL.BlockerRemove();
-         if(GLOBAL._selectedBuilding && GLOBAL._selectedBuilding._class != "mushroom")
+         if(Boolean(GLOBAL._selectedBuilding) && GLOBAL._selectedBuilding._class != "mushroom")
          {
             GLOBAL._selectedBuilding.StopMoveB();
          }
@@ -102,7 +102,12 @@ package
          }
       }
       
-      public static function Update() : *
+      public static function isOpen() : Boolean
+      {
+         return _open;
+      }
+      
+      public static function Update() : void
       {
          if(_open)
          {

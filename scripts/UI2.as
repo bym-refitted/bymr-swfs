@@ -18,45 +18,15 @@ package
    {
       public static var _top:UI_TOP;
       
-      public static var _visitor:*;
+      public static var _visitor:UI_VISITOR;
       
-      public static var _warning:*;
+      public static var _warning:UI_WARNING;
       
-      public static var _protected:*;
+      public static var _tutorial:MovieClip;
       
-      public static var _tutorial:*;
+      public static var _bottomName:String;
       
-      public static var _lastSwitch:*;
-      
-      public static var _queue:*;
-      
-      public static var _guestSave:*;
-      
-      public static var _fullScreen:*;
-      
-      public static var _soundmute:*;
-      
-      public static var _quests:*;
-      
-      public static var _baseSelect:*;
-      
-      public static var _research:*;
-      
-      public static var _creatures:*;
-      
-      public static var _map:*;
-      
-      public static var _attack:*;
-      
-      public static var _selectedBuilding:*;
-      
-      public static var _bottomName:*;
-      
-      public static var _lastBase:*;
-      
-      public static var _scareAway:*;
-      
-      public static var _progressBars:*;
+      public static var _scareAway:UI_BAITERSCAREAWAY;
       
       public static var _showTop:Boolean;
       
@@ -81,165 +51,67 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
-         try
+         _tutorial = GLOBAL._layerUI.addChild(new MovieClip()) as MovieClip;
+         _top = GLOBAL._layerUI.addChild(new UI_TOP()) as UI_TOP;
+         _warning = GLOBAL._layerUI.addChild(new UI_WARNING()) as UI_WARNING;
+         if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
          {
-            _tutorial = GLOBAL._layerUI.addChild(new MovieClip());
+            _visitor = GLOBAL._layerUI.addChild(new UI_VISITOR()) as UI_VISITOR;
          }
-         catch(e:Error)
+         else
          {
-            GLOBAL.ErrorMessage("UI2.Setup A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+            _visitor = null;
          }
-         try
+         _top.mc.x = 0;
+         _top.mc.y = 4;
+         _showTop = true;
+         _showBottom = false;
+         _showProtected = false;
+         _showWarning = false;
+         UI_BOTTOM.Setup();
+         UI_WORKERS.Setup();
+         _top.Setup();
+         if(Chat.flagsShouldChatExist() && Chat._bymChat._open)
          {
-            _top = GLOBAL._layerUI.addChild(new UI_TOP());
+            Chat.initChat();
          }
-         catch(e:Error)
+         if(Chat.flagsShouldChatDisplay())
          {
-            GLOBAL.ErrorMessage("UI2.Setup A3: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+            Chat.setChatPosition(GLOBAL._layerUI,10,5 * 60);
          }
-         try
+         _timers = new Array();
+         _timers.push(_top.mcProtected);
+         _timers.push(_top.mcReinforcements);
+         if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
          {
-            _warning = GLOBAL._layerUI.addChild(new UI_WARNING());
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A4: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
+            _timers.push(_top.mcSpecialEvent);
+            if(GLOBAL._countryCode != "ph")
             {
-               _visitor = GLOBAL._layerUI.addChild(new UI_VISITOR());
-            }
-            else
-            {
-               _visitor = null;
-            }
-            _top.mc.x = 0;
-            _top.mc.y = 4;
-            _showTop = true;
-            _showBottom = false;
-            _showProtected = false;
-            _showWarning = false;
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A5: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            UI_BOTTOM.Setup();
-            UI_WORKERS.Setup();
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A6: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            _top.Setup();
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A7: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(Chat.flagsShouldChatExist() && Chat._bymChat._open)
-            {
-               Chat.initChat();
+               _top.mcSpecialEvent.buttonMode = true;
+               _top.mcSpecialEvent.mouseChildren = false;
+               _top.mcSpecialEvent.addEventListener(MouseEvent.CLICK,SPECIALEVENT.TimerClicked);
             }
          }
-         catch(e:Error)
+         if(GLOBAL._aiDesignMode)
          {
-            GLOBAL.ErrorMessage("UI2.Setup A8 CHAT1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(Chat.flagsShouldChatDisplay())
-            {
-               Chat.setChatPosition(GLOBAL._layerUI,10,5 * 60);
-            }
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            _timers = new Array();
-            _timers.push(_top.mcProtected);
-            _timers.push(_top.mcReinforcements);
-            if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
-            {
-               _timers.push(_top.mcSpecialEvent);
-               if(GLOBAL._countryCode != "ph")
-               {
-                  _top.mcSpecialEvent.buttonMode = true;
-                  _top.mcSpecialEvent.mouseChildren = false;
-                  _top.mcSpecialEvent.addEventListener(MouseEvent.CLICK,SPECIALEVENT.TimerClicked);
-               }
-            }
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A10 TIMERS: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(GLOBAL._aiDesignMode)
-            {
-               DebugWarning();
-            }
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A11 Debug Warning: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+            DebugWarning();
          }
       }
       
-      public static function SetupHUD() : *
+      public static function SetupHUD() : void
       {
-         try
+         _tutorial = GLOBAL._layerUI.addChild(new MovieClip()) as MovieClip;
+         UI_BOTTOM.Setup();
+         UI_BOTTOM.Hide();
+         if(Chat.flagsShouldChatExist() && Chat._bymChat._open)
          {
-            _tutorial = GLOBAL._layerUI.addChild(new MovieClip());
+            Chat.initChat();
          }
-         catch(e:Error)
+         if(Chat.flagsShouldChatDisplay())
          {
-            GLOBAL.ErrorMessage("UI2.SetupHUD A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            UI_BOTTOM.Setup();
-            UI_BOTTOM.Hide();
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.SetupHUD A6: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(Chat.flagsShouldChatExist() && Chat._bymChat._open)
-            {
-               Chat.initChat();
-            }
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A8 CHAT1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-         }
-         try
-         {
-            if(Chat.flagsShouldChatDisplay())
-            {
-               Chat.setChatPosition(GLOBAL._layerUI,10,5 * 60);
-            }
-         }
-         catch(e:Error)
-         {
-            GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+            Chat.setChatPosition(GLOBAL._layerUI,10,5 * 60);
          }
       }
       
@@ -278,7 +150,7 @@ package
          {
             if(GLOBAL._render && !_scareAway)
             {
-               _scareAway = GLOBAL._layerUI.addChild(new UI_BAITERSCAREAWAY(param1 == "scareAway"));
+               _scareAway = GLOBAL._layerUI.addChild(new UI_BAITERSCAREAWAY(param1 == "scareAway")) as UI_BAITERSCAREAWAY;
                ResizeHandler();
             }
          }
@@ -367,7 +239,7 @@ package
                _warning.mc.y = -100;
             }
          }
-         else if(what == "scareAway" && _scareAway)
+         else if(what == "scareAway" && Boolean(_scareAway))
          {
             if(GLOBAL._layerUI.contains(_scareAway))
             {
@@ -387,7 +259,7 @@ package
                {
                   TweenLite.to(_wildMonsterBar,0.5,{
                      "y":_wildMonsterBar.y - 22,
-                     "onComplete":function():*
+                     "onComplete":function():void
                      {
                         _wildMonsterBar.parent.removeChild(_wildMonsterBar);
                         _wildMonsterBar = null;
@@ -622,8 +494,8 @@ package
       public static function ResizeHandler(param1:Event = null) : void
       {
          var _loc4_:Rectangle = null;
-         var _loc2_:* = GLOBAL._ROOT.stage.stageWidth;
-         var _loc3_:* = GLOBAL.GetGameHeight();
+         var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
+         var _loc3_:int = GLOBAL.GetGameHeight();
          var _loc5_:int = _wildMonsterBar != null ? 40 : 0;
          _loc4_ = new Rectangle(0 - (_loc2_ - GLOBAL._SCREENINIT.width) / 2,0 - (_loc3_ - (GLOBAL._SCREENINIT.height + _loc5_)) / 2,_loc2_,_loc3_);
          if(_wildMonsterBar)

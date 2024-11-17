@@ -1,6 +1,10 @@
 package
 {
    import com.monsters.events.CreepEvent;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.creeps.CREEP;
+   import com.monsters.monsters.creeps.CREEP_INFERNO;
    import flash.geom.Point;
    
    public class CREATURES
@@ -11,13 +15,9 @@ package
       
       public static var _creatureCount:int;
       
-      public static var _mcBody:*;
-      
-      public static var _mcLegs:*;
-      
       public static var _ticks:int;
       
-      public static var _guardianList:Vector.<CHAMPIONMONSTER> = new Vector.<CHAMPIONMONSTER>();
+      public static var _guardianList:Vector.<ChampionBase> = new Vector.<ChampionBase>();
       
       public function CREATURES()
       {
@@ -32,6 +32,7 @@ package
       public static function GetProperty(param1:String, param2:String, param3:int = 0, param4:Boolean = true) : Number
       {
          var stat:Array = null;
+         var checkID:String = null;
          var monsterID:String = param1;
          var statID:String = param2;
          var level:int = param3;
@@ -61,8 +62,17 @@ package
                {
                   return 0;
                }
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               checkID = monsterID;
+               if(CREATURELOCKER._creatures[checkID].dependent)
                {
+                  checkID = CREATURELOCKER._creatures[checkID].dependent;
+               }
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack" || !friendly)
+               {
+                  if(!GLOBAL._attackerCreatureUpgrades)
+                  {
+                     GLOBAL._attackerCreatureUpgrades = GLOBAL._playerCreatureUpgrades;
+                  }
                   if(!GLOBAL._attackerCreatureUpgrades[monsterID])
                   {
                      GLOBAL._attackerCreatureUpgrades[monsterID] = {"level":1};
@@ -71,30 +81,20 @@ package
                   {
                      if(!friendly)
                      {
-                        if(GLOBAL._attackerCreatureUpgrades[monsterID] != null)
+                        if(GLOBAL._attackerCreatureUpgrades[checkID] != null)
                         {
-                           level = int(GLOBAL._attackerCreatureUpgrades[monsterID].level);
+                           level = int(GLOBAL._attackerCreatureUpgrades[checkID].level);
                         }
                      }
-                     else if(ACADEMY._upgrades[monsterID] != null)
+                     else if(ACADEMY._upgrades[checkID] != null)
                      {
-                        level = int(ACADEMY._upgrades[monsterID].level);
+                        level = int(ACADEMY._upgrades[checkID].level);
                      }
                   }
                }
-               else
+               else if(level == 0 && ACADEMY._upgrades[checkID] != null)
                {
-                  if(level == 0)
-                  {
-                     if(ACADEMY._upgrades[monsterID] != null)
-                     {
-                        level = int(ACADEMY._upgrades[monsterID].level);
-                     }
-                  }
-                  if(level == 0 && ACADEMY._upgrades[monsterID] != null)
-                  {
-                     level = int(ACADEMY._upgrades[monsterID].level);
-                  }
+                  level = int(ACADEMY._upgrades[checkID].level);
                }
                if(stat.length < level)
                {
@@ -114,7 +114,7 @@ package
       
       public static function Tick() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:MonsterBase = null;
          var _loc2_:String = null;
          for(_loc2_ in _creatures)
          {
@@ -187,7 +187,7 @@ package
          _guardianList.length = 0;
       }
       
-      public static function get _guardian() : CHAMPIONMONSTER
+      public static function get _guardian() : ChampionBase
       {
          var _loc1_:int = 0;
          while(_loc1_ < _guardianList.length)
@@ -201,7 +201,7 @@ package
          return null;
       }
       
-      public static function get _krallen() : CHAMPIONMONSTER
+      public static function get _krallen() : ChampionBase
       {
          var _loc1_:int = 0;
          while(_loc1_ < _guardianList.length)
@@ -215,7 +215,7 @@ package
          return null;
       }
       
-      public static function getGuardian(param1:int) : CHAMPIONMONSTER
+      public static function getGuardian(param1:int) : ChampionBase
       {
          var _loc2_:int = 0;
          while(_loc2_ < _guardianList.length)
@@ -243,7 +243,7 @@ package
          return -1;
       }
       
-      public static function set _guardian(param1:CHAMPIONMONSTER) : void
+      public static function set _guardian(param1:ChampionBase) : void
       {
          var _loc2_:int = -1;
          var _loc3_:int = 0;
@@ -272,7 +272,7 @@ package
          }
       }
       
-      public static function addGuardian(param1:CHAMPIONMONSTER) : Boolean
+      public static function addGuardian(param1:ChampionBase) : Boolean
       {
          var _loc2_:int = -1;
          var _loc3_:int = 0;

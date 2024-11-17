@@ -2,11 +2,15 @@ package
 {
    import com.flashdynamix.utils.SWFProfiler;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.configs.BYMDevConfig;
    import com.monsters.debug.Console;
    import com.monsters.radio.RADIO;
    import flash.display.*;
+   import flash.events.ErrorEvent;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.events.UncaughtErrorEvent;
    import flash.external.ExternalInterface;
    import flash.geom.Rectangle;
    import flash.system.Security;
@@ -29,6 +33,15 @@ package
          var _loc2_:String = null;
          super();
          _instance = this;
+         GLOBAL._local = !ExternalInterface.available;
+         if(GLOBAL._local)
+         {
+            BYMDevConfig.instance;
+         }
+         else
+         {
+            BYMConfig.instance;
+         }
          if(this.parent)
          {
             _loc1_ = {};
@@ -180,10 +193,10 @@ package
          var u:String;
          var obj:Object = param1;
          var contained:Boolean = param2;
+         loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR,this.uncaughtErrorThrown);
          SWFProfiler.init(stage,null);
          Console.initialize(stage);
          _contained = contained;
-         GLOBAL._local = !ExternalInterface.available;
          GLOBAL._baseURL = obj._baseURL;
          GLOBAL._infBaseURL = obj.infbaseurl;
          GLOBAL._apiURL = obj._apiURL;
@@ -202,11 +215,11 @@ package
          GLOBAL._monetized = obj.monetized;
          GLOBAL._ROOT = new MovieClip();
          addChild(GLOBAL._ROOT);
-         GLOBAL._layerMap = GLOBAL._ROOT.addChild(new Sprite());
-         GLOBAL._layerUI = GLOBAL._ROOT.addChild(new Sprite());
-         GLOBAL._layerWindows = GLOBAL._ROOT.addChild(new Sprite());
-         GLOBAL._layerMessages = GLOBAL._ROOT.addChild(new Sprite());
-         GLOBAL._layerTop = GLOBAL._ROOT.addChild(new Sprite());
+         GLOBAL._layerMap = GLOBAL._ROOT.addChild(new Sprite()) as Sprite;
+         GLOBAL._layerUI = GLOBAL._ROOT.addChild(new Sprite()) as Sprite;
+         GLOBAL._layerWindows = GLOBAL._ROOT.addChild(new Sprite()) as Sprite;
+         GLOBAL._layerMessages = GLOBAL._ROOT.addChild(new Sprite()) as Sprite;
+         GLOBAL._layerTop = GLOBAL._ROOT.addChild(new Sprite()) as Sprite;
          GLOBAL._layerMap.mouseEnabled = false;
          GLOBAL._layerUI.mouseEnabled = false;
          GLOBAL._layerWindows.mouseEnabled = false;
@@ -230,7 +243,7 @@ package
          Security.allowDomain(u);
          if(ExternalInterface.available)
          {
-            ExternalInterface.addCallback("openbase",function(param1:String):*
+            ExternalInterface.addCallback("openbase",function(param1:String):void
             {
                var _loc2_:Object = null;
                if(BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading)
@@ -251,71 +264,71 @@ package
                   }
                }
             });
-            ExternalInterface.addCallback("fbcBuyItem",function(param1:String):*
+            ExternalInterface.addCallback("fbcBuyItem",function(param1:String):void
             {
                STORE.FacebookCreditPurchaseB(param1);
             });
-            ExternalInterface.addCallback("callbackgift",function(param1:String):*
+            ExternalInterface.addCallback("callbackgift",function(param1:String):void
             {
                POPUPS.CallbackGift(param1);
             });
-            ExternalInterface.addCallback("callbackshiny",function(param1:String):*
+            ExternalInterface.addCallback("callbackshiny",function(param1:String):void
             {
                POPUPS.CallbackShiny(param1);
             });
-            ExternalInterface.addCallback("twitteraccount",function(param1:String):*
+            ExternalInterface.addCallback("twitteraccount",function(param1:String):void
             {
                RADIO.TwitterCallback(param1);
             });
-            ExternalInterface.addCallback("updateCredits",function(param1:String):*
+            ExternalInterface.addCallback("updateCredits",function(param1:String):void
             {
                STORE.updateCredits(param1);
             });
-            ExternalInterface.addCallback("fbcAdd",function(param1:String):*
+            ExternalInterface.addCallback("fbcAdd",function(param1:String):void
             {
                BUY.FBCAdd(param1);
             });
-            ExternalInterface.addCallback("fbcOfferDaily",function(param1:String):*
+            ExternalInterface.addCallback("fbcOfferDaily",function(param1:String):void
             {
                BUY.FBCOfferDaily(param1);
             });
-            ExternalInterface.addCallback("fbcOfferEarn",function(param1:String):*
+            ExternalInterface.addCallback("fbcOfferEarn",function(param1:String):void
             {
                BUY.FBCOfferEarn(param1);
             });
-            ExternalInterface.addCallback("fbcNcp",function(param1:String):*
+            ExternalInterface.addCallback("fbcNcp",function(param1:String):void
             {
                BUY.FBCNcp(param1);
             });
-            ExternalInterface.addCallback("fbcNcpConfirm",function(param1:String):*
+            ExternalInterface.addCallback("fbcNcpConfirm",function(param1:String):void
             {
                BUY.FBCNcpConfirm(param1);
             });
-            ExternalInterface.addCallback("purchaseReceive",function(param1:String):*
+            ExternalInterface.addCallback("purchaseReceive",function(param1:String):void
             {
                BUY.purchaseReceive(param1);
             });
-            ExternalInterface.addCallback("purchaseComplete",function(param1:String):*
+            ExternalInterface.addCallback("purchaseComplete",function(param1:String):void
             {
                BUY.purchaseComplete(param1);
             });
-            ExternalInterface.addCallback("receivePurchase",function(param1:String):*
+            ExternalInterface.addCallback("receivePurchase",function(param1:String):void
             {
                BUY.purchaseReceive(param1);
             });
-            ExternalInterface.addCallback("startPromoTimer",function(param1:String):*
+            ExternalInterface.addCallback("startPromoTimer",function(param1:String):void
             {
                BUY.startPromo(param1);
             });
-            ExternalInterface.addCallback("alliancesupdate",function(param1:String):*
+            ExternalInterface.addCallback("alliancesupdate",function(param1:String):void
             {
                ALLIANCES.AlliancesServerUpdate(param1);
             });
-            ExternalInterface.addCallback("alliancesViewLeader",function(param1:String):*
+            ExternalInterface.addCallback("alliancesViewLeader",function(param1:String):void
             {
                ALLIANCES.AlliancesViewLeader(param1);
             });
-            ExternalInterface.addCallback("openmap",function(param1:String):*
+            ExternalInterface.addCallback("openmap",function(param1:String):void
             {
                GLOBAL.ShowMap();
             });
@@ -332,6 +345,26 @@ package
                GLOBAL._SCREENINIT = new Rectangle(0,0,760,750);
             }
          }
+      }
+      
+      protected function uncaughtErrorThrown(param1:UncaughtErrorEvent) : void
+      {
+         var _loc2_:String = null;
+         var _loc3_:Error = null;
+         if(param1.error is Error)
+         {
+            _loc2_ = Error(param1.error).message;
+            _loc3_ = param1.error as Error;
+         }
+         else if(param1.error is ErrorEvent)
+         {
+            _loc2_ = ErrorEvent(param1.error).text;
+         }
+         else
+         {
+            _loc2_ = param1.error.toString();
+         }
+         LOGGER.Log("err","UncaughtError: " + _loc2_ + (!!_loc3_ ? " | " + _loc3_.getStackTrace() : ""));
       }
       
       public function onStageRollOver(param1:MouseEvent = null) : void

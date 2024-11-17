@@ -39,8 +39,6 @@ package com.monsters.baseplanner.components
       
       private var mcSize:Number;
       
-      private var _positionOnMouseDown:Point;
-      
       public function BuildingItem(param1:PlannerNode)
       {
          super();
@@ -57,8 +55,8 @@ package com.monsters.baseplanner.components
          }
          this.category = this.defineCategory(this.node.type);
          this.desc = this.node.name + " " + KEYS.Get("basePlanner_buildingLevel") + this.node.level;
-         x = this.node.x;
-         y = this.node.y;
+         x = int(this.node.x / PlannerDesignView.MOUSE_POSITION_SNAP_THRESHHOLD) * PlannerDesignView.MOUSE_POSITION_SNAP_THRESHHOLD;
+         y = int(this.node.y / PlannerDesignView.MOUSE_POSITION_SNAP_THRESHHOLD) * PlannerDesignView.MOUSE_POSITION_SNAP_THRESHHOLD;
          this.setPositionReference();
          mc.width = size.width;
          mc.height = size.height;
@@ -194,25 +192,14 @@ package com.monsters.baseplanner.components
       override public function onMouseDown(param1:MouseEvent = null) : void
       {
          super.onMouseDown(param1);
-         this._positionOnMouseDown = new Point(mouseX,mouseY);
-         addEventListener(MouseEvent.MOUSE_MOVE,this.onMouseMove);
-         addEventListener(MouseEvent.MOUSE_UP,this.clicked);
       }
       
-      protected function clicked(param1:MouseEvent) : void
+      override public function onMouseUp(param1:MouseEvent = null) : void
       {
-         dispatchEvent(new BasePlannerNodeEvent(PlannerDesignView.BUILDING_CLICK,this.node));
-         removeEventListener(MouseEvent.MOUSE_MOVE,this.onMouseMove);
-         removeEventListener(MouseEvent.MOUSE_UP,this.clicked);
-      }
-      
-      protected function onMouseMove(param1:MouseEvent) : void
-      {
-         print("x:" + Math.abs(this._positionOnMouseDown.x - mouseX) + ", y:" + Math.abs(this._positionOnMouseDown.y - mouseY));
-         if(Math.abs(this._positionOnMouseDown.x - mouseX) > 30 || Math.abs(this._positionOnMouseDown.y - mouseY) > 30)
+         super.onMouseDown(param1);
+         if(!PLANNER.basePlanner.popup.designView._dragged)
          {
-            removeEventListener(MouseEvent.MOUSE_MOVE,this.onMouseMove);
-            removeEventListener(MouseEvent.MOUSE_UP,this.clicked);
+            dispatchEvent(new BasePlannerNodeEvent(PlannerDesignView.BUILDING_CLICK,this.node));
          }
       }
       
@@ -228,7 +215,7 @@ package com.monsters.baseplanner.components
          mc.mcFrame.gotoAndStop("off");
       }
       
-      public function addShadow() : *
+      public function addShadow() : void
       {
          var _loc1_:DropShadowFilter = new DropShadowFilter();
          _loc1_.distance = 5;
@@ -242,7 +229,7 @@ package com.monsters.baseplanner.components
          mc.filters = new Array(_loc1_);
       }
       
-      public function removeShadow() : *
+      public function removeShadow() : void
       {
          mc.filters = [];
       }

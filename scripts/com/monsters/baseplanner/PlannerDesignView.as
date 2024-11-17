@@ -14,6 +14,8 @@ package com.monsters.baseplanner
    
    public class PlannerDesignView extends Sprite
    {
+      public static var zoomValue:Number = 0.5;
+      
       public static const CHECKBOX_GROUND:uint = 0;
       
       public static const CHECKBOX_AIR:uint = 1;
@@ -23,6 +25,8 @@ package com.monsters.baseplanner
       private static const SIDEBAR_WIDTH:int = 140;
       
       private static const BOTTOMBAR_HEIGHT:int = 50;
+      
+      private static const SCROLL_ACTIVATION_PIXEL_THRESHOLD:int = 20;
       
       public static var SHOULD_SHOW_MOREINFO:Boolean = true;
       
@@ -70,8 +74,6 @@ package com.monsters.baseplanner
       
       public var xSpot:MovieClip;
       
-      public var zoomValue:Number = 0.5;
-      
       public const zoomMax:Number = 2;
       
       public const zoomMin:Number = 0.25;
@@ -86,7 +88,7 @@ package com.monsters.baseplanner
       
       public var _dragged:Boolean = false;
       
-      public var _dragOffset:Point;
+      private var _dragOffset:Point;
       
       public var _dragPoint:Point;
       
@@ -102,7 +104,7 @@ package com.monsters.baseplanner
       
       private const MAX_YARD_DIMENSIONS:Point = new Point(54 * 60,2600);
       
-      private const YARD_EXPANSIONS:Array = [new Point(1000,800),new Point(1100,880),new Point(1220,980),new Point(1340,18 * 60),new Point(1480,1180),new Point(27 * 60,1300)];
+      private const YARD_EXPANSIONS:Array = [new Point(1000,800),new Point(1100,880),new Point(1220,980),new Point(1340,18 * 60),new Point(1480,1180),new Point(27 * 60,1300),new Point(1780,1420)];
       
       public var currentTool:String = "selectmove";
       
@@ -132,8 +134,6 @@ package com.monsters.baseplanner
          this._canvas = new Sprite();
          this.addChild(this._canvas);
          addEventListener(MouseEvent.MOUSE_DOWN,this.canvasDragStart);
-         addEventListener(MouseEvent.MOUSE_UP,this.canvasDragStop);
-         addEventListener(MouseEvent.ROLL_OUT,this.canvasDragStop);
          addEventListener(MouseEvent.CLICK,this.onCanvasClick);
          this._canvas.addChild(this._layerGround);
          this._canvas.addChild(this._layerSetBuildings);
@@ -141,7 +141,7 @@ package com.monsters.baseplanner
          this._canvas.addChild(this._layerShroud);
          this._canvas.addChild(this._layerSelectRanges);
          this._canvas.addChild(this._layerSelectBuildings);
-         this.setZoom(this.zoomValue);
+         this.setZoom(zoomValue);
          this.centerView();
          this.displayInventory = new Vector.<BuildingItem>();
          this.fillGrass(this._layerGround);
@@ -153,7 +153,6 @@ package com.monsters.baseplanner
       
       public function centerView() : void
       {
-         this.setZoom(0.5);
          this._canvas.x = 260;
          this._canvas.y = 290;
       }
@@ -199,7 +198,7 @@ package com.monsters.baseplanner
          {
             _loc6_ = new Rectangle(-_loc4_.x / 2,-_loc4_.y / 2,_loc4_.x,_loc4_.y);
          }
-         if(_loc6_)
+         if(Boolean(_loc6_) && !BASE.isOutpost)
          {
             _loc8_ = new Sprite();
             _loc8_.graphics.beginFill(0xffffff,0.25);
@@ -226,8 +225,8 @@ package com.monsters.baseplanner
       {
          if(param1 > 0 && param1 < 10)
          {
-            this.zoomValue = param1;
-            this._canvas.scaleX = this._canvas.scaleY = this.zoomValue;
+            zoomValue = param1;
+            this._canvas.scaleX = this._canvas.scaleY = zoomValue;
             this.dealWithZoomReposition();
          }
       }
@@ -254,7 +253,7 @@ package com.monsters.baseplanner
          param1.addChild(_loc2_);
       }
       
-      public function onCanvasClick(param1:MouseEvent = null) : *
+      public function onCanvasClick(param1:MouseEvent = null) : void
       {
          if(this.currentTool == TOOL_SELECTMOVE)
          {
@@ -264,30 +263,43 @@ package com.monsters.baseplanner
          }
       }
       
-      public function canvasDragStart(param1:MouseEvent = null) : *
+      public function canvasDragStart(param1:MouseEvent = null) : void
       {
          this._dragging = true;
          this._dragged = false;
          this._dragOffset = new Point(this._canvas.x - mouseX,this._canvas.y - mouseY);
          this._dragPoint = new Point(this._canvas.x,this._canvas.y);
-         this.addEventListener(Event.ENTER_FRAME,this.canvasDrag);
+         GAME._instance.addEventListener(MouseEvent.MOUSE_MOVE,this.canvasDrag);
+         GAME._instance.addEventListener(MouseEvent.MOUSE_UP,this.canvasDragStop);
+         GAME._instance.addEventListener(MouseEvent.ROLL_OUT,this.canvasDragStop);
       }
       
-      public function canvasDragStop(param1:MouseEvent = null) : *
+      public function canvasDragStop(param1:MouseEvent = null) : void
       {
          this._dragging = false;
-         this.removeEventListener(Event.ENTER_FRAME,this.canvasDrag);
+         GAME._instance.removeEventListener(MouseEvent.MOUSE_MOVE,this.canvasDrag);
+         GAME._instance.removeEventListener(MouseEvent.MOUSE_UP,this.canvasDragStop);
+         GAME._instance.removeEventListener(MouseEvent.ROLL_OUT,this.canvasDragStop);
       }
       
-      public function canvasDrag(param1:Event = null) : *
+      public function canvasDrag(param1:Event = null) : void
       {
-         if(Math.abs(this._canvas.x - (mouseX + this._dragOffset.x)) > 10 || Math.abs(this._canvas.y - (mouseY + this._dragOffset.y)) > 10)
+         if(this._dragged)
          {
+            this.checkDragBounds();
+            return;
+         }
+         var _loc2_:Number = this._canvas.x - (mouseX + this._dragOffset.x);
+         var _loc3_:Number = this._canvas.y - (mouseY + this._dragOffset.y);
+         if(Math.abs(_loc2_) > SCROLL_ACTIVATION_PIXEL_THRESHOLD || Math.abs(_loc3_) > SCROLL_ACTIVATION_PIXEL_THRESHOLD)
+         {
+            this._dragOffset.x += _loc2_;
+            this._dragOffset.y += _loc3_;
             this.checkDragBounds();
          }
       }
       
-      private function checkDragBounds() : *
+      private function checkDragBounds() : void
       {
          var _loc1_:Number = mouseX + this._dragOffset.x;
          if(_loc1_ > this._canvas.width / 2)
@@ -302,7 +314,7 @@ package com.monsters.baseplanner
          {
             _loc1_ = GLOBAL._SCREEN.width / 2 - SIDEBAR_WIDTH;
          }
-         this._canvas.x = int(_loc1_ / 10) * 10;
+         this._canvas.x = _loc1_;
          _loc1_ = mouseY + this._dragOffset.y;
          if(_loc1_ > this._canvas.height / 2)
          {
@@ -316,7 +328,7 @@ package com.monsters.baseplanner
          {
             _loc1_ = GLOBAL._SCREEN.height / 2 - BOTTOMBAR_HEIGHT;
          }
-         this._canvas.y = int(_loc1_ / 10) * 10;
+         this._canvas.y = _loc1_;
          this._dragged = true;
       }
       
@@ -371,9 +383,11 @@ package com.monsters.baseplanner
       {
          this._selectMoveDragging = false;
          this._isAddingBuilding = false;
+         this._selectMoveInventoryBuilding = false;
+         this.currentTool = TOOL_SELECTMOVE;
          this.removeBuildingItem(param1);
          dispatchEvent(new BasePlannerNodeEvent(BasePlannerPopup.DESIGN_BUILDING_INVALID,param1.node));
-         removeEventListener(Event.ENTER_FRAME,this.dragBuildingTick);
+         removeEventListener(MouseEvent.MOUSE_MOVE,this.dragBuildingTick);
       }
       
       public function addMode(param1:BuildingItem) : void
@@ -385,8 +399,24 @@ package com.monsters.baseplanner
       
       public function setTool(param1:String) : void
       {
+         if(this.currentTool == param1)
+         {
+            return;
+         }
          this.currentTool = param1;
          dispatchEvent(new Event(BasePlannerPopup.DESIGN_TOOL_UPDATE));
+         if(param1)
+         {
+            this.removeSelection();
+         }
+      }
+      
+      public function removeSelection() : void
+      {
+         if(this._selectMoveTarget)
+         {
+            this.cancelDragBuilding(this._selectMoveTarget);
+         }
       }
       
       public function onBuildingClick(param1:BasePlannerNodeEvent) : void
@@ -398,6 +428,10 @@ package com.monsters.baseplanner
             return;
          }
          _loc2_ = param1.target as BuildingItem;
+         if(_loc2_.props.type == "enemy")
+         {
+            return;
+         }
          if(this.currentTool == TOOL_SELECTMOVE || this._selectMoveDragging)
          {
             this.dragBuilding(_loc2_);
@@ -456,6 +490,10 @@ package com.monsters.baseplanner
          if(param2)
          {
             this._selectMoveInventoryBuilding = true;
+            if(this.currentTool)
+            {
+               this.setTool("");
+            }
          }
          if(!this._selectMoveDragging)
          {
@@ -476,20 +514,29 @@ package com.monsters.baseplanner
          this._selectMoveDragging = true;
          this.sortBuildingOrder(param1,"front");
          param1.setPositionReference();
-         this._selectMoveDragPoint = new Point(param1.x - (this.mouseX - this._canvas.x) / this._canvas.scaleX,param1.y - (this.mouseY - this._canvas.y) / this._canvas.scaleY);
-         addEventListener(Event.ENTER_FRAME,this.dragBuildingTick);
+         this._selectMoveDragPoint = new Point(0 - param1.widthsize / 2 * param1.scale,0 - param1.widthsize / 2 * param1.scale);
+         addEventListener(MouseEvent.MOUSE_MOVE,this.dragBuildingTick);
       }
       
       public function stepDragBuilding(param1:BuildingItem) : void
       {
       }
       
-      public function stopDragBuilding(param1:BuildingItem) : void
+      public function dragBuildingTick(param1:Event) : void
+      {
+         this._selectMoveTarget.toggleInvalid(!this.validateBuilding(this._selectMoveTarget));
+         this._selectMoveTarget.x = int(((this.mouseX - this._canvas.x) / this._canvas.scaleX + this._selectMoveDragPoint.x) / MOUSE_POSITION_SNAP_THRESHHOLD) * MOUSE_POSITION_SNAP_THRESHHOLD;
+         this._selectMoveTarget.y = int(((this.mouseY - this._canvas.y) / this._canvas.scaleY + this._selectMoveDragPoint.y) / MOUSE_POSITION_SNAP_THRESHHOLD) * MOUSE_POSITION_SNAP_THRESHHOLD;
+         this.redrawRanges();
+      }
+      
+      public function stopDragBuilding(param1:BuildingItem, param2:Boolean = false) : void
       {
          this._selectMoveDragging = false;
          this._isAddingBuilding = false;
          if(this.validateBuilding(param1))
          {
+            param1.toggleInvalid(false);
             param1.setPositionReference();
             this.updateNodeReference(param1);
             if(this._selectMoveInventoryBuilding)
@@ -503,8 +550,10 @@ package com.monsters.baseplanner
          {
             if(this._selectMoveInventoryBuilding)
             {
-               if(ADD_INVENTORY_PAINTMODE)
+               if(ADD_INVENTORY_PAINTMODE && !param2)
                {
+                  this._selectMoveDragging = true;
+                  this._isAddingBuilding = true;
                   return;
                }
                this.removeBuildingItem(param1);
@@ -515,9 +564,30 @@ package com.monsters.baseplanner
          }
          if(!this._selectMoveDragging)
          {
-            removeEventListener(Event.ENTER_FRAME,this.dragBuildingTick);
+            removeEventListener(MouseEvent.MOUSE_MOVE,this.dragBuildingTick);
             param1.toggleInvalid(false);
             this._selectMoveInventoryBuilding = false;
+            this.setTool(TOOL_SELECTMOVE);
+         }
+      }
+      
+      public function cancelDragBuilding(param1:BuildingItem) : void
+      {
+         this._selectMoveDragging = false;
+         this._isAddingBuilding = false;
+         if(this._selectMoveInventoryBuilding)
+         {
+            this.removeBuildingItem(param1);
+            dispatchEvent(new Event(BasePlannerPopup.DESIGN_CLEAR_EXPLORER));
+         }
+         param1.resetPositionReference();
+         dispatchEvent(new BasePlannerNodeEvent(BasePlannerPopup.DESIGN_BUILDING_INVALID,param1.node));
+         if(!this._selectMoveDragging)
+         {
+            removeEventListener(MouseEvent.MOUSE_MOVE,this.dragBuildingTick);
+            param1.toggleInvalid(false);
+            this._selectMoveInventoryBuilding = false;
+            this._selectMoveTarget = null;
          }
       }
       
@@ -534,14 +604,6 @@ package com.monsters.baseplanner
             }
             _loc2_++;
          }
-      }
-      
-      public function dragBuildingTick(param1:Event) : void
-      {
-         this._selectMoveTarget.toggleInvalid(!this.validateBuilding(this._selectMoveTarget));
-         this._selectMoveTarget.x = int(((this.mouseX - this._canvas.x) / this._canvas.scaleX + this._selectMoveDragPoint.x) / MOUSE_POSITION_SNAP_THRESHHOLD) * MOUSE_POSITION_SNAP_THRESHHOLD;
-         this._selectMoveTarget.y = int(((this.mouseY - this._canvas.y) / this._canvas.scaleY + this._selectMoveDragPoint.y) / MOUSE_POSITION_SNAP_THRESHHOLD) * MOUSE_POSITION_SNAP_THRESHHOLD;
-         this.redrawRanges();
       }
       
       public function sortBuildingOrder(param1:BuildingItem, param2:String = "front") : void
@@ -598,7 +660,7 @@ package com.monsters.baseplanner
          return true;
       }
       
-      public function Bounds() : *
+      public function Bounds() : void
       {
       }
       
@@ -657,10 +719,10 @@ package com.monsters.baseplanner
       public function remove() : void
       {
          removeEventListener(MouseEvent.MOUSE_DOWN,this.canvasDragStart);
-         removeEventListener(MouseEvent.MOUSE_UP,this.canvasDragStop);
-         removeEventListener(MouseEvent.MOUSE_OUT,this.canvasDragStop);
          removeEventListener(MouseEvent.CLICK,this.onCanvasClick);
-         removeEventListener(Event.ENTER_FRAME,this.canvasDrag);
+         GAME._instance.removeEventListener(MouseEvent.MOUSE_MOVE,this.canvasDrag);
+         GAME._instance.removeEventListener(MouseEvent.MOUSE_UP,this.canvasDragStop);
+         GAME._instance.removeEventListener(MouseEvent.ROLL_OUT,this.canvasDragStop);
          this.clearAllLayers();
       }
       
@@ -739,7 +801,7 @@ package com.monsters.baseplanner
                      _loc3_ = Boolean(this.rangeCheckboxesFlags & 1 << _loc2_.rangeCategory() - 1);
                      break;
                   case 3:
-                     _loc3_ = Boolean(this.rangeCheckboxesFlags & 1 << CHECKBOX_GROUND) || Boolean(this.rangeCheckboxesFlags & 1 << CHECKBOX_AIR);
+                     _loc3_ = Boolean(this.rangeCheckboxesFlags & 1 << CHECKBOX_GROUND || this.rangeCheckboxesFlags & 1 << CHECKBOX_AIR);
                }
             }
             if(_loc3_)

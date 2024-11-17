@@ -16,6 +16,11 @@ package com.monsters.frontPage.messages.promotions
          super("promodaveclub","btn_tellmore","fp_promodaveclub_v2.jpg");
       }
       
+      public function get canBeShown() : Boolean
+      {
+         return this.m_CanBeShown;
+      }
+      
       public function set canBeShown(param1:Boolean) : void
       {
          this.m_CanBeShown = param1;

@@ -19,13 +19,13 @@ package
          Props();
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          super.TickAttack();
          Rotate();
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          if(_animLoaded && GLOBAL._render)
          {
@@ -34,7 +34,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          SOUNDS.Play("icannon");

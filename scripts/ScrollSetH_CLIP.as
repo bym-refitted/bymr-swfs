@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2298")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2284")]
    public dynamic class ScrollSetH_CLIP extends MovieClip
    {
       public var mcBG:MovieClip;

@@ -32,7 +32,7 @@ package
          super();
       }
       
-      public static function Data(param1:Object) : *
+      public static function Data(param1:Object) : void
       {
          var _loc2_:String = null;
          _upgrades = {};
@@ -70,20 +70,20 @@ package
          }
       }
       
-      public static function Show(param1:BFOUNDATION) : *
+      public static function Show(param1:BFOUNDATION) : void
       {
          if(!_open)
          {
             _open = true;
             _building = param1;
             GLOBAL.BlockerAdd();
-            _mc = GLOBAL._layerWindows.addChild(new ACADEMYPOPUP());
+            _mc = GLOBAL._layerWindows.addChild(new ACADEMYPOPUP()) as ACADEMYPOPUP;
             _mc.Center();
             _mc.ScaleUp();
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -192,9 +192,9 @@ package
          };
       }
       
-      public static function CancelMonsterUpgrade(param1:String) : *
+      public static function CancelMonsterUpgrade(param1:String) : void
       {
-         var _loc2_:* = undefined;
+         var _loc2_:BFOUNDATION = null;
          delete _upgrades[param1].time;
          delete _upgrades[param1].duration;
          for each(_loc2_ in BASE._buildingsAll)
@@ -209,11 +209,11 @@ package
          BASE.Save();
       }
       
-      public static function FinishMonsterUpgrade(param1:String) : *
+      public static function FinishMonsterUpgrade(param1:String) : void
       {
          var stat:Array;
          var Post:Function;
-         var building:* = undefined;
+         var building:BFOUNDATION = null;
          var id:String = null;
          var bragImage:String = null;
          var monsterName:String = null;
@@ -242,7 +242,7 @@ package
          LOGGER.Stat([12,monsterID.substr(monsterID.indexOf("C") + 1),_upgrades[monsterID].level]);
          if(GLOBAL._mode == "build")
          {
-            Post = function():*
+            Post = function():void
             {
                if(BASE.isInferno())
                {
@@ -264,9 +264,9 @@ package
             {
                GLOBAL._playerCreatureUpgrades[id] = {"level":_upgrades[id].level};
             }
-            if(CREATURELOCKER._creatures[_monsterID].stream[2])
+            if(CREATURELOCKER._creatures[monsterID].stream[2])
             {
-               bragImage = CREATURELOCKER._creatures[_monsterID].stream[2];
+               bragImage = CREATURELOCKER._creatures[monsterID].stream[2];
             }
             monsterName = KEYS.Get(CREATURELOCKER._creatures[monsterID].name);
             popupMC = new popup_monster();
@@ -279,7 +279,7 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc1_:String = null;
          var _loc2_:Object = null;
@@ -324,7 +324,7 @@ package
          return _loc1_;
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          if(_mc)
          {

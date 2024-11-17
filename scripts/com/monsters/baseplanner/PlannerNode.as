@@ -16,6 +16,8 @@ package com.monsters.baseplanner
       
       public static const TYPE_MISC:String = "misc";
       
+      protected static const MAX_TEXT_BEFORE_LEVEL:int = 16;
+      
       public var x:Number;
       
       public var y:Number;
@@ -66,7 +68,18 @@ package com.monsters.baseplanner
          this.defineCategory(param1._type);
          if(this.category != TYPE_DECORATION)
          {
-            this.displayName = this.name + " " + KEYS.Get("basePlanner_buildingLevel") + param1._lvl.Get();
+            if(this.name.length > MAX_TEXT_BEFORE_LEVEL && this.name.indexOf(" ") != this.name.lastIndexOf(" "))
+            {
+               this.displayName = this.name.substr(0,this.name.lastIndexOf(" "));
+            }
+            else
+            {
+               this.displayName = this.name;
+            }
+            if(param1._buildingProps.type != "enemy")
+            {
+               this.displayName += " " + KEYS.Get("basePlanner_buildingLevel") + param1._lvl.Get();
+            }
          }
          else
          {

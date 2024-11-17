@@ -240,7 +240,7 @@ package
          var lvl:int = param1;
          imageCompleteRoundDialogue = function(param1:String, param2:BitmapData):void
          {
-            var _loc3_:* = new Bitmap(param2);
+            var _loc3_:Bitmap = new Bitmap(param2);
             _loc3_.y = -_loc3_.height + 80;
             _loc3_.x = -100;
             completeRound.mcImage.addChild(_loc3_);
@@ -294,7 +294,7 @@ package
          var imageCompleteEmerge:Function = null;
          imageCompleteEmerge = function(param1:String, param2:BitmapData):void
          {
-            var _loc3_:* = new Bitmap(param2);
+            var _loc3_:Bitmap = new Bitmap(param2);
             completeEmerge.mcImage.addChild(_loc3_);
          };
          var portrait:String = "portrait_moloch.png";

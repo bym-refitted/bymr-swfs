@@ -10,9 +10,9 @@ package com.monsters.ai
    {
       public var _type:int;
       
-      private var d1:*;
+      private var d1:bubblepopup3;
       
-      private var d2:*;
+      private var d2:bubblepopup3;
       
       private var d3:bubblepopup3;
       
@@ -118,7 +118,7 @@ package com.monsters.ai
          }
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;

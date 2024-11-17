@@ -34,12 +34,11 @@ package com.monsters.subscriptions.rewards
       
       override public function reset() : void
       {
-         this.removed();
       }
       
       private function onAttackingCreepSpawned(param1:CreepEvent) : void
       {
-         if(GLOBAL.isAtHome() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
+         if(GLOBAL.isAtHomeOrInOutpost() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
          {
             param1.creep.currentSkinOverride = DAVE_CREEP_ID;
          }
@@ -47,7 +46,7 @@ package com.monsters.subscriptions.rewards
       
       private function onDefendingCreepSpawned(param1:CreepEvent) : void
       {
-         if(!GLOBAL.isAtHome() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
+         if(!GLOBAL.isAtHomeOrInOutpost() && _value && param1.creep && param1.creep._creatureID == DAVE_CREEP_ID)
          {
             param1.creep.currentSkinOverride = DAVE_CREEP_ID;
          }

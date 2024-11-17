@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.configs.BYMDevConfig;
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -20,7 +21,7 @@ package
          super();
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function Show(param1:MouseEvent = null) : void
       {
          LOGGER.Stat([22]);
          GLOBAL.CallJS("cc.showTopup",[{
@@ -29,7 +30,7 @@ package
          }]);
       }
       
-      public static function Offers(param1:String) : *
+      public static function Offers(param1:String) : void
       {
          switch(param1)
          {
@@ -112,7 +113,14 @@ package
                   }
                   else
                   {
-                     GLOBAL.CallJS("cc.ncp",["checkEligibility","fbcNcp"]);
+                     if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+                     {
+                        GLOBAL.CallJSWithClient("cc.ncp","fbcNcp",["checkEligibility"]);
+                     }
+                     else
+                     {
+                        GLOBAL.CallJS("cc.ncp",["checkEligibility","fbcNcp"]);
+                     }
                      FBCNcpUpgradeTimeout();
                   }
                   return true;
@@ -163,7 +171,14 @@ package
       
       public static function FBCNcp_Click(param1:MouseEvent) : void
       {
-         GLOBAL.CallJS("cc.ncp",["showPaymentDialog","fbcNcpConfirm"]);
+         if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+         {
+            GLOBAL.CallJSWithClient("cc.ncp","fbcNcpConfirm",["showPaymentDialog"]);
+         }
+         else
+         {
+            GLOBAL.CallJS("cc.ncp",["showPaymentDialog","fbcNcpConfirm"]);
+         }
          POPUPS.Next();
       }
       
@@ -193,7 +208,14 @@ package
       {
          if(param2)
          {
-            GLOBAL.CallJS("cc.ncp",["userCancelled"]);
+            if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+            {
+               GLOBAL.CallJSWithClient("cc.ncp","fbcNcpConfirm",["showPaymentDialog"]);
+            }
+            else
+            {
+               GLOBAL.CallJS("cc.ncp",["userCancelled"]);
+            }
          }
          POPUPS.Next();
          FBCNcpUpgradeCB();

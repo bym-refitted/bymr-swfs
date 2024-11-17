@@ -112,7 +112,7 @@ package com.monsters.ai
          var _loc6_:Number = NaN;
          var _loc7_:Number = NaN;
          var _loc8_:Number = NaN;
-         var _loc19_:* = undefined;
+         var _loc19_:BFOUNDATION = null;
          var _loc20_:Number = NaN;
          var _loc2_:Object = {};
          var _loc3_:int = 0;

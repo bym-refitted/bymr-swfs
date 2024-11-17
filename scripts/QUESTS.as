@@ -20,7 +20,7 @@ package
       
       public static var _displayedInstructions:Boolean;
       
-      public static var _mc:*;
+      public static var _mc:QUESTSPOPUP;
       
       public static var _open:Boolean;
       
@@ -42,7 +42,7 @@ package
          return _loc1_;
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _displayedInstructions = false;
          _global = {
@@ -1594,7 +1594,7 @@ package
          _infernoQuests = INFERNO_QUESTS._infernoQuests;
       }
       
-      public static function Data(param1:Object) : *
+      public static function Data(param1:Object) : void
       {
          if(param1 == null)
          {
@@ -1608,11 +1608,11 @@ package
          }
       }
       
-      public static function Check(param1:String = "", param2:int = 0) : *
+      public static function Check(param1:String = "", param2:int = 0) : void
       {
          var fail:Boolean = false;
          var i:int = 0;
-         var q:* = undefined;
+         var q:Object = null;
          var block:Boolean = false;
          var n:String = param1;
          var v:int = param2;
@@ -1696,7 +1696,7 @@ package
          }
       }
       
-      public static function TutorialCheck() : *
+      public static function TutorialCheck() : void
       {
       }
       
@@ -1718,9 +1718,9 @@ package
          return BASE.isInferno() ? _infernoQuests : _mainQuests;
       }
       
-      public static function QuestPopup(param1:String, param2:String, param3:String, param4:String, param5:String) : *
+      public static function QuestPopup(param1:String, param2:String, param3:String, param4:String, param5:String) : void
       {
-         var _loc6_:* = new popup_quest();
+         var _loc6_:popup_quest = new popup_quest();
          _loc6_.tA.autoSize = TextFieldAutoSize.LEFT;
          _loc6_.tA.htmlText = KEYS.Get("pop_questcomplete_body",{
             "v1":param2,
@@ -1744,11 +1744,11 @@ package
          POPUPS.Push(_loc6_,null,null,null,param4);
       }
       
-      public static function Collect(param1:String, param2:Boolean = false) : *
+      public static function Collect(param1:String, param2:Boolean = false) : Function
       {
          var questID:String = param1;
          var popup:Boolean = param2;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             CollectB(questID,popup);
          };
@@ -1772,7 +1772,7 @@ package
          var quantity:int = 0;
          var hasRoom:Boolean = false;
          var z:int = 0;
-         var popupMC:* = undefined;
+         var popupMC:popup_quest = null;
          var h:int = 0;
          var questID:String = param1;
          var popup:Boolean = param2;
@@ -1890,7 +1890,7 @@ package
             Check();
             if(TUTORIAL._stage >= 200 && Boolean(q.streamTitle))
             {
-               Brag = function():*
+               Brag = function():void
                {
                   var _loc1_:Array = [];
                   if(q.reward[0] > 0)
@@ -1960,7 +1960,7 @@ package
          var q:Object = null;
          var value:int = 0;
          var z:int = 0;
-         var popupMC:* = undefined;
+         var popupMC:popup_quest = null;
          var h:int = 0;
          var questID:String = param1;
          if(BASE._pendingPurchase.length == 0)
@@ -2017,7 +2017,7 @@ package
             Check();
             if(TUTORIAL._stage >= 200 && Boolean(q.streamTitle))
             {
-               Brag = function():*
+               Brag = function():void
                {
                   var _loc1_:Array = [];
                   if(q.reward[0] > 0)
@@ -2089,14 +2089,14 @@ package
                _open = true;
                BASE.BuildingDeselect();
                GLOBAL.BlockerAdd();
-               _mc = GLOBAL._layerWindows.addChild(new QUESTSPOPUP());
+               _mc = GLOBAL._layerWindows.addChild(new QUESTSPOPUP()) as QUESTSPOPUP;
                _mc.Center();
                _mc.ScaleUp();
             }
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -2111,12 +2111,12 @@ package
          }
       }
       
-      public static function CheckB() : *
+      public static function CheckB() : String
       {
          var _loc3_:Object = null;
          var _loc4_:int = 0;
          var _loc1_:Array = [];
-         var _loc2_:* = 0;
+         var _loc2_:int = 0;
          while(_loc2_ < _quests.length)
          {
             _loc3_ = _quests[_loc2_];
@@ -2135,7 +2135,7 @@ package
          return md5(JSON.encode(_loc1_));
       }
       
-      public static function Completed() : *
+      public static function Completed() : void
       {
       }
    }

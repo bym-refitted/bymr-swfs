@@ -139,7 +139,7 @@ package com.monsters.radio
          }
       }
       
-      private function SaveConfirmCB(param1:String, param2:Object) : *
+      private function SaveConfirmCB(param1:String, param2:Object) : void
       {
          if(!RADIO._isSaving)
          {

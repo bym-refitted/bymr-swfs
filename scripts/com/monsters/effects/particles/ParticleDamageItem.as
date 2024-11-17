@@ -1,8 +1,8 @@
 package com.monsters.effects.particles
 {
    import flash.geom.Point;
-   import gs.*;
-   import gs.easing.*;
+   import gs.TweenLite;
+   import gs.easing.Cubic;
    
    public class ParticleDamageItem extends ParticleDamageItem_CLIP
    {
@@ -15,7 +15,7 @@ package com.monsters.effects.particles
       
       public function Init(param1:Point, param2:int, param3:uint) : void
       {
-         this._mc = MAP._PROJECTILES.addChild(this);
+         this._mc = MAP._PROJECTILES.addChild(this) as ParticleDamageItem;
          this.Fill(param2,param3);
          this.Move(param1);
       }

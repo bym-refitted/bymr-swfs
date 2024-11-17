@@ -29,39 +29,39 @@ package
          super.Tick(param1);
       }
       
-      public function Fund() : *
+      public function Fund() : void
       {
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          super.Place(param1);
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bCatapult = null;
          super.Cancel();
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bCatapult = null;
          super.RecycleC();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _upgradeDescription = KEYS.Get("bdg_catapult_upgrade");
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -69,7 +69,7 @@ package
          GLOBAL._bCatapult = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-cat",KEYS.Get("pop_catapultbuilt_streamtitle"),KEYS.Get("pop_catapultbuilt_streambody"),"build-catapult.png"]);
                POPUPS.Next();
@@ -85,14 +85,14 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          if(GLOBAL._mode == "build")
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-cat-" + _lvl.Get(),KEYS.Get("pop_catapultupgraded" + _lvl.Get() + "_streamtitle"),KEYS.Get("pop_catapultupgraded" + _lvl.Get() + "_streambody"),"upgrade-catapult.png"]);
                POPUPS.Next();
@@ -107,14 +107,14 @@ package
          }
       }
       
-      public function LoadEffects() : *
+      public function LoadEffects() : void
       {
          ImageCache.GetImageWithCallBack("effects/pebble.png",null,true,6);
          ImageCache.GetImageWithCallBack("effects/pebblehit.png",null,true,6);
          ImageCache.GetImageWithCallBack("effects/twigs.png",null,true,6);
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() <= 0)

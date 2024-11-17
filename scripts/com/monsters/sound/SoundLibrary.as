@@ -3,6 +3,7 @@ package com.monsters.sound
    import flash.display.Loader;
    import flash.display.LoaderInfo;
    import flash.events.Event;
+   import flash.events.IOErrorEvent;
    import flash.net.URLRequest;
    import flash.system.ApplicationDomain;
    import flash.system.LoaderContext;
@@ -31,6 +32,7 @@ package com.monsters.sound
          this.loader = new Loader();
          this.loader.load(new URLRequest(this._asset),new LoaderContext(false,new ApplicationDomain(ApplicationDomain.currentDomain)));
          this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onLoad);
+         this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
       }
       
       private function onLoad(param1:Event) : void

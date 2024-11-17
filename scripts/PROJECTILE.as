@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.monsters.MonsterBase;
    import flash.display.MovieClip;
    import flash.geom.Point;
    
@@ -126,7 +127,7 @@ package
          return false;
       }
       
-      public function Render() : *
+      public function Render() : void
       {
          if(GLOBAL._render)
          {
@@ -135,15 +136,15 @@ package
          }
       }
       
-      public function Splash() : *
+      public function Splash() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Point = null;
          var _loc7_:int = 0;
-         var _loc8_:* = undefined;
+         var _loc8_:Array = null;
          _loc8_ = MAP.CreepCellFind(new Point(this._tmpX,this._tmpY),this._splash,this._splashtype);
          var _loc9_:int = 0;
          for(_loc3_ in _loc8_)
@@ -152,15 +153,15 @@ package
             _loc2_ = _loc1_.creep;
             if(_loc2_ == this._targetMC)
             {
-               _loc9_ += this._damage;
+               _loc9_ += _loc2_._damageMult * this._damage;
                _loc2_._health.Add(-(_loc2_._damageMult * this._damage));
             }
             else
             {
-               _loc4_ = _loc1_.dist;
+               _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
                _loc7_ = this._damage * 0.75 / this._splash * (this._splash - _loc4_);
-               _loc9_ += _loc7_;
+               _loc9_ += _loc2_._damageMult * _loc7_;
                _loc2_._health.Add(-(_loc2_._damageMult * _loc7_));
             }
          }

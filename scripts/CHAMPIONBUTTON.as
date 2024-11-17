@@ -42,7 +42,10 @@ package
          bRetreat.addEventListener(MouseEvent.CLICK,this.Retreat);
          addEventListener(MouseEvent.ROLL_OVER,this.Over);
          addEventListener(MouseEvent.ROLL_OUT,this.Out);
-         CREEPS._flungGuardian[this._index] = false;
+         if(CREEPS._flungGuardian)
+         {
+            CREEPS._flungGuardian[this._index] = false;
+         }
          if(Boolean(GLOBAL._playerGuardianData[this._index]) && Boolean(GLOBAL._playerGuardianData[this._index].l.Get()))
          {
             mcMonsterLevel.tLevel.htmlText = "<b>" + GLOBAL._playerGuardianData[this._index].l.Get() + "</b>";
@@ -54,12 +57,12 @@ package
          this.Update();
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData) : *
+      public function IconLoaded(param1:String, param2:BitmapData) : void
       {
          mcImage.addChild(new Bitmap(param2));
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          if(CREEPS._flungGuardian[this._index])
          {
@@ -68,7 +71,7 @@ package
          }
       }
       
-      public function Send(param1:MouseEvent) : *
+      public function Send(param1:MouseEvent) : void
       {
          if(!this._sent)
          {
@@ -87,7 +90,7 @@ package
          this.Update();
       }
       
-      public function Retreat(param1:MouseEvent) : *
+      public function Retreat(param1:MouseEvent) : void
       {
          var _loc2_:int = CREEPS.getGuardianIndex(int(this._creatureID.substr(1)));
          if(_loc2_ >= 0)
@@ -96,13 +99,13 @@ package
          }
       }
       
-      public function Over(param1:MouseEvent) : *
+      public function Over(param1:MouseEvent) : void
       {
          dispatchEvent(new Event(UI_TOP.CREATUREBUTTONOVER));
          this._description.visible = true;
       }
       
-      public function Out(param1:MouseEvent) : *
+      public function Out(param1:MouseEvent) : void
       {
          this._description.visible = false;
       }

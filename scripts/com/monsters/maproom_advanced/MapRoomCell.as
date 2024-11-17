@@ -169,7 +169,7 @@ package com.monsters.maproom_advanced
          mc.mcPrompt.visible = false;
       }
       
-      public function Setup(param1:Object) : *
+      public function Setup(param1:Object) : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
@@ -373,7 +373,7 @@ package com.monsters.maproom_advanced
             this._pic_square = param1.im;
          }
          this.Update();
-         var _loc2_:* = getTimer();
+         var _loc2_:int = getTimer();
          if(this._monsterData)
          {
             _loc3_ = getTimer();
@@ -611,7 +611,7 @@ package com.monsters.maproom_advanced
          {
             mc.mcPrompt.bYes.SetupKey("btn_yes");
             mc.mcPrompt.bNo.SetupKey("btn_no");
-            mc.mcPrompt.bYes.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            mc.mcPrompt.bYes.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                MapRoom.PreAcceptInvitation(MapRoom._mc as MovieClip);
             });
@@ -626,8 +626,8 @@ package com.monsters.maproom_advanced
          var _loc5_:int = 0;
          var _loc6_:Array = null;
          var _loc7_:Array = null;
-         var _loc8_:* = undefined;
-         var _loc9_:* = undefined;
+         var _loc8_:Array = null;
+         var _loc9_:Array = null;
          var _loc10_:String = null;
          if(MapRoom._viewOnly)
          {
@@ -887,7 +887,7 @@ package com.monsters.maproom_advanced
          return true;
       }
       
-      private function Over(param1:MouseEvent) : *
+      private function Over(param1:MouseEvent) : void
       {
          this._over = true;
          if(MapRoom._viewOnly && this._baseID == MapRoom._inviteBaseID)
@@ -905,7 +905,7 @@ package com.monsters.maproom_advanced
          MapRoom._mc.ShowInfo(this);
       }
       
-      private function Out(param1:MouseEvent) : *
+      private function Out(param1:MouseEvent) : void
       {
          this._over = false;
          if(MapRoom._viewOnly && this._baseID == MapRoom._inviteBaseID)
@@ -922,7 +922,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Cleanup() : *
+      public function Cleanup() : void
       {
          mc.mcHit.removeEventListener(MouseEvent.MOUSE_OVER,this.Over);
          mc.mcHit.removeEventListener(MouseEvent.MOUSE_OUT,this.Out);
@@ -931,7 +931,7 @@ package com.monsters.maproom_advanced
          this._alliance = null;
       }
       
-      private function SecureMonsterData() : *
+      private function SecureMonsterData() : void
       {
          var _loc1_:String = null;
          var _loc5_:int = 0;
@@ -1014,7 +1014,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      private function Click(param1:MouseEvent) : *
+      private function Click(param1:MouseEvent) : void
       {
          var _loc2_:String = null;
          if(Boolean(MapRoom._mc) && MapRoom._mc._dragged)
@@ -1169,11 +1169,11 @@ package com.monsters.maproom_advanced
          return _loc1_;
       }
       
-      private function Indicate() : *
+      private function Indicate() : void
       {
       }
       
-      private function SmokeAdd() : *
+      private function SmokeAdd() : void
       {
          this.SmokeRemove();
          var _loc1_:MovieClip = new MovieClip();
@@ -1186,7 +1186,7 @@ package com.monsters.maproom_advanced
          mc.mcPlayer.mouseChildren = false;
       }
       
-      private function SmokeRemove() : *
+      private function SmokeRemove() : void
       {
          if(Boolean(this._smokeDO) && Boolean(this._smokeDO.parent))
          {
@@ -1199,7 +1199,7 @@ package com.monsters.maproom_advanced
          return this._base == 2;
       }
       
-      private function SetupAlliance() : *
+      private function SetupAlliance() : void
       {
          var _loc1_:int = 0;
          mc.mcPlayer.mcFlag.visible = false;

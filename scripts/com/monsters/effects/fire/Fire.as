@@ -29,7 +29,7 @@ package com.monsters.effects.fire
          super();
       }
       
-      public static function Add(param1:DisplayObject, param2:Bitmap, param3:Point) : *
+      public static function Add(param1:DisplayObject, param2:Bitmap, param3:Point) : void
       {
          if(flames.length < 5)
          {
@@ -49,7 +49,7 @@ package com.monsters.effects.fire
          flames.splice(param1,1);
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc1_:int = 0;
          if(++_frameNumber % 2 == 0)
@@ -85,7 +85,7 @@ package com.monsters.effects.fire
          }
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
          var _loc1_:int = 0;
          while(_loc1_ < flames.length)

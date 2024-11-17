@@ -181,12 +181,11 @@ package com.monsters.mailbox
       
       private function onSuccess(param1:Object) : void
       {
-         var data:Object = param1;
-         if(data.error != undefined && data.error != 0)
+         if(param1.error != undefined && param1.error != 0)
          {
             try
             {
-               LOGGER.Log("err","mailbox-" + data.error);
+               LOGGER.Log("err","mailbox-" + param1.error);
             }
             catch(e:*)
             {
@@ -214,7 +213,7 @@ package com.monsters.mailbox
             }
             try
             {
-               this.successHandler(data);
+               this.successHandler(param1);
             }
             catch(e:*)
             {

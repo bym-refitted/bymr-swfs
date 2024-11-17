@@ -1,6 +1,7 @@
 package
 {
    import flash.events.Event;
+   import flash.events.IOErrorEvent;
    import flash.net.URLLoader;
    import flash.net.URLRequest;
    
@@ -33,47 +34,54 @@ package
       
       public static function Setup(param1:Function) : void
       {
-         var l:URLLoader;
-         var handleSucc:Function = null;
-         var _cbf:Function = param1;
-         handleSucc = function(param1:Event):void
-         {
-            var _loc3_:String = null;
-            var _loc4_:String = null;
-            _keys = JSON.decode(param1.target.data);
-            var _loc2_:Number = 0;
-            for(_loc3_ in _keys)
-            {
-               for(_loc4_ in _keys[_loc3_])
-               {
-                  _loc2_++;
-               }
-            }
-            cbf();
-         };
          if(_setup)
          {
             return;
          }
          _setup = true;
-         cbf = _cbf;
-         l = new URLLoader();
+         cbf = param1;
+         var _loc2_:URLLoader = new URLLoader();
          if(GLOBAL._local)
          {
             if(GLOBAL._localMode == 6)
             {
-               l.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/game/assets/" + _language + ".v" + _languageVersion + ".txt"));
+               _loc2_.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/game/assets/" + _language + ".v" + _languageVersion + ".txt"));
             }
             else
             {
-               l.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/gamestage/assets/" + _language + ".v" + _languageVersion + ".txt"));
+               _loc2_.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/gamestage/assets/" + _language + ".v" + _languageVersion + ".txt"));
             }
          }
          else
          {
-            l.load(new URLRequest(_storageURL + _language + ".v" + _languageVersion + ".txt"));
+            _loc2_.load(new URLRequest(_storageURL + _language + ".v" + _languageVersion + ".txt"));
          }
-         l.addEventListener(Event.COMPLETE,handleSucc);
+         _loc2_.addEventListener(Event.COMPLETE,handleSucc);
+         _loc2_.addEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
+      }
+      
+      private static function handleSucc(param1:Event) : void
+      {
+         var _loc3_:String = null;
+         var _loc4_:String = null;
+         _keys = JSON.decode(param1.target.data);
+         var _loc2_:Number = 0;
+         for(_loc3_ in _keys)
+         {
+            for(_loc4_ in _keys[_loc3_])
+            {
+               while(_loc4_.length > 1 && _loc4_.charAt(0) == " ")
+               {
+                  _loc4_ = _loc4_.substring(1,_loc4_.length);
+               }
+               while(_loc4_.length > 1 && _loc4_.charAt(_loc4_.length - 1) == " ")
+               {
+                  _loc4_ = _loc4_.substring(0,_loc4_.length - 1);
+               }
+               _loc2_++;
+            }
+         }
+         cbf();
       }
       
       public static function Get(param1:String, param2:Object = null) : String
@@ -109,7 +117,7 @@ package
                      }
                      if(_logFunction != null)
                      {
-                        _logFunction("err","missing key: " + key);
+                        _logFunction("log","missing key: " + key);
                      }
                      return "[[" + key + "]]";
                   }
@@ -122,7 +130,7 @@ package
                {
                   if(_logFunction != null)
                   {
-                     _logFunction("err","missing key: " + key);
+                     _logFunction("log","missing key: " + key);
                   }
                   return "[[" + key + "]]";
                }

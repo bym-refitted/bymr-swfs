@@ -53,7 +53,7 @@ package com.monsters.maproom_advanced
       
       public var _popupInfoViewOnly:PopupInfoViewOnly;
       
-      public var _popupBuff:*;
+      public var _popupBuff:bubblepopupBuff;
       
       private var _popupBookmarkMenu:Array;
       
@@ -71,8 +71,8 @@ package com.monsters.maproom_advanced
       
       public function MapRoomPopup()
       {
-         var w:*;
-         var h:*;
+         var w:int;
+         var h:int;
          var r:Rectangle;
          var i:int;
          this._sortArray = [];
@@ -146,7 +146,7 @@ package com.monsters.maproom_advanced
          if(!MapRoom._viewOnly)
          {
             this.bHome.SetupKey("btn_home");
-            this.bHome.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.bHome.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                HideBookmarkMenu();
                MapRoom.JumpTo(GLOBAL._mapHome);
@@ -169,7 +169,7 @@ package com.monsters.maproom_advanced
          else
          {
             this.bBookmarks.SetupKey("btn_home");
-            this.bBookmarks.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.bBookmarks.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                MapRoom.JumpTo(MapRoom._inviteLocation);
             });
@@ -208,13 +208,13 @@ package com.monsters.maproom_advanced
          this.mcMask.mcBG.addChild(this._cellContainer);
       }
       
-      private function JumpPopupShow(param1:MouseEvent = null) : *
+      private function JumpPopupShow(param1:MouseEvent = null) : void
       {
          var popupMC:MapRoomPopupJump = null;
          var Jump:Function = null;
          var JumpPopupHide:Function = null;
          var e:MouseEvent = param1;
-         Jump = function(param1:MouseEvent = null):*
+         Jump = function(param1:MouseEvent = null):void
          {
             var _loc2_:String = JumpToCoordinate(popupMC.tX.text,popupMC.tY.text);
             if(_loc2_)
@@ -226,7 +226,7 @@ package com.monsters.maproom_advanced
                JumpPopupHide();
             }
          };
-         JumpPopupHide = function(param1:MouseEvent = null):*
+         JumpPopupHide = function(param1:MouseEvent = null):void
          {
             GLOBAL.BlockerRemove();
             popupMC.bJump.removeEventListener(MouseEvent.CLICK,Jump);
@@ -248,7 +248,7 @@ package com.monsters.maproom_advanced
          this.addChild(popupMC);
       }
       
-      private function HideResourceDisplay() : *
+      private function HideResourceDisplay() : void
       {
          var _loc1_:int = 1;
          while(_loc1_ < 5)
@@ -259,7 +259,7 @@ package com.monsters.maproom_advanced
          mcOutposts.visible = false;
       }
       
-      private function UpdateResourceDisplay() : *
+      private function UpdateResourceDisplay() : void
       {
          var _loc2_:int = 0;
          var _loc1_:int = 1;
@@ -281,7 +281,7 @@ package com.monsters.maproom_advanced
          mcOutposts.tR.htmlText = GLOBAL._mapOutpost.length + " " + KEYS.Get("newmap_outposts");
       }
       
-      public function ShowInfo(param1:MapRoomCell) : *
+      public function ShowInfo(param1:MapRoomCell) : void
       {
          if(!param1._updated)
          {
@@ -406,7 +406,7 @@ package com.monsters.maproom_advanced
          mcInfo.visible = true;
       }
       
-      private function ProfilePic(param1:Number) : *
+      private function ProfilePic(param1:Number) : void
       {
          var profilePic:Loader = null;
          var onImageLoad:Function = null;
@@ -420,7 +420,7 @@ package com.monsters.maproom_advanced
             profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
-         LoadImageError = function(param1:IOErrorEvent):*
+         LoadImageError = function(param1:IOErrorEvent):void
          {
             profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
@@ -431,7 +431,7 @@ package com.monsters.maproom_advanced
          profilePic.load(new URLRequest("http://graph.facebook.com/" + fbid + "/picture"));
       }
       
-      private function ProfilePicVix(param1:String) : *
+      private function ProfilePicVix(param1:String) : void
       {
          var profilePic:Loader = null;
          var onImageLoad:Function = null;
@@ -445,7 +445,7 @@ package com.monsters.maproom_advanced
             profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
-         LoadImageError = function(param1:IOErrorEvent):*
+         LoadImageError = function(param1:IOErrorEvent):void
          {
             profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
@@ -456,7 +456,7 @@ package com.monsters.maproom_advanced
          profilePic.load(new URLRequest(imgURL));
       }
       
-      private function TribePic(param1:String) : *
+      private function TribePic(param1:String) : void
       {
          var imageComplete:Function = null;
          var tribe:String = param1;
@@ -482,23 +482,23 @@ package com.monsters.maproom_advanced
          }
       }
       
-      private function AlliancePic(param1:String, param2:AllyInfo) : *
+      private function AlliancePic(param1:String, param2:AllyInfo) : void
       {
          param2.AlliancePic(param1,mcInfo.mcAlliancePic.mcImage,mcInfo.mcAlliancePic.mcBG,true);
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
          if(BASE._loadedFriendlyBaseID)
          {
             BASE._yardType = BASE._loadedYardType;
-            BASE.LoadBase(null,null,BASE._loadedFriendlyBaseID,"build",false,BASE._loadedYardType);
+            BASE.LoadBase(null,0,BASE._loadedFriendlyBaseID,"build",false,BASE._loadedYardType);
          }
          else
          {
             BASE._yardType = BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
          }
          SOUNDS.Play("close");
          this.Cleanup();
@@ -559,8 +559,16 @@ package com.monsters.maproom_advanced
             this._popupBuff.Cleanup();
             this._popupBuff = null;
          }
-         mcFrame = null;
-         mcFrame2 = null;
+         if(mcFrame)
+         {
+            mcFrame.Clear();
+            mcFrame = null;
+         }
+         if(mcFrame2)
+         {
+            mcFrame2.Clear();
+            mcFrame2 = null;
+         }
          if(this._cellContainer)
          {
             while(this._cellContainer.numChildren > 0)
@@ -588,7 +596,7 @@ package com.monsters.maproom_advanced
          }
          if(!MapRoom._viewOnly)
          {
-            this.bHome.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.bHome.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                HideBookmarkMenu();
                MapRoom.JumpTo(GLOBAL._mapHome);
@@ -598,7 +606,7 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            this.bBookmarks.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            this.bBookmarks.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                MapRoom.JumpTo(MapRoom._inviteLocation);
             });
@@ -661,14 +669,13 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
-      private function GenerateCells(param1:Point) : *
+      private function GenerateCells(param1:Point) : void
       {
-         var _loc3_:int = 0;
-         var _loc5_:int = 0;
+         var _loc4_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:MapRoomCell = null;
-         var _loc2_:* = GLOBAL._ROOT.stage.stageWidth;
-         _loc3_ = GLOBAL.GetGameHeight();
+         var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
+         var _loc3_:int = GLOBAL.GetGameHeight();
          if(_loc2_ > 1024)
          {
             _loc2_ = 1024;
@@ -677,7 +684,7 @@ package com.monsters.maproom_advanced
          {
             _loc3_ = 768;
          }
-         var _loc4_:Rectangle = new Rectangle(0 - (_loc2_ - 760) / 2,0 - (_loc3_ - 520) / 2,_loc2_,_loc3_);
+         var _loc5_:Rectangle = new Rectangle(0 - (_loc2_ - 760) / 2,0 - (_loc3_ - 520) / 2,_loc2_,_loc3_);
          if(this._cellContainer)
          {
             while(this._cellContainer.numChildren > 0)
@@ -694,12 +701,12 @@ package com.monsters.maproom_advanced
          }
          if(this._cells)
          {
-            _loc5_ = int(this._cells.length - 1);
-            _loc5_ = int(this._cells.length - 1);
-            while(_loc5_ >= 0)
+            _loc4_ = int(this._cells.length - 1);
+            _loc4_ = int(this._cells.length - 1);
+            while(_loc4_ >= 0)
             {
-               delete this._cells[_loc5_];
-               _loc5_--;
+               delete this._cells[_loc4_];
+               _loc4_--;
             }
          }
          this._cells = [];
@@ -808,18 +815,14 @@ package com.monsters.maproom_advanced
       
       private function ContainerRelease(param1:MouseEvent) : void
       {
-         var e:MouseEvent = param1;
-         try
+         if(this._cellContainer)
          {
             this._cellContainer.removeEventListener(MouseEvent.MOUSE_MOVE,this.ContainerMove);
-            this._dragged = false;
          }
-         catch(e:Error)
-         {
-         }
+         this._dragged = false;
       }
       
-      public function Tick() : *
+      public function Tick() : void
       {
          var _loc1_:MapRoomCell = null;
          this.UpdateResourceDisplay();
@@ -830,7 +833,7 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
-      public function Check() : *
+      public function Check() : void
       {
          var _loc1_:MapRoomCell = null;
          for each(_loc1_ in this._cells)
@@ -839,12 +842,12 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Update(param1:Boolean = false) : *
+      public function Update(param1:Boolean = false) : void
       {
          var _loc3_:Boolean = false;
          var _loc4_:Boolean = false;
-         var _loc5_:MapRoomCell = null;
-         var _loc6_:Object = null;
+         var _loc5_:Object = null;
+         var _loc6_:MapRoomCell = null;
          var _loc7_:int = 0;
          var _loc8_:MapRoomCell = null;
          var _loc9_:Boolean = false;
@@ -859,95 +862,95 @@ package com.monsters.maproom_advanced
          }
          if((!this._fallbackHomeCell._updated || param1) && this._fallbackHomeCell._dataAge <= 0)
          {
-            _loc6_ = MapRoom.GetCell(this._fallbackHomeCell.X,this._fallbackHomeCell.Y);
-            if(_loc6_)
+            _loc5_ = MapRoom.GetCell(this._fallbackHomeCell.X,this._fallbackHomeCell.Y);
+            if(_loc5_)
             {
-               this._fallbackHomeCell.Setup(_loc6_);
+               this._fallbackHomeCell.Setup(_loc5_);
             }
          }
          this._sortArray = [];
-         for each(_loc5_ in this._cells)
+         for each(_loc6_ in this._cells)
          {
             _loc3_ = false;
-            if(this._cellContainer.x + _loc5_.x > this._cellCountX * (this._cellWidth * 0.75) - this._cellWidth * 0.75 * 5)
+            if(this._cellContainer.x + _loc6_.x > this._cellCountX * (this._cellWidth * 0.75) - this._cellWidth * 0.75 * 5)
             {
-               _loc5_.x -= this._cellCountX * (this._cellWidth * 0.75);
-               _loc5_.X -= this._cellCountX;
-               if(_loc5_.X < 0)
+               _loc6_.x -= this._cellCountX * (this._cellWidth * 0.75);
+               _loc6_.X -= this._cellCountX;
+               if(_loc6_.X < 0)
                {
-                  _loc5_.X += MapRoom._mapWidth;
+                  _loc6_.X += MapRoom._mapWidth;
                }
                _loc3_ = true;
             }
-            if(this._cellContainer.y + _loc5_.y > this._cellCountY * this._cellHeight - this._cellHeight * 5)
+            if(this._cellContainer.y + _loc6_.y > this._cellCountY * this._cellHeight - this._cellHeight * 5)
             {
-               _loc5_.y -= this._cellCountY * this._cellHeight;
-               _loc5_.Y -= this._cellCountY;
-               if(_loc5_.Y < 0)
+               _loc6_.y -= this._cellCountY * this._cellHeight;
+               _loc6_.Y -= this._cellCountY;
+               if(_loc6_.Y < 0)
                {
-                  _loc5_.Y += MapRoom._mapHeight;
+                  _loc6_.Y += MapRoom._mapHeight;
                }
                _loc3_ = true;
             }
-            if(this._cellContainer.x + _loc5_.x < -(this._cellWidth * 0.75 * 5))
+            if(this._cellContainer.x + _loc6_.x < -(this._cellWidth * 0.75 * 5))
             {
-               _loc5_.x += this._cellCountX * (this._cellWidth * 0.75);
-               _loc5_.X += this._cellCountX;
-               if(_loc5_.X > MapRoom._mapWidth - 1)
+               _loc6_.x += this._cellCountX * (this._cellWidth * 0.75);
+               _loc6_.X += this._cellCountX;
+               if(_loc6_.X > MapRoom._mapWidth - 1)
                {
-                  _loc5_.X -= MapRoom._mapWidth;
+                  _loc6_.X -= MapRoom._mapWidth;
                }
                _loc3_ = true;
             }
-            if(this._cellContainer.y + _loc5_.y < -(this._cellHeight * 5))
+            if(this._cellContainer.y + _loc6_.y < -(this._cellHeight * 5))
             {
-               _loc5_.y += this._cellCountY * this._cellHeight;
-               _loc5_.Y += this._cellCountY;
-               if(_loc5_.Y > MapRoom._mapHeight - 1)
+               _loc6_.y += this._cellCountY * this._cellHeight;
+               _loc6_.Y += this._cellCountY;
+               if(_loc6_.Y > MapRoom._mapHeight - 1)
                {
-                  _loc5_.Y -= MapRoom._mapHeight;
+                  _loc6_.Y -= MapRoom._mapHeight;
                }
                _loc3_ = true;
             }
-            if(_loc5_.X < 0)
+            if(_loc6_.X < 0)
             {
-               _loc5_.X += MapRoom._mapWidth;
+               _loc6_.X += MapRoom._mapWidth;
                _loc3_ = true;
             }
-            if(_loc5_.Y < 0)
+            if(_loc6_.Y < 0)
             {
-               _loc5_.Y += MapRoom._mapHeight;
+               _loc6_.Y += MapRoom._mapHeight;
                _loc3_ = true;
             }
-            if(_loc5_.X >= MapRoom._mapWidth)
+            if(_loc6_.X >= MapRoom._mapWidth)
             {
-               _loc5_.X -= MapRoom._mapWidth;
+               _loc6_.X -= MapRoom._mapWidth;
                _loc3_ = true;
             }
-            if(_loc5_.Y >= MapRoom._mapHeight)
+            if(_loc6_.Y >= MapRoom._mapHeight)
             {
-               _loc5_.Y -= MapRoom._mapHeight;
+               _loc6_.Y -= MapRoom._mapHeight;
                _loc3_ = true;
             }
             if(_loc3_)
             {
-               _loc5_.mc.gotoAndStop(1);
-               _loc5_.mc.y = 18;
-               _loc5_.mc.mcPlayer.visible = false;
-               _loc5_._updated = false;
-               _loc5_._dataAge = 0;
+               _loc6_.mc.gotoAndStop(1);
+               _loc6_.mc.y = 18;
+               _loc6_.mc.mcPlayer.visible = false;
+               _loc6_._updated = false;
+               _loc6_._dataAge = 0;
                _loc4_ = true;
             }
-            if((!_loc5_._updated || param1) && _loc5_._dataAge <= 0)
+            if((!_loc6_._updated || param1) && _loc6_._dataAge <= 0)
             {
-               _loc6_ = MapRoom.GetCell(_loc5_.X,_loc5_.Y);
-               if(_loc6_)
+               _loc5_ = MapRoom.GetCell(_loc6_.X,_loc6_.Y);
+               if(_loc5_)
                {
-                  _loc5_.Setup(_loc6_);
+                  _loc6_.Setup(_loc5_);
                }
             }
-            _loc5_.depth = _loc5_.y * 1000 + _loc5_.x;
-            this._sortArray.push(_loc5_);
+            _loc6_.depth = _loc6_.y * 1000 + _loc6_.x;
+            this._sortArray.push(_loc6_);
          }
          if(_loc4_)
          {
@@ -1016,11 +1019,11 @@ package com.monsters.maproom_advanced
          this.DisplayBuffs();
       }
       
-      public function ShowBubble(param1:MapRoomCell) : *
+      public function ShowBubble(param1:MapRoomCell) : void
       {
       }
       
-      public function HideBubble() : *
+      public function HideBubble() : void
       {
          if(this._bubble.parent)
          {
@@ -1028,10 +1031,11 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function ShowRange(param1:MapRoomCell, param2:int) : *
+      public function ShowRange(param1:MapRoomCell, param2:int) : void
       {
          var _loc3_:CellData = null;
-         var _loc4_:MapRoomCell = null;
+         var _loc4_:Vector.<CellData> = null;
+         var _loc5_:MapRoomCell = null;
          if(!this._dragged)
          {
             if(param1._water == 0)
@@ -1041,23 +1045,24 @@ package com.monsters.maproom_advanced
                   param1.mc.mcGlow.alpha = 0.5;
                }
                param1._inRange = true;
-               for each(_loc3_ in this.GetCellsInRange(param1.X,param1.Y,param2))
+               _loc4_ = this.GetCellsInRange(param1.X,param1.Y,param2);
+               for each(_loc3_ in _loc4_)
                {
-                  _loc4_ = _loc3_.cell;
-                  if((Boolean(_loc4_)) && !_loc4_._water)
+                  _loc5_ = _loc3_.cell;
+                  if((Boolean(_loc5_)) && !_loc5_._water)
                   {
-                     if(!_loc4_._over)
+                     if(!_loc5_._over)
                      {
                         if(_loc3_.range <= 10)
                         {
-                           _loc4_.mc.mcGlow.alpha = 0.5;
+                           _loc5_.mc.mcGlow.alpha = 0.5;
                         }
                         else
                         {
-                           _loc4_.mc.mcGlow.alpha = Math.max(_loc4_.mc.mcGlow.alpha,0.35);
+                           _loc5_.mc.mcGlow.alpha = Math.max(_loc5_.mc.mcGlow.alpha,0.35);
                         }
                      }
-                     _loc4_._inRange = true;
+                     _loc5_._inRange = true;
                   }
                }
             }
@@ -1457,7 +1462,7 @@ package com.monsters.maproom_advanced
          return _loc4_;
       }
       
-      public function GetCell(param1:int, param2:int) : MapRoomCell
+      private function GetCell(param1:int, param2:int) : MapRoomCell
       {
          var _loc3_:MapRoomCell = null;
          if(param1 >= MapRoom._mapWidth)
@@ -1490,7 +1495,7 @@ package com.monsters.maproom_advanced
          return null;
       }
       
-      public function ShowInfoMine(param1:MapRoomCell) : *
+      public function ShowInfoMine(param1:MapRoomCell) : void
       {
          this.HideBookmarkMenu();
          if(!this._dragged)
@@ -1504,7 +1509,7 @@ package com.monsters.maproom_advanced
          this._dragged = false;
       }
       
-      public function HideInfoMine() : *
+      public function HideInfoMine() : void
       {
          GLOBAL.BlockerRemove();
          if(this._popupInfoMine.parent)
@@ -1514,7 +1519,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowInfoEnemy(param1:MapRoomCell, param2:Boolean = false) : *
+      public function ShowInfoEnemy(param1:MapRoomCell, param2:Boolean = false) : void
       {
          this.HideBookmarkMenu();
          if(!this._dragged)
@@ -1528,7 +1533,7 @@ package com.monsters.maproom_advanced
          this._dragged = false;
       }
       
-      public function HideInfoEnemy() : *
+      public function HideInfoEnemy() : void
       {
          GLOBAL.BlockerRemove();
          if(this._popupInfoEnemy.parent)
@@ -1538,7 +1543,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowInfoViewOnly(param1:MapRoomCell, param2:Boolean = false) : *
+      public function ShowInfoViewOnly(param1:MapRoomCell, param2:Boolean = false) : void
       {
          if(!this._dragged)
          {
@@ -1550,7 +1555,7 @@ package com.monsters.maproom_advanced
          this._dragged = false;
       }
       
-      public function HideInfoViewOnly() : *
+      public function HideInfoViewOnly() : void
       {
          GLOBAL.BlockerRemove();
          if(this._popupInfoViewOnly.parent)
@@ -1560,7 +1565,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowInfoDestroyed(param1:MapRoomCell) : *
+      public function ShowInfoDestroyed(param1:MapRoomCell) : void
       {
          this.HideBookmarkMenu();
          if(!this._dragged)
@@ -1575,11 +1580,11 @@ package com.monsters.maproom_advanced
          this._dragged = false;
       }
       
-      public function HideTransferB() : *
+      public function HideTransferB() : void
       {
       }
       
-      public function ShowMonstersA(param1:MapRoomCell, param2:Boolean = false) : *
+      public function ShowMonstersA(param1:MapRoomCell, param2:Boolean = false) : void
       {
          SOUNDS.Play("click1");
          this.HideBookmarkMenu();
@@ -1589,7 +1594,7 @@ package com.monsters.maproom_advanced
          this.addChild(this._popupMonsters);
       }
       
-      public function HideMonstersA() : *
+      public function HideMonstersA() : void
       {
          if(this._popupMonsters.parent)
          {
@@ -1599,7 +1604,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowMonstersB(param1:Object, param2:MapRoomCell) : *
+      public function ShowMonstersB(param1:Object, param2:MapRoomCell) : void
       {
          SOUNDS.Play("click1");
          this.HideBookmarkMenu();
@@ -1608,7 +1613,7 @@ package com.monsters.maproom_advanced
          this.addChild(this._popupMonstersB);
       }
       
-      public function HideMonstersB() : *
+      public function HideMonstersB() : void
       {
          GLOBAL.BlockerRemove();
          if(Boolean(this._popupMonstersB) && Boolean(this._popupMonstersB.parent))
@@ -1618,7 +1623,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowAttack(param1:MapRoomCell) : *
+      public function ShowAttack(param1:MapRoomCell) : void
       {
          SOUNDS.Play("click1");
          this.HideBookmarkMenu();
@@ -1638,7 +1643,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function HideAttack() : *
+      public function HideAttack() : void
       {
          GLOBAL.BlockerRemove();
          if(this._popupAttackA.parent)
@@ -1648,7 +1653,7 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
-      public function ShowBookmarkMenu(param1:MouseEvent) : *
+      public function ShowBookmarkMenu(param1:MouseEvent) : void
       {
          var length:int = 0;
          var newY:int = 0;
@@ -1665,12 +1670,12 @@ package com.monsters.maproom_advanced
             i = 0;
             while(i < length)
             {
-               InBookmarkRemove = function(param1:MouseEvent):*
+               InBookmarkRemove = function(param1:MouseEvent):void
                {
                   BookmarkRemove(param1.target.index);
                   menuItem.bDelete.removeEventListener(MouseEvent.CLICK,InBookmarkRemove);
                };
-               inBookmarkSelect = function(param1:MouseEvent):*
+               inBookmarkSelect = function(param1:MouseEvent):void
                {
                   BookmarkSelect(param1.target.index);
                   menuItem.mcBG.removeEventListener(MouseEvent.CLICK,inBookmarkSelect);
@@ -1699,7 +1704,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function HideBookmarkMenu() : *
+      public function HideBookmarkMenu() : void
       {
          var _loc1_:int = 0;
          if(this._menuShown)
@@ -1739,7 +1744,7 @@ package com.monsters.maproom_advanced
          return KEYS.Get("map_notanumber");
       }
       
-      public function BookmarkSelect(param1:int) : *
+      public function BookmarkSelect(param1:int) : void
       {
          this.HideBookmarkMenu();
          if(MapRoom._bookmarks.length > param1)
@@ -1748,7 +1753,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function BookmarkRemove(param1:int) : *
+      public function BookmarkRemove(param1:int) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -1779,7 +1784,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function ShowBookmarkAddPopup(param1:MapRoomCell) : *
+      public function ShowBookmarkAddPopup(param1:MapRoomCell) : void
       {
          SOUNDS.Play("click1");
          MapRoom._currentPosition = new Point(param1.X,param1.Y);
@@ -1791,7 +1796,7 @@ package com.monsters.maproom_advanced
          this.addChild(this._popupBookmarkAdd);
       }
       
-      public function ShowRelocateMePopup(param1:MapRoomCell) : *
+      public function ShowRelocateMePopup(param1:MapRoomCell) : void
       {
          SOUNDS.Play("click1");
          this._popupRelocateMe.Setup(param1);
@@ -1799,7 +1804,7 @@ package com.monsters.maproom_advanced
          this.addChild(this._popupRelocateMe);
       }
       
-      public function HideBookmarkAddPopup(param1:MouseEvent = null) : *
+      public function HideBookmarkAddPopup(param1:MouseEvent = null) : void
       {
          if(this._popupBookmarkAdd.parent)
          {
@@ -1808,7 +1813,7 @@ package com.monsters.maproom_advanced
          GLOBAL.BlockerRemove();
       }
       
-      public function HideBookmarkAddPopupWithAdd(param1:MouseEvent) : *
+      public function HideBookmarkAddPopupWithAdd(param1:MouseEvent) : void
       {
          GLOBAL.BlockerRemove();
          var _loc2_:Object = MapRoom.AddBookmark(this._popupBookmarkAdd.tName.htmlText);
@@ -1825,10 +1830,10 @@ package com.monsters.maproom_advanced
       
       public function DisplayBuffs() : void
       {
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
@@ -1918,7 +1923,7 @@ package com.monsters.maproom_advanced
          if(!this._popupBuff)
          {
             _loc7_ = new bubblepopupBuff();
-            this._popupBuff = addChild(_loc7_);
+            this._popupBuff = addChild(_loc7_) as bubblepopupBuff;
             _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
             _loc7_.x = this.mcBuffHolder.x + (_loc2_.x + _loc2_.width / 2);
             if(_loc7_.x >= this.mcBuffHolder.x)
@@ -1934,7 +1939,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function BuffHide(param1:MouseEvent) : *
+      public function BuffHide(param1:MouseEvent) : void
       {
          if(this._popupBuff)
          {
@@ -1957,7 +1962,7 @@ package com.monsters.maproom_advanced
          Tutorial.ForceShowAll();
       }
       
-      public function FullScreen() : *
+      public function FullScreen() : void
       {
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {

@@ -17,9 +17,7 @@ package
       
       private var _maxPages:int = 4;
       
-      public var _mcList:*;
-      
-      public var _mcCreep:*;
+      public var _mcList:MovieClip;
       
       public var _tempCreatureList:Array;
       
@@ -77,7 +75,7 @@ package
          time_txt.htmlText = "<b>" + KEYS.Get("mon_att_time") + "</b>";
       }
       
-      public function PagePrevious(param1:MouseEvent) : *
+      public function PagePrevious(param1:MouseEvent) : void
       {
          if(CREATURELOCKER._page > this._minPages)
          {
@@ -86,7 +84,7 @@ package
          this.List();
       }
       
-      public function PageNext(param1:MouseEvent) : *
+      public function PageNext(param1:MouseEvent) : void
       {
          if(CREATURELOCKER._page < this._maxPages)
          {
@@ -106,13 +104,13 @@ package
          param1.Enabled = true;
       }
       
-      public function List() : *
+      public function List() : void
       {
          var _loc1_:String = null;
          var _loc4_:Object = null;
          var _loc5_:Object = null;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc6_:CreatureLockerItem = null;
+         var _loc7_:* = null;
          if(CREATURELOCKER._page > this._minPages)
          {
             this.enableButton(bPrevious);
@@ -144,7 +142,7 @@ package
          {
             mcList.removeChild(this._mcList);
          }
-         this._mcList = mcList.addChild(new MovieClip());
+         this._mcList = mcList.addChild(new MovieClip()) as MovieClip;
          this._mcList.x = 10;
          this._mcList.y = 10;
          var _loc2_:int = 0;
@@ -154,7 +152,7 @@ package
             _loc4_ = this._tempCreatureList[_loc3_];
             _loc1_ = _loc4_.id;
             _loc5_ = CREATURELOCKER._lockerData[_loc1_];
-            _loc6_ = this._mcList.addChild(new CreatureLockerItem());
+            _loc6_ = this._mcList.addChild(new CreatureLockerItem()) as CreatureLockerItem;
             _loc6_.y = _loc2_;
             _loc2_ += 40;
             _loc7_ = "<b>" + KEYS.Get(_loc4_.name) + "</b>";
@@ -207,16 +205,16 @@ package
          }
       }
       
-      public function Show(param1:String) : *
+      public function Show(param1:String) : Function
       {
          var creatureID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             ShowB(creatureID);
          };
       }
       
-      public function ShowB(param1:String) : *
+      public function ShowB(param1:String) : void
       {
          var data:Object;
          var str:String;
@@ -234,7 +232,7 @@ package
          var timeCost:int = 0;
          var resourcesCost:int = 0;
          var creatureID:String = param1;
-         UpdatePortrait = function(param1:String, param2:BitmapData):*
+         UpdatePortrait = function(param1:String, param2:BitmapData):void
          {
             _portraitImage = mcImage.addChild(new Bitmap(param2));
          };
@@ -401,7 +399,7 @@ package
          ImageCache.GetImageWithCallBack("monsters/" + this._creatureID + "-portrait.jpg",UpdatePortrait,true,1);
       }
       
-      public function Start(param1:MouseEvent) : *
+      public function Start(param1:MouseEvent) : void
       {
          if(CREATURELOCKER.Start(this._creatureID))
          {
@@ -409,28 +407,28 @@ package
          }
       }
       
-      public function Stop(param1:MouseEvent) : *
+      public function Stop(param1:MouseEvent) : void
       {
          GLOBAL.Message(KEYS.Get("mon_confirmcancel",{"v1":KEYS.Get(CREATURELOCKER._creatures[CREATURELOCKER._unlocking].name)}),KEYS.Get("btn_yes"),CREATURELOCKER.Cancel);
       }
       
-      public function Speedup(param1:MouseEvent) : *
+      public function Speedup(param1:MouseEvent) : void
       {
          STORE.SpeedUp("SP4");
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          this.ShowB(this._creatureID);
          this.Tick();
       }
       
-      public function Tick() : *
+      public function Tick() : void
       {
          this.List();
       }
       
-      public function InstantUnlock(param1:MouseEvent) : *
+      public function InstantUnlock(param1:MouseEvent) : void
       {
          var creature:Object;
          var StreamPost:Function;
@@ -484,12 +482,12 @@ package
          }
          if(GLOBAL._mode == "build")
          {
-            StreamPost = function(param1:String, param2:String, param3:String):*
+            StreamPost = function(param1:String, param2:String, param3:String):Function
             {
                var st:String = param1;
                var sd:String = param2;
                var im:String = param3;
-               return function(param1:MouseEvent = null):*
+               return function(param1:MouseEvent = null):void
                {
                   GLOBAL.CallJS("sendFeed",["unlock-end",st,sd,im,0]);
                   POPUPS.Next();
@@ -545,7 +543,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          CREATURELOCKER.Hide(param1);
       }

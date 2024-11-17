@@ -53,6 +53,7 @@ package de.polygonal.ds
          var _loc4_:* = null as SLLNode;
          var _loc5_:* = null as Object;
          var _loc6_:* = null as Object;
+         null;
          var _loc2_:SLLNode = param1.next;
          if(param1 == head)
          {
@@ -515,6 +516,7 @@ package de.polygonal.ds
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         null;
          if(param1.head != null)
          {
             _loc2_ = param1.head;

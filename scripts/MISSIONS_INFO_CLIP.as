@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2893")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2908")]
    public dynamic class MISSIONS_INFO_CLIP extends MovieClip
    {
       public var mcArrow:MovieClip;

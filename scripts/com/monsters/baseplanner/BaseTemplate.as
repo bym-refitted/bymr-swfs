@@ -70,11 +70,11 @@ package com.monsters.baseplanner
             _loc3_ = this.nodes[_loc2_];
             if(_loc3_.id == param1)
             {
-               return _loc3_;
+               return Boolean(_loc3_);
             }
             _loc2_++;
          }
-         return null;
+         return false;
       }
    }
 }

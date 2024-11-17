@@ -110,6 +110,7 @@ package com.monsters.baseplanner.components
             _loc1_++;
          }
          this._elementList.length = 0;
+         this.emptyCheck();
          var _loc2_:int = 0;
          while(numChildren > 1)
          {
@@ -137,6 +138,7 @@ package com.monsters.baseplanner.components
       public function removeNode(param1:PlannerNode) : void
       {
          var _loc2_:int = 0;
+         _loc2_ = 0;
          while(_loc2_ < this._elementList.length)
          {
             if(this._elementList[_loc2_].displayName == param1.displayName)
@@ -144,7 +146,8 @@ package com.monsters.baseplanner.components
                this._elementList[_loc2_].decrement();
                if(this._elementList[_loc2_].numBuildings <= 0)
                {
-                  this._elementList.splice(_loc2_,1);
+                  this._elementList[_loc2_].x = 500 * 60;
+                  delete global[this._elementList.splice(_loc2_,1)];
                }
             }
             _loc2_++;
@@ -197,6 +200,7 @@ package com.monsters.baseplanner.components
          {
             _loc4_ = new PlannerExplorerButton(param1);
             this._elementList.push(_loc4_);
+            this._elementList.sort(this.sortExplorerButtons);
             addChild(_loc4_);
             if(this._collapsed)
             {
@@ -206,6 +210,19 @@ package com.monsters.baseplanner.components
             return _loc4_;
          }
          return null;
+      }
+      
+      private function sortExplorerButtons(param1:PlannerExplorerButton, param2:PlannerExplorerButton) : Number
+      {
+         if(param1.displayName < param2.displayName)
+         {
+            return -1;
+         }
+         if(param1.displayName > param2.displayName)
+         {
+            return 1;
+         }
+         return 0;
       }
       
       override public function onRollOver(param1:MouseEvent = null) : void

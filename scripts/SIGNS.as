@@ -106,7 +106,6 @@ package
       
       public static function Hide(param1:MouseEvent = null) : void
       {
-         var e:MouseEvent = param1;
          if(_mc)
          {
             try

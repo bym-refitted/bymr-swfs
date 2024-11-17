@@ -41,7 +41,7 @@ package
          SetProps();
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          SOUNDS.Play("laser",!isJard ? 0.8 : 0.4);
@@ -62,7 +62,7 @@ package
          }
          else if(_targetVacuum)
          {
-            EFFECTS.Laser(x,y + 35,GLOBAL._bTownhall.x,GLOBAL._bTownhall.y - GLOBAL._bTownhall._mc.height * 2,int(_damage * 25 * _loc2_ * _loc3_),0,null);
+            EFFECTS.Laser(x,y + 35,GLOBAL._bTownhall.x,GLOBAL._bTownhall.y - GLOBAL._bTownhall._mc.height * 2,60,int(_damage * 25 * _loc2_ * _loc3_),0);
             ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 25 * _loc2_ * _loc3_);
             (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 25 * _loc2_ * _loc3_));
          }
@@ -72,7 +72,7 @@ package
          }
       }
       
-      public function Track(param1:int) : *
+      public function Track(param1:int) : void
       {
          if(param1 < 0)
          {
@@ -83,31 +83,24 @@ package
          this.AnimFrame();
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
-         var increment:Boolean = param1;
-         try
+         if(_animLoaded && !GLOBAL._catchup)
          {
-            if(_animLoaded && !GLOBAL._catchup)
-            {
-               _animRect.x = _animRect.width * _animTick;
-               _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
-            }
-            ++_frameNumber;
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
-         catch(e:Error)
-         {
-         }
+         ++_frameNumber;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-lt",KEYS.Get("pop_laserbuilt_streamtitle"),KEYS.Get("pop_laserbuilt_streambody"),"build-lasertower.png"]);
                POPUPS.Next();

@@ -107,7 +107,7 @@ package
       private function overBomb(param1:CATAPULTITEM) : Function
       {
          var b:CATAPULTITEM = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             b.ShowOver();
             b.parent.setChildIndex(b,b.parent.numChildren - 1);

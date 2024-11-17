@@ -44,7 +44,7 @@ package com.monsters.display
       {
          var _loc2_:DisplayObject = null;
          var _loc3_:Sprite = null;
-         var _loc4_:* = undefined;
+         var _loc4_:Point = null;
          var _loc5_:Array = null;
          var _loc6_:Array = null;
          var _loc7_:BitmapData = null;
@@ -138,9 +138,12 @@ package com.monsters.display
             }
             else if(param1._countdownFortify.Get() > 0)
             {
-               _loc6_ = int(param1._buildingProps.fortify_costs[param1._fortification.Get()].time);
-               _loc3_ = 49 / _loc6_ * (_loc6_ - param1._countdownFortify.Get());
-               _loc4_ = "fortifying";
+               if(param1._buildingProps.fortify_costs[param1._fortification.Get()])
+               {
+                  _loc6_ = int(param1._buildingProps.fortify_costs[param1._fortification.Get()].time);
+                  _loc3_ = 49 / _loc6_ * (_loc6_ - param1._countdownFortify.Get());
+                  _loc4_ = "fortifying";
+               }
             }
             if(_loc4_ != _loc8_.indextext || param2)
             {
@@ -212,7 +215,7 @@ package com.monsters.display
          }
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
          _buildings = {};
       }

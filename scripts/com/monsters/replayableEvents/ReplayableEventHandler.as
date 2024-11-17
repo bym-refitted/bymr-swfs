@@ -16,7 +16,7 @@ package com.monsters.replayableEvents
       
       public static var activeEvent:ReplayableEvent;
       
-      private static var _graphic:ReplayableEventUI;
+      private static var _graphic:IReplayableEventUI;
       
       private static const _DURATION_UNTIL_EVENT_STARTS:Number = 7 * 24 * 60 * 60;
       
@@ -54,7 +54,7 @@ package com.monsters.replayableEvents
          }
          if(activeEvent)
          {
-            assureAccurateStartDate();
+            assureAccurateDates();
             activeEvent.initialize();
             checkIfActiveEventIsFinished();
          }
@@ -74,12 +74,13 @@ package com.monsters.replayableEvents
          addUI();
       }
       
-      private static function assureAccurateStartDate() : void
+      private static function assureAccurateDates() : void
       {
          var _loc1_:Number = activeEvent.originalStartDate;
-         if(Boolean(_loc1_) && activeEvent.startDate != _loc1_)
+         if(_loc1_ && activeEvent.startDate != _loc1_ || activeEvent.endDate != activeEvent.startDate + activeEvent.duration)
          {
             activeEvent.setStartDate(_loc1_);
+            print("dates of the event are wrong, ressting them to:/nstart: " + new Date(activeEvent.startDate) + "/nend: " + new Date(activeEvent.endDate));
          }
       }
       
@@ -108,8 +109,12 @@ package com.monsters.replayableEvents
       
       public static function scheduleNewEvent(param1:ReplayableEvent, param2:Number) : void
       {
+         if(param1.startDate)
+         {
+            param1.reset();
+         }
          param1.setStartDate(param2);
-         callServerMethod("startevent",[["eventid",param1.id],["starttime",param1.startDate],["endtime",param1.endDate]]);
+         callServerMethod("startevent",[["eventid",param1.id],["starttime",param1.startDate],["endtime",param1.endDate]],startEventCallback);
          LOGGER.StatB({
             "st1":"ERS",
             "st2":param1.name
@@ -123,18 +128,23 @@ package com.monsters.replayableEvents
          _loc4_.load(GLOBAL._apiURL + "bm/event/" + param1,param2,param3);
       }
       
+      protected static function startEventCallback(param1:Object) : void
+      {
+         var _loc2_:Object = param1;
+      }
+      
       private static function addUI() : void
       {
          if(!activeEvent || !activeEvent.doesQualify())
          {
             return;
          }
-         _graphic = new ReplayableEventUI();
-         _graphic.Setup(activeEvent);
+         _graphic = activeEvent.createNewUI();
+         _graphic.setup(activeEvent);
          _graphic.addEventListener(Event.ENTER_FRAME,update,false,0,true);
          _graphic.addEventListener(ReplayableEventUI.CLICKED_ACTION,pressedActionButton,false,0,true);
          _graphic.addEventListener(ReplayableEventUI.CLICKED_INFO,pressedInfoButton,false,0,true);
-         UI_BOTTOM.addChild(_graphic);
+         UI_BOTTOM.addChild(_graphic.eventUI);
       }
       
       private static function removeUI() : void
@@ -146,12 +156,12 @@ package com.monsters.replayableEvents
          _graphic.removeEventListener(Event.ENTER_FRAME,update);
          _graphic.removeEventListener(ReplayableEventUI.CLICKED_ACTION,pressedActionButton);
          _graphic.removeEventListener(ReplayableEventUI.CLICKED_INFO,pressedInfoButton);
-         UI_BOTTOM.removeChild(_graphic);
+         UI_BOTTOM.removeChild(_graphic.eventUI);
       }
       
       private static function update(param1:Event) : void
       {
-         _graphic.Update();
+         _graphic.update();
          if(activeEvent)
          {
             activeEvent.update();
@@ -200,12 +210,16 @@ package com.monsters.replayableEvents
             }
             _loc4_++;
          }
-         return null;
+         return 0;
       }
       
       private static function canScheduleNewEvent() : Boolean
       {
-         return (!activeEvent && !hasRecentlyParticipatedInAnEvent() || Boolean(getQualifiedLiveEvent())) && ABTest.isInTestGroup("ers",205);
+         if(!GLOBAL._flags["ers"])
+         {
+            return false;
+         }
+         return Boolean(getQualifiedLiveEvent()) || !hasRecentlyParticipatedInAnEvent() && ABTest.isInTestGroup("ers",205);
       }
       
       private static function getQualifiedLiveEvent() : ReplayableEvent
@@ -281,7 +295,7 @@ package com.monsters.replayableEvents
       
       private static function comparePriority(param1:ReplayableEvent, param2:ReplayableEvent) : Number
       {
-         return param1.priority - param2.priority;
+         return param2.priority - param1.priority;
       }
       
       public static function exportData() : Object

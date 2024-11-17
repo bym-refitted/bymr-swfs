@@ -4,6 +4,7 @@ package
    import com.monsters.ai.*;
    import com.monsters.display.ImageCache;
    import com.monsters.pathing.PATHING;
+   import com.monsters.replayableEvents.monsterInvasion.WaveObj;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -85,7 +86,7 @@ package
       
       public static var _hitsPerCreep:Number = 30;
       
-      private static var attackPreference:* = 0;
+      private static var attackPreference:int = 0;
       
       private static var intelligence:Number = 0.1;
       
@@ -122,7 +123,7 @@ package
          super();
       }
       
-      public static function Setup(param1:Object) : *
+      public static function Setup(param1:Object) : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -278,147 +279,91 @@ package
       
       public static function Tick() : void
       {
-         var count:int = 0;
-         var b:BFOUNDATION = null;
-         var a:int = 0;
-         var creep:Object = null;
-         try
+         var _loc1_:int = 0;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:int = 0;
+         var _loc4_:Object = null;
+         if(GLOBAL._mode == "build")
          {
-            if(GLOBAL._mode == "build")
+            if(t % 10 == 0)
             {
-               if(t % 10 == 0)
+               _loc1_ = 0;
+               baseIsRepairing = false;
+               for each(_loc2_ in BASE._buildingsMain)
                {
-                  count = 0;
-                  baseIsRepairing = false;
-                  for each(b in BASE._buildingsMain)
-                  {
-                     count++;
-                     if(b._hp.Get() < b._hpMax.Get())
-                     {
-                        baseIsRepairing = true;
-                     }
-                  }
-                  if(Boolean(BASE._yardType) && count < 10)
+                  _loc1_++;
+                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get())
                   {
                      baseIsRepairing = true;
                   }
                }
-               t += 1;
-               if(_queued != null && !_inProgress)
+               if(Boolean(BASE._yardType) && _loc1_ < 10)
                {
-                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
+                  baseIsRepairing = true;
+               }
+            }
+            t += 1;
+            if(_queued != null && !_inProgress)
+            {
+               if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent() && !PLANNER.isOpen())
+               {
+                  ShowWarning();
+               }
+               if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
+               {
+                  UI2.Show("wmbar");
+               }
+               else if(baseIsRepairing && !GLOBAL._catchup)
+               {
+                  _queued = null;
+                  delete _history.queued;
+                  if(UI2._wildMonsterBar)
                   {
-                     try
-                     {
-                        ShowWarning();
-                     }
-                     catch(e:Error)
-                     {
-                        LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                     }
-                  }
-                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
-                  {
-                     try
-                     {
-                        UI2.Show("wmbar");
-                     }
-                     catch(e:Error)
-                     {
-                        LOGGER.Log("err","WMATTACK.TickC " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                     }
-                  }
-                  else if(baseIsRepairing && !GLOBAL._catchup)
-                  {
-                     try
-                     {
-                        _queued = null;
-                        delete _history.queued;
-                        if(UI2._wildMonsterBar)
-                        {
-                           UI2.Hide("wmbar");
-                        }
-                     }
-                     catch(e:Error)
-                     {
-                        LOGGER.Log("err","WMATTACK.TickD " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                     }
-                  }
-                  if(!baseIsRepairing && _queued.attackTime <= GLOBAL.Timestamp() && _enabled && BASE._isSanctuary <= GLOBAL.Timestamp())
-                  {
-                     if(!_inProgress && !CUSTOMATTACKS._started && !baseIsRepairing)
-                     {
-                        try
-                        {
-                           LaunchQueuedAttack();
-                        }
-                        catch(e:Error)
-                        {
-                           LOGGER.Log("err","WMATTACK.TickE " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                        }
-                     }
-                  }
-                  else if(Boolean(UI2._wildMonsterBar) && !baseIsRepairing)
-                  {
-                     try
-                     {
-                        UI2._wildMonsterBar.eta_txt.htmlText = KEYS.Get("ai_eta",{"v1":GLOBAL.ToTime(_queued.attackTime - GLOBAL.Timestamp())});
-                     }
-                     catch(e:Error)
-                     {
-                        LOGGER.Log("err","WMATTACK.TickF " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                     }
+                     UI2.Hide("wmbar");
                   }
                }
-               else if(!_inProgress)
+               if(!baseIsRepairing && _queued.attackTime <= GLOBAL.Timestamp() && _enabled && !PLANNER.isOpen() && BASE._isSanctuary <= GLOBAL.Timestamp())
                {
-                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
+                  if(!_inProgress && !CUSTOMATTACKS._started && !baseIsRepairing)
                   {
-                     _processing = true;
-                     try
-                     {
-                        Trigger();
-                     }
-                     catch(e:Error)
-                     {
-                        LOGGER.Log("err","WMATTACK.TickG " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
-                     }
+                     LaunchQueuedAttack();
                   }
                }
-               else if(_inProgress)
+               else if(Boolean(UI2._wildMonsterBar) && !baseIsRepairing)
                {
-                  try
+                  UI2._wildMonsterBar.eta_txt.htmlText = KEYS.Get("ai_eta",{"v1":GLOBAL.ToTime(_queued.attackTime - GLOBAL.Timestamp())});
+               }
+            }
+            else if(!_inProgress)
+            {
+               if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !PLANNER.isOpen() && !INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
+               {
+                  _processing = true;
+                  Trigger();
+               }
+            }
+            else if(_inProgress)
+            {
+               if(CREEPS._creepCount == 0)
+               {
+                  _cleanUpFunc();
+               }
+               else if(GLOBAL.Timestamp() % 10 == 0)
+               {
+                  _loc3_ = 0;
+                  for each(_loc4_ in CREEPS._creeps)
                   {
-                     if(CREEPS._creepCount == 0)
+                     if(_loc4_._behaviour == "attack" || _loc4_._behaviour == "bounce" || _loc4_._behaviour == "loot" || _loc4_._behaviour == "heal" || _loc4_._behaviour == "buff" || _loc4_._behaviour == "hunt")
                      {
-                        _cleanUpFunc();
-                     }
-                     else if(GLOBAL.Timestamp() % 10 == 0)
-                     {
-                        a = 0;
-                        for each(creep in CREEPS._creeps)
-                        {
-                           if(creep._behaviour == "attack" || creep._behaviour == "bounce" || creep._behaviour == "loot" || creep._behaviour == "heal" || creep._behaviour == "buff" || creep._behaviour == "hunt")
-                           {
-                              a++;
-                           }
-                        }
-                        if(a == 0)
-                        {
-                           _cleanUpFunc();
-                        }
+                        _loc3_++;
                      }
                   }
-                  catch(e:Error)
+                  if(_loc3_ == 0)
                   {
-                     LOGGER.Log("err","WMATTACK.TickH " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + JSON.encode(_history));
+                     _cleanUpFunc();
                   }
                }
             }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","WMATTACK.Tick " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " GLOBAL._catchup:" + GLOBAL._catchup + " Timestamp():" + GLOBAL.Timestamp() + " _history:" + JSON.encode(_history));
          }
       }
       
@@ -548,72 +493,63 @@ package
       
       public static function Trigger(param1:Boolean = false, param2:Number = 1) : void
       {
-         var proc:Class = null;
-         var b:Object = null;
-         var randomType:int = 0;
-         var andAttack:Boolean = param1;
-         var aiLevel:Number = param2;
-         try
+         var _loc3_:Class = null;
+         var _loc4_:Object = null;
+         var _loc5_:int = 0;
+         if(GLOBAL._mode == "build" && GLOBAL._render && POPUPS.Done())
          {
-            if(GLOBAL._mode == "build" && GLOBAL._render && POPUPS.Done())
+            intelligence = param2;
+            quickly = param1;
+            if(Boolean(WMBASE._bases) && WMBASE._bases.length > 0)
             {
-               intelligence = aiLevel;
-               quickly = andAttack;
-               if(Boolean(WMBASE._bases) && WMBASE._bases.length > 0)
+               for each(_loc4_ in WMBASE._bases)
                {
-                  for each(b in WMBASE._bases)
+                  if(_loc4_.destroyed == 0 && _loc4_.level >= BASE._baseLevel - 10)
                   {
-                     if(b.destroyed == 0 && b.level >= BASE._baseLevel - 10)
+                     _attackersBaseID = _loc4_.baseid;
+                     if(BASE.isInferno())
                      {
-                        _attackersBaseID = b.baseid;
-                        if(BASE.isInferno())
-                        {
-                           _type = WMATTACK.TYPE_SWARM;
-                           proc = PROCESS_INFERNO1;
-                           break;
-                        }
-                        _type = b.tribe.type;
-                        proc = b.tribe.process;
+                        _type = WMATTACK.TYPE_SWARM;
+                        _loc3_ = PROCESS_INFERNO1;
                         break;
                      }
+                     _type = _loc4_.tribe.type;
+                     _loc3_ = _loc4_.tribe.process;
+                     break;
                   }
                }
-               else
-               {
-                  randomType = int(Math.random() * 4) + 1;
-                  _attackersBaseID = randomType * 10;
-                  switch(randomType)
-                  {
-                     case 1:
-                        _type = WMATTACK.TYPE_TOWERS;
-                        proc = PROCESS3;
-                        break;
-                     case 2:
-                        _type = WMATTACK.TYPE_SWARM;
-                        proc = PROCESS4;
-                        break;
-                     case 3:
-                        _type = WMATTACK.TYPE_KAMIKAZE;
-                        proc = PROCESS5;
-                        break;
-                     case 4:
-                        _type = WMATTACK.TYPE_NERD;
-                        proc = PROCESS7;
-                  }
-               }
-               if(!proc)
-               {
-                  proc = PROCESS3;
-                  _type = WMATTACK.TYPE_TOWERS;
-                  _attackersBaseID = 1;
-               }
-               processor = new proc();
-               processor.Trigger(intelligence);
             }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","WMATTACK.Trigger " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name);
+            else
+            {
+               _loc5_ = int(Math.random() * 4) + 1;
+               _attackersBaseID = _loc5_ * 10;
+               switch(_loc5_)
+               {
+                  case 1:
+                     _type = WMATTACK.TYPE_TOWERS;
+                     _loc3_ = PROCESS3;
+                     break;
+                  case 2:
+                     _type = WMATTACK.TYPE_SWARM;
+                     _loc3_ = PROCESS4;
+                     break;
+                  case 3:
+                     _type = WMATTACK.TYPE_KAMIKAZE;
+                     _loc3_ = PROCESS5;
+                     break;
+                  case 4:
+                     _type = WMATTACK.TYPE_NERD;
+                     _loc3_ = PROCESS7;
+               }
+            }
+            if(!_loc3_)
+            {
+               _loc3_ = PROCESS3;
+               _type = WMATTACK.TYPE_TOWERS;
+               _attackersBaseID = 1;
+            }
+            processor = new _loc3_();
+            processor.Trigger(intelligence);
          }
       }
       
@@ -723,56 +659,69 @@ package
          PreemptQueue();
       }
       
-      public static function SpawnWave(param1:Array, param2:int) : Array
+      public static function SpawnWave(param1:WaveObj, param2:int) : Array
       {
          var _loc5_:Point = null;
          var _loc6_:Point = null;
          var _loc7_:Array = null;
-         var _loc10_:int = 0;
          var _loc3_:int = getTimer();
          var _loc4_:Array = [];
-         var _loc9_:* = 0;
-         while(_loc9_ < param1.length)
+         var _loc9_:int = param1.direction + param2;
+         _loc5_ = GRID.ToISO(Math.cos(_loc9_ * 0.0174532925) * 925,Math.sin(_loc9_ * 0.0174532925) * 925,0);
+         _loc6_ = GRID.ToISO(Math.cos(_loc9_ * 0.0174532925) * 900,Math.sin(_loc9_ * 0.0174532925) * 900,0);
+         if(param1.powerLevel)
          {
-            _loc10_ = param1[_loc9_][4] + param2;
-            _loc5_ = GRID.ToISO(Math.cos(_loc10_ * 0.0174532925) * (800 + param1[_loc9_][3] / 2),Math.sin(_loc10_ * 0.0174532925) * (800 + param1[_loc9_][3] / 2),0);
-            _loc6_ = GRID.ToISO(Math.cos(_loc10_ * 0.0174532925) * 900,Math.sin(_loc10_ * 0.0174532925) * 900,0);
-            _loc7_ = SpawnCreep(_loc5_,param1[_loc9_][3],param1[_loc9_][0],param1[_loc9_][2],param1[_loc9_][1]);
-            _loc4_.push(_loc7_);
-            if(param1[_loc9_][6] == 1)
-            {
-               MAP.FocusTo(_loc6_.x,_loc6_.y,1,0,0,true);
-            }
-            _loc9_ += 1;
+            GLOBAL._wmCreaturePowerups[param1.creatureID] = param1.powerLevel;
+         }
+         _loc7_ = SpawnCreep(_loc5_,250,param1.creatureID,param1.numCreep,param1.behavior,param1.level);
+         _loc4_.push(_loc7_);
+         if(param1.cameraFocus)
+         {
+            MAP.FocusTo(_loc6_.x,_loc6_.y,1,0,0,true);
          }
          return _loc4_;
       }
       
-      public static function SpawnCreep(param1:Point, param2:int, param3:String, param4:int, param5:String) : Array
+      public static function SpawnCreep(param1:Point, param2:int, param3:String, param4:int, param5:String, param6:int = 0) : Array
       {
-         var _loc6_:Number = NaN;
-         var _loc7_:int = 0;
-         var _loc8_:Point = null;
-         var _loc9_:MovieClip = null;
-         var _loc10_:Rndm = new Rndm(int(param1.x + param1.y));
+         var _loc7_:Number = NaN;
+         var _loc8_:int = 0;
+         var _loc9_:Point = null;
+         var _loc10_:MovieClip = null;
+         var _loc11_:Rndm = new Rndm(int(param1.x + param1.y));
          param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc11_:Array = [];
-         var _loc12_:int = 0;
-         while(_loc12_ < param4)
+         var _loc12_:Array = [];
+         var _loc13_:int = 0;
+         while(_loc13_ < param4)
          {
-            _loc6_ = _loc10_.random() * 360 * 0.0174532925;
-            _loc7_ = _loc10_.random() * param2 / 2;
-            _loc8_ = param1.add(new Point(Math.cos(_loc6_) * _loc7_,Math.sin(_loc6_) * _loc7_));
-            _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc10_.random() * 360);
-            _loc9_._hitLimit = int.MAX_VALUE;
+            _loc7_ = _loc11_.random() * 360 * 0.0174532925;
+            _loc8_ = _loc11_.random() * param2 / 2;
+            _loc9_ = param1.add(new Point(Math.cos(_loc7_) * _loc8_,Math.sin(_loc7_) * _loc8_));
+            if(param3.substr(0,1) == "G")
+            {
+               _loc10_ = CREEPS.SpawnGuardian(int(param3.substr(1)),MAP._BUILDINGTOPS,"bounce",param6,GRID.ToISO(_loc9_.x,_loc9_.y,0),_loc11_.random() * 360,int.MAX_VALUE,0,3,true);
+            }
+            else
+            {
+               if(!GLOBAL._attackerCreatureUpgrades)
+               {
+                  GLOBAL._attackerCreatureUpgrades = GLOBAL._playerCreatureUpgrades;
+               }
+               if(param6)
+               {
+                  GLOBAL._attackerCreatureUpgrades[param3] = {"level":param6};
+               }
+               _loc10_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc9_.x,_loc9_.y,0),_loc11_.random() * 360);
+            }
+            _loc10_._hitLimit = int.MAX_VALUE;
             if(_rage)
             {
-               _loc9_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
+               _loc10_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
             }
-            _loc11_.push(_loc9_);
-            _loc12_++;
+            _loc12_.push(_loc10_);
+            _loc13_++;
          }
-         return _loc11_;
+         return _loc12_;
       }
       
       public static function SpawnA(param1:Array) : Array
@@ -784,7 +733,7 @@ package
          var _loc10_:int = 0;
          var _loc2_:int = getTimer();
          var _loc3_:Array = [];
-         var _loc8_:* = 0;
+         var _loc8_:int = 0;
          while(_loc8_ < param1.length)
          {
             _loc9_ = int(param1[_loc8_][4]);
@@ -911,7 +860,7 @@ package
          var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:String = null;
          var _loc5_:BFOUNDATION = null;
          _inProgress = false;
          UI2.Show("top");
@@ -992,7 +941,7 @@ package
          var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:String = null;
          var _loc5_:BFOUNDATION = null;
          _inProgress = false;
          UI2.Show("top");
@@ -1054,7 +1003,7 @@ package
          var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:String = null;
          var _loc5_:BFOUNDATION = null;
          Tick();
          if(BASE.isInferno())

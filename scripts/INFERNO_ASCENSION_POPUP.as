@@ -34,7 +34,7 @@ package
          transfer_action_txt.text = KEYS.Get("ascdlg_transfer_action");
          transfer_desc_txt.text = KEYS.Get("ascdlg_transfer_desc");
          bTransfer.SetupKey("ascdlg_transfer_btn");
-         bTransfer.addEventListener(MouseEvent.CLICK,function():*
+         bTransfer.addEventListener(MouseEvent.CLICK,function():void
          {
             AscendQueuedMonsters();
          });
@@ -54,18 +54,18 @@ package
          var index:int = param2;
          this._monsterUi[index] = section;
          section.bRemove.SetupKey("ascdlg_unqueue_btn");
-         section.bRemove.addEventListener(MouseEvent.CLICK,function():*
+         section.bRemove.addEventListener(MouseEvent.CLICK,function():void
          {
             UnqueueMonster(_monsterUiIds[index]);
          });
          section.bAdd.SetupKey("ascdlg_queue_btn");
-         section.bAdd.addEventListener(MouseEvent.CLICK,function():*
+         section.bAdd.addEventListener(MouseEvent.CLICK,function():void
          {
             QueueMonster(_monsterUiIds[index]);
          });
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var storedRatio:Number;
          var queuedRatio:Number;
@@ -87,7 +87,7 @@ package
                monsterOrder.push(id);
             }
          }
-         monsterOrder.sort(function(param1:String, param2:String):*
+         monsterOrder.sort(function(param1:String, param2:String):int
          {
             return int(param1.substring(2)) - int(param2.substring(2));
          });
@@ -127,7 +127,7 @@ package
          tStorage.htmlText = "<b>" + GLOBAL.FormatNumber(this._newHousingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + " (" + Math.floor(queuedRatio * 100) + "%)</b>";
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -165,7 +165,7 @@ package
          return true;
       }
       
-      public function AscendQueuedMonsters() : *
+      public function AscendQueuedMonsters() : void
       {
          var _loc1_:SecNum = null;
          var _loc6_:String = null;
@@ -190,7 +190,7 @@ package
          this.Hide();
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          INFERNOPORTAL.HideAscendMonstersDialog();
       }

@@ -2,6 +2,7 @@ package com.monsters.subscriptions.rewards
 {
    import com.monsters.baseplanner.BasePlanner;
    import com.monsters.rewarding.Reward;
+   import com.monsters.subscriptions.SubscriptionHandler;
    
    public class YardPlannerExtraSlotsReward extends Reward
    {
@@ -19,7 +20,7 @@ package com.monsters.subscriptions.rewards
       
       override protected function onApplication() : void
       {
-         BasePlanner.maxNumberOfSlots = 10;
+         BasePlanner.slots = SubscriptionHandler.isEnabledForAll ? 10 : BasePlanner.DEFAULT_NUMBER_OF_SLOTS;
       }
       
       override public function reset() : void
@@ -29,7 +30,7 @@ package com.monsters.subscriptions.rewards
       
       override public function removed() : void
       {
-         BasePlanner.maxNumberOfSlots = BasePlanner.DEFAULT_NUMBER_OF_SLOTS;
+         BasePlanner.slots = BasePlanner.DEFAULT_NUMBER_OF_SLOTS;
       }
    }
 }

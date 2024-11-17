@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol60")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol243")]
    public dynamic class popup_frontpage_CLIP extends MovieClip
    {
       public var bNext:MovieClip;

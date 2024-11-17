@@ -29,7 +29,7 @@ package
          super();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          var _loc8_:Number = NaN;
          var _loc7_:int = param1;
@@ -51,6 +51,7 @@ package
             }
          }
          super.Damage(param1,param2,param3,param4,param5,param6);
+         return _loc7_;
       }
       
       override public function Loot(param1:int) : void
@@ -132,7 +133,7 @@ package
          super.Loot(param1);
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          var _loc2_:Number = NaN;
          var _loc3_:int = 0;

@@ -12,11 +12,11 @@ package
    import gs.*;
    import gs.easing.*;
    
-   internal class BUILDINGINFO
+   public class BUILDINGINFO
    {
       public static var _mc:MovieClip;
       
-      public static var _buttonsMC:*;
+      public static var _buttonsMC:MovieClip;
       
       public static var _building:BFOUNDATION;
       
@@ -31,16 +31,16 @@ package
          super();
       }
       
-      public static function Show(param1:BFOUNDATION) : *
+      public static function Show(param1:BFOUNDATION) : void
       {
-         if(GLOBAL._selectedBuilding && Boolean(GLOBAL._selectedBuilding._moving))
+         if(Boolean(GLOBAL._selectedBuilding) && GLOBAL._selectedBuilding._moving)
          {
             return;
          }
          _positionSet = false;
          _building = param1;
          _props = GLOBAL._buildingProps[_building._type - 1];
-         _mc = MAP._BUILDINGINFO.addChild(new buildingInfo());
+         _mc = MAP._BUILDINGINFO.addChild(new buildingInfo()) as MovieClip;
          _mc.tName.autoSize = TextFieldAutoSize.CENTER;
          var _loc2_:* = "<b>" + KEYS.Get(_props.name) + "</b>";
          if(_building._lvl.Get() > 0 && _props.costs && _props.costs.length > 1)
@@ -73,7 +73,7 @@ package
          Update();
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          var _loc4_:BFOUNDATION = null;
          var _loc5_:int = 0;
@@ -357,7 +357,7 @@ package
             {
                _mc.removeChild(_buttonsMC);
             }
-            _buttonsMC = _mc.addChild(new MovieClip());
+            _buttonsMC = _mc.addChild(new MovieClip()) as MovieClip;
             _loc6_ = 0;
             while(_loc6_ < _loc1_.length)
             {
@@ -502,7 +502,7 @@ package
          }
       }
       
-      public static function Tick(param1:Event) : *
+      public static function Tick(param1:Event) : void
       {
          if(_mc.mouseX > 150 || _mc.mouseX < -30 || _mc.mouseY > _mc.mcBG.height + 20 || _mc.mouseY < -50)
          {
@@ -510,7 +510,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_mc)
          {
@@ -528,7 +528,7 @@ package
          }
       }
       
-      public static function Special(param1:MouseEvent) : *
+      public static function Special(param1:MouseEvent) : void
       {
          var _loc2_:BFOUNDATION = null;
          var _loc3_:MONSTERLAB = null;

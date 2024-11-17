@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.configs.BYMDevConfig;
    import flash.display.Loader;
    import flash.display.MovieClip;
    import flash.events.Event;
@@ -49,7 +50,7 @@ package
          }
       }
       
-      public static function ProcessAcceptedGifts(param1:*) : void
+      public static function ProcessAcceptedGifts(param1:Array) : void
       {
          var _loc2_:Array = null;
          var _loc3_:Number = NaN;
@@ -128,7 +129,7 @@ package
          {
             try
             {
-               LoadImageError = function(param1:IOErrorEvent):*
+               LoadImageError = function(param1:IOErrorEvent):void
                {
                };
                onImageLoaded = function(param1:Event):void
@@ -214,7 +215,7 @@ package
          {
             try
             {
-               LoadImageError = function(param1:IOErrorEvent):*
+               LoadImageError = function(param1:IOErrorEvent):void
                {
                };
                onImageLoaded = function(param1:Event):void
@@ -267,7 +268,7 @@ package
          {
             try
             {
-               LoadImageError = function(param1:IOErrorEvent):*
+               LoadImageError = function(param1:IOErrorEvent):void
                {
                };
                onImageLoaded = function(param1:Event):void
@@ -306,22 +307,22 @@ package
          BASE.Save();
       }
       
-      public static function HelpFriend(param1:String) : *
+      public static function HelpFriend(param1:String) : Function
       {
          var giftFromID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             POPUPS.Next();
-            BASE.LoadBase(null,int(giftFromID),null,"help",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,int(giftFromID),0,"help",false,BASE.MAIN_YARD);
          };
       }
       
-      public static function GiveThanks(param1:int, param2:String, param3:int) : *
+      public static function GiveThanks(param1:int, param2:String, param3:int) : Function
       {
          var resourceID:int = param1;
          var giftFromID:String = param2;
          var giftValue:int = param3;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc2_:* = BASE.isInferno() ? resourceID + 4 : resourceID;
             var _loc3_:* = "gift" + _loc2_ + ".png";
@@ -335,7 +336,14 @@ package
       
       public static function SendGift(param1:MouseEvent) : void
       {
-         GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
+         if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+         {
+            GLOBAL.CallJSWithClient("cc.showFeedDialog","callbackgift",["gift"]);
+         }
+         else
+         {
+            GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
+         }
          POPUPS.Next();
       }
       

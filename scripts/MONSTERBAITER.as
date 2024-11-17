@@ -163,14 +163,14 @@ package
       
       public static function Update() : void
       {
-         var bdo:Object = null;
+         var _loc1_:Object = null;
          try
          {
             if(GLOBAL._bBaiter != null)
             {
-               bdo = GLOBAL._buildingProps[18];
-               _muskLimit = bdo.capacity[GLOBAL._bBaiter._lvl.Get() - 1];
-               _replenishRate = bdo.produce[GLOBAL._bBaiter._lvl.Get() - 1];
+               _loc1_ = GLOBAL._buildingProps[18];
+               _muskLimit = _loc1_.capacity[GLOBAL._bBaiter._lvl.Get() - 1];
+               _replenishRate = _loc1_.produce[GLOBAL._bBaiter._lvl.Get() - 1];
             }
          }
          catch(e:*)
@@ -198,14 +198,14 @@ package
          {
             SOUNDS.Play("click1");
             GLOBAL.BlockerAdd();
-            _mc = GLOBAL._layerWindows.addChild(new MONSTERBAITERPOPUP());
+            _mc = GLOBAL._layerWindows.addChild(new MONSTERBAITERPOPUP()) as MONSTERBAITERPOPUP;
             _mc.Setup(_queue,_attackDir);
             _mc.Center();
             _mc.ScaleUp();
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("close");
          GLOBAL.BlockerRemove();

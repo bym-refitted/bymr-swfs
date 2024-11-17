@@ -183,7 +183,7 @@ package com.monsters.siege
             allWeapons.length = newlen;
          }
          allWeapons.fixed = true;
-         allWeapons.sort(function(param1:SiegeWeapon, param2:SiegeWeapon):*
+         allWeapons.sort(function(param1:SiegeWeapon, param2:SiegeWeapon):int
          {
             return param1.weaponID < param2.weaponID ? -1 : 1;
          });
@@ -419,7 +419,7 @@ package com.monsters.siege
       
       private function onPreviewImageLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:Bitmap = null;
          if(param1 != this._currentPreviewUrl)
          {
             return;
@@ -441,7 +441,7 @@ package com.monsters.siege
       
       private function onIconImageLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:Bitmap = null;
          var _loc4_:MovieClip = param3[0];
          if(_loc4_)
          {
@@ -690,7 +690,7 @@ package com.monsters.siege
          mcResources.visible = true;
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          this._timer.stop();
          SiegeBuilding.Hide();

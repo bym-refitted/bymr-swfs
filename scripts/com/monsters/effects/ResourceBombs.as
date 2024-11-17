@@ -38,7 +38,7 @@ package com.monsters.effects
          super();
       }
       
-      public static function Data() : *
+      public static function Data() : void
       {
          _bombs = {
             "tw0":{
@@ -221,7 +221,7 @@ package com.monsters.effects
          };
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          var _loc3_:Object = null;
          var _loc4_:String = null;
@@ -275,7 +275,7 @@ package com.monsters.effects
          }
       }
       
-      public static function BombAdd(param1:Object) : *
+      public static function BombAdd(param1:Object) : void
       {
          _state = 1;
          ATTACK.DropZone(param1.radius,param1.dropTarget);
@@ -285,7 +285,7 @@ package com.monsters.effects
          }
       }
       
-      public static function BombRemove() : *
+      public static function BombRemove() : void
       {
          if(_state == 1)
          {
@@ -298,7 +298,7 @@ package com.monsters.effects
          }
       }
       
-      public static function BombDrop() : *
+      public static function BombDrop() : void
       {
          var _loc4_:Object = null;
          var _loc2_:Object = _bombs[_bombid];
@@ -341,7 +341,7 @@ package com.monsters.effects
          }
       }
       
-      public static function Trigger(param1:MovieClip, param2:Point, param3:Object, param4:int = 2) : *
+      public static function Trigger(param1:MovieClip, param2:Point, param3:Object, param4:int = 2) : void
       {
          _activeBombs[bombcounter] = new ResourceBomb(param1,param2,param3,param4);
          if(param3.resource == 1)
@@ -371,7 +371,7 @@ package com.monsters.effects
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc1_:String = null;
          var _loc3_:BFOUNDATION = null;

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2900")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2915")]
    public dynamic class button_alert extends MovieClip
    {
       public var mcSpin:button_spinner;

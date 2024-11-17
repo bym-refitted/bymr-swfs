@@ -74,7 +74,7 @@ package com.monsters.missions
             ImageLoaded = function(param1:String, param2:BitmapData):void
             {
                var k:int = 0;
-               var bmp:* = undefined;
+               var bmp:Bitmap = null;
                var key:String = param1;
                var bmd:BitmapData = param2;
                try
@@ -178,10 +178,10 @@ package com.monsters.missions
          }
       }
       
-      public function Collect(param1:String) : *
+      public function Collect(param1:String) : Function
       {
          var questID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             bCollect.enabled = false;
             var _loc2_:* = QUESTS.CollectB(questID);

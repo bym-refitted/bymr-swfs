@@ -24,7 +24,7 @@ package com.monsters.siege
          return this._values;
       }
       
-      public function getDescription(param1:*) : String
+      public function getDescription(param1:uint) : String
       {
          return KEYS.Get(this.descriptionKey,{"v1":this.getValueForLevel(param1)});
       }

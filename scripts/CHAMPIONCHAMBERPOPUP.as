@@ -134,12 +134,12 @@ package
          this.Hide();
       }
       
-      public function SelectGuard(param1:int = 1) : *
+      public function SelectGuard(param1:int = 1) : void
       {
          this.UpdateStats(CHAMPIONCAGE.GetGuardianData(param1));
       }
       
-      private function UpdateStats(param1:Object = null) : *
+      private function UpdateStats(param1:Object = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -210,7 +210,7 @@ package
          {
             selectedImage.removeChildAt(_loc3_);
          }
-         var _loc4_:* = new Bitmap(param2);
+         var _loc4_:Bitmap = new Bitmap(param2);
          selectedImage.addChild(_loc4_);
       }
       

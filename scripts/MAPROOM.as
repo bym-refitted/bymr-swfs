@@ -10,7 +10,7 @@ package
    
    public class MAPROOM
    {
-      public static var _mc:*;
+      public static var _mc:MapRoom;
       
       public static var _open:Boolean;
       
@@ -35,7 +35,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _mc = null;
          loadState = 0;
@@ -162,9 +162,8 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
-         var e:MouseEvent = param1;
          try
          {
             GLOBAL.BlockerRemove();
@@ -180,25 +179,25 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
-         if(_mc && Boolean(_mc.parent))
+         if(Boolean(_mc) && Boolean(_mc.parent))
          {
             _mc.Tick();
          }
       }
       
-      public static function RequestTruce(param1:String, param2:int) : *
+      public static function RequestTruce(param1:String, param2:int) : void
       {
          var mc:MovieClip = null;
          var Truce:Function = null;
          var name:String = param1;
          var baseid:int = param2;
-         Truce = function(param1:MouseEvent = null):*
+         Truce = function(param1:MouseEvent = null):void
          {
             var handleLoadSuccessful:Function = null;
             var e:MouseEvent = param1;
-            handleLoadSuccessful = function(param1:Object):*
+            handleLoadSuccessful = function(param1:Object):void
             {
                if(param1.error == 0)
                {
@@ -233,20 +232,20 @@ package
          var imgNumber:int = 0;
          var name:String = param1;
          var message:String = param2;
-         Share = function(param1:MouseEvent = null):*
+         Share = function(param1:MouseEvent = null):void
          {
             GLOBAL.CallJS("sendFeed",["Truce",KEYS.Get("map_truceaccept_streamtitle",{"v1":name}),KEYS.Get("map_truceaccept_streambody"),"truceaccept" + imgNumber + ".png",0]);
             POPUPS.Next();
          };
-         var Switch:Function = function(param1:int):*
+         var Switch:Function = function(param1:int):Function
          {
             var n:int = param1;
-            return function(param1:MouseEvent = null):*
+            return function(param1:MouseEvent = null):void
             {
                SwitchB(n);
             };
          };
-         var SwitchB:Function = function(param1:int):*
+         var SwitchB:Function = function(param1:int):void
          {
             imgNumber = param1;
             i = 1;
@@ -274,7 +273,7 @@ package
          SwitchB(1);
       }
       
-      public static function TruceSent(param1:String, param2:String) : *
+      public static function TruceSent(param1:String, param2:String) : void
       {
          var mc:MovieClip = null;
          var i:int = 0;
@@ -282,20 +281,20 @@ package
          var imgNumber:int = 0;
          var name:String = param1;
          var message:String = param2;
-         Share = function(param1:MouseEvent = null):*
+         Share = function(param1:MouseEvent = null):void
          {
             GLOBAL.CallJS("sendFeed",["Truce",KEYS.Get("map_truceproposed_streamtitle",{"v1":name}),KEYS.Get("map_truceproposed_streambody"),"truceaccept" + imgNumber + ".png",0]);
             POPUPS.Next();
          };
-         var Switch:Function = function(param1:int):*
+         var Switch:Function = function(param1:int):Function
          {
             var n:int = param1;
-            return function(param1:MouseEvent = null):*
+            return function(param1:MouseEvent = null):void
             {
                SwitchB(n);
             };
          };
-         var SwitchB:Function = function(param1:int):*
+         var SwitchB:Function = function(param1:int):void
          {
             imgNumber = param1;
             i = 1;
@@ -323,7 +322,7 @@ package
          SwitchB(1);
       }
       
-      public static function TruceRejected(param1:String, param2:String) : *
+      public static function TruceRejected(param1:String, param2:String) : void
       {
          var mc:MovieClip = null;
          var i:int = 0;
@@ -331,20 +330,20 @@ package
          var imgNumber:int = 0;
          var name:String = param1;
          var message:String = param2;
-         Share = function(param1:MouseEvent = null):*
+         Share = function(param1:MouseEvent = null):void
          {
             GLOBAL.CallJS("sendFeed",["Truce",KEYS.Get("map_trucerejected_streamtitle",{"v1":name}),KEYS.Get("map_trucerejected_streambody"),"taunt" + imgNumber + ".png",0]);
             POPUPS.Next();
          };
-         var Switch:Function = function(param1:int):*
+         var Switch:Function = function(param1:int):Function
          {
             var n:int = param1;
-            return function(param1:MouseEvent = null):*
+            return function(param1:MouseEvent = null):void
             {
                SwitchB(n);
             };
          };
-         var SwitchB:Function = function(param1:int):*
+         var SwitchB:Function = function(param1:int):void
          {
             imgNumber = param1;
             i = 1;

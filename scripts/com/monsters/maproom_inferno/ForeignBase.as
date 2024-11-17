@@ -142,7 +142,7 @@ package com.monsters.maproom_inferno
             {
                try
                {
-                  LoadImageError = function(param1:IOErrorEvent):*
+                  LoadImageError = function(param1:IOErrorEvent):void
                   {
                   };
                   this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onPortraitComplete);

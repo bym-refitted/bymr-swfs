@@ -29,7 +29,7 @@ package
          }
       }
       
-      public function Say(param1:String, param2:Boolean, param3:Boolean) : *
+      public function Say(param1:String, param2:Boolean, param3:Boolean) : void
       {
          mcText.htmlText = param1;
          if(TUTORIAL._stage < 200)
@@ -66,19 +66,19 @@ package
          mcText.y = 0 - mcBubble.height + 10;
       }
       
-      public function DragStart(param1:MouseEvent) : *
+      public function DragStart(param1:MouseEvent) : void
       {
          this.offsetX = GLOBAL._ROOT.mouseX - x;
          this.offsetY = GLOBAL._ROOT.mouseY - y;
          addEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      public function DragStop(param1:MouseEvent) : *
+      public function DragStop(param1:MouseEvent) : void
       {
          removeEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      public function Move(param1:Event = null) : *
+      public function Move(param1:Event = null) : void
       {
          x = GLOBAL._ROOT.mouseX - this.offsetX;
          y = GLOBAL._ROOT.mouseY - this.offsetY;
@@ -96,8 +96,8 @@ package
          y = GLOBAL._SCREEN.y + this.posY;
          var _loc1_:int = x;
          var _loc2_:int = y;
-         var _loc3_:* = mcBlocker.parent;
-         if(_loc3_ && Boolean(_loc3_.parent))
+         var _loc3_:Object = mcBlocker.parent;
+         if(Boolean(_loc3_) && Boolean(_loc3_.parent))
          {
             while(_loc3_.parent)
             {

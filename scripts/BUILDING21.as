@@ -6,8 +6,6 @@ package
    
    public class BUILDING21 extends BTOWER
    {
-      public var _animMC:*;
-      
       public var _animBitmap:BitmapData;
       
       public function BUILDING21()
@@ -22,13 +20,13 @@ package
          this.Props();
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          super.TickAttack();
          Rotate();
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          if(_animLoaded && GLOBAL._render)
          {
@@ -37,7 +35,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          if(BASE.isInferno())
@@ -73,17 +71,17 @@ package
          }
       }
       
-      override public function Props() : *
+      override public function Props() : void
       {
          super.Props();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
       }

@@ -71,6 +71,14 @@ package com.monsters.baseplanner
          {
             return 1;
          }
+         if(param1.level < param2.level)
+         {
+            return -1;
+         }
+         if(param1.level > param2.level)
+         {
+            return 1;
+         }
          return 0;
       }
       
@@ -121,6 +129,10 @@ package com.monsters.baseplanner
          var _loc5_:PlannerExplorerButton = null;
          var _loc4_:int = 0;
          _loc4_ = this.getCategoryIndex(param1.category);
+         if(_loc4_ >= this._headers.length)
+         {
+            return;
+         }
          _loc5_ = this._headers[_loc4_].addElement(param1);
          if(param3)
          {
@@ -165,6 +177,7 @@ package com.monsters.baseplanner
       public function clear() : void
       {
          this.clearHeaders();
+         this.reposition();
          removeEventListener(MouseEvent.CLICK,this.onClick);
       }
       
@@ -213,12 +226,13 @@ package com.monsters.baseplanner
       public function reposition(param1:Boolean = true) : void
       {
          var _loc2_:int = 0;
-         var _loc3_:int = 0;
-         while(_loc3_ < this._headers.length)
+         var _loc3_:int = int(this._headers.length);
+         var _loc4_:int = 0;
+         while(_loc4_ < _loc3_)
          {
-            this._headers[_loc3_].y = _loc2_;
-            _loc2_ += this._headers[_loc3_].rePosition() + this._headers[_loc3_].mc.height;
-            _loc3_++;
+            this._headers[_loc4_].y = _loc2_;
+            _loc2_ += this._headers[_loc4_].rePosition() + this._headers[_loc4_].mc.height;
+            _loc4_++;
          }
       }
    }

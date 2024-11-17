@@ -210,7 +210,10 @@ package com.monsters.maproom
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
          MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),"help");
-         MAPROOM._mc.Hide();
+         if(MAPROOM._mc)
+         {
+            MAPROOM._mc.Hide();
+         }
       }
       
       private function onView(param1:MouseEvent) : void
@@ -227,7 +230,7 @@ package com.monsters.maproom
          }
          var _loc3_:String = _loc2_.wm.Get() == 1 ? "wmview" : "view";
          MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.MAIN_YARD);
-         if(Boolean(MAPROOM) && MAPROOM._mc)
+         if(Boolean(MAPROOM) && Boolean(MAPROOM._mc))
          {
             MAPROOM._mc.Hide();
          }

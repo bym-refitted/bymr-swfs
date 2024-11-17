@@ -17,9 +17,9 @@ package
          super();
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
-         while(MAP._RESOURCES && MAP._RESOURCES.numChildren > 0)
+         while(Boolean(MAP._RESOURCES) && MAP._RESOURCES.numChildren > 0)
          {
             MAP._RESOURCES.removeChildAt(0);
          }
@@ -28,7 +28,7 @@ package
          _frame = 0;
       }
       
-      public static function Create(param1:int, param2:BFOUNDATION, param3:int, param4:Boolean = false) : *
+      public static function Create(param1:int, param2:BFOUNDATION, param3:int, param4:Boolean = false) : void
       {
          var _loc5_:BFOUNDATION = null;
          var _loc6_:BFOUNDATION = null;
@@ -143,7 +143,7 @@ package
          }
       }
       
-      public static function Spawn(param1:BFOUNDATION, param2:BFOUNDATION, param3:*, param4:int) : *
+      public static function Spawn(param1:BFOUNDATION, param2:BFOUNDATION, param3:int, param4:int) : void
       {
          var _loc5_:Point = new Point(0,-20);
          var _loc6_:int = 20;
@@ -161,28 +161,24 @@ package
          }
          var _loc9_:Point = new Point(param1._mc.x + _loc5_.x,param1._mc.y + _loc5_.y);
          var _loc10_:Point = new Point(param2._mc.x + _loc7_.x,param2._mc.y + _loc7_.y);
-         var _loc11_:* = MAP._RESOURCES.addChild(new ResourcePackage(_loc9_,_loc10_,_loc6_,_loc8_,param3,_packageCount,param2,param4 / 6));
+         var _loc11_:ResourcePackage = MAP._RESOURCES.addChild(new ResourcePackage(_loc9_,_loc10_,_loc6_,_loc8_,param3,_packageCount,param2,param4 / 6)) as ResourcePackage;
          _packages["p" + _packageCount] = _loc11_;
          ++_packageCount;
       }
       
       public static function Remove(param1:*) : void
       {
-         var id:* = param1;
-         try
+         if(Boolean(_packages["p" + param1]) && Boolean(_packages["p" + param1].parent))
          {
-            MAP._RESOURCES.removeChild(_packages["p" + id]);
-            delete _packages["p" + id];
-         }
-         catch(e:Error)
-         {
+            MAP._RESOURCES.removeChild(_packages["p" + param1]);
+            delete _packages["p" + param1];
          }
       }
       
       public static function Distance(param1:Number, param2:Number, param3:Number, param4:Number) : Number
       {
-         var _loc5_:* = param1 - param3;
-         var _loc6_:* = param2 - param4;
+         var _loc5_:Number = param1 - param3;
+         var _loc6_:Number = param2 - param4;
          return Math.sqrt(_loc5_ * _loc5_ + _loc6_ * _loc6_);
       }
    }

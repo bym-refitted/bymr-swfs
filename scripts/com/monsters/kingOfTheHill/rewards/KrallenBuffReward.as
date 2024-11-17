@@ -1,7 +1,8 @@
 package com.monsters.kingOfTheHill.rewards
 {
-   import com.monsters.champions.KOTHChampion;
    import com.monsters.debug.Console;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.champions.KOTHChampion;
    import com.monsters.rewarding.Reward;
    
    public class KrallenBuffReward extends Reward
@@ -38,7 +39,7 @@ package com.monsters.kingOfTheHill.rewards
       
       private function updateChampionBuff(param1:uint) : void
       {
-         var _loc2_:CHAMPIONMONSTER = CREATURES.getGuardian(KOTHChampion.TYPE);
+         var _loc2_:ChampionBase = CREATURES.getGuardian(KOTHChampion.TYPE);
          if(_loc2_)
          {
             _loc2_.LevelSet(param1);

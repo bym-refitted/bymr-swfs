@@ -96,6 +96,8 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
+         null;
+         null;
          var _loc3_:Object = _a[param1];
          _a[param1] = _a[param2];
          _a[param2] = _loc3_;
@@ -141,6 +143,7 @@ package de.polygonal.ds
       
       public function method_1(param1:int, param2:Object) : void
       {
+         null;
          _a[param1] = param2;
       }
       
@@ -288,6 +291,7 @@ package de.polygonal.ds
       
       public function method_2(param1:int) : Object
       {
+         null;
          return _a[param1];
       }
       
@@ -307,6 +311,7 @@ package de.polygonal.ds
       public function fill(param1:Object, param2:int = 0) : void
       {
          var _loc4_:int = 0;
+         null;
          if(param2 > 0)
          {
             if(maxSize != -1)
@@ -348,6 +353,7 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
+         null;
          _a[param1] = _a[param2];
       }
       
@@ -399,6 +405,7 @@ package de.polygonal.ds
             while(_loc6_ < _loc7_)
             {
                _loc8_ = _loc6_++;
+               null;
                _loc9_ = _a[_loc8_];
                _loc5_[_loc8_] = _loc9_.clone();
             }

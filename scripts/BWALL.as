@@ -11,13 +11,13 @@ package
          super();
       }
       
-      override public function GridCost(param1:Boolean = true) : *
+      override public function GridCost(param1:Boolean = true) : void
       {
          super.GridCost(param1);
          PATHING.RegisterBuilding(new Rectangle(_mc.x,_mc.y,20,20),this,param1);
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -34,7 +34,7 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          PATHING.RegisterBuilding(new Rectangle(_mc.x,_mc.y,20,20),this,false);
          super.RecycleC();

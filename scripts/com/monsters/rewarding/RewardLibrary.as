@@ -3,7 +3,10 @@ package com.monsters.rewarding
    import com.monsters.debug.Console;
    import com.monsters.kingOfTheHill.rewards.KrallenBuffReward;
    import com.monsters.kingOfTheHill.rewards.KrallenReward;
-   import com.monsters.rewarding.rewards.magmaTowers.UnlockMagmaTowers;
+   import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward1;
+   import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward2;
+   import com.monsters.replayableEvents.attackDefend.brukkargWar.rewards.SpurtzCannonReward3;
+   import com.monsters.replayableEvents.monsterInvasion.hellRaisers.rewards.UnlockMagmaTowerInOutposts;
    import com.monsters.rewarding.rewards.slimeattikus.UnblockSlimeattikusReward;
    import com.monsters.rewarding.rewards.slimeattikus.UnlockSlimeattikusReward;
    import com.monsters.rewarding.rewards.vorg.UnblockVorgReward;
@@ -29,7 +32,7 @@ package com.monsters.rewarding
          addRewardType(UnlockSlimeattikusReward.ID,UnlockSlimeattikusReward);
          addRewardType(UnblockSlimeattikusReward.ID,UnblockSlimeattikusReward);
          addRewardType(UnblockVorgReward.ID,UnblockVorgReward);
-         addRewardType(UnlockMagmaTowers.ID,UnlockMagmaTowers);
+         addRewardType(UnlockMagmaTowerInOutposts.ID,UnlockMagmaTowerInOutposts);
          addRewardType(KrallenReward.ID,KrallenReward);
          addRewardType(KrallenBuffReward.ID,KrallenBuffReward);
          addRewardType(DAVEStatueReward.ID,DAVEStatueReward);
@@ -37,6 +40,9 @@ package com.monsters.rewarding
          addRewardType(GoldenDAVEReward.ID,GoldenDAVEReward);
          addRewardType(ImprovedHCCReward.ID,ImprovedHCCReward);
          addRewardType(YardPlannerExtraSlotsReward.ID,YardPlannerExtraSlotsReward);
+         addRewardType(SpurtzCannonReward1.ID,SpurtzCannonReward1);
+         addRewardType(SpurtzCannonReward2.ID,SpurtzCannonReward2);
+         addRewardType(SpurtzCannonReward3.ID,SpurtzCannonReward3);
       }
       
       public static function addRewardType(param1:String, param2:Class) : void

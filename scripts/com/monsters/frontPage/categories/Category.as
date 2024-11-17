@@ -22,7 +22,6 @@ package com.monsters.frontPage.categories
       public function getNextQualifiedMessage() : Message
       {
          var _loc1_:int = 0;
-         var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:Message = null;
          if(this.lastMessageSeen)
@@ -38,7 +37,7 @@ package com.monsters.frontPage.categories
             }
          }
          var _loc2_:Boolean = false;
-         _loc3_ = _loc1_;
+         var _loc3_:int = _loc1_;
          _loc3_ = _loc1_;
          while(_loc3_ < this._messages.length)
          {

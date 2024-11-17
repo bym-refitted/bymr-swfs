@@ -95,19 +95,19 @@ package com.monsters.chat
       
       public function connect() : Boolean
       {
-         var success:Boolean = false;
+         var _loc1_:Boolean = false;
          if(!this.sfs.isConnected)
          {
             try
             {
                this.sfs.connect(this.host,this.port);
-               success = true;
+               _loc1_ = true;
             }
             catch(e:*)
             {
             }
          }
-         return success;
+         return _loc1_;
       }
       
       private function onErrorLogged(param1:LoggerEvent) : void
@@ -342,19 +342,15 @@ package com.monsters.chat
       
       public function login(param1:IAuthenticationSystem) : void
       {
-         var _password:String;
-         var _params:SFSObject;
-         var loginRequest:LoginRequest;
-         var auth:IAuthenticationSystem = param1;
-         var loginAuth:AS_Login = auth as AS_Login;
-         this.m_login = loginAuth;
-         this.m_user = loginAuth.User;
-         _password = loginAuth.Password;
-         _params = loginAuth.Params;
-         loginRequest = new LoginRequest(this.m_user.Name,_password,this.zone,_params);
+         var _loc2_:AS_Login = param1 as AS_Login;
+         this.m_login = _loc2_;
+         this.m_user = _loc2_.User;
+         var _loc3_:String = _loc2_.Password;
+         var _loc4_:SFSObject = _loc2_.Params;
+         var _loc5_:LoginRequest = new LoginRequest(this.m_user.Name,_loc3_,this.zone,_loc4_);
          try
          {
-            this.sfs.send(loginRequest);
+            this.sfs.send(_loc5_);
             this._isLoggingOut = false;
          }
          catch(e:*)
@@ -404,7 +400,6 @@ package com.monsters.chat
       
       private function onLogout(param1:SFSEvent) : void
       {
-         var event:SFSEvent = param1;
          this._isLoggedIn = false;
          try
          {
@@ -422,35 +417,32 @@ package com.monsters.chat
       
       public function join(param1:Channel, param2:String = null, param3:Boolean = true) : void
       {
-         var doNotLeaveRoom:int = 0;
-         var joinRoomRequest:JoinRoomRequest = null;
-         var params:SFSObject = null;
-         var extensionRequest:ExtensionRequest = null;
-         var channel:Channel = param1;
-         var password:String = param2;
-         var autocreate:Boolean = param3;
-         this.join_channel = channel;
+         var _loc4_:int = 0;
+         var _loc5_:JoinRoomRequest = null;
+         var _loc6_:SFSObject = null;
+         var _loc7_:ExtensionRequest = null;
+         this.join_channel = param1;
          if(Boolean(this.roomMap) && this.join_channel.Name in this.roomMap)
          {
-            doNotLeaveRoom = -1;
-            joinRoomRequest = new JoinRoomRequest(this.join_channel.Name,"",doNotLeaveRoom,false);
+            _loc4_ = -1;
+            _loc5_ = new JoinRoomRequest(this.join_channel.Name,"",_loc4_,false);
             try
             {
-               this.sfs.send(joinRoomRequest);
+               this.sfs.send(_loc5_);
             }
             catch(e:*)
             {
             }
          }
-         else if(autocreate)
+         else if(param3)
          {
-            params = new SFSObject();
-            params.putUtfString("command","create_room");
-            params.putUtfString("name",this.join_channel.Name);
-            extensionRequest = new ExtensionRequest(EXT_REQ_STRING,params);
+            _loc6_ = new SFSObject();
+            _loc6_.putUtfString("command","create_room");
+            _loc6_.putUtfString("name",this.join_channel.Name);
+            _loc7_ = new ExtensionRequest(EXT_REQ_STRING,_loc6_);
             try
             {
-               this.sfs.send(extensionRequest);
+               this.sfs.send(_loc7_);
             }
             catch(e:*)
             {
@@ -584,20 +576,17 @@ package com.monsters.chat
       
       public function extension(param1:String, param2:Dictionary) : void
       {
-         var extensionRequest:ExtensionRequest;
-         var cmd:String = param1;
-         var params:Dictionary = param2;
-         var sfsParams:SFSObject = new SFSObject();
-         switch(cmd)
+         var _loc3_:SFSObject = new SFSObject();
+         switch(param1)
          {
             case "add":
-               sfsParams.putInt("n1",params["n1"] as int);
-               sfsParams.putInt("n2",params["n2"] as int);
+               _loc3_.putInt("n1",param2["n1"] as int);
+               _loc3_.putInt("n2",param2["n2"] as int);
          }
-         extensionRequest = new ExtensionRequest(cmd,sfsParams);
+         var _loc4_:ExtensionRequest = new ExtensionRequest(param1,_loc3_);
          try
          {
-            this.sfs.send(extensionRequest);
+            this.sfs.send(_loc4_);
          }
          catch(e:*)
          {
@@ -613,40 +602,37 @@ package com.monsters.chat
       
       public function say(param1:Channel, param2:String) : void
       {
-         var channelName:String;
-         var params:SFSObject = null;
-         var receiver:User = null;
-         var privMesgRequest:PrivateMessageRequest = null;
-         var pubMesgRequest:PublicMessageRequest = null;
-         var channel:Channel = param1;
-         var chatMessage:String = param2;
-         chatMessage = chatMessage.replace(/&/g,"&amp;");
-         chatMessage = chatMessage.replace(/</g,"&lt;");
-         chatMessage = chatMessage.replace(/>/g,"&gt;");
-         chatMessage = chatMessage.replace(/\n/g,"");
-         chatMessage = chatMessage.replace(/\r/g,"");
-         chatMessage = chatMessage.replace(/&#10;/g,"");
-         chatMessage = chatMessage.replace(/&#13;/g,"");
-         chatMessage = chatMessage.replace(/^\s+$/,"");
-         chatMessage = chatMessage.replace(/:/g,"&#58;");
-         chatMessage = chatMessage.replace(/\'/g,"&#39;");
-         if(chatMessage == "")
+         var _loc4_:SFSObject = null;
+         var _loc5_:User = null;
+         var _loc6_:PrivateMessageRequest = null;
+         var _loc7_:PublicMessageRequest = null;
+         param2 = param2.replace(/&/g,"&amp;");
+         param2 = param2.replace(/</g,"&lt;");
+         param2 = param2.replace(/>/g,"&gt;");
+         param2 = param2.replace(/\n/g,"");
+         param2 = param2.replace(/\r/g,"");
+         param2 = param2.replace(/&#10;/g,"");
+         param2 = param2.replace(/&#13;/g,"");
+         param2 = param2.replace(/^\s+$/,"");
+         param2 = param2.replace(/:/g,"&#58;");
+         param2 = param2.replace(/\'/g,"&#39;");
+         if(param2 == "")
          {
             return;
          }
-         channelName = channel.Name;
-         if(channel.Type == "private")
+         var _loc3_:String = param1.Name;
+         if(param1.Type == "private")
          {
-            params = new SFSObject();
-            params.putUtfString("sender",this.m_user.Name);
-            params.putUtfString("receiver",channelName);
-            receiver = this.sfs.userManager.getUserByName(channelName);
-            if(receiver != null)
+            _loc4_ = new SFSObject();
+            _loc4_.putUtfString("sender",this.m_user.Name);
+            _loc4_.putUtfString("receiver",_loc3_);
+            _loc5_ = this.sfs.userManager.getUserByName(_loc3_);
+            if(_loc5_ != null)
             {
-               privMesgRequest = new PrivateMessageRequest(chatMessage,receiver.id,params);
+               _loc6_ = new PrivateMessageRequest(param2,_loc5_.id,_loc4_);
                try
                {
-                  this.sfs.send(privMesgRequest);
+                  this.sfs.send(_loc6_);
                }
                catch(e:*)
                {
@@ -654,22 +640,22 @@ package com.monsters.chat
             }
             else
             {
-               this.error(null,"no user found: \'" + channelName + "\'");
+               this.error(null,"no user found: \'" + _loc3_ + "\'");
             }
          }
-         if(channel.Type == "system")
+         if(param1.Type == "system")
          {
             if(this.roomMap == null)
             {
             }
-            if(!(channel.Name in this.roomMap))
+            if(!(param1.Name in this.roomMap))
             {
                return;
             }
-            pubMesgRequest = new PublicMessageRequest(chatMessage,null,this.roomMap[channelName]);
+            _loc7_ = new PublicMessageRequest(param2,null,this.roomMap[_loc3_]);
             try
             {
-               this.sfs.send(pubMesgRequest);
+               this.sfs.send(_loc7_);
             }
             catch(e:*)
             {
@@ -796,14 +782,12 @@ package com.monsters.chat
       
       private function keepAliveListener(param1:TimerEvent) : void
       {
-         var extensionRequest:ExtensionRequest;
-         var event:TimerEvent = param1;
-         var params:SFSObject = new SFSObject();
-         params.putUtfString("command","keepalive");
-         extensionRequest = new ExtensionRequest(EXT_REQ_STRING,params);
+         var _loc2_:SFSObject = new SFSObject();
+         _loc2_.putUtfString("command","keepalive");
+         var _loc3_:ExtensionRequest = new ExtensionRequest(EXT_REQ_STRING,_loc2_);
          try
          {
-            this.sfs.send(extensionRequest);
+            this.sfs.send(_loc3_);
          }
          catch(e:*)
          {

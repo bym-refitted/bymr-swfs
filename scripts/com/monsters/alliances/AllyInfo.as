@@ -154,7 +154,7 @@ package com.monsters.alliances
          }
       }
       
-      public function Relations(param1:int) : *
+      public function Relations(param1:int) : int
       {
          if(this.alliance_id)
          {
@@ -162,14 +162,14 @@ package com.monsters.alliances
          }
          if(!this.relationships || !ALLIANCES._myAlliance)
          {
-            return;
+            return 0;
          }
          var _loc2_:int = 0;
          if(param1 == this.alliance_id)
          {
             _loc2_ = int(AllyInfo._relationProps.member);
             this.relationship = _loc2_;
-            return;
+            return 0;
          }
          if(this._relCheckThem)
          {
@@ -189,9 +189,9 @@ package com.monsters.alliances
          return _loc2_;
       }
       
-      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : *
+      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:int = 0;
          var _loc6_:String = null;
          var _loc7_:Object = null;
          var _loc8_:String = null;
@@ -311,7 +311,7 @@ package com.monsters.alliances
          }
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          if(param3[0])
@@ -323,9 +323,10 @@ package com.monsters.alliances
          }
       }
       
-      public function IconRelationLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconRelationLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc4_:Bitmap = new Bitmap(param2);
+         var _loc4_:Bitmap = null;
+         _loc4_ = new Bitmap(param2);
          if(param3[0])
          {
             param3[0].addChild(_loc4_);

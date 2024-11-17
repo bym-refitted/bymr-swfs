@@ -1,6 +1,8 @@
 package com.monsters.effects
 {
+   import com.monsters.monsters.MonsterBase;
    import flash.display.BitmapData;
+   import flash.display.DisplayObjectContainer;
    import flash.display.MovieClip;
    import flash.display.Shape;
    import flash.filters.GlowFilter;
@@ -9,9 +11,9 @@ package com.monsters.effects
    
    public class LASER
    {
-      public var _container:*;
+      public var _container:DisplayObjectContainer;
       
-      public var _mc:*;
+      public var _mc:MovieClip;
       
       public var _buffer:Shape;
       
@@ -50,7 +52,7 @@ package com.monsters.effects
          super();
       }
       
-      public function Fire(param1:MovieClip, param2:Point, param3:Point, param4:int, param5:Number, param6:Number, param7:Function) : *
+      public function Fire(param1:MovieClip, param2:Point, param3:Point, param4:int, param5:Number, param6:Number, param7:Function) : void
       {
          this._height = param4;
          this._damage = param5;
@@ -62,7 +64,7 @@ package com.monsters.effects
          {
             this._trackCallbackFunction = param7;
          }
-         this._container = param1.addChild(new MovieClip());
+         this._container = param1.addChild(new MovieClip()) as DisplayObjectContainer;
          this._distance = Point.distance(this._pointA,this._pointB);
          var _loc8_:int = this._pointA.x - this._pointB.x;
          var _loc9_:int = this._pointA.y - this._pointB.y;
@@ -100,7 +102,7 @@ package com.monsters.effects
             this._container.removeChild(this._mc);
             this._mc = null;
          }
-         this._mc = this._container.addChild(new MovieClip());
+         this._mc = this._container.addChild(new MovieClip()) as MovieClip;
          if(this._duration > 100)
          {
             return true;
@@ -108,8 +110,8 @@ package com.monsters.effects
          var _loc9_:Number = 4 / Math.sqrt(this._distance);
          this._angle += _loc9_ / 2 * GLOBAL._loops;
          this._duration += GLOBAL._loops;
-         var _loc10_:* = this._pointA.x + Math.cos(this._angle * (Math.PI / 180)) * (this._distance + Math.sin((this._duration / 4 + getTimer() / 1000) / 20) * (this._distance / 20));
-         var _loc11_:* = this._pointA.y + Math.sin(this._angle * (Math.PI / 180)) * (this._distance + Math.sin((this._duration / 4 + getTimer() / 1000) / 20) * (this._distance / 20));
+         var _loc10_:Number = this._pointA.x + Math.cos(this._angle * (Math.PI / 180)) * (this._distance + Math.sin((this._duration / 4 + getTimer() / 1000) / 20) * (this._distance / 20));
+         var _loc11_:Number = this._pointA.y + Math.sin(this._angle * (Math.PI / 180)) * (this._distance + Math.sin((this._duration / 4 + getTimer() / 1000) / 20) * (this._distance / 20));
          this._pointB = new Point(_loc10_,_loc11_);
          if(this._trackCallbackFunction != null)
          {
@@ -184,21 +186,21 @@ package com.monsters.effects
          return false;
       }
       
-      public function Splash(param1:Point) : *
+      public function Splash(param1:Point) : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
+         var _loc2_:Object = null;
+         var _loc3_:MonsterBase = null;
+         var _loc4_:String = null;
+         var _loc5_:Number = NaN;
+         var _loc6_:Point = null;
          var _loc8_:Number = NaN;
-         var _loc9_:* = MAP.CreepCellFind(param1,this._splash,-1);
+         var _loc9_:Array = MAP.CreepCellFind(param1,this._splash,-1);
          var _loc10_:int = 0;
          for(_loc4_ in _loc9_)
          {
             _loc2_ = _loc9_[_loc4_];
             _loc3_ = _loc2_.creep;
-            _loc5_ = _loc2_.dist;
+            _loc5_ = Number(_loc2_.dist);
             _loc6_ = _loc2_.pos;
             _loc8_ = this._damage * 0.5 / this._splash * (this._splash - _loc5_);
             _loc10_ += _loc8_;

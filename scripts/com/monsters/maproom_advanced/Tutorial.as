@@ -116,7 +116,7 @@ package com.monsters.maproom_advanced
          GLOBAL.Message(param1,KEYS.Get("btn_continue"),this.AdvanceTutorial);
       }
       
-      private function HideBigDialog() : *
+      private function HideBigDialog() : void
       {
          if(this._bigPopup)
          {

@@ -143,7 +143,7 @@ package com.monsters.maproom
             {
                try
                {
-                  LoadImageError = function(param1:IOErrorEvent):*
+                  LoadImageError = function(param1:IOErrorEvent):void
                   {
                   };
                   this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onPortraitComplete);

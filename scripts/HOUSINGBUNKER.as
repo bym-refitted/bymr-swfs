@@ -57,13 +57,13 @@ package
          SetProps();
       }
       
-      override public function StopMoveB() : *
+      override public function StopMoveB() : void
       {
          super.StopMoveB();
          UpdateHousedCreatureTargets();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _upgradeDescription = KEYS.Get("bdg_housing_capacitydesc",{
@@ -86,7 +86,7 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          HOUSING.AddHouse(this);
@@ -102,7 +102,7 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
          HOUSING.HousingSpace();
@@ -123,7 +123,7 @@ package
          GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_bunkerbuilt_streamtitle"),KEYS.Get("pop_bunkerbuilt_streambody"),"build-monsterbunker.png"]);
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          super.RecycleC();
          this.Removed();
@@ -131,7 +131,7 @@ package
          RelocateHousedCreatures();
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
          var _loc2_:int = 0;
@@ -153,7 +153,7 @@ package
          HOUSING.RemoveHouse(this);
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          param1.t = _type;
          super.Setup(param1);
@@ -274,7 +274,7 @@ package
          return _loc1_;
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          var _loc4_:* = null;
          var _loc5_:* = undefined;
@@ -408,8 +408,7 @@ package
             _loc7_._targetCreep = param2;
             _loc7_._homeBunker = this;
             _loc7_._hasTarget = true;
-            _loc7_._pathing = "direct";
-            if(true)
+            if(_loc7_._pathing == "direct")
             {
                _loc7_.alpha = 0;
                _loc7_._phase = 1;
@@ -420,12 +419,12 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          ++this._frameNumber;
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"defense"))
          {
@@ -450,14 +449,15 @@ package
          }
          Update();
          BASE.Save();
+         return param1;
       }
       
-      public function Cull() : *
+      public function Cull() : void
       {
          HOUSING.Cull();
       }
       
-      override public function Over(param1:MouseEvent) : *
+      override public function Over(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
          {
@@ -490,7 +490,7 @@ package
          TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
-      override public function Out(param1:MouseEvent) : *
+      override public function Out(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
          {

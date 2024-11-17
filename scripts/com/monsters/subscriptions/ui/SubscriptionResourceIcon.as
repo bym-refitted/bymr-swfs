@@ -10,7 +10,7 @@ package com.monsters.subscriptions.ui
          mouseChildren = false;
       }
       
-      public function update(param1:Boolean) : *
+      public function update(param1:Boolean) : void
       {
          if(param1)
          {

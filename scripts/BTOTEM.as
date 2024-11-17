@@ -147,6 +147,7 @@ package
       {
          switch(SPECIALEVENT.wave)
          {
+            case 0:
             case 1:
                return 0;
             case 2:

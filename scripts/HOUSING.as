@@ -2,13 +2,14 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.ai.TRIBES;
+   import com.monsters.monsters.MonsterBase;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class HOUSING
    {
-      public static var _mc:*;
+      public static var _mc:HOUSINGPOPUP;
       
       public static var _open:Boolean;
       
@@ -45,16 +46,16 @@ package
          }
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function Show(param1:MouseEvent = null) : void
       {
          _open = true;
          GLOBAL.BlockerAdd();
-         _mc = GLOBAL._layerWindows.addChild(new HOUSINGPOPUP());
+         _mc = GLOBAL._layerWindows.addChild(new HOUSINGPOPUP()) as HOUSINGPOPUP;
          _mc.Center();
          _mc.ScaleUp();
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          if(_open)
          {
@@ -68,65 +69,57 @@ package
       
       public static function HousingSpace() : void
       {
-         var c:int = 0;
-         var building:BFOUNDATION = null;
-         var n:String = null;
-         var value:int = 0;
-         try
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         _housingCapacity = new SecNum(0);
+         _housingUsed = new SecNum(0);
+         _housingSpace = new SecNum(0);
+         _housingBuildingUpgrading = false;
+         var _loc1_:int = 0;
+         for each(_loc2_ in BASE._buildingsHousing)
          {
-            _housingCapacity = new SecNum(0);
-            _housingUsed = new SecNum(0);
-            _housingSpace = new SecNum(0);
-            _housingBuildingUpgrading = false;
-            c = 0;
-            for each(building in BASE._buildingsHousing)
+            if(_loc2_._countdownBuild.Get() <= 0 && _loc2_._hp.Get() > 10)
             {
-               if(building._countdownBuild.Get() <= 0 && building._hp.Get() > 10)
+               _loc4_ = int(_loc2_._buildingProps.capacity[_loc2_._lvl.Get() - 1]);
+               if(GLOBAL._extraHousing >= GLOBAL.Timestamp() && GLOBAL._extraHousingPower.Get() > 0)
                {
-                  value = int(building._buildingProps.capacity[building._lvl.Get() - 1]);
-                  if(GLOBAL._extraHousing >= GLOBAL.Timestamp() && GLOBAL._extraHousingPower.Get() > 0)
-                  {
-                     value *= 1 + GLOBAL._extraHousingPower.Get() * 0.25;
-                  }
-                  _housingCapacity.Add(value);
-                  c++;
+                  _loc4_ *= 1 + GLOBAL._extraHousingPower.Get() * 0.25;
                }
-               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() > 0)
-               {
-                  _housingBuildingUpgrading = true;
-               }
+               _housingCapacity.Add(_loc4_);
+               _loc1_++;
             }
-            for(n in _creatures)
+            if(_loc2_._countdownBuild.Get() + _loc2_._countdownUpgrade.Get() > 0)
             {
-               _housingUsed.Add(CREATURES.GetProperty(n,"cStorage",0,true) * _creatures[n].Get());
+               _housingBuildingUpgrading = true;
             }
-            _housingSpace.Set(_housingCapacity.Get() - _housingUsed.Get());
          }
-         catch(e:Error)
+         for(_loc3_ in _creatures)
          {
-            GLOBAL.ErrorMessage("HOUSING.HousingSpace: " + e.message + " | " + e.getStackTrace());
+            _housingUsed.Add(CREATURES.GetProperty(_loc3_,"cStorage",0,true) * _creatures[_loc3_].Get());
          }
+         _housingSpace.Set(_housingCapacity.Get() - _housingUsed.Get());
       }
       
-      public static function HousingStore(param1:String, param2:Point, param3:Boolean = false, param4:int = 0) : *
+      public static function HousingStore(param1:String, param2:Point, param3:Boolean = false, param4:int = 0) : Boolean
       {
          var _loc7_:* = undefined;
          var _loc8_:Array = null;
          var _loc9_:BFOUNDATION = null;
-         var _loc10_:* = undefined;
-         var _loc11_:* = undefined;
-         var _loc12_:* = undefined;
+         var _loc10_:Number = NaN;
+         var _loc11_:Number = NaN;
+         var _loc12_:int = 0;
          if(param4 > 0)
          {
             LOGGER.Log("hak","Instant monster hack");
             GLOBAL.ErrorMessage("HOUSING insta monster hack");
-            return;
+            return false;
          }
          if(param1 == "C100")
          {
             param1 = "C12";
          }
-         var _loc5_:* = CREATURES.GetProperty(param1,"cStorage",0,true);
+         var _loc5_:int = CREATURES.GetProperty(param1,"cStorage",0,true);
          var _loc6_:Boolean = (GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview") && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice";
          if(_housingSpace.Get() < _loc5_ && !_loc6_)
          {
@@ -162,7 +155,7 @@ package
                      {
                         _loc10_ = _loc9_._mc.x - param2.x;
                         _loc11_ = _loc9_._mc.y - param2.y;
-                        _loc12_ = int(Math.sqrt(_loc10_ * _loc10_ + _loc11_ * _loc11_));
+                        _loc12_ = int(_loc9_._creatures.length);
                         _loc8_.push({
                            "mc":_loc9_,
                            "dist":_loc12_
@@ -182,10 +175,10 @@ package
          return true;
       }
       
-      public static function Cull(param1:Boolean = false) : *
+      public static function Cull(param1:Boolean = false) : void
       {
          var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
+         var _loc3_:String = null;
          var _loc4_:int = 0;
          _housingCapacity = new SecNum(0);
          _housingUsed = new SecNum(0);
@@ -234,12 +227,12 @@ package
       
       public static function Populate() : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:BFOUNDATION = null;
          var _loc8_:Point = null;
          var _loc1_:Array = [];
          for each(_loc2_ in BASE._buildingsHousing)
@@ -253,7 +246,7 @@ package
          {
             for(_loc3_ in _creatures)
             {
-               _loc4_ = _creatures[_loc3_].Get();
+               _loc4_ = int(_creatures[_loc3_].Get());
                if(!BASE.isInferno() && _loc4_ > 50)
                {
                   _loc4_ = 50;
@@ -264,7 +257,7 @@ package
                   _loc6_ = Math.random() * _loc1_.length;
                   _loc7_ = _loc1_[_loc6_];
                   _loc8_ = GRID.FromISO(_loc7_.x,_loc7_.y);
-                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,CreepBase.k_sBHVR_PEN,PointInHouse(_loc8_),Math.random() * 360,_loc8_,_loc7_);
+                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,MonsterBase.k_sBHVR_PEN,PointInHouse(_loc8_),Math.random() * 360,_loc8_,_loc7_);
                   _loc5_++;
                }
             }
@@ -285,7 +278,7 @@ package
          }
       }
       
-      public static function Export() : *
+      public static function Export() : Object
       {
          var _loc2_:String = null;
          var _loc1_:Object = {};
@@ -330,7 +323,7 @@ package
          var _loc12_:String = null;
          var _loc13_:Object = null;
          var _loc14_:String = null;
-         var _loc15_:* = undefined;
+         var _loc15_:Object = null;
          var _loc1_:Array = [];
          var _loc2_:Array = [];
          var _loc3_:Array = [];

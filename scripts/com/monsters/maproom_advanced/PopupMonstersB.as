@@ -29,7 +29,7 @@ package com.monsters.maproom_advanced
          addChild(this._scroller);
          this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this.bTransfer.SetupKey("bunker_btn_transfer");
-         this.bTransfer.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bTransfer.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             MapRoom.TransferMonstersC(_cell);
          });
@@ -37,7 +37,7 @@ package com.monsters.maproom_advanced
          this.bCancel.addEventListener(MouseEvent.CLICK,this.Hide);
       }
       
-      public function Setup(param1:Object, param2:MapRoomCell) : *
+      public function Setup(param1:Object, param2:MapRoomCell) : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
@@ -83,7 +83,7 @@ package com.monsters.maproom_advanced
       
       public function Cleanup() : void
       {
-         this.bTransfer.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bTransfer.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             MapRoom.TransferMonstersC(_cell);
          });
@@ -98,7 +98,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          if(MapRoom._mc)
          {

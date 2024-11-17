@@ -1,16 +1,21 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.configs.BYMDevConfig;
    import com.monsters.display.BuildingAssetContainer;
    import com.monsters.display.BuildingOverlay;
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.events.BuildingEvent;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
+   import com.monsters.rendering.RasterData;
    import com.monsters.utils.MovieClipUtils;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.BlendMode;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.display.Sprite;
@@ -24,13 +29,37 @@ package
    {
       public static const TICK_LIMIT:int = 2 * 24 * 60 * 60;
       
-      internal var _mcBase:*;
+      protected static const _IMAGE_NAMES:Array = ["shadow","","top","anim","anim2","anim3"];
       
-      internal var _mcFootprint:*;
+      protected static const _RASTERDATA_SHADOW:uint = 0;
       
-      internal var _mcHit:*;
+      protected static const _RASTERDATA_FOOTPRINT:uint = 1;
       
-      internal var _r:*;
+      protected static const _RASTERDATA_TOP:uint = 2;
+      
+      protected static const _RASTERDATA_ANIM:uint = 3;
+      
+      protected static const _RASTERDATA_ANIM2:uint = 4;
+      
+      protected static const _RASTERDATA_ANIM3:uint = 5;
+      
+      protected static const _RASTERDATA_FORTFRONT:uint = 6;
+      
+      protected static const _RASTERDATA_FORTBACK:uint = 7;
+      
+      protected static const _RASTERDATA_AMOUNT:uint = 8;
+      
+      protected static const k_STATE_DESTROYED:String = "destroyed";
+      
+      protected static const k_STATE_DAMAGED:String = "damaged";
+      
+      protected static const k_STATE_DEFAULT:String = "";
+      
+      public var _mcBase:MovieClip;
+      
+      public var _mcFootprint:MovieClip;
+      
+      public var _mcHit:MovieClip;
       
       public var _mc:MovieClip;
       
@@ -232,8 +261,6 @@ package
       
       public var _upgrading:String;
       
-      public var _shadow:*;
-      
       public var _origin:Point;
       
       public var _shake:int;
@@ -250,7 +277,7 @@ package
       
       public var _spoutHeight:int;
       
-      public var _progressMC:*;
+      public var _progressMC:MovieClip;
       
       public var _canFunction:Boolean;
       
@@ -278,6 +305,16 @@ package
       
       public var _overlayOffset:Point = new Point(0,0);
       
+      protected var _rasterData:Vector.<RasterData>;
+      
+      protected var _rasterPt:Vector.<Point>;
+      
+      protected var _offsets:Vector.<Point>;
+      
+      protected var _debugRasterData:RasterData;
+      
+      protected var _imageCallbackHelpers:Vector.<ImageCallbackHelper>;
+      
       public var _recycled:Boolean = false;
       
       public function BFOUNDATION()
@@ -293,6 +330,17 @@ package
          this._buildingStats = "";
          this._creatures = [];
          this._helpList = [];
+         this._rasterData = new Vector.<RasterData>(_RASTERDATA_AMOUNT,true);
+         this._rasterPt = new Vector.<Point>(this._rasterData.length,true);
+         this._offsets = new Vector.<Point>(this._rasterData.length,true);
+         var _loc1_:int = int(this._rasterPt.length - 1);
+         while(_loc1_ >= 0)
+         {
+            this._rasterPt[_loc1_] = new Point();
+            this._offsets[_loc1_] = new Point();
+            _loc1_--;
+         }
+         this._imageCallbackHelpers = new Vector.<ImageCallbackHelper>();
          this._fortification = new SecNum(0);
          this._countdownBuild = new SecNum(0);
          this._countdownRebuild = new SecNum(0);
@@ -318,7 +366,7 @@ package
          }
       }
       
-      public function SetProps() : *
+      public function SetProps() : void
       {
          try
          {
@@ -332,7 +380,7 @@ package
          }
          try
          {
-            this._mcFootprint = MAP._BUILDINGFOOTPRINTS.addChild(this.GetFootprintMC());
+            this._mcFootprint = BYMConfig.instance.RENDERER_ON ? this.GetFootprintMC() : MAP._BUILDINGFOOTPRINTS.addChild(this.GetFootprintMC()) as MovieClip;
          }
          catch(e:Error)
          {
@@ -342,7 +390,7 @@ package
          }
          try
          {
-            this._mc = MAP._BUILDINGTOPS.addChild(new MovieClip());
+            this._mc = MAP._BUILDINGTOPS.addChild(new MovieClip()) as MovieClip;
          }
          catch(e:Error)
          {
@@ -400,10 +448,13 @@ package
          }
          try
          {
-            this._mc.addChild(this._fortBackContainer);
-            this._mc.addChild(this.topContainer);
-            this._mc.addChild(this.animContainer);
-            this._mc.addChild(this._fortFrontContainer);
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               this._mc.addChild(this._fortBackContainer);
+               this._mc.addChild(this.topContainer);
+               this._mc.addChild(this.animContainer);
+               this._mc.addChild(this._fortFrontContainer);
+            }
          }
          catch(e:Error)
          {
@@ -413,7 +464,14 @@ package
          }
          try
          {
-            this._mcBase = MAP._BUILDINGBASES.addChild(new BuildingAssetContainer());
+            if(!BYMConfig.instance.RENDERER_ON)
+            {
+               this._mcBase = MAP._BUILDINGBASES.addChild(new BuildingAssetContainer()) as BuildingAssetContainer;
+            }
+            else
+            {
+               this._mcBase = new BuildingAssetContainer();
+            }
          }
          catch(e:Error)
          {
@@ -423,10 +481,22 @@ package
          }
          try
          {
-            this._mcHit = this._mc.addChild(this.GetHitMC());
-            this._mcHit.gotoAndStop(1);
-            this._mcHit.cacheAsBitmap = true;
-            this._mcHit.alpha = 0;
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               this._mcHit = this.GetHitMC();
+               this._mc.addChild(this._mcHit);
+               this._mcHit.gotoAndStop(1);
+               this._mcHit.cacheAsBitmap = true;
+               this._mcHit.alpha = 0;
+            }
+            else
+            {
+               this._mcHit = this.GetHitMC();
+               this._mc.addChild(this._mcHit);
+               this._mcHit.gotoAndStop(1);
+               this._mcHit.cacheAsBitmap = true;
+               this._mcHit.alpha = 0;
+            }
          }
          catch(e:Error)
          {
@@ -474,17 +544,20 @@ package
          this.anim3Container = new BuildingAssetContainer();
          this.anim3Container.mouseChildren = false;
          this.anim3Container.mouseEnabled = false;
-         this._mc.addChild(this.anim2Container);
-         this._mc.addChild(this.anim3Container);
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            this._mc.addChild(this.anim2Container);
+            this._mc.addChild(this.anim3Container);
+         }
       }
       
-      public function Bank() : *
+      public function Bank() : void
       {
       }
       
-      public function Description() : *
+      public function Description() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:Number = NaN;
          var _loc2_:int = 0;
          var _loc3_:Object = null;
          if(this._buildingProps.names != null && this._buildingProps.names.length >= this._lvl.Get())
@@ -633,9 +706,12 @@ package
          }
       }
       
-      public function RenderClear() : void
+      public function RenderClear(param1:Boolean = true) : void
       {
-         this._renderState = null;
+         if(param1)
+         {
+            this._renderState = null;
+         }
          this._mcBase.Clear();
          this.topContainer.Clear();
          this.animContainer.Clear();
@@ -643,9 +719,8 @@ package
          this.anim3Container.Clear();
       }
       
-      public function Render(param1:String = "") : *
+      public function Render(param1:String = "") : void
       {
-         var ImageCallback:Function;
          var FortImageCallback:Function;
          var imageDataA:Object = null;
          var imageDataB:Object = null;
@@ -655,278 +730,16 @@ package
          var fortImageLevel:int = 0;
          var i:int = 0;
          var loadImages:Array = null;
+         var length:uint = 0;
          var j:int = 0;
          var loadFortImages:Array = null;
          var state:String = param1;
-         if(this._renderState == null || state != this._renderState || this._lvl.Get() != this._renderLevel)
+         if(GLOBAL._catchup)
          {
-            ImageCallback = function(param1:Array, param2:String):*
-            {
-               var rect:Rectangle = null;
-               var image:Array = null;
-               var key:String = null;
-               var bmd:BitmapData = null;
-               var container:BuildingAssetContainer = null;
-               var s:DisplayObject = null;
-               var images:Array = param1;
-               var imagestate:String = param2;
-               if(imagestate == _renderState)
-               {
-                  _mcBase.Clear();
-                  topContainer.Clear();
-                  animContainer.Clear();
-                  anim2Container.Clear();
-                  anim3Container.Clear();
-                  if(_lastLoadedState != null)
-                  {
-                     if(state == "destroyed" && _lastLoadedState == "damaged")
-                     {
-                        if(_type == 14)
-                        {
-                           SOUNDS.Play("destroytownhall");
-                           if(_type != 17 && _type != 18)
-                           {
-                              Smoke.CreatePoof(new Point(x,y + _middle),_middle,1);
-                           }
-                        }
-                        else
-                        {
-                           SOUNDS.Play(SOUNDS.DestroySoundIDForLevel(_lvl.Get()));
-                           if(_type != 17 && _type != 18)
-                           {
-                              Smoke.CreatePoof(new Point(x,y + _middle),_middle,1);
-                           }
-                        }
-                        if(_class != "wall" && _class != "trap" && _type != 15)
-                        {
-                           Smoke.CreateStream(new Point(x,y + _middle));
-                        }
-                     }
-                     if(state == "damaged" && _lastLoadedState == "")
-                     {
-                        SOUNDS.Play(SOUNDS.DamageSoundIDForLevel(_lvl.Get()));
-                        if(_type != 17 && _type != 18)
-                        {
-                           Smoke.CreatePoof(new Point(x,y + _middle),_middle,0.5);
-                        }
-                     }
-                  }
-                  _lastLoadedState = state;
-                  _mc.removeEventListener(Event.ENTER_FRAME,TickFast);
-                  for each(image in images)
-                  {
-                     key = image[0];
-                     bmd = image[1];
-                     if(Boolean(imageDataB["shadow" + state]) && imageDataA.baseurl + imageDataB["shadow" + state][0] == key)
-                     {
-                        container = _mcBase;
-                        container.Clear();
-                        s = container.addChild(new Bitmap(bmd));
-                        s.blendMode = "multiply";
-                        s.x = imageDataB["shadow" + state][1].x;
-                        s.y = imageDataB["shadow" + state][1].y;
-                     }
-                     else if(Boolean(imageDataB["top" + state]) && imageDataA.baseurl + imageDataB["top" + state][0] == key)
-                     {
-                        container = topContainer;
-                        container.Clear();
-                        container.addChild(new Bitmap(bmd));
-                        container.x = imageDataB["top" + state][1].x;
-                        container.y = imageDataB["top" + state][1].y;
-                        try
-                        {
-                           if(MovieClipUtils.validateFrameLabel(_mcHit as MovieClip,"f" + imageLevel + state))
-                           {
-                              _mcHit.gotoAndStop("f" + imageLevel + state);
-                           }
-                        }
-                        catch(e:Error)
-                        {
-                        }
-                        if(state == "destroyed" && _type != 14)
-                        {
-                           if(MovieClipUtils.validateFrameLabel(_mcHit as MovieClip,"f" + state))
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           else
-                           {
-                              print("BFOUNDATION.ImageCallback building has no hit 1 " + _type + " frame f" + state);
-                           }
-                        }
-                        _mcHit.x = container.x;
-                        _mcHit.y = container.y;
-                     }
-                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == key)
-                     {
-                        _animBMD = bmd;
-                        _animLoaded = true;
-                        container = animContainer;
-                        container.Clear();
-                        rect = imageDataB["anim" + state][1];
-                        _animRect = new Rectangle(0,0,rect.width,rect.height);
-                        _animFrames = imageDataB["anim" + state][2];
-                        if(_animRandomStart)
-                        {
-                           _animTick = int(Math.random() * (_animFrames - 2));
-                        }
-                        else
-                        {
-                           _animTick = 0;
-                        }
-                        if(_type == 9 || _type == 19 || _type == 25 || _type == 54)
-                        {
-                           _animTick = 0;
-                        }
-                        _animContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
-                        container.addChild(new Bitmap(_animContainerBMD));
-                        container.x = rect.x;
-                        container.y = rect.y;
-                        AnimFrame(false);
-                        _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        if(!imageDataB["top" + state])
-                        {
-                           try
-                           {
-                              _mcHit.gotoAndStop("f" + imageLevel + state);
-                           }
-                           catch(e:Error)
-                           {
-                           }
-                           if(state == "destroyed" && _type != 14)
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = container.x;
-                           _mcHit.y = container.y;
-                        }
-                     }
-                     else if(Boolean(imageDataB["anim2" + state]) && imageDataA.baseurl + imageDataB["anim2" + state][0] == key)
-                     {
-                        _anim2BMD = bmd;
-                        _anim2Loaded = true;
-                        container = anim2Container;
-                        container.Clear();
-                        rect = imageDataB["anim2" + state][1];
-                        _anim2Rect = new Rectangle(0,0,rect.width,rect.height);
-                        _anim2Frames = imageDataB["anim2" + state][2];
-                        if(_animRandomStart)
-                        {
-                           _anim2Tick = int(Math.random() * (_anim2Frames - 2));
-                        }
-                        else
-                        {
-                           _anim2Tick = 0;
-                        }
-                        _anim2ContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
-                        container.addChild(new Bitmap(_anim2ContainerBMD));
-                        container.x = rect.x;
-                        container.y = rect.y;
-                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
-                        {
-                           AnimFrame(false);
-                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        }
-                        if(!imageDataB["top" + state])
-                        {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
-                           if(state == "destroyed")
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = container.x;
-                           _mcHit.y = container.y;
-                        }
-                     }
-                     else if(Boolean(imageDataB["anim3" + state]) && imageDataA.baseurl + imageDataB["anim3" + state][0] == key)
-                     {
-                        _anim3BMD = bmd;
-                        _anim3Loaded = true;
-                        container = anim3Container;
-                        container.Clear();
-                        rect = imageDataB["anim3" + state][1];
-                        _anim3Rect = new Rectangle(0,0,rect.width,rect.height);
-                        _anim3Frames = imageDataB["anim3" + state][2];
-                        if(_animRandomStart)
-                        {
-                           _anim3Tick = int(Math.random() * (_anim3Frames - 2));
-                        }
-                        else
-                        {
-                           _anim3Tick = 0;
-                        }
-                        _anim3ContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
-                        container.addChild(new Bitmap(_anim3ContainerBMD));
-                        container.x = rect.x;
-                        container.y = rect.y;
-                        if(_animLoaded && _anim2Loaded && _anim3Loaded)
-                        {
-                           AnimFrame(false);
-                           _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        }
-                        if(!imageDataB["top" + state])
-                        {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
-                           if(state == "destroyed")
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = container.x;
-                           _mcHit.y = container.y;
-                        }
-                     }
-                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == key)
-                     {
-                        _animBMD = bmd;
-                        _animLoaded = true;
-                        container = animContainer;
-                        container.Clear();
-                        rect = imageDataB["anim" + state][1];
-                        _animRect = new Rectangle(0,0,rect.width,rect.height);
-                        _animFrames = imageDataB["anim" + state][2];
-                        if(_animRandomStart)
-                        {
-                           _animTick = int(Math.random() * (_animFrames - 2));
-                        }
-                        else
-                        {
-                           _animTick = 0;
-                        }
-                        if(_type == 9 || _type == 19 || _type == 25 || _type == 54)
-                        {
-                           _animTick = 0;
-                        }
-                        _animContainerBMD = new BitmapData(rect.width,rect.height,true,0xffffff);
-                        container.addChild(new Bitmap(_animContainerBMD));
-                        container.x = rect.x;
-                        container.y = rect.y;
-                        AnimFrame(false);
-                        _mc.addEventListener(Event.ENTER_FRAME,TickFast);
-                        if(!imageDataB["top" + state])
-                        {
-                           try
-                           {
-                              _mcHit.gotoAndStop("f" + imageLevel + state);
-                           }
-                           catch(e:Error)
-                           {
-                           }
-                           if(state == "destroyed" && _type != 14)
-                           {
-                              _mcHit.gotoAndStop("f" + state);
-                           }
-                           _mcHit.x = container.x;
-                           _mcHit.y = container.y;
-                        }
-                     }
-                     else if(imageDataB.topdestroyedfire && _oldRenderState == "damaged" && !GLOBAL._catchup && imageDataA.baseurl + imageDataB.topdestroyedfire[0] == key)
-                     {
-                        Fire.Add(_mc,new Bitmap(bmd),new Point(imageDataB.topdestroyedfire[1].x,imageDataB.topdestroyedfire[1].y));
-                     }
-                  }
-               }
-               AnimFrame();
-            };
+            return;
+         }
+         if(this._renderState == null || state !== this._renderState || this._lvl.Get() != this._renderLevel)
+         {
             this._renderLevel = this._lvl.Get();
             imageDataA = GLOBAL._buildingProps[this._type - 1].imageData;
             if(this._lvl.Get() == 0)
@@ -958,32 +771,22 @@ package
             if(imageDataB)
             {
                loadImages = [];
-               if(!imageDataB["top" + state])
+               if(!imageDataB[_IMAGE_NAMES[_RASTERDATA_TOP] + state])
                {
                   state = "";
                }
-               if(imageDataB["top" + state])
+               length = _IMAGE_NAMES.length;
+               i = 0;
+               while(i < length)
                {
-                  loadImages.push(imageDataA.baseurl + imageDataB["top" + state][0]);
-               }
-               if(imageDataB["shadow" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["shadow" + state][0]);
-               }
-               if(imageDataB["anim" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim" + state][0]);
-               }
-               if(imageDataB["anim2" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim2" + state][0]);
-               }
-               if(imageDataB["anim3" + state])
-               {
-                  loadImages.push(imageDataA.baseurl + imageDataB["anim3" + state][0]);
+                  if(imageDataB[_IMAGE_NAMES[i] + state])
+                  {
+                     loadImages.push(imageDataA.baseurl + imageDataB[_IMAGE_NAMES[i] + state][0]);
+                  }
+                  i++;
                }
                this._animLoaded = false;
-               if(state == "damaged" || state == "destroyed")
+               if(state === k_STATE_DAMAGED || state === k_STATE_DESTROYED)
                {
                   this._anim2Loaded = true;
                   this._anim3Loaded = true;
@@ -993,7 +796,8 @@ package
                   this._anim2Loaded = false;
                   this._anim3Loaded = false;
                }
-               ImageCache.GetImageGroupWithCallBack(BASE._yardType + "b" + this._type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
+               this._imageCallbackHelpers.push(new ImageCallbackHelper(this.ImageCallback,state,imageLevel,imageDataA,imageDataB));
+               ImageCache.GetImageGroupWithCallBack(BASE._yardType + "b" + this._type + "-" + imageLevel + state,loadImages,this.ImageCallback,true,2,state);
             }
          }
          if(this._fortification.Get() != this._renderFortLevel)
@@ -1026,7 +830,7 @@ package
             }
             if(fortImageDataB)
             {
-               FortImageCallback = function(param1:Array, param2:String):*
+               FortImageCallback = function(param1:Array, param2:String):void
                {
                   var _loc3_:Array = null;
                   var _loc4_:String = null;
@@ -1042,19 +846,41 @@ package
                         _loc5_ = _loc3_[1];
                         if(Boolean(fortImageDataB["front"]) && fortImageDataA.baseurl + fortImageDataB["front"][0] == _loc4_)
                         {
-                           _loc6_ = _fortFrontContainer;
-                           _loc6_.Clear();
-                           _loc6_.addChild(new Bitmap(_loc5_));
-                           _loc6_.x = fortImageDataB["front"][1].x;
-                           _loc6_.y = fortImageDataB["front"][1].y;
+                           if(!BYMConfig.instance.RENDERER_ON)
+                           {
+                              _loc6_ = _fortFrontContainer;
+                              _loc6_.Clear();
+                              _loc6_.addChild(new Bitmap(_loc5_));
+                              _loc6_.x = fortImageDataB["front"][1].x;
+                              _loc6_.y = fortImageDataB["front"][1].y;
+                           }
+                           else
+                           {
+                              _offsets[_RASTERDATA_FORTFRONT].x = fortImageDataB["front"][1].x;
+                              _offsets[_RASTERDATA_FORTFRONT].y = fortImageDataB["front"][1].y;
+                              _rasterPt[_RASTERDATA_FORTFRONT].x = _mc.x + _offsets[_RASTERDATA_FORTFRONT].x - MAP.instance.offset.x;
+                              _rasterPt[_RASTERDATA_FORTFRONT].y = _mc.y + _offsets[_RASTERDATA_FORTFRONT].y - MAP.instance.offset.y;
+                              _rasterData[_RASTERDATA_FORTFRONT] = _rasterData[_RASTERDATA_FORTFRONT] || new RasterData(_loc5_,_rasterPt[_RASTERDATA_FORTFRONT],int.MAX_VALUE);
+                           }
                         }
                         else if(Boolean(fortImageDataB["back"]) && fortImageDataA.baseurl + fortImageDataB["back"][0] == _loc4_)
                         {
-                           _loc6_ = _fortBackContainer;
-                           _loc6_.Clear();
-                           _loc6_.addChild(new Bitmap(_loc5_));
-                           _loc6_.x = fortImageDataB["back"][1].x;
-                           _loc6_.y = fortImageDataB["back"][1].y;
+                           if(!BYMConfig.instance.RENDERER_ON)
+                           {
+                              _loc6_ = _fortBackContainer;
+                              _loc6_.Clear();
+                              _loc6_.addChild(new Bitmap(_loc5_));
+                              _loc6_.x = fortImageDataB["back"][1].x;
+                              _loc6_.y = fortImageDataB["back"][1].y;
+                           }
+                           else
+                           {
+                              _offsets[_RASTERDATA_FORTBACK].x = fortImageDataB["back"][1].x;
+                              _offsets[_RASTERDATA_FORTBACK].y = fortImageDataB["back"][1].y;
+                              _rasterPt[_RASTERDATA_FORTBACK].x = _mc.x + _offsets[_RASTERDATA_FORTBACK].x - MAP.instance.offset.x;
+                              _rasterPt[_RASTERDATA_FORTBACK].y = _mc.y + _offsets[_RASTERDATA_FORTBACK].y - MAP.instance.offset.y;
+                              _rasterData[_RASTERDATA_FORTBACK] = _rasterData[_RASTERDATA_FORTBACK] || new RasterData(_loc5_,_rasterPt[_RASTERDATA_FORTBACK],int.MAX_VALUE);
+                           }
                         }
                      }
                   }
@@ -1070,6 +896,330 @@ package
                }
                ImageCache.GetImageGroupWithCallBack("fort" + this._type + "-" + fortImageLevel,loadFortImages,FortImageCallback,true,2,"fort" + this._renderFortLevel);
             }
+         }
+         this.updateRasterData();
+      }
+      
+      protected function ImageCallback(param1:Array, param2:String) : void
+      {
+         var _loc4_:ImageCallbackHelper = null;
+         var _loc5_:Boolean = false;
+         var _loc6_:int = 0;
+         var _loc11_:Array = null;
+         var _loc12_:String = null;
+         var _loc13_:BitmapData = null;
+         var _loc14_:BuildingAssetContainer = null;
+         var _loc15_:Rectangle = null;
+         var _loc16_:DisplayObject = null;
+         var _loc17_:BitmapData = null;
+         var _loc18_:Rectangle = null;
+         _loc6_ = int(this._imageCallbackHelpers.length - 1);
+         while(_loc6_ >= 0)
+         {
+            _loc4_ = this._imageCallbackHelpers[_loc6_];
+            if(_loc4_.ref === arguments.callee)
+            {
+               this._imageCallbackHelpers.splice(_loc6_,1);
+               _loc5_ = true;
+            }
+            _loc6_--;
+         }
+         if(!_loc5_)
+         {
+            return;
+         }
+         var _loc7_:String = _loc4_.state;
+         var _loc8_:int = _loc4_.level;
+         var _loc9_:Object = _loc4_.imageDataA;
+         var _loc10_:Object = _loc4_.imageDataB;
+         _loc4_.clear();
+         if(param2 == this._renderState)
+         {
+            this.RenderClear(false);
+            if(this._lastLoadedState != null)
+            {
+               if(_loc7_ === k_STATE_DESTROYED && this._lastLoadedState === k_STATE_DAMAGED)
+               {
+                  if(this._type == 14)
+                  {
+                     SOUNDS.Play("destroytownhall");
+                     if(this._type != 17 && this._type != 18)
+                     {
+                        Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,1);
+                     }
+                  }
+                  else
+                  {
+                     SOUNDS.Play(SOUNDS.DestroySoundIDForLevel(this._lvl.Get()));
+                     if(this._type != 17 && this._type != 18)
+                     {
+                        Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,1);
+                     }
+                  }
+                  if(this._class != "wall" && this._class != "trap" && this._type != 15)
+                  {
+                     Smoke.CreateStream(new Point(this.x,this.y + this._middle));
+                  }
+               }
+               if(_loc7_ == "damaged" && this._lastLoadedState == "")
+               {
+                  SOUNDS.Play(SOUNDS.DamageSoundIDForLevel(this._lvl.Get()));
+                  if(this._type != 17 && this._type != 18)
+                  {
+                     Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,0.5);
+                  }
+               }
+            }
+            this._lastLoadedState = _loc7_;
+            this._mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
+            for each(_loc11_ in param1)
+            {
+               _loc12_ = _loc11_[0];
+               _loc13_ = _loc11_[1];
+               if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][0] == _loc12_)
+               {
+                  if(!BYMConfig.instance.RENDERER_ON)
+                  {
+                     _loc14_ = BuildingAssetContainer(this._mcBase);
+                     _loc14_.Clear();
+                     _loc16_ = _loc14_.addChild(new Bitmap(_loc13_));
+                     _loc16_.blendMode = BlendMode.MULTIPLY;
+                     _loc16_.x = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].x;
+                     _loc16_.y = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].y;
+                  }
+                  else
+                  {
+                     this._offsets[_RASTERDATA_SHADOW].x = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].x;
+                     this._offsets[_RASTERDATA_SHADOW].y = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].y;
+                     this._rasterPt[_RASTERDATA_SHADOW].x = this._mc.x + this._offsets[_RASTERDATA_SHADOW].x - MAP.instance.offset.x;
+                     this._rasterPt[_RASTERDATA_SHADOW].y = this._mc.y + this._offsets[_RASTERDATA_SHADOW].y - MAP.instance.offset.y;
+                     _loc17_ = _loc17_ = new BitmapData(_loc13_.width,_loc13_.height,true);
+                     _loc18_ = new Rectangle(this._rasterPt[_RASTERDATA_SHADOW].x,this._rasterPt[_RASTERDATA_SHADOW].y,_loc17_.width,_loc17_.height);
+                     _loc17_.copyPixels(MAP.effectsBMD,_loc18_,new Point());
+                     _loc17_.draw(_loc13_,null,null,BlendMode.MULTIPLY);
+                     this._rasterData[_RASTERDATA_SHADOW] = this._rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc17_,this._rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW);
+                     this._rasterData[_RASTERDATA_SHADOW].visible = this._mcBase.visible;
+                  }
+               }
+               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_][0] == _loc12_)
+               {
+                  this.setupImage(_RASTERDATA_TOP,_loc7_,this.topContainer,_loc10_,_loc13_,int.MAX_VALUE);
+                  this.setupHit(_RASTERDATA_TOP,_loc8_,_loc7_);
+               }
+               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][0] == _loc12_)
+               {
+                  this._animBMD = _loc13_;
+                  this._animLoaded = true;
+                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][1];
+                  this._animRect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
+                  this._animFrames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][2];
+                  if(this._animRandomStart)
+                  {
+                     this._animTick = int(Math.random() * (this._animFrames - 2));
+                  }
+                  else
+                  {
+                     this._animTick = 0;
+                  }
+                  if(this._type == 9 || this._type == 19 || this._type == 25 || this._type == 54)
+                  {
+                     this._animTick = 0;
+                  }
+                  this._animContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM,_loc7_,this.animContainer,_loc10_,this._animContainerBMD,int.MAX_VALUE);
+                  this.AnimFrame(false);
+                  this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  {
+                     this.setupHit(_RASTERDATA_ANIM,_loc8_,_loc7_);
+                  }
+               }
+               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][0] == _loc12_)
+               {
+                  this._anim2BMD = _loc13_;
+                  this._anim2Loaded = true;
+                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][1];
+                  this._anim2Rect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
+                  this._anim2Frames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][2];
+                  if(this._animRandomStart)
+                  {
+                     this._anim2Tick = int(Math.random() * (this._anim2Frames - 2));
+                  }
+                  else
+                  {
+                     this._anim2Tick = 0;
+                  }
+                  this._anim2ContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM2,_loc7_,this.anim2Container,_loc10_,this._anim2ContainerBMD,int.MAX_VALUE);
+                  if(this._animLoaded && this._anim2Loaded && this._anim3Loaded)
+                  {
+                     this.AnimFrame(false);
+                     this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                  }
+                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  {
+                     this.setupHit(_RASTERDATA_ANIM2,_loc8_,_loc7_);
+                  }
+               }
+               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][0] == _loc12_)
+               {
+                  this._anim3BMD = _loc13_;
+                  this._anim3Loaded = true;
+                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][1];
+                  this._anim3Rect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
+                  this._anim3Frames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][2];
+                  if(this._animRandomStart)
+                  {
+                     this._anim3Tick = int(Math.random() * (this._anim3Frames - 2));
+                  }
+                  else
+                  {
+                     this._anim3Tick = 0;
+                  }
+                  this._anim3ContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM3,_loc7_,this.anim3Container,_loc10_,this._anim3ContainerBMD,int.MAX_VALUE);
+                  if(this._animLoaded && this._anim2Loaded && this._anim3Loaded)
+                  {
+                     this.AnimFrame(false);
+                     this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                  }
+                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  {
+                     this.setupHit(_RASTERDATA_ANIM3,_loc8_,_loc7_);
+                  }
+               }
+               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][0] == _loc12_)
+               {
+                  this._animBMD = _loc13_;
+                  this._animLoaded = true;
+                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][1];
+                  this._animRect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
+                  this._animFrames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][2];
+                  if(this._animRandomStart)
+                  {
+                     this._animTick = int(Math.random() * (this._animFrames - 2));
+                  }
+                  else
+                  {
+                     this._animTick = 0;
+                  }
+                  if(this._type == 9 || this._type == 19 || this._type == 25 || this._type == 54)
+                  {
+                     this._animTick = 0;
+                  }
+                  this._animContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM,_loc7_,this.animContainer,_loc10_,this._animContainerBMD,int.MAX_VALUE);
+                  this.AnimFrame(false);
+                  this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  {
+                     this.setupHit(_RASTERDATA_ANIM,_loc8_,_loc7_);
+                  }
+               }
+               else if(_loc10_.topdestroyedfire && this._oldRenderState == "damaged" && !GLOBAL._catchup && _loc9_.baseurl + _loc10_.topdestroyedfire[0] == _loc12_)
+               {
+                  Fire.Add(this._mc,new Bitmap(_loc13_),new Point(_loc10_.topdestroyedfire[1].x,_loc10_.topdestroyedfire[1].y));
+               }
+            }
+         }
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            if(!this._animLoaded && Boolean(this._rasterData[_RASTERDATA_ANIM]))
+            {
+               this._rasterData[_RASTERDATA_ANIM].clear();
+               this._rasterData[_RASTERDATA_ANIM] = null;
+            }
+            if(!this._anim2Loaded && Boolean(this._rasterData[_RASTERDATA_ANIM2]))
+            {
+               this._rasterData[_RASTERDATA_ANIM2].clear();
+               this._rasterData[_RASTERDATA_ANIM2] = null;
+            }
+            if(!this._anim3Loaded && Boolean(this._rasterData[_RASTERDATA_ANIM3]))
+            {
+               this._rasterData[_RASTERDATA_ANIM3].clear();
+               this._rasterData[_RASTERDATA_ANIM3] = null;
+            }
+         }
+         this.AnimFrame();
+      }
+      
+      protected function setupImage(param1:uint, param2:String, param3:BuildingAssetContainer, param4:Object, param5:BitmapData, param6:Number) : void
+      {
+         this._offsets[param1].x = param4[_IMAGE_NAMES[param1] + param2][1].x;
+         this._offsets[param1].y = param4[_IMAGE_NAMES[param1] + param2][1].y;
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            param3.Clear();
+            param3.addChild(new Bitmap(param5));
+            param3.x = this._offsets[param1].x;
+            param3.y = this._offsets[param1].y;
+         }
+         else
+         {
+            this._rasterPt[param1].x = this._mc.x + this._offsets[param1].x - MAP.instance.offset.x;
+            this._rasterPt[param1].y = this._mc.y + this._offsets[param1].y - MAP.instance.offset.y;
+            this._rasterData[param1] = this._rasterData[param1] || new RasterData(param5,this._rasterPt[param1],int.MAX_VALUE);
+            this._rasterData[param1].data = param5;
+            this._rasterData[param1].visible = this._mc.visible;
+         }
+      }
+      
+      protected function setupHit(param1:uint, param2:int, param3:String) : void
+      {
+         if(MovieClipUtils.validateFrameLabel(this._mcHit as MovieClip,"f" + param2 + param3))
+         {
+            this._mcHit.gotoAndStop("f" + param2 + param3);
+         }
+         if(param3 == "destroyed" && this._type !== 14)
+         {
+            if(MovieClipUtils.validateFrameLabel(this._mcHit as MovieClip,"f" + param3))
+            {
+               this._mcHit.gotoAndStop("f" + param3);
+            }
+            else
+            {
+               print("BFOUNDATION.ImageCallback building has no hit 1 " + this._type + " frame f" + param3);
+            }
+         }
+         this._mcHit.x = this._offsets[param1].x;
+         this._mcHit.y = this._offsets[param1].y;
+      }
+      
+      public function showFootprint(param1:Boolean) : void
+      {
+         if(this._mcFootprint)
+         {
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               this._rasterPt[_RASTERDATA_FOOTPRINT].x = this._mcFootprint.x - MAP.instance.offset.x;
+               this._rasterPt[_RASTERDATA_FOOTPRINT].y = this._mcFootprint.y - MAP.instance.offset.y;
+               this._rasterData[_RASTERDATA_FOOTPRINT] = this._rasterData[_RASTERDATA_FOOTPRINT] || new RasterData(this._mcFootprint,this._rasterPt[_RASTERDATA_FOOTPRINT],MAP.DEPTH_SHADOW + 1);
+            }
+            else
+            {
+               this._mcFootprint.visible = true;
+            }
+         }
+         if(param1)
+         {
+            this.BlockClicks();
+         }
+      }
+      
+      public function hideFootprint(param1:Boolean) : void
+      {
+         if(GLOBAL._selectedBuilding != this)
+         {
+            if(BYMConfig.instance.RENDERER_ON && Boolean(this._rasterData[_RASTERDATA_FOOTPRINT]))
+            {
+               this._rasterData[_RASTERDATA_FOOTPRINT].clear();
+               this._rasterData[_RASTERDATA_FOOTPRINT] = null;
+            }
+            this._mcFootprint.visible = false;
+         }
+         if(param1)
+         {
+            this.UnblockClicks();
          }
       }
       
@@ -1146,98 +1296,145 @@ package
          this.Update();
       }
       
-      public function TickFast(param1:Event = null) : *
+      protected function updateRasterData() : void
       {
-      }
-      
-      public function TickAttack() : *
-      {
-      }
-      
-      public function AnimFrame(param1:Boolean = true) : *
-      {
-         var increment:Boolean = param1;
-         try
+         var _loc2_:Number = NaN;
+         var _loc3_:Number = NaN;
+         var _loc4_:int = 0;
+         if(!BYMConfig.instance.RENDERER_ON)
          {
-            if(!GLOBAL._catchup && Boolean(this._animBMD))
+            return;
+         }
+         var _loc1_:Point = MAP.instance.offset;
+         if(this._mcBase && this._rasterData && Boolean(this._rasterData[_RASTERDATA_SHADOW]))
+         {
+            this._rasterPt[_RASTERDATA_SHADOW].x = this._mcBase.x + this._offsets[_RASTERDATA_SHADOW].x - _loc1_.x;
+            this._rasterPt[_RASTERDATA_SHADOW].y = this._mcBase.y + this._offsets[_RASTERDATA_SHADOW].y - _loc1_.y;
+            this._rasterData[_RASTERDATA_SHADOW].visible = this._mcBase.visible;
+         }
+         if(this._mc)
+         {
+            _loc2_ = this._mc.height * 0.5;
+            if(this._mc.middle)
             {
-               this._animRect.x = this._animRect.width * this._animTick;
-               this._animContainerBMD.copyPixels(this._animBMD,this._animRect,this._nullPoint);
-               if(increment)
+               _loc2_ = Number(this._mc._middle);
+            }
+            _loc3_ = Math.max(MAP.DEPTH_SHADOW + 1,(this._mc.y - _loc1_.y + _loc2_) * 1000 + (this._mc.x - _loc1_.x));
+            _loc4_ = _RASTERDATA_SHADOW + 1;
+            while(_loc4_ < _RASTERDATA_AMOUNT)
+            {
+               if(Boolean(this._rasterData[_loc4_]) && Boolean(this._rasterPt[_loc4_]))
                {
-                  if(this._class == "resource")
+                  this._rasterData[_loc4_].depth = _loc4_ === _RASTERDATA_FORTBACK ? _loc3_ - 1 : _loc3_ + _loc4_ - 1;
+                  this._rasterData[_loc4_].visible = this._mc.visible;
+                  this._rasterPt[_loc4_].x = this._mc.x + this._offsets[_loc4_].x - _loc1_.x;
+                  this._rasterPt[_loc4_].y = this._mc.y + this._offsets[_loc4_].y - _loc1_.y;
+               }
+               _loc4_++;
+            }
+         }
+      }
+      
+      public function TickFast(param1:Event = null) : void
+      {
+      }
+      
+      public function TickAttack() : void
+      {
+      }
+      
+      public function AnimFrame(param1:Boolean = true) : void
+      {
+         var _loc2_:Boolean = false;
+         if(!GLOBAL._catchup && Boolean(this._animBMD))
+         {
+            this._animRect.x = this._animRect.width * this._animTick;
+            this._animContainerBMD.copyPixels(this._animBMD,this._animRect,this._nullPoint);
+            _loc2_ = true;
+            if(param1)
+            {
+               if(this._class == "resource")
+               {
+                  if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
                   {
-                     if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
-                     {
-                        this._animTick += GLOBAL._harvesterOverdrivePower.Get();
-                     }
-                     else
-                     {
-                        ++this._animTick;
-                     }
+                     this._animTick += GLOBAL._harvesterOverdrivePower.Get();
                   }
                   else
                   {
                      ++this._animTick;
                   }
-                  if(this._animTick >= this._animFrames)
-                  {
-                     this._animTick = 0;
-                  }
                }
-            }
-            if(!GLOBAL._catchup && Boolean(this._anim2BMD))
-            {
-               this._anim2Rect.x = this._anim2Rect.width * this._anim2Tick;
-               this._anim2ContainerBMD.copyPixels(this._anim2BMD,this._anim2Rect,this._nullPoint);
-               if(increment)
+               else
                {
-                  ++this._anim2Tick;
-                  if(this._anim2Tick >= this._anim2Frames)
-                  {
-                     this._anim2Tick = 0;
-                  }
+                  ++this._animTick;
                }
-            }
-            if(!GLOBAL._catchup && Boolean(this._anim3BMD))
-            {
-               this._anim3Rect.x = this._anim3Rect.width * this._anim3Tick;
-               this._anim3ContainerBMD.copyPixels(this._anim3BMD,this._anim3Rect,this._nullPoint);
-               if(increment)
+               if(this._animTick >= this._animFrames)
                {
-                  ++this._anim3Tick;
-                  if(this._anim3Tick >= this._anim3Frames)
-                  {
-                     this._anim3Tick = 0;
-                  }
+                  this._animTick = 0;
                }
             }
          }
-         catch(e:Error)
+         if(!GLOBAL._catchup && Boolean(this._anim2BMD))
          {
+            this._anim2Rect.x = this._anim2Rect.width * this._anim2Tick;
+            this._anim2ContainerBMD.copyPixels(this._anim2BMD,this._anim2Rect,this._nullPoint);
+            _loc2_ = true;
+            if(param1)
+            {
+               ++this._anim2Tick;
+               if(this._anim2Tick >= this._anim2Frames)
+               {
+                  this._anim2Tick = 0;
+               }
+            }
+         }
+         if(!GLOBAL._catchup && Boolean(this._anim3BMD))
+         {
+            this._anim3Rect.x = this._anim3Rect.width * this._anim3Tick;
+            this._anim3ContainerBMD.copyPixels(this._anim3BMD,this._anim3Rect,this._nullPoint);
+            _loc2_ = true;
+            if(param1)
+            {
+               ++this._anim3Tick;
+               if(this._anim3Tick >= this._anim3Frames)
+               {
+                  this._anim3Tick = 0;
+               }
+            }
+         }
+         if(_loc2_)
+         {
+            this.updateRasterData();
          }
       }
       
-      public function Instructions() : *
+      public function Instructions() : void
       {
          this._buildingInstructions += KEYS.Get("building_instructions");
       }
       
-      public function FollowMouse() : *
+      public function FollowMouse() : void
       {
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            this.showFootprint(true);
+         }
+         this.updateRasterData();
          this._mc.addEventListener(Event.ENTER_FRAME,this.FollowMouseB);
          MAP._GROUND.addEventListener(MouseEvent.MOUSE_UP,this.Place);
          this._mc.addEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
-         this.Render("");
+         this.Render(k_STATE_DEFAULT);
       }
       
-      public function FollowMouseB(param1:Event = null) : *
+      public function FollowMouseB(param1:Event = null) : void
       {
-         var _loc2_:* = BASE.BuildBlockers(this,this._class == "decoration");
+         var _loc2_:String = BASE.BuildBlockers(this,this._class == "decoration");
          this._mc.x = int((MAP._GROUND.mouseX - this._mouseOffset.x) / 10) * 10;
          this._mc.y = int((MAP._GROUND.mouseY - this._mouseOffset.y) / 5) * 5;
          this._mcBase.x = this._mc.x;
          this._mcBase.y = this._mc.y;
+         this.showFootprint(false);
+         this.updateRasterData();
          if(this._mcFootprint)
          {
             this._mcFootprint.x = this._mc.x;
@@ -1251,10 +1448,13 @@ package
                this._mcFootprint.gotoAndStop(1);
             }
          }
-         MAP.SortDepth(false,true);
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            MAP.SortDepth();
+         }
       }
       
-      public function Cancel() : *
+      public function Cancel() : void
       {
          GLOBAL._newBuilding = null;
          this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
@@ -1273,9 +1473,31 @@ package
             MAP._BUILDINGFOOTPRINTS.removeChild(this._mcFootprint);
          }
          BASE.BuildingDeselect();
+         this.clearRasterData();
       }
       
-      public function Place(param1:MouseEvent = null) : *
+      protected function clearRasterData() : void
+      {
+         var _loc1_:RasterData = null;
+         var _loc2_:int = 0;
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            return;
+         }
+         _loc2_ = int(this._rasterData.length - 1);
+         while(_loc2_ >= 0)
+         {
+            _loc1_ = this._rasterData[_loc2_];
+            if(_loc1_)
+            {
+               _loc1_.clear();
+            }
+            this._rasterData[_loc2_] = null;
+            _loc2_--;
+         }
+      }
+      
+      public function Place(param1:MouseEvent = null) : void
       {
          var BragBiggulp:Function;
          var BragTotem:Function;
@@ -1290,249 +1512,248 @@ package
             this.Description();
             if(!MAP._dragged)
             {
-               if(BASE.BuildBlockers(this,this._class == "decoration") == "")
+               if(BASE.BuildBlockers(this,this._class == "decoration") != "")
                {
-                  if(BASE.isInferno())
-                  {
-                     SOUNDS.Play("inf_buildingplace");
-                  }
-                  else
-                  {
-                     SOUNDS.Play("buildingplace");
-                  }
-                  GLOBAL._newBuilding = null;
-                  this._mc.alpha = 1;
-                  this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
-                  MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
-                  this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
-                  if(BASE.CanBuild(this._type,this._buildInstant).error)
-                  {
-                     this.Cancel();
-                     return false;
-                  }
-                  if(this._buildInstant)
-                  {
-                     if(!this._buildInstantCost)
-                     {
-                        this.Cancel();
-                        return false;
-                     }
-                     if(BASE._credits.Get() < this._buildInstantCost.Get())
-                     {
-                        this.Cancel();
-                        POPUPS.DisplayGetShiny();
-                        return false;
-                     }
-                  }
-                  this._hasResources = false;
-                  this._hasWorker = false;
-                  ++BASE._buildingCount;
-                  this._id = BASE._buildingCount;
-                  tmpBuildTime = int(this._buildingProps.costs[0].time);
-                  if(STORE._storeData.BST)
-                  {
-                     tmpBuildTime -= tmpBuildTime * 0.2;
-                  }
-                  this._countdownBuild.Set(tmpBuildTime);
-                  this._hp.Set(this._buildingProps.hp[0]);
-                  this._hpMax.Set(this._hp.Get());
-                  this.PlaceB();
-                  this._mc.removeChild(this._mcHit);
-                  this._mc.addChild(this._mcHit);
-                  this.Tick(1);
-                  this.Update();
-                  this.Description();
-                  fromStorage = BASE.BuildingStorageRemove(this._type);
-                  if(!fromStorage)
-                  {
-                     if(!this._buildInstant)
-                     {
-                        isInfernoBuilding = BASE.isInfernoBuilding(this._type);
-                        BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
-                        BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
-                        BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
-                        BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
-                        if(STORE._storeItems["BUILDING" + this._type])
-                        {
-                           BASE.Purchase("BUILDING" + this._type,1,"building");
-                        }
-                        if(this._buildingProps.costs[0].time != 0 && BASE.BuildingStorageCount(this._type) == 0)
-                        {
-                           QUEUE.Add("building" + this._id,this);
-                        }
-                     }
-                     else
-                     {
-                        BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
-                        LOGGER.Stat([71,this._buildInstantCost.Get(),this._type]);
-                        this.Constructed();
-                     }
-                  }
-                  else
-                  {
-                     this.Constructed();
-                     if(this._type == 2 * 60)
-                     {
-                        LOGGER.Stat([75,"placedgoldenbiggulp"]);
-                     }
-                     if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
-                     {
-                        BragBiggulp = function():*
-                        {
-                           GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
-                           POPUPS.Next();
-                        };
-                        BragTotem = function(param1:int):*
-                        {
-                           var totemType:int = param1;
-                           return function(param1:MouseEvent = null):*
-                           {
-                              loop0:
-                              switch(totemType)
-                              {
-                                 case 121:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.1.png"]);
-                                    break;
-                                 case 122:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
-                                    break;
-                                 case 123:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
-                                    break;
-                                 case 124:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
-                                    break;
-                                 case 125:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
-                                    break;
-                                 case 126:
-                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
-                                    break;
-                                 case 131:
-                                    switch(_lvl.Get())
-                                    {
-                                       case 1:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
-                                          break loop0;
-                                       case 2:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
-                                          break loop0;
-                                       case 3:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
-                                          break loop0;
-                                       case 4:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
-                                          break loop0;
-                                       case 5:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
-                                          break loop0;
-                                       case 6:
-                                          GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
-                                    }
-                              }
-                              POPUPS.Next();
-                           };
-                        };
-                        if(BASE.is711Valid())
-                        {
-                           if(this._type == 2 * 60)
-                           {
-                              mc = new popup_biggulp();
-                              mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
-                              mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
-                              mc.bPost.SetupKey("btn_brag");
-                              mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
-                              mc.bPost.Highlight = true;
-                              POPUPS.Push(mc,null,null,null,"building-biggulp.png");
-                           }
-                        }
-                        if(BTOTEM.IsTotem(this._type))
-                        {
-                           mc = new popup_biggulp();
-                           mc.tA.htmlText = "<b>" + KEYS.Get("wmi_totemwon") + "</b>";
-                           mc.tB.htmlText = "";
-                           mc.bPost.SetupKey("btn_brag");
-                           mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
-                           mc.bPost.Highlight = true;
-                           totemImgUrl = "";
-                           switch(this._type)
-                           {
-                              case 121:
-                                 totemImgUrl = "building-wmitotem1.png";
-                                 break;
-                              case 122:
-                                 totemImgUrl = "building-wmitotem2.png";
-                                 break;
-                              case 123:
-                                 totemImgUrl = "building-wmitotem3.png";
-                                 break;
-                              case 124:
-                                 totemImgUrl = "building-wmitotem4.png";
-                                 break;
-                              case 125:
-                                 totemImgUrl = "building-wmitotem5.png";
-                                 break;
-                              case 126:
-                                 totemImgUrl = "building-wmitotem6.png";
-                                 break;
-                              default:
-                                 totemImgUrl = "building-wmitotem6.png";
-                           }
-                           POPUPS.Push(mc,null,null,null,totemImgUrl);
-                        }
-                        else if(BTOTEM.IsTotem2(this._type))
-                        {
-                           mc = new popup_biggulp();
-                           mc.tA.htmlText = "<b>" + KEYS.Get("wmi2_totemwon") + "</b>";
-                           mc.tB.htmlText = "";
-                           mc.bPost.SetupKey("btn_brag");
-                           mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
-                           mc.bPost.Highlight = true;
-                           totemImgUrl = "";
-                           switch(this._lvl.Get())
-                           {
-                              case 1:
-                                 totemImgUrl = "building-wmi2totem1.png";
-                                 break;
-                              case 2:
-                                 totemImgUrl = "building-wmi2totem2.png";
-                                 break;
-                              case 3:
-                                 totemImgUrl = "building-wmi2totem3.png";
-                                 break;
-                              case 4:
-                                 totemImgUrl = "building-wmi2totem4.png";
-                                 break;
-                              case 5:
-                                 totemImgUrl = "building-wmi2totem5.png";
-                                 break;
-                              case 6:
-                                 totemImgUrl = "building-wmi2totem6.png";
-                                 break;
-                              default:
-                                 totemImgUrl = "building-wmi2totem6.png";
-                           }
-                           POPUPS.Push(mc,null,null,null,totemImgUrl);
-                        }
-                     }
-                  }
-                  if(BASE._pendingPurchase.length == 0)
-                  {
-                     BASE.Save();
-                  }
-                  UPDATES.Create(["BP",this._type,this.Export()]);
-                  LOGGER.Stat([5,this._type]);
+                  this.Cancel();
+                  return;
+               }
+               if(BASE.isInferno())
+               {
+                  SOUNDS.Play("inf_buildingplace");
                }
                else
                {
-                  this.Cancel();
+                  SOUNDS.Play("buildingplace");
                }
+               GLOBAL._newBuilding = null;
+               this._mc.alpha = 1;
+               this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+               MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
+               this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+               if(BASE.CanBuild(this._type,this._buildInstant).error)
+               {
+                  this.Cancel();
+                  return;
+               }
+               if(this._buildInstant)
+               {
+                  if(!this._buildInstantCost)
+                  {
+                     this.Cancel();
+                     return;
+                  }
+                  if(BASE._credits.Get() < this._buildInstantCost.Get())
+                  {
+                     this.Cancel();
+                     POPUPS.DisplayGetShiny();
+                     return;
+                  }
+               }
+               this._hasResources = false;
+               this._hasWorker = false;
+               ++BASE._buildingCount;
+               this._id = BASE._buildingCount;
+               tmpBuildTime = int(this._buildingProps.costs[0].time);
+               if(STORE._storeData.BST)
+               {
+                  tmpBuildTime -= tmpBuildTime * 0.2;
+               }
+               this._countdownBuild.Set(tmpBuildTime);
+               this._hp.Set(this._buildingProps.hp[0]);
+               this._hpMax.Set(this._hp.Get());
+               this.PlaceB();
+               this._mc.removeChild(this._mcHit);
+               this._mc.addChild(this._mcHit);
+               this.Tick(1);
+               this.Update();
+               this.Description();
+               fromStorage = BASE.BuildingStorageRemove(this._type);
+               if(!fromStorage)
+               {
+                  if(!this._buildInstant)
+                  {
+                     isInfernoBuilding = BASE.isInfernoBuilding(this._type);
+                     BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
+                     BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
+                     BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
+                     BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
+                     if(STORE._storeItems["BUILDING" + this._type])
+                     {
+                        BASE.Purchase("BUILDING" + this._type,1,"building");
+                     }
+                     if(this._buildingProps.costs[0].time != 0 && BASE.BuildingStorageCount(this._type) == 0)
+                     {
+                        QUEUE.Add("building" + this._id,this);
+                     }
+                  }
+                  else
+                  {
+                     if(this._buildInstantCost.Get() > 0)
+                     {
+                        BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
+                     }
+                     LOGGER.Stat([71,this._buildInstantCost.Get(),this._type]);
+                     this.Constructed();
+                  }
+               }
+               else
+               {
+                  this.Constructed();
+                  if(this._type == 2 * 60)
+                  {
+                     LOGGER.Stat([75,"placedgoldenbiggulp"]);
+                  }
+                  if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+                  {
+                     BragBiggulp = function():void
+                     {
+                        GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
+                        POPUPS.Next();
+                     };
+                     BragTotem = function(param1:int):Function
+                     {
+                        var totemType:int = param1;
+                        return function(param1:MouseEvent = null):void
+                        {
+                           loop0:
+                           switch(totemType)
+                           {
+                              case 121:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.1.png"]);
+                                 break;
+                              case 122:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
+                                 break;
+                              case 123:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
+                                 break;
+                              case 124:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
+                                 break;
+                              case 125:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
+                                 break;
+                              case 126:
+                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
+                                 break;
+                              case 131:
+                                 switch(_lvl.Get())
+                                 {
+                                    case 1:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
+                                       break loop0;
+                                    case 2:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
+                                       break loop0;
+                                    case 3:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
+                                       break loop0;
+                                    case 4:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
+                                       break loop0;
+                                    case 5:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
+                                       break loop0;
+                                    case 6:
+                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
+                                 }
+                           }
+                           POPUPS.Next();
+                        };
+                     };
+                     mc = new popup_biggulp();
+                     if(BASE.is711Valid())
+                     {
+                        if(this._type == 2 * 60)
+                        {
+                           mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
+                           mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
+                           mc.bPost.SetupKey("btn_brag");
+                           mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
+                           mc.bPost.Highlight = true;
+                           POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                        }
+                     }
+                     totemImgUrl = "";
+                     if(BTOTEM.IsTotem(this._type))
+                     {
+                        mc.tA.htmlText = "<b>" + KEYS.Get("wmi_totemwon") + "</b>";
+                        mc.tB.htmlText = "";
+                        mc.bPost.SetupKey("btn_brag");
+                        mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                        mc.bPost.Highlight = true;
+                        switch(this._type)
+                        {
+                           case 121:
+                              totemImgUrl = "building-wmitotem1.png";
+                              break;
+                           case 122:
+                              totemImgUrl = "building-wmitotem2.png";
+                              break;
+                           case 123:
+                              totemImgUrl = "building-wmitotem3.png";
+                              break;
+                           case 124:
+                              totemImgUrl = "building-wmitotem4.png";
+                              break;
+                           case 125:
+                              totemImgUrl = "building-wmitotem5.png";
+                              break;
+                           case 126:
+                              totemImgUrl = "building-wmitotem6.png";
+                              break;
+                           default:
+                              totemImgUrl = "building-wmitotem6.png";
+                        }
+                        POPUPS.Push(mc,null,null,null,totemImgUrl);
+                     }
+                     else if(BTOTEM.IsTotem2(this._type))
+                     {
+                        mc.tA.htmlText = "<b>" + KEYS.Get("wmi2_totemwon") + "</b>";
+                        mc.tB.htmlText = "";
+                        mc.bPost.SetupKey("btn_brag");
+                        mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                        mc.bPost.Highlight = true;
+                        switch(this._lvl.Get())
+                        {
+                           case 1:
+                              totemImgUrl = "building-wmi2totem1.png";
+                              break;
+                           case 2:
+                              totemImgUrl = "building-wmi2totem2.png";
+                              break;
+                           case 3:
+                              totemImgUrl = "building-wmi2totem3.png";
+                              break;
+                           case 4:
+                              totemImgUrl = "building-wmi2totem4.png";
+                              break;
+                           case 5:
+                              totemImgUrl = "building-wmi2totem5.png";
+                              break;
+                           case 6:
+                              totemImgUrl = "building-wmi2totem6.png";
+                              break;
+                           default:
+                              totemImgUrl = "building-wmi2totem6.png";
+                        }
+                        POPUPS.Push(mc,null,null,null,totemImgUrl);
+                     }
+                  }
+               }
+               if(BASE._pendingPurchase.length == 0)
+               {
+                  BASE.Save();
+               }
+               UPDATES.Create(["BP",this._type,this.Export()]);
+               LOGGER.Stat([5,this._type]);
             }
          }
          catch(e:Error)
          {
-            LOGGER.Log("err","Foundation.Place: " + e.message + " | " + e.getStackTrace());
+            LOGGER.Log("err","Foundation.Place: ");
          }
+         this.updateRasterData();
       }
       
       public function SetGiftingProps(param1:int, param2:String, param3:int, param4:String, param5:String) : void
@@ -1545,7 +1766,7 @@ package
          UPDATES.Create(["BT",this._id,this._threadid,this._subject,this._senderid,this._senderName,this._senderPic]);
       }
       
-      public function PlaceB() : *
+      public function PlaceB() : void
       {
          this._position = new Point(this._mc.x,this._mc.y);
          this._mc.mouseEnabled = false;
@@ -1625,9 +1846,10 @@ package
             BUILDINGS._buildingID = 0;
          }
          GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.PLACED_FOR_CONSTRUCTION,this));
+         this.updateRasterData();
       }
       
-      public function Destroyed(param1:Boolean = true) : *
+      public function Destroyed(param1:Boolean = true) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -1688,7 +1910,7 @@ package
          }
       }
       
-      public function Repair() : *
+      public function Repair() : void
       {
          this._repairing = 1;
          this._destroyed = false;
@@ -1696,7 +1918,7 @@ package
          BASE.Save();
       }
       
-      public function Repaired() : *
+      public function Repaired() : void
       {
          if(!GLOBAL._catchup && this._hp.Get() < this._hpMax.Get())
          {
@@ -1718,7 +1940,7 @@ package
          UI2.Update();
       }
       
-      public function HasWorker() : *
+      public function HasWorker() : void
       {
          var _loc1_:* = 0;
          var _loc2_:int = 0;
@@ -1730,7 +1952,7 @@ package
             _loc2_ = 1;
             while(_loc2_ < 5)
             {
-               _loc3_ = uint(this._buildingProps.costs[this._lvl.Get()]["r" + _loc2_]);
+               _loc3_ = !!this._buildingProps.costs[this._lvl.Get()] ? uint(this._buildingProps.costs[this._lvl.Get()]["r" + _loc2_]) : 0;
                if(_loc3_)
                {
                   ResourcePackages.Create(_loc1_,this,_loc3_,true);
@@ -1741,18 +1963,18 @@ package
          }
       }
       
-      public function Over(param1:MouseEvent) : *
+      public function Over(param1:MouseEvent) : void
       {
       }
       
-      public function Out(param1:MouseEvent) : *
+      public function Out(param1:MouseEvent) : void
       {
       }
       
       public function FinishNowCost() : int
       {
          var _loc2_:int = 0;
-         var _loc3_:* = undefined;
+         var _loc3_:int = 0;
          var _loc4_:int = 0;
          if(this._countdownBuild.Get() > 0)
          {
@@ -1787,12 +2009,7 @@ package
          var _loc4_:int = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
          var _loc5_:int = STORE.GetTimeCost(_loc2_);
          var _loc6_:int = _loc4_ + _loc5_;
-         _loc6_ = int(_loc6_ * 0.95);
-         if(_loc6_ <= 5)
-         {
-            _loc6_ = 5;
-         }
-         return _loc6_;
+         return int(_loc6_ * 0.95);
       }
       
       public function InstantFortifyCost() : int
@@ -1860,7 +2077,7 @@ package
          return false;
       }
       
-      public function Fortify() : *
+      public function Fortify() : Boolean
       {
          var _loc1_:Object = null;
          if(!QUEUE.CanDo().error)
@@ -1888,10 +2105,10 @@ package
          return false;
       }
       
-      public function FortifyB() : *
+      public function FortifyB() : void
       {
          var _loc1_:Object = null;
-         var _loc2_:* = undefined;
+         var _loc2_:Object = null;
          var _loc3_:int = 0;
          if(this._countdownFortify.Get() == 0)
          {
@@ -1941,18 +2158,18 @@ package
          }
       }
       
-      public function FortifyCancel() : *
+      public function FortifyCancel() : void
       {
          GLOBAL.Message(KEYS.Get("msg_fortifycancelconfirm"),KEYS.Get("msg_stopfortifying_btn"),this.FortifyCancelB);
       }
       
-      public function FortifyCancelB(param1:MouseEvent = null) : *
+      public function FortifyCancelB(param1:MouseEvent = null) : void
       {
          UPDATES.Create(["BFC",this._id]);
          this.FortifyCancelC();
       }
       
-      public function FortifyCancelC() : *
+      public function FortifyCancelC() : void
       {
          var _loc1_:Object = null;
          if(this._countdownFortify.Get() > 0)
@@ -1980,7 +2197,7 @@ package
          }
       }
       
-      public function Upgrade() : *
+      public function Upgrade() : Boolean
       {
          var _loc1_:Object = null;
          if(!QUEUE.CanDo().error)
@@ -2008,14 +2225,14 @@ package
          return false;
       }
       
-      public function UpgradeB() : *
+      public function UpgradeB() : void
       {
          var GetFriends:Function;
          var canUpgrade:Object = null;
-         var o:* = undefined;
+         var o:Object = null;
          var isInfernoBuilding:Boolean = false;
          var tmpUpgradeTime:int = 0;
-         var popupMC:* = undefined;
+         var popupMC:popup_helpme = null;
          if(this._countdownUpgrade.Get() == 0)
          {
             canUpgrade = BASE.CanUpgrade(this);
@@ -2045,9 +2262,16 @@ package
                {
                   if(!GLOBAL._promptedInvite && BASE._credits.Get() < 40 && GLOBAL._canInvite && GLOBAL._friendCount == 0)
                   {
-                     GetFriends = function():*
+                     GetFriends = function():void
                      {
-                        GLOBAL.CallJS("cc.showFeedDialog",["invite","callbackgift"]);
+                        if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+                        {
+                           GLOBAL.CallJSWithClient("cc.showFeedDialog","callbackgift",["invite"]);
+                        }
+                        else
+                        {
+                           GLOBAL.CallJS("cc.showFeedDialog",["invite","callbackgift"]);
+                        }
                      };
                      GLOBAL._promptedInvite = true;
                      popupMC = new popup_helpme();
@@ -2082,7 +2306,7 @@ package
          }
       }
       
-      public function Help() : *
+      public function Help() : Boolean
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -2133,6 +2357,7 @@ package
                _loc3_ = "fortify";
             }
          }
+         return true;
       }
       
       public function HelpB() : int
@@ -2157,18 +2382,18 @@ package
          return _loc1_;
       }
       
-      public function UpgradeCancel() : *
+      public function UpgradeCancel() : void
       {
          GLOBAL.Message(KEYS.Get("msg_upgradecancelconfirm"),KEYS.Get("msg_stopupgrading_btn"),this.UpgradeCancelB);
       }
       
-      public function UpgradeCancelB(param1:MouseEvent = null) : *
+      public function UpgradeCancelB(param1:MouseEvent = null) : void
       {
          UPDATES.Create(["BUC",this._id]);
          this.UpgradeCancelC();
       }
       
-      public function UpgradeCancelC() : *
+      public function UpgradeCancelC() : void
       {
          var _loc1_:Object = null;
          var _loc2_:Boolean = false;
@@ -2198,7 +2423,7 @@ package
          }
       }
       
-      public function Upgraded() : *
+      public function Upgraded() : void
       {
          var c:Object;
          var a:int;
@@ -2235,7 +2460,7 @@ package
          LOGGER.Stat([8,this._type,this._lvl.Get()]);
       }
       
-      public function Downgrade_TOTEM_DEBUG() : *
+      public function Downgrade_TOTEM_DEBUG() : void
       {
          if(this._type != BTOTEM.BTOTEM_BUILDING_TYPE)
          {
@@ -2259,7 +2484,7 @@ package
          }
       }
       
-      public function Fortified() : *
+      public function Fortified() : void
       {
          var c:Object;
          var a:int;
@@ -2287,8 +2512,9 @@ package
          LOGGER.Stat([65,this._type,this._fortification.Get()]);
       }
       
-      public function Recycle() : *
+      public function Recycle() : void
       {
+         var _loc1_:String = null;
          if(this._countdownBuild.Get() > 0)
          {
             if(GLOBAL._mode == "build")
@@ -2321,7 +2547,8 @@ package
          {
             if(GLOBAL._mode == "build")
             {
-               GLOBAL.Message(KEYS.Get("msg_recycleconfirm"),KEYS.Get("msg_recyclebuilding_btn"),this.RecycleB);
+               _loc1_ = !!GLOBAL._buildingProps[this._type - 1]["recycleconfirmationoverride"] ? GLOBAL._buildingProps[this._type - 1]["recycleconfirmationoverride"] : "msg_recycleconfirm";
+               GLOBAL.Message(KEYS.Get(_loc1_),KEYS.Get("msg_recyclebuilding_btn"),this.RecycleB);
             }
          }
          else if(GLOBAL._mode == "build")
@@ -2338,9 +2565,9 @@ package
          GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ATTEMPT_RECYCLE,this));
       }
       
-      public function RecycleB(param1:MouseEvent = null) : *
+      public function RecycleB(param1:MouseEvent = null) : void
       {
-         var _loc2_:* = undefined;
+         var _loc2_:Object = null;
          var _loc3_:Boolean = false;
          BUILDINGOPTIONS.Hide();
          if(this._class != "decoration" && !this._blockRecycle)
@@ -2376,32 +2603,44 @@ package
          }
       }
       
-      public function RecycleC() : *
+      public function RecycleC() : void
       {
          this.GridCost(false);
          try
          {
-            MAP._BUILDINGBASES.removeChild(this._mcBase);
+            if(MAP._BUILDINGFOOTPRINTS.contains(this._mcBase))
+            {
+               MAP._BUILDINGBASES.removeChild(this._mcBase);
+            }
          }
          catch(e:Error)
          {
          }
          try
          {
-            MAP._BUILDINGFOOTPRINTS.removeChild(this._mcFootprint);
+            if(MAP._BUILDINGFOOTPRINTS.contains(this._mcFootprint))
+            {
+               MAP._BUILDINGFOOTPRINTS.removeChild(this._mcFootprint);
+            }
          }
          catch(e:Error)
          {
          }
          try
          {
-            MAP._BUILDINGTOPS.removeChild(this._mc);
+            if(MAP._BUILDINGTOPS.contains(this._mc))
+            {
+               MAP._BUILDINGTOPS.removeChild(this._mc);
+            }
          }
          catch(e:Error)
          {
          }
          GRID.Clear();
-         MAP.SortDepth();
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            MAP.SortDepth();
+         }
          QUEUE.Remove("building" + this._id,false,this);
          BASE.BuildingDeselect();
          if(this._class == "decoration")
@@ -2410,10 +2649,9 @@ package
          }
          this.Clean();
          BASE.Save();
-         return true;
       }
       
-      public function GridCost(param1:Boolean = true) : *
+      public function GridCost(param1:Boolean = true) : void
       {
          var _loc2_:Rectangle = null;
          if(this._footprint)
@@ -2425,11 +2663,11 @@ package
          }
       }
       
-      public function RecycleCost() : *
+      public function RecycleCost() : Object
       {
          var _loc2_:int = 0;
-         var _loc3_:* = undefined;
-         var _loc1_:* = {
+         var _loc3_:Object = null;
+         var _loc1_:Object = {
             "r1":0,
             "r2":0,
             "r3":0,
@@ -2475,7 +2713,7 @@ package
       
       public function UpgradeCost() : Object
       {
-         var _loc1_:* = undefined;
+         var _loc1_:Object = null;
          var _loc2_:Object = null;
          if(this._buildingProps.costs.length > this._lvl.Get())
          {
@@ -2515,7 +2753,7 @@ package
       
       public function FortifyCost() : Object
       {
-         var _loc1_:* = undefined;
+         var _loc1_:Object = null;
          var _loc2_:Object = null;
          if(this._buildingProps.can_fortify != true)
          {
@@ -2557,7 +2795,7 @@ package
          return {};
       }
       
-      internal function Mousedown(param1:MouseEvent) : *
+      internal function Mousedown(param1:MouseEvent) : void
       {
          if(!this._placing)
          {
@@ -2570,7 +2808,7 @@ package
          }
       }
       
-      internal function Mouseup(param1:MouseEvent) : *
+      internal function Mouseup(param1:MouseEvent) : void
       {
          if(this._mouseClicked)
          {
@@ -2585,7 +2823,7 @@ package
          }
       }
       
-      public function StartMove() : *
+      public function StartMove() : void
       {
          try
          {
@@ -2612,7 +2850,7 @@ package
          }
       }
       
-      public function StopMove(param1:MouseEvent) : *
+      public function StopMove(param1:MouseEvent) : void
       {
          if(this._mouseClicked)
          {
@@ -2627,7 +2865,7 @@ package
          this._mouseClicked = true;
       }
       
-      public function StopMoveB() : *
+      public function StopMoveB() : void
       {
          try
          {
@@ -2655,7 +2893,10 @@ package
                this.GridCost(true);
                PATHING.ResetCosts();
                this._mcFootprint.gotoAndStop(1);
-               MAP.SortDepth(false,true);
+               if(!BYMConfig.instance.RENDERER_ON)
+               {
+                  MAP.SortDepth();
+               }
                BASE.BuildingDeselect();
                BASE.HideFootprints();
                BASE._blockSave = false;
@@ -2669,7 +2910,7 @@ package
          }
       }
       
-      public function Click(param1:MouseEvent = null) : *
+      public function Click(param1:MouseEvent = null) : void
       {
          if(Boolean(GLOBAL._openBase) || TUTORIAL._stage >= 2 && TUTORIAL._stage != 90)
          {
@@ -2692,20 +2933,20 @@ package
          }
       }
       
-      public function Update(param1:Boolean = false) : *
+      public function Update(param1:Boolean = false) : void
       {
-         var _loc4_:Array = null;
+         var _loc3_:Array = null;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:int = 0;
          if(GLOBAL._render || param1)
          {
-            _loc4_ = [];
+            _loc3_ = [];
             if(this._repairing == 1)
             {
-               _loc5_ = 0;
-               _loc6_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
-               _loc5_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc6_]));
-               this._repairTime = int(this._hpMax.Get() - this._hp.Get()) / _loc5_;
+               _loc4_ = 0;
+               _loc5_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
+               _loc4_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
+               this._repairTime = int(this._hpMax.Get() - this._hp.Get()) / _loc4_;
                QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(this._repairTime,true));
             }
             else if(this._countdownBuild.Get() > 0)
@@ -2726,20 +2967,20 @@ package
             }
             if(this._hp.Get() <= 0)
             {
-               this.Render("destroyed");
+               this.Render(k_STATE_DESTROYED);
             }
             else if(this._hp.Get() < this._hpMax.Get() * 0.5)
             {
-               this.Render("damaged");
+               this.Render(k_STATE_DAMAGED);
             }
             else
             {
-               this.Render("");
+               this.Render(k_STATE_DEFAULT);
             }
          }
       }
       
-      public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          var _loc7_:int = param1;
          if(this._fortification.Get() > 0)
@@ -2766,13 +3007,14 @@ package
          }
          this.Update();
          BASE.Save();
+         return _loc7_;
       }
       
       public function Loot(param1:int) : void
       {
       }
       
-      public function Constructed() : *
+      public function Constructed() : void
       {
          if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
          {
@@ -2809,21 +3051,21 @@ package
          this.Update();
       }
       
-      public function BlockClicks() : *
+      public function BlockClicks() : void
       {
          this._mcHit.mouseEnabled = false;
          this._mcHit.buttonMode = false;
          this._mc.alpha = 0.5;
       }
       
-      public function UnblockClicks() : *
+      public function UnblockClicks() : void
       {
          this._mcHit.mouseEnabled = true;
          this._mcHit.buttonMode = true;
          this._mc.alpha = 1;
       }
       
-      public function Export() : *
+      public function Export() : Object
       {
          var _loc1_:Object = new Object();
          var _loc2_:Point = GRID.FromISO(this._mc.x,this._mc.y);
@@ -2906,12 +3148,13 @@ package
          return _loc1_;
       }
       
-      public function Setup(param1:Object) : *
+      public function Setup(param1:Object) : void
       {
          var _loc2_:Point = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         var _loc6_:int = 0;
          this._type = param1.t;
          this._id = param1.id;
          _loc2_ = GRID.ToISO(param1.X,param1.Y,0);
@@ -3017,9 +3260,9 @@ package
          }
          else
          {
-            _loc4_ = this._lvl.Get();
-            _loc5_ = int(this._buildingProps.hp[_loc4_ - 1]);
-            this._hpMax.Set(_loc5_);
+            _loc5_ = this._lvl.Get();
+            _loc6_ = int(this._buildingProps.hp[_loc5_ - 1]);
+            this._hpMax.Set(_loc6_);
          }
          if(param1.hp == null)
          {
@@ -3111,9 +3354,22 @@ package
             delete BASE._buildingsMain["b" + this._id];
             delete BASE._buildingsGifts["b" + this._id];
          }
-         this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
-         MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
-         this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+         if(this._mc.hasEventListener(Event.ENTER_FRAME))
+         {
+            this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+         }
+         if(MAP._GROUND.hasEventListener(MouseEvent.MOUSE_UP))
+         {
+            MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
+         }
+         if(this._mc.hasEventListener(MouseEvent.MOUSE_DOWN))
+         {
+            this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+         }
+         if(this._mc.hasEventListener(Event.ENTER_FRAME))
+         {
+            this._mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
+         }
          if(this._mcHit)
          {
             if(this._mcHit.parent)
@@ -3142,6 +3398,21 @@ package
          this._fortBackContainer.Clear();
          this.anim2Container.Clear();
          this.anim3Container.Clear();
+         if(this._animContainerBMD)
+         {
+            this._animContainerBMD.dispose();
+         }
+         if(this._anim2ContainerBMD)
+         {
+            this._anim2ContainerBMD.dispose();
+         }
+         if(this._anim3ContainerBMD)
+         {
+            this._anim3ContainerBMD.dispose();
+         }
+         this.clearRasterData();
+         this._rasterData = null;
+         this._rasterPt = null;
       }
       
       private function GetHitMC() : MovieClip
@@ -3555,6 +3826,10 @@ package
             _loc2_ = _loc2_.concat([0,0,3,0,0]);
             _loc2_ = _loc2_.concat([0,0,0,1,0]);
             this._mc.filters = [new ColorMatrixFilter(_loc2_)];
+            if(BYMConfig.instance.RENDERER_ON && Boolean(this._rasterData[_RASTERDATA_TOP]))
+            {
+               this._rasterData[_RASTERDATA_TOP].filter = this._mc.filters[0];
+            }
          }
       }
       
@@ -3563,6 +3838,10 @@ package
          if(this._mc)
          {
             this._mc.filters = [];
+            if(BYMConfig.instance.RENDERER_ON && Boolean(this._rasterData[_RASTERDATA_TOP]))
+            {
+               this._rasterData[_RASTERDATA_TOP].filter = null;
+            }
          }
       }
       
@@ -3576,14 +3855,16 @@ package
          return this._mc.y;
       }
       
-      public function set x(param1:int) : *
+      public function set x(param1:int) : void
       {
          this._mc.x = param1;
+         this.updateRasterData();
       }
       
-      public function set y(param1:int) : *
+      public function set y(param1:int) : void
       {
          this._mc.y = param1;
+         this.updateRasterData();
       }
       
       public function moveTo(param1:int, param2:int) : void
@@ -3615,7 +3896,7 @@ package
          return this._countdownBuild.Get() > 0;
       }
       
-      protected function RelocateHousedCreatures() : *
+      protected function RelocateHousedCreatures() : void
       {
          var _loc4_:* = undefined;
          var _loc1_:BFOUNDATION = BASE.FindClosestHousingToPoint(this.x,this.y,this);
@@ -3628,7 +3909,7 @@ package
          while(_loc3_ < _loc2_)
          {
             _loc4_ = this._creatures[_loc3_];
-            if(_loc4_._behaviour != CreepBase.k_sBHVR_JUICE)
+            if(_loc4_._behaviour != MonsterBase.k_sBHVR_JUICE)
             {
                _loc1_._creatures.push(_loc4_);
                _loc4_._house = _loc1_;
@@ -3640,7 +3921,7 @@ package
          this._creatures.length = 0;
       }
       
-      protected function UpdateHousedCreatureTargets() : *
+      protected function UpdateHousedCreatureTargets() : void
       {
          var _loc3_:* = undefined;
          var _loc1_:uint = this._creatures.length;
@@ -3648,7 +3929,7 @@ package
          while(_loc2_ < _loc1_)
          {
             _loc3_ = this._creatures[_loc2_];
-            if(!(_loc3_._behaviour == CreepBase.k_sBHVR_JUICE || _loc3_._behaviour == CreepBase.k_sBHVR_BUNKER))
+            if(!(_loc3_._behaviour == MonsterBase.k_sBHVR_JUICE || _loc3_._behaviour == MonsterBase.k_sBHVR_BUNKER && GLOBAL.InfernoMode() === false))
             {
                _loc3_._targetCenter = GRID.FromISO(this.x,this.y);
                _loc3_.ModeHousing();
@@ -3656,6 +3937,65 @@ package
             _loc2_++;
          }
       }
+      
+      public function StartProduction() : void
+      {
+      }
    }
 }
 
+final class ImageCallbackHelper
+{
+   private var _ref:Function;
+   
+   private var _state:String;
+   
+   private var _level:int;
+   
+   private var _imageDataA:Object;
+   
+   private var _imageDataB:Object;
+   
+   public function ImageCallbackHelper(param1:Function, param2:String, param3:int, param4:Object, param5:Object)
+   {
+      super();
+      this._ref = param1;
+      this._state = param2;
+      this._level = param3;
+      this._imageDataA = param4;
+      this._imageDataB = param5;
+   }
+   
+   public function get ref() : Function
+   {
+      return this._ref;
+   }
+   
+   public function get state() : String
+   {
+      return this._state;
+   }
+   
+   public function get level() : int
+   {
+      return this._level;
+   }
+   
+   public function get imageDataA() : Object
+   {
+      return this._imageDataA;
+   }
+   
+   public function get imageDataB() : Object
+   {
+      return this._imageDataB;
+   }
+   
+   public function clear() : void
+   {
+      this._ref = null;
+      this._state = null;
+      this._imageDataA = null;
+      this._imageDataB = null;
+   }
+}

@@ -40,43 +40,43 @@ package com.monsters.maproom_advanced
          this._scroller.Init(mMonsters,mMonstersMask,0,scroll.y,scroll.height);
          this.bOpen.SetupKey("btn_open");
          this.bOpen.Highlight = true;
-         this.bOpen.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bOpen.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("open");
          });
-         this.bOpen.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bOpen.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             Open();
          });
          this.bMonsters.SetupKey("newmap_tr_from");
-         this.bMonsters.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bMonsters.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("monsters");
          });
          this.bMonsters.addEventListener(MouseEvent.CLICK,this.StartTransferM);
          this.bRelocate.SetupKey("btn_movemainyardhere");
-         this.bRelocate.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bRelocate.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("relocateme");
          });
-         this.bRelocate.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bRelocate.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             MapRoom._mc.ShowRelocateMePopup(_cell);
          });
-         this.bInviteMigrate.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bInviteMigrate.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("invitemigrate");
          });
-         this.bInviteMigrate.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bInviteMigrate.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowInviteMigrate();
          });
          this.bBookmark.SetupKey("newmap_bookmark_btn");
-         this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bBookmark.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("bookmark");
          });
-         this.bBookmark.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bBookmark.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             if(!_bookmarked)
             {
@@ -91,7 +91,7 @@ package com.monsters.maproom_advanced
          (mcFrame as frame).Setup();
       }
       
-      private function StartTransferM(param1:MouseEvent) : *
+      private function StartTransferM(param1:MouseEvent) : void
       {
          if(this.bMonsters.Enabled && !MapRoom._monsterTransferInProgress && !MapRoom._resourceTransferInProgress && GLOBAL._mapOutpost.length > 0 && this._hasMonsters)
          {
@@ -99,12 +99,12 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          MapRoom._mc.HideInfoMine();
       }
       
-      public function Setup(param1:MapRoomCell) : *
+      public function Setup(param1:MapRoomCell) : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
@@ -219,40 +219,40 @@ package com.monsters.maproom_advanced
       
       public function Cleanup() : void
       {
-         this.bOpen.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bOpen.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("open");
          });
-         this.bOpen.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bOpen.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             Open();
          });
-         this.bMonsters.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bMonsters.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("monsters");
          });
          this.bMonsters.removeEventListener(MouseEvent.CLICK,this.StartTransferM);
-         this.bRelocate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bRelocate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("relocateme");
          });
-         this.bRelocate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bRelocate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             MapRoom._mc.ShowRelocateMePopup(_cell);
          });
-         this.bInviteMigrate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bInviteMigrate.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("invitemigrate");
          });
-         this.bInviteMigrate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bInviteMigrate.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             ShowInviteMigrate();
          });
-         this.bBookmark.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bBookmark.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("bookmark");
          });
-         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bBookmark.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             if(!_bookmarked)
             {
@@ -263,10 +263,14 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("newmap_bm_done"));
             }
          });
-         mcFrame = null;
+         if(mcFrame)
+         {
+            mcFrame.Clear();
+            mcFrame = null;
+         }
       }
       
-      public function Open() : *
+      public function Open() : void
       {
          var _loc1_:int = 0;
          if(!this._cell._locked || this._cell._locked == LOGIN._playerID)
@@ -277,7 +281,7 @@ package com.monsters.maproom_advanced
             MapRoom.ClearCells();
             GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
             _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,this._cell._baseID,"build",false,_loc1_);
+            BASE.LoadBase(null,0,this._cell._baseID,"build",false,_loc1_);
          }
          else
          {
@@ -285,7 +289,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function PendingInvite() : *
+      public function PendingInvite() : void
       {
          this._cell._invitePendingID = 1;
          this._cell.mc.mcPlayer.mcInvite.visible = true;
@@ -293,7 +297,7 @@ package com.monsters.maproom_advanced
          MapRoom.GetCell(this._cell.X,this._cell.Y,true);
       }
       
-      public function RevokeInvitation() : *
+      public function RevokeInvitation() : void
       {
          var body:String;
          var subject:String;
@@ -301,7 +305,7 @@ package com.monsters.maproom_advanced
          var r:URLLoaderApi;
          var onMigrateRevokeSuccess:Function = null;
          var onFail:Function = null;
-         onMigrateRevokeSuccess = function(param1:Object):*
+         onMigrateRevokeSuccess = function(param1:Object):void
          {
             Hide();
             if(param1.error != 0)
@@ -318,7 +322,7 @@ package com.monsters.maproom_advanced
             }
             GLOBAL.Message(KEYS.Get("msg_revoke_success"));
          };
-         onFail = function(param1:Error):*
+         onFail = function(param1:Error):void
          {
             Hide();
             GLOBAL.Message(KEYS.Get("msg_err_revoke") + param1.message);
@@ -336,7 +340,7 @@ package com.monsters.maproom_advanced
          r.load(GLOBAL._apiURL + "player/sendmessage",vars,onMigrateRevokeSuccess,onFail);
       }
       
-      public function ButtonInfo(param1:String) : *
+      public function ButtonInfo(param1:String) : void
       {
          if(param1 == "open")
          {
@@ -376,11 +380,11 @@ package com.monsters.maproom_advanced
          });
       }
       
-      public function PreInvite() : *
+      public function PreInvite() : void
       {
       }
       
-      public function ShowInviteMigrate() : *
+      public function ShowInviteMigrate() : void
       {
          if(this._cell._base < 2)
          {
@@ -418,7 +422,7 @@ package com.monsters.maproom_advanced
          this.bInviteMigrate.Enabled = false;
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;

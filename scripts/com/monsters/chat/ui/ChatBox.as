@@ -464,7 +464,7 @@ package com.monsters.chat.ui
          {
             Chat._bymChat.toggleMinimizedStat(false);
          }
-         this._scrollbar.ScrollTo(1,0);
+         this._scrollbar.ScrollTo(1,false);
          this.update();
       }
       
@@ -531,7 +531,7 @@ package com.monsters.chat.ui
          this._scrollbar.Update();
          if(!this._scrollbar.IsDragging)
          {
-            this._scrollbar.ScrollTo(1,0);
+            this._scrollbar.ScrollTo(1,false);
          }
       }
       
@@ -753,8 +753,8 @@ package com.monsters.chat.ui
       
       public function OnMsgIgnoreRollOver(param1:MouseEvent) : void
       {
-         var _loc2_:* = param1.currentTarget.parent.msgData.msgtype == "IgnoreList" ? "Click to unignore user" : "Click to ignore user";
-         var _loc3_:* = param1.currentTarget.y + param1.currentTarget.height / 2;
+         var _loc2_:String = param1.currentTarget.parent.msgData.msgtype == "IgnoreList" ? "Click to unignore user" : "Click to ignore user";
+         var _loc3_:Number = param1.currentTarget.y + param1.currentTarget.height / 2;
          PopupShow(param1.currentTarget.x - 10,_loc3_,_loc2_,param1.currentTarget.parent as MovieClip);
       }
       

@@ -14,17 +14,17 @@ package
          super();
       }
       
-      public static function MakeTile(param1:String = "grass") : *
+      public static function MakeTile(param1:String = "grass") : BitmapData
       {
          var tile:int = 0;
-         var ti:* = undefined;
+         var ti:int = 0;
          var tileCount:int = 0;
          var g:Object = null;
          var t:Object = null;
          var h:int = 0;
          var groundMask:BitmapData = null;
          var groundCompiled:BitmapData = null;
-         var groundCompiledBMP:* = undefined;
+         var groundCompiledBMP:Bitmap = null;
          var v:int = 0;
          var i:int = 0;
          var texture:String = param1;

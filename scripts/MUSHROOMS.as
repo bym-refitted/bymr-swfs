@@ -26,15 +26,14 @@ package
          var dist:int = 0;
          var angle:int = 0;
          var spawn:int = 0;
-         var X:* = undefined;
-         var Y:* = undefined;
+         var X:Number = NaN;
+         var Y:Number = NaN;
          var a:int = 0;
          var b:int = 0;
-         var iso:* = undefined;
          var s:int = 0;
          var n:int = 0;
-         var X2:* = undefined;
-         var Y2:* = undefined;
+         var X2:Number = NaN;
+         var Y2:Number = NaN;
          var shroom:Object = null;
          var replace:Boolean = false;
          var spawnCount:int = 0;
@@ -228,7 +227,7 @@ package
          }
       }
       
-      public static function PickWorker(param1:BFOUNDATION) : *
+      public static function PickWorker(param1:BFOUNDATION) : void
       {
          if(!param1._picking)
          {
@@ -246,10 +245,7 @@ package
       
       public static function Pick(param1:BFOUNDATION) : Boolean
       {
-         var _loc4_:Rndm = null;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:popup_mushroomshiny = null;
          var _loc8_:int = 0;
          var _loc2_:int = param1._id;
          var _loc3_:String = "";
@@ -257,54 +253,52 @@ package
          {
             return false;
          }
-         if(param1.RecycleC())
+         param1.RecycleC();
+         var _loc4_:Rndm = new Rndm(int(param1.x * param1.y));
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         ++QUESTS._global.mushroomspicked;
+         if(int(_loc4_.random() * 4) == 0)
          {
-            _loc4_ = new Rndm(int(param1.x * param1.y));
-            _loc5_ = 0;
-            _loc6_ = 0;
-            ++QUESTS._global.mushroomspicked;
-            if(int(_loc4_.random() * 4) == 0)
+            ++QUESTS._global.goldmushroomspicked;
+            GLOBAL.ValidateMushroomPick(param1);
+            _loc5_ = Math.random() * 3 + 1;
+            if(_loc5_ == 3)
             {
-               ++QUESTS._global.goldmushroomspicked;
-               GLOBAL.ValidateMushroomPick(param1);
-               _loc5_ = Math.random() * 3 + 1;
-               if(_loc5_ == 3)
-               {
-                  _loc5_ = 1;
-               }
-               BASE.Purchase("MUSHROOM" + _loc5_,1,"MUSHROOMS");
-               _loc6_ = 3;
-               if(_loc5_ == 2)
-               {
-                  _loc6_ = 8;
-               }
-               _loc3_ = KEYS.Get("pop_mushroom_msg1",{"v1":_loc6_});
-               _loc7_ = new popup_mushroomshiny();
-               _loc7_.tTitle.htmlText = "<b>" + KEYS.Get("pop_goldenmushroom_title") + "</b>";
-               _loc7_.tMessage.htmlText = KEYS.Get("pop_goldenmushroom_desc",{"v1":_loc6_});
-               POPUPS.Push(_loc7_,null,null,"chaching","goldmushroom.png");
+               _loc5_ = 1;
             }
-            else
+            BASE.Purchase("MUSHROOM" + _loc5_,1,"MUSHROOMS");
+            _loc6_ = 3;
+            if(_loc5_ == 2)
             {
-               _loc8_ = int(Math.random() * 3);
-               if(_loc8_ == 0)
-               {
-                  _loc3_ = KEYS.Get("pop_mushroom_msg2");
-               }
-               else if(_loc8_ == 1)
-               {
-                  _loc3_ = KEYS.Get("pop_mushroom_msg3");
-               }
-               else if(_loc8_ == 2)
-               {
-                  _loc3_ = KEYS.Get("pop_mushroom_msg4");
-               }
-               BASE.Save();
+               _loc6_ = 8;
             }
-            LOGGER.Stat([34,_loc6_]);
-            QUESTS.Check();
-            WORKERS.Say(_loc3_,QUEUE.Remove("mushroom" + _loc2_,true),50 * 60);
+            _loc3_ = KEYS.Get("pop_mushroom_msg1",{"v1":_loc6_});
+            _loc7_ = new popup_mushroomshiny();
+            _loc7_.tTitle.htmlText = "<b>" + KEYS.Get("pop_goldenmushroom_title") + "</b>";
+            _loc7_.tMessage.htmlText = KEYS.Get("pop_goldenmushroom_desc",{"v1":_loc6_});
+            POPUPS.Push(_loc7_,null,null,"chaching","goldmushroom.png");
          }
+         else
+         {
+            _loc8_ = int(Math.random() * 3);
+            if(_loc8_ == 0)
+            {
+               _loc3_ = KEYS.Get("pop_mushroom_msg2");
+            }
+            else if(_loc8_ == 1)
+            {
+               _loc3_ = KEYS.Get("pop_mushroom_msg3");
+            }
+            else if(_loc8_ == 2)
+            {
+               _loc3_ = KEYS.Get("pop_mushroom_msg4");
+            }
+            BASE.Save();
+         }
+         LOGGER.Stat([34,_loc6_]);
+         QUESTS.Check();
+         WORKERS.Say(_loc3_,QUEUE.Remove("mushroom" + _loc2_,true),50 * 60);
          return true;
       }
    }

@@ -98,8 +98,15 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
+         null;
+         null;
+         null;
+         null;
          var _loc3_:Object = _a[int((param1 + _front) % _capacity)];
+         null;
+         null;
          _a[int((param1 + _front) % _capacity)] = _a[int((param2 + _front) % _capacity)];
+         null;
          _a[int((param2 + _front) % _capacity)] = _loc3_;
       }
       
@@ -293,6 +300,7 @@ package de.polygonal.ds
       public function fill(param1:Object, param2:int = 0) : void
       {
          var _loc4_:int = 0;
+         null;
          if(param2 <= 0)
          {
             param2 = _capacity;
@@ -390,6 +398,7 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
+         null;
          _a[int((param1 + _front) % _capacity)] = _a[int((param2 + _front) % _capacity)];
       }
       

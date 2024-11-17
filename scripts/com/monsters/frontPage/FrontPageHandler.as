@@ -4,6 +4,7 @@ package com.monsters.frontPage
    import com.monsters.frontPage.categories.News;
    import com.monsters.frontPage.events.FrontPageEvent;
    import com.monsters.frontPage.messages.Message;
+   import flash.display.DisplayObject;
    import flash.events.Event;
    
    public class FrontPageHandler
@@ -27,6 +28,11 @@ package com.monsters.frontPage
       public function FrontPageHandler()
       {
          super();
+      }
+      
+      public static function get isVisible() : Boolean
+      {
+         return _graphic !== null;
       }
       
       public static function get hasBeenSeenThisSession() : Boolean
@@ -80,15 +86,22 @@ package com.monsters.frontPage
          }
       }
       
-      public static function showPopup() : Boolean
+      public static function showPopup(param1:Boolean = false) : Boolean
       {
+         var _loc2_:DisplayObject = null;
          if(GLOBAL._mode != "build" || BASE.isOutpost || !TUTORIAL.hasFinished || _hasBeenSeenThisSession || BASE._yardType != BASE.MAIN_YARD || INFERNO_EMERGENCE_EVENT.isGoingToAttack)
          {
             return false;
          }
-         if(Boolean(_graphic) || !updateQualifiedCategories())
+         if(_graphic && !param1 || !updateQualifiedCategories())
          {
             return false;
+         }
+         if(_graphic)
+         {
+            _loc2_ = _graphic;
+            closedPopup();
+            POPUPS.Remove(_loc2_);
          }
          _graphic = new FrontPageGraphic();
          _graphic.addEventListener(FrontPageEvent.NEXT,nextCategory);
@@ -105,19 +118,20 @@ package com.monsters.frontPage
       
       private static function closedPopup(param1:Event = null) : void
       {
+         var _loc2_:Number = NaN;
          _graphic.removeEventListener(FrontPageEvent.NEXT,nextCategory);
          _graphic.removeEventListener(FrontPageEvent.PREVIOUS,previousCategory);
          _graphic.removeEventListener(FrontPageEvent.CHANGE_CATEGORY,changeCategory);
          _graphic.removeEventListener(Event.REMOVED_FROM_STAGE,closedPopup);
          _graphic = null;
-         var _loc2_:* = GLOBAL.Timestamp() - _timeSpentViewing;
-         LOGGER.StatB({
-            "st1":"GTP",
-            "st2":"time",
-            "value":GLOBAL.Timestamp() - _timeSpentViewing
-         },"time_seen");
          if(param1)
          {
+            _loc2_ = GLOBAL.Timestamp() - _timeSpentViewing;
+            LOGGER.StatB({
+               "st1":"GTP",
+               "st2":"time",
+               "value":GLOBAL.Timestamp() - _timeSpentViewing
+            },"time_seen");
             save();
          }
       }
@@ -142,8 +156,10 @@ package com.monsters.frontPage
       
       public static function refresh() : void
       {
-         updateQualifiedCategories();
-         activeCategory = _qualifiedCategories[0];
+         if(updateQualifiedCategories())
+         {
+            activeCategory = _qualifiedCategories[0];
+         }
       }
       
       protected static function updateQualifiedCategories() : Vector.<Category>

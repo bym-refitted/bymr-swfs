@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.monsters.champions.ChampionBase;
    import flash.display.MovieClip;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
@@ -24,7 +25,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _updates = [];
          _myUpdates = [];
@@ -38,10 +39,10 @@ package
          _actions[param2] = param1;
       }
       
-      public static function Process(param1:Array) : *
+      public static function Process(param1:Array) : void
       {
          var _loc2_:Object = null;
-         var _loc3_:* = undefined;
+         var _loc3_:Object = null;
          var _loc4_:Object = null;
          if(!GLOBAL._save)
          {
@@ -71,7 +72,7 @@ package
          }
       }
       
-      public static function Check() : *
+      public static function Check() : void
       {
          var _loc3_:Object = null;
          if(!GLOBAL._save)
@@ -107,7 +108,6 @@ package
          var length:int = 0;
          var i:int = 0;
          var monsterdata:Object = null;
-         var champArr:* = undefined;
          var refundType:int = 0;
          var refundLevel:int = 0;
          var refundFeeds:int = 0;
@@ -165,7 +165,7 @@ package
                   _loc5_ = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
                   if(refundLevel > 0)
                   {
-                     CREATURES._guardian = new CHAMPIONMONSTER("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
+                     CREATURES._guardian = new ChampionBase("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
                      CREATURES._guardian.Export();
                      MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
                      CREATURES._guardian.ModeCage();
@@ -324,10 +324,9 @@ package
          {
             if(BASE.isInferno())
             {
-               LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",BASE._yardType);
+               LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",Boolean(BASE._yardType));
                return false;
             }
-            champArr = JSON.decode(update.data);
             refundType = int(update.data[2]);
             refundLevel = int(update.data[3]);
             refundFeeds = int(update.data[4]);
@@ -373,7 +372,7 @@ package
          return true;
       }
       
-      public static function Catchup() : *
+      public static function Catchup() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -382,7 +381,7 @@ package
          var _loc5_:String = null;
          var _loc6_:Boolean = false;
          var _loc7_:int = 0;
-         var _loc8_:* = undefined;
+         var _loc8_:popup_helped = null;
          var _loc9_:* = null;
          if(!GLOBAL._save)
          {
@@ -483,13 +482,13 @@ package
          }
       }
       
-      public static function GiveThanks(param1:Number, param2:String, param3:String, param4:String) : *
+      public static function GiveThanks(param1:Number, param2:String, param3:String, param4:String) : Function
       {
          var fbid:Number = param1;
          var messageA:String = param2;
          var messageB:String = param3;
          var image:String = param4;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             GLOBAL.CallJS("sendFeed",["thanks",messageA,messageB,image,fbid]);
             POPUPS.Next();
@@ -519,7 +518,7 @@ package
          var update:Array = param1;
          var id:int = param2;
          var lastupdate:Number = param3;
-         handleLoadSuccessful = function(param1:Object):*
+         handleLoadSuccessful = function(param1:Object):void
          {
             if(param1.error == 0)
             {

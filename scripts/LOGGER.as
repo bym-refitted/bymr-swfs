@@ -10,6 +10,8 @@ package
       
       public static var _statUpdated:int = 0;
       
+      public static const STAT_MEM:uint = 99;
+      
       public function LOGGER()
       {
          super();
@@ -750,6 +752,14 @@ package
                      val = int(data[1]);
                      name = "EV_taken";
                   }
+                  else if(data[0] == STAT_MEM)
+                  {
+                     st1 = "performance";
+                     st2 = "mem";
+                     name = data[1];
+                     val = int(data[2]);
+                     n2 = int(data[3]);
+                  }
                }
             }
             if(st1)
@@ -802,7 +812,7 @@ package
          GLOBAL.CallJS("cc.recordEvent",[param2,param1],false);
       }
       
-      public static function KongStat(param1:Array) : *
+      public static function KongStat(param1:Array) : void
       {
          var st1:String = null;
          var st2:String = null;
@@ -849,11 +859,11 @@ package
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
       }
       
-      public static function handleLoadSuccessful(param1:Object) : *
+      public static function handleLoadSuccessful(param1:Object) : void
       {
          if(param1.error == 0)
          {

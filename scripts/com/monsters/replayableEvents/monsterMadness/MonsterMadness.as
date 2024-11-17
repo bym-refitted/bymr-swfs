@@ -26,7 +26,7 @@ package com.monsters.replayableEvents.monsterMadness
       
       private static var _points:SecNum = new SecNum(0);
       
-      private static const _SAVE_ID:String = "event_score";
+      public static const SAVE_ID:String = "event_score";
       
       public function MonsterMadness()
       {
@@ -165,7 +165,7 @@ package com.monsters.replayableEvents.monsterMadness
       public static function initialize() : void
       {
          var _loc1_:uint = uint(GLOBAL.StatGet(LAST_SCORE));
-         var _loc2_:* = BASE.loadObject[_SAVE_ID];
+         var _loc2_:* = BASE.loadObject[SAVE_ID];
          if(_loc2_ && _loc2_ >= _loc1_ && !hasEventEnded || _loc1_ == -2126479027)
          {
             points = _loc2_;

@@ -1,14 +1,18 @@
 package com.monsters.kingOfTheHill.messages
 {
    import com.monsters.frontPage.messages.KeywordMessage;
-   import com.monsters.kingOfTheHill.KOTHHandler;
    
    public class KOTHRewardMessage extends KeywordMessage
    {
       public function KOTHRewardMessage(param1:Boolean)
       {
+         var _loc2_:int = 1;
+         if(CREEPS.krallen)
+         {
+            _loc2_ = CREEPS.krallen._level.Get();
+         }
          super(param1 ? "kothendkeep" : "kothendwin","btn_brag");
-         this.body = KEYS.Get(PREFIX + _keyword,{"v1":KOTHHandler.instance.wins + 1});
+         this.body = KEYS.Get(PREFIX + _keyword,{"v1":_loc2_});
          imageURL = getImageURLFromKeyword("event_kothwin");
       }
       

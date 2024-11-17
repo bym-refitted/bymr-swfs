@@ -1,10 +1,13 @@
 package
 {
+   import com.monsters.configs.BYMConfig;
    import com.monsters.display.ImageCache;
    import com.monsters.pathing.PATHING;
+   import com.monsters.rendering.RasterData;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
+   import flash.display.DisplayObjectContainer;
    import flash.display.MovieClip;
    import flash.events.TimerEvent;
    import flash.geom.Point;
@@ -33,13 +36,13 @@ package
       
       public var _scale:Number;
       
-      public var _targetBuilding:*;
+      public var _targetBuilding:BFOUNDATION;
       
-      public var _id:*;
+      public var _id:int;
       
       public var _size:Number;
       
-      public var _container:*;
+      public var _container:DisplayObjectContainer;
       
       public var _graphic:BitmapData;
       
@@ -47,7 +50,7 @@ package
       
       public var _messageMC:MovieClip;
       
-      internal var frameCount:int;
+      private var frameCount:int;
       
       public var showTimer:Timer;
       
@@ -57,11 +60,11 @@ package
       
       public var xd:int;
       
-      public var _mc:*;
+      public var _mc:MovieClip;
       
-      internal var _waypoints:Array;
+      public var _waypoints:Array;
       
-      internal var _waypointIndex:int;
+      private var _waypointIndex:int;
       
       private var _hasGraphic:Boolean;
       
@@ -75,6 +78,10 @@ package
       
       private var _graphicMC:DisplayObject;
       
+      protected var _rasterData:RasterData;
+      
+      protected var _rasterPt:Point;
+      
       public function WORKER(param1:*, param2:Point, param3:Number)
       {
          super();
@@ -85,6 +92,7 @@ package
          this.hideTimer = new Timer(2000);
          this.hideTimer.addEventListener("timer",this.sayHide);
          this._waypoints = [];
+         this._rasterPt = new Point();
          this._id = GLOBAL.NextCreepID();
          this._container = param1;
          this._targetPosition = param2;
@@ -103,9 +111,13 @@ package
             this._graphic = new BitmapData(64,55,true,0xffffff);
          }
          SPRITES.SetupSprite("worker");
-         this._graphicMC = addChild(new Bitmap(this._graphic));
+         this._graphicMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(this._graphic) : addChild(new Bitmap(this._graphic));
          this._graphicMC.x = -26;
          this._graphicMC.y = -36;
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            this._rasterData = this._rasterData || new RasterData(this._graphic,this._rasterPt,int.MAX_VALUE);
+         }
          this._hasGraphic = false;
          ImageCache.GetImageWithCallBack("monsters/worker.png",this.onAssetLoaded);
          mouseEnabled = false;
@@ -118,11 +130,38 @@ package
          this.Update(true);
       }
       
-      public function Clear() : *
+      protected function updateRasterData() : void
       {
+         var _loc2_:Number = NaN;
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            return;
+         }
+         var _loc1_:Point = MAP.instance.offset;
+         if(Boolean(this._graphicMC) && Boolean(this._rasterData))
+         {
+            _loc2_ = height * 0.5;
+            if(this._middle)
+            {
+               _loc2_ = this._middle;
+            }
+            this._rasterPt.x = x + this._graphicMC.x - _loc1_.x;
+            this._rasterPt.y = y + this._graphicMC.y - _loc1_.y;
+            this._rasterData.depth = Math.max(MAP.DEPTH_SHADOW + 1,(y - _loc1_.y + _loc2_) * 1000 + x - _loc1_.x);
+         }
       }
       
-      public function Tick() : *
+      public function Clear() : void
+      {
+         if(this._rasterData)
+         {
+            this._rasterData.clear();
+         }
+         this._rasterData = null;
+         this._rasterPt = null;
+      }
+      
+      public function Tick() : void
       {
          ++this._frameNumber;
          var _loc1_:int = Math.random() * 600;
@@ -135,13 +174,14 @@ package
          {
             this.Update();
          }
+         this.updateRasterData();
       }
       
-      public function Wander() : *
+      public function Wander() : void
       {
       }
       
-      public function SetWaypoints(param1:Array, param2:BFOUNDATION = null, param3:int = 0) : *
+      public function SetWaypoints(param1:Array, param2:BFOUNDATION = null, param3:int = 0) : void
       {
          if(this._pathID == param3)
          {
@@ -150,7 +190,7 @@ package
          }
       }
       
-      public function Update(param1:Boolean = false) : *
+      public function Update(param1:Boolean = false) : void
       {
          if(param1 || this._lastRotation != int(mcMarker.rotation / 12))
          {
@@ -159,7 +199,7 @@ package
          }
       }
       
-      public function Target(param1:Point, param2:BFOUNDATION = null) : *
+      public function Target(param1:Point, param2:BFOUNDATION = null) : void
       {
          var _loc3_:Rectangle = null;
          if(!GLOBAL._catchup)
@@ -178,10 +218,10 @@ package
          }
       }
       
-      public function Move() : *
+      public function Move() : void
       {
-         var newSpeed:*;
-         var difference:*;
+         var newSpeed:Number;
+         var difference:Number;
          var r:int = 0;
          var building:BFOUNDATION = null;
          var Distance:int = 0;
@@ -199,7 +239,7 @@ package
                         "y":this._graphicMC.y - 40,
                         "ease":Sine.easeOut,
                         "overwrite":false,
-                        "onComplete":function():*
+                        "onComplete":function():void
                         {
                            _jumpingUp = false;
                         }
@@ -209,7 +249,7 @@ package
                         "ease":Bounce.easeOut,
                         "overwrite":false,
                         "delay":0.4,
-                        "onComplete":function():*
+                        "onComplete":function():void
                         {
                            _jumping = false;
                         }
@@ -316,7 +356,7 @@ package
          }
       }
       
-      public function Say(param1:String, param2:int = 2000) : *
+      public function Say(param1:String, param2:int = 2000) : void
       {
          this.hideTimer.stop();
          this.hideTimer.delay = param2;
@@ -324,7 +364,7 @@ package
          {
             MAP._PROJECTILES.removeChild(this._messageMC);
          }
-         this._messageMC = MAP._PROJECTILES.addChild(new workerMessage());
+         this._messageMC = MAP._PROJECTILES.addChild(new workerMessage()) as MovieClip;
          this._messageMC.visible = false;
          this._messageMC.txt.autoSize = "left";
          this._messageMC.txt.htmlText = param1;
@@ -348,7 +388,7 @@ package
          this.showTimer.start();
       }
       
-      internal function sayShow(param1:TimerEvent = null) : *
+      private function sayShow(param1:TimerEvent = null) : void
       {
          if(this._messageMC)
          {
@@ -358,7 +398,7 @@ package
          this.showTimer.stop();
       }
       
-      internal function sayHide(param1:TimerEvent) : *
+      private function sayHide(param1:TimerEvent) : void
       {
          TweenLite.to(this._messageMC,0.5,{
             "alpha":0,
@@ -367,7 +407,7 @@ package
          this.hideTimer.stop();
       }
       
-      internal function sayHideB() : *
+      private function sayHideB() : void
       {
          if(Boolean(this._messageMC) && Boolean(this._messageMC.parent))
          {

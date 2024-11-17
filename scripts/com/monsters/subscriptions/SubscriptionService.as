@@ -16,10 +16,8 @@ package com.monsters.subscriptions
       private function callJS(param1:String, param2:Function = null, param3:Number = 2) : void
       {
          var _loc4_:String = param1.replace("cc.","");
-         print("Making subscription call(" + param1 + "), subscriptionID: " + param3 + "...");
          if(param2 && ExternalInterface.available && this._callbacks.indexOf(_loc4_) < 0)
          {
-            print("..and adding callback");
             ExternalInterface.addCallback(_loc4_,param2);
             this._callbacks[_loc4_] = _loc4_;
          }
@@ -33,9 +31,7 @@ package com.monsters.subscriptions
       
       public function getUserSubscriptions(param1:String) : void
       {
-         var _loc2_:SubscriptionStatusEvent = null;
-         _loc2_ = new SubscriptionStatusEvent(SubscriptionStatusEvent.STATUS_EVENT);
-         print("parsing callback data");
+         var _loc2_:SubscriptionStatusEvent = new SubscriptionStatusEvent(SubscriptionStatusEvent.STATUS_EVENT);
          if(!param1)
          {
             Console.warning("did not recieve json back from the server");
@@ -61,7 +57,6 @@ package com.monsters.subscriptions
          {
             _loc2_.expirationDate = _loc5_;
          }
-         print("dispatching parsed data");
          dispatchEvent(_loc2_);
       }
       
@@ -80,9 +75,8 @@ package com.monsters.subscriptions
       {
          if(!param1)
          {
-            print("got a calback @ \'showSubscriptionDialog\' but theres no JSON data!");
+            Console.warning("got a calback @ \'showSubscriptionDialog\' but theres no JSON data!");
          }
-         print("got a calback @ \'showSubscriptionDialog\'" + param1);
          this.getUserSubscriptions(param1);
       }
       

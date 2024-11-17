@@ -43,7 +43,7 @@ package com.monsters.maproom
       
       public var _wmbToDisplay:int = 3;
       
-      private var wmBasesUsed:* = 0;
+      private var wmBasesUsed:int = 0;
       
       public var faked:Boolean = false;
       
@@ -116,7 +116,7 @@ package com.monsters.maproom
          var r:Object;
          var handleLoadSuccessful:Function = null;
          var handleLoadError:Function = null;
-         handleLoadSuccessful = function(param1:Object):*
+         handleLoadSuccessful = function(param1:Object):void
          {
             var aib:Object = null;
             var ai:String = null;

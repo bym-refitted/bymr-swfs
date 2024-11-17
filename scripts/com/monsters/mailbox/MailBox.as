@@ -71,7 +71,7 @@ package com.monsters.mailbox
             "pic_square":""
          },true);
          _loc2_.picClass = system_message;
-         var _loc3_:* = new URLLoaderApi();
+         var _loc3_:URLLoaderApi = new URLLoaderApi();
          _loc3_.load(GLOBAL._apiURL + "player/getmessagetargets",null,this.onTargetsSuccess,this.onTargetsFail);
       }
       

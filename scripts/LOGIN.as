@@ -1,7 +1,9 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMDevConfig;
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.player.Player;
    import com.monsters.radio.RADIO;
    import flash.events.*;
    import flash.external.ExternalInterface;
@@ -87,7 +89,14 @@ package
                   GLOBAL.ErrorMessage(_loc2_.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
                }
             });
-            GLOBAL.CallJS("cc.initApplication",[GLOBAL._version.Get(),"loginsuccessful"]);
+            if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+            {
+               GLOBAL.CallJSWithClient("cc.initApplication","loginsuccessful",[GLOBAL._version.Get()]);
+            }
+            else
+            {
+               GLOBAL.CallJS("cc.initApplication",[GLOBAL._version.Get(),"loginsuccessful"]);
+            }
             logFlashCapabilities();
          }
       }
@@ -111,6 +120,13 @@ package
          }
          else
          {
+            GLOBAL.player = new Player();
+            GLOBAL.player.ID = param1.userid;
+            GLOBAL.player.name = param1.username;
+            GLOBAL.player.lastName = param1.last_name;
+            GLOBAL.player.picture = param1.pic_square;
+            GLOBAL.player.timePlayed = param1.timeplayed;
+            GLOBAL.player.email = param1.email;
             _playerID = param1.userid;
             _playerName = param1.username;
             _playerLastName = param1.last_name;
@@ -178,7 +194,7 @@ package
          }
       }
       
-      public static function Digits(param1:int) : *
+      public static function Digits(param1:int) : void
       {
          var _loc4_:int = 0;
          var _loc5_:String = null;
@@ -199,7 +215,7 @@ package
          }
       }
       
-      public static function Done() : *
+      public static function Done() : void
       {
          var _loc1_:int = 0;
          GLOBAL.Setup();
@@ -252,7 +268,7 @@ package
          }
       }
       
-      public static function checkHash(param1:String) : *
+      public static function checkHash(param1:String) : Boolean
       {
          var _loc2_:Array = param1.split(",\"h\":");
          param1 = _loc2_[0] + "}";
@@ -268,14 +284,14 @@ package
          return true;
       }
       
-      public static function getNum(param1:int) : *
+      public static function getNum(param1:int) : int
       {
          return param1 * (param1 % 11);
       }
       
-      public static function getSalt() : *
+      public static function getSalt() : String
       {
-         return decodeSalt("1V87Z84V19XV71U86583YX799Y8X5X89339UZ155");
+         return decodeSalt("XVV9YXVZVV2U3384W6VWYVZU31497399");
       }
       
       public static function decodeSalt(param1:String) : String

@@ -54,7 +54,7 @@ package com.monsters.maproom.views
             this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onImageLoaded);
             try
             {
-               LoadImageError = function(param1:IOErrorEvent):*
+               LoadImageError = function(param1:IOErrorEvent):void
                {
                };
                this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);

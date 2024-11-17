@@ -9,7 +9,7 @@ package
          super();
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          STORE.Hide();
       }

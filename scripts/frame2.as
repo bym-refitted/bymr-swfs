@@ -45,7 +45,7 @@ package
          this.Setup();
       }
       
-      public function Setup(param1:Boolean = true, param2:Function = null) : *
+      public function Setup(param1:Boolean = true, param2:Function = null) : void
       {
          var _loc3_:* = false;
          var _loc4_:MovieClip = null;
@@ -139,8 +139,63 @@ package
          this.visible = false;
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
+         if(Boolean(this._bottomLeft) && Boolean(this._bottomLeft.bitmapData))
+         {
+            this._bottomLeft.bitmapData.dispose();
+            this._bottomLeft.bitmapData = null;
+         }
+         if(Boolean(this._bottomRight) && Boolean(this._bottomRight.bitmapData))
+         {
+            this._bottomRight.bitmapData.dispose();
+            this._bottomRight.bitmapData = null;
+         }
+         if(Boolean(this._topLeft) && Boolean(this._topLeft.bitmapData))
+         {
+            this._topLeft.bitmapData.dispose();
+            this._topLeft.bitmapData = null;
+         }
+         if(Boolean(this._topRight) && Boolean(this._topRight.bitmapData))
+         {
+            this._topRight.bitmapData.dispose();
+            this._topRight.bitmapData = null;
+         }
+         if(Boolean(this._fillerTop) && Boolean(this._fillerTop.bitmapData))
+         {
+            this._fillerTop.bitmapData.dispose();
+            this._fillerTop.bitmapData = null;
+         }
+         if(Boolean(this._fillerLeft) && Boolean(this._fillerLeft.bitmapData))
+         {
+            this._fillerLeft.bitmapData.dispose();
+            this._fillerLeft.bitmapData = null;
+         }
+         if(Boolean(this._fillerRight) && Boolean(this._fillerRight.bitmapData))
+         {
+            this._fillerRight.bitmapData.dispose();
+            this._fillerRight.bitmapData = null;
+         }
+         if(Boolean(this._fillerBottom) && Boolean(this._fillerBottom.bitmapData))
+         {
+            this._fillerBottom.bitmapData.dispose();
+            this._fillerBottom.bitmapData = null;
+         }
+         if(Boolean(this._background) && Boolean(this._background.bitmapData))
+         {
+            this._background.bitmapData.dispose();
+            this._background.bitmapData = null;
+         }
+         if(Boolean(this._buttonClose) && Boolean(this._buttonClose.bitmapData))
+         {
+            this._buttonClose.bitmapData.dispose();
+            this._buttonClose.bitmapData = null;
+         }
+         if(Boolean(this._buttonHelp) && Boolean(this._buttonHelp.bitmapData))
+         {
+            this._buttonHelp.bitmapData.dispose();
+            this._buttonHelp.bitmapData = null;
+         }
          try
          {
             if(this._frameDO.parent)
@@ -157,7 +212,7 @@ package
          }
       }
       
-      private function BtnClose(param1:MouseEvent = null) : *
+      private function BtnClose(param1:MouseEvent = null) : void
       {
          if("Hide" in parent)
          {
@@ -173,7 +228,7 @@ package
          }
       }
       
-      private function BtnHelp(param1:MouseEvent = null) : *
+      private function BtnHelp(param1:MouseEvent = null) : void
       {
          if("Help" in parent)
          {
@@ -181,7 +236,7 @@ package
          }
       }
       
-      private function BtnFullScreen(param1:MouseEvent = null) : *
+      private function BtnFullScreen(param1:MouseEvent = null) : void
       {
          GLOBAL.goFullScreen();
          if("FullScreen" in parent)

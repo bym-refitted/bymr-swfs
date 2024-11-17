@@ -5998,17 +5998,172 @@ package
       },{
          "id":132,
          "group":3,
-         "order":2,
+         "order":5,
          "buildStatus":0,
          "type":"tower",
-         "name":"#b_magmatower#",
+         "name":"#bi_magmatower#",
+         "attackType":1,
          "size":64,
          "attackgroup":1,
          "tutstage":200,
          "sale":0,
          "description":"bi_magmatower_desc",
          "block":true,
-         "quantity":[0]
+         "rewarded":false,
+         "stats":[{
+            "range":3 * 60,
+            "damage":3 * 60,
+            "rate":20,
+            "speed":14,
+            "splash":0
+         },{
+            "range":190,
+            "damage":4 * 60,
+            "rate":20,
+            "speed":15,
+            "splash":0
+         },{
+            "range":200,
+            "damage":5 * 60,
+            "rate":20,
+            "speed":16,
+            "splash":0
+         },{
+            "range":210,
+            "damage":6 * 60,
+            "rate":20,
+            "speed":17,
+            "splash":0
+         },{
+            "range":220,
+            "damage":7 * 60,
+            "rate":20,
+            "speed":18,
+            "splash":0
+         },{
+            "range":230,
+            "damage":8 * 60,
+            "rate":20,
+            "speed":19,
+            "splash":0
+         }],
+         "costs":[{
+            "r1":187500,
+            "r2":250000,
+            "r3":62500,
+            "r4":0,
+            "time":5 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         },{
+            "r1":750000,
+            "r2":1000000,
+            "r3":250000,
+            "r4":0,
+            "time":24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         },{
+            "r1":625 * 60 * 60,
+            "r2":50 * 60 * 1000,
+            "r3":750000,
+            "r4":0,
+            "time":2 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         },{
+            "r1":5250000,
+            "r2":5000000,
+            "r3":1250000,
+            "r4":0,
+            "time":4 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         },{
+            "r1":200 * 60 * 1000,
+            "r2":10000000,
+            "r3":2000000,
+            "r4":0,
+            "time":6 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         },{
+            "r1":16000000,
+            "r2":250 * 60 * 1000,
+            "r3":50 * 60 * 1000,
+            "r4":0,
+            "time":791200,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1]]
+         }],
+         "fortify_costs":[{
+            "r1":215000,
+            "r2":280000,
+            "r3":62500,
+            "r4":0,
+            "time":5 * 60 * 60,
+            "re":[[14,1,5]]
+         },{
+            "r1":850000,
+            "r2":20 * 60 * 1000,
+            "r3":250000,
+            "r4":0,
+            "time":24 * 60 * 60,
+            "re":[[14,1,6]]
+         },{
+            "r1":2750000,
+            "r2":3400000,
+            "r3":750000,
+            "r4":0,
+            "time":2 * 24 * 60 * 60,
+            "re":[[14,1,7]]
+         },{
+            "r1":5750000,
+            "r2":5200000,
+            "r3":1250000,
+            "r4":0,
+            "time":4 * 24 * 60 * 60,
+            "re":[[14,1,8]]
+         }],
+         "imageData":{
+            "baseurl":"buildings/imagmatower/",
+            "1":{
+               "anim":["anim.1.v2.png",new Rectangle(-26,-50,54,42),31],
+               "anim2":["anim.2.v2.png",new Rectangle(-17,26,38,19),31],
+               "top":["top.1.v2.png",new Point(-34,-9)],
+               "shadow":["shadow.1.v2.jpg",new Point(-31,10)],
+               "animdamaged":["anim.1.damaged.v2.png",new Rectangle(-28.6,-47.6,52,43),31],
+               "animdamaged2":["anim.2.damaged.v2.png",new Rectangle(-21,28,38,19),31],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-38,-4)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-38,16)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-36,6)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-36,22)]
+            }
+         },
+         "buildingbuttons":["magma_tower.v2"],
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{
+               "img":"magma_tower.v2.jpg",
+               "silhouette_img":"magma_tower.v2.silhouette.jpg"
+            }
+         },
+         "fortImgData":{
+            "baseurl":"buildings/fortifications/",
+            "1":{
+               "front":["fort70_F1.png",new Point(-73,21)],
+               "back":["fort70_B1.png",new Point(-70,-10)]
+            },
+            "2":{
+               "front":["fort70_F2.png",new Point(-69,22)],
+               "back":["fort70_B2.png",new Point(-65,-12)]
+            },
+            "3":{
+               "front":["fort70_F3.png",new Point(-72,10)],
+               "back":["fort70_B3.png",new Point(-68,-12)]
+            },
+            "4":{
+               "front":["fort70_F4.png",new Point(-70,-11)],
+               "back":["fort70_B4.png",new Point(-61,-36)]
+            }
+         },
+         "quantity":[0,1,1,1,2,2,2,2,2,2,2],
+         "hp":[250 * 60,22000,500 * 60,49000,59000,70000],
+         "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,92000]
       },{
          "id":133,
          "group":2,

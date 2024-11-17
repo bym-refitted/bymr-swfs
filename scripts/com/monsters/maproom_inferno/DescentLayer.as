@@ -45,7 +45,7 @@ package com.monsters.maproom_inferno
       
       public var _wmbToDisplay:int = 20;
       
-      private var wmBasesUsed:* = 0;
+      private var wmBasesUsed:int = 0;
       
       private var descentShroud:MovieClip;
       

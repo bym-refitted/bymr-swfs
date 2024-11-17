@@ -182,7 +182,7 @@ package
          return _loc3_;
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -191,18 +191,18 @@ package
          param3[0].mcLoading.visible = false;
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:String = null;
          var _loc2_:String = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:Object = null;
-         var _loc6_:int = 0;
-         var _loc7_:String = null;
-         var _loc8_:int = 0;
-         var _loc9_:* = false;
-         var _loc10_:* = undefined;
+         var _loc6_:* = false;
+         var _loc7_:int = 0;
+         var _loc8_:String = null;
+         var _loc9_:int = 0;
+         var _loc10_:Number = NaN;
          var _loc11_:int = 0;
          var _loc12_:Number = NaN;
          this.GetHousableCreatures();
@@ -213,18 +213,18 @@ package
             _loc3_ += CREATURELOCKER._creatures[_loc2_].props.cStorage * this._juiceList[_loc2_];
          }
          HOUSING._housingUsed.Add(-_loc3_);
-         _loc6_ = Math.round(100 / Number(HOUSING._housingCapacity.Get()) * Number(HOUSING._housingUsed.Get()));
+         _loc7_ = Math.round(100 / Number(HOUSING._housingCapacity.Get()) * Number(HOUSING._housingUsed.Get()));
          mcStorage.mcBar.width = 535 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
          mcStorage.mcBarB.width = 1;
-         tStorage.htmlText = "<b>" + GLOBAL.FormatNumber(HOUSING._housingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + " (" + _loc6_ + "%)</b>";
-         for(_loc7_ in this._creatureData)
+         tStorage.htmlText = "<b>" + GLOBAL.FormatNumber(HOUSING._housingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + " (" + _loc7_ + "%)</b>";
+         for(_loc8_ in this._creatureData)
          {
-            _loc8_ = int(_loc7_.substring(_loc7_.indexOf("C") + 1));
-            _loc1_ = _loc7_;
-            _loc9_ = _loc1_.substring(0,2) == "IC";
-            if(!((_loc9_) && !MAPROOM_DESCENT.DescentPassed))
+            _loc9_ = int(_loc8_.substring(_loc8_.indexOf("C") + 1));
+            _loc1_ = _loc8_;
+            _loc6_ = _loc1_.substring(0,2) == "IC";
+            if(!((_loc6_) && !MAPROOM_DESCENT.DescentPassed))
             {
-               if(!_loc9_ && !CREATURELOCKER._lockerData[_loc1_])
+               if(!_loc6_ && !CREATURELOCKER._lockerData[_loc1_])
                {
                   if(BASE.isInferno())
                   {
@@ -236,7 +236,7 @@ package
                   }
                   this._creatureList["m" + _loc1_];
                }
-               else if(!_loc9_ && CREATURELOCKER._lockerData[_loc1_].t == 1)
+               else if(!_loc6_ && CREATURELOCKER._lockerData[_loc1_].t == 1)
                {
                   this._creatureList["m" + _loc1_].tInfo.htmlText = KEYS.Get("mh_item_unlocking");
                   this._creatureList["m" + _loc1_].alpha = 0.5;
@@ -250,7 +250,7 @@ package
          }
          for(_loc2_ in HOUSING._creatures)
          {
-            _loc10_ = HOUSING._creatures[_loc2_].Get();
+            _loc10_ = Number(HOUSING._creatures[_loc2_].Get());
             if(this._creatureList["m" + _loc2_])
             {
                if(_loc10_ > 0)
@@ -281,8 +281,8 @@ package
             _loc4_ = 0;
             for(_loc2_ in this._juiceList)
             {
-               _loc9_ = _loc2_.substring(0,2) == "IC";
-               if(!_loc9_)
+               _loc6_ = _loc2_.substring(0,2) == "IC";
+               if(!_loc6_)
                {
                   _loc3_ += this._juiceList[_loc2_];
                   _loc12_ = 0.6;
@@ -334,12 +334,12 @@ package
          this._scroller.Update();
       }
       
-      public function JuicerAdd(param1:String) : *
+      public function JuicerAdd(param1:String) : Function
       {
          var isInfernoType:Boolean = false;
          var n:String = param1;
          isInfernoType = n.substring(0,2) == "IC";
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             if(isInfernoType)
             {
@@ -372,7 +372,7 @@ package
          };
       }
       
-      public function Juice(param1:MouseEvent = null) : *
+      public function Juice(param1:MouseEvent = null) : void
       {
          var _loc2_:String = null;
          var _loc4_:BFOUNDATION = null;
@@ -415,7 +415,7 @@ package
          HOUSING.Hide();
       }
       
-      public function SelectAll(param1:MouseEvent = null) : *
+      public function SelectAll(param1:MouseEvent = null) : void
       {
          var _loc2_:String = null;
          var _loc3_:* = false;
@@ -438,7 +438,7 @@ package
          }
       }
       
-      public function SelectNone(param1:MouseEvent = null) : *
+      public function SelectNone(param1:MouseEvent = null) : void
       {
          this._juiceList = {};
          bJuice.SetupKey("mh_nomonsters_btn");
@@ -447,14 +447,14 @@ package
          this.Update();
       }
       
-      public function Ascend(param1:MouseEvent = null) : *
+      public function Ascend(param1:MouseEvent = null) : void
       {
          SOUNDS.Play("click1");
          this.Hide();
          INFERNOPORTAL.AscendMonsters();
       }
       
-      public function Hide() : *
+      public function Hide() : void
       {
          HOUSING.Hide();
       }

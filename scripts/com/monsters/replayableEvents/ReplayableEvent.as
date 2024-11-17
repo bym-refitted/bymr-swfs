@@ -39,13 +39,29 @@ package com.monsters.replayableEvents
       
       protected var _duration:uint = 345600;
       
+      protected var _quotas:Vector.<ReplayableEventQuota>;
+      
+      protected var m_mustBeInsideBase:Boolean = false;
+      
+      protected var _maxScore:Number = 1.7976931348623157e+308;
+      
       public function ReplayableEvent()
       {
          super();
          if(this._rewardMessage)
          {
+            if(FrontPageLibrary.EVENTS === null)
+            {
+               FrontPageLibrary.addCategories();
+            }
             FrontPageLibrary.EVENTS.addMessage(this._rewardMessage);
          }
+         this._quotas = new Vector.<ReplayableEventQuota>();
+      }
+      
+      public function createNewUI() : IReplayableEventUI
+      {
+         return new ReplayableEventUI();
       }
       
       public function doesQualify() : Boolean
@@ -124,21 +140,52 @@ package com.monsters.replayableEvents
       
       public function exportData() : Object
       {
+         var _loc3_:int = 0;
+         var _loc4_:Object = null;
          var _loc1_:Object = {};
          _loc1_.startDate = this.startDate;
          if(this._rewardMessage)
          {
             _loc1_.reward = this._rewardMessage.export();
          }
+         var _loc2_:int = !!this._quotas ? int(this._quotas.length) : 0;
+         if(_loc2_ != 0)
+         {
+            _loc1_.quotas = new Array(_loc2_);
+            _loc3_ = 0;
+            while(_loc3_ < this._quotas.length)
+            {
+               _loc4_ = this._quotas[_loc3_].exportData();
+               if(_loc4_)
+               {
+                  _loc1_.quotas[_loc3_] = _loc4_;
+               }
+               _loc3_++;
+            }
+         }
          return _loc1_;
       }
       
       public function importData(param1:Object) : void
       {
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
          this.setStartDate(param1.startDate);
          if(Boolean(this._rewardMessage) && Boolean(param1.reward))
          {
             this._rewardMessage.setup(param1.reward);
+         }
+         if(param1.quotas)
+         {
+            _loc2_ = int(this._quotas.length);
+            _loc3_ = int(param1.quotas.length);
+            _loc4_ = 0;
+            while(_loc4_ < _loc2_ && _loc4_ < _loc3_)
+            {
+               this._quotas[_loc4_].importData(param1.quotas[_loc4_]);
+               _loc4_++;
+            }
          }
          this.onImport();
       }
@@ -186,7 +233,7 @@ package com.monsters.replayableEvents
          return this._name;
       }
       
-      internal function get originalStartDate() : Number
+      public function get originalStartDate() : Number
       {
          return this._originalStartDate;
       }
@@ -207,18 +254,40 @@ package com.monsters.replayableEvents
       
       public function set score(param1:Number) : void
       {
-         if(param1 == this._score)
-         {
-            return;
-         }
-         if(this._score >= 0)
+         var _loc2_:ReplayableEventQuota = null;
+         if(this._score >= 0 && param1 - this._score > 0)
          {
             ReplayableEventHandler.callServerMethod("updatescore",[["eventid",this._id],["delta",param1 - this._score]],this.verifyScoreFromServer);
          }
          this._score = param1;
+         if(!this.m_mustBeInsideBase || this.m_mustBeInsideBase && GLOBAL.isAtHome() === true)
+         {
+            _loc2_ = this.getCurrentQuota();
+            if(Boolean(_loc2_) && !_loc2_.hasBeenAwarded)
+            {
+               _loc2_.metQuota();
+            }
+         }
       }
       
-      private function verifyScoreFromServer(param1:Object) : void
+      protected function getCurrentQuota() : ReplayableEventQuota
+      {
+         var _loc3_:ReplayableEventQuota = null;
+         var _loc1_:int = int(this._quotas.length);
+         var _loc2_:int = 0;
+         while(_loc2_ < _loc1_)
+         {
+            _loc3_ = this._quotas[_loc2_];
+            if(this._score >= _loc3_.quota)
+            {
+               return _loc3_;
+            }
+            _loc2_++;
+         }
+         return null;
+      }
+      
+      protected function verifyScoreFromServer(param1:Object) : void
       {
          var _loc2_:Number = param1.score as Number;
          if(this._score != _loc2_)
@@ -229,6 +298,10 @@ package com.monsters.replayableEvents
       
       private function completedEvent() : void
       {
+         if(this.m_mustBeInsideBase && GLOBAL.isAtHome() != true)
+         {
+            return;
+         }
          if(!this._rewardMessage.hasBeenSeen)
          {
             POPUPS.Push(new FrontPageGraphic(this._rewardMessage));
@@ -285,6 +358,16 @@ package com.monsters.replayableEvents
       public function get score() : Number
       {
          return this._score;
+      }
+      
+      public function get rewards() : Vector.<ReplayableEventQuota>
+      {
+         return this._quotas;
+      }
+      
+      public function getMaxScore() : Number
+      {
+         return this._maxScore;
       }
    }
 }

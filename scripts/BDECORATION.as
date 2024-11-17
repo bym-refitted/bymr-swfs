@@ -2,13 +2,14 @@ package
 {
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Rectangle;
    
    public class BDECORATION extends BFOUNDATION
    {
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _field:BitmapData;
       
@@ -29,13 +30,13 @@ package
          super.SetProps();
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          super.Place(param1);
          Constructed();
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(GLOBAL._render && this._frameNumber % 2 == 0)

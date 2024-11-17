@@ -227,7 +227,7 @@ package com.monsters.display
             TweenLite.to(this.mcScroller,0.6,{
                "y":tgtY,
                "onUpdate":this.OnDrag,
-               "onComplete":function():*
+               "onComplete":function():void
                {
                   _Easing = oldEase;
                }

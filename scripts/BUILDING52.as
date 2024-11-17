@@ -9,8 +9,6 @@ package
    
    public class BUILDING52 extends BEXPIRABLE
    {
-      public var _animMC:*;
-      
       public var _field:BitmapData;
       
       public var _fieldBMP:Bitmap;
@@ -29,7 +27,7 @@ package
          SetProps();
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          super.Place(param1);
          if(_placing == false)
@@ -38,7 +36,7 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(GLOBAL._render && this._frameNumber % 2 == 0 && CREEPS._creepCount == 0)
@@ -48,20 +46,13 @@ package
          ++this._frameNumber;
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
-         var increment:Boolean = param1;
-         try
+         _animContainerBMD.copyPixels(_animBMD,new Rectangle(24 * _animTick,0,24,30),new Point(0,0));
+         ++_animTick;
+         if(_animTick == 22)
          {
-            _animContainerBMD.copyPixels(_animBMD,new Rectangle(24 * _animTick,0,24,30),new Point(0,0));
-            ++_animTick;
-            if(_animTick == 22)
-            {
-               _animTick = 0;
-            }
-         }
-         catch(e:Error)
-         {
+            _animTick = 0;
          }
       }
    }

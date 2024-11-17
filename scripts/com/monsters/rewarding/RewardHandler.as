@@ -95,19 +95,23 @@ package com.monsters.rewarding
          }
       }
       
+      public function clear() : void
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < this.rewards.length)
+         {
+            this.rewards[_loc1_].reset();
+            _loc1_++;
+         }
+         this.rewards.length = 0;
+      }
+      
       public function initialize(param1:Object = null) : void
       {
          if(GLOBAL._mode != "build" || BASE.isInferno())
          {
             return;
          }
-         var _loc2_:int = 0;
-         while(_loc2_ < this.rewards.length)
-         {
-            this.rewards[_loc2_].reset();
-            _loc2_++;
-         }
-         this.rewards.length = 0;
          UPDATES.addAction(this.processUpdate,this.name);
          RewardLibrary.initialize();
          if(param1)

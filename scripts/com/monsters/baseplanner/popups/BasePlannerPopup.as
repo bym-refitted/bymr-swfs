@@ -113,7 +113,7 @@ package com.monsters.baseplanner.popups
          this.Resize();
       }
       
-      public function setup() : *
+      public function setup() : void
       {
          this.configPopupTemplate();
          this.buildingExplorer.addEventListener(PlannerExplorer.EXPLORER_ITEM_CLICK,this.onExplorerItemClick);
@@ -123,6 +123,8 @@ package com.monsters.baseplanner.popups
             this._bLoad.mouseEnabled = false;
             this._bSave.Enabled = false;
             this._bSave.mouseEnabled = false;
+            this._bSave.mouseChildren = false;
+            this._bSave.enabled = false;
          }
       }
       
@@ -139,7 +141,7 @@ package com.monsters.baseplanner.popups
          while(_loc1_ < this._plannerTemplate.inventoryData.length)
          {
             _loc2_ = this._plannerTemplate.inventoryData[_loc1_].category;
-            if(_loc2_ != PlannerNode.TYPE_DECORATION)
+            if(_loc2_ != PlannerNode.TYPE_DECORATION && _loc2_ != PlannerNode.TYPE_MISC)
             {
                return false;
             }
@@ -152,11 +154,11 @@ package com.monsters.baseplanner.popups
       {
          this.buildingExplorer.redraw();
          this.designView.redraw();
+         this.sideBarScrollBar.checkResize();
       }
       
       public function configPopupTemplate(param1:int = 0, param2:int = 0) : void
       {
-         var _loc3_:Point = null;
          var _loc6_:Checkbox = null;
          var _loc7_:Checkbox = null;
          var _loc8_:Checkbox = null;
@@ -187,7 +189,7 @@ package com.monsters.baseplanner.popups
          this.mcFrame.width = this._guideMC.guideBG.width;
          this.mcFrame.height = this._guideMC.guideBG.height;
          (this.mcFrame as frame).Setup(true,this.Hide);
-         _loc3_ = new Point(this._PLANNER_LEFT_MARGIN,this._PLANNER_TOP_MARGIN);
+         var _loc3_:Point = new Point(this._PLANNER_LEFT_MARGIN,this._PLANNER_TOP_MARGIN);
          if(!this.sideBar)
          {
             this.sideBar = new BasePlannerPopup_ExplorerContainer();
@@ -201,7 +203,10 @@ package com.monsters.baseplanner.popups
          this.sideBar.canvasmask.height = param2 - (this.sideBar.y + _layoutSpacing.y + this._PLANNER_BOTTOM_MARGIN);
          this.sideBar.bg.width = this._PLANNER_SIDEBAR_WIDTH;
          this.sideBar.bg.height = param2 - (this.sideBar.y + _layoutSpacing.y + this._PLANNER_BOTTOM_MARGIN);
-         this.sideBarHeader = new BasePlannerPopup_ExplorerHeader();
+         if(!this.sideBarHeader)
+         {
+            this.sideBarHeader = new BasePlannerPopup_ExplorerHeader();
+         }
          this.sideBarHeader.tLabel.htmlText = KEYS.Get("basePlanner_explorerHeader");
          this.sideBarHeader.x = _layoutSpacing.x + _loc3_.x;
          this.sideBarHeader.y = _layoutSpacing.y + _loc3_.y;
@@ -216,6 +221,7 @@ package com.monsters.baseplanner.popups
             this.buildingExplorer.addEventListener(BasePlannerPopup.EXPLORER_UPDATE,this.onExplorerChange);
             this.buildingExplorer.x = 0;
             this.buildingExplorer.y = 0;
+            this.sideBar.canvas.getChildAt(0).height = 0;
             this.sideBar.canvas.addChild(this.buildingExplorer);
          }
          _layoutOffset.x = this.sideBar.x + this.sideBar.canvasmask.width;
@@ -283,6 +289,10 @@ package com.monsters.baseplanner.popups
             this._bSave.addEventListener(MouseEvent.ROLL_OUT,this.onToolTipHide);
             this.bottomMenu.addChild(this._bSave);
             this.bottomMenu.removeChild(this.bottomMenu.btnSave);
+            if(!BasePlanner.canSave)
+            {
+               this._bSave.mouseEnabled = this._bSave.enabled = this._bSave.Enabled = false;
+            }
             this._bLoad = new Button_CLIP();
             this._bLoad.x = this.bottomMenu.btnLoad.x;
             this._bLoad.y = this.bottomMenu.btnLoad.y;
@@ -294,6 +304,10 @@ package com.monsters.baseplanner.popups
             this._bLoad.addEventListener(MouseEvent.ROLL_OUT,this.onToolTipHide);
             this.bottomMenu.addChild(this._bLoad);
             this.bottomMenu.removeChild(this.bottomMenu.btnLoad);
+            if(!BasePlanner.canSave)
+            {
+               this._bLoad.mouseEnabled = this._bLoad.enabled = false;
+            }
             this._bApply = new Button_CLIP();
             this._bApply.x = this.bottomMenu.btnApply.x;
             this._bApply.y = this.bottomMenu.btnApply.y;
@@ -355,7 +369,7 @@ package com.monsters.baseplanner.popups
             this.toolMenu.mcStore.addEventListener(MouseEvent.CLICK,this.onToolClick);
             this.toolMenu.mcStore.addEventListener(MouseEvent.ROLL_OVER,this.onToolOver);
             this.toolMenu.mcStore.addEventListener(MouseEvent.ROLL_OUT,this.onToolOut);
-            if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 5)
+            if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 6)
             {
                this.toolMenu.mcExpand.enabled = false;
                this.toolMenu.mcExpand.mouseEnabled = false;
@@ -466,7 +480,7 @@ package com.monsters.baseplanner.popups
          {
             this.toolMenu.mcStore.gotoAndStop("over");
          }
-         if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 5)
+         if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 6)
          {
             this.toolMenu.mcExpand.enabled = false;
             this.toolMenu.mcExpand.mouseEnabled = false;
@@ -493,11 +507,11 @@ package com.monsters.baseplanner.popups
       {
          if(param1.target == this.toolMenu.mcSelectMove)
          {
-            this.designView.currentTool = PlannerDesignView.TOOL_SELECTMOVE;
+            this.designView.setTool(PlannerDesignView.TOOL_SELECTMOVE);
          }
          if(param1.target == this.toolMenu.mcStore)
          {
-            this.designView.currentTool = PlannerDesignView.TOOL_STORE;
+            this.designView.setTool(PlannerDesignView.TOOL_STORE);
          }
          this.onToolUpdate();
       }
@@ -553,6 +567,11 @@ package com.monsters.baseplanner.popups
          }
       }
       
+      public function removeSelection() : void
+      {
+         this.designView.removeSelection();
+      }
+      
       protected function onScroll(param1:MouseEvent) : void
       {
          if(param1.delta < 0)
@@ -565,9 +584,9 @@ package com.monsters.baseplanner.popups
          }
       }
       
-      public function onZoomUp(param1:MouseEvent = null) : *
+      public function onZoomUp(param1:MouseEvent = null) : void
       {
-         var _loc2_:Number = this.designView.zoomValue;
+         var _loc2_:Number = PlannerDesignView.zoomValue;
          if(_loc2_ < this.designView.zoomMax)
          {
             _loc2_ = Math.min(_loc2_ + this.designView.zoomStep,this.designView.zoomMax);
@@ -578,7 +597,7 @@ package com.monsters.baseplanner.popups
       
       public function onZoomDown(param1:MouseEvent = null) : void
       {
-         var _loc2_:Number = this.designView.zoomValue;
+         var _loc2_:Number = PlannerDesignView.zoomValue;
          if(_loc2_ > this.designView.zoomMin)
          {
             _loc2_ = Math.max(_loc2_ - this.designView.zoomStep,this.designView.zoomMin);
@@ -593,9 +612,8 @@ package com.monsters.baseplanner.popups
       
       public function zoomScrollerUpdate() : void
       {
-         var _loc3_:Number = 65;
-         var _loc4_:* = this.designView.zoomMax - this.designView.zoomMin;
-         var _loc5_:Number = 107 - _loc3_ / _loc4_ * this.designView.zoomValue;
+         var _loc4_:Number = this.designView.zoomMax - this.designView.zoomMin;
+         var _loc5_:Number = 107 - 65 / _loc4_ * PlannerDesignView.zoomValue;
          this.zoomMenu.scrollbar.y = _loc5_;
       }
       
@@ -640,9 +658,18 @@ package com.monsters.baseplanner.popups
          this._clearConfirmationPopup.tBody.htmlText = KEYS.Get("basePlanner_unsaved");
          this._clearConfirmationPopup.bCancel.SetupKey("basePlanner_btnClear");
          this._clearConfirmationPopup.bCancel.addEventListener(MouseEvent.CLICK,this.clickedClearInConfirmationClear,false,0,true);
-         this._clearConfirmationPopup.bConfirm.addEventListener(MouseEvent.CLICK,this.clickedSaveInConfirmationClear,false,0,true);
+         if(BasePlanner.canSave == false)
+         {
+            this._clearConfirmationPopup.bConfirm.Enabled = false;
+         }
+         else
+         {
+            this._clearConfirmationPopup.bConfirm.Enabled = true;
+            this._clearConfirmationPopup.bConfirm.addEventListener(MouseEvent.CLICK,this.clickedSaveInConfirmationClear,false,0,true);
+         }
          this._clearConfirmationPopup.addEventListener(Event.CLOSE,this.clickedCloseInConfirmationClear,false,0,true);
          POPUPS.Add(this._clearConfirmationPopup);
+         POPUPSETTINGS.AlignToCenter(this._clearConfirmationPopup);
       }
       
       protected function clickedCloseInConfirmationClear(param1:Event) : void
@@ -673,18 +700,25 @@ package com.monsters.baseplanner.popups
       
       private function clear() : void
       {
-         var _loc1_:int = 0;
-         while(_loc1_ < this._plannerTemplate.displayData.length)
+         var _loc3_:String = null;
+         var _loc1_:int = int(this._plannerTemplate.displayData.length);
+         var _loc2_:int = _loc1_ - 1;
+         while(_loc2_ >= 0)
          {
-            this._plannerTemplate.inventoryData.push(this._plannerTemplate.displayData[_loc1_]);
-            _loc1_++;
+            _loc3_ = this._plannerTemplate.displayData[_loc2_].category;
+            if(_loc3_ != PlannerNode.TYPE_MISC)
+            {
+               this._plannerTemplate.inventoryData.push(this._plannerTemplate.displayData[_loc2_]);
+               this._plannerTemplate.displayData.splice(_loc2_,1);
+            }
+            _loc2_--;
          }
-         this._plannerTemplate.displayData.length = 0;
          this.redraw();
          this.sideBarScrollBar.checkResize();
          this.changedPlannerData();
          this.zoomScrollerUpdate();
          this.designView.redrawRanges();
+         this.onDesignStateChange();
       }
       
       public function onExplorerChange(param1:Event = null) : void
@@ -696,11 +730,12 @@ package com.monsters.baseplanner.popups
       
       public function onClearExplorerSelections(param1:Event = null) : void
       {
-         this.buildingExplorer.clearSelections("");
+         this.buildingExplorer.clearSelections();
       }
       
       public function onExplorerItemClick(param1:BasePlannerNodeEvent = null) : void
       {
+         this.removeSelection();
          this.designView.addInventoryItem(param1.node);
          this.changedPlannerData();
          this.onToolUpdate();
@@ -734,7 +769,7 @@ package com.monsters.baseplanner.popups
          this.hasBeenSaved = false;
       }
       
-      public function Remove() : *
+      public function Remove() : void
       {
          if(this.designView)
          {
@@ -765,7 +800,7 @@ package com.monsters.baseplanner.popups
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          if(!this.hasBeenSaved && BasePlanner.canSave)
          {
@@ -780,6 +815,7 @@ package com.monsters.baseplanner.popups
             this._confirmationPopup.bConfirm.addEventListener(MouseEvent.CLICK,this.clickedSaveInConfirmation,false,0,true);
             this._confirmationPopup.addEventListener(Event.CLOSE,this.clickedCloseInConfirmation,false,0,true);
             POPUPS.Add(this._confirmationPopup);
+            POPUPSETTINGS.AlignToCenter(this._confirmationPopup);
          }
          else
          {
@@ -831,11 +867,15 @@ package com.monsters.baseplanner.popups
          this._hasBeenSaved = param1;
          if(param1)
          {
-            this._bSave.Enabled = false;
+            this._bSave.Enabled = !BASE.isOutpost;
+            this._bSave.enabled = !BASE.isOutpost;
+            this._bSave.mouseEnabled = !BASE.isOutpost;
          }
          else
          {
-            this._bSave.Enabled = true;
+            this._bSave.Enabled = BasePlanner.canSave;
+            this._bSave.enabled = BasePlanner.canSave;
+            this._bSave.mouseEnabled = BasePlanner.canSave;
          }
       }
    }

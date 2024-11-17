@@ -13,7 +13,7 @@ package
          super();
       }
       
-      public static function AlignToCenter(param1:DisplayObject) : *
+      public static function AlignToCenter(param1:DisplayObject) : void
       {
          param1.x = GLOBAL._SCREENCENTER.x;
          param1.y = GLOBAL._SCREENCENTER.y - _BOTTOM_PADDING;
@@ -23,13 +23,17 @@ package
          }
       }
       
-      public static function AlignToUpperLeft(param1:DisplayObject) : *
+      public static function AlignToUpperLeft(param1:DisplayObject, param2:Boolean = false) : void
       {
          param1.x = GLOBAL._SCREENCENTER.x - param1.width * 0.5;
          param1.y = GLOBAL._SCREENCENTER.y - _BOTTOM_PADDING - param1.height * 0.5;
+         if(param2)
+         {
+            param1.y = GLOBAL._SCREENCENTER.y - param1.height * 0.5;
+         }
       }
       
-      public static function ScaleUp(param1:DisplayObject) : *
+      public static function ScaleUp(param1:DisplayObject) : void
       {
          param1.scaleX = 0.9;
          param1.scaleY = 0.9;
@@ -40,7 +44,7 @@ package
          });
       }
       
-      public static function ScaleUpFromTopLeft(param1:DisplayObject) : *
+      public static function ScaleUpFromTopLeft(param1:DisplayObject) : void
       {
          param1.scaleX = 0.9;
          param1.scaleY = 0.9;

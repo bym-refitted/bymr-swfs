@@ -4,19 +4,20 @@ package com.monsters.replayableEvents
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.utils.Timer;
    
-   public class ReplayableEventUI extends EventsBar_CLIP
+   public class ReplayableEventUI extends EventsBar_CLIP implements IReplayableEventUI
    {
       public static var CLICKED_ACTION:String = "eventBarAction";
       
       public static var CLICKED_INFO:String = "eventBarInfo";
       
-      public var points:int;
+      private var points:int;
       
-      public var _timer:Timer;
+      private var _timer:Timer;
       
       private var _phase:int;
       
@@ -26,22 +27,27 @@ package com.monsters.replayableEvents
       
       private var _titlelogo:String;
       
-      public var _event:ReplayableEvent;
+      private var _event:ReplayableEvent;
       
       private const BASEIMAGEURL:String = "specialevent/";
       
-      public var eventText_tLabel:Array = ["tLabel","tLabel"];
+      private var eventText_tLabel:Array = ["tLabel","tLabel"];
       
-      public var eventText_barProgressTxt:Array = ["fp_infobar_progressbar","fp_infobar_progressbar"];
+      private var eventText_barProgressTxt:Array = ["fp_infobar_progressbar","fp_infobar_progressbar"];
       
-      public var eventText_bActionTxt:Array = ["btn_info","btn_info"];
+      private var eventText_bActionTxt:Array = ["btn_info","btn_info"];
       
       public function ReplayableEventUI()
       {
          super();
       }
       
-      public function Setup(param1:ReplayableEvent) : void
+      public function get eventUI() : DisplayObject
+      {
+         return this;
+      }
+      
+      public function setup(param1:ReplayableEvent) : void
       {
          this._event = param1;
          bHelp.addEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
@@ -56,11 +62,6 @@ package com.monsters.replayableEvents
          mcLogo.visible = false;
          mcLogo.enabled = false;
          mcLogo.mouseEnabled = false;
-         this.Update();
-      }
-      
-      public function Update(param1:* = null) : void
-      {
          gotoAndStop(this.phase);
          if(Boolean(this._event.buttonCopy) && this.phase > 1)
          {
@@ -84,16 +85,20 @@ package com.monsters.replayableEvents
             bHelp.x = 200;
          }
          this.updateImage();
+      }
+      
+      public function update() : void
+      {
          this.Tick();
       }
       
-      public function Tick(param1:* = null) : void
+      private function Tick(param1:* = null) : void
       {
          this.updateText();
          this.Resize();
       }
       
-      public function get phase() : Number
+      private function get phase() : Number
       {
          if(this._event.hasEventStarted)
          {
@@ -106,7 +111,7 @@ package com.monsters.replayableEvents
          return this._phase;
       }
       
-      public function updateText() : void
+      private function updateText() : void
       {
          var _loc2_:String = null;
          var _loc3_:Number = NaN;
@@ -133,7 +138,7 @@ package com.monsters.replayableEvents
             tLabel.htmlText = "<b>" + _loc2_ + "</b>";
          }
          tLabel.mouseEnabled = false;
-         if(this.phase > 1)
+         if(currentFrame > 1)
          {
             _loc3_ = 0;
             _loc4_ = this._event.progress;
@@ -145,9 +150,13 @@ package com.monsters.replayableEvents
             barProgressTxt.htmlText = "" + _loc6_ + " - " + _loc3_ + " %" + "";
             barProgress.mcBar.width = Math.min(100,this._event.progress * 100);
          }
+         else if(this.phase > 1)
+         {
+            tLabel.htmlText = "<b>" + KEYS.Get("refresh_to_start_event") + "<b>";
+         }
       }
       
-      public function updateImage() : void
+      private function updateImage() : void
       {
          var _loc1_:String = null;
          var _loc2_:String = null;
@@ -169,7 +178,7 @@ package com.monsters.replayableEvents
          }
       }
       
-      public function onImageLoaded(param1:String, param2:BitmapData) : void
+      private function onImageLoaded(param1:String, param2:BitmapData) : void
       {
          while(mcImage.numChildren)
          {
@@ -178,7 +187,7 @@ package com.monsters.replayableEvents
          mcImage.addChild(new Bitmap(param2));
       }
       
-      public function onLogoLoaded(param1:String, param2:BitmapData) : void
+      private function onLogoLoaded(param1:String, param2:BitmapData) : void
       {
          while(mcLogo.numChildren)
          {
@@ -190,27 +199,21 @@ package com.monsters.replayableEvents
          mcLogo.visible = true;
       }
       
-      public function ShowEventPopup(param1:MouseEvent = null) : void
+      private function ShowEventPopup(param1:MouseEvent = null) : void
       {
          dispatchEvent(new Event(CLICKED_ACTION));
       }
       
-      public function ShowInfoPopup(param1:MouseEvent = null) : void
+      private function ShowInfoPopup(param1:MouseEvent = null) : void
       {
          dispatchEvent(new Event(CLICKED_INFO));
       }
       
-      public function Hide() : void
+      private function Hide() : void
       {
-         if(true)
-         {
-            bHelp.removeEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
-            bAction.removeEventListener(MouseEvent.CLICK,this.ShowEventPopup);
-            parent.removeChild(this);
-         }
       }
       
-      public function Resize() : void
+      private function Resize() : void
       {
          GLOBAL.RefreshScreen();
          x = int(GLOBAL._SCREEN.x + 5 + 30);
@@ -221,7 +224,7 @@ package com.monsters.replayableEvents
          }
       }
       
-      public function PhaseKey(param1:Array, param2:Boolean = true) : String
+      private function PhaseKey(param1:Array, param2:Boolean = true) : String
       {
          if(this.phase - 1 < param1.length - 1)
          {

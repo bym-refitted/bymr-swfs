@@ -1,5 +1,6 @@
 package com.monsters.siege
 {
+   import com.monsters.debug.Console;
    import com.monsters.siege.weapons.*;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
@@ -56,6 +57,10 @@ package com.monsters.siege
       
       public static function activateWeapon(param1:String, param2:Number = 0, param3:Number = 0) : Boolean
       {
+         if(param1 == Vacuum.ID && GLOBAL._bTownhall._destroyed == true)
+         {
+            return false;
+         }
          activeWeaponID = param1;
          var _loc4_:SiegeWeapon = getWeapon(param1);
          ATTACK.Log("siegeWeaponActivation","<font color=\"#0000FF\">" + _loc4_.logMessage + "</font>");
@@ -81,6 +86,7 @@ package com.monsters.siege
       {
          if(!activeWeapon)
          {
+            Console.warning("there is no active weapon to deactivate, wtf you doin?");
             return;
          }
          if(activeWeaponTimer)

@@ -4,6 +4,7 @@ package com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg
    import com.monsters.frontPage.messages.events.battletoads.*;
    import com.monsters.frontPage.messages.events.monsterBlitzkrieg.*;
    import com.monsters.replayableEvents.monsterInvasion.MonsterInvasion;
+   import com.monsters.replayableEvents.monsterInvasion.WaveObj;
    import com.monsters.rewarding.RewardHandler;
    import com.monsters.rewarding.RewardLibrary;
    import com.monsters.rewarding.rewards.slimeattikus.UnblockSlimeattikusReward;
@@ -11,107 +12,8 @@ package com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg
    
    public class MonsterBlitzkrieg extends MonsterInvasion
    {
-      private static const WAVES:Array = [[{
-         "type":CREEP,
-         "wave":[["C2","bounce",8,250,DIR.N,0,1]],
-         "powerup":1,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C2","bounce",10,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },1,{
-         "type":CREEP,
-         "wave":[["C3","bounce",5,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C2","bounce",5,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },1,{
-         "type":CREEP,
-         "wave":[["C1","bounce",10,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C1","bounce",20,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },1,{
-         "type":CREEP,
-         "wave":[["C3","bounce",15,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C17","bounce",3,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },{
-         "type":CREEP,
-         "wave":[["C4","bounce",5,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C2","bounce",6,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },2,{
-         "type":CREEP,
-         "wave":[["C4","bounce",8,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C6","bounce",10,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },5,{
-         "type":CREEP,
-         "wave":[["C3","bounce",50,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C1","bounce",40,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },2,{
-         "type":CREEP,
-         "wave":[["C4","bounce",8,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C2","bounce",10,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      },1,{
-         "type":CREEP,
-         "wave":[["C1","bounce",10,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      },{
-         "type":CREEP,
-         "wave":[["C4","bounce",10,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      },5,{
-         "type":CREEP,
-         "wave":[["C3","bounce",10,250,DIR.N,0,0]],
-         "powerup":0,
-         "level":1
-      }],[{
-         "type":CREEP,
-         "wave":[["C17","bounce",8,250,DIR.N,0,1]],
-         "powerup":0,
-         "level":1
-      }]];
+      private static const WAVES:Array = [[new WaveObj("C2","bounce",8,WaveObj.DIR.N,0,0,true)],[new WaveObj("C2","bounce",10,WaveObj.DIR.N,0,0,true),1,new WaveObj("C3","bounce",5,WaveObj.DIR.N,0,0)],[new WaveObj("C2","bounce",5,WaveObj.DIR.N,0,0,true),1,new WaveObj("C1","bounce",10,WaveObj.DIR.N,0,0)],[new WaveObj("C1","bounce",20,WaveObj.DIR.N,0,0,true),1,new WaveObj("C3","bounce",15,WaveObj.DIR.N,0,0)],[new WaveObj("C17","bounce",3,WaveObj.DIR.N,0,0,true),new WaveObj("C4","bounce",5,WaveObj.DIR.N,0,0)],[new WaveObj("C2","bounce",6,WaveObj.DIR.N,0,0,true),2,new WaveObj("C4","bounce",8,WaveObj.DIR.N,0,0)],[new WaveObj("C6","bounce",10,WaveObj.DIR.N,0,0,true),5,new WaveObj("C3","bounce",50,WaveObj.DIR.N,0,0)],[new WaveObj("C1","bounce",40,WaveObj.DIR.N,0,0,true),2,new WaveObj("C4","bounce",8,WaveObj.DIR.N,0,0)],[new WaveObj("C2","bounce",10,WaveObj.DIR.N,0,0,true),1,new WaveObj("C1","bounce",10,WaveObj.DIR.N,0,0),new WaveObj("C4","bounce",10,WaveObj.DIR.N,0,0),5,new WaveObj("C3","bounce",10,WaveObj
+      .DIR.N,0,0)],[new WaveObj("C17","bounce",8,WaveObj.DIR.N,0,0,true)]];
       
       private const _WAVES_TOTAL:uint = 10;
       

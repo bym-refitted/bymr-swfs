@@ -48,7 +48,7 @@ package
          super.Tick(param1);
       }
       
-      private function NewWorld() : *
+      private function NewWorld() : void
       {
          var _loc1_:Array = null;
          if(GLOBAL._mode == GLOBAL._loadmode)
@@ -65,7 +65,7 @@ package
          }
       }
       
-      private function NewWorldSuccess(param1:Object) : *
+      private function NewWorldSuccess(param1:Object) : void
       {
          var _loc2_:int = 0;
          if(param1.error == 0)
@@ -125,7 +125,7 @@ package
          PLEASEWAIT.Hide();
       }
       
-      private function NewWorldFail(param1:IOErrorEvent) : *
+      private function NewWorldFail(param1:IOErrorEvent) : void
       {
          this.callPending = false;
          LOGGER.Log("err","BUILDING11.NewWorld HTTP");
@@ -133,19 +133,19 @@ package
          PLEASEWAIT.Hide();
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
          GLOBAL._bMap = this;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          GLOBAL._bMap = this;
          super.Constructed();
       }
       
-      override public function UpgradeB() : *
+      override public function UpgradeB() : void
       {
          super.UpgradeB();
          this.PopupUpgrade(1);
@@ -156,7 +156,7 @@ package
          var Speedup:Function = null;
          var popupMC:popup_generic = null;
          var n:int = param1;
-         Speedup = function(param1:MouseEvent = null):*
+         Speedup = function(param1:MouseEvent = null):void
          {
             POPUPS.Next();
             STORE.SpeedUp("SP4");
@@ -176,10 +176,10 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function = null;
-         Brag = function():*
+         Brag = function():void
          {
             GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("newmap_upgraded3"),KEYS.Get("newmap_upgraded1"),"build-maproom.png"]);
             POPUPS.Next();
@@ -189,7 +189,7 @@ package
          super.Upgraded();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(GLOBAL._advancedMap)
          {
@@ -208,7 +208,7 @@ package
          GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ATTEMPT_RECYCLE,this));
       }
       
-      private function RecycleD() : *
+      private function RecycleD() : void
       {
          if(GLOBAL._mode != GLOBAL._loadmode)
          {
@@ -219,7 +219,7 @@ package
          PLEASEWAIT.Show(KEYS.Get("wait_processing"));
       }
       
-      private function RecycleDSuccess(param1:Object) : *
+      private function RecycleDSuccess(param1:Object) : void
       {
          var _loc2_:int = 0;
          PLEASEWAIT.Hide();
@@ -264,14 +264,14 @@ package
          }
       }
       
-      private function RecycleDFail(param1:IOErrorEvent) : *
+      private function RecycleDFail(param1:IOErrorEvent) : void
       {
          PLEASEWAIT.Hide();
          LOGGER.Log("err","BUILDING11.Recycle HTTP");
          GLOBAL.ErrorMessage("BUILDING11 RecycleD 2");
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_lvl.Get() > 1)

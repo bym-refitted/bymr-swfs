@@ -7,7 +7,7 @@ package
          super();
       }
       
-      public function Update(param1:String) : *
+      public function Update(param1:String) : void
       {
          mc.tText.htmlText = param1;
       }

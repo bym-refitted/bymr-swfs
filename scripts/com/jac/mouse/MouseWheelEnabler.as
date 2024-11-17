@@ -62,7 +62,7 @@ package com.jac.mouse
          }
       }
       
-      private static function handleExternalMouseEvent(param1:Number, param2:*) : void
+      private static function handleExternalMouseEvent(param1:Number, param2:Number) : void
       {
          var _loc3_:Number = NaN;
          var _loc4_:uint = uint(getTimer());

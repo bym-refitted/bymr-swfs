@@ -13,7 +13,7 @@ package com.monsters.maproom_advanced
          super();
       }
       
-      public function Setup(param1:int, param2:int, param3:String, param4:int) : *
+      public function Setup(param1:int, param2:int, param3:String, param4:int) : void
       {
          var ImageLoaded:Function = null;
          var name:String = null;
@@ -21,7 +21,7 @@ package com.monsters.maproom_advanced
          var Y:int = param2;
          var monsterID:String = param3;
          var quantity:int = param4;
-         ImageLoaded = function(param1:String, param2:BitmapData):*
+         ImageLoaded = function(param1:String, param2:BitmapData):void
          {
             mcImage.addChild(new Bitmap(param2));
             mcImage.width = 30;

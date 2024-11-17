@@ -11,13 +11,13 @@ package
          super();
       }
       
-      public function Setup(param1:String, param2:int, param3:String) : *
+      public function Setup(param1:String, param2:int, param3:String) : void
       {
          var ImageLoaded:Function = null;
          var name:String = param1;
          var quantity:int = param2;
          var image:String = param3;
-         ImageLoaded = function(param1:String, param2:BitmapData):*
+         ImageLoaded = function(param1:String, param2:BitmapData):void
          {
             mcImage.addChild(new Bitmap(param2));
             mcImage.width = 30;

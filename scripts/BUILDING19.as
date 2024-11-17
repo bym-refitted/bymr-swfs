@@ -41,7 +41,7 @@ package
          SetProps();
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          if(!GLOBAL._catchup)
          {
@@ -77,18 +77,18 @@ package
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _upgradeDescription = KEYS.Get("building_baiter_upgrade_desc");
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -96,7 +96,7 @@ package
          GLOBAL._bBaiter = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_baiterbuilt_streamtitle"),KEYS.Get("pop_baiterbuilt_streambody"),"build-monsterbaiter.png"]);
                POPUPS.Next();
@@ -113,7 +113,7 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var percent:int = 0;
@@ -121,7 +121,7 @@ package
          super.Upgraded();
          if(GLOBAL._mode == "build")
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-wmb-" + _lvl.Get(),KEYS.Get("pop_baitupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_baitupgraded_streambody"),"upgrade-monsterbaiter.png"]);
                POPUPS.Next();
@@ -146,13 +146,13 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bBaiter = null;
          super.RecycleC();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() == 0)
@@ -161,7 +161,7 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          return super.Export();
       }

@@ -122,7 +122,7 @@ package com.monsters.siege
       {
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(this.upgradingWeapon)
@@ -131,7 +131,7 @@ package com.monsters.siege
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          var _loc2_:String = null;
          super.Setup(param1);
@@ -153,10 +153,10 @@ package com.monsters.siege
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc2_:String = null;
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          if(this.unlockingWeapons)
          {
             _loc1_.unlockingWeapons2 = {};

@@ -73,7 +73,7 @@ package
          }
       }
       
-      override public function SetProps() : *
+      override public function SetProps() : void
       {
          super.SetProps();
          _spriteAlert = new mc_buildingalerticon();
@@ -82,17 +82,17 @@ package
          _spriteAlert.mouseEnabled = false;
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          super.Click(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          var _loc8_:Number = NaN;
          var _loc7_:int = param1;
@@ -114,6 +114,7 @@ package
             }
          }
          super.Damage(param1,param2,param3,param4,param5,param6);
+         return _loc7_;
       }
       
       override public function Loot(param1:int) : void
@@ -161,7 +162,7 @@ package
          super.Loot(_loc2_);
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          if(param1)
          {
@@ -170,7 +171,7 @@ package
          super.Destroyed(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          if(!_producing)
@@ -179,7 +180,7 @@ package
          }
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -190,7 +191,7 @@ package
          }
          if(GLOBAL._mode == "build" && _lvl.Get() >= 3 && TUTORIAL._stage > 200 && !BASE.isInferno())
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                var _loc2_:String = "upgrade-twigsnapper.png";
                var _loc3_:String = KEYS.Get("#r_twigs#");
@@ -231,17 +232,17 @@ package
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:* = undefined;
+         var _loc7_:Number = NaN;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
-         var _loc10_:* = undefined;
+         var _loc10_:Number = NaN;
          super.Description();
          var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
          if(BASE._yardType == BASE.OUTPOST)
@@ -412,7 +413,7 @@ package
          }
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
          if(GLOBAL._render || param1)
@@ -437,7 +438,7 @@ package
          }
       }
       
-      public function StartProduction() : *
+      override public function StartProduction() : void
       {
          if(_hp.Get() > 0)
          {
@@ -472,7 +473,6 @@ package
       
       public function Produce() : void
       {
-         var v:* = undefined;
          if(_prefab)
          {
             _producing = 0;
@@ -485,29 +485,23 @@ package
          {
             _producing = 0;
          }
-         try
+         if(Math.max(_countdownProduce.Get(),0))
          {
-            if(Math.max(_countdownProduce.Get(),0))
+            LOGGER.Log("hak","BRESOURCE.Produce hack");
+            GLOBAL.ErrorMessage("BRESOURCE production hack");
+            return;
+         }
+         if(_producing)
+         {
+            _stored.Set(Math.min(_stored.Get() + this.productionValue,_buildingProps.capacity[_lvl.Get() - 1]));
+            if(_stored.Get() >= _buildingProps.capacity[_lvl.Get() - 1])
             {
-               LOGGER.Log("hak","BRESOURCE.Produce hack");
-               GLOBAL.ErrorMessage("BRESOURCE production hack");
-               return;
-            }
-            if(_producing)
-            {
-               _stored.Set(Math.min(_stored.Get() + this.productionValue,_buildingProps.capacity[_lvl.Get() - 1]));
-               if(_stored.Get() >= _buildingProps.capacity[_lvl.Get() - 1])
-               {
-                  _producing = 0;
-               }
-            }
-            if(_producing)
-            {
-               this.StartProduction();
+               _producing = 0;
             }
          }
-         catch(e:Error)
+         if(_producing)
          {
+            this.StartProduction();
          }
       }
       
@@ -525,7 +519,7 @@ package
          return this.ApplyTerrainBonus(_loc1_);
       }
       
-      override public function Bank() : *
+      override public function Bank() : void
       {
          var _loc3_:SecNum = null;
          var _loc1_:SecNum = new SecNum(_stored.Get());
@@ -562,7 +556,7 @@ package
          }
       }
       
-      override public function Repair() : *
+      override public function Repair() : void
       {
          super.Repair();
          if(!_producing)
@@ -571,12 +565,12 @@ package
          }
       }
       
-      override public function Repaired() : *
+      override public function Repaired() : void
       {
          super.Repaired();
       }
       
-      public function Fund(param1:int, param2:int) : *
+      public function Fund(param1:int, param2:int) : int
       {
          var _loc3_:int = 0;
          if(param1 < 4)
@@ -610,9 +604,9 @@ package
          return param2;
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
-         var _loc1_:* = undefined;
+         var _loc1_:Object = null;
          if(BASE.isOutpost)
          {
             return super.Export();
@@ -627,7 +621,7 @@ package
          return _loc1_;
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;

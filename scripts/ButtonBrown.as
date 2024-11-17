@@ -30,9 +30,9 @@ package
       
       public var labelKey:String;
       
-      public var _onColor:* = 3355443;
+      public var _onColor:Number = 3355443;
       
-      public var _offColor:* = 14398588;
+      public var _offColor:Number = 14398588;
       
       public function ButtonBrown()
       {
@@ -64,7 +64,7 @@ package
          cacheAsBitmap = true;
       }
       
-      public function Setup(param1:String = "", param2:Boolean = false, param3:int = 0, param4:int = 0, param5:String = "#333333") : *
+      public function Setup(param1:String = "", param2:Boolean = false, param3:int = 0, param4:int = 0, param5:String = "#333333") : void
       {
          this._tab = param2;
          if(param3 > 0)
@@ -89,7 +89,7 @@ package
          this.Setup(KEYS.Get(this.labelKey),param2,param3,param4);
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          if(this._highlight)
          {
@@ -115,7 +115,7 @@ package
          }
       }
       
-      public function Over(param1:MouseEvent) : *
+      public function Over(param1:MouseEvent) : void
       {
          if(this._highlight)
          {
@@ -129,7 +129,7 @@ package
          }
       }
       
-      public function Out(param1:MouseEvent) : *
+      public function Out(param1:MouseEvent) : void
       {
          if(this._highlight)
          {

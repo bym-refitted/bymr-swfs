@@ -68,10 +68,10 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function LoadPreset(param1:int) : *
+      private function LoadPreset(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             brightness = presets[n][1];
             contrast = presets[n][2];
@@ -83,13 +83,13 @@ package com.cc.screenshot
          };
       }
       
-      private function DragStart(param1:MouseEvent = null) : *
+      private function DragStart(param1:MouseEvent = null) : void
       {
          this.dragPoint = new Point(mouseX,mouseY);
          addEventListener(MouseEvent.MOUSE_MOVE,this.Dragging);
       }
       
-      private function DragStop(param1:MouseEvent = null) : *
+      private function DragStop(param1:MouseEvent = null) : void
       {
          removeEventListener(MouseEvent.MOUSE_MOVE,this.Dragging);
          this.offsetPoint.x += mouseX - this.dragPoint.x;
@@ -97,7 +97,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function Dragging(param1:MouseEvent = null) : *
+      private function Dragging(param1:MouseEvent = null) : void
       {
          screenshot.Take(mouseX - this.dragPoint.x + this.offsetPoint.x,mouseY - this.dragPoint.y + this.offsetPoint.y);
          this.Update();
@@ -105,7 +105,7 @@ package com.cc.screenshot
          mcImage.addChild(new Bitmap(screenshot._processedImage));
       }
       
-      private function Update() : *
+      private function Update() : void
       {
          tBrightness.htmlText = "<b>" + (100 + this.brightness) + "%";
          tContrast.htmlText = "<b>" + (100 + this.contrast) + "%";
@@ -119,7 +119,7 @@ package com.cc.screenshot
          mcImage.height = 6 * 60;
       }
       
-      private function Save(param1:MouseEvent = null) : *
+      private function Save(param1:MouseEvent = null) : void
       {
          var _loc2_:JPGEncoder = new JPGEncoder(80);
          var _loc3_:ByteArray = _loc2_.encode(screenshot._processedImage);
@@ -127,7 +127,7 @@ package com.cc.screenshot
          _loc4_.save(_loc3_,"BackyardMonsters.jpg");
       }
       
-      private function BrightnessDown(param1:MouseEvent) : *
+      private function BrightnessDown(param1:MouseEvent) : void
       {
          if(this.brightness > -100)
          {
@@ -136,7 +136,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function BrightnessUp(param1:MouseEvent) : *
+      private function BrightnessUp(param1:MouseEvent) : void
       {
          if(this.brightness < 100)
          {
@@ -145,7 +145,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function ContrastDown(param1:MouseEvent) : *
+      private function ContrastDown(param1:MouseEvent) : void
       {
          if(this.contrast > -100)
          {
@@ -154,7 +154,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function ContrastUp(param1:MouseEvent) : *
+      private function ContrastUp(param1:MouseEvent) : void
       {
          if(this.contrast < 100)
          {
@@ -163,7 +163,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function SaturationDown(param1:MouseEvent) : *
+      private function SaturationDown(param1:MouseEvent) : void
       {
          if(this.saturation > -100)
          {
@@ -172,7 +172,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function SaturationUp(param1:MouseEvent) : *
+      private function SaturationUp(param1:MouseEvent) : void
       {
          if(this.saturation < 100)
          {
@@ -181,7 +181,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function TiltUp(param1:MouseEvent) : *
+      private function TiltUp(param1:MouseEvent) : void
       {
          if(this.tilt < 100)
          {
@@ -190,7 +190,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function TiltDown(param1:MouseEvent) : *
+      private function TiltDown(param1:MouseEvent) : void
       {
          if(this.tilt > 0)
          {
@@ -199,7 +199,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function GrainDown(param1:MouseEvent) : *
+      private function GrainDown(param1:MouseEvent) : void
       {
          if(this.grain > 0)
          {
@@ -208,7 +208,7 @@ package com.cc.screenshot
          this.Update();
       }
       
-      private function GrainUp(param1:MouseEvent) : *
+      private function GrainUp(param1:MouseEvent) : void
       {
          if(this.grain < 2)
          {

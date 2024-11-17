@@ -1,12 +1,11 @@
 package com.monsters.autobanking
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
    
    public class AutoBankManager
    {
-      public static const AUTOBANK_FIX:Boolean = true;
-      
-      public function AutoBankManager(param1:ManagerEnforcer)
+      public function AutoBankManager(param1:InstanceEnforcer)
       {
          super();
       }
@@ -19,7 +18,7 @@ package com.monsters.autobanking
          {
             if(_loc3_ === "t")
             {
-               if(AUTOBANK_FIX && GLOBAL._mode === GLOBAL.MODE_ATTACK && BASE._yardType === BASE.OUTPOST)
+               if(BYMConfig.instance.AUTOBANK_FIX && GLOBAL._mode === GLOBAL.MODE_ATTACK && BASE._yardType === BASE.OUTPOST)
                {
                   param1[_loc3_] = BASE._lastProcessedGIP;
                }
@@ -116,9 +115,9 @@ package com.monsters.autobanking
    }
 }
 
-final class ManagerEnforcer
+final class InstanceEnforcer
 {
-   public function ManagerEnforcer()
+   public function InstanceEnforcer()
    {
       super();
    }

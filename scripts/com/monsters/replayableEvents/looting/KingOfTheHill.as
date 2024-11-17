@@ -70,7 +70,7 @@ package com.monsters.replayableEvents.looting
       
       override public function doesQualify() : Boolean
       {
-         return true;
+         return false;
       }
    }
 }

@@ -74,22 +74,22 @@ package com.monsters.mailbox
       
       public function shouldLoadImage() : void
       {
-         var c:Contact = null;
-         var pic_str:String = null;
+         var _loc1_:Contact = null;
+         var _loc2_:String = null;
          if(!this.loader)
          {
-            c = Contact.contactWithUserId(this.data.userid,true);
-            if(!c)
+            _loc1_ = Contact.contactWithUserId(this.data.userid,true);
+            if(!_loc1_)
             {
                return;
             }
-            pic_str = c.pic;
+            _loc2_ = _loc1_.pic;
             this.loader = new Loader();
             this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.onImgComplete);
             this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,this.onErr);
             try
             {
-               this.loader.load(new URLRequest(pic_str));
+               this.loader.load(new URLRequest(_loc2_));
             }
             catch(e:*)
             {

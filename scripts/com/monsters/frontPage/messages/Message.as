@@ -48,7 +48,7 @@ package com.monsters.frontPage.messages
       
       public function get hasBeenSeen() : Boolean
       {
-         return this.timeLastSeen;
+         return Boolean(this.timeLastSeen);
       }
       
       public function get areRequirementsMet() : Boolean
@@ -156,7 +156,7 @@ package com.monsters.frontPage.messages
          }
       }
       
-      public function markAsUnseenIfOlderThan(param1:*) : void
+      public function markAsUnseenIfOlderThan(param1:int) : void
       {
          if(GLOBAL.Timestamp() - this.timeLastSeen >= param1)
          {

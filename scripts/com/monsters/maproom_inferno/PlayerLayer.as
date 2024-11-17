@@ -45,7 +45,7 @@ package com.monsters.maproom_inferno
       
       public var _wmbToDisplay:int = 7;
       
-      private var wmBasesUsed:* = 0;
+      private var wmBasesUsed:int = 0;
       
       private var _BRIDGE:Object;
       
@@ -135,7 +135,7 @@ package com.monsters.maproom_inferno
          var r:Object;
          var handleLoadSuccessful:Function = null;
          var handleLoadError:Function = null;
-         handleLoadSuccessful = function(param1:Object):*
+         handleLoadSuccessful = function(param1:Object):void
          {
             var aib:Object = null;
             var ai:String = null;

@@ -1,7 +1,9 @@
 package
 {
+   import com.monsters.configs.BYMConfig;
+   import com.monsters.rendering.RasterData;
+   import flash.display.BlendMode;
    import flash.display.DisplayObject;
-   import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
@@ -16,43 +18,64 @@ package
          super();
       }
       
-      override public function SetProps() : *
+      override public function SetProps() : void
       {
          super.SetProps();
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
+         var _loc1_:doodad_mushroom_mc = null;
+         var _loc2_:doodad_mushroom_shadow = null;
          super.PlaceB();
-         var _loc1_:* = _mc.addChild(new doodad_mushroom_mc());
+         _loc1_ = new doodad_mushroom_mc();
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            _mc.addChild(_loc1_);
+         }
+         else
+         {
+            _rasterData[_RASTERDATA_TOP] = _rasterData[_RASTERDATA_TOP] || new RasterData(_loc1_,_rasterPt[_RASTERDATA_TOP],int.MAX_VALUE);
+         }
          _loc1_.mc.gotoAndStop(this._mushroomFrame);
          _loc1_.mouseEnabled = false;
          _loc1_.mouseChildren = false;
-         var _loc2_:DisplayObject = _mcBase.addChild(new doodad_mushroom_shadow());
-         MovieClip(_loc2_).gotoAndStop(this._mushroomFrame);
-         _loc2_.blendMode = "multiply";
+         _loc2_ = new doodad_mushroom_shadow();
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            _mcBase.addChild(_loc2_);
+         }
+         else
+         {
+            _rasterData[_RASTERDATA_SHADOW] = _rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc2_,_rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,BlendMode.MULTIPLY);
+         }
+         _loc2_.gotoAndStop(this._mushroomFrame);
+         _loc2_.mouseEnabled = false;
+         _loc2_.mouseChildren = false;
+         _loc2_.blendMode = BlendMode.MULTIPLY;
          _origin = new Point(x,y);
+         updateRasterData();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          this._mushroomFrame = param1.frame;
          super.Setup(param1);
          _hp.Set(_hpMax.Get());
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc1_:Object = super.Export();
          _loc1_.frame = this._mushroomFrame;
          return _loc1_;
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
       }
       
-      override public function HasWorker() : *
+      override public function HasWorker() : void
       {
          if(_shake > 60 && BASE._pendingPurchase.length == 0)
          {
@@ -61,8 +84,9 @@ package
             _mcBase.x = _origin.x;
             _mcBase.y = _origin.y;
             MUSHROOMS.Pick(this);
+            return;
          }
-         else if(_shake % 2 == 0)
+         if(_shake % 2 == 0)
          {
             _mc.x = _origin.x - 2 + Math.random() * 4;
             _mc.y = _origin.y - 2 + Math.random() * 4;
@@ -70,9 +94,10 @@ package
             _mcBase.y = _origin.y - 1 + Math.random() * 2;
          }
          ++_shake;
+         updateRasterData();
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          if(TUTORIAL._stage >= 200 && !_picking)
          {
@@ -80,15 +105,15 @@ package
          }
       }
       
-      override public function Render(param1:String = "") : *
+      override public function Render(param1:String = "") : void
       {
       }
       
-      public function SoundGood() : *
+      public function SoundGood() : void
       {
       }
       
-      public function SoundBad() : *
+      public function SoundBad() : void
       {
       }
    }

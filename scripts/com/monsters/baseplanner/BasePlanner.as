@@ -40,10 +40,7 @@ package com.monsters.baseplanner
       
       public function setup(param1:Boolean = true) : void
       {
-         if(BASE.isOutpost)
-         {
-            canSave = false;
-         }
+         canSave = !BASE.isOutpost;
          this.service = new BasePlannerService();
          this.service.loadTemplates();
          this.service.addEventListener(BasePlannerServiceEvent.LOADED_TEMPLATES_LIST,this.loadedTemplateList);
@@ -73,6 +70,7 @@ package com.monsters.baseplanner
          {
             this.popup.redraw();
             this.popup.hasBeenSaved = true;
+            this.popup.changedPlannerData();
          }
       }
       
@@ -92,6 +90,7 @@ package com.monsters.baseplanner
       
       private function clickedSave(param1:Event) : void
       {
+         this.popup.removeSelection();
          if(this._transferPopup)
          {
             POPUPS.Remove(this._transferPopup);
@@ -104,11 +103,12 @@ package com.monsters.baseplanner
          }
          this._transferPopup.addEventListener(BasePlannerEvent.SAVE,this.saveTemplate,false,0,true);
          this._transferPopup.addEventListener(Event.CLOSE,this.closedTransferPopup);
-         POPUPS.Add(this._transferPopup);
+         POPUPS.Add(this._transferPopup,1);
       }
       
       private function clickedLoad(param1:Event) : void
       {
+         this.popup.removeSelection();
          if(this._transferPopup)
          {
             POPUPS.Remove(this._transferPopup);
@@ -121,7 +121,7 @@ package com.monsters.baseplanner
          }
          this._transferPopup.addEventListener(BasePlannerEvent.LOAD,this.loadTemplate,false,0,true);
          this._transferPopup.addEventListener(Event.CLOSE,this.closedTransferPopup);
-         POPUPS.Add(this._transferPopup);
+         POPUPS.Add(this._transferPopup,1);
       }
       
       private function clickedApply(param1:Event) : void
@@ -160,9 +160,10 @@ package com.monsters.baseplanner
          this.closedTransferPopup(null);
       }
       
-      protected function closedTransferPopup(param1:Event) : void
+      protected function closedTransferPopup(param1:Event = null) : void
       {
          POPUPS.Remove(this._transferPopup);
+         this._transferPopup.clear();
          this._transferPopup.removeEventListener(Event.CLOSE,this.closedTransferPopup);
          this._transferPopup = null;
       }
@@ -178,6 +179,10 @@ package com.monsters.baseplanner
             SOUNDS.Play("close");
             GLOBAL._layerWindows.removeChild(this.popup);
             this.popup = null;
+         }
+         if(this._transferPopup)
+         {
+            this.closedTransferPopup();
          }
       }
    }

@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Decoy;
    import flash.display.Bitmap;
@@ -79,14 +80,14 @@ package
          SetProps();
       }
       
-      public function FindTargets(param1:int, param2:int = 1) : *
+      public function FindTargets(param1:int, param2:int = 1) : void
       {
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
-         var _loc8_:* = undefined;
+         var _loc3_:Object = null;
+         var _loc4_:MonsterBase = null;
+         var _loc5_:String = null;
+         var _loc6_:Number = NaN;
+         var _loc7_:Point = null;
+         var _loc8_:int = 0;
          var _loc9_:Array = null;
          if(_lvl.Get() > 0 && _hp.Get() > 0)
          {
@@ -114,11 +115,12 @@ package
                _loc8_ = 0;
                for(_loc5_ in _loc9_)
                {
-                  if(++_loc8_ <= param1 && _loc9_[_loc5_].creep._behaviour != "retreat")
+                  _loc8_++;
+                  if(_loc8_ <= param1 && _loc9_[_loc5_].creep._behaviour != "retreat")
                   {
                      _loc3_ = _loc9_[_loc5_];
                      _loc4_ = _loc3_.creep;
-                     _loc6_ = _loc3_.dist;
+                     _loc6_ = Number(_loc3_.dist);
                      _loc7_ = _loc3_.pos;
                      this._targetCreeps.push({
                         "creep":_loc4_,
@@ -154,11 +156,12 @@ package
                   _loc8_ = 0;
                   for(_loc5_ in _loc9_)
                   {
-                     if(++_loc8_ <= param1 && _loc9_[_loc5_].creep._behaviour != "retreat")
+                     _loc8_++;
+                     if(_loc8_ <= param1 && _loc9_[_loc5_].creep._behaviour != "retreat")
                      {
                         _loc3_ = _loc9_[_loc5_];
                         _loc4_ = _loc3_.creep;
-                        _loc6_ = _loc3_.dist;
+                        _loc6_ = Number(_loc3_.dist);
                         _loc7_ = _loc3_.pos;
                         this._targetFlyers.push({
                            "creep":_loc4_,
@@ -284,7 +287,7 @@ package
          return false;
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          var _loc2_:String = null;
          var _loc3_:int = 0;
@@ -437,7 +440,7 @@ package
                   _loc10_._targetCreep = _loc5_;
                   _loc10_._homeBunker = this;
                   _loc10_._hasTarget = true;
-                  if(_loc10_._pathing = "direct")
+                  if(_loc10_._pathing == "direct")
                   {
                      _loc10_.alpha = 0;
                      _loc10_._phase = 1;
@@ -451,7 +454,7 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          ++this._frameNumber;
          if(!GLOBAL._catchup)
@@ -483,7 +486,7 @@ package
          }
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
          {
@@ -508,27 +511,28 @@ package
          }
          this.Update();
          BASE.Save();
+         return param1;
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
          _upgradeDescription = KEYS.Get("bunker_upgrade_desc");
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-wmb",KEYS.Get("pop_bunkerbuilt_streamtitle"),KEYS.Get("pop_bunkerbuilt_streambody"),"build-monsterbunker.png"]);
                POPUPS.Next();
@@ -548,7 +552,7 @@ package
          }
       }
       
-      override public function Destroyed(param1:Boolean = true) : *
+      override public function Destroyed(param1:Boolean = true) : void
       {
          var _loc2_:String = null;
          for(_loc2_ in this._monsters)
@@ -562,14 +566,14 @@ package
          super.Destroyed();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          if(GLOBAL._mode == "build")
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["upgrade-wmb-" + _lvl.Get(),KEYS.Get("pop_bunkerupgraded_streamtitle",{"v1":_lvl.Get()}),KEYS.Get("pop_bunkerupgraded_streambody"),"build-monsterbunker.png"]);
                POPUPS.Next();
@@ -589,14 +593,14 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          super.RecycleC();
          this._capacity = 0;
          this.Cull();
       }
       
-      public function Cull() : *
+      public function Cull() : void
       {
          var _loc3_:String = null;
          var _loc4_:String = null;
@@ -640,7 +644,7 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          var _loc2_:String = null;
          super.Setup(param1);
@@ -682,7 +686,7 @@ package
          }
       }
       
-      override public function Over(param1:MouseEvent) : *
+      override public function Over(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
          {
@@ -715,7 +719,7 @@ package
          TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
-      override public function Out(param1:MouseEvent) : *
+      override public function Out(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
          {
@@ -728,10 +732,10 @@ package
          TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc2_:int = 0;
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          if(Boolean(this._monsters) && _hp.Get() > 0)
          {
             for each(_loc2_ in this._monsters)

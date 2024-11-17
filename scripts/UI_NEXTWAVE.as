@@ -6,7 +6,7 @@ package
    
    public class UI_NEXTWAVE extends NEXTWAVEBAR_CLIP
    {
-      private var _popupWaveInfo:*;
+      private var _popupWaveInfo:bubblepopupDownBuff;
       
       public function UI_NEXTWAVE()
       {
@@ -84,7 +84,7 @@ package
          if(!this._popupWaveInfo)
          {
             _loc7_ = new bubblepopupDownBuff();
-            this._popupWaveInfo = this.addChild(_loc7_);
+            this._popupWaveInfo = this.addChild(_loc7_) as bubblepopupDownBuff;
             _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
             _loc7_.x = 20;
             _loc7_.y = -20;
@@ -96,7 +96,7 @@ package
          }
       }
       
-      public function WaveHide(param1:MouseEvent) : *
+      public function WaveHide(param1:MouseEvent) : void
       {
          if(this._popupWaveInfo)
          {

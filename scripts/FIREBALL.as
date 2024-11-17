@@ -1,5 +1,7 @@
 package
 {
+   import com.monsters.display.SpriteData;
+   import com.monsters.monsters.MonsterBase;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -16,7 +18,13 @@ package
       
       public static const TYPE_MAGMA:String = "magma";
       
+      public static const TYPE_SPURTZ:String = "spurtz";
+      
       public static const COLLIDED:String = "fireballCollided";
+      
+      public static const ROCKET_GRAPHIC_NAME:String = "rocket";
+      
+      public static const SPRUTZ_GRAPHIC_NAME:String = "IC1";
       
       private const DO_ROCKETS_ACCELERATE:Boolean = false;
       
@@ -86,6 +94,8 @@ package
       
       private var _acceleration:Number;
       
+      private var _graphicName:String;
+      
       public function FIREBALL()
       {
          super();
@@ -93,7 +103,8 @@ package
       
       public function Setup(param1:String = "fireball") : void
       {
-         var _loc2_:Bitmap = null;
+         var _loc2_:SpriteData = null;
+         var _loc3_:Bitmap = null;
          if(this._graphic)
          {
             if(this._graphic.numChildren > 0)
@@ -112,18 +123,28 @@ package
                this._graphic.filters = [new GlowFilter(0xff9000,1,12,12,6,1,false,false)];
             }
          }
-         else if(this._type == TYPE_MISSILE)
+         else
          {
+            switch(this._type)
+            {
+               case TYPE_MISSILE:
+                  this._graphicName = ROCKET_GRAPHIC_NAME;
+                  break;
+               case TYPE_SPURTZ:
+                  this._graphicName = SpurtzCannon.SPURTZ_PROJECTILE;
+                  this._targetType = 3;
+            }
             this._graphic = new MovieClip();
             if(this.DO_ROCKETS_ACCELERATE)
             {
                this._acceleration = 0.05;
             }
-            this._bitmapData = new BitmapData(16,16,true,0xffffff);
-            _loc2_ = new Bitmap(this._bitmapData);
-            _loc2_.x = -10;
-            _loc2_.y = -10;
-            this._graphic.addChild(_loc2_);
+            _loc2_ = SPRITES.GetSpriteDescriptor(this._graphicName) as SpriteData;
+            this._bitmapData = new BitmapData(_loc2_.width,_loc2_.height,true,0xffffff);
+            _loc3_ = new Bitmap(this._bitmapData);
+            _loc3_.x = -(_loc2_.width * 0.5);
+            _loc3_.y = -(_loc2_.height * 0.5);
+            this._graphic.addChild(_loc3_);
          }
       }
       
@@ -146,9 +167,15 @@ package
                this._targetPoint = this._targetCreep._tmpPoint;
             }
          }
-         if(this._targetType == 2)
+         else if(this._targetType == 2)
          {
             this._targetPoint = new Point(this._targetBuilding._mc.x,this._targetBuilding._mc.y + this._targetBuilding._footprint[0].height / 2);
+         }
+         else if(this._targetType != 3)
+         {
+            if(this._targetType == 4)
+            {
+            }
          }
          this._distance = Point.distance(this._targetPoint,new Point(this._tmpX,this._tmpY));
          if(this.Move())
@@ -161,6 +188,9 @@ package
       
       public function Move() : Boolean
       {
+         var _loc2_:Number = NaN;
+         var _loc3_:int = 0;
+         var _loc4_:MovieClip = null;
          if(this._type == TYPE_MISSILE && this.DO_ROCKETS_ACCELERATE)
          {
             this._acceleration += 0.025;
@@ -183,41 +213,49 @@ package
             {
                this.Splash();
             }
-            else
+            else if(this._targetType == 1)
             {
-               if(this._targetType == 1)
+               if(this._damage > 0)
                {
-                  if(this._damage > 0)
+                  _loc2_ = this._targetCreep._damageMult * this._damage;
+                  this._targetCreep._health.Add(-(this._targetCreep._damageMult * this._damage));
+               }
+               else
+               {
+                  if(this._targetCreep._creatureID.substr(0,1) == "G")
                   {
-                     this._targetCreep._health.Add(-(this._targetCreep._damageMult * this._damage));
+                     this._damage *= 0.1;
+                  }
+                  _loc2_ = this._damage;
+                  if(this._targetCreep._health.Get() - _loc2_ >= this._targetCreep._maxHealth)
+                  {
+                     _loc2_ = -(this._targetCreep._maxHealth - this._targetCreep._health.Get());
+                     this._targetCreep._health.Set(this._targetCreep._maxHealth);
                   }
                   else
                   {
-                     if(this._targetCreep._creatureID.substr(0,1) == "G")
-                     {
-                        this._damage *= 0.1;
-                     }
-                     this._targetCreep._health.Add(-this._damage);
-                     if(this._targetCreep._health.Get() > this._targetCreep._maxHealth)
-                     {
-                        this._targetCreep._health.Set(this._targetCreep._maxHealth);
-                     }
+                     this._targetCreep._health.Add(-_loc2_);
                   }
-                  ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage > 0 ? int(this._targetCreep._damageMult * this._damage) : int(this._damage));
                }
-               if(this._targetType == 2)
+               ATTACK.Damage(this._startPoint.x,this._startPoint.y,_loc2_);
+            }
+            else if(this._targetType == 2)
+            {
+               if(this._targetBuilding._hp.Get() > 0)
                {
-                  if(this._targetBuilding._hp.Get() > 0)
+                  _loc3_ = this._targetBuilding.Damage(this._damage,this._targetBuilding._position.x,this._targetBuilding._position.y,1,true);
+                  ATTACK.Damage(this._startPoint.x,this._startPoint.y,_loc3_);
+               }
+            }
+            else if(this._targetType != 3)
+            {
+               if(this._targetType == 4)
+               {
+                  _loc4_ = BUILDING14(GLOBAL._bTownhall)._vacuum;
+                  if((Boolean(_loc4_)) && this._targetCreep == _loc4_)
                   {
-                     this._targetBuilding.Damage(this._damage,this._targetBuilding._position.x,this._targetBuilding._position.y,1,true);
-                     if(this._targetBuilding._fortification.Get() > 0)
-                     {
-                        ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage * ((100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100));
-                     }
-                     else
-                     {
-                        ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage);
-                     }
+                     BUILDING14(GLOBAL._bTownhall)._vacuumHealth.Add(-this._damage);
+                     ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage);
                   }
                }
             }
@@ -240,7 +278,7 @@ package
          return false;
       }
       
-      public function Render() : *
+      public function Render() : void
       {
          var _loc1_:Number = NaN;
          var _loc2_:Number = NaN;
@@ -249,104 +287,100 @@ package
             this._graphic.x = int(this._tmpX);
             this._graphic.y = int(this._tmpY);
          }
-         if(this._type == TYPE_MISSILE)
+         if(this._graphicName)
          {
-            _loc1_ = Math.atan2(this._targetPoint.x - this._tmpX,this._targetPoint.y - this._tmpY);
+            _loc1_ = Math.atan2(this._targetPoint.y - this._tmpY,this._targetPoint.x - this._tmpX);
             _loc2_ = _loc1_ * (180 / Math.PI);
-            SPRITES.GetSprite(this._bitmapData,"rocket","",_loc2_ - 90);
+            SPRITES.GetSprite(this._bitmapData,this._graphicName,"",_loc2_,this._frameNumber);
          }
       }
       
-      public function Splash() : *
+      public function Splash() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc7_:int = 0;
-         var _loc8_:* = undefined;
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:Number = NaN;
+         var _loc4_:Point = null;
+         var _loc5_:int = 0;
+         var _loc6_:Array = null;
          if(this._targetCreep._movement == "fly")
          {
-            _loc8_ = MAP.CreepCellFind(new Point(this._tmpX,this._tmpY),this._splash,2);
+            _loc6_ = MAP.CreepCellFind(new Point(this._tmpX,this._tmpY),this._splash,2);
          }
          else
          {
-            _loc8_ = MAP.CreepCellFind(new Point(this._tmpX,this._tmpY),this._splash);
+            _loc6_ = MAP.CreepCellFind(new Point(this._tmpX,this._tmpY),this._splash);
          }
-         var _loc9_:int = 0;
-         for(_loc3_ in _loc8_)
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         while(_loc8_ < _loc6_.length)
          {
-            _loc1_ = _loc8_[_loc3_];
+            _loc1_ = _loc6_[_loc8_];
             _loc2_ = _loc1_.creep;
-            if(!(Boolean(_loc2_._friendly) && this._damage < 0))
+            if(!(_loc2_._friendly && this._damage < 0))
             {
                if(_loc2_ == this._targetCreep)
                {
-                  if(_loc2_._creatureID.substr(0,1) == "G")
-                  {
-                     _loc9_ += this._damage / 10;
-                  }
-                  else
-                  {
-                     _loc9_ += this._damage;
-                  }
                   if(this._damage > 0)
                   {
                      _loc2_._health.Add(-(_loc2_._damageMult * this._damage));
+                     _loc7_ += _loc2_._damageMult * this._damage;
                   }
                   else if(_loc2_._creatureID.substr(0,1) == "G")
                   {
                      _loc2_._health.Add(-this._damage / 10);
+                     _loc7_ += this._damage / 10;
                   }
                   else
                   {
                      _loc2_._health.Add(-this._damage);
+                     _loc7_ += this._damage;
                   }
                   if(_loc2_._health.Get() > _loc2_._maxHealth)
                   {
-                     _loc9_ -= _loc2_._maxHealth - _loc2_._health.Get();
+                     _loc7_ -= _loc2_._maxHealth - _loc2_._health.Get();
                      _loc2_._health.Set(_loc2_._maxHealth);
                   }
                }
                else
                {
-                  _loc4_ = _loc1_.dist;
-                  _loc5_ = _loc1_.pos;
-                  _loc7_ = this._damage * 0.75 / this._splash * (this._splash - _loc4_);
-                  if(_loc7_ > 0)
+                  _loc3_ = Number(_loc1_.dist);
+                  _loc4_ = _loc1_.pos;
+                  _loc5_ = this._damage * 0.75 / this._splash * (this._splash - _loc3_);
+                  if(_loc5_ > 0)
                   {
-                     _loc2_._health.Add(-(_loc2_._damageMult * _loc7_));
-                     _loc9_ += _loc7_;
+                     _loc2_._health.Add(-(_loc2_._damageMult * _loc5_));
+                     _loc7_ += _loc2_._damageMult * _loc5_;
                   }
                   else if(_loc2_._creatureID.substr(0,1) == "G")
                   {
-                     _loc2_._health.Add(-_loc7_ / 10);
-                     _loc9_ += _loc7_ / 10;
+                     _loc2_._health.Add(-_loc5_ / 10);
+                     _loc7_ += _loc5_ / 10;
                   }
                   else
                   {
-                     _loc2_._health.Add(-_loc7_);
-                     _loc9_ += _loc7_;
+                     _loc2_._health.Add(-_loc5_);
+                     _loc7_ += _loc5_;
                   }
                   if(_loc2_._health.Get() > _loc2_._maxHealth)
                   {
-                     _loc9_ -= _loc2_._maxHealth - _loc2_._health.Get();
+                     _loc7_ -= _loc2_._maxHealth - _loc2_._health.Get();
                      _loc2_._health.Set(_loc2_._maxHealth);
                   }
                }
             }
+            _loc8_++;
          }
-         ATTACK.Damage(this._startPoint.x,this._startPoint.y,_loc9_);
+         ATTACK.Damage(this._startPoint.x,this._startPoint.y,_loc7_);
       }
       
-      public function FindGlaveTarget() : *
+      public function FindGlaveTarget() : void
       {
          var _loc1_:Point = null;
          var _loc2_:Point = null;
          var _loc3_:int = 0;
          var _loc5_:BFOUNDATION = null;
-         var _loc6_:* = undefined;
+         var _loc6_:String = null;
          var _loc4_:Array = [];
          _loc1_ = new Point(this._graphic.x,this._graphic.y);
          for(_loc6_ in BASE._buildingsMain)

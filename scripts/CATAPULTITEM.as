@@ -58,7 +58,7 @@ package
          this.Update();
       }
       
-      public function imageComplete(param1:String, param2:BitmapData) : *
+      public function imageComplete(param1:String, param2:BitmapData) : void
       {
          var _loc3_:Bitmap = new Bitmap(param2);
          this._image.addChild(_loc3_);

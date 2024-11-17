@@ -112,7 +112,7 @@ package com.monsters.ai
          var _loc6_:Number = NaN;
          var _loc7_:Number = NaN;
          var _loc8_:Number = NaN;
-         var _loc20_:* = undefined;
+         var _loc20_:BFOUNDATION = null;
          var _loc2_:Object = {};
          var _loc3_:int = 0;
          while(_loc3_ < WMATTACK._monsterKeys.length)

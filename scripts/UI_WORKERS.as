@@ -32,7 +32,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          var _loc1_:int = 0;
          var _loc2_:MovieClip = null;
@@ -86,10 +86,10 @@ package
          }
       }
       
-      private static function MouseOver(param1:int) : *
+      private static function MouseOver(param1:int) : Function
       {
          var i:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc3_:* = undefined;
             var _loc2_:* = _workers[i];
@@ -112,15 +112,15 @@ package
          };
       }
       
-      private static function MouseOut(param1:MouseEvent) : *
+      private static function MouseOut(param1:MouseEvent) : void
       {
          PopupHide();
       }
       
-      private static function MouseClicked(param1:int) : *
+      private static function MouseClicked(param1:int) : Function
       {
          var i:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             if(_workers[i])
             {
@@ -136,10 +136,10 @@ package
          };
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          var _loc3_:Object = null;
-         var _loc4_:* = undefined;
+         var _loc4_:Object = null;
          var _loc1_:Boolean = false;
          var _loc2_:int = 0;
          while(_loc2_ < _workers.length)
@@ -177,7 +177,7 @@ package
          Resize();
       }
       
-      public static function Resize() : *
+      public static function Resize() : void
       {
          var _loc1_:int = 0;
          if(!Chat.flagsShouldChatDisplay() && _canUseHorizontal)
@@ -196,7 +196,7 @@ package
          }
       }
       
-      private static function Render() : *
+      private static function Render() : void
       {
          var _loc2_:Object = null;
          var _loc1_:int = 0;
@@ -231,7 +231,7 @@ package
          }
       }
       
-      public static function PopupShow(param1:int, param2:int, param3:String, param4:int) : *
+      public static function PopupShow(param1:int, param2:int, param3:String, param4:int) : void
       {
          PopupHide();
          _popupID = param4;
@@ -241,7 +241,7 @@ package
          _popupdo = GLOBAL._layerUI.addChild(_popupmc);
       }
       
-      public static function PopupUpdate(param1:String) : *
+      public static function PopupUpdate(param1:String) : void
       {
          if(_popupmc)
          {
@@ -253,7 +253,7 @@ package
          }
       }
       
-      public static function PopupHide() : *
+      public static function PopupHide() : void
       {
          if(_popupdo)
          {
@@ -262,7 +262,7 @@ package
          }
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(TUTORIAL._stage < 192)
          {
@@ -274,7 +274,7 @@ package
          }
       }
       
-      public static function Hide() : *
+      public static function Hide() : void
       {
          _mc.visible = false;
       }

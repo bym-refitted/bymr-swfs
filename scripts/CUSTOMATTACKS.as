@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.monsters.MonsterBase;
    import flash.geom.Point;
    
    public class CUSTOMATTACKS
@@ -29,20 +30,24 @@ package
       
       public static function TrojanHorse() : void
       {
-         var _loc1_:Point = null;
-         var _loc2_:BFOUNDATION = null;
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:Point = null;
+         var _loc4_:BFOUNDATION = null;
          if(!BUILDING27._exists && !BASE.isInferno())
          {
-            _loc1_ = GRID.ToISO(-70,-800,0);
-            _loc2_ = BASE.addBuildingC(27);
+            _loc1_ = GLOBAL._mapHeight;
+            _loc2_ = -800 - (GLOBAL._mapHeight - 800) / 2;
+            _loc3_ = GRID.ToISO(-70,_loc2_,0);
+            _loc4_ = BASE.addBuildingC(27);
             ++BASE._buildingCount;
-            _loc2_.Setup({
+            _loc4_.Setup({
                "t":27,
                "X":-70,
-               "Y":-800,
+               "Y":_loc2_,
                "id":BASE._buildingCount
             });
-            MAP.FocusTo(_loc1_.x,_loc1_.y,2);
+            MAP.FocusTo(_loc3_.x,_loc3_.y,2);
             BASE.Save(0,false,true);
          }
       }
@@ -58,7 +63,7 @@ package
             UI2._scareAway.addEventListener("scareAway",MONSTERBAITER.End);
          }
          var _loc3_:Array = WMATTACK.SpawnA(param1);
-         var _loc4_:* = _loc3_[0][0];
+         var _loc4_:MonsterBase = _loc3_[0][0];
          MAP.FocusTo(_loc4_.x,_loc4_.y,2);
          return _loc3_;
       }

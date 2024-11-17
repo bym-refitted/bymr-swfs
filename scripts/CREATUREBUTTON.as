@@ -49,12 +49,12 @@ package
          this.Update();
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData) : *
+      public function IconLoaded(param1:String, param2:BitmapData) : void
       {
          mcImage.addChild(new Bitmap(param2));
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:int = 0;
          if(GLOBAL._advancedMap)
@@ -82,24 +82,24 @@ package
          }
       }
       
-      public function Over(param1:MouseEvent) : *
+      public function Over(param1:MouseEvent) : void
       {
          dispatchEvent(new Event(UI_TOP.CREATUREBUTTONOVER));
          this._description.visible = true;
       }
       
-      public function Out(param1:MouseEvent) : *
+      public function Out(param1:MouseEvent) : void
       {
          this._description.visible = false;
       }
       
-      public function Clear(param1:MouseEvent = null) : *
+      public function Clear(param1:MouseEvent = null) : void
       {
          removeEventListener(Event.ENTER_FRAME,this.MoreTick);
          removeEventListener(Event.ENTER_FRAME,this.LessTick);
       }
       
-      public function More(param1:MouseEvent) : *
+      public function More(param1:MouseEvent) : void
       {
          UI2._top.BombDeselect();
          this.MoreTickB();
@@ -107,7 +107,7 @@ package
          addEventListener(Event.ENTER_FRAME,this.MoreTick);
       }
       
-      public function MoreTick(param1:Event = null) : *
+      public function MoreTick(param1:Event = null) : void
       {
          if(this._tick > 10 && this._tick % 2 == 0)
          {
@@ -117,14 +117,14 @@ package
          ++this._tick;
       }
       
-      public function MoreTickB() : *
+      public function MoreTickB() : void
       {
          ATTACK.BucketAdd(this._creatureID);
          this.Update();
          ATTACK.BucketUpdate();
       }
       
-      public function Less(param1:MouseEvent) : *
+      public function Less(param1:MouseEvent) : void
       {
          UI2._top.BombDeselect();
          this.LessTickB();
@@ -132,7 +132,7 @@ package
          addEventListener(Event.ENTER_FRAME,this.LessTick);
       }
       
-      public function LessTick(param1:Event = null) : *
+      public function LessTick(param1:Event = null) : void
       {
          if(this._tick > 10 && this._tick % 2 == 0)
          {
@@ -142,14 +142,14 @@ package
          ++this._tick;
       }
       
-      public function LessTickB() : *
+      public function LessTickB() : void
       {
          ATTACK.BucketRemove(this._creatureID);
          this.Update();
          ATTACK.BucketUpdate();
       }
       
-      public function MovedOut() : *
+      public function MovedOut() : void
       {
          if(mouseY < 31 || mouseY > 51)
          {

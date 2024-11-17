@@ -322,7 +322,7 @@ package
          }
       }
       
-      public static function Show(param1:String = "text") : *
+      public static function Show(param1:String = "text") : void
       {
          if(!_open)
          {
@@ -478,7 +478,7 @@ package
          }
       }
       
-      public static function Hide() : *
+      public static function Hide() : void
       {
          if(_open)
          {
@@ -505,7 +505,7 @@ package
          }
       }
       
-      public function Switch(param1:String = "text") : *
+      public function Switch(param1:String = "text") : void
       {
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
@@ -667,7 +667,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          SALESPECIALSPOPUP.Hide();
       }

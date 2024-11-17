@@ -32,7 +32,7 @@ package com.monsters.subscriptions.ui.controlPanel
          this.Hide(param1);
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          dispatchEvent(new Event(SubscriptionHandler.CLOSECONFIRM));
          bConfirm.removeEventListener(MouseEvent.CLICK,this.clickedConfirm);

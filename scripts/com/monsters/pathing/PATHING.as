@@ -11,11 +11,11 @@ package com.monsters.pathing
    
    public class PATHING extends MovieClip
    {
-      internal static var _poolPathing:Vector.<PATHINGobject>;
+      private static var _poolPathing:Vector.<PATHINGobject>;
       
-      internal static var _poolPathingB:Vector.<PATHINGobject>;
+      private static var _poolPathingB:Vector.<PATHINGobject>;
       
-      internal static var _poolPathingLength:int;
+      private static var _poolPathingLength:int;
       
       public static var floodDisplay:DisplayObject;
       
@@ -27,32 +27,32 @@ package com.monsters.pathing
       
       public static var pathmc:DisplayObject;
       
-      internal static const PI:Number = Math.PI;
+      private static const PI:Number = Math.PI;
       
-      internal static const c180PI:Number = 180 / PI;
+      private static const c180PI:Number = 180 / PI;
       
-      internal static const cPI180:Number = PI / 180;
+      private static const cPI180:Number = PI / 180;
       
-      internal static var _gridWidth:int = 164;
+      private static var _gridWidth:int = 164;
       
-      internal static var _gridHeight:int = 132;
+      private static var _gridHeight:int = 132;
       
-      internal static var _floods:Object = {};
+      private static var _floods:Object = {};
       
-      internal static var _costs:Object = {};
+      private static var _costs:Object = {};
       
-      internal static var _framenumber:int = 0;
+      private static var _framenumber:int = 0;
       
-      internal static var _clicked:Boolean = false;
+      private static var _clicked:Boolean = false;
       
-      internal static var _resetRequested:Boolean = false;
+      private static var _resetRequested:Boolean = false;
       
       public function PATHING()
       {
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          var _loc2_:PATHINGobject = null;
          var _loc3_:int = 0;
@@ -80,7 +80,7 @@ package com.monsters.pathing
          _poolPathingLength = 0;
       }
       
-      public static function Cost(param1:Point, param2:Rectangle, param3:int) : *
+      public static function Cost(param1:Point, param2:Rectangle, param3:int) : Rectangle
       {
          var _loc4_:Point = null;
          var _loc5_:Point = null;
@@ -117,7 +117,7 @@ package com.monsters.pathing
          return _loc9_;
       }
       
-      public static function RegisterBuilding(param1:Rectangle, param2:BFOUNDATION, param3:Boolean) : *
+      public static function RegisterBuilding(param1:Rectangle, param2:BFOUNDATION, param3:Boolean) : void
       {
          var _loc4_:Point = null;
          var _loc5_:int = 0;
@@ -150,7 +150,7 @@ package com.monsters.pathing
          }
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var _loc5_:Point = null;
          var _loc8_:int = 0;
@@ -208,7 +208,7 @@ package com.monsters.pathing
          ProcessFlood();
       }
       
-      public static function GetPath(param1:Point, param2:Rectangle, param3:Function = null, param4:Boolean = false, param5:BFOUNDATION = null) : *
+      public static function GetPath(param1:Point, param2:Rectangle, param3:Function = null, param4:Boolean = false, param5:BFOUNDATION = null) : Array
       {
          var _loc6_:Point = null;
          var _loc7_:Rectangle = null;
@@ -233,9 +233,10 @@ package com.monsters.pathing
          _loc7_.width *= 0.1;
          _loc7_.height *= 0.1;
          GetPathB(_loc6_,_loc7_,_loc9_,_loc10_,param3,param4,param5);
+         return [];
       }
       
-      public static function GetPathB(param1:Point, param2:Rectangle, param3:Point, param4:Point, param5:Function = null, param6:Boolean = false, param7:BFOUNDATION = null) : *
+      public static function GetPathB(param1:Point, param2:Rectangle, param3:Point, param4:Point, param5:Function = null, param6:Boolean = false, param7:BFOUNDATION = null) : void
       {
          var _loc9_:int = 0;
          var _loc10_:int = 0;
@@ -249,9 +250,9 @@ package com.monsters.pathing
          var _loc21_:int = 0;
          var _loc22_:PATHINGfloodobject = null;
          var _loc23_:int = 0;
-         var _loc24_:* = undefined;
-         var _loc25_:* = undefined;
-         var _loc26_:* = undefined;
+         var _loc24_:PATHINGobject = null;
+         var _loc25_:PATHINGobject = null;
+         var _loc26_:PATHINGobject = null;
          RenderCosts();
          param1.x = int(param1.x);
          param1.y = int(param1.y);
@@ -340,130 +341,117 @@ package com.monsters.pathing
          _floods[_loc9_].pending += 1;
       }
       
-      internal static function ProcessFlood(param1:Event = null) : *
+      private static function ProcessFlood(param1:Event = null) : void
       {
-         var edgeSquare:PATHINGobject = null;
-         var edgeSquareX:int = 0;
-         var edgeSquareY:int = 0;
-         var o:PATHINGobject = null;
-         var pointID:int = 0;
-         var pointX:int = 0;
-         var pointY:int = 0;
-         var processed:int = 0;
-         var newEdge:Object = null;
-         var newMinDepth:int = 0;
-         var steps:int = 0;
-         var loops:int = 0;
-         var pendingfloodcount:int = 0;
-         var tmpCost:int = 0;
-         var flood:PATHINGfloodobject = null;
-         var e:Event = param1;
-         var t:int = getTimer();
-         var tt:int = getTimer();
-         for each(flood in _floods)
+         var _loc4_:PATHINGobject = null;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:PATHINGobject = null;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:Object = null;
+         var _loc13_:int = 0;
+         var _loc14_:int = 0;
+         var _loc15_:int = 0;
+         var _loc16_:int = 0;
+         var _loc17_:int = 0;
+         var _loc18_:PATHINGfloodobject = null;
+         var _loc2_:int = getTimer();
+         var _loc3_:int = getTimer();
+         for each(_loc18_ in _floods)
          {
-            if(flood.pending)
+            if(_loc18_.pending)
             {
-               pendingfloodcount += 1;
+               _loc16_ += 1;
             }
          }
-         loops = 25 / pendingfloodcount;
-         if(loops < 5)
+         _loc15_ = 25 / _loc16_;
+         if(_loc15_ < 5)
          {
-            loops = 5;
+            _loc15_ = 5;
          }
-         for each(flood in _floods)
+         for each(_loc18_ in _floods)
          {
-            if(flood.pending)
+            if(_loc18_.pending)
             {
-               tt = getTimer();
-               processed = 0;
-               steps = 0;
-               while(getTimer() - tt < loops && flood.pending > 0)
+               _loc3_ = getTimer();
+               _loc11_ = 0;
+               _loc14_ = 0;
+               while(getTimer() - _loc3_ < _loc15_ && _loc18_.pending > 0)
                {
-                  newEdge = {};
-                  newMinDepth = 9999999;
-                  flood.edgeLength = 0;
-                  for each(edgeSquare in flood.edge)
+                  _loc12_ = {};
+                  _loc13_ = 9999999;
+                  _loc18_.edgeLength = 0;
+                  for each(_loc4_ in _loc18_.edge)
                   {
-                     if(edgeSquare.depth <= flood.minDepth)
+                     if(_loc4_.depth <= _loc18_.minDepth)
                      {
-                        edgeSquareX = edgeSquare.pointX;
-                        edgeSquareY = edgeSquare.pointY;
-                        pointX = edgeSquareX - 1;
-                        while(pointX < edgeSquareX + 2)
+                        _loc5_ = _loc4_.pointX;
+                        _loc6_ = _loc4_.pointY;
+                        _loc9_ = _loc5_ - 1;
+                        while(_loc9_ < _loc5_ + 2)
                         {
-                           pointY = edgeSquareY - 1;
-                           for(; pointY < edgeSquareY + 2; pointY += 1)
+                           _loc10_ = _loc6_ - 1;
+                           while(_loc10_ < _loc6_ + 2)
                            {
-                              if(!(pointX == edgeSquareX && pointY == edgeSquareY))
+                              if(!(_loc9_ == _loc5_ && _loc10_ == _loc6_))
                               {
-                                 pointID = pointX * 1000 + pointY;
-                                 if(!flood.flood[pointID])
+                                 _loc8_ = _loc9_ * 1000 + _loc10_;
+                                 if(!_loc18_.flood[_loc8_])
                                  {
-                                    if(!newEdge[pointID])
+                                    if(!_loc12_[_loc8_])
                                     {
-                                       if(_costs[pointID])
+                                       if(_costs[_loc8_])
                                        {
-                                          try
+                                          _loc11_ += 1;
+                                          _loc7_ = new PATHINGobject();
+                                          _loc7_.pointX = _loc9_;
+                                          _loc7_.pointY = _loc10_;
+                                          _loc17_ = int(_costs[_loc8_].cost);
+                                          if(_loc18_.ignoreWalls)
                                           {
-                                             processed += 1;
-                                             o = new PATHINGobject();
-                                             o.pointX = pointX;
-                                             o.pointY = pointY;
-                                             tmpCost = int(_costs[pointID].cost);
-                                             if(flood.ignoreWalls)
+                                             if(_costs[_loc8_].building)
                                              {
-                                                if(_costs[pointID].building)
-                                                {
-                                                   tmpCost = 20;
-                                                }
-                                             }
-                                             if(pointX != edgeSquare.pointX && pointY != edgeSquare.pointY)
-                                             {
-                                                tmpCost *= 1.5;
+                                                _loc17_ = 20;
                                              }
                                           }
-                                          catch(e:Error)
+                                          if(_loc9_ != _loc4_.pointX && _loc10_ != _loc4_.pointY)
                                           {
+                                             _loc17_ *= 1.5;
                                           }
-                                          try
+                                          _loc7_.depth = _loc4_.depth + _loc17_;
+                                          if(_loc7_.depth < _loc13_)
                                           {
-                                             o.depth = edgeSquare.depth + tmpCost;
-                                             if(o.depth < newMinDepth)
-                                             {
-                                                newMinDepth = o.depth;
-                                             }
-                                             newEdge[pointID] = o;
-                                             flood.flood[pointID] = o;
-                                             flood.edgeLength += 1;
-                                             steps += 1;
+                                             _loc13_ = _loc7_.depth;
                                           }
-                                          catch(e:Error)
-                                          {
-                                          }
-                                          continue;
+                                          _loc12_[_loc8_] = _loc7_;
+                                          _loc18_.flood[_loc8_] = _loc7_;
+                                          _loc18_.edgeLength += 1;
+                                          _loc14_ += 1;
                                        }
                                     }
                                  }
                               }
+                              _loc10_ += 1;
                            }
-                           pointX += 1;
+                           _loc9_ += 1;
                         }
                      }
                      else
                      {
-                        newEdge[edgeSquare.pointID] = edgeSquare;
-                        flood.edgeLength += 1;
-                        if(edgeSquare.depth < newMinDepth)
+                        _loc12_[_loc4_.pointID] = _loc4_;
+                        _loc18_.edgeLength += 1;
+                        if(_loc4_.depth < _loc13_)
                         {
-                           newMinDepth = edgeSquare.depth;
+                           _loc13_ = _loc4_.depth;
                         }
                      }
                   }
-                  flood.edge = newEdge;
-                  flood.minDepth = newMinDepth;
-                  CheckStartReached(flood);
+                  _loc18_.edge = _loc12_;
+                  _loc18_.minDepth = _loc13_;
+                  CheckStartReached(_loc18_);
                }
             }
          }
@@ -491,159 +479,144 @@ package com.monsters.pathing
          return _loc2_;
       }
       
-      public static function Path(param1:Object, param2:int, param3:Function, param4:Boolean = false, param5:BFOUNDATION = null, param6:Point = null) : *
+      public static function Path(param1:Object, param2:int, param3:Function, param4:Boolean = false, param5:BFOUNDATION = null, param6:Point = null) : void
       {
-         var pointX:int = 0;
-         var pointY:int = 0;
-         var tempPointID:int = 0;
-         var tempPoint:Point = null;
-         var nextDepth:int = 0;
-         var nextPointX:int = 0;
-         var nextPointY:int = 0;
-         var nextPointFound:Boolean = false;
-         var building:BFOUNDATION = null;
-         var moved:Boolean = false;
-         var h:* = undefined;
-         var v:* = undefined;
-         var extras:int = 0;
-         var i:int = 0;
-         var otherPoints:Array = null;
-         var j:* = undefined;
-         var otherPointID:* = undefined;
-         var weirdPoint:Point = null;
-         var pickOne:int = 0;
-         var flood:Object = param1;
-         var startID:int = param2;
-         var cbf:Function = param3;
-         var ignoreWalls:Boolean = param4;
-         var targetBuilding:BFOUNDATION = param5;
-         var targetPoint:Point = param6;
-         var t:int = getTimer();
-         var waypoints:Array = [];
-         var waypointlength:int = 0;
-         try
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:Point = null;
+         var _loc14_:int = 0;
+         var _loc15_:int = 0;
+         var _loc16_:int = 0;
+         var _loc17_:Boolean = false;
+         var _loc18_:BFOUNDATION = null;
+         var _loc19_:Boolean = false;
+         var _loc20_:int = 0;
+         var _loc21_:int = 0;
+         var _loc22_:int = 0;
+         var _loc23_:int = 0;
+         var _loc24_:Array = null;
+         var _loc25_:int = 0;
+         var _loc26_:int = 0;
+         var _loc27_:Point = null;
+         var _loc28_:int = 0;
+         var _loc7_:int = getTimer();
+         var _loc10_:Array = [];
+         var _loc11_:int = 0;
+         if(param1[param2])
          {
-            pointX = int(flood[startID].pointX);
-            pointY = int(flood[startID].pointY);
-            nextDepth = int(flood[startID].depth);
-            waypoints[waypointlength] = ToISO(LocalGlobal(new Point(pointX,pointY)),0);
-            waypointlength += 1;
-            moved = true;
+            _loc8_ = int(param1[param2].pointX);
+            _loc9_ = int(param1[param2].pointY);
+            _loc14_ = int(param1[param2].depth);
+            _loc10_[_loc11_] = ToISO(LocalGlobal(new Point(_loc8_,_loc9_)),0);
+            _loc11_ += 1;
+            _loc19_ = true;
          }
-         catch(e:Error)
+         _loc13_ = new Point(0,0);
+         while(_loc19_)
          {
-         }
-         tempPoint = new Point(0,0);
-         while(moved)
-         {
-            moved = false;
-            h = -1;
-            while(h < 2)
+            _loc19_ = false;
+            _loc20_ = -1;
+            while(_loc20_ < 2)
             {
-               v = -1;
-               while(v < 2)
+               _loc21_ = -1;
+               while(_loc21_ < 2)
                {
-                  if(!(h == 0 && v == 0))
+                  if(!(_loc20_ == 0 && _loc21_ == 0))
                   {
-                     tempPoint.x = pointX + h;
-                     tempPoint.y = pointY + v;
-                     tempPointID = tempPoint.x * 1000 + tempPoint.y;
-                     if(flood[tempPointID] && flood[tempPointID].depth < nextDepth && flood[tempPointID].depth > 0)
+                     _loc13_.x = _loc8_ + _loc20_;
+                     _loc13_.y = _loc9_ + _loc21_;
+                     _loc12_ = _loc13_.x * 1000 + _loc13_.y;
+                     if(param1[_loc12_] && param1[_loc12_].depth < _loc14_ && param1[_loc12_].depth > 0)
                      {
-                        nextPointX = tempPoint.x;
-                        nextPointY = tempPoint.y;
-                        nextPointFound = true;
-                        nextDepth = int(flood[tempPointID].depth);
-                        moved = true;
-                        if(!ignoreWalls && waypointlength > 1)
+                        _loc15_ = _loc13_.x;
+                        _loc16_ = _loc13_.y;
+                        _loc17_ = true;
+                        _loc14_ = int(param1[_loc12_].depth);
+                        _loc19_ = true;
+                        if(!param4 && _loc11_ > 1)
                         {
-                           if(_costs[tempPointID])
+                           if(_costs[_loc12_])
                            {
-                              building = _costs[tempPointID].building;
-                              if(building)
+                              _loc18_ = _costs[_loc12_].building;
+                              if(_loc18_)
                               {
-                                 if(building._hp.Get() > 0)
+                                 if(_loc18_._hp.Get() > 0)
                                  {
-                                    extras = (building._lvl.Get() ^ 2) + 1;
-                                    i = 0;
-                                    while(i < extras)
+                                    _loc22_ = (_loc18_._lvl.Get() ^ 2) + 1;
+                                    _loc23_ = 0;
+                                    while(_loc23_ < _loc22_)
                                     {
-                                       waypoints.push(waypoints[waypoints.length - 1]);
-                                       i++;
+                                       _loc10_.push(_loc10_[_loc10_.length - 1]);
+                                       _loc23_++;
                                     }
-                                    cbf(waypoints,building);
-                                    RenderPath(waypoints);
+                                    param3(_loc10_,_loc18_);
+                                    RenderPath(_loc10_);
                                     return;
                                  }
                               }
                            }
                         }
-                        if(!ignoreWalls && nextDepth < 20)
+                        if(!param4 && _loc14_ < 20)
                         {
                            if(Math.random() < 0.6)
                            {
-                              otherPoints = new Array();
-                              i = -3;
-                              while(i < 4)
+                              _loc24_ = new Array();
+                              _loc23_ = -3;
+                              while(_loc23_ < 4)
                               {
-                                 j = -3;
-                                 while(j < 4)
+                                 _loc25_ = -3;
+                                 while(_loc25_ < 4)
                                  {
-                                    if(Boolean(i) && j)
+                                    if(Boolean(_loc23_) && Boolean(_loc25_))
                                     {
-                                       otherPointID = (nextPointX + i) * 1000 + nextPointY + j;
-                                       if(flood[otherPointID])
+                                       _loc26_ = (_loc15_ + _loc23_) * 1000 + _loc16_ + _loc25_;
+                                       if(param1[_loc26_])
                                        {
-                                          if(flood[otherPointID].depth < 20 && flood[otherPointID].depth > 0)
+                                          if(param1[_loc26_].depth < 20 && param1[_loc26_].depth > 0)
                                           {
-                                             weirdPoint = new Point(nextPointX + i,nextPointY + j);
-                                             otherPoints.push(weirdPoint);
+                                             _loc27_ = new Point(_loc15_ + _loc23_,_loc16_ + _loc25_);
+                                             _loc24_.push(_loc27_);
                                           }
                                        }
                                     }
-                                    j++;
+                                    _loc25_++;
                                  }
-                                 i++;
+                                 _loc23_++;
                               }
-                              if(otherPoints.length > 0)
+                              if(_loc24_.length > 0)
                               {
-                                 pickOne = int(Math.random() * otherPoints.length);
-                                 nextPointX = int(otherPoints[pickOne].x);
-                                 nextPointY = int(otherPoints[pickOne].y);
+                                 _loc28_ = int(Math.random() * _loc24_.length);
+                                 _loc15_ = int(_loc24_[_loc28_].x);
+                                 _loc16_ = int(_loc24_[_loc28_].y);
                               }
                            }
                         }
                      }
                   }
-                  v += 1;
+                  _loc21_ += 1;
                }
-               h += 1;
+               _loc20_ += 1;
             }
-            try
+            if(_loc17_)
             {
-               if(nextPointFound)
-               {
-                  pointX = nextPointX;
-                  pointY = nextPointY;
-                  waypoints[waypointlength] = ToISO(LocalGlobal(Jiggle(nextPointX,nextPointY)),0);
-                  waypointlength += 1;
-               }
-            }
-            catch(e:Error)
-            {
+               _loc8_ = _loc15_;
+               _loc9_ = _loc16_;
+               _loc10_[_loc11_] = ToISO(LocalGlobal(Jiggle(_loc15_,_loc16_)),0);
+               _loc11_ += 1;
             }
          }
-         if(targetPoint)
+         if(param6)
          {
-            tempPoint = GlobalLocal(FromISO(targetPoint));
-            if(!targetBuilding || !_costs[tempPoint.x * 1000 + tempPoint.y])
+            _loc13_ = GlobalLocal(FromISO(param6));
+            if(!param5 || !_costs[_loc13_.x * 1000 + _loc13_.y])
             {
-               waypoints[waypointlength] = targetPoint;
+               _loc10_[_loc11_] = param6;
             }
          }
          RenderFlood();
-         RenderPath(waypoints);
-         cbf(waypoints,targetBuilding);
+         RenderPath(_loc10_);
+         param3(_loc10_,param5);
       }
       
       private static function Jiggle(param1:int, param2:int) : Point
@@ -663,7 +636,7 @@ package com.monsters.pathing
          return null;
       }
       
-      public static function Clear() : *
+      public static function Clear() : void
       {
          var _loc3_:PATHINGfloodobject = null;
          var _loc4_:int = 0;
@@ -697,7 +670,7 @@ package com.monsters.pathing
          }
       }
       
-      public static function Cleanup() : *
+      public static function Cleanup() : void
       {
          var _loc1_:* = undefined;
          for each(_loc1_ in _costs)
@@ -751,14 +724,14 @@ package com.monsters.pathing
          return true;
       }
       
-      public static function ResetCosts() : *
+      public static function ResetCosts() : void
       {
          _resetRequested = true;
       }
       
-      public static function Wander(param1:Point, param2:int = 50, param3:Function = null) : *
+      public static function Wander(param1:Point, param2:int = 50, param3:Function = null) : void
       {
-         var _loc7_:* = undefined;
+         var _loc7_:Point = null;
          param1.x = int(param1.x);
          param1.y = int(param1.y);
          var _loc4_:Array = [];
@@ -791,22 +764,22 @@ package com.monsters.pathing
          }
       }
       
-      public static function RenderFlood() : *
+      public static function RenderFlood() : void
       {
          if(GLOBAL._catchup)
          {
          }
       }
       
-      public static function RenderCosts() : *
+      public static function RenderCosts() : void
       {
       }
       
-      public static function RenderPath(param1:*, param2:Boolean = false) : *
+      public static function RenderPath(param1:Array, param2:Boolean = false) : void
       {
       }
       
-      public static function getNumberAsHexString(param1:uint, param2:uint = 1, param3:Boolean = true) : *
+      public static function getNumberAsHexString(param1:uint, param2:uint = 1, param3:Boolean = true) : String
       {
          var _loc4_:String = param1.toString(16).toUpperCase();
          while(param2 > _loc4_.length)
@@ -820,7 +793,7 @@ package com.monsters.pathing
          return _loc4_;
       }
       
-      internal static function GlobalLocal(param1:Point) : Point
+      private static function GlobalLocal(param1:Point) : Point
       {
          param1.x *= 0.1;
          param1.y *= 0.1;
@@ -854,11 +827,11 @@ package com.monsters.pathing
          return new Point(_loc3_,_loc2_);
       }
       
-      public static function PlotRandom(param1:MouseEvent) : *
+      public static function PlotRandom(param1:MouseEvent) : void
       {
          var Done:Function = null;
          var e:MouseEvent = param1;
-         Done = function(param1:Array):*
+         Done = function(param1:Array):void
          {
          };
          var p:Point = ToISO(new Point(260,260),0);

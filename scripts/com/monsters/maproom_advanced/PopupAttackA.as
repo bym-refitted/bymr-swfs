@@ -63,7 +63,7 @@ package com.monsters.maproom_advanced
          tMonsters.htmlText = "<b>" + KEYS.Get("newmap_monstersrange") + "</b>";
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          var _loc2_:int = int(mcProfilePic.mcBG.numChildren);
          while(_loc2_--)
@@ -73,7 +73,7 @@ package com.monsters.maproom_advanced
          MapRoom._mc.HideAttack();
       }
       
-      public function Setup(param1:MapRoomCell) : *
+      public function Setup(param1:MapRoomCell) : void
       {
          this._cell = param1;
          if(this._cell._base == 3)
@@ -111,14 +111,15 @@ package com.monsters.maproom_advanced
       {
          this.bAttack.removeEventListener(MouseEvent.CLICK,this.Attack);
          this.bCancel.removeEventListener(MouseEvent.CLICK,this.Hide);
+         this._cellsInRange = new Vector.<CellData>(0,true);
       }
       
-      private function Attack(param1:MouseEvent) : *
+      private function Attack(param1:MouseEvent) : void
       {
          var _loc2_:int = 0;
          if(!this._enabled)
          {
-            return false;
+            return;
          }
          MapRoom._mc.HideAttack();
          if(!this._cell._protected && !(this._cell._truce && this._cell._truce > GLOBAL.Timestamp()) && this._monstersInRange)
@@ -128,20 +129,20 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("newmap_attack"),KEYS.Get("confirm_btn"),this.DoAttack);
                return;
             }
-            MapRoom.Hide();
-            MapRoom.ClearCells();
             GLOBAL._attackerMapCreatures = this._attackMonsters;
             GLOBAL._attackerMapResources = this._attackResources;
             GLOBAL._attackerCellsInRange = this._cellsInRange;
+            MapRoom.Hide();
+            MapRoom.ClearCells();
             GLOBAL._currentCell = this._cell;
             if(this._cell._base == 1)
             {
-               BASE.LoadBase(null,null,this._cell._baseID,"wmattack",false,BASE.MAIN_YARD);
+               BASE.LoadBase(null,0,this._cell._baseID,"wmattack",false,BASE.MAIN_YARD);
             }
             else
             {
                _loc2_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-               BASE.LoadBase(null,null,this._cell._baseID,"attack",false,_loc2_);
+               BASE.LoadBase(null,0,this._cell._baseID,"attack",false,_loc2_);
             }
          }
          else if(this._cell._protected)
@@ -178,19 +179,19 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function DoAttack() : *
+      public function DoAttack() : void
       {
          this._protectedInRange = false;
          this.Attack(null);
       }
       
-      public function Update() : *
+      public function Update() : Boolean
       {
          var _loc2_:CellData = null;
-         var _loc4_:MapRoomCell = null;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
+         var _loc3_:MapRoomCell = null;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
          var _loc8_:int = 0;
          var _loc9_:CATAPULTITEM = null;
          var _loc10_:SiegeWeapon = null;
@@ -215,8 +216,8 @@ package com.monsters.maproom_advanced
             this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10 + _loc1_);
             for each(_loc2_ in this._cellsInRange)
             {
-               _loc4_ = _loc2_.cell;
-               if((Boolean(_loc4_)) && !_loc4_._processed)
+               _loc3_ = _loc2_.cell;
+               if(Boolean(_loc3_) && !_loc3_._processed)
                {
                   return false;
                }
@@ -241,19 +242,19 @@ package com.monsters.maproom_advanced
             };
             for each(_loc2_ in this._cellsInRange)
             {
-               _loc4_ = _loc2_["cell"];
+               _loc3_ = _loc2_["cell"];
                _loc11_ = int(_loc2_["range"]);
-               if(Boolean(_loc4_) && Boolean(_loc4_._mine))
+               if(Boolean(_loc3_) && Boolean(_loc3_._mine))
                {
                   _loc12_ = 0;
-                  if(_loc4_._flingerRange.Get() + _loc1_ >= _loc11_)
+                  if(_loc3_._flingerRange.Get() + _loc1_ >= _loc11_)
                   {
-                     for(_loc13_ in _loc4_._monsters)
+                     for(_loc13_ in _loc3_._monsters)
                      {
-                        _loc14_ = int(_loc4_._monsters[_loc13_].Get());
+                        _loc14_ = int(_loc3_._monsters[_loc13_].Get());
                         this._monstersInRange = true;
                         _loc12_++;
-                        if(_loc14_ > 0 && Boolean(_loc4_._protected))
+                        if(_loc14_ > 0 && Boolean(_loc3_._protected))
                         {
                            this._protectedInRange = true;
                         }
@@ -268,9 +269,9 @@ package com.monsters.maproom_advanced
                      }
                      MapRoom._flingerInRange = true;
                   }
-                  if(_loc4_._flingerRange.Get() >= this._attackResources.flinger.Get())
+                  if(_loc3_._flingerRange.Get() >= this._attackResources.flinger.Get())
                   {
-                     this._attackResources.flinger.Set(_loc4_._flingerLevel.Get());
+                     this._attackResources.flinger.Set(_loc3_._flingerLevel.Get());
                   }
                }
             }
@@ -445,14 +446,14 @@ package com.monsters.maproom_advanced
             this.bAttack.Enabled = true;
             this._enabled = true;
          }
-         var _loc3_:String = "";
-         _loc3_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
+         var _loc4_:String = "";
+         _loc4_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
          if(this._cell._monsterData)
          {
-            _loc3_ += "<br>_monsterData:" + JSON.encode(this._cell._monsterData);
-            _loc3_ += "<br>_monsterData.saved:" + JSON.encode(this._cell._monsterData.saved);
-            _loc3_ += "<br>_monsterData.h:" + JSON.encode(this._cell._monsterData.h);
-            _loc3_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
+            _loc4_ += "<br>_monsterData:" + JSON.encode(this._cell._monsterData);
+            _loc4_ = _loc4_ + ("<br>_monsterData.saved:" + JSON.encode(this._cell._monsterData.saved));
+            _loc4_ = _loc4_ + ("<br>_monsterData.h:" + JSON.encode(this._cell._monsterData.h));
+            _loc4_ = _loc4_ + ("<br>_monsterData.hcount:" + this._cell._monsterData.hcount);
          }
          if(this._scroller)
          {
@@ -472,7 +473,7 @@ package com.monsters.maproom_advanced
                _loc4_.removeChildAt(0);
             }
          }
-         var _loc5_:* = new Bitmap(param2);
+         var _loc5_:Bitmap = new Bitmap(param2);
          _loc5_.height = 60;
          _loc5_.width = 60;
          if(_loc4_)
@@ -481,7 +482,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      private function ProfilePic() : *
+      private function ProfilePic() : void
       {
          var onImageLoad:Function = null;
          var imageComplete:Function = null;
@@ -499,7 +500,7 @@ package com.monsters.maproom_advanced
             _profileBmp = new Bitmap(param2);
             mcProfilePic.mcBG.addChild(_profileBmp);
          };
-         LoadImageError = function(param1:IOErrorEvent):*
+         LoadImageError = function(param1:IOErrorEvent):void
          {
          };
          if(!this._cell._facebookID && this._cell._base != 1 && !this._cell._pic_square)
@@ -541,7 +542,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : *
+      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
       {
          var k:int = 0;
          var allyinfo:AllyInfo = null;
@@ -549,7 +550,7 @@ package com.monsters.maproom_advanced
          var container:MovieClip = param2;
          var containerBG:MovieClip = param3;
          var showRel:Boolean = param4;
-         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):void
          {
             var _loc4_:Bitmap = new Bitmap(param2);
             if(param3[0])
@@ -562,7 +563,7 @@ package com.monsters.maproom_advanced
                }
             }
          };
-         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):void
          {
             var _loc4_:Bitmap = new Bitmap(param2);
             if(param3[0])

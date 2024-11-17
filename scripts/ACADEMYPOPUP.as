@@ -135,7 +135,7 @@ package
          lastAction = 0;
       }
       
-      private function UpdatePortrait(param1:String, param2:BitmapData, param3:Array) : *
+      private function UpdatePortrait(param1:String, param2:BitmapData, param3:Array) : void
       {
          if(Boolean(this._portraitImage) && Boolean(this._portraitImage.parent))
          {
@@ -148,7 +148,7 @@ package
          }
       }
       
-      private function CalculateInstantCost() : *
+      private function CalculateInstantCost() : void
       {
          var _loc1_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[ACADEMY._upgrades[_monsterID].level - 1];
          var _loc2_:String = KEYS.Get(CREATURELOCKER._creatures[_monsterID].name);
@@ -159,7 +159,7 @@ package
          _instantUpgradeCost = _loc5_ + _loc6_;
       }
       
-      public function Update(param1:Boolean = false) : *
+      public function Update(param1:Boolean = false) : void
       {
          var _loc7_:Boolean = false;
          var _loc11_:Object = null;
@@ -416,16 +416,16 @@ package
          }
       }
       
-      public function StartMonsterUpgrade(param1:MouseEvent) : *
+      public function StartMonsterUpgrade(param1:MouseEvent) : void
       {
          ACADEMY.StartMonsterUpgrade(_monsterID);
          this.Setup(_monsterID);
       }
       
-      public function InstantMonsterUpgrade(param1:MouseEvent) : *
+      public function InstantMonsterUpgrade(param1:MouseEvent) : void
       {
          var Post:Function;
-         var building:* = undefined;
+         var building:BFOUNDATION = null;
          var bragImage:String = null;
          var monsterName:String = null;
          var popupMC:popup_monster = null;
@@ -466,7 +466,7 @@ package
          LOGGER.Stat([47,_monsterID,ACADEMY._upgrades[_monsterID].level]);
          if(GLOBAL._mode == "build")
          {
-            Post = function():*
+            Post = function():void
             {
                if(BASE.isInferno())
                {
@@ -504,24 +504,24 @@ package
          BASE.Purchase("ITR",_instantUpgradeCost,"academy");
       }
       
-      public function CancelMonsterUpgrade(param1:MouseEvent) : *
+      public function CancelMonsterUpgrade(param1:MouseEvent) : void
       {
          GLOBAL.Message(KEYS.Get("acad_confirmcancel",{"v1":CREATURELOCKER._creatures[_monsterID].name}),KEYS.Get("acad_confirmcancel_btn"),this.CancelMonsterUpgradeB);
       }
       
-      public function CancelMonsterUpgradeB() : *
+      public function CancelMonsterUpgradeB() : void
       {
          ACADEMY.CancelMonsterUpgrade(_monsterID);
          this.Setup(_monsterID);
       }
       
-      public function SpeedUp(param1:MouseEvent) : *
+      public function SpeedUp(param1:MouseEvent) : void
       {
          ACADEMY._monsterID = _monsterID;
          STORE.SpeedUp("SP4");
       }
       
-      public function Previous(param1:MouseEvent = null) : *
+      public function Previous(param1:MouseEvent = null) : void
       {
          --_page;
          lastAction = -1;
@@ -546,7 +546,7 @@ package
          }
       }
       
-      public function Next(param1:MouseEvent = null) : *
+      public function Next(param1:MouseEvent = null) : void
       {
          ++_page;
          lastAction = 1;
@@ -600,7 +600,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          ACADEMY.Hide(param1);
       }

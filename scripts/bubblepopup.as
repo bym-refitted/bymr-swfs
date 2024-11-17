@@ -26,7 +26,7 @@ package
          mcText.autoSize = TextFieldAutoSize.CENTER;
       }
       
-      public function Setup(param1:int, param2:int, param3:String = "") : *
+      public function Setup(param1:int, param2:int, param3:String = "") : void
       {
          this.mouseEnabled = false;
          this.mouseChildren = false;
@@ -47,7 +47,7 @@ package
          }
       }
       
-      public function Update(param1:String, param2:int = 1) : *
+      public function Update(param1:String, param2:int = 1) : void
       {
          var _loc5_:Rectangle = null;
          mcText.htmlText = param1;
@@ -61,8 +61,8 @@ package
          mcBG.height = int(mcText.height + 10);
          mcBG.y = int(mcText.y - 4);
          mcBG.x = -int(mcBG.width * 0.5);
-         var _loc3_:* = GLOBAL._ROOT.stage.stageWidth;
-         var _loc4_:* = GLOBAL.GetGameHeight();
+         var _loc3_:int = GLOBAL._ROOT.stage.stageWidth;
+         var _loc4_:int = GLOBAL.GetGameHeight();
          _loc5_ = new Rectangle(0 - (_loc3_ - 760) / 2,0 - (_loc4_ - 520) / 2,_loc3_,_loc4_);
          if(x + mcBG.x < _loc5_.x + 10)
          {
@@ -75,7 +75,7 @@ package
          mcText.x = int(mcBG.x + 8);
       }
       
-      public function Wobble() : *
+      public function Wobble() : void
       {
          rotation += 3;
          TweenLite.to(this,0.6,{
@@ -84,7 +84,7 @@ package
          });
       }
       
-      public function Nudge(param1:String) : *
+      public function Nudge(param1:String) : void
       {
          if(param1 == "up")
          {
@@ -104,7 +104,7 @@ package
          }
       }
       
-      public function Clear() : *
+      public function Clear() : void
       {
       }
    }

@@ -19,16 +19,16 @@ package
          super();
       }
       
-      public static function setOnClickedWhenLockedCallback(param1:int, param2:Function) : *
+      public static function setOnClickedWhenLockedCallback(param1:int, param2:Function) : void
       {
          s_LockedCallbacks[param1] = param2;
       }
       
-      public function Setup(param1:int, param2:Boolean = true) : *
+      public function Setup(param1:int, param2:Boolean = true) : void
       {
          var _loc6_:String = null;
          var _loc7_:* = null;
-         var _loc9_:* = undefined;
+         var _loc9_:BFOUNDATION = null;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
          var _loc12_:String = null;
@@ -52,7 +52,7 @@ package
          mcSale.t.htmlText = "<b>" + KEYS.Get("ui_building_sale") + "</b>";
          mcNew.t.htmlText = "<b>" + KEYS.Get("str_new_caps") + "</b>";
          var _loc3_:int = GLOBAL.GetBuildingTownHallLevel(this._buildingProps);
-         var _loc4_:int = int(this._buildingProps.quantity[_loc3_]);
+         var _loc4_:int = _loc3_ < this._buildingProps.quantity.length ? int(this._buildingProps.quantity[_loc3_]) : int(this._buildingProps.quantity[this._buildingProps.quantity.length - 1]);
          var _loc5_:int = 0;
          for(_loc6_ in BASE._buildingsAll)
          {
@@ -145,13 +145,13 @@ package
          mcShroud.addChild(new Bitmap(param2));
       }
       
-      public function ShowInfo(param1:MouseEvent) : *
+      public function ShowInfo(param1:MouseEvent) : void
       {
          SOUNDS.Play("click1");
          MovieClip(parent.parent).ShowInfo(this._id);
       }
       
-      private function ShowLockedInfo(param1:MouseEvent) : *
+      private function ShowLockedInfo(param1:MouseEvent) : void
       {
          var _loc2_:Function = s_LockedCallbacks[this._id];
          if(_loc2_ == null)
@@ -167,7 +167,7 @@ package
          return Boolean(this._buildingProps) && Boolean(this._buildingProps["locked"]);
       }
       
-      public function Update() : *
+      public function Update() : void
       {
       }
    }

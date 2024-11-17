@@ -13,7 +13,7 @@ package com.monsters.kingOfTheHill.graphics
       {
          gotoAndStop(param1 ? "active" : "inactive");
          mcLevel.tLevel.text = param2.toString();
-         mcLevel.visible = param2;
+         mcLevel.visible = Boolean(param2);
       }
    }
 }

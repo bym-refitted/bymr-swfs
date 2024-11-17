@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.configs.BYMDevConfig;
    import com.monsters.display.ImageCache;
    import com.monsters.frontPage.FrontPageGraphic;
    import flash.display.Bitmap;
@@ -34,7 +35,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _popups = {
             "now":[],
@@ -120,7 +121,7 @@ package
       
       public static function hasPopupsOpen() : Boolean
       {
-         var _loc1_:Boolean = GLOBAL._newBuilding && (GLOBAL._newBuilding as BFOUNDATION)._placing == true;
+         var _loc1_:Boolean = Boolean(GLOBAL._newBuilding) && (GLOBAL._newBuilding as BFOUNDATION)._placing == true;
          return BUILDINGS._open || STORE._open || BUILDINGOPTIONS._open || ACADEMY._open || CREATURELOCKER._open || _loc1_ || Boolean(_mc) || _open;
       }
       
@@ -149,9 +150,19 @@ package
          }
       }
       
-      public static function Add(param1:DisplayObject) : void
+      public static function Add(param1:DisplayObject, param2:int = 0) : void
       {
          GLOBAL._layerTop.addChild(param1);
+         switch(param2)
+         {
+            case 0:
+               break;
+            case 1:
+               assignAlignToUpperLeft(param1);
+               break;
+            case 2:
+               assignAlignToCenter(param1);
+         }
       }
       
       public static function Remove(param1:DisplayObject = null) : void
@@ -159,26 +170,45 @@ package
          if(Boolean(param1) && Boolean(param1.parent))
          {
             param1.removeEventListener(Event.ENTER_FRAME,onResize);
+            param1.removeEventListener(Event.ENTER_FRAME,onResizeCenter);
             param1.parent.removeChild(param1);
          }
+      }
+      
+      public static function assignAlignToUpperLeft(param1:DisplayObject = null) : void
+      {
+         POPUPSETTINGS.AlignToUpperLeft(param1,true);
+         param1.addEventListener(Event.ENTER_FRAME,onResize,false,0,true);
+      }
+      
+      public static function assignAlignToCenter(param1:DisplayObject = null) : void
+      {
+         POPUPSETTINGS.AlignToCenter(param1);
+         param1.addEventListener(Event.ENTER_FRAME,onResizeCenter,false,0,true);
       }
       
       protected static function onResize(param1:Event) : void
       {
          var _loc2_:DisplayObject = param1.currentTarget as DisplayObject;
-         POPUPSETTINGS.AlignToUpperLeft(_loc2_);
+         POPUPSETTINGS.AlignToUpperLeft(_loc2_,true);
+      }
+      
+      protected static function onResizeCenter(param1:Event) : void
+      {
+         var _loc2_:DisplayObject = param1.currentTarget as DisplayObject;
+         POPUPSETTINGS.AlignToCenter(_loc2_);
       }
       
       public static function Show(param1:String = "now") : void
       {
          var ImageLoaded:Function;
-         var message:* = undefined;
+         var message:Array = null;
          var group:String = param1;
          if(!GLOBAL._catchup || group == "tip")
          {
             _lastGroup = group;
             message = _popups[group].shift();
-            if(message && !_open)
+            if(Boolean(message) && !_open)
             {
                _open = true;
                AddBG();
@@ -229,10 +259,8 @@ package
                }
                if(message[4])
                {
-                  ImageLoaded = function(param1:String, param2:BitmapData):*
+                  ImageLoaded = function(param1:String, param2:BitmapData):void
                   {
-                     var key:String = param1;
-                     var bmd:BitmapData = param2;
                      try
                      {
                         if(Boolean(_mc) && Boolean(_mc.mcImage))
@@ -241,7 +269,7 @@ package
                            {
                               _mc.mcImage.removeChildAt(0);
                            }
-                           _mc.mcImage.addChild(new Bitmap(bmd));
+                           _mc.mcImage.addChild(new Bitmap(param2));
                            _mc.mcImage.mouseEnabled = false;
                            _mc.mcImage.mouseChildren = false;
                            if(_mc.mcImageFrame)
@@ -315,7 +343,7 @@ package
       {
          RemoveBG();
          GLOBAL.RefreshScreen();
-         _mcBG = GLOBAL._layerTop.addChild(new popup_bg());
+         _mcBG = GLOBAL._layerTop.addChild(new popup_bg()) as popup_bg;
          _mcBG.width = GLOBAL._SCREEN.width;
          _mcBG.height = GLOBAL._SCREEN.height;
          _mcBG.x = GLOBAL._SCREEN.x;
@@ -355,7 +383,7 @@ package
          {
             GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
-         _mcBG = GLOBAL._layerTop.addChild(new popup_bg2());
+         _mcBG = GLOBAL._layerTop.addChild(new popup_bg2()) as popup_bg2;
          _mcBG.x = GLOBAL._SCREEN.x;
          _mcBG.y = GLOBAL._SCREEN.y;
          _mcBG.width = GLOBAL._SCREEN.width;
@@ -408,13 +436,13 @@ package
       {
          var SendGift:Function;
          var GetFriends:Function;
-         var popupMC:* = undefined;
+         var popupMC:MovieClip = null;
          var showingamepopup:Boolean = param1;
          if(GLOBAL._canGift || Boolean(GLOBAL._flags.kongregate))
          {
             if(showingamepopup)
             {
-               SendGift = function(param1:MouseEvent):*
+               SendGift = function(param1:MouseEvent):void
                {
                   POPUPS.Next(param1);
                   DisplayGiftSelect();
@@ -441,7 +469,7 @@ package
          }
          else
          {
-            GetFriends = function(param1:MouseEvent):*
+            GetFriends = function(param1:MouseEvent):void
             {
                POPUPS.Next(param1);
                Invite();
@@ -468,11 +496,11 @@ package
       public static function Invite(param1:Boolean = false) : void
       {
          var GetFriends:Function;
-         var popupMC:* = undefined;
+         var popupMC:popup_invite_friends = null;
          var showingamepopup:Boolean = param1;
          if(showingamepopup)
          {
-            GetFriends = function(param1:MouseEvent):*
+            GetFriends = function(param1:MouseEvent):void
             {
                POPUPS.Next(param1);
                DisplayInviteSelect();
@@ -497,7 +525,7 @@ package
          return _open == false;
       }
       
-      public static function DisplaySR(param1:MouseEvent = null) : *
+      public static function DisplaySR(param1:MouseEvent = null) : void
       {
          AddBG();
          GLOBAL.CallJS("cc.showSrOverlay",["callbackshiny"]);
@@ -507,14 +535,28 @@ package
       public static function DisplayGiftSelect(param1:MouseEvent = null) : void
       {
          AddBG();
-         GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
+         if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+         {
+            GLOBAL.CallJSWithClient("cc.showFeedDialog","callbackgift",["gift"]);
+         }
+         else
+         {
+            GLOBAL.CallJS("cc.showFeedDialog",["gift","callbackgift"]);
+         }
          LOGGER.Stat([20,1]);
       }
       
       public static function DisplayInviteSelect(param1:MouseEvent = null) : void
       {
          AddBG();
-         GLOBAL.CallJS("cc.showFeedDialog",["invite","callbackgift"]);
+         if(BYMDevConfig.instance.USE_CLIENT_WITH_CALLBACK)
+         {
+            GLOBAL.CallJSWithClient("cc.showFeedDialog","callbackgift",["invite"]);
+         }
+         else
+         {
+            GLOBAL.CallJS("cc.showFeedDialog",["invite","callbackgift"]);
+         }
          LOGGER.Stat([21,1]);
       }
       
@@ -525,7 +567,7 @@ package
          var e:MouseEvent = param1;
          if(GLOBAL._flags.fanfriendbookmarkquests)
          {
-            Share = function():*
+            Share = function():void
             {
                LOGGER.Stat([23,1]);
                GLOBAL.CallJS("sendFeed",["started-aggressive",KEYS.Get("pop_displaywelcome_streamtitle"),KEYS.Get("pop_displaywelcome_streambody"),"aggressive.png",0,null,"aggressive.v3.swf"]);
@@ -623,7 +665,7 @@ package
             mc.tA.htmlText = KEYS.Get("worker_busy");
             mc.tB.htmlText = KEYS.Get("worker_speedupoutpost",{"v1":QUEUE.GetFinishCost()});
             mc.bGet.SetupKey("btn_speedup");
-            mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+            mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
             {
                DisplayWorkerNext(n,b);
             });
@@ -636,7 +678,7 @@ package
             {
                mc.tB.htmlText = KEYS.Get("worker_speedup",{"v1":QUEUE.GetFinishCost()});
                mc.bGet.SetupKey("btn_speedup");
-               mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+               mc.bGet.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
                {
                   DisplayWorkerNext(n,b);
                });
@@ -657,7 +699,7 @@ package
          var popupMC:popup_pleasebuy = null;
          var Action:Function = null;
          var key:String = param1;
-         Action = function():*
+         Action = function():void
          {
             popupMC.bAction.Enabled = false;
             popupMC.bAction.removeEventListener(MouseEvent.CLICK,Action);
@@ -687,7 +729,7 @@ package
             _loc6_.mcBG.height = 190;
          }
          _loc6_.bAction.y = _loc6_.mcBG.y + _loc6_.mcBG.height - 45;
-         (_loc6_.mcBG as frame).Setup();
+         _loc6_.mcBG.Setup();
          POPUPS.Push(_loc6_,null,null,"",param4);
       }
       
@@ -703,7 +745,7 @@ package
          var action:Function = param6;
          imageCompleteDialogue = function(param1:String, param2:BitmapData):void
          {
-            var _loc3_:* = new Bitmap(param2);
+            var _loc3_:Bitmap = new Bitmap(param2);
             _loc3_.x = imageOffset.x;
             _loc3_.y = -_loc3_.height + imageOffset.y;
             dialogueMC.mcImage.addChild(_loc3_);
@@ -724,7 +766,7 @@ package
             dialogueMC.mcBG.height = 190;
          }
          dialogueMC.bAction.y = dialogueMC.mcBG.y + dialogueMC.mcBG.height - 35;
-         (dialogueMC.mcBG as frame3).Setup();
+         dialogueMC.mcBG.Setup();
          if(image)
          {
             ImageCache.GetImageWithCallBack("popups/" + image,imageCompleteDialogue);

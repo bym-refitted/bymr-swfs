@@ -1,6 +1,7 @@
 package com.monsters.baseplanner.popups.transfer
 {
    import com.monsters.baseplanner.BaseTemplate;
+   import com.monsters.subscriptions.SubscriptionHandler;
    import flash.events.Event;
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
@@ -39,8 +40,9 @@ package com.monsters.baseplanner.popups.transfer
          }
          else
          {
-            tTemplateName.htmlText = KEYS.Get("basePlanner_layoutname",{"v1":param2.toString()});
+            tTemplateName.htmlText = KEYS.Get("basePlanner_layoutname",{"v1":(param2 + 1).toString()});
          }
+         mcEdit.visible = false;
       }
       
       public function set canEdit(param1:Boolean) : void
@@ -87,20 +89,23 @@ package com.monsters.baseplanner.popups.transfer
          this._isEditing = param1;
       }
       
-      public function disable() : void
+      public function disable(param1:Boolean = true) : void
       {
          mouseChildren = false;
          bTransfer.visible = false;
-         tTemplateName.htmlText = "<font color=\"#333333\">>locked</font>";
-         tSlotName.htmlText = "<font color=\"#999999\">>Slot" + (this.slot + 1) + "</font>";
+         tTemplateName.htmlText = "<font color=\"#333333\">" + KEYS.Get("basePlanner_layoutname",{"v1":(this.slot + 1).toString()}) + "</font>";
+         tSlotName.htmlText = "<font color=\"#AAAAAA\">" + KEYS.Get("basePlanner_slot_label",{"v1":String(this.slot + 1)}) + "</font>";
          mcBackground.transform.colorTransform = new ColorTransform(0.75,0.75,0.75);
-         mcLock.visible = true;
-         addEventListener(MouseEvent.CLICK,this.clickedUnlock,false,0,true);
+         if(param1)
+         {
+            mcLock.visible = true;
+            addEventListener(MouseEvent.CLICK,this.clickedUnlock,false,0,true);
+         }
       }
       
       protected function clickedUnlock(param1:MouseEvent) : void
       {
-         GLOBAL.Message("THIS WILL TAKE YOU TO THE SUBSCRIPTION POPUP");
+         SubscriptionHandler.instance.showPromoPopup();
       }
       
       protected function removedFromStage(param1:Event) : void

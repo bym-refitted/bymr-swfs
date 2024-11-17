@@ -1502,7 +1502,8 @@ package
          },
          "quantity":[1,1,1,1,1,1,1,1,1,1,1],
          "hp":[0xfa0,8800,20000,700 * 60,94000,200000,5 * 60 * 1000,400000,500000,10 * 60 * 1000],
-         "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60,512 * 60,18 * 60 * 60,24 * 60 * 60,2 * 24 * 60 * 60,4 * 24 * 60 * 60]
+         "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60,512 * 60,18 * 60 * 60,24 * 60 * 60,2 * 24 * 60 * 60,4 * 24 * 60 * 60],
+         "additionalUpgradeInfo":[null,null,null,null,null,null,null,null,"th_upgradeth10_msg",null]
       },{
          "id":15,
          "group":2,
@@ -1596,6 +1597,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"hcc_desc",
+         "recycleconfirmationoverride":"hcc_msg_recycle",
          "costs":[{
             "r1":4000000,
             "r2":4000000,
@@ -7373,6 +7375,230 @@ package
          "quantity":[0],
          "hp":[100],
          "repairTime":[1]
+      },{
+         "id":136,
+         "group":3,
+         "order":5,
+         "buildStatus":0,
+         "type":"tower",
+         "name":"#bi_spurtzcannon#",
+         "size":64,
+         "attackgroup":1,
+         "attackType":1,
+         "tutstage":200,
+         "sale":0,
+         "description":"bi_spurtzcannon_desc",
+         "block":true,
+         "cls":SpurtzCannon,
+         "hitCls":SpurtzCannonHit,
+         "stats":[{
+            "range":5 * 60,
+            "damage":280,
+            "rate":72,
+            "speed":11,
+            "splash":35,
+            "shots":10
+         },{
+            "range":350,
+            "damage":5 * 60,
+            "rate":96,
+            "speed":12,
+            "splash":45,
+            "shots":20
+         },{
+            "range":400,
+            "damage":320,
+            "rate":2 * 60,
+            "speed":13,
+            "splash":55,
+            "shots":30
+         },{
+            "range":450,
+            "damage":340,
+            "rate":144,
+            "speed":14,
+            "splash":65,
+            "shots":40
+         },{
+            "range":500,
+            "damage":6 * 60,
+            "rate":170,
+            "speed":15,
+            "splash":75,
+            "shots":50
+         }],
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "time":0,
+            "re":[]
+         },{
+            "r1":500000,
+            "r2":375000,
+            "r3":250000,
+            "r4":0,
+            "time":5 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,7]]
+         },{
+            "r1":1000000,
+            "r2":750000,
+            "r3":500000,
+            "r4":0,
+            "time":7 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,8]]
+         },{
+            "r1":50 * 60 * 1000,
+            "r2":625 * 60 * 60,
+            "r3":25 * 60 * 1000,
+            "r4":0,
+            "time":10 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,9]]
+         },{
+            "r1":200 * 60 * 1000,
+            "r2":9000000,
+            "r3":100 * 60 * 1000,
+            "r4":0,
+            "time":14 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,10]]
+         }],
+         "imageData":{
+            "baseurl":"buildings/spurtztower/",
+            "1":{
+               "anim":["top-normal-anim.v2.png",new Rectangle(-27,-57,51,43),31],
+               "top":["normal_base.png",new Point(-39,-35)],
+               "shadow":["normal_damaged_shadow.jpg",new Point(-31,10)],
+               "animdamaged":["top-damaged-anim.v2.png",new Rectangle(-27,-57,50,43),31],
+               "topdamaged":["damaged_base.png",new Point(-39,-35)],
+               "shadowdamaged":["normal_damaged_shadow.jpg",new Point(-38,16)],
+               "topdestroyed":["destroyed_base.png",new Point(-39,-13)],
+               "shadowdestroyed":["destroyed_shadow.jpg",new Point(-36,22)]
+            }
+         },
+         "buildingbuttons":["spurtz_tower_button"],
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{
+               "img":"spurtz_tower_button.jpg",
+               "silhouette_img":"spurtz_tower_silhouette.jpg"
+            }
+         },
+         "quantity":[0,2],
+         "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
+         "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
+      },{
+         "id":137,
+         "group":3,
+         "order":5,
+         "buildStatus":0,
+         "type":"tower",
+         "name":"#bi_blackspurtzcannon#",
+         "size":64,
+         "attackgroup":1,
+         "attackType":1,
+         "tutstage":200,
+         "sale":0,
+         "description":"bi_blackspurtzcannon_desc",
+         "block":true,
+         "cls":BlackSpurtzCannon,
+         "hitCls":SpurtzCannonHit,
+         "stats":[{
+            "range":5 * 60,
+            "damage":330,
+            "rate":72,
+            "speed":11,
+            "splash":35,
+            "shots":15
+         },{
+            "range":350,
+            "damage":350,
+            "rate":96,
+            "speed":12,
+            "splash":45,
+            "shots":25
+         },{
+            "range":400,
+            "damage":370,
+            "rate":2 * 60,
+            "speed":13,
+            "splash":55,
+            "shots":35
+         },{
+            "range":450,
+            "damage":390,
+            "rate":144,
+            "speed":14,
+            "splash":65,
+            "shots":45
+         },{
+            "range":500,
+            "damage":410,
+            "rate":170,
+            "speed":15,
+            "splash":75,
+            "shots":55
+         }],
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "time":0,
+            "re":[]
+         },{
+            "r1":500000,
+            "r2":375000,
+            "r3":250000,
+            "r4":0,
+            "time":5 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,7]]
+         },{
+            "r1":1000000,
+            "r2":750000,
+            "r3":500000,
+            "r4":0,
+            "time":7 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,8]]
+         },{
+            "r1":50 * 60 * 1000,
+            "r2":625 * 60 * 60,
+            "r3":25 * 60 * 1000,
+            "r4":0,
+            "time":10 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,9]]
+         },{
+            "r1":200 * 60 * 1000,
+            "r2":9000000,
+            "r3":100 * 60 * 1000,
+            "r4":0,
+            "time":14 * 24 * 60 * 60,
+            "re":[[INFERNOQUAKETOWER.UNDERHALL_ID,1,1],[14,1,10]]
+         }],
+         "imageData":{
+            "baseurl":"buildings/blackspurtztower/",
+            "1":{
+               "anim":["top-normal-anim.v2.png",new Rectangle(-27,-57,54,42),31],
+               "top":["normal_base.png",new Point(-39,-35)],
+               "shadow":["normal_damaged_shadow.jpg",new Point(-31,10)],
+               "animdamaged":["top-damaged-anim.v2.png",new Rectangle(-27,-57,54,42),31],
+               "topdamaged":["damaged_base.png",new Point(-39,-35)],
+               "shadowdamaged":["normal_damaged_shadow.jpg",new Point(-38,16)],
+               "topdestroyed":["destroyed_base.png",new Point(-39,-13)],
+               "shadowdestroyed":["destroyed_shadow.jpg",new Point(-36,22)]
+            }
+         },
+         "buildingbuttons":["black_diamond_spurtz_cannon_button"],
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{
+               "img":"black_diamond_spurtz_cannon_button.jpg",
+               "silhouette_img":"black_diamond_spurtz_cannon_silohouette.jpg"
+            }
+         },
+         "quantity":[0,2],
+         "hp":[275 * 60,24200,550 * 60,880 * 60,66000],
+         "repairTime":[2110,4220,8450,10190,220 * 60]
       }];
       
       public function YARD_PROPS()

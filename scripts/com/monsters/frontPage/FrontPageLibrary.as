@@ -10,6 +10,7 @@ package com.monsters.frontPage
    import com.monsters.frontPage.messages.news.News05YardPlanner2;
    import com.monsters.frontPage.messages.news.News06TownHallLevel10;
    import com.monsters.frontPage.messages.promotions.Promo01DaveClub;
+   import com.monsters.frontPage.messages.promotions.Promo02DaveClub;
    import com.monsters.frontPage.messages.underusedFeatures.Underused01MonsterLocker;
    import com.monsters.frontPage.messages.underusedFeatures.Underused02Academy;
    
@@ -51,6 +52,7 @@ package com.monsters.frontPage
          NEWS.addMessage(new News05YardPlanner2());
          NEWS.addMessage(new News06TownHallLevel10());
          PROMOTIONS.addMessage(new Promo01DaveClub());
+         PROMOTIONS.addMessage(new Promo02DaveClub());
          UNDERUSED_FEATURES.addMessage(new Underused01MonsterLocker());
          UNDERUSED_FEATURES.addMessage(new Underused02Academy());
          WHATS_AVAILABLE.addMessage(new BuildTree_01_SniperCannonTowers());

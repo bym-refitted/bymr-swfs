@@ -6,7 +6,7 @@ package
    
    public class buttonMusic extends MovieClip
    {
-      internal var _bubble:bubblepopup5;
+      private var _bubble:bubblepopup5;
       
       public function buttonMusic()
       {
@@ -18,13 +18,13 @@ package
          buttonMode = true;
       }
       
-      private function Click(param1:MouseEvent) : *
+      private function Click(param1:MouseEvent) : void
       {
          SOUNDS.ToggleMusic();
          this.Over();
       }
       
-      private function Over(param1:MouseEvent = null) : *
+      private function Over(param1:MouseEvent = null) : void
       {
          this.Out();
          this._bubble = new bubblepopup5();
@@ -47,7 +47,7 @@ package
          this.addChild(this._bubble);
       }
       
-      private function Out(param1:MouseEvent = null) : *
+      private function Out(param1:MouseEvent = null) : void
       {
          if(Boolean(this._bubble) && Boolean(this._bubble.parent))
          {

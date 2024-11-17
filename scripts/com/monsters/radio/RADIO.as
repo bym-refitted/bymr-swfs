@@ -33,7 +33,7 @@ package com.monsters.radio
          super();
       }
       
-      public static function Setup(param1:Object = null) : *
+      public static function Setup(param1:Object = null) : void
       {
          if(param1)
          {
@@ -82,7 +82,7 @@ package com.monsters.radio
          }
          else
          {
-            LOGGER.Log("err","|RADIO| - handleSettingsSaveSucc - Fail",JSON.encode(param1));
+            LOGGER.Log("err","|RADIO| - handleSettingsSaveSucc - Fail" + JSON.encode(param1));
             GLOBAL.Message(KEYS.Get("radio_saveFail"),null,null,null);
          }
       }
@@ -93,7 +93,7 @@ package com.monsters.radio
          GLOBAL.Message(KEYS.Get("radio_saveFail"),null,null,null);
       }
       
-      public static function TwitterCallback(param1:String) : *
+      public static function TwitterCallback(param1:String) : void
       {
          var _loc2_:Object = JSON.decode(param1);
          if(_loc2_.error)
@@ -110,18 +110,18 @@ package com.monsters.radio
          }
       }
       
-      public static function TwitterSetName(param1:String) : *
+      public static function TwitterSetName(param1:String) : void
       {
          GLOBAL.CallJS("twitterInterface.setName",["" + param1,"twitteraccount"],false);
          _twitterAccount = param1;
       }
       
-      public static function TwitterRemoveName() : *
+      public static function TwitterRemoveName() : void
       {
          GLOBAL.CallJS("twitterInterface.deleteName",["twitteraccount"],false);
       }
       
-      public static function RemoveName() : *
+      public static function RemoveName() : void
       {
          var handleRemoveSucc:Function = null;
          var handleRemoveFail:Function = null;
@@ -142,7 +142,7 @@ package com.monsters.radio
             }
             else
             {
-               LOGGER.Log("err","|RADIO| - handleSettingsSaveSucc - Fail",JSON.encode(param1));
+               LOGGER.Log("err","|RADIO| - handleSettingsSaveSucc - Fail" + JSON.encode(param1));
                GLOBAL.Message(KEYS.Get("radio_recycleConfirm"),null,null,null);
             }
          };
@@ -166,12 +166,12 @@ package com.monsters.radio
          removeEmail("o1",obj);
       }
       
-      public static function TwitterFollow() : *
+      public static function TwitterFollow() : void
       {
          GLOBAL.CallJS("openUrl",["http://twitter.com/#!/BackyardMonster"],true);
       }
       
-      public static function TwitterBrag() : *
+      public static function TwitterBrag() : void
       {
          GLOBAL.CallJS("sendFeed",["build-radio",KEYS.Get("radiobuilt_streamtitle"),KEYS.Get("radiobuilt_streambody"),"build-radio.v2.png"]);
       }
@@ -181,7 +181,7 @@ package com.monsters.radio
          return _settings;
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(!_open)
          {
@@ -210,7 +210,7 @@ package com.monsters.radio
          }
       }
       
-      public static function Hide() : *
+      public static function Hide() : void
       {
          if(_open)
          {

@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.monsters.MonsterBase;
    import flash.events.*;
    import flash.geom.Point;
    
@@ -10,29 +11,29 @@ package
          super();
       }
       
-      override public function FindTargets() : *
+      override public function FindTargets() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc7_:String = null;
-         var _loc8_:int = 0;
-         creeps = MAP.CreepCellFind(_position,_range,-1);
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Point = null;
+         var _loc8_:String = null;
+         var _loc9_:int = 0;
+         var _loc7_:Array = MAP.CreepCellFind(_position,_range,-1);
          _hasTargets = false;
          _targetCreeps = [];
-         for(_loc3_ in creeps)
+         for(_loc3_ in _loc7_)
          {
-            _loc1_ = creeps[_loc3_];
+            _loc1_ = _loc7_[_loc3_];
             _loc2_ = _loc1_.creep;
-            _loc4_ = _loc1_.dist;
+            _loc4_ = Number(_loc1_.dist);
             _loc5_ = _loc1_.pos;
-            _loc7_ = _loc2_._creatureID.substr(0,1);
-            _loc8_ = int(_loc2_._creatureID.substring(_loc2_._creatureID.indexOf("C") + 1));
-            if(!(_loc7_ == "C" && (_loc8_ < 10 || _loc8_ > 12)))
+            _loc8_ = _loc2_._creatureID.substr(0,1);
+            _loc9_ = int(_loc2_._creatureID.substring(_loc2_._creatureID.indexOf("C") + 1));
+            if(!(_loc8_ == "C" && (_loc9_ < 10 || _loc9_ > 12)))
             {
-               if(!(_loc7_ == "I" && (_loc8_ < 7 || _loc8_ > 8)))
+               if(!(_loc8_ == "I" && (_loc9_ < 7 || _loc9_ > 8)))
                {
                   _targetCreeps.push({
                      "creep":_loc2_,
@@ -46,14 +47,14 @@ package
          }
       }
       
-      override public function Explode() : *
+      override public function Explode() : void
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc7_:* = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
+         var _loc1_:Object = null;
+         var _loc2_:MonsterBase = null;
+         var _loc3_:String = null;
+         var _loc4_:Number = NaN;
+         var _loc5_:Point = null;
+         var _loc7_:Array = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
          var _loc8_:int = 0;
          var _loc9_:int = 0;
          for(_loc3_ in _loc7_)
@@ -63,7 +64,7 @@ package
             if(_loc2_._health.Get() > 0)
             {
                _loc8_++;
-               _loc4_ = _loc1_.dist;
+               _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
                _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
                if(_loc2_._health.Get() <= 0)
@@ -81,7 +82,7 @@ package
             if(_loc2_._health.Get() > 0)
             {
                _loc8_++;
-               _loc4_ = _loc1_.dist;
+               _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
                _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] * 0.5 / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
                if(_loc2_._health.Get() <= 0)

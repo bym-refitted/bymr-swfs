@@ -352,9 +352,9 @@ package com.monsters.missions
          var _loc5_:String = null;
          var _loc6_:int = 0;
          var _loc10_:int = 0;
-         var _loc2_:* = new Array();
-         var _loc3_:* = new Array();
-         var _loc4_:* = new Array();
+         var _loc2_:Array = new Array();
+         var _loc3_:Array = new Array();
+         var _loc4_:Array = new Array();
          this.Clear();
          if(QUESTS._completed)
          {

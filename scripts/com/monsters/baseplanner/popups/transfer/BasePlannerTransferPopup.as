@@ -63,6 +63,10 @@ package com.monsters.baseplanner.popups.transfer
       protected function clickedTransfer(param1:Event) : void
       {
       }
+      
+      public function clear() : void
+      {
+      }
    }
 }
 

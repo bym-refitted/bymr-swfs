@@ -18,7 +18,7 @@ package com.monsters.ai
       
       public static const D_IDS:Array = [31,32,33,34,35,36,37,38,39,40,47,48,101,102,103,104,105,106,107,108,109,110];
       
-      public static const B_IDS:Array = [101,102,103,104,105,106,107,108,109,110];
+      public static var B_IDS:Array = [];
       
       public function TRIBES()
       {
@@ -168,7 +168,7 @@ package com.monsters.ai
          {
             return _infernotribes.d;
          }
-         if(param1 >= B_IDS[0] && param1 <= B_IDS[B_IDS.length - 1])
+         if(param1 >= B_IDS[0] || param1 === 0)
          {
             return _eventtribes.b;
          }

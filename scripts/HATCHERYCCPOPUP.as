@@ -2,6 +2,7 @@ package
 {
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
+   import com.monsters.subscriptions.SubscriptionHandler;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -181,7 +182,7 @@ package
          }
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -189,7 +190,7 @@ package
          this[param3[0] + param3[1]].mcImage.visible = true;
       }
       
-      public function MonsterIconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function MonsterIconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -200,13 +201,13 @@ package
       public function MonsterInfo(param1:String) : Function
       {
          var n:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             MonsterInfoB(n);
          };
       }
       
-      public function MonsterInfoB(param1:String) : *
+      public function MonsterInfoB(param1:String) : void
       {
          var _loc11_:String = null;
          var _loc12_:int = 0;
@@ -215,8 +216,8 @@ package
          {
             _loc2_++;
          }
-         var _loc3_:* = param1;
-         var _loc4_:* = CREATURELOCKER._creatures[_loc3_];
+         var _loc3_:String = param1;
+         var _loc4_:Object = CREATURELOCKER._creatures[_loc3_];
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
@@ -315,12 +316,12 @@ package
          this.MonsterInfoShow();
       }
       
-      public function MonsterInfoShow() : *
+      public function MonsterInfoShow() : void
       {
          mcMonsterInfo.visible = true;
       }
       
-      public function MonsterInfoHide(param1:MouseEvent = null) : *
+      public function MonsterInfoHide(param1:MouseEvent = null) : void
       {
          mcMonsterInfo.visible = false;
       }
@@ -328,8 +329,13 @@ package
       public function QueueAdd(param1:String) : Function
       {
          var targetID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
+            if(!SubscriptionHandler.instance.isSubscriptionActive && SubscriptionHandler.isEnabledForAll && BASE.isInfernoCreep(targetID))
+            {
+               SubscriptionHandler.instance.showPromoPopup();
+               return;
+            }
             _tick = 0;
             _monsterID = targetID;
             QueueAddTick();
@@ -337,7 +343,7 @@ package
          };
       }
       
-      private function QueueAddTick(param1:Event = null) : *
+      private function QueueAddTick(param1:Event = null) : void
       {
          var _loc4_:Array = null;
          this._tick += 1;
@@ -345,7 +351,7 @@ package
          {
             return;
          }
-         var _loc2_:* = this._monsterID;
+         var _loc2_:String = this._monsterID;
          if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true,BASE.isInfernoCreep(_loc2_)))
          {
             return;
@@ -384,7 +390,7 @@ package
          }
       }
       
-      private function FinishNow(param1:MouseEvent) : *
+      private function FinishNow(param1:MouseEvent) : void
       {
          var _loc2_:Array = null;
          var _loc3_:String = null;
@@ -394,7 +400,7 @@ package
          {
             return;
          }
-         if(GLOBAL._bHatcheryCC && GLOBAL._bHatcheryCC._finishCost.Get() > 0)
+         if(Boolean(GLOBAL._bHatcheryCC) && GLOBAL._bHatcheryCC._finishCost.Get() > 0)
          {
             if(BASE._credits.Get() >= GLOBAL._bHatcheryCC._finishCost.Get())
             {
@@ -435,12 +441,12 @@ package
          }
       }
       
-      private function DoFinish() : *
+      private function DoFinish() : void
       {
          GLOBAL._bHatcheryCC.FinishNow();
       }
       
-      private function Charge(param1:String) : *
+      private function Charge(param1:String) : void
       {
          var _loc2_:Boolean = BASE.isInfernoCreep(param1);
          BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"),false,_loc2_);
@@ -451,7 +457,7 @@ package
       public function QueueRemove(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             _tick = 0;
             _monsterIndex = n;
@@ -460,7 +466,7 @@ package
          };
       }
       
-      private function QueueRemoveTick(param1:Event = null) : *
+      private function QueueRemoveTick(param1:Event = null) : void
       {
          this._tick += 1;
          if(this._tick < HATCHERYCC.queueLimit && this._tick != 1)
@@ -485,7 +491,7 @@ package
          this.Update();
       }
       
-      private function ClearEvents(param1:MouseEvent) : *
+      private function ClearEvents(param1:MouseEvent) : void
       {
          removeEventListener(Event.ENTER_FRAME,this.QueueAddTick);
          removeEventListener(Event.ENTER_FRAME,this.QueueRemoveTick);
@@ -494,7 +500,7 @@ package
       public function StopProduction(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc3_:* = undefined;
             var _loc2_:* = 1;
@@ -515,12 +521,10 @@ package
          };
       }
       
-      public function RenderQueue() : *
+      public function RenderQueue() : void
       {
-         var _loc5_:int = 0;
          var _loc8_:BFOUNDATION = null;
          var _loc9_:int = 0;
-         var _loc10_:int = 0;
          var _loc2_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          var _loc3_:int = 1;
          while(_loc3_ <= 7)
@@ -541,7 +545,7 @@ package
             _loc3_++;
          }
          HOUSING.HousingSpace();
-         _loc5_ = 100 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
+         var _loc5_:int = 100 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
          mcStorage.mcBar.width = 535 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
          var _loc6_:* = "<b>" + GLOBAL.FormatNumber(HOUSING._housingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + "</b>";
          var _loc7_:int = 0;
@@ -616,7 +620,7 @@ package
          }
          mcStorage.mcBarB.width = _loc5_;
          txtStorage.htmlText = _loc6_;
-         _loc10_ = int(BASE._resources.r4.Get());
+         var _loc10_:int = int(BASE._resources.r4.Get());
          _loc9_ = 0;
          while(_loc9_ < _loc2_.length)
          {
@@ -661,7 +665,7 @@ package
          }
       }
       
-      public function Setup() : *
+      public function Setup() : void
       {
          var _loc2_:int = 1;
          while(_loc2_ <= 7)
@@ -698,7 +702,7 @@ package
       public function ShowRemove(param1:MovieClip) : Function
       {
          var n:MovieClip = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             n.visible = true;
          };
@@ -707,13 +711,13 @@ package
       public function HideRemove(param1:MovieClip) : Function
       {
          var n:MovieClip = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             n.visible = false;
          };
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc4_:MovieClip = null;
          var _loc7_:BFOUNDATION = null;
@@ -728,7 +732,12 @@ package
          while(_loc6_ < this._monsterSlots.length)
          {
             _loc10_ = this._monsterSlots[_loc6_].id;
-            if(!BASE.Charge(4,CREATURES.GetProperty(_loc10_,"cResource"),true,BASE.isInfernoCreep(_loc10_)))
+            if(!SubscriptionHandler.instance.isSubscriptionActive && SubscriptionHandler.isEnabledForAll && BASE.isInfernoCreep(_loc10_))
+            {
+               this._monsterSlots[_loc6_].mcMonster.alpha = 0.5;
+               this._monsterSlots[_loc6_].mcLevel.alpha = 0.5;
+            }
+            else if(!BASE.Charge(4,CREATURES.GetProperty(_loc10_,"cResource"),true,BASE.isInfernoCreep(_loc10_)))
             {
                this._monsterSlots[_loc6_].mcMonster.alpha = 0.5;
                this._monsterSlots[_loc6_].mcLevel.alpha = 0.5;
@@ -764,7 +773,7 @@ package
                   _loc4_.mcLoading.visible = false;
                   _loc4_.tLabel.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("hat_slot_upgrading") + "</font>";
                }
-               else if(_loc7_._inProduction != "")
+               else if(Boolean(_loc7_._inProduction) && _loc7_._inProduction != "")
                {
                   _loc4_.mcLoading.visible = true;
                   ImageCache.GetImageWithCallBack("monsters/" + _loc7_._inProduction + "-medium.jpg",this.IconLoaded,true,1,"",["hatchery",_loc3_]);
@@ -825,6 +834,8 @@ package
                _loc4_.visible = true;
                _loc4_.tLabel.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("hat_slot_buildanother") + "</font>";
                _loc4_.mcLoading.visible = false;
+               this["hatcheryBG" + _loc9_].visible = true;
+               this["hatlabel" + _loc9_ + "_txt"].visible = true;
                this["bProgress" + _loc9_].visible = false;
                this["tProgress" + _loc9_].visible = false;
                this["hatcheryRemove" + _loc9_].visible = false;
@@ -832,6 +843,9 @@ package
             else
             {
                _loc4_.visible = false;
+               this["hatlabel" + _loc9_ + "_txt"].visible = false;
+               this["hatcheryBG" + _loc9_].visible = false;
+               this["hatcheryBG" + _loc9_].visible = false;
                this["bProgress" + _loc9_].visible = false;
                this["tProgress" + _loc9_].visible = false;
                this["hatcheryRemove" + _loc9_].visible = false;
@@ -876,7 +890,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          HATCHERYCC.Hide(param1);
       }

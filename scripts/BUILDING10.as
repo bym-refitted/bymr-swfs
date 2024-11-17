@@ -22,10 +22,10 @@ package
       
       private function onAssetLoaded(param1:String, param2:BitmapData) : void
       {
-         var _loc3_:* = undefined;
+         var _loc3_:Bitmap = null;
          if(param1 == imageData.shadowURL)
          {
-            _loc3_ = _mcBase.addChild(new Bitmap(param2));
+            _loc3_ = _mcBase.addChild(new Bitmap(param2)) as Bitmap;
             _loc3_.x = imageData.shadowX;
             _loc3_.y = imageData.shadowY;
             _loc3_.blendMode = "multiply";
@@ -36,17 +36,17 @@ package
          }
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          super.Description();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -54,7 +54,7 @@ package
          GLOBAL._bYardPlanner = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                GLOBAL.CallJS("sendFeed",["build-yardplanner",KEYS.Get("pop_planner_streamtitle"),KEYS.Get("pop_planner_body"),"build-yardplanner.png"]);
                POPUPS.Next();
@@ -69,18 +69,18 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bYardPlanner = null;
          super.RecycleC();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(_countdownBuild.Get() == 0)

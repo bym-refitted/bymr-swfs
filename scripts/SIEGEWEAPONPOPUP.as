@@ -8,6 +8,7 @@ package
    import com.monsters.siege.weapons.IDurable;
    import com.monsters.siege.weapons.Jars;
    import com.monsters.siege.weapons.SiegeWeapon;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.BlendMode;
@@ -140,7 +141,7 @@ package
       {
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
-         var _loc4_:* = undefined;
+         var _loc4_:int = 0;
          if(this._currentSiegeWeapon.image != this._currentImage)
          {
             ImageCache.GetImageWithCallBack(this._currentSiegeWeapon.image,this.onImageLoaded);
@@ -380,6 +381,7 @@ package
       
       public function Target(param1:MouseEvent = null) : void
       {
+         var _loc2_:Boolean = false;
          if(this._state == 1)
          {
             this.Cancel();
@@ -394,7 +396,13 @@ package
             }
             else
             {
-               SiegeWeapons.activateWeapon(this._currentSiegeWeapon.weaponID);
+               _loc2_ = SiegeWeapons.activateWeapon(this._currentSiegeWeapon.weaponID);
+               if(!_loc2_)
+               {
+                  _bOpen.enabled = false;
+                  _bOpen.mouseEnabled = false;
+                  return;
+               }
                this.HasFired();
             }
          }
@@ -517,6 +525,18 @@ package
          this._t.stop();
          this._open = false;
          this.Update();
+      }
+      
+      public function validate() : Boolean
+      {
+         var _loc1_:Boolean = true;
+         switch(this._currentSiegeWeapon.weaponID)
+         {
+            case Vacuum.ID:
+               _loc1_ = Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._destroyed === false;
+               enabled = _loc1_;
+         }
+         return _loc1_;
       }
       
       public function Center() : void

@@ -32,7 +32,16 @@ package
          }
       }
       
-      public function Spew(param1:Event = null) : *
+      protected function popupRemoveFromStage(param1:Event) : void
+      {
+         if(this._spewed === true)
+         {
+            return;
+         }
+         this._clicked = false;
+      }
+      
+      public function Spew(param1:Event = null) : void
       {
          var _loc4_:int = 0;
          ++this._spewNumber;
@@ -55,7 +64,7 @@ package
             _loc4_ = Math.ceil(this._spewNumber / 100);
             if(_loc4_ == 5 || _loc4_ > 11)
             {
-               return false;
+               return;
             }
             _animTick = 1;
             AnimFrame();
@@ -73,7 +82,7 @@ package
          }
       }
       
-      public function StartAttack(param1:MouseEvent = null) : *
+      public function StartAttack(param1:MouseEvent = null) : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -103,7 +112,7 @@ package
          }
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          var _loc2_:MovieClip = null;
          if(GLOBAL._mode == "build")
@@ -120,9 +129,10 @@ package
                _loc2_.tA.htmlText = "<b>" + KEYS.Get("ai_trojan_headline") + "</b>";
                _loc2_.tName.htmlText = KEYS.Get("ai_trojan_letter",{"v1":LOGIN._playerName});
                _loc2_.bA.SetupKey("ai_trojan_sendback_btn");
-               _loc2_.bA.addEventListener(MouseEvent.CLICK,this.StartAttack);
+               _loc2_.bA.addEventListener(MouseEvent.CLICK,this.StartAttack,false,0,true);
                _loc2_.bB.SetupKey("ai_trojan_accept_btn");
-               _loc2_.bB.addEventListener(MouseEvent.CLICK,this.StartAttack);
+               _loc2_.bB.addEventListener(MouseEvent.CLICK,this.StartAttack,false,0,true);
+               _loc2_.addEventListener(Event.REMOVED_FROM_STAGE,this.popupRemoveFromStage,false,0,true);
                POPUPS.Push(_loc2_);
             }
          }
@@ -137,11 +147,11 @@ package
       {
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc1_:Object = super.Export();
          if(!this._spewed)

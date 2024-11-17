@@ -27,7 +27,7 @@ package
          {
             _open = true;
             GLOBAL.BlockerAdd();
-            _mc = GLOBAL._layerWindows.addChild(new HATCHERYCCPOPUP());
+            _mc = GLOBAL._layerWindows.addChild(new HATCHERYCCPOPUP()) as HATCHERYCCPOPUP;
             _mc.Setup();
             _mc.Center();
             _mc.ScaleUp();
@@ -49,16 +49,9 @@ package
       
       public static function Tick() : void
       {
-         try
+         if(_mc)
          {
-            if(_mc)
-            {
-               _mc.Update();
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","Hatchery.Tick: " + e.message + " | " + e.getStackTrace());
+            _mc.Update();
          }
       }
    }

@@ -1,8 +1,9 @@
 package com.monsters.kingOfTheHill.rewards
 {
    import com.cc.utils.SecNum;
-   import com.monsters.champions.KOTHChampion;
    import com.monsters.debug.Console;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.champions.KOTHChampion;
    import com.monsters.rewarding.Reward;
    
    public class KrallenReward extends Reward
@@ -28,6 +29,10 @@ package com.monsters.kingOfTheHill.rewards
          }
       }
       
+      override public function reset() : void
+      {
+      }
+      
       override public function canBeApplied() : Boolean
       {
          return GLOBAL.isAtHome();
@@ -36,7 +41,7 @@ package com.monsters.kingOfTheHill.rewards
       private function updateKrallenStatus(param1:uint) : void
       {
          var _loc3_:CHAMPIONCAGE = null;
-         var _loc2_:CHAMPIONMONSTER = CREATURES.getGuardian(KOTHChampion.TYPE);
+         var _loc2_:ChampionBase = CREATURES.getGuardian(KOTHChampion.TYPE);
          param1 = Math.min(param1,KOTHChampion.MAX_POWERLEVEL);
          if(_loc2_)
          {

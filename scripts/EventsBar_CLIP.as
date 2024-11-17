@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1682")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1667")]
    public dynamic class EventsBar_CLIP extends MovieClip
    {
       public var mcHit:MovieClip;

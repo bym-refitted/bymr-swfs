@@ -6,7 +6,7 @@ package
    
    public class UI_VISITOR extends UI_VISITOR_CLIP
    {
-      public static var _helpButtons:*;
+      public static var _helpButtons:MovieClip;
       
       public function UI_VISITOR()
       {
@@ -59,15 +59,15 @@ package
             mc.bReturn.SetupKey("btn_returnhome");
             mc.bAttack.visible = false;
          }
-         mc.bReturn.addEventListener(MouseEvent.CLICK,this.Return);
+         mc.bReturn.addEventListener(MouseEvent.CLICK,this.ReturnCB);
          mc.gotoAndStop(1);
          this.Update();
       }
       
-      public static function Focus(param1:BFOUNDATION) : *
+      public static function Focus(param1:BFOUNDATION) : Function
       {
          var building:BFOUNDATION = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             MAP.FocusTo(building._mc.x,building._mc.y,0.6);
             BASE.BuildingSelect(building,true);
@@ -84,7 +84,7 @@ package
          BUILDINGS.Show();
       }
       
-      public function Return(param1:MouseEvent) : void
+      public function ReturnCB(param1:MouseEvent) : void
       {
          if(GLOBAL._newBuilding)
          {
@@ -103,7 +103,7 @@ package
          {
             if(MAPROOM_DESCENT.InDescent)
             {
-               BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+               BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
             }
             else
             {
@@ -112,11 +112,11 @@ package
          }
          else
          {
-            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
          }
       }
       
-      public function Attack(param1:MouseEvent) : *
+      public function Attack(param1:MouseEvent) : void
       {
          if(GLOBAL._currentCell)
          {
@@ -155,13 +155,13 @@ package
          }
       }
       
-      public function Update() : *
+      public function Update() : void
       {
-         var count:int = 0;
-         var building:* = undefined;
-         var helped:Boolean = false;
-         var helper:int = 0;
-         var b:MovieClip = null;
+         var _loc1_:int = 0;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:Boolean = false;
+         var _loc4_:int = 0;
+         var _loc5_:MovieClip = null;
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
             if(ATTACK._countdown < 0)
@@ -171,50 +171,44 @@ package
          }
          else if(GLOBAL._mode == "help")
          {
-            try
+            if(Boolean(_helpButtons) && mc.contains(_helpButtons))
             {
-               if(_helpButtons)
-               {
-                  mc.removeChild(_helpButtons);
-               }
+               mc.removeChild(_helpButtons);
             }
-            catch(e:Error)
-            {
-            }
-            _helpButtons = mc.addChild(new MovieClip());
+            _helpButtons = mc.addChild(new MovieClip()) as MovieClip;
             _helpButtons.x = 210;
             _helpButtons.y = 5;
-            count = 0;
-            for each(building in BASE._buildingsAll)
+            _loc1_ = 0;
+            for each(_loc2_ in BASE._buildingsAll)
             {
-               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() + building._countdownFortify.Get() > 0)
+               if(_loc2_._countdownBuild.Get() + _loc2_._countdownUpgrade.Get() + _loc2_._countdownFortify.Get() > 0)
                {
-                  helped = false;
-                  for each(helper in building._helpList)
+                  _loc3_ = false;
+                  for each(_loc4_ in _loc2_._helpList)
                   {
-                     if(helper == LOGIN._playerID)
+                     if(_loc4_ == LOGIN._playerID)
                      {
-                        helped = true;
+                        _loc3_ = true;
                         break;
                      }
                   }
                   mc.gotoAndStop(2);
-                  b = new button_buildings();
-                  b.gotoAndStop(building._type);
-                  b.x = count * 45;
-                  if(!helped)
+                  _loc5_ = new button_buildings();
+                  _loc5_.gotoAndStop(_loc2_._type);
+                  _loc5_.x = _loc1_ * 45;
+                  if(!_loc3_)
                   {
-                     b.buttonMode = true;
-                     b.addEventListener(MouseEvent.CLICK,Focus(building));
-                     b.mcTick.visible = false;
+                     _loc5_.buttonMode = true;
+                     _loc5_.addEventListener(MouseEvent.CLICK,Focus(_loc2_));
+                     _loc5_.mcTick.visible = false;
                   }
-                  _helpButtons.addChild(b);
-                  count++;
+                  _helpButtons.addChild(_loc5_);
+                  _loc1_++;
                }
             }
-            if(count > 0)
+            if(_loc1_ > 0)
             {
-               mc.mcBG.width = 220 + count * 45;
+               mc.mcBG.width = 220 + _loc1_ * 45;
             }
             else
             {

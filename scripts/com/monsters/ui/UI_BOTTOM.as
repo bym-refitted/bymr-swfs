@@ -24,7 +24,7 @@ package com.monsters.ui
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _children = new Vector.<DisplayObject>();
          _mc = new UI_MENU();
@@ -62,12 +62,12 @@ package com.monsters.ui
          _nextwave.visible = false;
       }
       
-      public static function ShowStarterKits(param1:MouseEvent = null) : *
+      public static function ShowStarterKits(param1:MouseEvent = null) : void
       {
          POPUPS.Push(new popup_prefab_help());
       }
       
-      public static function Update() : *
+      public static function Update() : void
       {
          var _loc2_:int = 0;
          var _loc1_:int = 0;
@@ -133,7 +133,7 @@ package com.monsters.ui
          }
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          if(_mc)
          {
@@ -157,7 +157,7 @@ package com.monsters.ui
          showChildren();
       }
       
-      public static function Hide() : *
+      public static function Hide() : void
       {
          if(_mc)
          {
@@ -216,7 +216,10 @@ package com.monsters.ui
          {
             _children.splice(_loc2_,1);
          }
-         GLOBAL._layerUI.removeChild(param1);
+         if(param1.parent)
+         {
+            param1.parent.removeChild(param1);
+         }
       }
    }
 }

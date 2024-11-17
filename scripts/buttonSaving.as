@@ -7,7 +7,7 @@ package
    
    public class buttonSaving extends MovieClip
    {
-      internal var _bubble:bubblepopup5;
+      private var _bubble:bubblepopup5;
       
       public function buttonSaving()
       {
@@ -18,7 +18,7 @@ package
          buttonMode = true;
       }
       
-      private function Over(param1:MouseEvent) : *
+      private function Over(param1:MouseEvent) : void
       {
          this.Out();
          this._bubble = new bubblepopup5();
@@ -41,7 +41,7 @@ package
          this.addChild(this._bubble);
       }
       
-      private function Tick(param1:Event) : *
+      private function Tick(param1:Event) : void
       {
          if(Boolean(this._bubble) && Boolean(this._bubble.parent))
          {
@@ -56,7 +56,7 @@ package
          }
       }
       
-      private function Out(param1:MouseEvent = null) : *
+      private function Out(param1:MouseEvent = null) : void
       {
          if(Boolean(this._bubble) && Boolean(this._bubble.parent))
          {

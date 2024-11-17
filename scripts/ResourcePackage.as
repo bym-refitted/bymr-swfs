@@ -6,21 +6,21 @@ package
    
    public class ResourcePackage extends ResourcePackage_CLIP
    {
-      internal var _frame:int = 0;
+      private var _frame:int = 0;
       
-      internal var _id:int;
+      private var _id:int;
       
-      internal var _targetPoint:Point;
+      private var _targetPoint:Point;
       
-      internal var _target:BFOUNDATION;
+      private var _target:BFOUNDATION;
       
-      internal var xd:*;
+      private var xd:Number;
       
-      internal var yd:*;
+      private var yd:Number;
       
-      internal var _targetRotation:*;
+      private var _targetRotation:Number;
       
-      internal var _speed:Number;
+      private var _speed:Number;
       
       public function ResourcePackage(param1:Point, param2:Point, param3:int, param4:int, param5:int, param6:int = 0, param7:BFOUNDATION = null, param8:Number = 0)
       {
@@ -35,7 +35,7 @@ package
          var target:BFOUNDATION = param7;
          var delay:Number = param8;
          super();
-         Sound = function():*
+         Sound = function():void
          {
             if(BASE.isInferno())
             {
@@ -100,7 +100,7 @@ package
          });
       }
       
-      internal function Arrived() : *
+      private function Arrived() : void
       {
          if(BASE.isInferno())
          {

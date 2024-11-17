@@ -55,7 +55,7 @@ package com.monsters.replayableEvents.monsterMadness.popups
          var _loc2_:Number = 0;
          var _loc3_:* = 0;
          var _loc4_:int = 0;
-         var _loc5_:* = undefined;
+         var _loc5_:Number = NaN;
          var _loc6_:int = 0;
          var _loc1_:uint = uint(MonsterMadness.EVENT_DATES.indexOf(MonsterMadness.activeDate));
          if(MonsterMadness.hasEventStarted || Boolean(MonsterMadness.points))

@@ -9,7 +9,7 @@ package
    
    public class BUILDING115 extends BTOWER
    {
-      public var _animMC:*;
+      public var _animMC:MovieClip;
       
       public var _animBitmap:BitmapData;
       
@@ -34,7 +34,7 @@ package
          this.Props();
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          var _loc2_:Boolean = false;
          var _loc3_:int = 0;
@@ -126,7 +126,7 @@ package
          }
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
          if(_animLoaded && GLOBAL._render)
          {
@@ -135,7 +135,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          SOUNDS.Play("snipe1",!isJard ? 0.8 : 0.4);
@@ -164,7 +164,7 @@ package
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:Object = null;
          var _loc2_:Object = null;
@@ -207,24 +207,24 @@ package
          }
       }
       
-      override public function Props() : *
+      override public function Props() : void
       {
          super.Props();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function():*
+            Brag = function():void
             {
                GLOBAL.CallJS("sendFeed",["aatower-construct",KEYS.Get("pop_aabuilt_streamtitle"),KEYS.Get("pop_aabuilt_streambody"),"build-aerial.v2.png"]);
                POPUPS.Next();

@@ -1,5 +1,6 @@
 package
 {
+   import flash.display.MovieClip;
    import flash.display.StageDisplayState;
    import flash.events.*;
    import gs.*;
@@ -7,16 +8,16 @@ package
    
    public class ERRORMESSAGE extends ERRORMESSAGE_CLIP
    {
-      public var _mc:*;
+      public var _mc:MovieClip;
       
-      public var _blocker:*;
+      public var _blocker:popup_bg;
       
       public function ERRORMESSAGE()
       {
          super();
       }
       
-      public function Show(param1:String, param2:int = 0) : *
+      public function Show(param1:String, param2:int = 0) : void
       {
          var Resume:Function;
          var _message:String = param1;
@@ -27,7 +28,7 @@ package
          }
          if(errortype != GLOBAL.ERROR_OOPS_ONLY)
          {
-            this._mc = GLOBAL._layerTop.addChild(this);
+            this._mc = GLOBAL._layerTop.addChild(this) as MovieClip;
             tMessage.autoSize = "left";
             if(_message)
             {
@@ -42,10 +43,11 @@ package
          }
          if(errortype != GLOBAL.ERROR_ORANGE_BOX_ONLY)
          {
-            Resume = function(param1:MouseEvent = null):*
+            Resume = function(param1:MouseEvent = null):void
             {
                GLOBAL.CallJS("reloadPage");
             };
+            print(" *** ERRORMESSAGE SHOWING OOPS" + _message);
             GLOBAL.RefreshScreen();
             try
             {
@@ -55,7 +57,7 @@ package
             {
                LOGGER.Log("err","HALT " + _message + " | " + e.getStackTrace());
             }
-            this._mc = GLOBAL._ROOT.addChild(new popup_error());
+            this._mc = GLOBAL._ROOT.addChild(new popup_error()) as MovieClip;
             (this._mc.mcFrame as frame).Setup(false);
             if(KEYS._setup)
             {

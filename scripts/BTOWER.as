@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.display.SpriteData;
    import com.monsters.display.SpriteSheetAnimation;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Jars;
@@ -28,11 +29,11 @@ package
          "132":1
       };
       
-      internal var creeps:Array;
+      private var creeps:Array;
       
-      internal var maxDist:int;
+      private var maxDist:int;
       
-      internal var minDist:int;
+      private var minDist:int;
       
       public var _frameNumber:int;
       
@@ -48,6 +49,8 @@ package
       
       public var _fireTick:int = 0;
       
+      public var _target:*;
+      
       private var pointA:Point;
       
       private var pointB:Point;
@@ -59,6 +62,8 @@ package
       public var _jarHealth:SecNum;
       
       public var _targetVacuum:Boolean;
+      
+      protected var _maxTargets:int = 1;
       
       public function BTOWER()
       {
@@ -81,7 +86,7 @@ package
          return param1[Math.floor(Math.random() * param1.length)];
       }
       
-      public function Props() : *
+      public function Props() : void
       {
          var _loc1_:int = 0;
          if(_lvl.Get() > 0)
@@ -111,14 +116,14 @@ package
          this._fireTick = super._rate;
       }
       
-      override public function Place(param1:MouseEvent = null) : *
+      override public function Place(param1:MouseEvent = null) : void
       {
          ++GLOBAL._bTowerCount;
          GLOBAL._bTower = this;
          super.Place(param1);
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:Object = null;
          var _loc2_:Object = null;
@@ -162,11 +167,11 @@ package
          }
       }
       
-      override public function TickAttack() : *
+      override public function TickAttack() : void
       {
          var _loc1_:Boolean = false;
          var _loc2_:MovieClip = null;
-         var _loc3_:* = undefined;
+         var _loc3_:int = 0;
          if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
             --this._fireTick;
@@ -183,7 +188,7 @@ package
                   else
                   {
                      this._targetVacuum = false;
-                     this.FindTargets(1,this._priority);
+                     this.FindTargets(this._maxTargets,this._priority);
                      this._fireTick = 30;
                      if(CREEPS._creepCount > 150)
                      {
@@ -208,7 +213,8 @@ package
                   }
                   else
                   {
-                     for(_loc3_ in this._targetCreeps)
+                     _loc3_ = 0;
+                     while(_loc3_ < this._targetCreeps.length)
                      {
                         if(this._targetCreeps[_loc3_].creep._health.Get() > 0)
                         {
@@ -219,11 +225,12 @@ package
                            _loc1_ = true;
                            this._targetCreeps = [];
                         }
+                        _loc3_++;
                      }
                   }
                   if(Boolean(this._retarget) || _loc1_)
                   {
-                     this.FindTargets(1,this._priority);
+                     this.FindTargets(this._maxTargets,this._priority);
                      this._fireTick = 30;
                      if(CREEPS._creepCount > 150)
                      {
@@ -239,10 +246,10 @@ package
       {
          var _loc1_:Point = null;
          var _loc3_:Number = NaN;
-         var _loc4_:* = undefined;
          var _loc2_:Point = GRID.FromISO(_mc.x,_mc.y);
          _loc2_.add(new Point(_footprint[0].width * 0.5,_footprint[0].height * 0.5));
-         for(_loc4_ in this._targetCreeps)
+         var _loc4_:int = 0;
+         while(_loc4_ < this._targetCreeps.length)
          {
             _loc1_ = GRID.FromISO(this._targetCreeps[_loc4_].creep._tmpPoint.x,this._targetCreeps[_loc4_].creep._tmpPoint.y);
             _loc3_ = GLOBAL.QuickDistanceSquared(_loc2_,_loc1_);
@@ -250,13 +257,14 @@ package
             {
                return true;
             }
+            _loc4_++;
          }
          return false;
       }
       
       public function get isJard() : Boolean
       {
-         return this._jarHealth;
+         return Boolean(this._jarHealth);
       }
       
       public function ApplyJar(param1:int) : void
@@ -307,6 +315,10 @@ package
       
       private function TickJar() : void
       {
+         if(Boolean(this._jarHealth) && this._jarHealth.Get() <= 0)
+         {
+            this.KillJar();
+         }
          this._jarAnimation.update();
          if(this._jarAnimation.currentFrame >= this._jarAnimation.totalFrames)
          {
@@ -331,20 +343,21 @@ package
          }
       }
       
-      public function Fire(param1:*) : *
+      public function Fire(param1:*) : void
       {
          if(this._jarHealth)
          {
             this.UpdateJar();
          }
+         this._target = param1;
       }
       
-      override public function Update(param1:Boolean = false) : *
+      override public function Update(param1:Boolean = false) : void
       {
          super.Update(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : void
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null) : int
       {
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
          {
@@ -375,9 +388,10 @@ package
          }
          this.Update();
          BASE.Save();
+         return _loc7_;
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -385,7 +399,7 @@ package
          this.Props();
          if(GLOBAL._mode == "build" && !(BASE.isInfernoBuilding(_type) || BASE.isInferno()))
          {
-            Brag = function(param1:MouseEvent):*
+            Brag = function(param1:MouseEvent):void
             {
                var _loc2_:String = "build-cannon.png";
                if(_type == 21)
@@ -427,20 +441,20 @@ package
          }
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          this.Props();
       }
       
-      public function FindTargets(param1:int, param2:int) : *
+      public function FindTargets(param1:int, param2:int) : void
       {
-         var _loc3_:* = undefined;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc7_:* = undefined;
-         var _loc8_:* = undefined;
+         var _loc3_:Object = null;
+         var _loc4_:MonsterBase = null;
+         var _loc5_:String = null;
+         var _loc6_:Number = NaN;
+         var _loc7_:Point = null;
+         var _loc8_:int = 0;
          var _loc9_:int = 0;
          if(_targetFlyerMode[_type])
          {
@@ -470,11 +484,12 @@ package
             _loc8_ = 0;
             for(_loc5_ in this.creeps)
             {
-               if(++_loc8_ <= param1)
+               _loc8_++;
+               if(_loc8_ <= param1)
                {
                   _loc3_ = this.creeps[_loc5_];
                   _loc4_ = _loc3_.creep;
-                  _loc6_ = _loc3_.dist;
+                  _loc6_ = Number(_loc3_.dist);
                   _loc7_ = _loc3_.pos;
                   this._targetCreeps.push({
                      "creep":_loc4_,
@@ -487,28 +502,28 @@ package
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bTower = null;
          --GLOBAL._bTowerCount;
          super.RecycleC();
       }
       
-      override public function Cancel() : *
+      override public function Cancel() : void
       {
          GLOBAL._bTower = null;
          --GLOBAL._bTowerCount;
          super.Cancel();
       }
       
-      protected function Rotate() : *
+      protected function Rotate() : void
       {
          var _loc1_:Point = null;
          var _loc2_:Point = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:* = undefined;
+         var _loc6_:MonsterBase = null;
          var _loc7_:Point = null;
          var _loc8_:Point = null;
          var _loc9_:int = 0;
@@ -526,7 +541,7 @@ package
             {
                _loc5_ = 6 * 60 + _loc5_;
             }
-            _loc5_ /= 12;
+            _loc5_ /= 11.25;
             _animTick = int(_loc5_);
             AnimFrame();
             ++this._frameNumber;
@@ -544,14 +559,14 @@ package
             {
                _loc11_ = 6 * 60 + _loc11_;
             }
-            _loc11_ /= 12;
+            _loc11_ /= 11.25;
             _animTick = int(_loc11_);
             AnimFrame();
             ++this._frameNumber;
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          ++GLOBAL._bTowerCount;
@@ -559,7 +574,7 @@ package
          this.Props();
       }
       
-      override public function Over(param1:MouseEvent) : *
+      override public function Over(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
          {
@@ -592,7 +607,7 @@ package
          TweenLite.killDelayedCallsTo(this.RangeIndicator);
       }
       
-      override public function Out(param1:MouseEvent) : *
+      override public function Out(param1:MouseEvent) : void
       {
          if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
          {

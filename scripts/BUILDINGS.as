@@ -21,7 +21,7 @@ package
          super();
       }
       
-      public static function Reset(param1:Boolean = false) : *
+      public static function Reset(param1:Boolean = false) : void
       {
          if(param1)
          {
@@ -33,7 +33,7 @@ package
          Hide();
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function Show(param1:MouseEvent = null) : void
       {
          GLOBAL.BlockerAdd();
          if(GLOBAL._mode == "build")
@@ -47,7 +47,7 @@ package
                SOUNDS.Play("click1");
                BASE.BuildingDeselect();
                _open = true;
-               _mc = GLOBAL._layerWindows.addChild(new BUILDINGSPOPUP());
+               _mc = GLOBAL._layerWindows.addChild(new BUILDINGSPOPUP()) as BUILDINGSPOPUP;
                _mc.Center();
                _mc.ScaleUp();
             }
@@ -58,7 +58,7 @@ package
          }
       }
       
-      public static function Hide(param1:MouseEvent = null) : *
+      public static function Hide(param1:MouseEvent = null) : void
       {
          GLOBAL.BlockerRemove();
          if(_open)

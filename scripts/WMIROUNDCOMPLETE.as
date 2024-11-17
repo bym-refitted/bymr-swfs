@@ -18,13 +18,13 @@ package
          var bannerComplete:Function = null;
          var imageComplete:Function = null;
          var numDamagedBuildings:int = 0;
-         var b:* = undefined;
+         var b:BFOUNDATION = null;
          var wave:int = param1;
          var surrendered:Boolean = param2;
-         bannerComplete = function(param1:String, param2:BitmapData):*
+         bannerComplete = function(param1:String, param2:BitmapData):void
          {
-            bm = new Bitmap(param2);
-            mcBanner.addChild(bm);
+            var _loc3_:Bitmap = new Bitmap(param2);
+            mcBanner.addChild(_loc3_);
             mcBanner.width = 672;
             mcBanner.height = 82;
          };
@@ -247,7 +247,7 @@ package
       
       private function StartRepairsClicked(param1:MouseEvent) : void
       {
-         var _loc2_:* = undefined;
+         var _loc2_:BFOUNDATION = null;
          for each(_loc2_ in BASE._buildingsAll)
          {
             if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)

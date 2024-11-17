@@ -23,18 +23,18 @@ package com.monsters.maproom_advanced
          x = 455;
          y = 260;
          this.bView.SetupKey("map_view_btn");
-         this.bView.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("view");
          });
-         this.bView.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bView.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             View();
          });
          (mcFrame as frame).Setup();
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          if(Boolean(this._profilePic) && Boolean(this._profilePic.parent))
          {
@@ -49,7 +49,7 @@ package com.monsters.maproom_advanced
          MapRoom._mc.HideInfoViewOnly();
       }
       
-      public function Setup(param1:MapRoomCell, param2:Boolean = false) : *
+      public function Setup(param1:MapRoomCell, param2:Boolean = false) : void
       {
          var _loc3_:int = 0;
          var _loc4_:int = 0;
@@ -130,7 +130,7 @@ package com.monsters.maproom_advanced
          this.Update();
       }
       
-      private function ProfilePic() : *
+      private function ProfilePic() : void
       {
          var onImageLoad:Function = null;
          var imageComplete:Function = null;
@@ -147,7 +147,7 @@ package com.monsters.maproom_advanced
             _profileBmp = new Bitmap(param2);
             mcProfilePic.mcBG.addChild(_profileBmp);
          };
-         LoadImageError = function(param1:IOErrorEvent):*
+         LoadImageError = function(param1:IOErrorEvent):void
          {
             _profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             _profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
@@ -196,18 +196,22 @@ package com.monsters.maproom_advanced
       
       public function Cleanup() : void
       {
-         this.bView.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
+         this.bView.removeEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):void
          {
             ButtonInfo("view");
          });
-         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
+         this.bView.removeEventListener(MouseEvent.CLICK,function(param1:MouseEvent):void
          {
             View();
          });
-         mcFrame = null;
+         if(mcFrame)
+         {
+            mcFrame.Clear();
+            mcFrame = null;
+         }
       }
       
-      public function View() : *
+      public function View() : void
       {
          var _loc1_:int = 0;
          MapRoom.HideFromViewOnly();
@@ -218,22 +222,22 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE.LoadBase(null,null,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
          }
          else
          {
             _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,this._cell._baseID,"view",false,_loc1_);
+            BASE.LoadBase(null,0,this._cell._baseID,"view",false,_loc1_);
          }
       }
       
-      public function ButtonInfo(param1:String) : *
+      public function ButtonInfo(param1:String) : void
       {
          txtButtonInfo.htmlText = KEYS.Get("newmap_view",{"v1":this._cell._name});
          mcArrow.x = bView.x + bView.width / 2 - 5;
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc1_:String = "";
          _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange.Get() + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);

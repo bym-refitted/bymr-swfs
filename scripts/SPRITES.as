@@ -15,7 +15,7 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _sprites = {};
          if(!BASE.isInferno())
@@ -89,6 +89,7 @@ package
          _sprites.heart = new SpriteData("effects/heart_icon.v2.png",12,12,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.flame = new SpriteData("effects/flame_icon.png",16,25,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.venom = new SpriteData("effects/venom_icon.v2.png",16,26,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[SpurtzCannon.SPURTZ_PROJECTILE] = new SpriteData("buildings/ispurtz_cannon/spurtz_projectile.png",34,27,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Jars.JAR_GRAPHIC] = new SpriteData(Jars.JAR_GRAPHIC_URL,Jars.JAR_GRAPHIC_WIDTH,Jars.JAR_GRAPHIC_HEIGHT,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Decoy.DECOY_WAVE] = new SpriteData("siegeimages/decoy_wave_anim.png",61,70,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Decoy.DECOY_FUSE] = new SpriteData("siegeimages/decoy_fuse_anim.png",44,49,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
@@ -229,11 +230,11 @@ package
          }
          if(param2 == "IC1")
          {
-            if(param6 != param4 / 12)
+            if(param6 != param4 / 11.25)
             {
-               GetFrame(param1,_sprites.IC1,param4 / 12,param5 / 8 % 2 + 1);
+               GetFrame(param1,_sprites.IC1,param4 / 11.25,param5 / 8 % 2 + 1);
             }
-            return param4 / 12;
+            return param4 / 11.25;
          }
          if(param2 == "IC3")
          {
@@ -414,11 +415,19 @@ package
          }
          if(param2 == "rocket")
          {
-            if(param6 != param4 / 12)
+            if(param6 != param4 / 11.25)
             {
-               GetFrame(param1,_sprites.rocket,32 - param4 / 12);
+               GetFrame(param1,_sprites.rocket,param4 / 11.25);
             }
-            return param4 / 12;
+            return param4 / 11.25;
+         }
+         if(param2 == SpurtzCannon.SPURTZ_PROJECTILE)
+         {
+            if(param6 != param4 / 11.25)
+            {
+               GetFrame(param1,_sprites[SpurtzCannon.SPURTZ_PROJECTILE],param4 / 11.25,param5 / 8 % 2 + 1);
+            }
+            return param4 / 11.25;
          }
          if(_sprites[param2])
          {
@@ -428,6 +437,7 @@ package
             }
             return param4 / 12;
          }
+         print("could not get frame " + param2);
          return 0;
       }
       
@@ -440,6 +450,10 @@ package
             if(param1)
             {
                param1.copyPixels(param2.image,param2.rect,param2.offset);
+            }
+            else
+            {
+               print("passed in a null canvas",true);
             }
          }
       }

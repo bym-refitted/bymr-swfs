@@ -1,8 +1,10 @@
 package com.monsters.siege.weapons
 {
-   import com.monsters.components.statusEffects.DecoyEffect;
    import com.monsters.display.SpriteData;
    import com.monsters.display.SpriteSheetAnimation;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.components.statusEffects.DecoyEffect;
    import com.monsters.siege.SiegeWeaponProperty;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -247,27 +249,27 @@ package com.monsters.siege.weapons
       
       private function updateDecoy() : void
       {
-         var _loc3_:* = undefined;
+         var _loc2_:MonsterBase = null;
          var _loc1_:Array = this.getDefendingCreepsInRange();
-         var _loc2_:int = 0;
-         while(_loc2_ < _loc1_.length)
+         var _loc3_:int = 0;
+         while(_loc3_ < _loc1_.length)
          {
-            _loc3_ = _loc1_[_loc2_];
-            if(this._attractedCreeps.indexOf(_loc3_) == -1)
+            _loc2_ = _loc1_[_loc3_];
+            if(this._attractedCreeps.indexOf(_loc2_) == -1)
             {
-               this.attractCreep(_loc3_);
+               this.attractCreep(_loc2_);
             }
-            _loc2_++;
+            _loc3_++;
          }
-         _loc2_ = int(this._attractedCreeps.length - 1);
-         while(_loc2_ >= 0)
+         _loc3_ = int(this._attractedCreeps.length - 1);
+         while(_loc3_ >= 0)
          {
-            _loc3_ = this._attractedCreeps[_loc2_];
-            if(_loc1_.indexOf(_loc3_) == -1)
+            _loc2_ = this._attractedCreeps[_loc3_];
+            if(_loc1_.indexOf(_loc2_) == -1)
             {
-               this.detractCreep(_loc3_,_loc2_);
+               this.detractCreep(_loc2_,_loc3_);
             }
-            _loc2_--;
+            _loc3_--;
          }
          this.ejectDefendersFromBunkers();
       }
@@ -371,7 +373,7 @@ package com.monsters.siege.weapons
          }
          for each(_loc5_ in _loc4_)
          {
-            if(!(_loc5_._behaviour != "defend" && _loc5_._behaviour != "bunker" && _loc5_._behaviour != "decoy" && !(_loc5_ is CHAMPIONMONSTER)))
+            if(!(_loc5_._behaviour != "defend" && _loc5_._behaviour != "bunker" && _loc5_._behaviour != "decoy" && !(_loc5_ is ChampionBase)))
             {
                _loc6_ = GLOBAL.QuickDistance(new Point(_loc5_._mc.x,_loc5_._mc.y),_loc3_);
                if(_loc6_ <= range)

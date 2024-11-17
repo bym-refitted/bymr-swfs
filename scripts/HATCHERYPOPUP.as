@@ -112,7 +112,7 @@ package
          this.MonsterInfoB(1);
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
+      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          _loc4_.smoothing = true;
@@ -121,21 +121,21 @@ package
          param3[0].mcImage.visible = true;
       }
       
-      public function MonsterInfo(param1:int) : *
+      public function MonsterInfo(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             MonsterInfoB(n);
          };
       }
       
-      public function MonsterInfoB(param1:int) : *
+      public function MonsterInfoB(param1:int) : void
       {
          var _loc10_:String = null;
          var _loc11_:int = 0;
          var _loc2_:String = BASE.isInferno() ? "IC" + param1 : "C" + param1;
-         var _loc3_:* = CREATURELOCKER._creatures[_loc2_];
+         var _loc3_:Object = CREATURELOCKER._creatures[_loc2_];
          ImageCache.GetImageWithCallBack("monsters/" + _loc2_ + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
          var _loc4_:Number = 0;
          var _loc5_:int = 0;
@@ -238,20 +238,20 @@ package
          this.MonsterInfoShow();
       }
       
-      public function MonsterInfoShow() : *
+      public function MonsterInfoShow() : void
       {
          mcMonsterInfo.visible = true;
       }
       
-      public function MonsterInfoHide(param1:MouseEvent = null) : *
+      public function MonsterInfoHide(param1:MouseEvent = null) : void
       {
          mcMonsterInfo.visible = false;
       }
       
-      public function QueueAdd(param1:int) : *
+      public function QueueAdd(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc4_:* = undefined;
             var _loc5_:* = undefined;
@@ -324,17 +324,17 @@ package
          };
       }
       
-      private function Charge(param1:String) : *
+      private function Charge(param1:String) : void
       {
          BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"));
          ResourcePackages.Create(BASE.isInferno() ? 8 : 4,this._hatchery,CREATURES.GetProperty(param1,"cResource"),true);
          BASE.Save();
       }
       
-      public function QueueRemove(param1:int) : *
+      public function QueueRemove(param1:int) : Function
       {
          var n:int = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc2_:* = undefined;
             var _loc3_:* = undefined;
@@ -366,11 +366,11 @@ package
          };
       }
       
-      public function RenderQueue() : *
+      public function RenderQueue() : void
       {
          var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc1_:* = 2 + this._hatchery._lvl.Get();
+         var _loc1_:int = 2 + this._hatchery._lvl.Get();
          var _loc2_:Array = this._hatchery._monsterQueue;
          var _loc3_:int = 0;
          while(_loc3_ < _loc2_.length)
@@ -440,10 +440,10 @@ package
          }
       }
       
-      public function Setup(param1:BUILDING13) : *
+      public function Setup(param1:BUILDING13) : void
       {
          this._hatchery = param1;
-         var _loc2_:* = 2 + this._hatchery._lvl.Get();
+         var _loc2_:int = 2 + this._hatchery._lvl.Get();
          var _loc3_:int = 0;
          while(_loc3_ < _loc2_)
          {
@@ -470,39 +470,39 @@ package
          this.Update();
       }
       
-      public function ShowRemove(param1:MovieClip) : *
+      public function ShowRemove(param1:MovieClip) : Function
       {
          var n:MovieClip = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             n.visible = true;
          };
       }
       
-      public function HideRemove(param1:MovieClip) : *
+      public function HideRemove(param1:MovieClip) : Function
       {
          var n:MovieClip = param1;
-         return function(param1:MouseEvent):*
+         return function(param1:MouseEvent):void
          {
             n.visible = false;
          };
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          var _loc4_:Boolean = false;
          var _loc5_:Array = null;
          this.RenderQueue();
          var _loc1_:Array = this._hatchery._monsterQueue;
          var _loc2_:Array = [];
-         var _loc3_:* = 1 + this._hatchery._lvl.Get();
+         var _loc3_:int = 1 + this._hatchery._lvl.Get();
          if(_loc1_.length == 0 && !this._hatchery._inProduction)
          {
             _loc2_ = [1,"<font color=\"#CC0000\"><b>" + KEYS.Get("hat_nothinginproduction") + "</b></font> " + KEYS.Get("hat_producing_message")];
          }
          else if(this._hatchery._canFunction)
          {
-            if(this._hatchery._productionStage.Get() == 2 && !HOUSING.HousingStore(this._hatchery._inProduction,new Point(this._hatchery._mc.x,this._hatchery._mc.y),true))
+            if(this._hatchery._productionStage.Get() == 2 && this._hatchery._inProduction && !HOUSING.HousingStore(this._hatchery._inProduction,new Point(this._hatchery._mc.x,this._hatchery._mc.y),true))
             {
                _loc2_ = [2,KEYS.Get(BASE.isInferno() ? "incubator_needhousing" : "hat_needhousing")];
             }
@@ -581,7 +581,7 @@ package
          }
       }
       
-      private function FinishNow(param1:MouseEvent) : *
+      private function FinishNow(param1:MouseEvent) : void
       {
          var _loc2_:Array = null;
          var _loc3_:String = null;
@@ -632,12 +632,12 @@ package
          }
       }
       
-      private function DoFinish() : *
+      private function DoFinish() : void
       {
          this._hatchery.FinishNow();
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          HATCHERY.Hide(param1);
       }

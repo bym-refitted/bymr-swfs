@@ -53,7 +53,7 @@ package
          cacheAsBitmap = true;
       }
       
-      public function Setup(param1:String = "", param2:Boolean = false, param3:int = 0, param4:int = 0) : *
+      public function Setup(param1:String = "", param2:Boolean = false, param3:int = 0, param4:int = 0) : void
       {
          this._tab = param2;
          if(param3 > 0)
@@ -82,7 +82,7 @@ package
          this.Setup(KEYS.Get(this.labelKey),param2,param3,param4);
       }
       
-      public function Update() : *
+      public function Update() : void
       {
          if(this._highlight)
          {
@@ -105,7 +105,7 @@ package
          }
       }
       
-      public function Over(param1:MouseEvent) : *
+      public function Over(param1:MouseEvent) : void
       {
          if(this._highlight)
          {
@@ -117,7 +117,7 @@ package
          }
       }
       
-      public function Out(param1:MouseEvent) : *
+      public function Out(param1:MouseEvent) : void
       {
          if(this._highlight)
          {

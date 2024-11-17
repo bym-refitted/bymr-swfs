@@ -15,8 +15,6 @@ package
       
       public static var _stack:Array;
       
-      public static var _popup:*;
-      
       public static var _workerCount:int;
       
       public static var _workingCount:int;
@@ -28,18 +26,17 @@ package
          super();
       }
       
-      public static function Setup() : *
+      public static function Setup() : void
       {
          _items = {};
          _stack = [];
-         _popup = null;
          _workerCount = 0;
          _workingCount = 0;
       }
       
-      public static function Spawn(param1:int = 0) : *
+      public static function Spawn(param1:int = 0) : void
       {
-         var _loc4_:int = 0;
+         var _loc3_:int = 0;
          if(BASE._yardType)
          {
             if(_workerCount > 0)
@@ -71,16 +68,16 @@ package
             }
          }
          _workerCount += param1;
-         var _loc3_:Object = {};
+         var _loc2_:Object = {};
          if(GLOBAL._mode != "wmattack" && GLOBAL._mode != "wmview")
          {
-            _loc4_ = 0;
-            while(_loc4_ < param1)
+            _loc3_ = 0;
+            while(_loc3_ < param1)
             {
-               _loc3_ = WORKERS.Spawn();
+               _loc2_ = WORKERS.Spawn();
                _stack.push({
                   "id":null,
-                  "workermc":_loc3_.mc,
+                  "workermc":_loc2_.mc,
                   "active":false,
                   "expanded":false,
                   "building":null,
@@ -88,7 +85,7 @@ package
                   "message":"",
                   "say":""
                });
-               _loc4_++;
+               _loc3_++;
             }
             UI_WORKERS.Update();
          }
@@ -191,7 +188,7 @@ package
       {
          var _loc3_:int = 0;
          var _loc4_:Object = null;
-         var _loc5_:* = undefined;
+         var _loc5_:Object = null;
          _items[param1] = {
             "id":param1,
             "building":param2
@@ -249,11 +246,11 @@ package
          return null;
       }
       
-      public static function Tick() : *
+      public static function Tick() : void
       {
          var upgradingCount:int = 0;
          var i:int = 0;
-         var s:* = undefined;
+         var s:Object = null;
          var msg:String = null;
          var title:String = null;
          try
@@ -314,9 +311,9 @@ package
          UI_WORKERS.Update();
       }
       
-      public static function Update(param1:String, param2:String, param3:String) : *
+      public static function Update(param1:String, param2:String, param3:String) : void
       {
-         var _loc5_:* = undefined;
+         var _loc5_:Object = null;
          var _loc4_:int = 0;
          while(_loc4_ < _stack.length)
          {
@@ -332,27 +329,26 @@ package
          Tick();
       }
       
-      public static function JumpToWorker(param1:int) : *
+      public static function JumpToWorker(param1:int) : void
       {
          var _loc2_:MovieClip = _stack[param1].workermc;
          MAP.FocusTo(_loc2_.x,_loc2_.y,0.5);
       }
       
-      public static function Move(param1:int, param2:int) : *
+      public static function Move(param1:int, param2:int) : void
       {
       }
       
-      public static function Speed(param1:MouseEvent) : *
+      public static function Speed(param1:MouseEvent) : void
       {
          STORE.SpeedUp("SP4");
       }
       
-      public static function Sort() : *
+      public static function Sort() : void
       {
-         var _loc2_:int = 0;
          var _loc3_:Object = null;
          var _loc1_:Array = new Array();
-         _loc2_ = 0;
+         var _loc2_:int = 0;
          while(_loc2_ < _stack.length)
          {
             _loc3_ = {

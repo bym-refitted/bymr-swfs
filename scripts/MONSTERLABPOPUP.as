@@ -153,24 +153,24 @@ package
          }
       }
       
-      public function Setup(param1:String) : *
+      public function Setup(param1:String) : void
       {
          _creatureID = param1;
          this.List();
          this.Update(_creatureID,true);
       }
       
-      private function UpdatePortrait(param1:String) : *
+      private function UpdatePortrait(param1:String) : void
       {
          var UpdatePortraitIcon:Function = null;
          var UpdateStatusIcon:Function = null;
          var key:String = param1;
-         UpdatePortraitIcon = function(param1:String, param2:BitmapData):*
+         UpdatePortraitIcon = function(param1:String, param2:BitmapData):void
          {
             mcPortraitIcon.mcImage.addChild(new Bitmap(param2));
             mcPortraitIcon.loading.visible = false;
          };
-         UpdateStatusIcon = function(param1:String, param2:BitmapData):*
+         UpdateStatusIcon = function(param1:String, param2:BitmapData):void
          {
             icon_status.mcImage.addChild(new Bitmap(param2));
             icon_status.loading.visible = false;
@@ -195,11 +195,11 @@ package
          ImageCache.GetImageWithCallBack("popups/" + _creatureID + "-LAB-75.jpg",UpdateStatusIcon);
       }
       
-      public function Update(param1:String, param2:Boolean = false) : *
+      public function Update(param1:String, param2:Boolean = false) : void
       {
-         var _loc14_:Boolean = false;
-         var _loc15_:int = 0;
-         var _loc16_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:int = 0;
+         var _loc16_:Boolean = false;
          _creatureID = param1;
          if(!param1)
          {
@@ -311,8 +311,8 @@ package
             this.StatusChange("IDLE");
             if(!_loc5_.error)
             {
-               _loc15_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
-               _loc16_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
+               _loc12_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
+               _loc13_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
                _instantUnlockCost = MONSTERLAB.GetShinyCost(_creatureID,_unlockLevel);
                this.btn_instant.tDescription.htmlText = "<b>" + KEYS.Get("buildoptions_upgradeinstant") + "</b>";
                this.btn_instant.gArrow.visible = true;
@@ -330,18 +330,18 @@ package
                this.btn_resource.bAction.addEventListener(MouseEvent.CLICK,this.StartMonsterPowerup);
                this.btn_resource.bAction.visible = true;
                this.btn_resource.mcR3.visible = true;
-               this.btn_resource.mcR3.tValue.htmlText = "<b><font color=\"#" + (_loc6_[0] > GLOBAL._resources.r3.Get() ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc15_) + "</font></b>";
+               this.btn_resource.mcR3.tValue.htmlText = "<b><font color=\"#" + (_loc6_[0] > GLOBAL._resources.r3.Get() ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc12_) + "</font></b>";
                this.btn_resource.mcR4.visible = true;
                this.btn_resource.mcTime.visible = true;
-               this.btn_resource.mcTime.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc16_) + "</b>";
+               this.btn_resource.mcTime.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc13_) + "</b>";
                this.btn_instant.visible = true;
                this.btn_resource.visible = true;
             }
             else if(_loc5_.errorString == KEYS.Get("acad_err_putty"))
             {
                this.StatusChange("IDLE");
-               _loc15_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
-               _loc16_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
+               _loc12_ = MONSTERLAB.GetPuttyCost(_creatureID,_unlockLevel);
+               _loc13_ = MONSTERLAB.GetTimeCost(_creatureID,_unlockLevel);
                _instantUnlockCost = MONSTERLAB.GetShinyCost(_creatureID,_unlockLevel);
                this.btn_instant.tDescription.htmlText = KEYS.Get("academy_traininstantly");
                this.btn_instant.tDescription.visible = true;
@@ -415,21 +415,21 @@ package
                }
             }
          }
-         var _loc12_:* = "<b>" + KEYS.Get("acad_mon_name") + "</b> " + KEYS.Get(CREATURELOCKER._creatures[_creatureID].name) + "<br>";
-         _loc12_ = _loc12_ + ("<b>" + KEYS.Get("acad_mon_status") + "</b> " + _loc5_.status);
-         _loc12_ = _loc12_ + ("<br>" + KEYS.Get(CREATURELOCKER._creatures[_creatureID].description));
-         var _loc13_:int = CREATURES.GetProperty(_creatureID,"damage",0,true);
-         if(_loc13_ > 0)
+         var _loc14_:* = "<b>" + KEYS.Get("acad_mon_name") + "</b> " + KEYS.Get(CREATURELOCKER._creatures[_creatureID].name) + "<br>";
+         _loc14_ = _loc14_ + ("<b>" + KEYS.Get("acad_mon_status") + "</b> " + _loc5_.status);
+         _loc14_ = _loc14_ + ("<br>" + KEYS.Get(CREATURELOCKER._creatures[_creatureID].description));
+         var _loc15_:int = CREATURES.GetProperty(_creatureID,"damage",0,true);
+         if(_loc15_ > 0)
          {
-            _loc14_ = false;
+            _loc16_ = false;
          }
          else
          {
-            _loc14_ = true;
+            _loc16_ = true;
          }
       }
       
-      public function Tick() : *
+      public function Tick() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -449,31 +449,31 @@ package
          {
             if(!this._scrollbar.visible)
             {
-               this._scrollbar.visible = 1;
+               this._scrollbar.visible = true;
                this.list_mc.addChild(this._scrollbar);
             }
             this._scrollbar.Update();
          }
       }
       
-      public function StartMonsterPowerup(param1:MouseEvent) : *
+      public function StartMonsterPowerup(param1:MouseEvent) : void
       {
          _bMonsterLab.StartMonsterPowerup(_creatureID,_unlockLevel);
          this.Setup(_creatureID);
       }
       
-      public function InstantMonsterPowerup(param1:MouseEvent) : *
+      public function InstantMonsterPowerup(param1:MouseEvent) : void
       {
          _bMonsterLab.InstantMonsterPowerup(_creatureID,_unlockLevel);
          this.Setup(_creatureID);
       }
       
-      public function CancelMonsterPowerup(param1:MouseEvent) : *
+      public function CancelMonsterPowerup(param1:MouseEvent) : void
       {
          _bMonsterLab.CancelMonsterPowerup(param1);
       }
       
-      public function SpeedUp(param1:MouseEvent) : *
+      public function SpeedUp(param1:MouseEvent) : void
       {
          GLOBAL._selectedBuilding = _bMonsterLab;
          STORE.SpeedUp("SP4");
@@ -487,8 +487,8 @@ package
          var cr:String = null;
          var abilityUpgrade:Object = null;
          var data:Object = null;
-         var item:* = undefined;
-         var str:* = undefined;
+         var item:MONSTERLABITEM_CLIP = null;
+         var str:String = null;
          var itemIconImage:MovieClip = null;
          this._abilityUpgradesList = [];
          for(cr in MONSTERLAB._powerupProps)
@@ -519,7 +519,7 @@ package
          i = 0;
          while(i < this._abilityUpgradesList.length)
          {
-            UpdateItemIcon = function(param1:String, param2:BitmapData):*
+            UpdateItemIcon = function(param1:String, param2:BitmapData):void
             {
                var _loc3_:MONSTERLABITEM_CLIP = _labItems[param1];
                _loc3_.mcIcon.mcImage.addChild(new Bitmap(param2));
@@ -528,7 +528,7 @@ package
             abilityUpgrade = this._abilityUpgradesList[i];
             cr = abilityUpgrade.id;
             data = MONSTERLAB._powerupProps[cr];
-            item = this._listContainer.addChild(new MONSTERLABITEM_CLIP());
+            item = this._listContainer.addChild(new MONSTERLABITEM_CLIP()) as MONSTERLABITEM_CLIP;
             _labItems["popups/" + cr + "-LAB-50.jpg"] = item;
             item.y = offset;
             offset += 60;
@@ -573,10 +573,10 @@ package
          return this._scrollbar;
       }
       
-      public function Show(param1:String) : *
+      public function Show(param1:String) : Function
       {
          var creatureID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             Update(creatureID,true);
          };
@@ -620,7 +620,7 @@ package
          }
       }
       
-      public function Hide(param1:MouseEvent = null) : *
+      public function Hide(param1:MouseEvent = null) : void
       {
          MONSTERLAB.Hide(param1);
       }

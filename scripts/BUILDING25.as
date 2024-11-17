@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.monsters.MonsterBase;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -20,7 +21,7 @@ package
       
       public var _shotsFired:int;
       
-      public var _target:MovieClip;
+      public var _laserTarget:MovieClip;
       
       public function BUILDING25()
       {
@@ -37,7 +38,7 @@ package
          this.Props();
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
          var _loc1_:Object = null;
          var _loc2_:Object = null;
@@ -80,32 +81,25 @@ package
          }
       }
       
-      override public function AnimFrame(param1:Boolean = true) : *
+      override public function AnimFrame(param1:Boolean = true) : void
       {
-         var increment:Boolean = param1;
-         try
+         if(_animLoaded && !GLOBAL._catchup)
          {
-            if(_animLoaded && !GLOBAL._catchup)
-            {
-               _animRect.x = _animRect.width * _animTick;
-               _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
-            }
-         }
-         catch(e:Error)
-         {
+            _animRect.x = _animRect.width * _animTick;
+            _animContainerBMD.copyPixels(_animBMD,_animRect,_nullPoint);
          }
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
-         if(param1 is CREEP || param1 is CREEP_INFERNO || param1 is CHAMPIONMONSTER)
+         if(param1 is MonsterBase)
          {
-            this._target = param1;
+            this._laserTarget = param1;
          }
          else
          {
-            this._target = null;
+            this._laserTarget = null;
          }
          if(this._fireStage == 0)
          {
@@ -114,7 +108,7 @@ package
          }
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
@@ -167,29 +161,26 @@ package
                               KillJar();
                            }
                         }
-                        else if(this._target)
+                        else if(Boolean(this._laserTarget) || _targetVacuum)
                         {
-                           if(_targetVacuum)
+                           if(this._laserTarget)
+                           {
+                              if(this._laserTarget._movement == "fly")
+                              {
+                                 EFFECTS.Lightning(_mc.x,_mc.y - 50,this._laserTarget.x,this._laserTarget.y - this._laserTarget._altitude);
+                              }
+                              else
+                              {
+                                 EFFECTS.Lightning(_mc.x,_mc.y - 50,this._laserTarget.x,this._laserTarget.y);
+                              }
+                              this._laserTarget._health.Add(-(this._laserTarget._damageMult * int(_damage * _loc2_ * _loc3_)));
+                              ATTACK.Damage(_mc.x,_mc.y - 50,this._laserTarget._damageMult * int(_damage * _loc2_ * _loc3_));
+                           }
+                           else if(_targetVacuum)
                            {
                               EFFECTS.Lightning(_mc.x,_mc.y - 50,GLOBAL._bTownhall._mc.x,GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height);
-                           }
-                           else if(this._target._movement == "fly")
-                           {
-                              EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y - this._target._altitude);
-                           }
-                           else
-                           {
-                              EFFECTS.Lightning(_mc.x,_mc.y - 50,this._target.x,this._target.y);
-                           }
-                           if(_targetVacuum)
-                           {
                               (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * _loc2_ * _loc3_));
                               ATTACK.Damage(_mc.x,_mc.y - 50,int(_damage * _loc2_ * _loc3_));
-                           }
-                           else
-                           {
-                              this._target._health.Add(-(this._target._damageMult * int(_damage * _loc2_ * _loc3_)));
-                              ATTACK.Damage(_mc.x,_mc.y - 50,this._target._damageMult * int(_damage * _loc2_ * _loc3_));
                            }
                         }
                      }
@@ -217,7 +208,7 @@ package
                            SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
                         }
                      }
-                     else if(Boolean(this._target) && this._target._health.Get() <= 0)
+                     else if(Boolean(this._laserTarget) && this._laserTarget._health.Get() <= 0)
                      {
                         if(BASE._yardType == BASE.MAIN_YARD && GLOBAL._bTownhall && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range)
                         {
@@ -256,17 +247,17 @@ package
          }
       }
       
-      override public function Props() : *
+      override public function Props() : void
       {
          super.Props();
       }
       
-      override public function Upgraded() : *
+      override public function Upgraded() : void
       {
          super.Upgraded();
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
       }

@@ -26,7 +26,7 @@ package
          SetProps();
       }
       
-      override public function Click(param1:MouseEvent = null) : *
+      override public function Click(param1:MouseEvent = null) : void
       {
          if(_upgrading && ACADEMY._upgrades[_upgrading] && ACADEMY._upgrades[_upgrading].time == null)
          {
@@ -36,7 +36,7 @@ package
          super.Click(param1);
       }
       
-      override public function TickFast(param1:Event = null) : *
+      override public function TickFast(param1:Event = null) : void
       {
          super.TickFast(param1);
          if(_upgrading && GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
@@ -56,7 +56,7 @@ package
          ++this._frameNumber;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
@@ -64,7 +64,7 @@ package
          GLOBAL._bAcademy = this;
          if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
-            Brag = function():*
+            Brag = function():void
             {
                if(BASE.isInferno())
                {
@@ -86,26 +86,19 @@ package
          }
       }
       
-      override public function Description() : *
+      override public function Description() : void
       {
-         try
+         super.Description();
+         if(_upgrading != null && Boolean(ACADEMY._upgrades[_upgrading].time))
          {
-            super.Description();
-            if(_upgrading != null)
-            {
-               _specialDescription = KEYS.Get("building_academy_training",{
-                  "v1":CREATURELOCKER._creatures[_upgrading].name,
-                  "v2":GLOBAL.ToTime(ACADEMY._upgrades[_upgrading].time.Get() - GLOBAL.Timestamp())
-               });
-            }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","BUILDING26.Description _upgrading:" + _upgrading);
+            _specialDescription = KEYS.Get("building_academy_training",{
+               "v1":CREATURELOCKER._creatures[_upgrading].name,
+               "v2":GLOBAL.ToTime(ACADEMY._upgrades[_upgrading].time.Get() - GLOBAL.Timestamp())
+            });
          }
       }
       
-      override public function Upgrade() : *
+      override public function Upgrade() : Boolean
       {
          if(_upgrading)
          {
@@ -115,7 +108,7 @@ package
          return super.Upgrade();
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(_upgrading)
          {
@@ -128,7 +121,7 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
          if(param1.upg)
@@ -145,9 +138,9 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          if(_upgrading)
          {
             _loc1_.upg = _upgrading;

@@ -8,8 +8,6 @@ package
    {
       public static const TYPE:uint = 20;
       
-      public var _animMC:*;
-      
       public var _animBitmap:BitmapData;
       
       public function BUILDING20()
@@ -24,7 +22,7 @@ package
          Props();
       }
       
-      override public function Fire(param1:*) : *
+      override public function Fire(param1:*) : void
       {
          super.Fire(param1);
          SOUNDS.Play("splash1",!isJard ? 0.8 : 0.4);

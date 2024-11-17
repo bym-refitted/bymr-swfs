@@ -29,13 +29,13 @@ package com.monsters.siege
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          GLOBAL._bSiegeFactory = this;
          return super.Setup(param1);
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          GLOBAL._bSiegeFactory = this;
          return super.Constructed();
@@ -54,7 +54,7 @@ package com.monsters.siege
          return false;
       }
       
-      override public function Upgrade() : *
+      override public function Upgrade() : Boolean
       {
          if(upgradingWeapon)
          {
@@ -68,9 +68,10 @@ package com.monsters.siege
             }
             GLOBAL.Message(KEYS.Get("msg_sfactory_cantupgrade2"));
          }
+         return false;
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(upgradingWeapon)
          {
@@ -86,17 +87,17 @@ package com.monsters.siege
          }
       }
       
-      override public function RecycleC() : *
+      override public function RecycleC() : void
       {
          GLOBAL._bSiegeFactory = null;
-         return super.RecycleC();
+         super.RecycleC();
       }
       
       private function ShowWarnDialog(param1:SiegeWeapon) : void
       {
          var Post:Function = null;
          var weapon:SiegeWeapon = param1;
-         Post = function(param1:MouseEvent):*
+         Post = function(param1:MouseEvent):void
          {
             if(weapon.weaponID == Jars.ID)
             {

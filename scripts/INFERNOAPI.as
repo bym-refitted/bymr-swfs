@@ -77,7 +77,7 @@ package
          var baseid:int = param3;
          var mode:String = param4;
          var createinfernobase:Boolean = param5;
-         handleLoadSuccessful = function(param1:Object):*
+         handleLoadSuccessful = function(param1:Object):void
          {
             if(param1.error == 0)
             {
@@ -162,7 +162,7 @@ package
             }
             _loading = false;
          };
-         var t:* = getTimer();
+         var t:int = getTimer();
          _loading = true;
          _baseID = baseid;
          PLEASEWAIT.Hide();

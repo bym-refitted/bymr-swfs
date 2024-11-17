@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2523")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2504")]
    public dynamic class plannerBuilding_CLIP extends MovieClip
    {
       public var mcLocked:MovieClip;

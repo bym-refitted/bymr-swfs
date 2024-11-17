@@ -54,11 +54,9 @@ package com.monsters.missions
          {
             ImageLoaded = function(param1:String, param2:BitmapData):void
             {
-               var key:String = param1;
-               var bmd:BitmapData = param2;
                try
                {
-                  mcImage.addChild(new Bitmap(bmd));
+                  mcImage.addChild(new Bitmap(param2));
                }
                catch(e:Error)
                {
@@ -112,10 +110,10 @@ package com.monsters.missions
          }
       }
       
-      public function ShowMission(param1:String) : *
+      public function ShowMission(param1:String) : Function
       {
          var missionID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
             var _loc2_:* = undefined;
             var _loc3_:* = undefined;
@@ -133,10 +131,10 @@ package com.monsters.missions
          };
       }
       
-      public function MissionRollOver(param1:String) : *
+      public function MissionRollOver(param1:String) : Function
       {
          var missionID:String = param1;
-         return function(param1:MouseEvent = null):*
+         return function(param1:MouseEvent = null):void
          {
          };
       }

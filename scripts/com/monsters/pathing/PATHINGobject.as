@@ -17,7 +17,7 @@ package com.monsters.pathing
          super();
       }
       
-      public function Init() : *
+      public function Init() : void
       {
          this.pointX = 0;
          this.pointY = 0;

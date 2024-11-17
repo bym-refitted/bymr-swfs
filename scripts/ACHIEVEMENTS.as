@@ -58,7 +58,7 @@ package
          super();
       }
       
-      public static function Data(param1:Object) : *
+      public static function Data(param1:Object) : void
       {
          if(param1.s)
          {
@@ -101,13 +101,13 @@ package
          }
       }
       
-      public static function Check(param1:String = "", param2:int = 0, param3:Boolean = false) : *
+      public static function Check(param1:String = "", param2:int = 0, param3:Boolean = false) : void
       {
          var fail:Boolean = false;
          var i:int = 0;
          var a:Object = null;
          var block:Boolean = false;
-         var n:* = undefined;
+         var n:String = null;
          var s:String = param1;
          var v:int = param2;
          var checkall:Boolean = param3;

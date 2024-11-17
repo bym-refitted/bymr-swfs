@@ -5,6 +5,7 @@ package com.monsters.subscriptions
    import com.monsters.frontPage.FrontPageHandler;
    import com.monsters.frontPage.FrontPageLibrary;
    import com.monsters.frontPage.messages.promotions.Promo01DaveClub;
+   import com.monsters.frontPage.messages.promotions.Promo02DaveClub;
    import com.monsters.interfaces.IHandler;
    import com.monsters.rewarding.Reward;
    import com.monsters.rewarding.RewardHandler;
@@ -35,6 +36,8 @@ package com.monsters.subscriptions
       
       public static const REACTIVATE:String = "reactiveSubscription";
       
+      public static var ignoreAB:Boolean = false;
+      
       private var _rewardIDs:Vector.<String> = Vector.<String>([ImprovedHCCReward.ID,DAVEStatueReward.ID,GoldenDAVEReward.ID,ExtraTilesReward.ID,YardPlannerExtraSlotsReward.ID]);
       
       private var _renewalDate:uint;
@@ -60,6 +63,11 @@ package com.monsters.subscriptions
             _instance._service = new SubscriptionService();
          }
          return _instance;
+      }
+      
+      public static function get isEnabledForAll() : Boolean
+      {
+         return GLOBAL._flags["subscriptions"] > 0 && GLOBAL._flags["subscriptions_ab"] == 0;
       }
       
       public static function setRenewalDateDEBUG(param1:uint) : void
@@ -101,12 +109,12 @@ package com.monsters.subscriptions
       
       private function specialUser() : Boolean
       {
-         return LOGIN._playerID == 12467111 || LOGIN._playerID == 3099454;
+         return ignoreAB || (LOGIN._playerID == 12467111 || LOGIN._playerID == 3099454);
       }
       
       public function initialize(param1:Object = null) : void
       {
-         if(GLOBAL._flags["subscriptions_ab"] > 0 && !ABTest.isInTestGroup("davesclub108",64) && !this.specialUser() || !GLOBAL.isAtHome() || !GLOBAL._flags["subscriptions"] || GLOBAL.isNoob())
+         if(!SubscriptionHandler.isEnabledForAll && !ABTest.isInTestGroup("davesclub108",64) && !this.specialUser() || !GLOBAL.isAtHome() || !GLOBAL._flags["subscriptions"] || GLOBAL.isNoob())
          {
             return;
          }
@@ -121,7 +129,6 @@ package com.monsters.subscriptions
          this._subscriptionID = param1.subscriptionID;
          this._renewalDate = param1.renewalDate;
          this._expirationDate = param1.expirationDate;
-         print("recievedSubscriptionData: _subscriptionID:" + this._subscriptionID + " _renewalDate:" + this._renewalDate + " _expirationDate" + this._expirationDate);
          this.updateSubscriptionStatus();
       }
       
@@ -129,23 +136,28 @@ package com.monsters.subscriptions
       {
          this.updateRewards();
          this._icon.update(this.isSubscriptionActive);
-         if(this.isSubscriptionActive)
-         {
-            return;
-         }
          var _loc1_:Promo01DaveClub = FrontPageLibrary.getMessageByName(Promo01DaveClub.NAME) as Promo01DaveClub;
-         if(_loc1_ == null)
+         var _loc2_:Promo02DaveClub = FrontPageLibrary.getMessageByName(Promo02DaveClub.NAME) as Promo02DaveClub;
+         if(_loc1_ && !ABTest.isInTestGroup("davesclub108",64) && !this.isSubscriptionActive)
+         {
+            _loc1_.canBeShown = true;
+         }
+         else if(_loc2_ && ABTest.isInTestGroup("davesclub108",64) && SubscriptionHandler.isEnabledForAll)
+         {
+            _loc2_.canBeShown = true;
+         }
+         if(!_loc1_ && !_loc2_)
          {
             return;
          }
-         _loc1_.canBeShown = true;
          if(FrontPageHandler.hasBeenSetupThisSession == false)
          {
             return;
          }
-         if(FrontPageHandler.hasBeenSeenThisSession == false)
+         if(FrontPageHandler.hasBeenSeenThisSession == false || FrontPageHandler.isVisible)
          {
-            FrontPageHandler.showPopup();
+            FrontPageHandler.refresh();
+            FrontPageHandler.showPopup(true);
          }
          else if(POPUPS.hasPopupsOpen())
          {
@@ -160,7 +172,10 @@ package com.monsters.subscriptions
          {
             DAVEStatueReward.unlockTeaserInformation(this.showPromoPopup);
          }
-         BasePlanner.maxNumberOfSlots = 10;
+         if(SubscriptionHandler.isEnabledForAll)
+         {
+            BasePlanner.maxNumberOfSlots = 10;
+         }
       }
       
       private function addIcon() : void

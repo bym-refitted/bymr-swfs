@@ -15,7 +15,7 @@ package
       
       public var _oldPoint:Point;
       
-      public var _rangeCircle:*;
+      public var _rangeCircle:plannerRange;
       
       public var _clickAge:int;
       
@@ -60,7 +60,7 @@ package
          }
          if(this._building._class == "tower")
          {
-            this._rangeCircle = param2.addChild(new plannerRange());
+            this._rangeCircle = param2.addChild(new plannerRange()) as plannerRange;
             this._rangeCircle.x = x + mcSquare.width / 2;
             this._rangeCircle.y = y + mcSquare.height / 2;
             var _loc4_:* = this._building._range * 2;
@@ -70,7 +70,7 @@ package
          }
       }
       
-      public function Remove() : *
+      public function Remove() : void
       {
          removeEventListener(Event.ENTER_FRAME,this.Drag);
          mcSquare.removeEventListener(MouseEvent.CLICK,this.Click);
@@ -78,7 +78,7 @@ package
          mcSquare.removeEventListener(MouseEvent.ROLL_OUT,this.InfoHide);
       }
       
-      public function Click(param1:MouseEvent = null) : *
+      public function Click(param1:MouseEvent = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -113,7 +113,7 @@ package
          }
       }
       
-      public function ClickB(param1:MouseEvent = null) : *
+      public function ClickB(param1:MouseEvent = null) : void
       {
          var _loc2_:Point = null;
          if(!PLANNER._mc._dragged && this._clickAge > 0)
@@ -132,7 +132,7 @@ package
          }
       }
       
-      public function Drag(param1:Event) : *
+      public function Drag(param1:Event) : void
       {
          var _loc2_:Point = null;
          if(PLANNER._open)
@@ -183,7 +183,7 @@ package
          }
       }
       
-      public function InfoShow(param1:MouseEvent) : *
+      public function InfoShow(param1:MouseEvent) : void
       {
          var _loc2_:* = null;
          if(this._building._class == "decoration" || this._building._class == "mushroom" || this._building._class == "immovable")
@@ -220,14 +220,14 @@ package
          PLANNER._mc.mcNameBG.visible = true;
       }
       
-      public function InfoHide(param1:MouseEvent) : *
+      public function InfoHide(param1:MouseEvent) : void
       {
          mcSquare.mcOver.visible = false;
          PLANNER._mc.tName.visible = false;
          PLANNER._mc.mcNameBG.visible = false;
       }
       
-      public function ShadowAdd() : *
+      public function ShadowAdd() : void
       {
          var _loc1_:DropShadowFilter = new DropShadowFilter();
          _loc1_.distance = 5;
@@ -241,7 +241,7 @@ package
          mcSquare.filters = new Array(_loc1_);
       }
       
-      public function ShadowRemove() : *
+      public function ShadowRemove() : void
       {
          mcSquare.filters = [];
       }

@@ -26,10 +26,14 @@ package com.monsters.baseplanner.popups.transfer
          this._row = param1.currentTarget as BasePlannerTransferRow;
          if(this._row.template)
          {
-            this._confirmationPopup = new BasePlannerTransferConfirmation("\'" + this._row.template.name + "\'");
-            this._confirmationPopup.addEventListener(BasePlannerEvent.SAVE,this.confirmedSave);
-            this._confirmationPopup.addEventListener(Event.CLOSE,this.clickedClose);
-            POPUPS.Add(this._confirmationPopup);
+            if(!this._confirmationPopup)
+            {
+               this._confirmationPopup = new BasePlannerTransferConfirmation("\'" + this._row.template.name + "\'");
+               this._confirmationPopup.addEventListener(BasePlannerEvent.SAVE,this.confirmedSave);
+               this._confirmationPopup.addEventListener(Event.CLOSE,this.clickedClose);
+               POPUPS.Add(this._confirmationPopup);
+               POPUPSETTINGS.AlignToCenter(this._confirmationPopup);
+            }
          }
          else
          {
@@ -39,9 +43,13 @@ package com.monsters.baseplanner.popups.transfer
       
       protected function clickedClose(param1:Event = null) : void
       {
-         this._confirmationPopup.removeEventListener(BasePlannerEvent.SAVE,this.confirmedSave);
-         this._confirmationPopup.removeEventListener(Event.CLOSE,this.clickedClose);
-         POPUPS.Remove(this._confirmationPopup);
+         if(this._confirmationPopup)
+         {
+            this._confirmationPopup.removeEventListener(BasePlannerEvent.SAVE,this.confirmedSave);
+            this._confirmationPopup.removeEventListener(Event.CLOSE,this.clickedClose);
+            POPUPS.Remove(this._confirmationPopup);
+            this._confirmationPopup = null;
+         }
       }
       
       protected function confirmedSave(param1:Event) : void
@@ -51,6 +59,11 @@ package com.monsters.baseplanner.popups.transfer
          {
             this.clickedClose();
          }
+      }
+      
+      override public function clear() : void
+      {
+         this.clickedClose();
       }
    }
 }

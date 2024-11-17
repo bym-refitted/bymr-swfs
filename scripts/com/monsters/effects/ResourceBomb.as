@@ -7,59 +7,64 @@ package com.monsters.effects
    
    public class ResourceBomb
    {
-      internal var position:Point;
+      private var position:Point;
       
-      internal var positionFromISO:Point;
+      private var positionFromISO:Point;
       
-      internal var size:int;
+      private var size:int;
       
-      internal var damage:int;
+      private var damage:int;
       
-      internal var particles:Object;
+      private var particles:Object;
       
-      internal var i:int;
+      private var i:int;
       
-      internal var particleCount:int;
+      private var particleCount:int;
       
-      internal var angle:Number;
+      private var angle:Number;
       
-      internal var distance:int;
+      private var distance:int;
       
-      internal var damageSum:int;
+      private var damageSum:int;
       
-      internal var targets:Array;
+      private var targets:Array;
       
-      internal var bomb:Object;
+      private var bomb:Object;
       
-      internal var tempPoint:Point;
+      private var tempPoint:Point;
       
-      internal var dist:int;
+      private var dist:int;
       
-      internal var tempBuilding:Array;
+      private var tempBuilding:Array;
       
-      internal var mctop:DisplayObject;
+      private var mctop:DisplayObject;
       
-      internal var mcbottom:DisplayObject;
+      private var mcbottom:DisplayObject;
       
-      internal var totalDamage:int;
+      private var totalDamage:int;
       
-      internal var resourceid:int;
+      private var resourceid:int;
       
-      internal var dpp:*;
+      private var dpp:int;
       
       public function ResourceBomb(param1:MovieClip, param2:Point, param3:Object, param4:int)
       {
-         var _loc5_:* = undefined;
-         var _loc6_:BFOUNDATION = null;
-         var _loc7_:Point = null;
-         var _loc8_:* = undefined;
-         var _loc9_:* = undefined;
-         var _loc10_:* = undefined;
-         var _loc11_:* = undefined;
-         var _loc12_:* = undefined;
-         var _loc13_:* = undefined;
-         var _loc14_:* = undefined;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:BFOUNDATION = null;
+         var _loc8_:Point = null;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:Number = NaN;
+         var _loc12_:Number = NaN;
+         var _loc13_:Number = NaN;
+         var _loc14_:Number = NaN;
          var _loc15_:Object = null;
+         var _loc16_:Object = null;
+         var _loc17_:Object = null;
+         var _loc18_:Number = NaN;
+         var _loc19_:Number = NaN;
+         var _loc20_:Number = NaN;
          this.particles = {};
          this.targets = [];
          super();
@@ -72,68 +77,71 @@ package com.monsters.effects
          this.positionFromISO = PATHING.FromISO(this.position);
          if(this.resourceid != 3)
          {
-            for(_loc5_ in BASE._buildingsAll)
+            for each(_loc7_ in BASE._buildingsAll)
             {
-               _loc6_ = BASE._buildingsAll[_loc5_];
-               _loc7_ = new Point(_loc6_._mc.x,_loc6_._mc.y + _loc6_._middle);
-               if(!(_loc6_._class == "trap" || _loc6_._hp.Get() <= 0 || _loc6_._class == "decoration" || _loc6_._class == "enemy" || _loc6_._class == "immovable"))
+               _loc8_ = new Point(_loc7_._mc.x,_loc7_._mc.y + _loc7_._middle);
+               if(!(_loc7_._class == "trap" || _loc7_._hp.Get() <= 0 || _loc7_._class == "decoration" || _loc7_._class == "enemy" || _loc7_._class == "immovable"))
                {
-                  _loc8_ = Math.atan2(this.position.y - _loc7_.y,this.position.x - _loc7_.x);
-                  _loc9_ = BASE.EllipseEdgeDistance(_loc8_,this.size,this.size * BASE._angle);
-                  _loc8_ = Math.atan2(_loc7_.y - this.position.y,_loc7_.x - this.position.x);
-                  _loc10_ = BASE.EllipseEdgeDistance(_loc8_,_loc6_._size * 0.5,_loc6_._size * 0.5 * BASE._angle);
-                  _loc11_ = this.position.x - _loc7_.x;
-                  _loc12_ = this.position.y - _loc7_.y;
-                  _loc13_ = int(Math.sqrt(_loc11_ * _loc11_ + _loc12_ * _loc12_));
-                  if(_loc13_ < _loc9_ + _loc10_)
+                  _loc9_ = Math.atan2(this.position.y - _loc8_.y,this.position.x - _loc8_.x);
+                  _loc10_ = BASE.EllipseEdgeDistanceSqrd(_loc9_,this.size,this.size * BASE._angle);
+                  _loc9_ = Math.atan2(_loc8_.y - this.position.y,_loc8_.x - this.position.x);
+                  _loc11_ = BASE.EllipseEdgeDistanceSqrd(_loc9_,_loc7_._size * 0.5,_loc7_._size * 0.5 * BASE._angle);
+                  _loc12_ = this.position.x - _loc8_.x;
+                  _loc13_ = this.position.y - _loc8_.y;
+                  _loc14_ = _loc12_ * _loc12_ + _loc13_ * _loc13_;
+                  if(_loc14_ * _loc14_ < (_loc10_ + _loc11_) * (_loc10_ + _loc11_))
                   {
-                     this.targets.push([_loc6_,1 - 1 / (this.size * 0.5) * _loc13_,this.tempPoint,_loc6_._footprint[0].width * 0.5]);
+                     this.targets.push([_loc7_,1 - 1 / (this.size * 0.5) * this.dist,this.tempPoint,_loc7_._footprint[0].width * 0.5]);
                   }
                }
             }
          }
          else
          {
-            for each(_loc14_ in CREEPS._creeps)
+            _loc17_ = CREEPS._creeps;
+            for each(_loc15_ in _loc17_)
             {
-               this.tempPoint = PATHING.FromISO(new Point(_loc14_.x,_loc14_.y));
-               if(_loc14_._creatureID.substr(0,1) == "G")
+               this.tempPoint = PATHING.FromISO(new Point(_loc15_.x,_loc15_.y));
+               if(_loc15_._creatureID.substr(0,1) == "G")
                {
-                  _loc15_ = SPRITES._sprites[_loc14_._spriteID];
+                  _loc16_ = SPRITES._sprites[_loc15_._spriteID];
                }
                else
                {
-                  _loc15_ = SPRITES._sprites[_loc14_._creatureID];
+                  _loc16_ = SPRITES._sprites[_loc15_._creatureID];
                }
-               this.tempPoint.add(_loc15_.middle);
-               _loc13_ = Point.distance(this.positionFromISO,this.tempPoint);
-               if(_loc13_ < this.size * 0.5)
+               this.tempPoint.add(_loc16_.middle);
+               _loc18_ = this.positionFromISO.x - this.tempPoint.x;
+               _loc19_ = this.positionFromISO.y - this.tempPoint.y;
+               _loc20_ = this.size * 0.5;
+               if(_loc18_ * _loc18_ + _loc19_ * _loc19_ < _loc20_ * _loc20_)
                {
-                  this.targets.push([_loc14_]);
+                  this.targets.push([_loc15_]);
                }
             }
          }
          this.mctop = MAP._BUILDINGTOPS.addChild(new MovieClip());
          this.mcbottom = MAP._BUILDINGBASES.addChild(new MovieClip());
-         _loc5_ = 0;
-         while(_loc5_ < this.bomb.particles)
+         _loc6_ = int(this.bomb.particles);
+         while(_loc5_ < _loc6_)
          {
-            _loc8_ = Math.random() * 360 * 0.0174532925;
+            _loc9_ = Math.random() * 360 * 0.0174532925;
             this.distance = Math.random() * this.size / 2;
-            this.particles[_loc5_] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(_loc8_) * this.distance,this.position.y + Math.cos(_loc8_) * this.distance * 0.5),this,_loc5_.toString(),param4,this.resourceid);
+            this.particles[_loc5_] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(_loc9_) * this.distance,this.position.y + Math.cos(_loc9_) * this.distance * 0.5),this,_loc5_.toString(),param4,this.resourceid);
             ++this.particleCount;
             _loc5_++;
          }
          this.dpp = param3.damage / this.particleCount;
       }
       
-      public function RemoveParticle(param1:String) : *
+      public function RemoveParticle(param1:String) : void
       {
+         this.particles[param1].clear();
          delete this.particles[param1];
          --this.particleCount;
       }
       
-      public function Damage(param1:Point) : *
+      public function Damage(param1:Point) : void
       {
          var _loc2_:int = 0;
          var _loc4_:int = 0;
@@ -192,14 +200,10 @@ package com.monsters.effects
       
       public function Tick() : Boolean
       {
-         if(this.particleCount == 0)
-         {
-            return true;
-         }
-         return false;
+         return !this.particleCount;
       }
       
-      public function Freeze() : *
+      public function Freeze() : void
       {
          if(Boolean(this.mctop) && Boolean(this.mctop.parent))
          {

@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.monsters.champions.ChampionBase;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -45,7 +46,7 @@ package
          return false;
       }
       
-      public static function Show() : *
+      public static function Show() : void
       {
          var _loc1_:CHAMPIONCHAMBER = GLOBAL._bChamber as CHAMPIONCHAMBER;
          if(CREATURES._guardian == null && (_loc1_ && _loc1_._frozen.length == 0))
@@ -66,7 +67,7 @@ package
          {
             _open = true;
             GLOBAL.BlockerAdd();
-            _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCHAMBERPOPUP());
+            _popup = GLOBAL._layerWindows.addChild(new CHAMPIONCHAMBERPOPUP()) as CHAMPIONCHAMBERPOPUP;
             _popup.Center();
             _popup.ScaleUp();
          }
@@ -88,19 +89,19 @@ package
          }
       }
       
-      override public function PlaceB() : *
+      override public function PlaceB() : void
       {
          super.PlaceB();
          GLOBAL._bChamber = this;
       }
       
-      override public function Constructed() : *
+      override public function Constructed() : void
       {
          super.Constructed();
          GLOBAL._bChamber = this;
       }
       
-      override public function Recycle() : *
+      override public function Recycle() : void
       {
          if(Boolean(this._frozen) && this._frozen.length > 0)
          {
@@ -113,7 +114,7 @@ package
          }
       }
       
-      public function FreezeGuardian() : *
+      public function FreezeGuardian() : void
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
@@ -186,7 +187,7 @@ package
                p = new Point(x,y + 80);
                level = int(this._frozen[i].l.Get());
                target = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
-               CREATURES._guardian = new CHAMPIONMONSTER("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
+               CREATURES._guardian = new ChampionBase("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
                CREATURES._guardian.Export();
                MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
                CREATURES._guardian.ModeCage();
@@ -230,7 +231,7 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Setup(param1:Object) : void
       {
          var _loc2_:Array = null;
          var _loc3_:int = 0;
@@ -301,7 +302,7 @@ package
          }
       }
       
-      override public function Export() : *
+      override public function Export() : Object
       {
          var _loc4_:Object = null;
          var _loc1_:Object = super.Export();

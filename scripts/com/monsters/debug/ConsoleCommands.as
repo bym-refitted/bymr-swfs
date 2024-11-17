@@ -2,9 +2,15 @@ package com.monsters.debug
 {
    import com.cc.utils.SecNum;
    import com.monsters.baseplanner.BaseTemplate;
+   import com.monsters.baseplanner.PlannerDesignView;
+   import com.monsters.configs.BYMConfig;
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.FrontPageLibrary;
+   import com.monsters.frontPage.messages.Message;
+   import com.monsters.input.DebugKeyboardInputHandler;
    import com.monsters.kingOfTheHill.KOTHHandler;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.rendering.RasterData;
    import com.monsters.replayableEvents.ReplayableEvent;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    import com.monsters.replayableEvents.ReplayableEventLibrary;
@@ -23,7 +29,7 @@ package com.monsters.debug
          super();
       }
       
-      public static function initialize() : *
+      public static function initialize() : void
       {
          Console.registerCommand("unlockquest",unlockQuest);
          Console.registerCommand("lockquest",lockQuest);
@@ -60,6 +66,12 @@ package com.monsters.debug
          Console.registerCommand("reactivatesubscription",subscriptionsReactivateSubscription);
          Console.registerCommand("changesubscription",subscriptionsChangeSubscription);
          Console.registerCommand("cancelsubscription",subscriptionsCancelSubscription);
+         Console.registerCommand("givesubscription",subscriptionsGiveSubscription);
+         Console.registerCommand("trojan",spawnTrojan);
+         Console.registerCommand("wmattack",spawnWildMonsters);
+         Console.registerCommand("showsubscriptiondata",showSubscriptionData);
+         Console.registerCommand("toggleGoEasy",toggleGoEasy);
+         Console.registerCommand("rendererdebug",showRendererDebug);
          Console.registerCommand("printJS",printJSCalls);
          Console.registerCommand("fullscreen",toggleFullScreen);
          Console.registerCommand("ncpElligible",fbCNcpElligibility);
@@ -114,6 +126,12 @@ package com.monsters.debug
       {
          var _loc2_:KOTHHandler = KOTHHandler.instance;
          return "tier: " + _loc2_.tier + ", wins:" + _loc2_.wins + ", server event ends in: " + _loc2_.timeToReset;
+      }
+      
+      private static function toggleGoEasy(param1:*) : String
+      {
+         (DebugKeyboardInputHandler.instance as DebugKeyboardInputHandler).goEasy = !(DebugKeyboardInputHandler.instance as DebugKeyboardInputHandler).goEasy;
+         return "Go easy is now" + ((DebugKeyboardInputHandler.instance as DebugKeyboardInputHandler).goEasy ? " ON " : " OFF ");
       }
       
       private static function sam(param1:*) : String
@@ -173,15 +191,15 @@ package com.monsters.debug
       
       private static function setDebugChampion(param1:*) : String
       {
-         var _loc3_:CHAMPIONMONSTER = null;
+         var _loc3_:ChampionBase = null;
          var _loc2_:Shape = new Shape();
          switch(true)
          {
-            case CREATURES._guardian is CHAMPIONMONSTER:
-               _loc3_ = CREATURES._guardian as CHAMPIONMONSTER;
+            case CREATURES._guardian is ChampionBase:
+               _loc3_ = CREATURES._guardian as ChampionBase;
                break;
-            case CREEPS._guardian is CHAMPIONMONSTER:
-               _loc3_ = CREEPS._guardian as CHAMPIONMONSTER;
+            case CREEPS._guardian is ChampionBase:
+               _loc3_ = CREEPS._guardian as ChampionBase;
                break;
             default:
                return "No Champion found.";
@@ -233,12 +251,12 @@ package com.monsters.debug
       
       private static function setChampionPL(param1:*) : String
       {
-         var _loc3_:CHAMPIONMONSTER = null;
+         var _loc3_:ChampionBase = null;
          if(!param1)
          {
             return "Specify a powerlevel.";
          }
-         var _loc2_:Vector.<CHAMPIONMONSTER> = CREATURES._guardianList;
+         var _loc2_:Vector.<ChampionBase> = CREATURES._guardianList;
          for each(_loc3_ in CREATURES._guardianList)
          {
             _loc3_._powerLevel.Set(Number(param1));
@@ -499,7 +517,7 @@ package com.monsters.debug
       public static function showFrontPageMsg(param1:String) : String
       {
          var _loc2_:Class = getDefinitionByName(param1) as Class;
-         var _loc3_:* = new _loc2_();
+         var _loc3_:Message = new _loc2_();
          print(param1);
          if(_loc3_ == null)
          {
@@ -541,7 +559,7 @@ package com.monsters.debug
             if(Boolean(PLANNER.basePlanner.popup.designView) && param1 > 0)
             {
                PLANNER.basePlanner.popup.designView.setZoom(param1);
-               return "PlannerDesignView Zoomed To: " + PLANNER.basePlanner.popup.designView.zoomValue;
+               return "PlannerDesignView Zoomed To: " + PlannerDesignView.zoomValue;
             }
             return "enter a value noob.";
          }
@@ -667,6 +685,59 @@ package com.monsters.debug
       {
          BUY.FBCNcpCheckEligibility();
          return "console: trying to check ncp";
+      }
+      
+      public static function subscriptionsGiveSubscription(param1:* = null) : String
+      {
+         SubscriptionHandler.ignoreAB = true;
+         SubscriptionHandler.instance.initialize();
+         SubscriptionHandler.setRenewalDateDEBUG(123456);
+         return "SUBSCRIPTIONS> forcing subscription for this session";
+      }
+      
+      public static function spawnTrojan(param1:* = null) : String
+      {
+         CUSTOMATTACKS.TrojanHorse();
+         return "Creating CUSTOMATTACKS.TrojanHorse";
+      }
+      
+      public static function spawnWildMonsters(param1:* = null) : String
+      {
+         WMATTACK.Trigger(true);
+         return "Creating Wild Monster attacks via WMATTACK.Trigger.";
+      }
+      
+      public static function toggleBuildingBases(param1:* = null) : String
+      {
+         MAP._BUILDINGBASES.visible = !MAP._BUILDINGBASES.visible;
+         return "Building Bases Visible:" + MAP._BUILDINGBASES.visible;
+      }
+      
+      public static function toggleBuildingTops(param1:* = null) : String
+      {
+         MAP._BUILDINGTOPS.visible = !MAP._BUILDINGTOPS.visible;
+         return "Building Tops Visible:" + MAP._BUILDINGTOPS.visible;
+      }
+      
+      public static function toggleRenderer(param1:* = null) : String
+      {
+         MAP.instance.canvasContainer.visible = !MAP.instance.canvasContainer.visible;
+         return "Renderer set to:" + MAP.instance.canvasContainer.visible.toString();
+      }
+      
+      public static function showSubscriptionData(param1:* = null) : String
+      {
+         return "name:" + SubscriptionHandler.instance.name + " exp:" + SubscriptionHandler.instance.expirationDate + " renew:" + SubscriptionHandler.instance.renewalDate + " active:" + SubscriptionHandler.instance.isSubscriptionActive;
+      }
+      
+      public static function showRendererDebug(param1:* = null) : String
+      {
+         if(!BYMConfig.instance.RENDERER_ON)
+         {
+            return "Renderer disabled";
+         }
+         RasterData.showDebug();
+         return "RasterData:" + RasterData.rasterData.length + " | " + RasterData.visibleData.length + " | " + int(RasterData.totalMemory / 1024) + "Kb";
       }
    }
 }
