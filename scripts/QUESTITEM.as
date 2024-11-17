@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1778")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1835")]
    public dynamic class QUESTITEM extends MovieClip
    {
       public var mcTick:MovieClip;

@@ -14,7 +14,7 @@ package
       
       public function Setup(param1:int) : *
       {
-         ImageCache.GetImageWithCallBack("ui/prefab-large-" + param1 + ".jpg",this.ShowImage,true,1);
+         ImageCache.GetImageWithCallBack("ui/prefab-large-" + (param1 + 1) + ".jpg",this.ShowImage,true,1);
          x = 450;
          y = 250;
       }

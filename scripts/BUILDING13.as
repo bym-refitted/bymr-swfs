@@ -413,7 +413,7 @@ package
             {
                _productionStage.Set(0);
             }
-            BASE.Purchase("FQ",this._finishCost.Get(),"store");
+            BASE.Purchase("FQ",this._finishCost.Get(),"BUILDING13.FinishNow");
             HATCHERY.Tick();
             this.Tick();
          }

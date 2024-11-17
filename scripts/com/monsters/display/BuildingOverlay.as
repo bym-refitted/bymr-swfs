@@ -17,6 +17,8 @@ package com.monsters.display
       
       private static var b_bmd:BitmapData;
       
+      private static var f_bmd:BitmapData;
+      
       private static var labelWidth:int;
       
       private static var _textDO:DisplayObject;
@@ -55,7 +57,8 @@ package com.monsters.display
             u_bmd = ImageText.Get(KEYS.Get("bdg_state_upgrading"),9,0.6,_loc5_);
             r_bmd = ImageText.Get(KEYS.Get("bdg_state_repairing"),9,0.6,_loc5_);
             b_bmd = ImageText.Get(KEYS.Get("bdg_state_building"),9,0.6,_loc5_);
-            _loc6_ = [u_bmd,r_bmd,b_bmd];
+            f_bmd = ImageText.Get(KEYS.Get("bdg_state_fortifying"),9,0.6,_loc5_);
+            _loc6_ = [u_bmd,r_bmd,b_bmd,f_bmd];
             for each(_loc7_ in _loc6_)
             {
                labelWidth = labelWidth > _loc7_.width ? labelWidth : _loc7_.width;
@@ -92,10 +95,6 @@ package com.monsters.display
          var _loc8_:Object = null;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
-         var _loc11_:Array = null;
-         var _loc12_:int = 0;
-         var _loc13_:int = 0;
-         var _loc14_:int = 0;
          var _loc3_:int = -1;
          var _loc4_:String = "";
          var _loc7_:int = getTimer();
@@ -128,66 +127,20 @@ package com.monsters.display
                {
                   _loc6_ = int(param1._buildingProps.costs[param1._lvl.Get()].time);
                }
-               if(GLOBAL._flags.split)
-               {
-                  if(GLOBAL._mode == "build")
-                  {
-                     _loc11_ = LOGIN._digits;
-                  }
-                  else
-                  {
-                     _loc11_ = BASE._userDigits;
-                  }
-                  _loc12_ = int(_loc11_[_loc11_.length - 1]);
-                  _loc13_ = int(_loc11_[_loc11_.length - 2]);
-                  _loc14_ = _loc12_ + _loc13_;
-                  if(_loc14_ > 9)
-                  {
-                     _loc14_ -= 10;
-                  }
-                  if(_loc14_ >= 7)
-                  {
-                     _loc6_ *= 1.5;
-                  }
-                  else if(_loc14_ >= 4)
-                  {
-                     _loc6_ *= 1.25;
-                  }
-               }
                _loc3_ = 49 / _loc6_ * (_loc6_ - param1._countdownBuild.Get());
                _loc4_ = "building";
             }
             else if(param1._countdownUpgrade.Get() > 0)
             {
                _loc6_ = int(param1._buildingProps.costs[param1._lvl.Get()].time);
-               if(GLOBAL._flags.split)
-               {
-                  if(GLOBAL._mode == "build")
-                  {
-                     _loc11_ = LOGIN._digits;
-                  }
-                  else
-                  {
-                     _loc11_ = BASE._userDigits;
-                  }
-                  _loc12_ = int(_loc11_[_loc11_.length - 1]);
-                  _loc13_ = int(_loc11_[_loc11_.length - 2]);
-                  _loc14_ = _loc12_ + _loc13_;
-                  if(_loc14_ > 9)
-                  {
-                     _loc14_ -= 10;
-                  }
-                  if(_loc14_ >= 7)
-                  {
-                     _loc6_ *= 1.5;
-                  }
-                  else if(_loc14_ >= 4)
-                  {
-                     _loc6_ *= 1.25;
-                  }
-               }
                _loc3_ = 49 / _loc6_ * (_loc6_ - param1._countdownUpgrade.Get());
                _loc4_ = "upgrading";
+            }
+            else if(param1._countdownFortify.Get() > 0)
+            {
+               _loc6_ = int(param1._buildingProps.fortify_costs[param1._fortification.Get()].time);
+               _loc3_ = 49 / _loc6_ * (_loc6_ - param1._countdownFortify.Get());
+               _loc4_ = "fortifying";
             }
             if(_loc4_ != _loc8_.indextext || param2)
             {
@@ -204,6 +157,10 @@ package com.monsters.display
                if(_loc4_ == "upgrading")
                {
                   _loc5_.copyPixels(u_bmd,new Rectangle(0,0,u_bmd.width,u_bmd.height),new Point((labelWidth - u_bmd.width) * 0.5,-1));
+               }
+               if(_loc4_ == "fortifying")
+               {
+                  _loc5_.copyPixels(f_bmd,new Rectangle(0,0,f_bmd.width,f_bmd.height),new Point((labelWidth - f_bmd.width) * 0.5,-1));
                }
             }
             if(_loc3_ == -1)

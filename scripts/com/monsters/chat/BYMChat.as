@@ -9,6 +9,7 @@ package com.monsters.chat
    import flash.ui.Keyboard;
    import flash.utils.Dictionary;
    import flash.utils.Timer;
+   import gs.TweenLite;
    
    public class BYMChat extends Sprite
    {
@@ -40,7 +41,7 @@ package com.monsters.chat
       
       private var delay:int = 1000;
       
-      private var initialized:Boolean = false;
+      public var initialized:Boolean = false;
       
       private var _sectorBaseName:String = null;
       
@@ -48,11 +49,15 @@ package com.monsters.chat
       
       private var messageQueue:Array = new Array();
       
-      private var sector_channel:Channel = null;
+      public var sector_channel:Channel = null;
       
       private var default_chat_channel:String = "sector";
       
       private var _ignore_list:Array = null;
+      
+      public var isLoggingOut:Boolean = false;
+      
+      private var isLoggingOutTimer:Number = 5;
       
       private var chatBox:ChatBox;
       
@@ -61,6 +66,8 @@ package com.monsters.chat
       private var _chatPort:int;
       
       private var _isConnected:Boolean = false;
+      
+      private var _isJoined:Boolean = false;
       
       private var _hideX:int;
       
@@ -100,6 +107,14 @@ package com.monsters.chat
          }
          this._chatHost = _loc3_;
          this._chatPort = _loc4_;
+         if(GLOBAL.StatGet("chatmin") == 1)
+         {
+            this._open = false;
+         }
+         else
+         {
+            this._open = true;
+         }
       }
       
       public static function get serverInited() : Boolean
@@ -112,9 +127,19 @@ package com.monsters.chat
          super.visible = GLOBAL.flagsShouldChatConnectButStayInvisible() ? false : param1;
       }
       
+      public function get IsAnimating() : Boolean
+      {
+         return this.chatBox._animating;
+      }
+      
       public function get IsConnected() : Boolean
       {
          return this._isConnected;
+      }
+      
+      public function get IsJoined() : Boolean
+      {
+         return this._isJoined;
       }
       
       public function initServer() : void
@@ -243,7 +268,10 @@ package com.monsters.chat
       
       public function connect() : void
       {
-         _chat.connect();
+         if(!this._isConnected)
+         {
+            _chat.connect();
+         }
       }
       
       public function login(param1:String, param2:String, param3:int) : void
@@ -267,7 +295,29 @@ package com.monsters.chat
       
       public function logout() : void
       {
-         _chat.logout();
+         if(_chat)
+         {
+            _chat.logout();
+            this.isLoggingOut = true;
+            TweenLite.delayedCall(3,this.logoutDelayCB);
+         }
+      }
+      
+      public function logoutDelayCB() : void
+      {
+         this.isLoggingOut = false;
+      }
+      
+      public function disableChat() : void
+      {
+         this._joinAttempts = 0;
+         _serverInited = false;
+         this._isConnected = false;
+         this._isJoined = false;
+         this.logout();
+         this.clearChat();
+         this.chatBox.EnableInput(false);
+         this.system_message("Chat is currently disconnected.");
       }
       
       public function system_message(param1:String) : void
@@ -555,6 +605,8 @@ package com.monsters.chat
             this.system_message("Type /h for help.");
             _chat.setDisplayNameUserVar("[" + BASE.BaseLevel().level + "] " + _userRecord.Id);
             _chat.updateDisplayName(_loc2_,_userRecord.Name,"[" + BASE.BaseLevel().level + "] " + _userRecord.Id);
+            this.chatBox.EnableInput(true);
+            this._isJoined = true;
          }
          else
          {
@@ -723,6 +775,7 @@ package com.monsters.chat
       {
          this._open = !this._open;
          this.toggleVisibleB();
+         GLOBAL.StatSet("chatvis",this._open ? 1 : 0);
       }
       
       public function toggleVisibleB(... rest) : void
@@ -738,7 +791,19 @@ package com.monsters.chat
       
       public function hide() : void
       {
-         this.visible = false;
+         this.visible = true;
+      }
+      
+      public function showUnavailableInYourArea() : void
+      {
+         this.chatBox.disableChatBoxForAB();
+         this.system_message("Chat is currently unavailable in your area.");
+      }
+      
+      public function showInvalidName() : void
+      {
+         this.chatBox.disableChatBoxForAB();
+         this.system_message("Chat is currently unavailable. (EC:13)");
       }
       
       public function fetchDisplayName(param1:String) : String
@@ -749,6 +814,17 @@ package com.monsters.chat
       
       public function toggleMinimizedStat(param1:Boolean = true) : *
       {
+         if(param1 == true)
+         {
+            if(GLOBAL.StatGet("chatmin") != 1)
+            {
+               GLOBAL.StatSet("chatmin",1);
+            }
+         }
+         else if(GLOBAL.StatGet("chatmin") != 0)
+         {
+            GLOBAL.StatSet("chatmin",0);
+         }
       }
       
       private function showIgnoreListMessage(param1:String, param2:String) : void
@@ -837,37 +913,31 @@ package com.monsters.chat
       
       public function position() : void
       {
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
          var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
          var _loc2_:* = GLOBAL._ROOT.stage.stageHeight;
-         var _loc3_:Rectangle = new Rectangle(0 - (_loc1_ - 760) / 2 + 10,0 - (_loc2_ - 520) / 2,_loc1_,_loc2_);
-         this._hideX = _loc3_.x;
-         this._showX = _loc3_.x;
-         if(GLOBAL._mode == "build" || GLOBAL._mode == "view" || GLOBAL._mode == "help")
-         {
-            this._hideX = _loc3_.x;
-            this._showX = _loc3_.x;
-         }
-         else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview")
-         {
-            this._hideX = _loc3_.x + _loc3_.width - (this.chatBox.width + 5);
-            this._showX = _loc3_.x + _loc3_.width - (this.chatBox.width + 5);
-         }
-         this._showY = 520 + (_loc2_ - 520) / 2 - 37;
-         this._hideY = 520 + (_loc2_ - 520) / 2 - 37;
+         var _loc5_:Rectangle = new Rectangle(0 - (_loc1_ - GLOBAL._SCREENINIT.width) / 2 + 0,0 - (_loc2_ - GLOBAL._SCREENINIT.height) / 2 + 0,_loc1_,_loc2_);
+         this._hideX = _loc5_.x;
+         this._showX = _loc5_.x;
+         this._showY = GLOBAL._SCREENINIT.height + (_loc2_ - GLOBAL._SCREENINIT.height) / 2 - 30;
+         this._hideY = GLOBAL._SCREENINIT.height + (_loc2_ - GLOBAL._SCREENINIT.height) / 2 - 30;
+         this._hideX += 0;
+         this._showX += 0;
+         this._showY += 0;
+         this._hideY += 0;
          if(this._open)
          {
-            _loc4_ = this._showX;
-            _loc5_ = this._showY;
+            _loc6_ = this._showX;
+            _loc7_ = this._showY;
          }
          else
          {
-            _loc4_ = this._hideX;
-            _loc5_ = this._hideY;
+            _loc6_ = this._hideX;
+            _loc7_ = this._hideY;
          }
-         x = _loc4_;
-         y = _loc5_;
+         x = _loc6_;
+         y = _loc7_;
          this.chatBox.update();
       }
       
@@ -922,7 +992,11 @@ package com.monsters.chat
       
       public function chatInputHasFocus() : Boolean
       {
-         return stage.focus == this.chatBox.input;
+         if(Boolean(stage) && Boolean(this.chatBox))
+         {
+            return stage.focus == this.chatBox.input;
+         }
+         return false;
       }
    }
 }

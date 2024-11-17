@@ -11,7 +11,6 @@ package
    import flash.text.TextFieldAutoSize;
    import flash.utils.Timer;
    import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class POPUPS
    {
@@ -87,14 +86,6 @@ package
          {
             Show("now");
          }
-         if(BASE._mcAllianceArrow)
-         {
-            if(BASE._mcAllianceArrow.parent)
-            {
-               BASE._mcAllianceArrow.parent.removeChild(BASE._mcAllianceArrow);
-            }
-            BASE._mcAllianceArrow = null;
-         }
       }
       
       private static function HideB() : *
@@ -149,14 +140,8 @@ package
                _open = true;
                AddBG();
                _mc = GLOBAL._layerTop.addChild(message[0]) as MovieClip;
-               _mc.x = GLOBAL._SCREENCENTER.x;
-               _mc.y = GLOBAL._SCREENCENTER.y;
-               _mc.scaleX = _mc.scaleY = 0.9;
-               TweenLite.to(_mc,0.2,{
-                  "scaleX":1,
-                  "scaleY":1,
-                  "ease":Quad.easeOut
-               });
+               POPUPSETTINGS.AlignToCenter(_mc);
+               POPUPSETTINGS.ScaleUp(_mc);
                try
                {
                   if(_mc.bMessage)
@@ -284,6 +269,7 @@ package
       
       public static function Timeout() : *
       {
+         var _loc1_:MovieClip = null;
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
@@ -295,7 +281,7 @@ package
          _mcBG.x = (GLOBAL._SCREENINIT.width - GLOBAL._ROOT.stage.stageWidth) / 2;
          _mcBG.y = (GLOBAL._SCREENINIT.height - GLOBAL._ROOT.stage.stageHeight) / 2;
          _mcBG.cacheAsBitmap = true;
-         var _loc1_:MovieClip = new popup_timeout();
+         _loc1_ = new popup_timeout();
          _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_timeout_title") + "</b>";
          _loc1_.tB.htmlText = KEYS.Get("pop_timeout_body");
          if(!GLOBAL._flags.kongregate)
@@ -536,6 +522,16 @@ package
                {
                   BUILDINGINFO.Hide();
                   MUSHROOMS.PickWorker(_loc4_);
+               }
+               else if(param1 == 3 && Boolean(_loc4_))
+               {
+                  if(int(_loc4_._buildingProps.fortify_costs[_loc4_._fortification.Get()].time * GLOBAL._buildTime) > 60 * 60)
+                  {
+                     UPDATES.Create(["BF",_loc4_._id]);
+                  }
+                  BUILDINGOPTIONS.Hide();
+                  _loc4_.FortifyB();
+                  BASE.Save();
                }
             }
             POPUPS.Next();

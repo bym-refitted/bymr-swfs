@@ -242,7 +242,7 @@ package com.monsters.mailbox
          inputBox.y = _loc2_["inputBoxY"];
          inputBox.height = _loc2_["inputBoxHeight"];
          mask_mc.height = _loc2_["maskHeight"];
-         this.scroller.scrollTo(1);
+         this.scroller.ScrollTo(1);
          if(this.contains(inputBox))
          {
             setChildIndex(inputBox,this.numChildren - 1);
@@ -340,11 +340,11 @@ package com.monsters.mailbox
          if(!this._wide)
          {
             this.scroller.visible = false;
-            this.scroller.scrollTo(0,0);
+            this.scroller.ScrollTo(0,0);
          }
          else
          {
-            this.scroller.scrollTo(1);
+            this.scroller.ScrollTo(1);
          }
       }
       
@@ -514,7 +514,7 @@ package com.monsters.mailbox
          }
          if(this._wide)
          {
-            this.scroller.scrollTo(1,0);
+            this.scroller.ScrollTo(1,0);
          }
       }
       
@@ -522,11 +522,10 @@ package com.monsters.mailbox
       {
          if(this._wide)
          {
-            this.scroller.initWith(this.shell,mask_mc,106,319);
-            this.scroller.easing = 2;
-            this.scroller.bottomPadding = 20;
+            this.scroller.Init(this.shell,mask_mc,0,106,319);
+            this.scroller.BottomPadding = 20;
             this.scroller.visible = true;
-            this.scroller.scrollTo(1);
+            this.scroller.ScrollTo(1);
             mcFrame.width = WIDE;
          }
          else
@@ -595,11 +594,12 @@ package com.monsters.mailbox
       {
          SOUNDS.Play("click1");
          var _loc2_:uint = this.data.userid;
-         var _loc3_:String = Contact.contactWithUserId(this.data.convo[0].userid).firstname;
-         var _loc4_:String = KEYS.Get("invite_revoke",{"v1":_loc3_});
-         var _loc5_:Array = [["threadid",this.data.threadid],["targetid",_loc2_],["targetbaseid",0],["type","migraterevoke"],["subject",this.subject],["message",_loc4_]];
-         var _loc6_:URLLoaderApi = new URLLoaderApi();
-         _loc6_.load(GLOBAL._apiURL + "player/sendmessage",_loc5_,this.onMigrateRevokeSuccess,this.onFail);
+         var _loc3_:Contact = Contact.contactWithUserId(this.data.convo[0].userid,true);
+         var _loc4_:String = _loc3_.firstname;
+         var _loc5_:String = KEYS.Get("invite_revoke",{"v1":_loc4_});
+         var _loc6_:Array = [["threadid",this.data.threadid],["targetid",_loc2_],["targetbaseid",0],["type","migraterevoke"],["subject",this.subject],["message",_loc5_]];
+         var _loc7_:URLLoaderApi = new URLLoaderApi();
+         _loc7_.load(GLOBAL._apiURL + "player/sendmessage",_loc6_,this.onMigrateRevokeSuccess,this.onFail);
          this.sending = true;
          this.Validate();
          acceptBtn.Enabled = denyBtn.Enabled = sendBtn.Enabled = viewBtn.Enabled = false;

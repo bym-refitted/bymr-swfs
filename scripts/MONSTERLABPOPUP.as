@@ -445,7 +445,7 @@ package
                this._scrollbar.visible = 1;
                this.list_mc.addChild(this._scrollbar);
             }
-            this._scrollbar.update();
+            this._scrollbar.Update();
          }
       }
       
@@ -469,7 +469,7 @@ package
       public function SpeedUp(param1:MouseEvent) : *
       {
          GLOBAL._selectedBuilding = _bMonsterLab;
-         STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+         STORE.SpeedUp("SP4");
       }
       
       public function List() : *
@@ -502,8 +502,8 @@ package
          this._scrollbar.x = 190;
          this._scrollbar.y = 0;
          this.list_mc.addChild(this._scrollbar);
-         this._scrollbar.initWith(this._listContainer,this.list_mc.mcMask,0,this.list_mc.height,20);
-         this._scrollbar.autoHide = false;
+         this._scrollbar.Init(this._listContainer,this.list_mc.mcMask,0,0,this.list_mc.height,20);
+         this._scrollbar.AutoHideEnabled = false;
          this._scrollbar.visible = false;
          offset = 0;
          i = 0;
@@ -615,10 +615,14 @@ package
          MONSTERLAB.Hide(param1);
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

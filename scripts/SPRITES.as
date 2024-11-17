@@ -554,15 +554,26 @@ package
       
       public static function GetFrame(param1:BitmapData, param2:Object, param3:int, param4:int = 0) : void
       {
-         var _loc5_:Point = new Point(26,36);
-         if(param2)
+         var offset:Point = null;
+         var canvas:BitmapData = param1;
+         var sprite:Object = param2;
+         var frame:int = param3;
+         var row:int = param4;
+         try
          {
-            _loc5_.x -= param2.middle.x;
-            _loc5_.y -= param2.middle.y;
-            if(param2.sprite)
+            offset = new Point(26,36);
+            if(sprite)
             {
-               param1.copyPixels(param2.sprite,new Rectangle(param2.width * param3,param2.height * param4,param2.width,param2.height),_loc5_);
+               offset.x -= sprite.middle.x;
+               offset.y -= sprite.middle.y;
+               if(sprite.sprite)
+               {
+                  canvas.copyPixels(sprite.sprite,new Rectangle(sprite.width * frame,sprite.height * row,sprite.width,sprite.height),offset);
+               }
             }
+         }
+         catch(e:Error)
+         {
          }
       }
    }

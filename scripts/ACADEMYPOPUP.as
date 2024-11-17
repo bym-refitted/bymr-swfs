@@ -441,7 +441,7 @@ package
       public function SpeedUp(param1:MouseEvent) : *
       {
          ACADEMY._monsterID = _monsterID;
-         STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+         STORE.SpeedUp("SP4");
       }
       
       public function Previous(param1:MouseEvent) : *
@@ -488,10 +488,14 @@ package
          ACADEMY.Hide(param1);
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

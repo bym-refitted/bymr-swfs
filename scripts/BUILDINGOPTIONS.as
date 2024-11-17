@@ -2,12 +2,10 @@ package
 {
    import flash.display.DisplayObject;
    import flash.events.MouseEvent;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class BUILDINGOPTIONS
    {
-      public static var _do:DisplayObject;
+      public static var _do:BUILDINGOPTIONSPOPUP;
       
       public static var _doBG:DisplayObject;
       
@@ -30,15 +28,8 @@ package
             _building = param1;
             _open = true;
             _do = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP(param2));
-            _do.x = 380;
-            _do.y = 260;
-            _do.scaleY = 0.9;
-            _do.scaleX = 0.9;
-            TweenLite.to(_do,0.2,{
-               "scaleX":1,
-               "scaleY":1,
-               "ease":Quad.easeOut
-            });
+            _do.Center();
+            _do.ScaleUp();
          }
       }
       

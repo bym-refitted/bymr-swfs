@@ -363,7 +363,6 @@ package
                }
                _loc2_++;
             }
-            QUESTS.Hide();
          };
       }
       
@@ -372,10 +371,14 @@ package
          QUESTS.Hide();
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

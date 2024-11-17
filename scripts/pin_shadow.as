@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/1981_pin_shadow_pin_shadow.png")]
+   [Embed(source="/_assets/2045_pin_shadow_pin_shadow.png")]
    public dynamic class pin_shadow extends BitmapData
    {
       public function pin_shadow(param1:int = 28, param2:int = 25)

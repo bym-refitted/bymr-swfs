@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol140")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol980")]
    public dynamic class popup_mushroomshiny extends MovieClip
    {
       public var tTitle:TextField;

@@ -59,6 +59,10 @@ package
       
       public var _goo:int;
       
+      private var _secureDamageMult:SecNum;
+      
+      private var _secureSpeedMult:SecNum;
+      
       public var _venom:SecNum;
       
       public var _targetRotation:Number;
@@ -176,6 +180,8 @@ package
       public function CREEP(param1:String, param2:String, param3:Point, param4:Number, param5:Point = null, param6:Boolean = false, param7:BFOUNDATION = null, param8:Number = 1, param9:Boolean = false, param10:CREEP = null)
       {
          var _loc12_:Point = null;
+         this._secureDamageMult = new SecNum(100);
+         this._secureSpeedMult = new SecNum(100);
          this._venom = new SecNum(0);
          this._tmpPoint = new Point(0,0);
          super();
@@ -497,6 +503,8 @@ package
                this._glow = null;
             }
          }
+         this._secureSpeedMult = new SecNum(int(this._speedMult * 100));
+         this._secureDamageMult = new SecNum(int(this._damageMult * 100));
       }
       
       public function ModeAttack() : void
@@ -1515,6 +1523,36 @@ package
          var aggros:Array = null;
          var l:int = 0;
          this._frameNumber += 1;
+         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         {
+            if(this._health.Get() > this._maxHealth)
+            {
+               LOGGER.Log("hak","Regular monster health exceeds maximum");
+               GLOBAL.ErrorMessage("CREEP hack 1");
+               return false;
+            }
+            if(this._frameNumber % 30 == 0)
+            {
+               if(this._maxHealth != CREATURES.GetProperty(this._creatureID,"health"))
+               {
+                  LOGGER.Log("hak","Regular monster health max incorrect");
+                  GLOBAL.ErrorMessage("CREEP hack 2");
+                  return false;
+               }
+               if(this._secureSpeedMult.Get() != int(this._speedMult * 100))
+               {
+                  LOGGER.Log("hak","Regular monster speed buff incorrect");
+                  GLOBAL.ErrorMessage("CREEP hack 4");
+                  return false;
+               }
+               if(this._secureDamageMult.Get() != int(this._damageMult * 100))
+               {
+                  LOGGER.Log("hak","Regular monster damage buff incorrect");
+                  GLOBAL.ErrorMessage("CREEP hack 5");
+                  return false;
+               }
+            }
+         }
          if(this._movement == "fly" && this._health.Get() > 0 && this._behaviour != "pen")
          {
             if(this._behaviour != "juice" && this._behaviour != "feed" || this._altitude >= 60)
@@ -1884,6 +1922,10 @@ package
                         if(this._targetCreep)
                         {
                            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult,this._mc.visible);
+                        }
+                        else if(this._targetBuilding._fortification.Get() > 0)
+                        {
+                           ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage * (100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100,this._mc.visible);
                         }
                         else
                         {

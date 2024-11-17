@@ -48,6 +48,8 @@ package
                BASE.BuildingDeselect();
                _open = true;
                _mc = GLOBAL._layerWindows.addChild(new BUILDINGSPOPUP());
+               _mc.Center();
+               _mc.ScaleUp();
             }
             if(BUILDINGS._buildingID > 0)
             {

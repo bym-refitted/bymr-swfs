@@ -15,13 +15,13 @@ package com.monsters.effects.particles
          super();
       }
       
-      public static function Create(param1:Point, param2:int) : *
+      public static function Create(param1:Point, param2:int, param3:Boolean = false) : *
       {
-         var _loc3_:* = undefined;
+         var _loc4_:* = undefined;
          if(!GLOBAL._catchup && _currentCount < _currentMax)
          {
-            _loc3_ = PoolGet();
-            _loc3_.Init(param1,param2);
+            _loc4_ = PoolGet();
+            _loc4_.Init(param1,param2,param3);
          }
       }
       

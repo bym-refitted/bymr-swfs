@@ -42,15 +42,21 @@ package
       
       override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
       {
+         var _loc6_:int = param1;
+         if(_fortification.Get() > 0)
+         {
+            _loc6_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc6_ = _loc6_ / 100;
+         }
          if(param5)
          {
             if(param4 == 3)
             {
-               this.Loot(param1 * 2);
+               this.Loot(_loc6_ * 2);
             }
             else
             {
-               this.Loot(param1 * 0.5);
+               this.Loot(_loc6_ * 0.5);
             }
          }
          super.Damage(param1,param2,param3,param4,param5);
@@ -149,6 +155,7 @@ package
       
       override public function Description() : *
       {
+         var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
@@ -159,14 +166,14 @@ package
          var _loc9_:int = 0;
          var _loc10_:* = undefined;
          super.Description();
-         var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
+         _loc1_ = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
          if(BASE._isOutpost)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);
          }
          if(_hp.Get() < _hpMax.Get())
          {
-            if(_countdownUpgrade.Get() <= 0)
+            if(_countdownUpgrade.Get() + _countdownFortify.Get() <= 0)
             {
                _loc5_ = _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / _hpMax.Get() * _hp.Get()));
                _loc6_ = _buildingProps.produce[_lvl.Get() - 1] / _loc5_ * 60 * 60;
@@ -254,7 +261,7 @@ package
          super.Tick();
          if(GLOBAL._catchup)
          {
-            if(_countdownBuild.Get() + _countdownUpgrade.Get() + _repairing == 0)
+            if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() + _repairing == 0)
             {
                if(_hp.Get() >= _hpMax.Get() * 0.5)
                {
@@ -270,7 +277,7 @@ package
                }
             }
          }
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0)
+         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
             if(_hp.Get() < _hpMax.Get() * 0.5)
             {
@@ -310,6 +317,14 @@ package
                CatchupRemove();
             }
          }
+         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         {
+            if(_stored.Get() < 0)
+            {
+               LOGGER.Log("hak","Attack harvester storage < 0");
+               GLOBAL.ErrorMessage();
+            }
+         }
       }
       
       override public function Update(param1:Boolean = false) : *
@@ -317,7 +332,7 @@ package
          super.Update(param1);
          if(GLOBAL._render || param1)
          {
-            if(_producing == 0 && GLOBAL._mode == "build" && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _hp.Get() > _hpMax.Get() * 0.5)
+            if(_producing == 0 && GLOBAL._mode == "build" && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _hp.Get() > _hpMax.Get() * 0.5)
             {
                if(!_mcAlert)
                {
@@ -516,7 +531,15 @@ package
       {
          super.Setup(param1);
          var _loc2_:int = GLOBAL._mode == "wmattack" && _hp.Get() == _hpMax.Get() ? int(0.25 * _buildingProps.capacity[_lvl.Get() - 1]) : int(param1.st);
-         _stored.Set(_loc2_);
+         if(_loc2_ >= 0)
+         {
+            _stored.Set(_loc2_);
+         }
+         else
+         {
+            _stored.Set(0);
+            LOGGER.Log("err","Harvester storage < 0 mode: " + GLOBAL._mode);
+         }
          _producing = int(param1.pr);
          _countdownProduce.Set(int(param1.cP));
       }

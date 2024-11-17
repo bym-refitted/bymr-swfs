@@ -38,10 +38,13 @@ package com.monsters.alliances
       public static function Setup(param1:int = 0) : void
       {
          _alliances = new Object();
-         _allianceID = 0;
-         if(param1)
+         if(param1 > 0)
          {
             _allianceID = param1;
+            if(GLOBAL._mode == "build")
+            {
+               ACHIEVEMENTS.Check("alliance",1,true);
+            }
          }
       }
       
@@ -56,7 +59,6 @@ package com.monsters.alliances
          {
             _myAlliance = null;
          }
-         _allianceID = 0;
       }
       
       public static function GetAllianceInfo(param1:int, param2:MapRoomCell = null, param3:Boolean = false) : void

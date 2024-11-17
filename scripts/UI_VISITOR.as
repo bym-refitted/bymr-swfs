@@ -176,7 +176,7 @@ package
             count = 0;
             for each(building in BASE._buildingsAll)
             {
-               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() > 0)
+               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() + building._countdownFortify.Get() > 0)
                {
                   helped = false;
                   for each(helper in building._helpList)
@@ -211,6 +211,14 @@ package
                mc.gotoAndStop(1);
             }
          }
+         this.Resize();
+      }
+      
+      public function Resize() : void
+      {
+         GLOBAL.RefreshScreen();
+         mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - mc.mcBG.width - 10;
+         mc.y = GLOBAL._SCREENHUD.y - (mc.height + 10);
       }
    }
 }

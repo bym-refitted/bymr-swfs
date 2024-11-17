@@ -7,17 +7,16 @@ package
    import com.monsters.effects.smoke.Smoke;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class MONSTERLAB extends BFOUNDATION
    {
-      public static var _mcPopup:MovieClip;
+      public static var _mcPopup:MONSTERLABPOPUP;
       
       public static var _open:Boolean = false;
       
@@ -346,15 +345,8 @@ package
             _open = true;
             GLOBAL.BlockerAdd();
             _mcPopup = GLOBAL._layerWindows.addChild(new MONSTERLABPOPUP());
-            _mcPopup.x = 380;
-            _mcPopup.y = 260;
-            _mcPopup.scaleY = 0.8;
-            _mcPopup.scaleX = 0.8;
-            TweenLite.to(_mcPopup,0.2,{
-               "scaleX":1,
-               "scaleY":1,
-               "ease":Quad.easeOut
-            });
+            _mcPopup.Center();
+            _mcPopup.ScaleUp();
          }
       }
       
@@ -570,7 +562,7 @@ package
                var _loc4_:String = null;
                var _loc5_:BitmapData = null;
                var _loc6_:BuildingAssetContainer = null;
-               var _loc7_:* = undefined;
+               var _loc7_:DisplayObject = null;
                if(param2 == _renderState)
                {
                   _mcBase.Clear();

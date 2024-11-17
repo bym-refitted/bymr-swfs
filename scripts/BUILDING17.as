@@ -34,9 +34,11 @@ package
          }
       }
       
-      override public function Setup(param1:Object) : *
+      override public function Constructed() : *
       {
-         super.Setup(param1);
+         ++ACHIEVEMENTS._stats["blocksbuilt"];
+         ACHIEVEMENTS.Check();
+         super.Constructed();
       }
    }
 }

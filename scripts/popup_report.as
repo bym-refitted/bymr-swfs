@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1866")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1920")]
    public dynamic class popup_report extends MovieClip
    {
       public var sendBtn:Button_CLIP;

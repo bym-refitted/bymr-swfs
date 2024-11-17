@@ -22,35 +22,36 @@ package
          if(this.parent)
          {
             _loc1_ = {};
-            if(GLOBAL._testKongregate)
+            switch(GLOBAL._localMode)
             {
-               _loc1_._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
-               _loc1_._apiURL = "http://bm-kg-web2.dev.casualcollective.com/api/";
-               _loc1_._gameURL = "";
-               _loc1_._statsURL = "http://bm-kg-web2.dev.casualcollective.com/recordstats.php";
-               _loc1_._storageURL = "assets/";
-               _loc1_._soundPathURL = "assets/sounds/";
-               _loc1_._mapURL = "http://bm-kg-web2.dev.casualcollective.com/worldmapv2/";
-               _loc1_._allianceURL = "http://bmstage.fb.casualcollective.com/alliance/";
-               _loc1_.fb_kongregate_api_path = "http://chat.kongregate.com/flash/API_AS3_46ebaf5ef297ce57605ca0a769f70b7d.swf";
-               _loc1_._appid = "";
-               _loc1_._tpid = "";
-               _loc1_._countryCode = "us";
+               case 1:
+                  _loc1_._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-trunk.dev.kixeye.com/api/";
+                  _loc1_._statsURL = "http://bym-fb-trunk.dev.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-trunk.dev.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-trunk.dev.kixeye.com/alliance/";
+                  break;
+               case 2:
+                  _loc1_._baseURL = "http://bm-kg-web2.dev.casualcollective.com/base/";
+                  _loc1_._apiURL = "http://bm-kg-web2.dev.casualcollective.com/api/";
+                  _loc1_._statsURL = "http://bm-kg-web2.dev.casualcollective.com/recordstats.php";
+                  _loc1_._mapURL = "http://bm-kg-web2.dev.casualcollective.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bmstage.fb.casualcollective.com/alliance/";
+                  _loc1_.fb_kongregate_api_path = "http://chat.kongregate.com/flash/API_AS3_46ebaf5ef297ce57605ca0a769f70b7d.swf";
+                  break;
+               default:
+                  _loc1_._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
+                  _loc1_._apiURL = "http://bym-fb-web1.stage.kixeye.com/api/";
+                  _loc1_._statsURL = "http://bym-fb-web1.stage.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "http://bym-fb-web1.stage.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "http://bym-fb-web1.stage.kixeye.com/alliance/";
             }
-            else
-            {
-               _loc1_._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
-               _loc1_._apiURL = "http://bym-fb-trunk.dev.kixeye.com/api/";
-               _loc1_._gameURL = "";
-               _loc1_._statsURL = "http://bym-fb-trunk.dev.kixeye.com/recordstats.php";
-               _loc1_._storageURL = "assets/";
-               _loc1_._soundPathURL = "assets/sounds/";
-               _loc1_._mapURL = "http://bym-fb-trunk.dev.kixeye.com/worldmapv2/";
-               _loc1_._allianceURL = "http://bym-fb-trunk.dev.kixeye.com/alliance/";
-               _loc1_._appid = "";
-               _loc1_._tpid = "";
-               _loc1_._countryCode = "us";
-            }
+            _loc1_._gameURL = "";
+            _loc1_._storageURL = "assets/";
+            _loc1_._soundPathURL = "assets/sounds/";
+            _loc1_._appid = "";
+            _loc1_._tpid = "";
+            _loc1_._countryCode = "us";
             this.Data(_loc1_,false);
          }
       }
@@ -103,7 +104,7 @@ package
             ExternalInterface.addCallback("openbase",function(param1:String):*
             {
                var _loc2_:Object = null;
-               if(BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
+               if(BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading)
                {
                   BASE._isOutpost = 0;
                   GLOBAL._currentCell = null;

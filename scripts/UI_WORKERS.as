@@ -24,6 +24,8 @@ package
       
       private static var _workerMCOffset:int = 45;
       
+      private static var _canUseHorizontal:Boolean = false;
+      
       public function UI_WORKERS()
       {
          super();
@@ -201,7 +203,7 @@ package
       
       public static function Resize() : *
       {
-         if(!GLOBAL.flagsShouldChatDisplay())
+         if(!GLOBAL.flagsShouldChatDisplay() && _canUseHorizontal)
          {
             if(_mc)
             {

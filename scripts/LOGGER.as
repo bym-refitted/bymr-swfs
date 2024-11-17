@@ -58,7 +58,7 @@ package
             n2 = 0;
             if(data[0] >= 1 && data[0] <= 4 || data[0] == 26 || data[0] == 51)
             {
-               if(data[0] == 1 || data[0] == 2 || data[0] == 26)
+               if(data[0] == 1 || data[0] == 2 || data[0] == 26 || data[0] == 67)
                {
                   st1 = "buildings";
                }
@@ -73,6 +73,10 @@ package
                if(data[0] == 26)
                {
                   st2 = "repairing";
+               }
+               if(data[0] == 67)
+               {
+                  st2 = "fortifying";
                }
                if(data[0] == 3 || data[0] == 4 || data[0] == 51)
                {
@@ -90,7 +94,7 @@ package
                {
                   st2 = "powerup";
                }
-               if(data[0] == 1 || data[0] == 2 || data[0] == 26)
+               if(data[0] == 1 || data[0] == 2 || data[0] == 26 || data[0] == 67)
                {
                   st3 = KEYS.Get(GLOBAL._buildingProps[data[1] - 1].name);
                }
@@ -168,7 +172,7 @@ package
                name = "cost";
                val = int(data[2]);
             }
-            else if(data[0] == 14 || data[0] == 15)
+            else if(data[0] == 14 || data[0] == 15 || data[0] == 66)
             {
                st1 = "helping";
                st2 = "buildings";
@@ -385,7 +389,7 @@ package
                      st1 = "champion";
                      st2 = "heal";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 52)
@@ -393,7 +397,7 @@ package
                      st1 = "champion";
                      st2 = "select";
                      name = "level1";
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 53)
@@ -401,7 +405,7 @@ package
                      st1 = "champion";
                      st2 = "attack_win";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 54)
@@ -409,7 +413,7 @@ package
                      st1 = "champion";
                      st2 = "attack_lose";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 55)
@@ -417,7 +421,7 @@ package
                      st1 = "champion";
                      st2 = "defense_win";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 56)
@@ -425,7 +429,7 @@ package
                      st1 = "champion";
                      st2 = "defense_lose";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 57)
@@ -433,7 +437,7 @@ package
                      st1 = "champion";
                      st2 = "evolve";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
                   else if(data[0] == 58)
@@ -441,15 +445,89 @@ package
                      st1 = "champion";
                      st2 = "feed";
                      name = "level" + data[3];
-                     st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
                      val = int(data[2]);
                   }
-                  else if(data[0] == 59)
+                  else if(data[0] == 60)
+                  {
+                     st1 = "champion";
+                     st2 = "feed";
+                     name = "buff" + data[3];
+                     st3 = CHAMPIONCAGE._guardians[data[1]].name;
+                     val = int(data[2]);
+                  }
+                  else if(data[0] == 61)
                   {
                      st1 = "store";
-                     st2 = "purchase";
-                     name = data[1];
+                     st2 = data[1];
+                     name = "cost-var";
                      val = int(data[2]);
+                  }
+                  else if(data[0] == 62)
+                  {
+                     st1 = "zazzle";
+                     name = "view";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 63)
+                  {
+                     st1 = "zazzle";
+                     name = "click";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 64)
+                  {
+                     st1 = "buildings";
+                     st2 = "fortify" + data[2];
+                     st3 = KEYS.Get(GLOBAL._buildingProps[data[1] - 1].name);
+                     name = "fortify_start";
+                     val = 1;
+                  }
+                  else if(data[0] == 65)
+                  {
+                     st1 = "buildings";
+                     st2 = "fortify" + data[2];
+                     st3 = KEYS.Get(GLOBAL._buildingProps[data[1] - 1].name);
+                     name = "fortify_finish";
+                     val = 1;
+                  }
+                  else if(data[0] == 68)
+                  {
+                     st1 = "chat";
+                     name = data[1];
+                     val = 1;
+                  }
+                  else if(data[0] == 69)
+                  {
+                     st1 = "champion";
+                     st2 = "freeze";
+                     st3 = CHAMPIONCAGE._guardians["G" + data[1]].name;
+                     name = "Level" + data[2];
+                     val = 1;
+                  }
+                  else if(data[0] == 70)
+                  {
+                     st1 = "champion";
+                     st2 = "thaw";
+                     st3 = CHAMPIONCAGE._guardians["G" + data[1]].name;
+                     name = "Level" + data[2];
+                     val = 1;
+                  }
+                  else if(data[0] == 71)
+                  {
+                     st1 = "buildings";
+                     st2 = "build";
+                     st3 = KEYS.Get(GLOBAL._buildingProps[data[2] - 1].name);
+                     name = "build_instant";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 72)
+                  {
+                     st1 = "buildings";
+                     st2 = "upgrade";
+                     st3 = KEYS.Get(GLOBAL._buildingProps[data[2] - 1].name) + "_level" + data[3];
+                     name = "upgrade_instant";
+                     val = int(data[1]);
                   }
                }
             }

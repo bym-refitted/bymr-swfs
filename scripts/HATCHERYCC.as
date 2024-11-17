@@ -1,12 +1,10 @@
 package
 {
    import flash.events.MouseEvent;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class HATCHERYCC
    {
-      public static var _mc:*;
+      public static var _mc:HATCHERYCCPOPUP;
       
       public static var _open:Boolean = false;
       
@@ -23,15 +21,8 @@ package
             GLOBAL.BlockerAdd();
             _mc = GLOBAL._layerWindows.addChild(new HATCHERYCCPOPUP());
             _mc.Setup();
-            _mc.x = GLOBAL._SCREENCENTER.x;
-            _mc.y = GLOBAL._SCREENCENTER.y;
-            _mc.scaleY = 0.9;
-            _mc.scaleX = 0.9;
-            TweenLite.to(_mc,0.2,{
-               "scaleX":1,
-               "scaleY":1,
-               "ease":Quad.easeOut
-            });
+            _mc.Center();
+            _mc.ScaleUp();
          }
       }
       

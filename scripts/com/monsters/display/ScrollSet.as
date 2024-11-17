@@ -1,6 +1,5 @@
 package com.monsters.display
 {
-   import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -10,131 +9,151 @@ package com.monsters.display
    
    public class ScrollSet extends ScrollSet_CLIP
    {
-      private var shell:Sprite;
+      public static const BROWN:int = 0;
       
-      private var _mask:MovieClip;
+      public static const GREEN:int = 1;
       
-      private var offsetY:Number = 0;
+      private static const NUM_COLORS:int = 2;
       
-      public var dragging:Boolean = false;
+      private var _IsInitialized:Boolean = false;
       
-      public var easing:Number = 1;
+      private var _Container:Sprite;
       
-      public var margin:int = 3;
+      private var _ContainerHeight:int;
       
-      public var autoHide:Boolean = false;
+      private var _Mask:MovieClip;
       
-      public var thresh:Number = 0.05;
+      private var _ScrollBarHeight:Number;
       
-      public var bottomPadding:uint = 0;
+      private var _OffsetY:Number = 0;
       
-      private var _hardObjectHeight:int;
+      private var _Easing:Number = 1;
       
-      private var initialized:Boolean = false;
+      private var _Margin:Number = 1;
       
-      private var _minScrollHeight:int;
+      private var _Thresh:Number = 0.03;
       
-      private var _scrollbarHeight:int;
+      private var _BottomPadding:Number = 0;
       
-      public var updateCallback:Function;
+      private var _AutoHideEnabled:Boolean = true;
+      
+      private var _MinScrollerHeight:Number;
+      
+      private var _IsDragging:Boolean = false;
       
       public function ScrollSet()
       {
          super();
       }
       
-      public function initWith(param1:Sprite, param2:MovieClip, param3:Number = 0, param4:uint = 315, param5:int = 60) : void
+      public function Init(param1:Sprite, param2:MovieClip, param3:int = 0, param4:Number = 0, param5:Number = 315, param6:Number = 30) : void
       {
-         this._scrollbarHeight = param4;
-         this._minScrollHeight = param5;
-         this.shell = param1;
-         this._mask = param2;
-         this.offsetY = param3;
-         bg_mc.height = param4;
-         scroller_mc.y = this.margin;
-         scroller_mc.addEventListener(MouseEvent.MOUSE_DOWN,this.scrollerDown);
-         scroller_mc.useHandCursor = true;
+         var _loc7_:Number = NaN;
+         this._Container = param1;
+         this._ContainerHeight = param1.height;
+         this._Mask = param2;
+         this._ScrollBarHeight = param5;
+         this._MinScrollerHeight = param6;
+         this._OffsetY = param4;
+         if(param3 < 0 || param3 >= NUM_COLORS)
+         {
+            return;
+         }
+         switch(param3)
+         {
+            case BROWN:
+               this.mcScroller.gotoAndStop(1);
+               break;
+            case GREEN:
+               this.mcScroller.gotoAndStop(2);
+         }
+         this.mcScroller.y = this._Margin;
+         this.mcBG.height = param5;
+         this.mcScroller.addEventListener(MouseEvent.MOUSE_DOWN,this.ScrollerDown);
+         this.mcScroller.useHandCursor = true;
          this.addEventListener(MouseEvent.MOUSE_OVER,this.Show);
          this.addEventListener(MouseEvent.MOUSE_OUT,this.Hide);
-         if(param1.height < param2.height)
+         if(Boolean(this.parent) && param1.height < this._Mask.height)
          {
-            if(this.parent)
-            {
-               parent.removeChild(this);
-            }
-         }
-         this.update();
-         this.initialized = true;
-      }
-      
-      public function set hardObjectHeight(param1:Number) : void
-      {
-         this._hardObjectHeight = param1;
-         this.onDrag(null);
-      }
-      
-      public function update() : void
-      {
-         var _loc1_:* = this._mask.height / this.shell.height;
-         _loc1_ = Math.min(_loc1_,1);
-         var _loc2_:int = bg_mc.height * _loc1_;
-         scroller_mc.height = _loc2_ < this._minScrollHeight ? this._minScrollHeight : _loc2_;
-         scroller_mc.height = Math.min(scroller_mc.height,this._scrollbarHeight);
-         this._hardObjectHeight = this.shell.height;
-      }
-      
-      private function scrollerDown(param1:MouseEvent) : void
-      {
-         stage.addEventListener(MouseEvent.MOUSE_UP,this.onStageUp);
-         var _loc2_:Rectangle = new Rectangle(scroller_mc.x,bg_mc.y + this.margin,0,bg_mc.height - scroller_mc.height - 2 * this.margin);
-         scroller_mc.startDrag(false,_loc2_);
-         addEventListener(Event.ENTER_FRAME,this.onDrag);
-         this.dragging = true;
-      }
-      
-      private function onDrag(param1:Event = null) : void
-      {
-         var _loc4_:int = 0;
-         var _loc2_:Number = (this.margin + scroller_mc.y) / (bg_mc.height - scroller_mc.height - this.margin);
-         if(_loc2_ < this.thresh)
-         {
-            _loc2_ = 0;
-         }
-         if(_loc2_ > 1 - this.thresh)
-         {
-            _loc2_ = 1;
-         }
-         var _loc3_:Number = this.offsetY - _loc2_ * (this._hardObjectHeight - this._mask.height + this.bottomPadding);
-         if(this.easing != 0)
-         {
-            _loc4_ = this.shell.y - (this.shell.y - _loc3_) / this.easing;
-            this.shell.y = int(_loc4_);
+            this.parent.removeChild(this);
          }
          else
          {
-            this.shell.y = int(_loc3_);
+            if(param1.height == 0)
+            {
+               param1.height = 1;
+            }
+            _loc7_ = param5 * (param2.height / param1.height);
+            this.mcScroller.height = _loc7_ < param6 ? param6 : _loc7_;
+            this.Show();
          }
-         if(this.updateCallback != null)
+         this._IsInitialized = true;
+      }
+      
+      public function Update() : void
+      {
+         this.ResizeScroller();
+         if(this._Mask.height != this._ScrollBarHeight)
          {
-            this.updateCallback();
+            this.ResizeScrollBar();
+         }
+         this._ContainerHeight = this._Container.height;
+      }
+      
+      private function ResizeScroller() : void
+      {
+         var _loc1_:Number = this._Mask.height / this._Container.height;
+         _loc1_ = Math.min(_loc1_,1);
+         var _loc2_:Number = this.mcBG.height * _loc1_;
+         _loc2_ = _loc2_ < this._MinScrollerHeight ? this._MinScrollerHeight : _loc2_;
+         _loc2_ = Math.min(_loc2_,this._ScrollBarHeight);
+         this.mcScroller.height = _loc2_;
+      }
+      
+      private function ResizeScrollBar() : void
+      {
+         this._ScrollBarHeight = this._Mask.height;
+         this.mcBG.height = this._Mask.height;
+      }
+      
+      private function ScrollerDown(param1:MouseEvent) : void
+      {
+         stage.addEventListener(MouseEvent.MOUSE_UP,this.OnStageUp);
+         addEventListener(Event.ENTER_FRAME,this.OnDrag);
+         var _loc2_:Rectangle = new Rectangle(this.mcScroller.x,this.mcBG.y + this._Margin,0,this.mcBG.height - this.mcScroller.height - 2 * this._Margin);
+         this.mcScroller.startDrag(false,_loc2_);
+         this._IsDragging = true;
+      }
+      
+      private function OnDrag(param1:Event = null) : void
+      {
+         var _loc4_:int = 0;
+         var _loc2_:Number = (this._Margin + this.mcScroller.y) / (this.mcBG.height - this.mcScroller.height - this._Margin);
+         if(_loc2_ < this._Thresh)
+         {
+            _loc2_ = 0;
+         }
+         if(_loc2_ > 1 - this._Thresh)
+         {
+            _loc2_ = 1;
+         }
+         var _loc3_:Number = this._OffsetY - _loc2_ * (this._ContainerHeight - this._Mask.height + this._BottomPadding);
+         if(this._Easing != 0)
+         {
+            _loc4_ = this._Container.y - (this._Container.y - _loc3_) / this._Easing;
+            this._Container.y = int(_loc4_);
+         }
+         else
+         {
+            this._Container.y = int(_loc3_);
          }
       }
       
-      private function onStageUp(param1:MouseEvent) : void
+      private function OnStageUp(param1:MouseEvent) : void
       {
-         removeEventListener(Event.ENTER_FRAME,this.onDrag);
-         scroller_mc.stopDrag();
-         this.dragging = false;
-      }
-      
-      public function isChildVisible(param1:DisplayObject) : Boolean
-      {
-         var _loc2_:int = param1.y + param1.parent.y;
-         if(_loc2_ > this._mask.y && _loc2_ < this._mask.y + this._mask.height)
-         {
-            return true;
-         }
-         return false;
+         removeEventListener(Event.ENTER_FRAME,this.OnDrag);
+         this.mcScroller.stopDrag();
+         this._IsDragging = false;
       }
       
       public function Show(param1:MouseEvent = null) : void
@@ -144,42 +163,97 @@ package com.monsters.display
       
       public function Hide(param1:MouseEvent = null) : void
       {
-         if(!this.dragging && this.autoHide)
+         if(!this._IsDragging && this._AutoHideEnabled)
          {
             TweenLite.to(this,0.3,{"alpha":0.2});
          }
       }
       
-      public function scrollTo(param1:Number, param2:Number = 0.5) : void
+      public function ScrollTo(param1:Number, param2:Boolean = false) : void
       {
          var tgtY:Number;
          var oldEase:Number = NaN;
          var pctY:Number = param1;
-         var time:Number = param2;
-         if(!this.initialized)
+         var instant:Boolean = param2;
+         if(!this._IsInitialized)
          {
             return;
          }
-         TweenLite.killTweensOf(scroller_mc);
-         oldEase = this.easing;
-         this.easing = 1;
-         tgtY = pctY * (bg_mc.height - scroller_mc.height - 2 * this.margin) + this.margin;
-         if(time == 0)
+         TweenLite.killTweensOf(this.mcScroller);
+         oldEase = this._Easing;
+         this._Easing = 1;
+         tgtY = pctY * (this.mcBG.height - this.mcScroller.height - this._Margin) + this._Margin;
+         if(instant)
          {
-            scroller_mc.y = tgtY;
-            this.onDrag();
+            this.mcScroller.y = tgtY;
+            this.OnDrag();
          }
          else
          {
-            TweenLite.to(scroller_mc,time,{
+            TweenLite.to(this.mcScroller,0.6,{
                "y":tgtY,
-               "onUpdate":this.onDrag,
+               "onUpdate":this.OnDrag,
                "onComplete":function():*
                {
-                  easing = oldEase;
+                  _Easing = oldEase;
                }
             });
          }
+      }
+      
+      public function get AutoHideEnabled() : Boolean
+      {
+         return this._AutoHideEnabled;
+      }
+      
+      public function set AutoHideEnabled(param1:Boolean) : void
+      {
+         this._AutoHideEnabled = param1;
+      }
+      
+      public function get BottomPadding() : Number
+      {
+         return this._BottomPadding;
+      }
+      
+      public function set BottomPadding(param1:Number) : void
+      {
+         this._BottomPadding = param1;
+      }
+      
+      public function get ContainerHeight() : Number
+      {
+         return this._ContainerHeight;
+      }
+      
+      public function set ContainerHeight(param1:Number) : void
+      {
+         this._ContainerHeight = param1;
+      }
+      
+      public function get ScrollerBarHeight() : Number
+      {
+         return this._ScrollBarHeight;
+      }
+      
+      public function set ScrollerBarHeight(param1:Number) : void
+      {
+         this._ScrollBarHeight = param1;
+      }
+      
+      public function get Easing() : Number
+      {
+         return this._Easing;
+      }
+      
+      public function set Easing(param1:Number) : void
+      {
+         this._Easing = param1;
+      }
+      
+      public function get IsDragging() : Boolean
+      {
+         return this._IsDragging;
       }
    }
 }

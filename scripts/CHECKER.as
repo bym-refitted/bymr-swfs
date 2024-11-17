@@ -21,16 +21,30 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "2b7e7c7bb28c072674f06a03e3fb3ede")
+            if(GLOBAL.Check() != "849247ffc3d39b2af3796e45723fb263")
             {
-               LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
-               GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
+               if(GLOBAL.Check() == "a0c2c3ab8a06277b5ceab9234c31a8b8")
+               {
+                  LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch" + GLOBAL.Check());
+               }
+               else
+               {
+                  LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
+                  GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
+               }
             }
          }
-         else if(GLOBAL.Check() != "a9c03a2ffc719202bb7c74c8e43b0dcb")
+         else if(GLOBAL.Check() != "a0c2c3ab8a06277b5ceab9234c31a8b8")
          {
-            LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
-            GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
+            if(GLOBAL.Check() == "849247ffc3d39b2af3796e45723fb263")
+            {
+               LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch" + GLOBAL.Check());
+            }
+            else
+            {
+               LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
+               GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
+            }
          }
          if(!GLOBAL._flags.kongregate)
          {
@@ -45,9 +59,9 @@ package
             LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
             GLOBAL.ErrorMessage("CHECKER.Quests");
          }
-         if(GUARDIANCAGE.Check() != "52828a21e22ced0235fd56298c222347")
+         if(CHAMPIONCAGE.Check() != "99fa0737508999fe1bb4cce06cac4e2e")
          {
-            LOGGER.Log("hak","CHECKER.Guardian " + GUARDIANCAGE.Check());
+            LOGGER.Log("hak","CHECKER.Guardian " + CHAMPIONCAGE.Check());
             GLOBAL.ErrorMessage("CHECKER.GUARDIANCAGE");
          }
          if(CREATURELOCKER.Check() != "4f23177e5caa74b4abd2ef4af7fd4107")

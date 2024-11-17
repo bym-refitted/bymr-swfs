@@ -168,7 +168,6 @@ package com.monsters.maproom_advanced
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
-         var _loc6_:int = 0;
          this._dataAge = 10;
          this._updated = true;
          this._processed = false;
@@ -189,13 +188,10 @@ package com.monsters.maproom_advanced
          {
             this._allianceID = param1.aid;
          }
-         else if(this.inTest)
+         else
          {
-            if(this._base > 1)
-            {
-               _loc3_ = Math.floor(Math.random() * (this.testAllianceIDs.length - 1));
-               this._allianceID = this.testAllianceIDs[_loc3_];
-            }
+            this._allianceID = 0;
+            this._alliance = null;
          }
          if(this._alliance)
          {
@@ -362,16 +358,16 @@ package com.monsters.maproom_advanced
          var _loc2_:* = getTimer();
          if(this._monsterData)
          {
-            _loc4_ = getTimer();
+            _loc3_ = getTimer();
+            _loc4_ = int(this._monsterData.saved);
             _loc5_ = int(this._monsterData.saved);
-            _loc6_ = int(this._monsterData.saved);
-            while(_loc6_ < GLOBAL.Timestamp())
+            while(_loc5_ < GLOBAL.Timestamp())
             {
-               if(this.Tick(_loc6_))
+               if(this.Tick(_loc5_))
                {
                   break;
                }
-               _loc6_++;
+               _loc5_++;
             }
          }
          this._processed = true;

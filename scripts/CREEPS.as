@@ -20,7 +20,7 @@ package
       
       private static var _creepOverlap:Object;
       
-      public static var _guardian:GUARDIANMONSTER;
+      public static var _guardian:CHAMPIONMONSTER;
       
       public static var _flungGuardian:Boolean;
       
@@ -92,12 +92,24 @@ package
                tmpMonster.Clear();
                MAP._BUILDINGTOPS.removeChild(tmpMonster);
                --_creepCount;
+               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               {
+                  ATTACK._creaturesFlung.Add(-1);
+               }
                delete _creeps[m];
             }
          }
          if(_creepCount <= 0)
          {
             _creepCount = 0;
+         }
+         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         {
+            if(ATTACK._creaturesFlung.Get() < _creepCount && ATTACK._creaturesFlung.Get() > 0)
+            {
+               LOGGER.Log("log","More creeps than flung creatures");
+               GLOBAL.ErrorMessage();
+            }
          }
       }
       
@@ -111,17 +123,17 @@ package
          return _loc8_;
       }
       
-      public static function SpawnGuardian(param1:int, param2:*, param3:String, param4:int, param5:Point, param6:Number, param7:int = 20000, param8:Boolean = false) : GUARDIANMONSTER
+      public static function SpawnGuardian(param1:int, param2:*, param3:String, param4:int, param5:Point, param6:Number, param7:int = 20000, param8:int = 0, param9:Boolean = false) : CHAMPIONMONSTER
       {
          ++_creepID;
          ++_creepCount;
-         if(param8)
+         if(param9)
          {
-            _guardian = new GUARDIANMONSTER(param3,param5,0,null,false,null,param4,0,0,param1,param7);
+            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,0,0,param1,param7,param8);
          }
          else
          {
-            _guardian = new GUARDIANMONSTER(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData.fd,GLOBAL._playerGuardianData.ft,param1,param7);
+            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData.fd,GLOBAL._playerGuardianData.ft,param1,param7,param8);
          }
          _creeps[_creepID] = _guardian;
          param2.addChild(_guardian);

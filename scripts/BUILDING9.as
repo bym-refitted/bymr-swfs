@@ -48,6 +48,7 @@ package
          this._bank.Add(Math.ceil(CREATURES.GetProperty(param1,"cResource") * 0.7));
          ++QUESTS._global.monstersblended;
          QUESTS._global.monstersblendedgoo += Math.ceil(CREATURES.GetProperty(param1,"cResource") * 0.7);
+         ACHIEVEMENTS.Check("monstersblended",QUESTS._global.monstersblended);
          QUESTS.Check();
          if(GLOBAL._mode == "build")
          {

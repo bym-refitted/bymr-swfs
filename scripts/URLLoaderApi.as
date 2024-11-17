@@ -9,7 +9,6 @@ package
    import flash.net.URLRequest;
    import flash.net.URLRequestMethod;
    import flash.net.URLVariables;
-   import package_1.class_1;
    
    public class URLLoaderApi
    {
@@ -119,7 +118,14 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = com.adobe.serialization.json.JSON.decode("{\"fb_sig_request_method\":\"GET\",\"fb_sig_in_canvas\":\"1\",\"fb_sig_locale\":\"en_US\",\"fb_sig_in_new_facebook\":\"1\",\"fb_sig_time\":\"1313452949.7504\",\"fb_sig_added\":\"1\",\"fb_sig_profile_update_time\":\"1302821666\",\"fb_sig_expires\":\"1313460000\",\"fb_sig_user\":\"100002269913463\",\"fb_sig_session_key\":\"2.AQCQ2GFpHMG57OFZ.3600.1313460000.1-100002269913463\",\"fb_sig_ext_perms\":\"email\",\"fb_sig_preload_fql_timestamp\":\"1313452949.7504\",\"fb_sig_country\":\"us\",\"fb_sig_api_key\":\"c11ea2880d6b94be2fd187e9f274acea\",\"fb_sig_app_id\":\"191772264192545\",\"fb_sig\":\"c56b771806ab08023aa6927f0d4cdc80\",\"PHPSESSID\":\"c11ea2880d6b94be2fd187e9f274acea100002269913463\",\"app_id\":\"191772264192545\",\"tpid\":\"wV805-dynPPTskA6rS4ChuHkkWE\"}");
+            if(GLOBAL._localMode > 0)
+            {
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"4OUhOsA-EbJ8t7TF0UH-hIY-SsWK1vyPvrySjrF_uBE.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTcyNDM2MDAsImlzc3VlZF9hdCI6MTMxNzIzNjg1NCwib2F1dGhfdG9rZW4iOiIyMjM1MzcyODEwMjk4OTV8Mi5BUUNNWnpTUkNRdWI1WUNvLjM2MDAuMTMxNzI0MzYwMC4xLTExMjI4MjAxNTN8ZTZtN2o1eHpXb1Zqd3poZUJBNzgwOXZUcUkwIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMTIyODIwMTUzIn0\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"223537281029895\",\"tpid\":false}");
+            }
+            else
+            {
+               _loc1_ = com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"PYag8sMNkcUZkNrYQV3CuuUFPQfI6KQNsf-w1NW2QbA.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTc0MzQ0MDAsImlzc3VlZF9hdCI6MTMxNzQyODIxMiwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUNZTElNUkpveVl2T0ROSU5UWUFZQ2JEV205ckJWam1aQmhGTG94djBBMUVNaElYbmhrQWRJQm9wUWZLeW1aQ3A5WkNsYWdhc3BUSXJPdXdaQWhaQUdVdVpDVFRaQ1pDcW10WkJrR25CZ2pkUSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTEyMjgyMDE1MyJ9\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"495789755606\",\"tpid\":false}");
+            }
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
          }
@@ -148,7 +154,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt(class_1.method_1(-390,-587));
+         return this.decodeSalt("TU1S0wu1T2S045ttu1WQB5VQ1B10Qsg1I");
       }
       
       private function decodeSalt(param1:String) : String

@@ -382,7 +382,7 @@ package
       
       public function Speedup(param1:MouseEvent) : *
       {
-         STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+         STORE.SpeedUp("SP4");
       }
       
       public function Update() : *
@@ -485,10 +485,14 @@ package
          CREATURELOCKER.Hide(param1);
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

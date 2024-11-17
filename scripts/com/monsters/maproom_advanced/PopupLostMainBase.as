@@ -48,15 +48,23 @@ package com.monsters.maproom_advanced
             PLEASEWAIT.Hide();
             if(param1.error == 0)
             {
-               GLOBAL._mapOutpost = [];
-               MapRoom.ClearCells();
-               if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+               if(param1.cantMoveTill)
                {
-                  GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                  MapRoom.BookmarksClear();
-                  MapRoom.Setup(GLOBAL._mapHome);
-                  MapRoom._empiredestroyed = true;
-                  MapRoom.ShowDelayed(true);
+                  GLOBAL.Message(KEYS.Get("movebase_warning",{"v1":GLOBAL.ToTime(param1.cantMoveTill - param1.currenttime)}));
+                  Hide();
+               }
+               else
+               {
+                  GLOBAL._mapOutpost = [];
+                  MapRoom.ClearCells();
+                  if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+                  {
+                     GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
+                     MapRoom.BookmarksClear();
+                     MapRoom.Setup(GLOBAL._mapHome);
+                     MapRoom._empiredestroyed = true;
+                     MapRoom.ShowDelayed(true);
+                  }
                }
             }
             else

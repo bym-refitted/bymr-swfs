@@ -4,7 +4,7 @@ package
    import flash.display.SimpleButton;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1720")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1772")]
    public dynamic class MonsterBaiterItem_CLIP extends MovieClip
    {
       public var tInfo:TextField;

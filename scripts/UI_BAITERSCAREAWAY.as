@@ -15,6 +15,13 @@ package
       {
          MONSTERBAITER.End();
       }
+      
+      public function Resize() : void
+      {
+         GLOBAL.RefreshScreen();
+         x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - mcBG.width - 10;
+         y = GLOBAL._SCREENHUD.y - (mcBG.height + 10);
+      }
    }
 }
 

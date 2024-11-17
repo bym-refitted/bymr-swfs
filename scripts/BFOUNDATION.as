@@ -35,6 +35,10 @@ package
       
       public var animContainer:BuildingAssetContainer;
       
+      public var _fortBackContainer:BuildingAssetContainer;
+      
+      public var _fortFrontContainer:BuildingAssetContainer;
+      
       public var _spriteAlert:Sprite;
       
       public var _mcAlert:DisplayObject;
@@ -65,6 +69,8 @@ package
       
       public var _buildInstantCost:SecNum;
       
+      public var _fortification:SecNum;
+      
       public var _animLoaded:Boolean = false;
       
       public var _animBMD:BitmapData;
@@ -84,6 +90,8 @@ package
       public var _countdownRebuild:SecNum;
       
       public var _countdownProduce:SecNum;
+      
+      public var _countdownFortify:SecNum;
       
       public var _stored:SecNum;
       
@@ -221,6 +229,8 @@ package
       
       public var _renderLevel:int = 0;
       
+      public var _renderFortLevel:int = 0;
+      
       public var _treat:int;
       
       public var _expireTime:int = 0;
@@ -246,10 +256,12 @@ package
          this._buildingStats = "";
          this._creatures = [];
          this._helpList = [];
+         this._fortification = new SecNum(0);
          this._countdownBuild = new SecNum(0);
          this._countdownRebuild = new SecNum(0);
          this._countdownUpgrade = new SecNum(0);
          this._countdownProduce = new SecNum(0);
+         this._countdownFortify = new SecNum(0);
          this._stored = new SecNum(0);
          this._lvl = new SecNum(0);
          this._hpCountdownRebuild = 0;
@@ -327,8 +339,34 @@ package
          }
          try
          {
+            this._fortFrontContainer = new BuildingAssetContainer();
+            this._fortFrontContainer.mouseChildren = false;
+            this._fortFrontContainer.mouseEnabled = false;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  _fortFrontContainer | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  _fortFrontContainer");
+            return;
+         }
+         try
+         {
+            this._fortBackContainer = new BuildingAssetContainer();
+            this._fortBackContainer.mouseChildren = false;
+            this._fortBackContainer.mouseEnabled = false;
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","BFOUNDATION.SetProps:  _fortBackContainer | " + e.message + " | " + e.getStackTrace());
+            GLOBAL.ErrorMessage("BFOUNDATION.SetProps:  _fortBackContainer");
+            return;
+         }
+         try
+         {
+            this._mc.addChild(this._fortBackContainer);
             this._mc.addChild(this.topContainer);
             this._mc.addChild(this.animContainer);
+            this._mc.addChild(this._fortFrontContainer);
          }
          catch(e:Error)
          {
@@ -414,6 +452,10 @@ package
             if(this._countdownUpgrade.Get() > 0)
             {
                this._repairDescription = "<font color=\"#FF0000\"><b>Upgrade on hold until building is repaired.</b></font>";
+            }
+            else if(this._countdownFortify.Get() > 0)
+            {
+               this._repairDescription = "<font color=\"#FF0000\"><b>Fortify on hold until building is repaired.</b></font>";
             }
             else
             {
@@ -521,11 +563,17 @@ package
       public function Render(param1:String = "") : *
       {
          var ImageCallback:Function;
+         var FortImageCallback:Function;
          var imageDataA:Object = null;
          var imageDataB:Object = null;
          var imageLevel:int = 0;
+         var fortImageDataA:Object = null;
+         var fortImageDataB:Object = null;
+         var fortImageLevel:int = 0;
          var i:int = 0;
          var loadImages:Array = null;
+         var j:int = 0;
+         var loadFortImages:Array = null;
          var state:String = param1;
          if(this._renderState == null || state != this._renderState || this._lvl.Get() != this._renderLevel)
          {
@@ -535,7 +583,7 @@ package
                var key:String = null;
                var bmd:BitmapData = null;
                var container:BuildingAssetContainer = null;
-               var s:* = undefined;
+               var s:DisplayObject = null;
                var images:Array = param1;
                var imagestate:String = param2;
                if(imagestate == _renderState)
@@ -649,6 +697,42 @@ package
                            _mcHit.y = container.y;
                         }
                      }
+                     else if(Boolean(imageDataB["anim" + state]) && imageDataA.baseurl + imageDataB["anim" + state][0] == key)
+                     {
+                        _animBMD = bmd;
+                        _animLoaded = true;
+                        container = animContainer;
+                        container.Clear();
+                        _animRect = imageDataB["anim" + state][1];
+                        _animFrames = imageDataB["anim" + state][2];
+                        _animTick = int(Math.random() * (_animFrames - 2));
+                        if(_type == 9 || _type == 19 || _type == 25 || _type == 54)
+                        {
+                           _animTick = 0;
+                        }
+                        _animContainerBMD = new BitmapData(_animRect.width,_animRect.height,true,0xffffff);
+                        container.addChild(new Bitmap(_animContainerBMD));
+                        container.x = _animRect.x;
+                        container.y = _animRect.y;
+                        AnimFrame(false);
+                        _mc.addEventListener(Event.ENTER_FRAME,TickFast);
+                        if(!imageDataB["top" + state])
+                        {
+                           try
+                           {
+                              _mcHit.gotoAndStop("f" + imageLevel + state);
+                           }
+                           catch(e:Error)
+                           {
+                           }
+                           if(state == "destroyed" && _type != 14)
+                           {
+                              _mcHit.gotoAndStop("f" + state);
+                           }
+                           _mcHit.x = container.x;
+                           _mcHit.y = container.y;
+                        }
+                     }
                      else if(imageDataB.topdestroyedfire && _oldRenderState == "damaged" && !GLOBAL._catchup && imageDataA.baseurl + imageDataB.topdestroyedfire[0] == key)
                      {
                         Fire.Add(_mc,new Bitmap(bmd),new Point(imageDataB.topdestroyedfire[1].x,imageDataB.topdestroyedfire[1].y));
@@ -707,6 +791,76 @@ package
                ImageCache.GetImageGroupWithCallBack("b" + this._type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
             }
          }
+         if(this._fortification.Get() != this._renderFortLevel)
+         {
+            this._renderFortLevel = this._fortification.Get();
+            fortImageDataA = GLOBAL._buildingProps[this._type - 1].fortImgData;
+            if(fortImageDataA[this._fortification.Get()])
+            {
+               fortImageDataB = fortImageDataA[this._fortification.Get()];
+               fortImageLevel = this._fortification.Get();
+            }
+            else
+            {
+               j = this._fortification.Get() - 1;
+               while(i > 0)
+               {
+                  if(fortImageDataA[j])
+                  {
+                     fortImageDataB = fortImageDataA[j];
+                     imageLevel = j;
+                     break;
+                  }
+                  i--;
+               }
+            }
+            if(fortImageDataB)
+            {
+               FortImageCallback = function(param1:Array, param2:String):*
+               {
+                  var _loc3_:Array = null;
+                  var _loc4_:String = null;
+                  var _loc5_:BitmapData = null;
+                  var _loc6_:BuildingAssetContainer = null;
+                  if(param2 == "fort" + _renderFortLevel)
+                  {
+                     _fortFrontContainer.Clear();
+                     _fortBackContainer.Clear();
+                     for each(_loc3_ in param1)
+                     {
+                        _loc4_ = _loc3_[0];
+                        _loc5_ = _loc3_[1];
+                        if(Boolean(fortImageDataB["front"]) && fortImageDataA.baseurl + fortImageDataB["front"][0] == _loc4_)
+                        {
+                           _loc6_ = _fortFrontContainer;
+                           _loc6_.Clear();
+                           _loc6_.addChild(new Bitmap(_loc5_));
+                           _loc6_.x = fortImageDataB["front"][1].x;
+                           _loc6_.y = fortImageDataB["front"][1].y;
+                        }
+                        else if(Boolean(fortImageDataB["back"]) && fortImageDataA.baseurl + fortImageDataB["back"][0] == _loc4_)
+                        {
+                           _loc6_ = _fortBackContainer;
+                           _loc6_.Clear();
+                           _loc6_.addChild(new Bitmap(_loc5_));
+                           _loc6_.x = fortImageDataB["back"][1].x;
+                           _loc6_.y = fortImageDataB["back"][1].y;
+                        }
+                     }
+                  }
+               };
+               loadFortImages = [];
+               if(fortImageDataB["front"])
+               {
+                  loadFortImages.push(fortImageDataA.baseurl + fortImageDataB["front"][0]);
+               }
+               if(fortImageDataB["back"])
+               {
+                  loadFortImages.push(fortImageDataA.baseurl + fortImageDataB["back"][0]);
+               }
+               ImageCache.GetImageGroupWithCallBack("fort" + this._type + "-" + fortImageLevel,loadFortImages,FortImageCallback,true,2,"fort" + this._renderFortLevel);
+            }
+         }
       }
       
       public function Tick() : *
@@ -723,7 +877,7 @@ package
          {
             this.CatchupRemove();
          }
-         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._repairing > 0)
+         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() + this._repairing > 0)
          {
             _loc1_ = 0;
             _loc2_ = 0;
@@ -753,6 +907,14 @@ package
                   if(!Math.max(this._countdownBuild.Get(),0))
                   {
                      this.Constructed();
+                  }
+               }
+               else if(this._countdownFortify.Get() > 0 && this._hasWorker && this._hasResources)
+               {
+                  this._countdownFortify.Add(-1);
+                  if(!Math.max(this._countdownFortify.Get(),0))
+                  {
+                     this.Fortified();
                   }
                }
             }
@@ -869,10 +1031,6 @@ package
       {
          var tmpBuildTime:int = 0;
          var fromStorage:Boolean = false;
-         var digits:Array = null;
-         var lastDigit:int = 0;
-         var secondDigit:int = 0;
-         var sum:int = 0;
          var e:MouseEvent = param1;
          try
          {
@@ -910,32 +1068,6 @@ package
                   ++BASE._buildingCount;
                   this._id = BASE._buildingCount;
                   tmpBuildTime = int(this._buildingProps.costs[0].time);
-                  if(Boolean(GLOBAL._flags.split) && TUTORIAL._stage >= 202)
-                  {
-                     if(GLOBAL._mode == "build")
-                     {
-                        digits = LOGIN._digits;
-                     }
-                     else
-                     {
-                        digits = BASE._userDigits;
-                     }
-                     lastDigit = int(digits[LOGIN._digits.length - 1]);
-                     secondDigit = int(digits[LOGIN._digits.length - 2]);
-                     sum = lastDigit + secondDigit;
-                     if(sum > 9)
-                     {
-                        sum -= 10;
-                     }
-                     if(sum >= 7)
-                     {
-                        tmpBuildTime *= 1.5;
-                     }
-                     else if(sum >= 4)
-                     {
-                        tmpBuildTime *= 1.25;
-                     }
-                  }
                   if(STORE._storeData.BST)
                   {
                      tmpBuildTime -= tmpBuildTime * 0.2;
@@ -968,6 +1100,7 @@ package
                      else
                      {
                         BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
+                        LOGGER.Stat([71,this._buildInstantCost.Get(),this._type]);
                         this.Constructed();
                      }
                   }
@@ -1086,10 +1219,6 @@ package
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:Array = null;
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:int = 0;
          if(!this._destroyed)
          {
             this._destroyed = true;
@@ -1115,32 +1244,6 @@ package
             {
                ATTACK.Damage(this._mc.x,this._mc.y,this._buildingProps.hp[this._lvl.Get()]);
                _loc2_ = int(this._buildingProps.costs[this._lvl.Get()].time * GLOBAL._buildTime);
-               if(Boolean(GLOBAL._flags.split) && TUTORIAL._stage >= 202)
-               {
-                  if(GLOBAL._mode == "build")
-                  {
-                     _loc5_ = LOGIN._digits;
-                  }
-                  else
-                  {
-                     _loc5_ = BASE._userDigits;
-                  }
-                  _loc6_ = int(_loc5_[_loc5_.length - 1]);
-                  _loc7_ = int(_loc5_[_loc5_.length - 2]);
-                  _loc8_ = _loc6_ + _loc7_;
-                  if(_loc8_ > 9)
-                  {
-                     _loc8_ -= 10;
-                  }
-                  if(_loc8_ >= 7)
-                  {
-                     _loc2_ *= 1.5;
-                  }
-                  else if(_loc8_ >= 4)
-                  {
-                     _loc2_ *= 1.25;
-                  }
-               }
                _loc3_ = (_loc2_ - this._countdownUpgrade.Get()) * 0.5;
                if(_loc3_ > 28800)
                {
@@ -1197,7 +1300,7 @@ package
       public function HasWorker() : *
       {
          this._hasWorker = true;
-         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() > 0)
+         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
             ResourcePackages.Create(1,this,2,true);
             ResourcePackages.Create(2,this,2,true);
@@ -1217,9 +1320,6 @@ package
          var _loc2_:int = 0;
          var _loc3_:* = undefined;
          var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:* = undefined;
          if(this._countdownBuild.Get() > 0)
          {
             _loc2_ = this._countdownBuild.Get();
@@ -1228,33 +1328,16 @@ package
          {
             _loc2_ = this._countdownUpgrade.Get();
          }
+         if(this._countdownFortify.Get() > 0)
+         {
+            _loc2_ = this._countdownFortify.Get();
+         }
          if(_loc2_ <= 5 * 60)
          {
             return 0;
          }
          _loc3_ = Math.ceil(_loc2_ * 20 / 60 / 60);
          _loc4_ = int(Math.sqrt(_loc2_ * 0.8));
-         if(GLOBAL._flags.split)
-         {
-            _loc5_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-            _loc6_ = int(LOGIN._digits[LOGIN._digits.length - 3]);
-            _loc7_ = _loc5_ + _loc6_;
-            if(_loc7_ >= 10)
-            {
-               _loc7_ -= 10;
-            }
-            if(_loc7_ > 3)
-            {
-               if(_loc7_ <= 6)
-               {
-                  _loc4_ = int(Math.pow(_loc2_ * 0.6,0.55));
-               }
-               else if(_loc7_ <= 9)
-               {
-                  _loc4_ = int(Math.pow(_loc2_,0.55));
-               }
-            }
-         }
          return Math.min(_loc3_,_loc4_);
       }
       
@@ -1276,6 +1359,25 @@ package
             _loc6_ = 5;
          }
          return _loc6_;
+      }
+      
+      public function InstantFortifyCost() : int
+      {
+         if(this._buildingProps.fortify_costs.length <= this._fortification.Get())
+         {
+            return 0;
+         }
+         var _loc1_:Object = this._buildingProps.fortify_costs[this._fortification.Get()];
+         var _loc2_:int = int(_loc1_.time);
+         if(_loc2_ <= 5 * 60)
+         {
+            _loc2_ = 0;
+         }
+         var _loc3_:int = _loc1_.r1 + _loc1_.r2 + _loc1_.r3;
+         var _loc4_:int = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
+         var _loc5_:int = STORE.GetTimeCost(_loc2_);
+         var _loc6_:int = _loc4_ + _loc5_;
+         return int(_loc6_ * 0.95);
       }
       
       public function InstantUpgradeCost() : int
@@ -1304,10 +1406,144 @@ package
          {
             this.Upgraded();
             BASE.Purchase("IU",_loc1_,"upgrade");
+            LOGGER.Stat([72,_loc1_,this._type,this._lvl.Get()]);
             return true;
          }
          POPUPS.DisplayGetShiny();
          return false;
+      }
+      
+      public function DoInstantFortify() : Boolean
+      {
+         var _loc1_:int = this.InstantFortifyCost();
+         if(BASE._credits.Get() >= _loc1_)
+         {
+            this.Fortified();
+            BASE.Purchase("IF",_loc1_,"fortify");
+            return true;
+         }
+         POPUPS.DisplayGetShiny();
+         return false;
+      }
+      
+      public function Fortify() : *
+      {
+         var _loc1_:Object = null;
+         if(!QUEUE.CanDo().error)
+         {
+            _loc1_ = BASE.CanFortify(this);
+            if(!_loc1_.error)
+            {
+               if(int(this._buildingProps.fortify_costs[this._fortification.Get()].time * GLOBAL._buildTime) > 60 * 60)
+               {
+                  UPDATES.Create(["BF",this._id]);
+               }
+               this.FortifyB();
+               BASE.Save();
+               return true;
+            }
+            if(GLOBAL._mode == "build")
+            {
+               GLOBAL.Message(_loc1_.errorMessage);
+            }
+         }
+         else if(GLOBAL._mode == "build")
+         {
+            POPUPS.DisplayWorker(3,this);
+         }
+         return false;
+      }
+      
+      public function FortifyB() : *
+      {
+         var _loc1_:Object = null;
+         var _loc2_:* = undefined;
+         var _loc3_:int = 0;
+         if(this._countdownFortify.Get() == 0)
+         {
+            _loc1_ = BASE.CanFortify(this);
+            if(!_loc1_.error)
+            {
+               _loc2_ = this.FortifyCost();
+               if(_loc2_.r1 > 0)
+               {
+                  BASE.Charge(1,_loc2_.r1);
+               }
+               if(_loc2_.r2 > 0)
+               {
+                  BASE.Charge(2,_loc2_.r2);
+               }
+               if(_loc2_.r3 > 0)
+               {
+                  BASE.Charge(3,_loc2_.r3);
+               }
+               if(_loc2_.r4 > 0)
+               {
+                  BASE.Charge(4,_loc2_.r4);
+               }
+               _loc3_ = int(this._buildingProps.fortify_costs[this._fortification.Get()].time * GLOBAL._buildTime);
+               this._countdownFortify.Set(_loc3_);
+               this._hasResources = false;
+               this._hasWorker = false;
+               if(GLOBAL._catchup)
+               {
+                  this._hasResources = true;
+                  this._hasWorker = true;
+               }
+               QUEUE.Add("building" + this._id,this);
+               LOGGER.Stat([64,this._type,this._fortification.Get() + 1]);
+               this._helpList = [];
+               this.Update();
+               if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25) || this._type == 115)
+               {
+                  GLOBAL._selectedBuilding = this;
+                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during fortification.<br><br>Move other buildings nearby to help protect them or simply speed up the fortification.","Speed Up",STORE.SpeedUp,["SP4"]);
+               }
+            }
+            else if(GLOBAL._mode == "build")
+            {
+               GLOBAL.Message(_loc1_.errorMessage);
+            }
+         }
+      }
+      
+      public function FortifyCancel() : *
+      {
+         GLOBAL.Message(KEYS.Get("msg_fortifycancelconfirm"),KEYS.Get("msg_stopfortifying_btn"),this.FortifyCancelB);
+      }
+      
+      public function FortifyCancelB(param1:MouseEvent = null) : *
+      {
+         UPDATES.Create(["BFC",this._id]);
+         this.FortifyCancelC();
+      }
+      
+      public function FortifyCancelC() : *
+      {
+         var _loc1_:Object = null;
+         if(this._countdownFortify.Get() > 0)
+         {
+            QUEUE.Remove("building" + this._id,false,this);
+            this._countdownFortify.Set(0);
+            _loc1_ = this.FortifyCost();
+            if(_loc1_.r1 > 0)
+            {
+               BASE.Fund(1,int(_loc1_.r1));
+            }
+            if(_loc1_.r2 > 0)
+            {
+               BASE.Fund(2,int(_loc1_.r2));
+            }
+            if(_loc1_.r3 > 0)
+            {
+               BASE.Fund(3,int(_loc1_.r3));
+            }
+            if(_loc1_.r4 > 0)
+            {
+               BASE.Fund(4,int(_loc1_.r4));
+            }
+            BASE.Save();
+         }
       }
       
       public function Upgrade() : *
@@ -1344,10 +1580,6 @@ package
          var canUpgrade:Object = null;
          var o:* = undefined;
          var tmpUpgradeTime:int = 0;
-         var digits:Array = null;
-         var lastDigit:int = 0;
-         var secondDigit:int = 0;
-         var sum:int = 0;
          var popupMC:* = undefined;
          if(this._countdownUpgrade.Get() == 0)
          {
@@ -1372,32 +1604,6 @@ package
                   BASE.Charge(4,o.r4);
                }
                tmpUpgradeTime = int(this._buildingProps.costs[this._lvl.Get()].time * GLOBAL._buildTime);
-               if(Boolean(GLOBAL._flags.split) && TUTORIAL._stage >= 202)
-               {
-                  if(GLOBAL._mode == "build")
-                  {
-                     digits = LOGIN._digits;
-                  }
-                  else
-                  {
-                     digits = BASE._userDigits;
-                  }
-                  lastDigit = int(digits[digits.length - 1]);
-                  secondDigit = int(digits[digits.length - 2]);
-                  sum = lastDigit + secondDigit;
-                  if(sum > 9)
-                  {
-                     sum -= 10;
-                  }
-                  if(sum >= 7)
-                  {
-                     tmpUpgradeTime *= 1.5;
-                  }
-                  else if(sum >= 4)
-                  {
-                     tmpUpgradeTime *= 1.25;
-                  }
-               }
                this._countdownUpgrade.Set(tmpUpgradeTime);
                if(this._type != 14 && this._countdownUpgrade.Get() > 7200 && TUTORIAL._stage > 200)
                {
@@ -1426,10 +1632,10 @@ package
                LOGGER.Stat([7,this._type,this._lvl.Get() + 1]);
                this._helpList = [];
                this.Update();
-               if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25))
+               if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25 || this._type == 115))
                {
                   GLOBAL._selectedBuilding = this;
-                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during upgrades.<br><br>Move other buildings nearby to help protect them or simply speed up the upgrade.","Speed Up",STORE.ShowB,[3,0,["SP1","SP2","SP3","SP4"]]);
+                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during upgrades.<br><br>Move other buildings nearby to help protect them or simply speed up the upgrade.","Speed Up",STORE.SpeedUp,["SP4"]);
                }
             }
             else if(GLOBAL._mode == "build")
@@ -1444,7 +1650,7 @@ package
          var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:String = null;
-         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() > 0)
+         if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
             if(this._helpList.length > 4)
             {
@@ -1480,6 +1686,15 @@ package
                LOGGER.Stat([15,this._type,this._lvl.Get() + 1,0,_loc2_]);
                _loc3_ = "upgrade";
             }
+            if(this._countdownFortify.Get() > 0)
+            {
+               GLOBAL.Message(KEYS.Get("base_thankfortify",{
+                  "v1":GLOBAL.ToTime(_loc2_,false,false),
+                  "v2":KEYS.Get(this._buildingProps.name)
+               }));
+               LOGGER.Stat([66,this._type,this._fortification.Get() + 1,0,_loc2_]);
+               _loc3_ = "fortify";
+            }
          }
       }
       
@@ -1495,6 +1710,11 @@ package
          {
             _loc1_ = int(this._countdownUpgrade.Get() * 0.05);
             this._countdownUpgrade.Add(0 - int(this._countdownUpgrade.Get() * 0.05));
+         }
+         else if(this._countdownFortify.Get() > 0)
+         {
+            _loc1_ = int(this._countdownFortify.Get() * 0.05);
+            this._countdownFortify.Add(0 - int(this._countdownFortify.Get() * 0.05));
          }
          BASE.Save();
          return _loc1_;
@@ -1513,7 +1733,7 @@ package
       
       public function UpgradeCancelC() : *
       {
-         var _loc1_:* = undefined;
+         var _loc1_:Object = null;
          if(this._countdownUpgrade.Get() > 0)
          {
             QUEUE.Remove("building" + this._id,false,this);
@@ -1574,6 +1794,34 @@ package
          this.Description();
          QUEUE.Remove("building" + this._id,true,this);
          LOGGER.Stat([8,this._type,this._lvl.Get()]);
+      }
+      
+      public function Fortified() : *
+      {
+         var c:Object;
+         var a:int;
+         try
+         {
+            if(Math.max(this._countdownFortify.Get(),0))
+            {
+               LOGGER.Log("log","bdg fort cnt > 0, probable hack");
+               GLOBAL.ErrorMessage("BFOUNDATION fortify hack");
+               return;
+            }
+            this._countdownFortify.Set(0);
+            this._fortification.Add(1);
+         }
+         catch(e:Error)
+         {
+            LOGGER.Log("err","Foundation.Fortified: " + e.message + " | " + e.getStackTrace());
+         }
+         BASE.CalcResources();
+         c = this._buildingProps.fortify_costs[this._fortification.Get() - 1];
+         a = Math.floor((int(c.time) + int(c.r1) + int(c.r2) + int(c.r3) + int(c.r4)) / 3);
+         BASE.PointsAdd(a);
+         this.Description();
+         QUEUE.Remove("building" + this._id,true,this);
+         LOGGER.Stat([65,this._type,this._fortification.Get()]);
       }
       
       public function Recycle() : *
@@ -1689,10 +1937,6 @@ package
          }
          this.Clean();
          BASE.Save();
-         if(GLOBAL._flags.showProgressBar == 1 && UI_PROGRESSBAR.ShouldProcess(this))
-         {
-            UI_PROGRESSBAR.ProcessBuildings(true);
-         }
          return true;
       }
       
@@ -1749,7 +1993,7 @@ package
          return _loc1_;
       }
       
-      public function UpgradeCost() : *
+      public function UpgradeCost() : Object
       {
          var _loc1_:* = undefined;
          var _loc2_:Object = null;
@@ -1786,6 +2030,51 @@ package
             _loc1_.time = _loc2_.time;
             return _loc1_;
          }
+         return {};
+      }
+      
+      public function FortifyCost() : Object
+      {
+         var _loc1_:* = undefined;
+         var _loc2_:Object = null;
+         if(this._buildingProps.can_fortify != true)
+         {
+            return {};
+         }
+         if(this._buildingProps.fortify_costs.length > this._fortification.Get())
+         {
+            _loc1_ = {
+               "time":"0",
+               "r1":this._buildingProps.fortify_costs[this._fortification.Get()].r1,
+               "r2":this._buildingProps.fortify_costs[this._fortification.Get()].r2,
+               "r3":this._buildingProps.fortify_costs[this._fortification.Get()].r3,
+               "r4":this._buildingProps.fortify_costs[this._fortification.Get()].r4,
+               "r1over":false,
+               "r2over":false,
+               "r3over":false,
+               "r4over":false
+            };
+            _loc2_ = this._buildingProps.fortify_costs[this._fortification.Get()];
+            if(BASE._resources.r1.Get() < _loc2_.r1)
+            {
+               _loc1_.r1over = true;
+            }
+            if(BASE._resources.r2.Get() < _loc2_.r2)
+            {
+               _loc1_.r2over = true;
+            }
+            if(BASE._resources.r3.Get() < _loc2_.r3)
+            {
+               _loc1_.r3over = true;
+            }
+            if(BASE._resources.r4.Get() < _loc2_.r4)
+            {
+               _loc1_.r4over = true;
+            }
+            _loc1_.time = _loc2_.time;
+            return _loc1_;
+         }
+         return {};
       }
       
       internal function Mousedown(param1:MouseEvent) : *
@@ -1808,7 +2097,7 @@ package
             this._mouseClicked = false;
             if(!MAP._dragged)
             {
-               if(this._countdownBuild.Get() + this._countdownUpgrade.Get() > 0)
+               if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
                {
                }
                this.Click();
@@ -1911,7 +2200,7 @@ package
                {
                   BASE.BuildingSelect(this);
                }
-               if(GLOBAL._mode == "help" && this._countdownBuild.Get() + this._countdownUpgrade.Get() > 0)
+               if(GLOBAL._mode == "help" && this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
                {
                   BASE.BuildingSelect(this);
                }
@@ -1947,6 +2236,10 @@ package
             {
                QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_upgrading"),GLOBAL.ToTime(this._countdownUpgrade.Get(),true));
             }
+            else if(this._countdownFortify.Get() > 0)
+            {
+               QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_fortifying"),GLOBAL.ToTime(this._countdownFortify.Get(),true));
+            }
             if(this._class != "mushroom")
             {
                BuildingOverlay.Update(this,param1);
@@ -1968,7 +2261,13 @@ package
       
       public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
       {
-         this._hp.Add(-param1);
+         var _loc6_:int = param1;
+         if(this._fortification.Get() > 0)
+         {
+            _loc6_ *= 100 - (this._fortification.Get() * 10 + 10);
+            _loc6_ = _loc6_ / 100;
+         }
+         this._hp.Add(-_loc6_);
          if(this._hp.Get() <= 0)
          {
             this._hp.Set(0);
@@ -2028,10 +2327,6 @@ package
          QUEUE.Remove("building" + this._id,true,this);
          LOGGER.Stat([6,this._type]);
          this.Update();
-         if(GLOBAL._flags.showProgressBar == 1 && UI_PROGRESSBAR.ShouldProcess(this))
-         {
-            UI_PROGRESSBAR.ProcessBuildings(true);
-         }
       }
       
       public function BlockClicks() : *
@@ -2076,9 +2371,17 @@ package
          {
             _loc1_.cR = this._countdownRebuild.Get();
          }
+         if(this._countdownFortify.Get() > 0)
+         {
+            _loc1_.cF = this._countdownFortify.Get();
+         }
          if(this._repairing > 0)
          {
             _loc1_.rE = this._repairing;
+         }
+         if(this._fortification.Get() > 0)
+         {
+            _loc1_.fort = this._fortification.Get();
          }
          if(this._threadid)
          {
@@ -2116,7 +2419,7 @@ package
          {
             _loc1_.hp = int(this._hp.Get());
          }
-         if(this._helpList.length > 0 && this._countdownBuild.Get() + this._countdownUpgrade.Get() > 0)
+         if(this._helpList.length > 0 && this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
             _loc1_.hl = this._helpList;
          }
@@ -2128,10 +2431,6 @@ package
          var _loc2_:Point = null;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:Array = null;
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:int = 0;
          this._type = param1.t;
          this._id = param1.id;
          _loc2_ = GRID.ToISO(param1.X,param1.Y,0);
@@ -2164,38 +2463,28 @@ package
                   _loc3_ += GLOBAL._buildingProps[this._type - 1].costs[_loc4_].time;
                   _loc4_++;
                }
-               if(Boolean(GLOBAL._flags.split) && TUTORIAL._stage >= 202)
-               {
-                  if(GLOBAL._mode == "build")
-                  {
-                     _loc5_ = LOGIN._digits;
-                  }
-                  else
-                  {
-                     _loc5_ = BASE._userDigits;
-                  }
-                  _loc6_ = int(_loc5_[_loc5_.length - 1]);
-                  _loc7_ = int(_loc5_[_loc5_.length - 2]);
-                  _loc8_ = _loc6_ + _loc7_;
-                  if(_loc8_ > 9)
-                  {
-                     _loc8_ -= 10;
-                  }
-                  if(_loc8_ >= 7)
-                  {
-                     _loc3_ *= 1.5;
-                  }
-                  else if(_loc8_ >= 4)
-                  {
-                     _loc3_ *= 1.25;
-                  }
-               }
                this._countdownBuild.Set(_loc3_);
             }
          }
          this._countdownUpgrade.Set(int(param1.cU));
          this._countdownRebuild.Set(int(param1.cR));
          this._hpCountdownRebuild = this._countdownRebuild.Get();
+         if(param1.cF)
+         {
+            this._countdownFortify.Set(int(param1.cF));
+         }
+         else
+         {
+            this._countdownFortify.Set(0);
+         }
+         if(param1.fort)
+         {
+            this._fortification.Set(param1.fort);
+         }
+         else
+         {
+            this._fortification.Set(0);
+         }
          this._repairing = int(param1.rE);
          if(this._repairing > 0)
          {
@@ -2303,6 +2592,17 @@ package
                this.UpgradeCancelB();
             }
          }
+         else if(this._countdownFortify.Get() > 0)
+         {
+            if(QUEUE.Add("building" + this._id,this))
+            {
+               this._hasResources = true;
+            }
+            else
+            {
+               this.FortifyCancelB();
+            }
+         }
          else
          {
             QUESTS.Check("blvl",this._lvl.Get());
@@ -2356,6 +2656,8 @@ package
          }
          this.topContainer.Clear();
          this.animContainer.Clear();
+         this._fortFrontContainer.Clear();
+         this._fortBackContainer.Clear();
       }
       
       public function CatchupAdd() : void
@@ -2657,6 +2959,10 @@ package
          if(this._type == 118)
          {
             return new building118hit();
+         }
+         if(this._type == 119)
+         {
+            return new building119hit();
          }
          return new building1hit();
       }

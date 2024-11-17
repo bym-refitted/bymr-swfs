@@ -200,8 +200,6 @@ package
       
       private static var _tmpPercent:Number;
       
-      public static var _mcAllianceArrow:TUTORIALARROWMC;
-      
       public static var _allianceArmamentTime:SecNum = new SecNum(0);
       
       public static var _loadedOutpost:int = 0;
@@ -213,6 +211,10 @@ package
       public static var _guardianData:Object = null;
       
       public static var _showingWhatsNew:Boolean = false;
+      
+      public static var _needCurrentCell:Boolean = false;
+      
+      public static var _currentCellLoc:Point = null;
       
       private static var _loadedSomething:Boolean = false;
       
@@ -446,9 +448,6 @@ package
             var listed:Object = null;
             var popupMC:popup_attackedme = null;
             var loader:Loader = null;
-            var d:int = 0;
-            var txt:* = undefined;
-            var popupMClike:popup_like = null;
             var promoTimer:int = 0;
             var promoItemsArr:Array = null;
             var obj:Object = param1;
@@ -498,18 +497,6 @@ package
                {
                   GLOBAL._chatServers = new Array();
                }
-               if(obj.chatenabled != null)
-               {
-                  GLOBAL._chatEnabled = obj.chatenabled;
-                  if(GLOBAL.flagsShouldChatExist())
-                  {
-                     GLOBAL.initChat();
-                  }
-               }
-               else
-               {
-                  GLOBAL._chatEnabled = 0;
-               }
                _lastSaveID = obj.id;
                _baseSeed = obj.baseseed;
                _loadedBaseID = obj.baseid;
@@ -537,6 +524,7 @@ package
                      {
                         ALLIANCES._allianceID = int(obj.alliancedata.alliance_id);
                         ALLIANCES._myAlliance = ALLIANCES.SetAlliance(obj.alliancedata);
+                        ACHIEVEMENTS.Check("alliance",1);
                      }
                   }
                   else if(_userID == LOGIN._playerID && (ALLIANCES._allianceID || ALLIANCES._myAlliance))
@@ -574,20 +562,22 @@ package
                      {
                         if(obj.homebase.length == 2 && obj.homebase[0] > -1 && obj.homebase[1] > -1)
                         {
-                           GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
                            if(obj.outposts)
                            {
                               GLOBAL._mapOutpost = [];
+                              GLOBAL._mapOutpostIDs = [];
                               ix = 0;
                               while(ix < obj.outposts.length)
                               {
-                                 if(obj.outposts[ix].length == 2)
+                                 if(obj.outposts[ix].length == 3)
                                  {
                                     GLOBAL._mapOutpost.push(new Point(obj.outposts[ix][0],obj.outposts[ix][1]));
+                                    GLOBAL._mapOutpostIDs.push(obj.outposts[ix][2]);
                                  }
                                  ix++;
                               }
                            }
+                           GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
                         }
                         else
                         {
@@ -615,9 +605,13 @@ package
                {
                   UPDATES.Process(obj.updates);
                }
+               else if(obj.lastupdate)
+               {
+                  UPDATES._lastUpdateID = Number(obj.lastupdate);
+               }
                else
                {
-                  UPDATES._lastUpdateID = int(obj.lastupdate);
+                  UPDATES._lastUpdateID = 0;
                }
                if(obj.mushrooms.l)
                {
@@ -752,6 +746,7 @@ package
                if(GLOBAL._mode == "build")
                {
                   TUTORIAL._stage = int(obj.tutorialstage);
+                  TUTORIAL.Tick();
                }
                WORKERS.Setup();
                QUEUE.Setup();
@@ -760,6 +755,37 @@ package
                QUESTS.Data(obj.quests);
                MAPROOM.Setup();
                MONSTERBAITER.Setup(obj.monsterbaiter);
+               if(obj.chatenabled != null)
+               {
+                  GLOBAL._chatEnabled = obj.chatenabled;
+                  if(GLOBAL.flagsShouldChatExist())
+                  {
+                     GLOBAL.initChat();
+                  }
+               }
+               if(obj.stats.achievements)
+               {
+                  ACHIEVEMENTS.Data(obj.stats.achievements);
+               }
+               else if(obj.quests)
+               {
+                  if(GLOBAL._mode == "build")
+                  {
+                     ACHIEVEMENTS._stats.upgrade_champ1 = QUESTS._global.upgrade_champ1;
+                     ACHIEVEMENTS._stats.upgrade_champ2 = QUESTS._global.upgrade_champ2;
+                     ACHIEVEMENTS._stats.upgrade_champ3 = QUESTS._global.upgrade_champ3;
+                     ACHIEVEMENTS._stats.monstersblended = QUESTS._global.monstersblended;
+                     ACHIEVEMENTS._stats.wm2hall = QUESTS._global.destroy_tribe2;
+                     if(obj.alliancedata)
+                     {
+                        if(obj.alliancedata.alliance_id)
+                        {
+                           ACHIEVEMENTS._stats.alliance = 1;
+                        }
+                     }
+                     ACHIEVEMENTS.Check();
+                  }
+               }
                _guardianData = null;
                if(obj.champion)
                {
@@ -804,6 +830,14 @@ package
                            {
                               _guardianData.hp = new SecNum(0);
                            }
+                           if(ooo.fb)
+                           {
+                              _guardianData.fb = new SecNum(ooo.fb);
+                           }
+                           else
+                           {
+                              _guardianData.fb = new SecNum(0);
+                           }
                         }
                      }
                      catch(e:Error)
@@ -826,13 +860,13 @@ package
                         {
                            GLOBAL._playerGuardianData.ft = _guardianData.ft;
                         }
-                        if(_guardianData.fn)
+                        if(_guardianData.fd)
                         {
-                           GLOBAL._playerGuardianData.fn = _guardianData.fn;
+                           GLOBAL._playerGuardianData.fd = _guardianData.fd;
                         }
                         else
                         {
-                           GLOBAL._playerGuardianData.fn = 0;
+                           GLOBAL._playerGuardianData.fd = 0;
                         }
                         if(_guardianData.l)
                         {
@@ -849,6 +883,14 @@ package
                         else
                         {
                            GLOBAL._playerGuardianData.hp = new SecNum(0);
+                        }
+                        if(_guardianData.fb)
+                        {
+                           GLOBAL._playerGuardianData.fb = new SecNum(_guardianData.fb.Get());
+                        }
+                        else
+                        {
+                           GLOBAL._playerGuardianData.fb = new SecNum(0);
                         }
                      }
                   }
@@ -963,44 +1005,6 @@ package
                }
                _ownerName = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).name : obj.name;
                _ownerPic = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).profilepic : obj.pic_square;
-               try
-               {
-                  if(GLOBAL._mode == "build" && Boolean(GLOBAL._flags.fanfriendbookmarkquests))
-                  {
-                     if(BASE._isFan < 1)
-                     {
-                        if(GLOBAL._sessionCount == 20 || GLOBAL._sessionCount == 50 || GLOBAL._sessionCount == 100 || GLOBAL._sessionCount == 200 || GLOBAL._sessionCount == 500 || GLOBAL._sessionCount == 1000)
-                        {
-                           d = int((_currentTime - GLOBAL._addTime) / 86400);
-                           txt = KEYS.Get("pop_nthvisit",{
-                              "v1":GLOBAL.FormatNumber(GLOBAL._sessionCount),
-                              "v2":d
-                           });
-                           if(d == 0)
-                           {
-                              txt += "<b>" + KEYS.Get("pop_firstday") + "</b>";
-                           }
-                           else if(int(GLOBAL._sessionCount / d) >= 5)
-                           {
-                              txt += "<b>" + KEYS.Get("pop_averagevisits",{"v1":int(GLOBAL._sessionCount / d)}) + "</b>";
-                           }
-                           txt += "<br><br>" + KEYS.Get("pop_likeus");
-                           popupMClike = new popup_like();
-                           popupMClike.tA.htmlText = txt;
-                           POPUPS.Push(popupMClike,null,null,"","like.png");
-                        }
-                     }
-                     else if(TUTORIAL._stage > 200 && GLOBAL.StatGet("popuprate") < 2 && GLOBAL._sessionCount < 1000)
-                     {
-                        GLOBAL.StatSet("popuprate",2);
-                        POPUPS.DisplayRate();
-                     }
-                  }
-               }
-               catch(e:Error)
-               {
-                  LOGGER.Log("err","popup_like/rate " + e.getStackTrace());
-               }
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
                {
                   if(obj.promotiontimer)
@@ -1048,13 +1052,24 @@ package
             }
             else if(GLOBAL._local && obj.error == "Incorrect map version")
             {
-               if(GLOBAL._baseURL == "http://bym-fb-trunk.dev.kixeye.com/base/")
+               switch(GLOBAL._localMode)
                {
-                  GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base/";
-               }
-               else
-               {
-                  GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
+                  case 1:
+                     if(GLOBAL._baseURL == "http://bym-fb-trunk.dev.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base";
+                     break;
+                  default:
+                     if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-fb-web1.stage.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
+                     break;
                }
                BASE.Load();
             }
@@ -1197,6 +1212,9 @@ package
          var length1:int = 0;
          var length2:int = 0;
          var ijx:int = 0;
+         var lastDigit:int = 0;
+         var secondDigit:int = 0;
+         var sum:int = 0;
          var thl:int = 0;
          var tmpcount:int = 0;
          var hp:int = 0;
@@ -1378,6 +1396,38 @@ package
                      "t":2,
                      "l":1
                   });
+                  if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID > -GLOBAL._flags.splituserid2)
+                  {
+                     if(GLOBAL.GetABTestHash("tutorial") < 14)
+                     {
+                        b = addBuildingC(3);
+                        b.Setup({
+                           "X":60,
+                           "Y":140,
+                           "id":count++,
+                           "t":3,
+                           "l":1
+                        });
+                     }
+                  }
+                  else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+                  {
+                     lastDigit = int(LOGIN._digits[LOGIN._digits.length - 1]);
+                     secondDigit = int(LOGIN._digits[LOGIN._digits.length - 2]);
+                     sum = lastDigit + secondDigit;
+                     sum %= 10;
+                     if(sum < 2)
+                     {
+                        b = addBuildingC(3);
+                        b.Setup({
+                           "X":60,
+                           "Y":140,
+                           "id":count++,
+                           "t":3,
+                           "l":1
+                        });
+                     }
+                  }
                   b = addBuildingC(12);
                   b.Setup({
                      "X":60,
@@ -1806,15 +1856,13 @@ package
       
       public static function ProcessD() : *
       {
-         var WhatsNewAction32:Function;
-         var WhatsNewAction34:Function;
-         var WhatsNewAction35_1:Function;
-         var WhatsNewAction36:Function;
-         var WhatsNewAction37:Function;
-         var WhatsNewAction38:Function;
-         var WhatsNewAction38B:Function;
-         var WhatsNewAction39:Function;
-         var WhatsNewAction40:Function;
+         var WhatsNewAction41:Function;
+         var WhatsNewAction42:Function;
+         var WhatsNewAction43:Function;
+         var WhatsNewAction44:Function;
+         var WhatsNewAction45:Function;
+         var WhatsNewAction47:Function;
+         var WhatsNewAction48:Function;
          var popupWhatsNewDisplayed:Function;
          var RepairAll:Function;
          var Action:Function;
@@ -1830,7 +1878,6 @@ package
          var newWhatsnewid:int = 0;
          var helper:int = 0;
          var popupMCDamaged:popup_damaged = null;
-         var popupMCmushroom:* = undefined;
          var promptSPost:Boolean = false;
          var b:* = undefined;
          var popupMCdamaged:MovieClip = null;
@@ -1899,173 +1946,120 @@ package
                   GLOBAL._displayedWhatsNew = true;
                   display = false;
                   newWhatsnewid = GLOBAL._whatsnewid;
-                  if(GLOBAL._whatsnewid < 1032)
+                  if(GLOBAL._whatsnewid < 1041)
                   {
-                     WhatsNewAction32 = function(param1:MouseEvent):void
+                     WhatsNewAction41 = function(param1:MouseEvent):void
                      {
-                        BUILDINGS._buildingID = 118;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,0);
+                        CHAMPIONCAGE.Show();
                         POPUPS.Next();
                      };
-                     popupWhatsNew = new popup_whatsnew32();
-                     newWhatsnewid = 1032;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction32);
-                  }
-                  else if(GLOBAL._whatsnewid < 1033 && GLOBAL._advancedMap != 0)
-                  {
-                     popupWhatsNew = new popup_whatsnew33();
-                     newWhatsnewid = 1033;
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1034)
-                  {
-                     WhatsNewAction34 = function(param1:MouseEvent):void
+                     popupWhatsNew = new popup_whatsnew41();
+                     newWhatsnewid = 1041;
+                     if(GLOBAL._bCage)
                      {
-                        GLOBAL._selectedBuilding = GLOBAL._bAcademy;
-                        BUILDINGOPTIONS.Show(GLOBAL._bAcademy,"upgrade");
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew34();
-                     newWhatsnewid = 1034;
-                     display = true;
-                     if(GLOBAL._bAcademy)
-                     {
-                        popupWhatsNew.bAction.Setup("Upgrade Now");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction34);
-                     }
-                     else
-                     {
-                        popupWhatsNew.bAction.visible = false;
-                     }
-                  }
-                  else if(GLOBAL._whatsnewid < 1035)
-                  {
-                     display = true;
-                     if(GLOBAL._advancedMap)
-                     {
-                        popupWhatsNew = new popup_whatsnew35_v2();
-                     }
-                     else
-                     {
-                        WhatsNewAction35_1 = function(param1:MouseEvent):void
-                        {
-                           GLOBAL._selectedBuilding = GLOBAL._bMap;
-                           BUILDINGOPTIONS.Show(GLOBAL._bMap,"upgrade");
-                           POPUPS.Next();
-                        };
-                        popupWhatsNew = new popup_whatsnew35_v1();
-                        if(GLOBAL._bMap)
-                        {
-                           popupWhatsNew.bAction.Setup("Upgrade Now");
-                           popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction35_1);
-                        }
-                        else
-                        {
-                           popupWhatsNew.bAction.visible = false;
-                        }
-                     }
-                     newWhatsnewid = 1035;
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1036)
-                  {
-                     WhatsNewAction36 = function(param1:MouseEvent):void
-                     {
-                        BUILDINGS._buildingID = 113;
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(2,2,0);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew36();
-                     newWhatsnewid = 1036;
-                     display = true;
-                     popupWhatsNew.bAction.Setup("Build Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction36);
-                  }
-                  else if(GLOBAL._whatsnewid < 1037)
-                  {
-                     WhatsNewAction37 = function(param1:MouseEvent):void
-                     {
-                        GLOBAL._selectedBuilding = GLOBAL._bBaiter;
-                        BUILDINGOPTIONS.Show(GLOBAL._bBaiter,"upgrade");
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew37();
-                     newWhatsnewid = 1037;
-                     display = true;
-                     if(GLOBAL._bBaiter)
-                     {
-                        popupWhatsNew.bAction.Setup("Upgrade Now");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction37);
-                     }
-                     else
-                     {
-                        popupWhatsNew.bAction.visible = false;
-                     }
-                  }
-                  else if(GLOBAL._whatsnewid < 1038)
-                  {
-                     WhatsNewAction38 = function(param1:MouseEvent):void
-                     {
-                        ALLIANCES.ShowAlliancesDialogue("hq");
-                        POPUPS.Next();
-                     };
-                     WhatsNewAction38B = function(param1:MouseEvent):void
-                     {
-                        ALLIANCES.ShowAlliancesDialogue("search");
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew38();
-                     newWhatsnewid = 1038;
-                     display = true;
-                     if(GLOBAL._advancedMap)
-                     {
-                        popupWhatsNew.bAction.Setup("Report Now");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction38);
-                     }
-                     else
-                     {
-                        popupWhatsNew.bAction.Setup("Join an Alliance");
-                        popupWhatsNew.bAction.Enabled = true;
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction38B);
-                     }
-                  }
-                  else if(GLOBAL._whatsnewid < 1039)
-                  {
-                     WhatsNewAction39 = function(param1:MouseEvent):void
-                     {
-                        BUILDINGS.Show();
-                        BUILDINGS._mc.SwitchB(3,1,0);
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew39();
-                     newWhatsnewid = 1039;
-                     popupWhatsNew.bAction.Setup("Build Now");
-                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction39);
-                     display = true;
-                  }
-                  else if(GLOBAL._whatsnewid < 1040)
-                  {
-                     WhatsNewAction40 = function(param1:MouseEvent):void
-                     {
-                        (GLOBAL._bLab as MONSTERLAB).Show();
-                        POPUPS.Next();
-                     };
-                     popupWhatsNew = new popup_whatsnew40();
-                     newWhatsnewid = 1040;
-                     if(GLOBAL._bLab)
-                     {
-                        popupWhatsNew.bAction.Setup("Research Now");
-                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction40);
+                        popupWhatsNew.bAction.Setup("Feed Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction41);
                      }
                      else
                      {
                         popupWhatsNew.bAction.visible = false;
                      }
                      display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1042)
+                  {
+                     WhatsNewAction42 = function(param1:MouseEvent):void
+                     {
+                        POPUPS.Next();
+                        STORE.ShowB(5,1,null);
+                     };
+                     popupWhatsNew = new popup_whatsnew42();
+                     newWhatsnewid = 1042;
+                     popupWhatsNew.bAction.Setup("View Merchandise");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction42);
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1043)
+                  {
+                     WhatsNewAction43 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL._selectedBuilding = GLOBAL._bTownhall;
+                        BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"fortify");
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew43();
+                     newWhatsnewid = 1043;
+                     if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() > 4)
+                     {
+                        popupWhatsNew.bAction.Setup("Build Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction43);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.visible = false;
+                     }
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1044 && Boolean(GLOBAL._advancedMap))
+                  {
+                     WhatsNewAction44 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL.ShowMap();
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew44();
+                     newWhatsnewid = 1044;
+                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction44);
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1045 && Boolean(GLOBAL._advancedMap))
+                  {
+                     WhatsNewAction45 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL.ShowMap();
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew45();
+                     newWhatsnewid = 1045;
+                     popupWhatsNew.bAction.Setup("Open Map");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction45);
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1046 && Boolean(GLOBAL._advancedMap))
+                  {
+                     popupWhatsNew = new popup_whatsnew46();
+                     newWhatsnewid = 1046;
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1047)
+                  {
+                     WhatsNewAction47 = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS._buildingID = 119;
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.SwitchB(3,1,1);
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew47();
+                     newWhatsnewid = 1047;
+                     display = true;
+                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction47);
+                  }
+                  else if(GLOBAL._whatsnewid < 1048)
+                  {
+                     WhatsNewAction48 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL._selectedBuilding = GLOBAL._bTownhall;
+                        BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew48();
+                     newWhatsnewid = 1048;
+                     display = true;
+                     popupWhatsNew.bAction.Setup("Upgrade Now");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction48);
                   }
                   if(display)
                   {
@@ -2076,14 +2070,6 @@ package
                      _showingWhatsNew = true;
                      LOGGER.Stat([23]);
                      POPUPS.Push(popupWhatsNew,popupWhatsNewDisplayed,null,"","",true);
-                     if(newWhatsnewid == 1035)
-                     {
-                        _mcAllianceArrow = GLOBAL._layerTop.addChild(new TUTORIALARROWMC());
-                        _mcAllianceArrow.x = GLOBAL._SCREEN.x + 700;
-                        _mcAllianceArrow.y = 5;
-                        _mcAllianceArrow.rotation = 310;
-                        _mcAllianceArrow.Rotate();
-                     }
                   }
                }
             }
@@ -2095,7 +2081,7 @@ package
                {
                   damageCount++;
                }
-               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() > 0)
+               if(building._countdownBuild.Get() + building._countdownUpgrade.Get() + building._countdownFortify.Get() > 0)
                {
                   upgradeCount++;
                   for each(helper in building._helpList)
@@ -2133,17 +2119,6 @@ package
                if(damageCount > 30)
                {
                   MARKETING.Show("catapult");
-               }
-            }
-            if(!BASE._isOutpost && GLOBAL._mode == "build" && GLOBAL._sessionCount >= 2 && GLOBAL._sessionCount <= 20 && TUTORIAL._stage >= 200)
-            {
-               if(_mushroomList.length >= 10)
-               {
-                  LOGGER.Stat([39]);
-                  popupMCmushroom = new popup_mushroomshiny();
-                  popupMCmushroom.tTitle.htmlText = "<b>Did you know?</b>";
-                  popupMCmushroom.tMessage.htmlText = "Your workers can pick the mushrooms<br>growing in your yard? <b>Some mushrooms uncover FREE Shiny!</b>";
-                  POPUPS.Push(popupMCmushroom,null,null,null,"goldmushroom.png");
                }
             }
             if(GLOBAL._mode == "help")
@@ -2291,6 +2266,7 @@ package
                   GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered a " + _takeoverPreviousOwnersName + " base!","In war, there are no unwounded monsters.","build-outpost.png"]);
                   POPUPS.Next();
                };
+               ACHIEVEMENTS.Check("wmoutpost",1);
                POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed a " + _takeoverPreviousOwnersName + " base. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragA);
             }
             else if(_takeoverFirstOpen == 2)
@@ -2300,6 +2276,8 @@ package
                   GLOBAL.CallJS("sendFeed",["upgrade-mr","#fname# conquered " + _takeoverPreviousOwnersName + "\'s Outpost!","Veni, Vidi, Vici!","build-outpost.png"]);
                   POPUPS.Next();
                };
+               ++ACHIEVEMENTS._stats.playeroutpost;
+               ACHIEVEMENTS.Check();
                POPUPS.DisplayGeneric("Veni, Vidi, Vici!","You destroyed " + _takeoverPreviousOwnersName + "\'s Outpost. Take over their yard and expand your empire.","Brag to your friends","building-outpost.png",BragB);
             }
          }
@@ -2339,20 +2317,9 @@ package
                }
             }
          }
-         if(GLOBAL._flags.showProgressBar == 1)
-         {
-            try
-            {
-               UI_PROGRESSBAR.ProcessBuildings(false);
-            }
-            catch(e:Error)
-            {
-               LOGGER.Log("err","PROCESS BASES " + e.getStackTrace);
-            }
-         }
          try
          {
-            GLOBAL.CallJS("cc.injectFriendsSwf");
+            GLOBAL.CallJS("cc.injectFriendsSwf",null,false);
          }
          catch(e:Error)
          {
@@ -2410,13 +2377,6 @@ package
                Page();
             }
             ++_lastPaged;
-            if(GLOBAL._flags.showProgressBar == 1)
-            {
-               if(GLOBAL._mode == "build")
-               {
-                  UI_PROGRESSBAR.Update();
-               }
-            }
             if(GLOBAL._extraHousing < GLOBAL.Timestamp() && HOUSING._housingUsed.Get() > HOUSING._housingCapacity.Get())
             {
                HOUSING.Cull(false);
@@ -2445,7 +2405,10 @@ package
             return false;
          }
          _pendingPurchase = [param1,param2,_saveCounterA + 1,param3,param4];
-         LOGGER.Stat([59,param1,param2]);
+         if(param3 != "store")
+         {
+            LOGGER.Stat([61,param1,param2]);
+         }
          BASE.Save();
       }
       
@@ -2657,7 +2620,7 @@ package
             finishTime = 0;
             if(WORKERS._workers && WORKERS._workers.length > 0 && Boolean(WORKERS._workers[0].task))
             {
-               finishTime = GLOBAL.Timestamp() + WORKERS._workers[0].task._countdownBuild.Get() + WORKERS._workers[0].task._countdownUpgrade.Get();
+               finishTime = GLOBAL.Timestamp() + WORKERS._workers[0].task._countdownBuild.Get() + WORKERS._workers[0].task._countdownUpgrade.Get() + WORKERS._workers[0].task._countdownFortify.Get();
             }
             for(i in _buildingsAll)
             {
@@ -2693,6 +2656,7 @@ package
             stats.moga = int(QUESTS._global.gift_accept);
             stats.updateid = GLOBAL._whatsnewid;
             stats.other = GLOBAL._otherStats;
+            stats.achievements = ACHIEVEMENTS.Export();
             CalcResources();
             SaveDeltaResources();
             r = {
@@ -2786,8 +2750,10 @@ package
                }
             }
             storageString = com.adobe.serialization.json.JSON.encode(o);
+            t = getTimer();
             attackResults = [];
             attackString = com.adobe.serialization.json.JSON.encode(attackResults);
+            t = getTimer();
             _mushroomList = [];
             for each(building in _buildingsMushrooms)
             {
@@ -2798,11 +2764,13 @@ package
                "l":_mushroomList,
                "s":int(_lastSpawnedMushroom)
             });
+            t = getTimer();
             tmpQ = com.adobe.serialization.json.JSON.encode(QUESTS._completed);
+            t = getTimer();
             _bn = GLOBAL._mode == "wmattack" ? TRIBES.TribeForBaseID(_wmID).name : _baseName;
             loadObjects = {
                "baseid":_baseID,
-               "lastupdate":UPDATES._lastUpdateID,
+               "lastupdate":(isNaN(UPDATES._lastUpdateID) ? 0 : UPDATES._lastUpdateID),
                "resources":tmpR,
                "academy":com.adobe.serialization.json.JSON.encode(ACADEMY.Export()),
                "stats":com.adobe.serialization.json.JSON.encode(stats),
@@ -2827,7 +2795,8 @@ package
                "catapult":catapult,
                "flinger":flinger,
                "empirevalue":CalcBaseValue(),
-               "inventory":STORE.InventoryExport()
+               "inventory":STORE.InventoryExport(),
+               "achieved":com.adobe.serialization.json.JSON.encode(ACHIEVEMENTS.Report())
             };
             if(GLOBAL._advancedMap)
             {
@@ -2871,6 +2840,14 @@ package
                else
                {
                   guardObj.fd = 0;
+               }
+               if(_guardianData.fb)
+               {
+                  guardObj.fb = _guardianData.fb.Get();
+               }
+               else
+               {
+                  guardObj.fb = 0;
                }
                loadObjects.champion = com.adobe.serialization.json.JSON.encode(guardObj);
             }
@@ -2948,6 +2925,14 @@ package
                   else
                   {
                      guardAttObj.fd = 0;
+                  }
+                  if(GLOBAL._playerGuardianData.fb)
+                  {
+                     guardAttObj.fb = GLOBAL._playerGuardianData.fb.Get();
+                  }
+                  else
+                  {
+                     guardAttObj.fb = 0;
                   }
                   loadObjects.attackerchampion = com.adobe.serialization.json.JSON.encode(guardAttObj);
                }
@@ -3120,7 +3105,7 @@ package
             LOGGER.Log("err","BASE.SaveB " + e.errorID + " | " + e.getStackTrace);
             GLOBAL.ErrorMessage("BASE.SaveB 1");
          }
-         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete"];
+         saveOrder = ["baseid","lastupdate","resources","academy","stats","mushrooms","basename","baseseed","buildingdata","researchdata","lockerdata","quests","basevalue","points","tutorialstage","basesaveid","clienttime","monsters","attacks","monsterbaiter","version","attackreport","over","protect","monsterupdate","attackid","aiattacks","effects","catapult","flinger","gifts","sentgifts","sentinvites","purchase","inventory","timeplayed","destroyed","damage","type","attackcreatures","attackloot","lootreport","empirevalue","champion","attackerchampion","purchasecomplete","achieved"];
          loadVars = [];
          so = 0;
          while(so < saveOrder.length)
@@ -3528,6 +3513,11 @@ package
             _loc4_ = true;
             _loc5_ = KEYS.Get("base_uperr_alreadyupgrading");
          }
+         else if(param1._countdownFortify.Get())
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_uperr_stillfortifying");
+         }
          else
          {
             _loc9_ = [];
@@ -3611,6 +3601,167 @@ package
                      {
                         _loc4_ = true;
                         _loc5_ = KEYS.Get("base_uperr_resources",{
+                           "v1":GLOBAL.FormatNumber(_loc14_),
+                           "v2":KEYS.Get(GLOBAL._resourceNames[_loc13_ - 1])
+                        });
+                     }
+                  }
+               }
+            }
+         }
+         return {
+            "error":_loc4_,
+            "errorMessage":_loc5_,
+            "costs":_loc3_,
+            "needResource":_loc13_
+         };
+      }
+      
+      public static function CanFortify(param1:BFOUNDATION) : Object
+      {
+         var _loc7_:String = null;
+         var _loc9_:Array = null;
+         var _loc10_:Array = null;
+         var _loc11_:int = 0;
+         var _loc12_:BFOUNDATION = null;
+         var _loc13_:* = undefined;
+         var _loc14_:int = 0;
+         if(param1._class == "mushroom")
+         {
+            return {"error":false};
+         }
+         var _loc2_:Object = {};
+         var _loc3_:Object = {
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "time":0
+         };
+         var _loc4_:Boolean = false;
+         var _loc5_:String = "";
+         var _loc6_:int = param1._fortification.Get();
+         for(_loc7_ in GLOBAL._buildingProps)
+         {
+            if(GLOBAL._buildingProps[_loc7_].id == param1._type)
+            {
+               _loc2_ = GLOBAL._buildingProps[_loc7_];
+               break;
+            }
+         }
+         if(!_loc2_.can_fortify)
+         {
+            return {"error":true};
+         }
+         var _loc8_:* = _loc2_.fortify_costs;
+         if(!GLOBAL._bTownhall)
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_forterr_th");
+         }
+         else if(_loc6_ >= _loc8_.length)
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_forterr_fully");
+         }
+         else if(param1._countdownBuild.Get())
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_forterr_stillbuilding");
+         }
+         else if(param1._countdownUpgrade.Get())
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_forterr_stillupgrading");
+         }
+         else if(param1._countdownFortify.Get())
+         {
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_forterr_stillfortifying");
+         }
+         else
+         {
+            _loc9_ = [];
+            for each(_loc10_ in _loc8_[_loc6_].re)
+            {
+               _loc11_ = 0;
+               for each(_loc12_ in BASE._buildingsAll)
+               {
+                  if(_loc12_._type == _loc10_[0] && _loc12_._lvl.Get() >= _loc10_[2])
+                  {
+                     _loc11_++;
+                  }
+               }
+               if(_loc11_ < _loc10_[1])
+               {
+                  if(_loc10_[1] == 1)
+                  {
+                     if(_loc10_[2] == 1)
+                     {
+                        _loc9_.push([0,KEYS.Get("base_forterr_bdgpart1",{"v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)})]);
+                     }
+                     else
+                     {
+                        _loc9_.push([0,KEYS.Get("base_forterr_bdgpart2",{
+                           "v1":_loc10_[2],
+                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name)
+                        })]);
+                     }
+                  }
+                  else if(_loc10_[2] == 1)
+                  {
+                     _loc9_.push([0,KEYS.Get("base_forterr_bdgpart3",{
+                        "v1":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v2":_loc10_[1]
+                     })]);
+                  }
+                  else
+                  {
+                     _loc9_.push([0,KEYS.Get("base_forterr_bdgpart4",{
+                        "v1":_loc10_[2],
+                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc10_[0] - 1].name),
+                        "v3":_loc10_[1]
+                     })]);
+                  }
+               }
+            }
+            if(_loc9_.length > 0)
+            {
+               _loc4_ = true;
+               _loc5_ = KEYS.Get("base_forterr_buildings",{"v1":GLOBAL.Array2StringB(_loc9_)});
+            }
+            if(!_loc4_)
+            {
+               if(_loc6_ < _loc8_.length)
+               {
+                  _loc3_ = _loc8_[_loc6_];
+                  if(!_loc4_)
+                  {
+                     _loc14_ = 0;
+                     if(_loc3_.r1 > BASE._resources.r1.Get())
+                     {
+                        _loc13_ = 1;
+                        _loc14_ = _loc3_.r1 - BASE._resources.r1.Get();
+                     }
+                     if(_loc3_.r2 > BASE._resources.r2.Get())
+                     {
+                        _loc13_ = 2;
+                        _loc14_ = _loc3_.r2 - BASE._resources.r2.Get();
+                     }
+                     if(_loc3_.r3 > BASE._resources.r3.Get())
+                     {
+                        _loc13_ = 3;
+                        _loc14_ = _loc3_.r3 - BASE._resources.r3.Get();
+                     }
+                     if(_loc3_.r4 > BASE._resources.r4.Get())
+                     {
+                        _loc13_ = 4;
+                        _loc14_ = _loc3_.r4 - BASE._resources.r4.Get();
+                     }
+                     if(_loc13_ > 0)
+                     {
+                        _loc4_ = true;
+                        _loc5_ = KEYS.Get("base_forterr_resources",{
                            "v1":GLOBAL.FormatNumber(_loc14_),
                            "v2":KEYS.Get(GLOBAL._resourceNames[_loc13_ - 1])
                         });
@@ -3799,7 +3950,7 @@ package
          }
          else if(param1 == 114)
          {
-            _loc2_ = new GUARDIANCAGE();
+            _loc2_ = new CHAMPIONCAGE();
          }
          else if(param1 == 115)
          {
@@ -3816,6 +3967,10 @@ package
          else if(param1 == 118)
          {
             _loc2_ = new BUILDING118();
+         }
+         else if(param1 == 119)
+         {
+            _loc2_ = new CHAMPIONCHAMBER();
          }
          return _loc2_;
       }
@@ -4140,6 +4295,64 @@ package
          }
       }
       
+      public static function LoadNext(param1:MouseEvent = null) : void
+      {
+         var _loc2_:Number = NaN;
+         var _loc3_:int = 0;
+         if(_saving || _loading || BASE._saveCounterA != BASE._saveCounterB)
+         {
+            return;
+         }
+         if(GLOBAL._advancedMap)
+         {
+            if(!_isOutpost && !GLOBAL._bMap._canFunction)
+            {
+               GLOBAL.Message(KEYS.Get("map_msg_damaged"));
+               return;
+            }
+            if(Boolean(GLOBAL._mapOutpostIDs) && GLOBAL._mapOutpostIDs.length > 0)
+            {
+               if(GLOBAL._mode == "build")
+               {
+                  if(!_isOutpost)
+                  {
+                     _currentCellLoc = GLOBAL._mapOutpost[0];
+                     GLOBAL._currentCell = null;
+                     _needCurrentCell = true;
+                     MapRoom.GetCell(GLOBAL._mapOutpost[0].x,GLOBAL._mapOutpost[0].y,true);
+                     PLEASEWAIT.Show(KEYS.Get("process_outpost"));
+                  }
+                  else
+                  {
+                     _loc2_ = 0;
+                     _loc3_ = 0;
+                     while(_loc3_ < GLOBAL._mapOutpostIDs.length)
+                     {
+                        if(GLOBAL._mapOutpostIDs[_loc3_] == _loadedBaseID)
+                        {
+                           if(_loc3_ < GLOBAL._mapOutpostIDs.length - 1)
+                           {
+                              _currentCellLoc = GLOBAL._mapOutpost[_loc3_ + 1];
+                              GLOBAL._currentCell = null;
+                              _needCurrentCell = true;
+                              MapRoom.GetCell(GLOBAL._mapOutpost[_loc3_ + 1].x,GLOBAL._mapOutpost[_loc3_ + 1].y,true);
+                              PLEASEWAIT.Show(KEYS.Get("process_outpost"));
+                              break;
+                           }
+                           _isOutpost = 0;
+                           _needCurrentCell = false;
+                           GLOBAL._currentCell = null;
+                           LoadBase(null,null,GLOBAL._homeBaseID,"build");
+                           break;
+                        }
+                        _loc3_++;
+                     }
+                  }
+               }
+            }
+         }
+      }
+      
       public static function CalcResources() : *
       {
          var capacity:int = 0;
@@ -4164,6 +4377,10 @@ package
                _resources.r2max = 10000;
                _resources.r3max = 10000;
                _resources.r4max = 10000;
+            }
+            if(_resources.r1.Get() > 25000000 && _resources.r2.Get() > 25000000 && _resources.r3.Get() > 25000000 && _resources.r4.Get() > 25000000)
+            {
+               ACHIEVEMENTS.Check("stockpile",1);
             }
             _resources.r1Rate = 0;
             _resources.r2Rate = 0;
@@ -4545,10 +4762,13 @@ package
       
       private static function CaluclateExpectedTownHallLevel() : int
       {
-         var _loc4_:BFOUNDATION = null;
-         var _loc1_:int = 1;
+         var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
+         var _loc4_:BFOUNDATION = null;
+         _loc1_ = 1;
+         _loc2_ = 0;
+         _loc3_ = 0;
          for each(_loc4_ in _buildingsTowers)
          {
             if(_loc4_._type == 20)

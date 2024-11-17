@@ -280,6 +280,16 @@ package
       {
          return true;
       }
+      
+      public function Center() : void
+      {
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
+      }
    }
 }
 

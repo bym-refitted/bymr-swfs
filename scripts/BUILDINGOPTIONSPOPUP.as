@@ -67,6 +67,14 @@ package
                mcInstant.gCoin.mouseEnabled = false;
             }
          }
+         else if(param1 == "fortify")
+         {
+            this._building = BUILDINGOPTIONS._building;
+            mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantFortify);
+            mcInstant.bAction.Setup("Use " + this._building.InstantFortifyCost() + " Shiny");
+            mcInstant.tDescription.htmlText = "Keep your resources and fortify instantly!";
+            mcInstant.gCoin.mouseEnabled = false;
+         }
          else
          {
             this._building = BUILDINGOPTIONS._building;
@@ -94,11 +102,8 @@ package
          var _loc9_:* = undefined;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
-         var _loc12_:int = 0;
-         var _loc13_:int = 0;
-         var _loc14_:int = 0;
-         var _loc15_:MovieClip = null;
-         var _loc2_:String = "";
+         var _loc12_:MovieClip = null;
+         var _loc2_:* = "";
          var _loc3_:Object = {};
          var _loc4_:* = "";
          SOUNDS.Play("click1");
@@ -238,6 +243,72 @@ package
                this.toggleCheckbox(false);
             }
          }
+         else if(param1 == "fortify")
+         {
+            mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceFortify);
+            mcResources.bAction.Setup("Use Resources");
+            if(Boolean(this._building._buildingProps.can_fortify) && this._building._fortification.Get() < this._building._buildingProps.fortify_costs.length)
+            {
+               for each(_loc6_ in this._building._buildingProps.fortify_costs[this._building._fortification.Get()].re)
+               {
+                  _loc7_ = 0;
+                  _loc8_ = "#CC0000";
+                  for each(_loc9_ in BASE._buildingsAll)
+                  {
+                     if(_loc9_._type == _loc6_[0] && _loc9_._lvl.Get() >= _loc6_[2])
+                     {
+                        _loc7_++;
+                     }
+                  }
+                  if(_loc7_ >= _loc6_[1])
+                  {
+                     _loc8_ = "#333333";
+                  }
+                  _loc4_ += "<font color=\"" + _loc8_ + "\">";
+                  if(_loc6_[1] == 1)
+                  {
+                     if(_loc6_[2] == 1)
+                     {
+                        _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name);
+                     }
+                     else
+                     {
+                        _loc4_ += "• " + KEYS.Get("bdg_buildingrequirement",{
+                           "v1":_loc6_[2],
+                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name)
+                        });
+                     }
+                  }
+                  else if(_loc6_[2] == 1)
+                  {
+                     _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name) + " x" + _loc6_[1];
+                  }
+                  else
+                  {
+                     _loc4_ += "• " + KEYS.Get("bdg_buildingsrequirement",{
+                        "v1":_loc6_[2],
+                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name),
+                        "v3":_loc6_[1]
+                     });
+                  }
+                  _loc4_ += "</font><br>";
+               }
+               _loc2_ = "<b>Fortify your " + KEYS.Get(this._building._buildingProps.name) + " to level " + (this._building._fortification.Get() + 1) + "!<br></b>";
+               _loc2_ += "Damage protection goes from " + (!!this._building._fortification.Get() ? this._building._fortification.Get() * 10 + 10 : 0) + "% to " + (this._building._fortification.Get() * 10 + 20) + "%.<br><br>";
+               if(_loc4_ != "")
+               {
+                  _loc2_ += KEYS.Get("bdg_upgraderequirements",{"v1":_loc4_});
+               }
+               _loc3_ = this._building.FortifyCost();
+               this.toggleCheckbox(true);
+            }
+            else
+            {
+               _loc2_ = KEYS.Get("bdg_fullyfortified");
+               _loc3_ = null;
+               this.toggleCheckbox(false);
+            }
+         }
          else if(param1 == "more")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionRecycle);
@@ -279,52 +350,34 @@ package
          if(_loc3_)
          {
             _loc10_ = int(_loc3_.time);
-            if(Boolean(GLOBAL._flags.split) && TUTORIAL._stage >= 202)
-            {
-               _loc12_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-               _loc13_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
-               _loc14_ = _loc12_ + _loc13_;
-               if(_loc14_ > 9)
-               {
-                  _loc14_ -= 10;
-               }
-               if(_loc14_ >= 7)
-               {
-                  _loc10_ *= 1.5;
-               }
-               else if(_loc14_ >= 4)
-               {
-                  _loc10_ *= 1.25;
-               }
-            }
             _loc11_ = 1;
             while(_loc11_ < 5)
             {
-               _loc15_ = this.mcResources["mcR" + _loc11_];
-               _loc15_.gotoAndStop(_loc11_);
-               _loc15_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc11_ - 1]) + "</b>";
-               _loc15_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc11_] > GLOBAL._resources["r" + _loc11_].Get() && (param1 == "upgrade" || param1 == "build") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc11_]) + "</font></b>";
+               _loc12_ = this.mcResources["mcR" + _loc11_];
+               _loc12_.gotoAndStop(_loc11_);
+               _loc12_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc11_ - 1]) + "</b>";
+               _loc12_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc11_] > GLOBAL._resources["r" + _loc11_].Get() && (param1 == "upgrade" || param1 == "build") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc11_]) + "</font></b>";
                if(Boolean(_loc3_["r" + _loc11_]) && _loc3_["r" + _loc11_] > 0)
                {
-                  _loc15_.alpha = 1;
+                  _loc12_.alpha = 1;
                }
                else
                {
-                  _loc15_.alpha = 0.25;
+                  _loc12_.alpha = 0.25;
                }
                _loc11_++;
             }
-            _loc15_ = this.mcResources.mcTime;
-            _loc15_.gotoAndStop(6);
+            _loc12_ = this.mcResources.mcTime;
+            _loc12_.gotoAndStop(6);
             if(TUTORIAL._stage >= 200 && _loc3_.time > 0)
             {
-               _loc15_.visible = true;
-               _loc15_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[5]) + "</b>";
-               _loc15_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc10_,true,false) + "</b>";
+               _loc12_.visible = true;
+               _loc12_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[5]) + "</b>";
+               _loc12_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc10_,true,false) + "</b>";
             }
             else
             {
-               _loc15_.visible = false;
+               _loc12_.visible = false;
             }
             if(this._doStreamPost && !BASE._isOutpost)
             {
@@ -341,7 +394,7 @@ package
                   this.streampost_cb.alpha = 0.25;
                }
             }
-            if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade")
+            if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade" && param1 != "fortify")
             {
                mcInstant.visible = false;
                _loc5_ = tDescription.height + 53;
@@ -363,7 +416,7 @@ package
          }
          mcBG.height = _loc5_;
          mcBG.Setup();
-         if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade")
+         if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade" && param1 != "fortify")
          {
             mcResources.y = mcBG.y + _loc5_ - 63;
          }
@@ -533,6 +586,55 @@ package
          }
       }
       
+      private function ActionResourceFortify(param1:MouseEvent) : *
+      {
+         var _loc3_:int = 0;
+         var _loc6_:Object = null;
+         var _loc7_:int = 0;
+         var _loc2_:Boolean = false;
+         _loc3_ = 0;
+         var _loc4_:int = 0;
+         var _loc5_:Object = BASE.CanFortify(this._building);
+         if(Boolean(_loc5_.error) && !_loc5_.needResource)
+         {
+            GLOBAL.Message(_loc5_.errorMessage);
+         }
+         else if(_loc5_.needResource)
+         {
+            _loc3_ = 0;
+            _loc6_ = this._building._buildingProps.fortify_costs[this._building._fortification.Get()];
+            _loc7_ = 1;
+            while(_loc7_ < 5)
+            {
+               if(_loc6_["r" + _loc7_] > 0)
+               {
+                  if(_loc6_["r" + _loc7_] > BASE._resources["r" + _loc7_ + "max"])
+                  {
+                     _loc2_ = true;
+                  }
+                  else if(_loc6_["r" + _loc7_] > BASE._resources["r" + _loc7_].Get())
+                  {
+                     _loc3_ += _loc6_["r" + _loc7_] - BASE._resources["r" + _loc7_].Get();
+                  }
+               }
+               _loc7_++;
+            }
+            _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
+            if(_loc2_)
+            {
+               GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to fortify this.</b>");
+            }
+            else
+            {
+               GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to fortify.</b><br><br>Get the resources and start fortifying for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources And Start",this.TopoffFortify);
+            }
+         }
+         else if(this._building.Fortify())
+         {
+            BUILDINGOPTIONS.Hide();
+         }
+      }
+      
       private function ActionInstantBuild(param1:MouseEvent) : *
       {
          var _loc7_:int = 0;
@@ -584,6 +686,19 @@ package
             GLOBAL.Message(_loc2_.errorMessage);
          }
          else if(this._building.DoInstantUpgrade())
+         {
+            BUILDINGOPTIONS.Hide();
+         }
+      }
+      
+      private function ActionInstantFortify(param1:MouseEvent) : *
+      {
+         var _loc2_:Object = BASE.CanFortify(this._building);
+         if(Boolean(_loc2_.error) && !_loc2_.needResource)
+         {
+            GLOBAL.Message(_loc2_.errorMessage);
+         }
+         else if(this._building.DoInstantFortify())
          {
             BUILDINGOPTIONS.Hide();
          }
@@ -647,7 +762,7 @@ package
                }
                this._building.Upgrade();
                this.Hide();
-               BASE.Purchase("BRTOPUP",_loc4_,"store");
+               BASE.Purchase("BRTOPUP",_loc4_,"BUILDINGOPTIONS.TopoffUpgrade");
             }
          }
       }
@@ -685,7 +800,7 @@ package
          }
          else
          {
-            BASE.Purchase("BRTOPUP",_loc6_,"store");
+            BASE.Purchase("BRTOPUP",_loc6_,"BUILDINGOPTIONS.TopoffBuild");
             _loc5_ = 1;
             while(_loc5_ < 5)
             {
@@ -699,24 +814,90 @@ package
          }
       }
       
+      private function TopoffFortify(param1:MouseEvent = null) : *
+      {
+         var _loc4_:int = 0;
+         var _loc6_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:Boolean = false;
+         var _loc5_:Object = this._building._buildingProps.fortify_costs[this._building._fortification.Get()];
+         _loc6_ = 1;
+         while(_loc6_ < 5)
+         {
+            if(_loc5_["r" + _loc6_] > 0)
+            {
+               if(_loc5_["r" + _loc6_] > BASE._resources["r" + _loc6_ + "max"])
+               {
+                  _loc3_ = true;
+               }
+               else if(_loc5_["r" + _loc6_] > BASE._resources["r" + _loc6_].Get())
+               {
+                  _loc2_ += _loc5_["r" + _loc6_] - BASE._resources["r" + _loc6_].Get();
+               }
+            }
+            _loc6_++;
+         }
+         _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc2_ / 2),0.75));
+         if(_loc3_)
+         {
+            GLOBAL.Message(KEYS.Get("msg_overcapacity"));
+         }
+         else if(BASE._pendingPurchase.length == 0)
+         {
+            if(_loc4_ > BASE._credits.Get())
+            {
+               POPUPS.DisplayGetShiny();
+            }
+            else
+            {
+               _loc6_ = 1;
+               while(_loc6_ < 5)
+               {
+                  if(_loc5_["r" + _loc6_] > 0 && _loc5_["r" + _loc6_] > BASE._resources["r" + _loc6_].Get())
+                  {
+                     BASE.Fund(_loc6_,_loc5_["r" + _loc6_] - BASE._resources["r" + _loc6_].Get());
+                  }
+                  _loc6_++;
+               }
+               this._building.Fortify();
+               this.Hide();
+               BASE.Purchase("BRTOPUP",_loc4_,"BUILDINGOPTIONS.TopoffFortify");
+            }
+         }
+      }
+      
       private function Render(param1:String) : void
       {
+         var FortifyImageLoaded:Function;
          var ImageLoaded:Function;
          var numImageElements:Function;
          var DefaultImageLoaded:Function;
+         var nextFortifyLevel:int = 0;
+         var img:String = null;
          var imageDataA:Object = null;
          var imageDataB:Object = null;
          var imageLevel:int = 0;
          var upgradeImgURL:String = null;
-         var img:String = null;
          var upgradeImgLen:int = 0;
          var i:int = 0;
          var j:int = 0;
          var str:String = param1;
-         if(str == "upgrade")
+         if(str == "fortify")
          {
+            FortifyImageLoaded = function(param1:String, param2:BitmapData):void
+            {
+               imageContainer.Clear();
+               imageContainer.addChild(new Bitmap(param2));
+            };
+            nextFortifyLevel = this._building._fortification.Get() + 1;
+            if(nextFortifyLevel > 4)
+            {
+               nextFortifyLevel = 4;
+            }
+            img = "fortifybuttons/fort" + nextFortifyLevel + ".png";
+            ImageCache.GetImageWithCallBack(img,FortifyImageLoaded);
          }
-         if(GLOBAL._buildingProps[this._building._type - 1].upgradeImgData)
+         else if(GLOBAL._buildingProps[this._building._type - 1].upgradeImgData)
          {
             ImageLoaded = function(param1:String, param2:BitmapData):void
             {
@@ -841,10 +1022,14 @@ package
          }
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

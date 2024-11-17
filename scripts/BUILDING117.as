@@ -11,6 +11,13 @@ package
          _footprint = [new Rectangle(0,0,20,20)];
          SetProps();
       }
+      
+      override public function Constructed() : *
+      {
+         ++ACHIEVEMENTS._stats["heavytraps"];
+         ACHIEVEMENTS.Check();
+         super.Constructed();
+      }
    }
 }
 

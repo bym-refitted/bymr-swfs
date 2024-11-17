@@ -1,8 +1,6 @@
 package
 {
    import flash.events.MouseEvent;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class HATCHERY
    {
@@ -23,15 +21,8 @@ package
             GLOBAL.BlockerAdd();
             _mc = GLOBAL._layerWindows.addChild(new HATCHERYPOPUP());
             _mc.Setup(param1);
-            _mc.x = GLOBAL._SCREENCENTER.x;
-            _mc.y = GLOBAL._SCREENCENTER.y;
-            _mc.scaleY = 0.8;
-            _mc.scaleX = 0.8;
-            TweenLite.to(_mc,0.2,{
-               "scaleX":1,
-               "scaleY":1,
-               "ease":Quad.easeOut
-            });
+            _mc.Center();
+            _mc.ScaleUp();
          }
       }
       

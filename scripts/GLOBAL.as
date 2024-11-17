@@ -14,6 +14,7 @@ package
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.maproom_advanced.MapRoomCell;
    import com.monsters.pathing.PATHING;
+   import com.monsters.ui.UI_BOTTOM;
    import flash.display.DisplayObject;
    import flash.display.DisplayObjectContainer;
    import flash.display.MovieClip;
@@ -27,7 +28,6 @@ package
    import flash.utils.*;
    import gs.TweenLite;
    import gs.easing.Cubic;
-   import package_1.class_1;
    
    public class GLOBAL
    {
@@ -84,6 +84,8 @@ package
       public static var _SCREEN:Rectangle;
       
       public static var _SCREENCENTER:Point;
+      
+      public static var _SCREENHUD:Point;
       
       public static var t:int;
       
@@ -199,9 +201,11 @@ package
       
       public static var _bYardPlanner:*;
       
+      public static var _bChamber:BFOUNDATION;
+      
       public static var _bLab:BFOUNDATION;
       
-      public static var _bCage:GUARDIANCAGE;
+      public static var _bCage:CHAMPIONCAGE;
       
       public static var _bTower:*;
       
@@ -291,7 +295,9 @@ package
       
       public static var _testKongregate:Boolean = false;
       
-      public static var _version:SecNum = new SecNum(117);
+      public static var _localMode:int = 0;
+      
+      public static var _version:SecNum = new SecNum(118);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -303,13 +309,15 @@ package
       
       public static var _chatEnabled:Boolean = true;
       
+      public static var _validName:Boolean = true;
+      
       public static var _checkPromo:int = 1;
       
       public static var _giveTips:int = 1;
       
       public static var _fluidWidthEnabled:Boolean = true;
       
-      public static var _SCREENINIT:Rectangle = new Rectangle(0,0,760,520);
+      public static var _SCREENINIT:Rectangle = new Rectangle(0,0,760,750);
       
       public static var _countryCode:String = "us";
       
@@ -330,6 +338,8 @@ package
       public static var _chatBlackList:Array = null;
       
       public static var _chatWhiteList:Array = null;
+      
+      public static var _countryCodeBlackList:Array = null;
       
       public static var _newMapFirstOpen:Boolean = false;
       
@@ -372,6 +382,8 @@ package
       public static var _FPSarray:Array = [];
       
       public static var _mapOutpost:Array = [];
+      
+      public static var _mapOutpostIDs:Array = [];
       
       public static var _advancedMap:int = 0;
       
@@ -438,6 +450,8 @@ package
       public static const ERROR_OOPS_AND_ORANGE_BOX:int = 1;
       
       public static const ERROR_ORANGE_BOX_ONLY:int = 2;
+      
+      public static var _showStreamlinedSpeedUps:Boolean = false;
       
       private static var _blockerList:Array = [];
       
@@ -584,7 +598,7 @@ package
                "6":{"img":"1.6.png"},
                "10":{"img":"1.10.png"}
             },
-            "quantity":[0,1,2,4,5,6,6,6,6],
+            "quantity":[0,1,2,4,5,6,6,6,6,6],
             "produce":[2,4,7,11,16,22,29,37,46,56],
             "cycleTime":[10,10,10,10,10,10,10,10,10,10],
             "capacity":[12 * 60,36 * 60,5670,13365,486 * 60,60142,118918,227584,424414,775018],
@@ -726,7 +740,7 @@ package
                "6":{"img":"2.6.png"},
                "10":{"img":"2.10.png"}
             },
-            "quantity":[0,1,2,4,5,6,6,6,6],
+            "quantity":[0,1,2,4,5,6,6,6,6,6],
             "produce":[2,4,7,11,16,22,29,37,46,56],
             "cycleTime":[10,10,10,10,10,10,10,10,10,10],
             "capacity":[12 * 60,36 * 60,5670,13365,486 * 60,60142,118918,227584,424414,775018],
@@ -868,7 +882,7 @@ package
                "6":{"img":"3.6.png"},
                "10":{"img":"3.10.png"}
             },
-            "quantity":[0,1,2,4,5,6,6,6,6],
+            "quantity":[0,1,2,4,5,6,6,6,6,6],
             "produce":[2,4,7,11,16,22,29,37,46,56],
             "cycleTime":[10,10,10,10,10,10,10,10,10,10],
             "capacity":[12 * 60,36 * 60,5670,13365,486 * 60,60142,118918,227584,424414,775018],
@@ -1010,7 +1024,7 @@ package
                "6":{"img":"4.6.png"},
                "10":{"img":"4.10.png"}
             },
-            "quantity":[0,1,2,4,5,6,6,6,6],
+            "quantity":[0,1,2,4,5,6,6,6,6,6],
             "produce":[2,4,7,11,16,22,29,37,46,56],
             "cycleTime":[10,10,10,10,10,10,10,10,10,10],
             "capacity":[12 * 60,36 * 60,5670,13365,486 * 60,60142,118918,227584,424414,775018],
@@ -1105,7 +1119,7 @@ package
                "3":{"img":"5.3.png"},
                "4":{"img":"5.4.png"}
             },
-            "quantity":[0,1,1,1,1,1,1,1,1],
+            "quantity":[0,1,1,1,1,1,1,1,1,1],
             "capacity":[500,1000,1750,2250,50 * 60,0xfa0],
             "hp":[0xfa0,0x1f40,16000,28000],
             "repairTime":[100,5 * 60,10 * 60,15 * 60]
@@ -1191,6 +1205,36 @@ package
                "time":46132,
                "re":[[14,1,6]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":59375,
+               "r2":29687,
+               "r3":0,
+               "r4":0,
+               "time":60750,
+               "re":[[14,1,5]]
+            },{
+               "r1":118750,
+               "r2":59375,
+               "r3":0,
+               "r4":0,
+               "time":91120,
+               "re":[[14,1,6]]
+            },{
+               "r1":637500,
+               "r2":518750,
+               "r3":0,
+               "r4":0,
+               "time":136680,
+               "re":[[14,1,7]]
+            },{
+               "r1":1475000,
+               "r2":1237500,
+               "r3":0,
+               "r4":0,
+               "time":205030,
+               "re":[[14,1,8]]
+            }],
             "imageData":{
                "baseurl":"buildings/storagesilo/",
                "1":{
@@ -1211,7 +1255,26 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"6.png"}
             },
-            "quantity":[0,1,2,3,4,5,5,5,5],
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,28)],
+                  "back":["fort70_B1.png",new Point(-71,-4)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,26)],
+                  "back":["fort70_B2.png",new Point(-65,-7)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-73,17)],
+                  "back":["fort70_B3.png",new Point(-69,-5)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-3)],
+                  "back":["fort70_B4.png",new Point(-62,-31)]
+               }
+            },
+            "quantity":[0,1,2,3,4,5,5,5,5,6],
             "capacity":[125 * 60,250 * 60,500 * 60,60 * 1000,2 * 60 * 1000,4 * 60 * 1000,8 * 60 * 1000,16 * 60 * 1000,32 * 60 * 1000,64 * 60 * 1000],
             "hp":[750,1400,2550,4750,8800,16250,500 * 60,55600,105000,190000],
             "repairTime":[30,60,2 * 60,4 * 60,8 * 60,16 * 60,32 * 60,0xf00,128 * 60,256 * 60]
@@ -1326,7 +1389,7 @@ package
                "3":{"img":"8.3.png"},
                "4":{"img":"8.4.png"}
             },
-            "quantity":[0,0,1,1,1,1,1,1,1],
+            "quantity":[0,0,1,1,1,1,1,1,1,1],
             "hp":[0xfa0,16000,32000,64000],
             "repairTime":[8 * 60,32 * 60,0xf00,256 * 60]
          },{
@@ -1382,7 +1445,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"9.png"}
             },
-            "quantity":[0,0,0,1,1,1,1,1,1],
+            "quantity":[0,0,0,1,1,1,1,1,1,1],
             "hp":[16000,32000,64000],
             "repairTime":[8 * 60,32 * 60,128 * 60]
          },{
@@ -1424,7 +1487,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"10.png"}
             },
-            "quantity":[0,0,0,1,1,1,1,1,1],
+            "quantity":[0,0,0,1,1,1,1,1,1,1],
             "hp":[16000],
             "repairTime":[0xf00]
          },{
@@ -1472,7 +1535,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"11.png"}
             },
-            "quantity":[0,1,1,1,1,1,1,1,1],
+            "quantity":[0,1,1,1,1,1,1,1,1,1],
             "hp":[5000,10000],
             "repairTime":[5 * 60,10 * 60]
          },{
@@ -1513,7 +1576,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"12.png"}
             },
-            "quantity":[0,1,1,1,1,1,1,1,1],
+            "quantity":[0,1,1,1,1,1,1,1,1,1],
             "hp":[0xfa0],
             "repairTime":[10]
          },{
@@ -1591,7 +1654,7 @@ package
                "2":{"img":"13.2.png"},
                "3":{"img":"13.3.png"}
             },
-            "quantity":[0,1,2,3,4,5,5,5,5],
+            "quantity":[0,1,2,3,4,5,5,5,5,5],
             "hp":[0xfa0,16000,32000],
             "repairTime":[60,150,5 * 60]
          },{
@@ -1656,12 +1719,49 @@ package
                "time":6 * 24 * 60 * 60,
                "re":[[14,1,6]]
             },{
-               "r1":18680000,
-               "r2":18680000,
+               "r1":14420000,
+               "r2":14420000,
                "r3":0,
                "r4":0,
                "time":8 * 24 * 60 * 60,
                "re":[[14,1,7]]
+            },{
+               "r1":18680000,
+               "r2":18680000,
+               "r3":0,
+               "r4":0,
+               "time":12 * 24 * 60 * 60,
+               "re":[[14,1,8]]
+            }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":500000,
+               "r2":100000,
+               "r3":50000,
+               "r4":0,
+               "time":4 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":1000000,
+               "r2":1000000,
+               "r3":500000,
+               "r4":0,
+               "time":16 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":5000000,
+               "r2":5000000,
+               "r3":2000000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":10000000,
+               "r2":10000000,
+               "r3":5000000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[14,1,8]]
             }],
             "imageData":{
                "baseurl":"buildings/townhall/",
@@ -1734,6 +1834,14 @@ package
                   "shadowdamaged":["shadow.8.damaged.jpg",new Point(-86,13)],
                   "topdestroyed":["top.8.destroyed.png",new Point(-84,-13)],
                   "shadowdestroyed":["shadow.8.destroyed.jpg",new Point(-102,8)]
+               },
+               "9":{
+                  "top":["top.9.png",new Point(-77,-97)],
+                  "shadow":["shadow.9.jpg",new Point(-76,24)],
+                  "topdamaged":["top.9.damaged.png",new Point(-86,-71)],
+                  "shadowdamaged":["shadow.9.damaged.jpg",new Point(-88,23)],
+                  "topdestroyed":["top.9.destroyed.png",new Point(-80,-54)],
+                  "shadowdestroyed":["shadow.9.destroyed.jpg",new Point(-81,23)]
                }
             },
             "upgradeImgData":{
@@ -1745,7 +1853,8 @@ package
                "5":{"img":"14.5.jpg"},
                "6":{"img":"14.6.jpg"},
                "7":{"img":"14.7.jpg"},
-               "8":{"img":"14.8.jpg"}
+               "8":{"img":"14.8.jpg"},
+               "9":{"img":"14.9.jpg"}
             },
             "thumbImgData":{
                "baseurl":"buildingthumbs/",
@@ -1758,9 +1867,28 @@ package
                "7":{"img":"14.7.png"},
                "8":{"img":"14.8.png"}
             },
-            "quantity":[1,1,1,1,1,1,1,1,1],
-            "hp":[0xfa0,8800,20000,700 * 60,94000,200000,5 * 60 * 1000,400000],
-            "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60,512 * 60,18 * 60 * 60,24 * 60 * 60]
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort130_F1.png",new Point(-127,46)],
+                  "back":["fort130_B1.png",new Point(-122,-10)]
+               },
+               "2":{
+                  "front":["fort130_F2.png",new Point(-124,48)],
+                  "back":["fort130_B2.png",new Point(-120,-15)]
+               },
+               "3":{
+                  "front":["fort130_F3.png",new Point(-124,32)],
+                  "back":["fort130_B3.png",new Point(-110,-11)]
+               },
+               "4":{
+                  "front":["fort130_F4.png",new Point(-124,15)],
+                  "back":["fort130_B4.png",new Point(-116,-49)]
+               }
+            },
+            "quantity":[1,1,1,1,1,1,1,1,1,1],
+            "hp":[0xfa0,8800,20000,700 * 60,94000,200000,5 * 60 * 1000,400000,500000],
+            "repairTime":[8 * 60,32 * 60,0xf00,128 * 60,256 * 60,512 * 60,18 * 60 * 60,24 * 60 * 60,2 * 24 * 60 * 60]
          },{
             "id":15,
             "group":2,
@@ -1834,7 +1962,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"15.png"}
             },
-            "quantity":[0,1,1,2,2,3,3,3,4],
+            "quantity":[0,1,1,2,2,3,3,3,4,4],
             "capacity":[200,260,320,380,450,9 * 60],
             "hp":[0xfa0,14000,25000,43000,75000,130000],
             "repairTime":[100,200,5 * 60,400,500,10 * 60]
@@ -1876,7 +2004,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"16.png"}
             },
-            "quantity":[0,0,0,1,1,1,1,1,1],
+            "quantity":[0,0,0,1,1,1,1,1,1,1],
             "hp":[64000],
             "repairTime":[5 * 60]
          },{
@@ -1985,7 +2113,7 @@ package
                "4":{"img":"17.4.png"},
                "4":{"img":"17.5.png"}
             },
-            "quantity":[0,0,30,60,2 * 60,200,220,280,5 * 60],
+            "quantity":[0,0,30,60,2 * 60,200,220,280,5 * 60,340],
             "hp":[1000,2300,5750,5 * 60 * 60,450 * 60],
             "repairTime":[5,5,5,5,5]
          },{
@@ -2027,7 +2155,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"18.png"}
             },
-            "quantity":[0,0,10,20,40,60,70,90,90],
+            "quantity":[0,0,10,20,40,60,70,90,90,90],
             "hp":[60 * 60],
             "repairTime":[20]
          },{
@@ -2111,7 +2239,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"19.png"}
             },
-            "quantity":[0,0,0,0,1,1,1,1,1],
+            "quantity":[0,0,0,0,1,1,1,1,1,1],
             "produce":[2,2,2,2,2,2,2],
             "capacity":[10 * 60,15 * 60,20 * 60,25 * 60,35 * 60,3200,80 * 60],
             "hp":[1000,25 * 60,2250,3375,5000,125 * 60,200 * 60],
@@ -2259,6 +2387,36 @@ package
                "time":132 * 60 * 60,
                "re":[[14,1,8]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":50000,
+               "r2":625 * 60,
+               "r3":12500,
+               "r4":0,
+               "time":135 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":250000,
+               "r2":187500,
+               "r3":62500,
+               "r4":0,
+               "time":405 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":1250000,
+               "r2":937500,
+               "r3":312500,
+               "r4":0,
+               "time":72900,
+               "re":[[14,1,7]]
+            },{
+               "r1":6250000,
+               "r2":4687500,
+               "r3":1562500,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,8]]
+            }],
             "imageData":{
                "baseurl":"buildings/cannontower/",
                "1":{
@@ -2279,7 +2437,26 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"20.png"}
             },
-            "quantity":[0,2,3,4,5,6,6,6,6],
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,2,3,4,5,6,6,6,6,6],
             "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
             "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,18 * 60 * 60,24 * 60 * 60]
          },{
@@ -2425,6 +2602,36 @@ package
                "time":132 * 60 * 60,
                "re":[[14,1,8]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":625 * 60,
+               "r2":50000,
+               "r3":12500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":187500,
+               "r2":250000,
+               "r3":62500,
+               "r4":0,
+               "time":12 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":937500,
+               "r2":1250000,
+               "r3":312500,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":4687500,
+               "r2":6250000,
+               "r3":1562500,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,8]]
+            }],
             "imageData":{
                "baseurl":"buildings/snipertower/",
                "1":{
@@ -2447,7 +2654,26 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"21.png"}
             },
-            "quantity":[0,2,3,4,5,6,6,6,6],
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,2,3,4,5,6,6,6,6,6],
             "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
             "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,18 * 60 * 60,24 * 60 * 60]
          },{
@@ -2461,7 +2687,7 @@ package
             "tutstage":200,
             "sale":0,
             "description":"monsterbunker_desc",
-            "stats":[{"range":5 * 60},{"range":350},{"range":400}],
+            "stats":[{"range":5 * 60},{"range":350},{"range":400},{"range":450}],
             "costs":[{
                "r1":250000,
                "r2":187500,
@@ -2483,6 +2709,13 @@ package
                "r4":0,
                "time":24 * 60 * 60,
                "re":[[14,1,5],[15,1,3]]
+            },{
+               "r1":4000000,
+               "r2":4000000,
+               "r3":2000000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,9],[15,1,3]]
             }],
             "imageData":{
                "baseurl":"buildings/bunker/",
@@ -2503,10 +2736,10 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"22.png"}
             },
-            "quantity":[0,0,0,1,1,2,2,3,4],
-            "capacity":[380,450,9 * 60],
-            "hp":[10000,24500,52000],
-            "repairTime":[2 * 60,4 * 60,8 * 60]
+            "quantity":[0,0,0,1,1,2,2,3,4,4],
+            "capacity":[380,450,9 * 60,640],
+            "hp":[10000,24500,52000,75000],
+            "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60]
          },{
             "id":23,
             "group":3,
@@ -2546,6 +2779,12 @@ package
                "rate":80,
                "speed":0,
                "splash":40
+            },{
+               "range":175,
+               "damage":4 * 60,
+               "rate":80,
+               "speed":0,
+               "splash":40
             }],
             "costs":[{
                "r1":500000,
@@ -2582,6 +2821,43 @@ package
                "r4":0,
                "time":108 * 60 * 60,
                "re":[[14,1,8]]
+            },{
+               "r1":16000000,
+               "r2":8000000,
+               "r3":3200000,
+               "r4":0,
+               "time":9 * 24 * 60 * 60,
+               "re":[[14,1,9]]
+            }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":500000,
+               "r2":250000,
+               "r3":100000,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":1000000,
+               "r2":500000,
+               "r3":200000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":2000000,
+               "r2":1000000,
+               "r3":400000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":4000000,
+               "r2":2000000,
+               "r3":800000,
+               "r4":0,
+               "time":3 * 24 * 60 * 60,
+               "re":[[14,1,8]]
             }],
             "imageData":{
                "baseurl":"buildings/lasertower/",
@@ -2605,9 +2881,28 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"23.png"}
             },
-            "quantity":[0,0,0,0,1,2,3,3,3],
-            "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400],
-            "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,0,0,0,1,2,3,3,3,3],
+            "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400,42200],
+            "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
          },{
             "id":24,
             "group":3,
@@ -2644,7 +2939,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"24.png"}
             },
-            "quantity":[0,0,8,15,20,28,35,42,50],
+            "quantity":[0,0,8,15,20,28,35,42,50,60],
             "damage":[1000],
             "hp":[10],
             "repairTime":[1]
@@ -2687,6 +2982,12 @@ package
                "rate":25,
                "speed":10,
                "splash":0
+            },{
+               "range":6 * 60,
+               "damage":200,
+               "rate":30,
+               "speed":10,
+               "splash":0
             }],
             "costs":[{
                "r1":187500,
@@ -2723,6 +3024,43 @@ package
                "r4":0,
                "time":6 * 24 * 60 * 60,
                "re":[[14,1,7]]
+            },{
+               "r1":5 * 60 * 60 * 1000,
+               "r2":250 * 60 * 1000,
+               "r3":5000000,
+               "r4":0,
+               "time":8 * 24 * 60 * 60,
+               "re":[[14,1,9]]
+            }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":187500,
+               "r2":250000,
+               "r3":62500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":750000,
+               "r2":1000000,
+               "r3":250000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":625 * 60 * 60,
+               "r2":50 * 60 * 1000,
+               "r3":750000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":5250000,
+               "r2":5000000,
+               "r3":1250000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[14,1,8]]
             }],
             "imageData":{
                "baseurl":"buildings/lightningtower/",
@@ -2746,9 +3084,28 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"25.png"}
             },
-            "quantity":[0,0,0,0,1,2,3,3,3],
-            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
-            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,0,0,0,1,2,3,3,3,3],
+            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000,20 * 60 * 60],
+            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60,5 * 60 * 60]
          },{
             "id":26,
             "group":2,
@@ -2847,7 +3204,7 @@ package
                "3":{"img":"26.3.png"},
                "4":{"img":"26.4.png"}
             },
-            "quantity":[0,0,0,1,1,2,2,2,2],
+            "quantity":[0,0,0,1,1,2,2,2,2,2],
             "hp":[100 * 60,10000,14000,20000,500 * 60],
             "repairTime":[3800,128 * 60,10640,260 * 60,380 * 60]
          },{
@@ -3700,7 +4057,7 @@ package
                "2":{"img":"51.2.png"},
                "3":{"img":"51.3.png"}
             },
-            "quantity":[0,0,0,1,1,1,1,1,1],
+            "quantity":[0,0,0,1,1,1,1,1,1,1],
             "hp":[0xfa0,0x1f40,16000,32000],
             "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60]
          },{
@@ -5596,7 +5953,7 @@ package
                   "shadowdestroyed":["shadow.destroyed.jpg",new Point(-41,19)]
                }
             },
-            "quantity":[1,1,1,1,1,1,1,1,1],
+            "quantity":[1,1,1,1,1,1,1,1,1,1],
             "hp":[3400],
             "repairTime":[4 * 60]
          },{
@@ -5627,13 +5984,13 @@ package
                   "shadowopen":["shadow.1.jpg",new Point(-132,10)]
                }
             },
-            "quantity":[0,0,0,0,1,1,1,1,1],
+            "quantity":[0,0,0,0,1,1,1,1,1,1],
             "hp":[10000],
             "repairTime":[18 * 60]
          },{
             "id":115,
             "group":3,
-            "order":10,
+            "order":5,
             "type":"tower",
             "name":"#b_flaktower#",
             "attackgroup":2,
@@ -5670,6 +6027,12 @@ package
                "rate":60,
                "speed":36,
                "splash":200
+            },{
+               "range":400,
+               "damage":350,
+               "rate":60,
+               "speed":40,
+               "splash":215
             }],
             "costs":[{
                "r1":215000,
@@ -5706,6 +6069,43 @@ package
                "r4":0,
                "time":6 * 24 * 60 * 60,
                "re":[[14,1,7]]
+            },{
+               "r1":16000000,
+               "r2":14000000,
+               "r3":4000000,
+               "r4":0,
+               "time":8 * 24 * 60 * 60,
+               "re":[[14,1,9]]
+            }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":215000,
+               "r2":280000,
+               "r3":62500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":850000,
+               "r2":20 * 60 * 1000,
+               "r3":250000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":2750000,
+               "r2":3400000,
+               "r3":750000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":5750000,
+               "r2":5200000,
+               "r3":1250000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[14,1,8]]
             }],
             "imageData":{
                "baseurl":"buildings/flaktower/",
@@ -5725,9 +6125,28 @@ package
                "baseurl":"buildingbuttons/",
                "1":{"img":"115.jpg"}
             },
-            "quantity":[0,0,0,0,1,2,2,2,2],
-            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
-            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,0,0,0,1,2,2,2,2,2],
+            "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000,20 * 60 * 60],
+            "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60,5 * 60 * 60]
          },{
             "id":116,
             "group":2,
@@ -5778,7 +6197,7 @@ package
                "baseurl":"buildingbuttons/",
                "1":{"img":"116.jpg"}
             },
-            "quantity":[0,0,0,0,1,1,1,1,1],
+            "quantity":[0,0,0,0,1,1,1,1,1,1],
             "hp":[150 * 60,16000,400 * 60,32000],
             "repairTime":[3800,128 * 60,10640,260 * 60]
          },{
@@ -5813,7 +6232,7 @@ package
                "baseurl":"buildingbuttons/",
                "1":{"img":"117.jpg"}
             },
-            "quantity":[0,0,0,0,4,6,8,10,12],
+            "quantity":[0,0,0,0,4,6,8,10,12,15],
             "damage":[10000],
             "hp":[10],
             "repairTime":[1]
@@ -5858,6 +6277,12 @@ package
                "rate":160,
                "speed":20,
                "splash":0
+            },{
+               "range":380,
+               "damage":2000,
+               "rate":160,
+               "speed":20,
+               "splash":0
             }],
             "costs":[{
                "r1":2000000,
@@ -5888,11 +6313,48 @@ package
                "time":4 * 24 * 60 * 60,
                "re":[[14,1,7]]
             },{
-               "r1":243 * 24 * 60 * 60,
-               "r2":0x1806f00,
+               "r1":16995200,
+               "r2":18194240,
                "r3":16796160,
                "r4":0,
                "time":6 * 24 * 60 * 60,
+               "re":[[14,1,8]]
+            },{
+               "r1":337 * 60 * 1000,
+               "r2":24202000,
+               "r3":19000000,
+               "r4":0,
+               "time":8 * 24 * 60 * 60,
+               "re":[[14,1,9]]
+            }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":2000000,
+               "r2":40 * 60 * 1000,
+               "r3":1600000,
+               "r4":0,
+               "time":12 * 60 * 60,
+               "re":[[14,1,5]]
+            },{
+               "r1":2600000,
+               "r2":3320000,
+               "r3":1880000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,6]]
+            },{
+               "r1":4480000,
+               "r2":4776000,
+               "r3":2184000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[14,1,7]]
+            },{
+               "r1":9664000,
+               "r2":9996800,
+               "r3":4331200,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
                "re":[[14,1,8]]
             }],
             "imageData":{
@@ -5917,9 +6379,61 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"118.png"}
             },
-            "quantity":[0,0,0,0,0,2,2,2,2],
-            "hp":[294 * 60,34400,750 * 60,58000,75500],
-            "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000]
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
+            "quantity":[0,0,0,0,0,2,2,2,2,2],
+            "hp":[294 * 60,34400,750 * 60,58000,75500,25 * 60 * 60],
+            "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000,69000]
+         },{
+            "id":119,
+            "group":3,
+            "order":10,
+            "type":"special",
+            "name":"#b_championchamber#",
+            "size":64,
+            "attackgroup":3,
+            "tutstage":28,
+            "sale":0,
+            "description":"championchamber_desc",
+            "costs":[{
+               "r1":500000,
+               "r2":500000,
+               "r3":250000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[14,1,4],[114,1,1]]
+            }],
+            "imageData":{
+               "baseurl":"buildings/champchamber/",
+               "1":{
+                  "top":["top.3.png",new Point(-66,-62)],
+                  "shadow":["shadow.3.jpg",new Point(-66,10)],
+                  "topdamaged":["top.3.damaged.png",new Point(-66,-54)],
+                  "shadowdamaged":["shadow.3.jpg",new Point(-66,4)],
+                  "topdestroyed":["top.3.png",new Point(-73,-32)],
+                  "shadowdestroyed":["shadow.3.jpg",new Point(-67,14)]
+               }
+            },
+            "quantity":[0,0,0,0,1,1,1,1,1,1],
+            "hp":[16000],
+            "repairTime":[60 * 60]
          }];
          _outpostProps = [{
             "id":1,
@@ -7380,6 +7894,36 @@ package
                "time":132 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":50000,
+               "r2":625 * 60,
+               "r3":12500,
+               "r4":0,
+               "time":135 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":250000,
+               "r2":187500,
+               "r3":62500,
+               "r4":0,
+               "time":405 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":1250000,
+               "r2":937500,
+               "r3":312500,
+               "r4":0,
+               "time":72900,
+               "re":[[112,1,1]]
+            },{
+               "r1":6250000,
+               "r2":4687500,
+               "r3":1562500,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/cannontower/",
                "1":{
@@ -7399,6 +7943,25 @@ package
             "thumbImgData":{
                "baseurl":"buildingthumbs/",
                "1":{"img":"20.png"}
+            },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
             },
             "quantity":[0,4],
             "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
@@ -7546,6 +8109,36 @@ package
                "time":132 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":625 * 60,
+               "r2":50000,
+               "r3":12500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":187500,
+               "r2":250000,
+               "r3":62500,
+               "r4":0,
+               "time":12 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":937500,
+               "r2":1250000,
+               "r3":312500,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":4687500,
+               "r2":6250000,
+               "r3":1562500,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/snipertower/",
                "1":{
@@ -7567,6 +8160,25 @@ package
             "thumbImgData":{
                "baseurl":"buildingthumbs/",
                "1":{"img":"21.png"}
+            },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
             },
             "quantity":[0,4],
             "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
@@ -7705,6 +8317,36 @@ package
                "time":108 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":500000,
+               "r2":250000,
+               "r3":100000,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":1000000,
+               "r2":500000,
+               "r3":200000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":2000000,
+               "r2":1000000,
+               "r3":400000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":4000000,
+               "r2":2000000,
+               "r3":800000,
+               "r4":0,
+               "time":3 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/lasertower/",
                "1":{
@@ -7726,6 +8368,25 @@ package
             "thumbImgData":{
                "baseurl":"buildingthumbs/",
                "1":{"img":"23.png"}
+            },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
             },
             "quantity":[0,2],
             "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400],
@@ -7846,6 +8507,36 @@ package
                "time":6 * 24 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":187500,
+               "r2":250000,
+               "r3":62500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":750000,
+               "r2":1000000,
+               "r3":250000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":625 * 60 * 60,
+               "r2":50 * 60 * 1000,
+               "r3":750000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":5250000,
+               "r2":5000000,
+               "r3":1250000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/lightningtower/",
                "1":{
@@ -7867,6 +8558,25 @@ package
             "thumbImgData":{
                "baseurl":"buildingthumbs/",
                "1":{"img":"25.png"}
+            },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
             },
             "quantity":[0,2],
             "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
@@ -10698,6 +11408,55 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"112.png"}
             },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort130_F1.png",new Point(-127,46)],
+                  "back":["fort130_B1.png",new Point(-122,-10)]
+               },
+               "2":{
+                  "front":["fort130_F2.png",new Point(-124,48)],
+                  "back":["fort130_B2.png",new Point(-120,-15)]
+               },
+               "3":{
+                  "front":["fort130_F3.png",new Point(-124,32)],
+                  "back":["fort130_B3.png",new Point(-110,-11)]
+               },
+               "4":{
+                  "front":["fort130_F4.png",new Point(-124,15)],
+                  "back":["fort130_B4.png",new Point(-116,-49)]
+               }
+            },
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":250000,
+               "r2":50000,
+               "r3":25000,
+               "r4":0,
+               "time":4 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":500000,
+               "r2":500000,
+               "r3":500000,
+               "r4":0,
+               "time":16 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":2500000,
+               "r2":2500000,
+               "r3":1000000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":5000000,
+               "r2":5000000,
+               "r3":2500000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "quantity":[1,1,1,1,1,1,1,1,1],
             "hp":[200000],
             "repairTime":[60 * 60]
@@ -10730,7 +11489,7 @@ package
          },{
             "id":115,
             "group":3,
-            "order":10,
+            "order":5,
             "type":"tower",
             "name":"#b_flaktower#",
             "attackgroup":2,
@@ -10804,6 +11563,36 @@ package
                "time":6 * 24 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":215000,
+               "r2":280000,
+               "r3":62500,
+               "r4":0,
+               "time":5 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":850000,
+               "r2":20 * 60 * 1000,
+               "r3":250000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":2750000,
+               "r2":3400000,
+               "r3":750000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":5750000,
+               "r2":5200000,
+               "r3":1250000,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/flaktower/",
                "1":{
@@ -10821,6 +11610,25 @@ package
             "upgradeImgData":{
                "baseurl":"buildingbuttons/",
                "1":{"img":"115.jpg"}
+            },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
             },
             "quantity":[0,2],
             "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
@@ -10951,6 +11759,36 @@ package
                "time":6 * 24 * 60 * 60,
                "re":[[112,1,1]]
             }],
+            "can_fortify":true,
+            "fortify_costs":[{
+               "r1":2000000,
+               "r2":40 * 60 * 1000,
+               "r3":1600000,
+               "r4":0,
+               "time":12 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":2600000,
+               "r2":3320000,
+               "r3":1880000,
+               "r4":0,
+               "time":24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":4480000,
+               "r2":4776000,
+               "r3":2184000,
+               "r4":0,
+               "time":2 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            },{
+               "r1":9664000,
+               "r2":9996800,
+               "r3":4331200,
+               "r4":0,
+               "time":4 * 24 * 60 * 60,
+               "re":[[112,1,1]]
+            }],
             "imageData":{
                "baseurl":"buildings/railguntower/",
                "1":{
@@ -10973,9 +11811,41 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"118.png"}
             },
+            "fortImgData":{
+               "baseurl":"buildings/fortifications/",
+               "1":{
+                  "front":["fort70_F1.png",new Point(-73,21)],
+                  "back":["fort70_B1.png",new Point(-70,-10)]
+               },
+               "2":{
+                  "front":["fort70_F2.png",new Point(-69,22)],
+                  "back":["fort70_B2.png",new Point(-65,-12)]
+               },
+               "3":{
+                  "front":["fort70_F3.png",new Point(-72,10)],
+                  "back":["fort70_B3.png",new Point(-68,-12)]
+               },
+               "4":{
+                  "front":["fort70_F4.png",new Point(-70,-11)],
+                  "back":["fort70_B4.png",new Point(-61,-36)]
+               }
+            },
             "quantity":[0,1],
             "hp":[294 * 60,34400,750 * 60,58000,75500],
             "repairTime":[48 * 60,96 * 60,192 * 60,23000,46000]
+         },{
+            "id":119,
+            "group":3,
+            "order":10,
+            "type":"special",
+            "name":"#b_championchamber#",
+            "size":64,
+            "attackgroup":3,
+            "tutstage":28,
+            "sale":0,
+            "description":"championchamber_desc",
+            "block":true,
+            "quantity":[0]
          }];
          if(BASE._isOutpost)
          {
@@ -11143,11 +12013,14 @@ package
          {
             UI2._top.mcZoom.gotoAndStop(1);
             _ROOT.stage.displayState = StageDisplayState.NORMAL;
+            ThrowStackTrace("goFullScreen");
          }
          _zoomed = false;
          MAP._GROUND.scaleY = 1;
          MAP._GROUND.scaleX = 1;
          MAP.Focus(0,0);
+         RefreshScreen();
+         UI_BOTTOM.Resize();
       }
       
       public static function Zoom(param1:MouseEvent = null) : *
@@ -11316,6 +12189,13 @@ package
             PLEASEWAIT.Hide();
             MapRoom.ShowDelayed();
          }
+         if(BASE._needCurrentCell && Boolean(GLOBAL._currentCell))
+         {
+            PLEASEWAIT.Hide();
+            BASE._needCurrentCell = false;
+            BASE._isOutpost = GLOBAL._currentCell._base == 3 ? 1 : 0;
+            BASE.LoadBase(null,null,GLOBAL._currentCell._baseID,"build");
+         }
       }
       
       public static function TickFast(param1:Event) : *
@@ -11466,6 +12346,7 @@ package
       {
          if(GLOBAL._advancedMap)
          {
+            BASE._needCurrentCell = false;
             MapRoom.Setup(_mapHome,MapRoom._worldID,MapRoom._inviteBaseID,MapRoom._viewOnly);
             MapRoom.Show();
          }
@@ -11670,7 +12551,7 @@ package
          hid = int(o.hid);
          s = s.split(",\"h\":\"" + h + "\"").join("");
          s = s.split(",\"hid\":" + hid).join("");
-         hash = MD5.hash(class_1.method_1(-391,-586) + s + hid * (hid % 11));
+         hash = MD5.hash("ilevbioghv890347ho3nrkljebv" + s + hid * (hid % 11));
          if(hash == h)
          {
             return true;
@@ -11685,6 +12566,7 @@ package
          {
             var _loc3_:Array = null;
             var _loc4_:int = 0;
+            var _loc5_:Array = null;
             var _loc2_:Object = _buildingProps[param1];
             if(_loc2_.group != 999)
             {
@@ -11709,6 +12591,22 @@ package
                      _loc4_++;
                   }
                }
+               if(_loc2_.fortify_costs)
+               {
+                  _loc5_ = _loc2_.fortify_costs;
+                  _loc4_ = 0;
+                  while(_loc4_ < _loc5_.length)
+                  {
+                     tmpArray.push(_loc5_[_loc4_].r1);
+                     tmpArray.push(_loc5_[_loc4_].r2);
+                     tmpArray.push(_loc5_[_loc4_].r3);
+                     tmpArray.push(_loc5_[_loc4_].r4);
+                     tmpArray.push(_loc5_[_loc4_].r5);
+                     tmpArray.push(_loc5_[_loc4_].time);
+                     tmpArray.push(_loc5_[_loc4_].re);
+                     _loc4_++;
+                  }
+               }
             }
          };
          tmpArray = [];
@@ -11726,6 +12624,10 @@ package
          var func:String = param1;
          var args:Array = param2;
          var exitFullScreen:Boolean = param3;
+         if(exitFullScreen)
+         {
+            ThrowStackTrace("CallJS dropping out of full screen");
+         }
          if(GLOBAL._local)
          {
             return;
@@ -11989,22 +12891,28 @@ package
          {
             _flags.plinko = 0;
          }
+         if(Boolean(_flags.split2) && _flags.splituserid2 < LOGIN._playerID)
+         {
+            if(GetABTestHash("speedup") >= 13)
+            {
+               _showStreamlinedSpeedUps = true;
+            }
+         }
          _flags.showProgressBar = 0;
       }
       
       public static function initChat() : void
       {
-         if(TUTORIAL._stage < TUTORIAL._endstage)
-         {
-            return;
-         }
          if(_chatInited)
          {
             if(_bymChat != null)
             {
                _bymChat.show();
             }
-            return;
+            if(_bymChat.IsConnected)
+            {
+               return;
+            }
          }
          if(_chatServers == null || _chatServers.length == 0)
          {
@@ -12040,10 +12948,6 @@ package
          _chatServer = _chatServers[_chatroomNumber % _chatServers.length];
          if(_bymChat == null)
          {
-            if(!chatUserIsInABTest())
-            {
-               return;
-            }
             _bymChat = new BYMChat(new ChatBox(),_chatServer);
             _chatInited = true;
             if(flagsShouldChatConnectButStayInvisible())
@@ -12053,35 +12957,71 @@ package
             _layerUI.addChild(_bymChat);
          }
          _bymChat.init();
-         GLOBAL.connectAndLogin();
+         if(!chatUserIsInABTest())
+         {
+            _bymChat.disableChat();
+            _bymChat.showUnavailableInYourArea();
+            return;
+         }
+         if(TUTORIAL._stage >= TUTORIAL._endstage && flagsShouldChatExist())
+         {
+            if(GLOBAL._chatEnabled && !_bymChat.IsConnected && _bymChat._open)
+            {
+               GLOBAL.connectAndLogin();
+            }
+         }
+         else
+         {
+            _bymChat.disableChat();
+         }
       }
       
       public static function connectAndLogin() : void
       {
          var _loc1_:String = null;
-         var _loc2_:String = null;
-         var _loc3_:String = null;
          if(!_chatInited)
          {
             return;
          }
-         if(_bymChat == null || BYMChat.serverInited)
+         if(!_validName)
+         {
+            return;
+         }
+         if(_bymChat == null || BYMChat.serverInited || _bymChat.IsConnected || _bymChat.IsJoined)
+         {
+            return;
+         }
+         if(!_bymChat._open)
+         {
+            return;
+         }
+         if(_bymChat.IsConnected)
          {
             return;
          }
          if(_bymChat)
          {
+            _loc1_ = getFirstNameLastInitial();
+            if(_loc1_ == null || _loc1_.length == 0)
+            {
+               _validName = false;
+               _bymChat.showInvalidName();
+               return;
+            }
             _bymChat.initServer();
-            _loc1_ = LOGIN._playerName;
-            if(_loc1_ != null && _loc1_.length > 0)
-            {
-               _loc1_ = _loc1_.replace(/ /,"_");
-            }
-            else
-            {
-               _loc1_ = "Dr";
-            }
-            _loc2_ = LOGIN._playerLastName;
+            GLOBAL._bymChat.login(_loc1_,LOGIN._playerID.toString(),BASE.BaseLevel().level);
+            _bymChat.show();
+            _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
+         }
+      }
+      
+      private static function getFirstNameLastInitial() : String
+      {
+         var _loc1_:String = LOGIN._playerName;
+         if(_loc1_ != null && _loc1_.length > 0)
+         {
+            _loc1_ = _loc1_.replace(/ /,"_");
+            var _loc2_:String = LOGIN._playerLastName;
             if(_loc2_ != null && _loc2_.length > 0)
             {
                _loc2_ = _loc2_.substr(0,1);
@@ -12095,18 +13035,12 @@ package
                }
                if(_loc2_ == null || _loc2_.length != 1)
                {
-                  _loc2_ = "X";
+                  return null;
                }
             }
-            if(_loc2_ == null || _loc2_.length != 1)
-            {
-               _loc2_ = "X";
-            }
-            _loc3_ = _loc1_ + _loc2_;
-            GLOBAL._bymChat.login(_loc3_,LOGIN._playerID.toString(),BASE.BaseLevel().level);
-            _bymChat.show();
-            _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
+            return _loc1_ + _loc2_;
          }
+         return null;
       }
       
       public static function setChatPosition(param1:DisplayObjectContainer = null, param2:Number = NaN, param3:Number = NaN) : void
@@ -12142,6 +13076,10 @@ package
             {
                _chatBlackList = String(_flags.chatblacklist).split(",");
             }
+            if(_flags.hasOwnProperty("countrycodeblacklist"))
+            {
+               _countryCodeBlackList = String(_flags.countrycodeblacklist).split(",");
+            }
          }
          if(_chatWhiteList != null && _chatWhiteList.indexOf(LOGIN._playerID.toString()) != -1)
          {
@@ -12151,11 +13089,7 @@ package
          {
             return false;
          }
-         if(_countryCode != "us" || KEYS != null && KEYS._language != "en")
-         {
-            return false;
-         }
-         if(_countryCode == "ph")
+         if(_countryCodeBlackList != null && _countryCodeBlackList.indexOf(_countryCode) != -1)
          {
             return false;
          }
@@ -12193,8 +13127,13 @@ package
       {
          var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
          var _loc2_:* = GLOBAL.GetGameHeight();
-         _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - _SCREENINIT.height) / 2,_loc1_,_loc2_);
+         _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - (_SCREENINIT.height + 0)) / 2,_loc1_,_loc2_);
          _SCREENCENTER = new Point(_SCREEN.x + _SCREEN.width / 2,_SCREEN.y + _SCREEN.height / 2);
+         _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 208);
+         if(UI_BOTTOM && UI_BOTTOM._missions && !UI_BOTTOM._missions._open)
+         {
+            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 30 - 0);
+         }
       }
       
       public static function ResizeLayer(param1:MovieClip) : void
@@ -12246,6 +13185,50 @@ package
          return new Point(_loc2_,_loc3_);
       }
       
+      public static function ThrowStackTrace(param1:String) : *
+      {
+      }
+      
+      public static function gotoURL(param1:String, param2:URLVariables = null, param3:Boolean = true, param4:Array = null) : void
+      {
+         var targetURL:String = null;
+         var url:String = param1;
+         var urlVars:URLVariables = param2;
+         var inNewWindow:Boolean = param3;
+         var logData:Array = param4;
+         var targetVars:URLVariables = new URLVariables();
+         var request:URLRequest = new URLRequest(url);
+         var windowScope:String = "_blank";
+         if(url)
+         {
+            targetURL = url;
+            if(urlVars)
+            {
+               request.data = urlVars;
+            }
+            if(inNewWindow)
+            {
+               windowScope = "_blank";
+            }
+            else
+            {
+               windowScope = "_parent";
+            }
+            try
+            {
+               navigateToURL(request,windowScope);
+            }
+            catch(e:Error)
+            {
+            }
+            if(logData)
+            {
+               LOGGER.Stat(logData);
+            }
+            return;
+         }
+      }
+      
       public static function flagsShouldChatDisplay() : Boolean
       {
          if(_flags == null)
@@ -12260,7 +13243,7 @@ package
          {
             return false;
          }
-         if(!chatUserIsInABTest())
+         if(MapRoom._open && GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
             return false;
          }
@@ -12290,7 +13273,7 @@ package
       
       public static function flagsShouldChatConnectButStayInvisible() : Boolean
       {
-         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 1 && chatUserIsInABTest();
+         return false;
       }
       
       public static function ValidateMushroomPick(param1:BFOUNDATION) : void
@@ -12347,6 +13330,45 @@ package
       private static function UpdateAFKTimer() : *
       {
          _afktimer.Set(Timestamp());
+      }
+      
+      public static function DisplayObjectPath(param1:DisplayObject) : String
+      {
+         var _loc2_:String = "";
+         do
+         {
+            if(param1.name)
+            {
+               _loc2_ = param1.name + (_loc2_ == "" ? "" : "." + _loc2_);
+            }
+         }
+         while(param1 = param1.parent, param1);
+         
+         return _loc2_;
+      }
+      
+      public static function GetABTestHash(param1:String) : int
+      {
+         var _loc2_:String = LOGIN._playerID.toString();
+         var _loc3_:String = MD5.hash(param1 + _loc2_);
+         var _loc4_:String = _loc3_.substr(_loc3_.length - 1,1);
+         switch(_loc4_)
+         {
+            case "a":
+               return 10;
+            case "b":
+               return 11;
+            case "c":
+               return 12;
+            case "d":
+               return 13;
+            case "e":
+               return 14;
+            case "f":
+               return 15;
+            default:
+               return int(_loc4_);
+         }
       }
    }
 }

@@ -16,7 +16,7 @@ package com.monsters.display
       public static function Get(param1:String, param2:int = 13, param3:int = 0, param4:Array = null) : BitmapData
       {
          var _loc5_:TextFormat = new TextFormat();
-         _loc5_.font = "GROBOLD";
+         _loc5_.font = "Groboldov Bold";
          _loc5_.size = param2;
          _loc5_.color = 0xffffff;
          _loc5_.letterSpacing = param3;
@@ -25,7 +25,7 @@ package com.monsters.display
          _loc6_.antiAliasType = AntiAliasType.NORMAL;
          _loc6_.width = 10 * 60;
          _loc6_.defaultTextFormat = _loc5_;
-         _loc6_.text = param1;
+         _loc6_.htmlText = param1;
          if(param4)
          {
             _loc6_.filters = param4;

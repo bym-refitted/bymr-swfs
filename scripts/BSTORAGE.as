@@ -12,15 +12,21 @@ package
       
       override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
       {
+         var _loc6_:int = param1;
+         if(_fortification.Get() > 0)
+         {
+            _loc6_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc6_ = _loc6_ / 100;
+         }
          if(param5)
          {
             if(param4 == 3)
             {
-               this.Loot(param1 * 3);
+               this.Loot(_loc6_ * 3);
             }
             else
             {
-               this.Loot(param1 * 0.5);
+               this.Loot(_loc6_ * 0.5);
             }
          }
          super.Damage(param1,param2,param3,param4,param5);

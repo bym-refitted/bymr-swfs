@@ -4,12 +4,10 @@ package
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class MONSTERBUNKER
    {
-      public static var _mc:*;
+      public static var _mc:MONSTERBUNKERPOPUP;
       
       public static var _open:Boolean;
       
@@ -44,15 +42,8 @@ package
          _open = true;
          GLOBAL.BlockerAdd();
          _mc = GLOBAL._layerWindows.addChild(new MONSTERBUNKERPOPUP());
-         _mc.x = 380;
-         _mc.y = 260;
-         _mc.scaleY = 0.9;
-         _mc.scaleX = 0.9;
-         TweenLite.to(_mc,0.2,{
-            "scaleX":1,
-            "scaleY":1,
-            "ease":Quad.easeOut
-         });
+         _mc.Center();
+         _mc.ScaleUp();
       }
       
       public static function Hide(param1:MouseEvent = null) : *

@@ -25,9 +25,7 @@ package com.monsters.ai
          imageComplete = function(param1:String, param2:BitmapData):void
          {
             bm = new Bitmap(param2);
-            addChild(bm);
-            bm.x = GLOBAL._SCREENCENTER.x - 520 - bm.width * 0.5;
-            bm.y = GLOBAL._SCREENCENTER.y - 250 - bm.height * 0.5;
+            mcImage.addChild(bm);
          };
          super();
          addEventListener(Event.ADDED_TO_STAGE,this.onAdd);
@@ -167,8 +165,7 @@ package com.monsters.ai
       
       public function Resize() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
          this.bm.x = GLOBAL._SCREENCENTER.x - 520 - this.bm.width * 0.5;
          this.bm.y = GLOBAL._SCREENCENTER.y - 250 - this.bm.height * 0.5;
       }

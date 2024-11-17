@@ -79,6 +79,10 @@ package
       
       public static var _shownFinal:Boolean = false;
       
+      public static var _creaturesFlung:SecNum = new SecNum(0);
+      
+      public static var _creaturesLoaded:SecNum = new SecNum(0);
+      
       public function ATTACK()
       {
          super();
@@ -89,6 +93,8 @@ package
          var _loc3_:BFOUNDATION = null;
          _flingerCooldown = 5;
          _flingerCooling = 0;
+         _creaturesFlung.Set(0);
+         _creaturesLoaded.Set(0);
          _flingerBucket = {};
          _flingCount = 0;
          _log = [];
@@ -316,7 +322,7 @@ package
                _attackLog.addChild(ss);
                ss.x = 613;
                ss.y = 115;
-               ss.initWith(_attackLog.shell,_attackLog.maskMC,_attackLog.maskMC.y,270);
+               ss.Init(_attackLog.shell,_attackLog.maskMC,0,_attackLog.maskMC.y,270);
                _attackLog.shell.mask = _attackLog.maskMC;
             }
             else
@@ -508,9 +514,9 @@ package
                   _loc3_ = Math.random() * 360 * 0.0174532925;
                   _loc4_ = Math.random() * param2 / 2;
                   _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
-                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData.t,MAP._BUILDINGTOPS,"bounce",_loc10_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData.hp.Get());
-                  _flungSpace.Add(GUARDIANCAGE.GetGuardianProperty(_loc8_,_loc10_,"bucket"));
-                  _loc11_ = "Level " + GLOBAL._playerGuardianData.l.Get() + " " + GUARDIANCAGE._guardians[CREEPS._guardian._creatureID].name;
+                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData.t,MAP._BUILDINGTOPS,"bounce",_loc10_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData.hp.Get(),GLOBAL._playerGuardianData.fb.Get());
+                  _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc10_,"bucket"));
+                  _loc11_ = "Level " + GLOBAL._playerGuardianData.l.Get() + " " + CHAMPIONCAGE._guardians[CREEPS._guardian._creatureID].name;
                   _loc6_.push([1,_loc11_]);
                   CREEPS._flungGuardian = true;
                }
@@ -541,6 +547,8 @@ package
                }
             }
          }
+         _creaturesFlung.Add(_creaturesLoaded.Get());
+         _creaturesLoaded.Set(0);
          if(_loc6_.length == 1 && _loc6_[0][0] == 1)
          {
             Log("fling" + _flingCount,"<font color=\"#0000FF\">" + KEYS.Get("attack_log_flungin",{"v1":GLOBAL.Array2String(_loc6_)}) + "</font>");
@@ -570,8 +578,9 @@ package
          }
          if(param1.substr(0,1) == "G")
          {
-            _loc2_ -= GUARDIANCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
+            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
             ATTACK._flingerBucket[param1] = new SecNum(1);
+            _creaturesLoaded.Add(1);
             SOUNDS.Play("click1");
          }
          else if(GLOBAL._advancedMap)
@@ -585,6 +594,7 @@ package
                if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
                {
                   GLOBAL._attackerMapCreatures[param1].Add(-1);
+                  _creaturesLoaded.Add(1);
                   if(!ATTACK._flingerBucket[param1])
                   {
                      ATTACK._flingerBucket[param1] = new SecNum(0);
@@ -603,6 +613,7 @@ package
             if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
             {
                GLOBAL._attackerCreatures[param1].Add(-1);
+               _creaturesLoaded.Add(1);
                if(!ATTACK._flingerBucket[param1])
                {
                   ATTACK._flingerBucket[param1] = new SecNum(0);
@@ -626,10 +637,12 @@ package
             else if(GLOBAL._advancedMap)
             {
                GLOBAL._attackerMapCreatures[param1].Add(1);
+               _creaturesLoaded.Add(-1);
             }
             else
             {
                GLOBAL._attackerCreatures[param1].Add(1);
+               _creaturesLoaded.Add(-1);
             }
             SOUNDS.Play("click1");
             return true;
@@ -645,7 +658,7 @@ package
          {
             if(_loc2_.substr(0,1) == "G")
             {
-               _loc1_ += GUARDIANCAGE.GetGuardianProperty(_loc2_.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
+               _loc1_ += CHAMPIONCAGE.GetGuardianProperty(_loc2_.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
             }
             else
             {
@@ -761,11 +774,11 @@ package
       {
       }
       
-      public static function Damage(param1:Number, param2:Number, param3:int, param4:Boolean = true) : void
+      public static function Damage(param1:Number, param2:Number, param3:int, param4:Boolean = true, param5:Boolean = false) : void
       {
          if(param4)
          {
-            ParticleDamage.Create(new Point(param1,param2),param3);
+            ParticleDamage.Create(new Point(param1,param2),param3,param5);
          }
       }
       
@@ -868,6 +881,10 @@ package
             {
                if(_loc7_._hp.Get() == 0 && _loc7_._repairing == 0 && _loc7_._type == 14 && GLOBAL._mode == "wmattack")
                {
+                  if(TRIBES.TribeForBaseID(BASE._wmID).id == 2)
+                  {
+                     ACHIEVEMENTS.Check("wm2hall",1);
+                  }
                   _loc1_ = true;
                   break;
                }

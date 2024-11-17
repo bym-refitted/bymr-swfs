@@ -32,6 +32,10 @@ package
       
       public static var _endstage:int = 205;
       
+      public static var _completed:Boolean = false;
+      
+      public static var _arrowRotation:int = 0;
+      
       private static const ARROW_STORE_BUY_1:Point = new Point(215,200);
       
       private static const ARROW_STORE_BUY_2:Point = new Point(225,200);
@@ -54,9 +58,9 @@ package
       
       private static var _rewindCondition:Function = null;
       
-      private static var BOBBOTTOMLEFTLOW:Point = new Point(10,510);
+      private static var BOBBOTTOMLEFTLOW:Point = new Point(10,560);
       
-      private static var BOBBOTTOMLEFTHIGH:Point = new Point(10,510);
+      private static var BOBBOTTOMLEFTHIGH:Point = new Point(10,560);
       
       private static var POINT_QUEST:Point = new Point(583,481);
       
@@ -75,24 +79,76 @@ package
       
       public static function Setup() : *
       {
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
          _container = GLOBAL._layerMessages;
          _doBob = null;
          _doArrow = null;
          _mcBob = new TUTORIALPOPUPMC();
          _mcArrow = new TUTORIALARROWMC();
          _currentStage = 0;
+         if(_secondWorker)
+         {
+            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+            {
+               _loc1_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
+               _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
+               _loc3_ = _loc1_ + _loc2_;
+               _loc3_ %= 10;
+               if(_loc3_ < 2)
+               {
+                  _secondWorker = false;
+               }
+            }
+            if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+            {
+               _loc4_ = GLOBAL.GetABTestHash("tutorial");
+               if(_loc4_ < 14)
+               {
+                  _secondWorker = false;
+               }
+            }
+         }
       }
       
       public static function Process() : *
       {
-         var _loc1_:BFOUNDATION = null;
+         var _loc1_:int = 0;
          var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:BFOUNDATION = null;
+         var _loc6_:int = 0;
          if(GLOBAL._flags.showProgressBar == 0)
          {
             if(BASE._isOutpost)
             {
-               _stage = 202;
+               _stage = _endstage;
                UI_WORKERS.Show();
+            }
+         }
+         if(_secondWorker)
+         {
+            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+            {
+               _loc1_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
+               _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
+               _loc3_ = _loc1_ + _loc2_;
+               _loc3_ %= 10;
+               if(_loc3_ < 2)
+               {
+                  _secondWorker = false;
+               }
+            }
+            if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+            {
+               _loc4_ = GLOBAL.GetABTestHash("tutorial");
+               if(_loc4_ < 14)
+               {
+                  _secondWorker = false;
+               }
             }
          }
          if(_stage < 200)
@@ -119,6 +175,13 @@ package
                {
                   _stage = 3 * 60;
                }
+               if(_stage > 59)
+               {
+                  if(QUESTS._global.worder_count > 1 && !_secondWorker)
+                  {
+                     _stage = _endstage;
+                  }
+               }
                if(_stage >= 110 && _stage < 130)
                {
                   _stage = 99;
@@ -127,20 +190,20 @@ package
                {
                   if(GLOBAL._bHousing)
                   {
-                     _loc1_ = GLOBAL._bHousing;
+                     _loc5_ = GLOBAL._bHousing;
                      if(CREATURES._creatureCount < 50)
                      {
-                        _loc2_ = 50;
-                        while(_loc2_ > CREATURES._creatureCount)
+                        _loc6_ = 50;
+                        while(_loc6_ > CREATURES._creatureCount)
                         {
-                           HOUSING.HousingStore("C1",new Point(_loc1_.x,_loc1_.y + 80),false);
-                           _loc2_--;
+                           HOUSING.HousingStore("C1",new Point(_loc5_.x,_loc5_.y + 80),false);
+                           _loc6_--;
                         }
                      }
                   }
                   else
                   {
-                     _stage = 202;
+                     _stage = _endstage;
                   }
                }
                if(_stage < 150 && GLOBAL._bHatchery)
@@ -159,6 +222,10 @@ package
             {
                _stage = 110;
             }
+         }
+         else if(_stage >= _endstage)
+         {
+            _completed = true;
          }
       }
       
@@ -210,6 +277,11 @@ package
             if(_stage > 205)
             {
                _stage = 205;
+               _completed = true;
+            }
+            if(_stage > 205)
+            {
+               _stage = _endstage;
             }
             if(!GLOBAL._catchup)
             {
@@ -241,6 +313,13 @@ package
          var _loc9_:SecNum = null;
          var _loc1_:Point = new Point();
          var _loc4_:MovieClip = new MovieClip();
+         if(_stage > 59)
+         {
+            if(QUESTS._global.worder_count > 1 && !_secondWorker)
+            {
+               _stage = _endstage;
+            }
+         }
          switch(_stage)
          {
             case 1:
@@ -375,7 +454,7 @@ package
                }
                BASE.BuildingDeselect();
                MAP._canScroll = false;
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_26"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectU1);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_26"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectU1);
                break;
             case 27:
                _advanceCondition = ConditionQuestCollectU1;
@@ -397,7 +476,7 @@ package
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_33"),new Point(166,242),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(2 * 60,230)],false,false,ConditionBuildingsSniper,ConditionRewindBuildingsClosed);
                break;
             case 34:
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_34"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_34"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
                break;
             case 35:
                MAP._canScroll = true;
@@ -431,7 +510,7 @@ package
                break;
             case 38:
                MAP._canScroll = true;
-               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
+               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
                break;
             case 39:
                _advanceCondition = ConditionQuestCollectT1;
@@ -452,7 +531,7 @@ package
                break;
             case 42:
                BUILDINGS._buildingID = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
                break;
             case 43:
                _advanceCondition = ConditionQuestCollectD1;
@@ -472,7 +551,7 @@ package
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_52"),ARROW_BUILDINGS_HOUSING,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(500,4 * 60)],false,false,ConditionBuildingsHousing,ConditionRewindBuildingsClosedB);
                break;
             case 53:
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_53"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_53"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
                break;
             case 54:
                SPRITES.SetupSprite("C1");
@@ -518,7 +597,7 @@ package
                }
                MAP.Focus(_loc5_.x,_loc5_.y);
                MAP.FocusTo(GLOBAL._bHousing.x,GLOBAL._bHousing.y,int(_loc6_ / 120),0,0,false);
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
                break;
             case 58:
                _advanceCondition = ConditionQuestCollectCR3;
@@ -578,7 +657,9 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_67"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(260,304)],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_67"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(235,394)],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
+               _arrowRotation = _mcArrow.rotation;
+               _mcArrow.rotation = 200;
                break;
             case 68:
                if(QUESTS._global.b5lvl > 0)
@@ -586,7 +667,8 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_68"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
+               _mcArrow.rotation = _arrowRotation;
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_68"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
                break;
             case 69:
                if(QUESTS._global.b5lvl > 0)
@@ -656,7 +738,7 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_93"),new Point(595,291),null,false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_93"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
                break;
             case 94:
                if(QUESTS._global.b11lvl > 0)
@@ -724,7 +806,7 @@ package
                }
                if(_freeSpeedup)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_98"),ARROW_STORE_BUY_4,null,false,false,ConditionConstructed11,ConditionRewindStoreClosed);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_98"),ARROW_STORE_BUY_4,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-150,100)],false,false,ConditionConstructed11,ConditionRewindStoreClosed);
                   _mcArrow.rotation = 70;
                   break;
                }
@@ -732,7 +814,7 @@ package
                break;
             case 99:
                MAP._canScroll = true;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_99"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectBunch);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_99"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectBunch);
                break;
             case 100:
                _advanceCondition = ConditionQuestCollectBunch;
@@ -790,7 +872,7 @@ package
                break;
             case 115:
                _timer = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_115"),new Point(5 * 60,60),["mc",(UI2._top as UI_TOP).mc as MovieClip,new Point(450,72)],false,false,ConditionTimer5);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_115"),new Point(5 * 60,60),["mc",(UI2._top as UI_TOP).mc as MovieClip,new Point(350,62)],false,false,ConditionTimer5);
                break;
             case 116:
                _timer = 0;
@@ -807,7 +889,7 @@ package
             case 131:
                QUESTS.Check("destroy_tribe1",1);
                MAP._canScroll = false;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_131"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],false,false,ConditionQuestsOpen,ConditionQuestCollectWM1);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_131"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],false,false,ConditionQuestsOpen,ConditionQuestCollectWM1);
                break;
             case 132:
                QUESTS.Check("destroy_tribe1",1);
@@ -846,7 +928,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_143"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect13);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_143"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect13);
                break;
             case 144:
                if(QUESTS._global.b13lvl > 0)
@@ -902,9 +984,15 @@ package
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_151"),new Point(130,217),["mc",_loc4_,new Point(55,40)],false,false,ConditionHatcheryProducing,ConditionRewindHatcheryClose);
                break;
             case 152:
-               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_152"),new Point(730,21),["mc",HATCHERY._mc as HATCHERY as MovieClip,new Point(346,-240)],false,false,ConditionHatcheryClose);
+               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_152"),new Point(730,21),["mc",HATCHERY._mc as MovieClip,new Point(346,-240)],false,false,ConditionHatcheryClose);
                break;
             case 160:
+               if(!_secondWorker)
+               {
+                  _stage = 169;
+                  Advance();
+                  break;
+               }
                if(QUESTS._global.b3lvl > 0)
                {
                   Advance();
@@ -935,7 +1023,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_163"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_163"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
                break;
             case 164:
                if(QUESTS._global.b3lvl > 0)
@@ -947,12 +1035,6 @@ package
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_164"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingF);
                break;
             case 170:
-               if(!_secondWorker)
-               {
-                  _stage = 179;
-                  Advance();
-                  break;
-               }
                if(QUESTS._global.b4lvl > 0)
                {
                   Advance();
@@ -983,7 +1065,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_173"),new Point(595,291),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_173"),new Point(595,421),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230)],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
                break;
             case 174:
                if(QUESTS._global.b4lvl > 0)
@@ -1005,17 +1087,10 @@ package
                Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_190"),new Point(740,70),["mc",UI2._top.mcProtected,new Point(5,20)],true,true);
                break;
             case 191:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15)],true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150)],true,true);
                break;
             case 192:
-               if(GLOBAL._flags.showProgressBar == 1)
-               {
-                  UI_PROGRESSBAR.Show();
-               }
-               else
-               {
-                  UI_WORKERS.Show();
-               }
+               UI_WORKERS.Show();
                BASE.Save();
                Advance();
                break;
@@ -1023,6 +1098,7 @@ package
                if(_stage >= 205)
                {
                   _stage = 205;
+                  _completed = true;
                   break;
                }
                Advance();
@@ -1893,15 +1969,18 @@ package
             _loc9_ = param3.x;
             _loc10_ = param3.y;
             _loc11_ = param3.parent;
-            while(_loc11_.parent)
+            if(_loc11_)
             {
-               _loc9_ += _loc11_.x;
-               _loc10_ += _loc11_.y;
-               if(_loc11_.parent == GLOBAL._ROOT.stage)
+               while(_loc11_.parent)
                {
-                  break;
+                  _loc9_ += _loc11_.x;
+                  _loc10_ += _loc11_.y;
+                  if(_loc11_.parent == GLOBAL._ROOT.stage)
+                  {
+                     break;
+                  }
+                  _loc11_ = _loc11_.parent;
                }
-               _loc11_ = _loc11_.parent;
             }
             if(_loc8_)
             {

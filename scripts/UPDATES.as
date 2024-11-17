@@ -13,7 +13,7 @@ package
       
       public static var _myUpdates:Array;
       
-      public static var _lastUpdateID:int;
+      public static var _lastUpdateID:Number;
       
       public static var _catchupList:Array;
       
@@ -114,6 +114,22 @@ package
             if(_loc2_)
             {
                _loc2_.UpgradeCancelC();
+            }
+         }
+         if(param1.data[1] == "BF")
+         {
+            _loc2_ = GetBuilding(param1.data[2]);
+            if(_loc2_)
+            {
+               _loc2_.FortifyB();
+            }
+         }
+         if(param1.data[1] == "BFC")
+         {
+            _loc2_ = GetBuilding(param1.data[2]);
+            if(_loc2_)
+            {
+               _loc2_.FortifyCancelC();
             }
          }
          if(param1.data[1] == "BMU")
@@ -337,7 +353,7 @@ package
          CreateB(param1,_loc3_,_lastUpdateID);
       }
       
-      public static function CreateB(param1:Array, param2:int, param3:int) : void
+      public static function CreateB(param1:Array, param2:int, param3:Number) : void
       {
          var url:String;
          var loadVars:Array;
@@ -345,7 +361,7 @@ package
          var handleLoadError:Function = null;
          var update:Array = param1;
          var id:int = param2;
-         var lastupdate:int = param3;
+         var lastupdate:Number = param3;
          handleLoadSuccessful = function(param1:Object):*
          {
             if(param1.error == 0)

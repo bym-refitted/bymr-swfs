@@ -4,8 +4,6 @@ package
    import com.adobe.serialization.json.JSON;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class CREATURELOCKER
    {
@@ -13,7 +11,7 @@ package
       
       public static var _open:Boolean;
       
-      public static var _mc:*;
+      public static var _mc:CREATURELOCKERPOPUP;
       
       public static var _creatures:Object;
       
@@ -30,12 +28,26 @@ package
       
       public static function Data(param1:Object) : void
       {
+         var _loc2_:int = 0;
          _lockerData = param1;
          _lockerData.C1 = {"t":2};
          if(_lockerData.C100)
          {
             _lockerData.C12 = _lockerData.C100;
             delete _lockerData.C100;
+         }
+         if(GLOBAL._mode == "build")
+         {
+            _loc2_ = 2;
+            while(_loc2_ <= 15)
+            {
+               if(Boolean(_lockerData["C" + _loc2_]) && _lockerData["C" + _loc2_].t == 2)
+               {
+                  ACHIEVEMENTS.Check("unlock_monster",1);
+                  break;
+               }
+               _loc2_++;
+            }
          }
       }
       
@@ -423,6 +435,7 @@ package
                   _lockerData[_unlocking].t = 2;
                   ACADEMY._upgrades[_unlocking] = {"level":1};
                   GLOBAL._playerCreatureUpgrades[_unlocking] = {"level":1};
+                  ACHIEVEMENTS.Check("unlock_monster",1);
                   delete _lockerData[_unlocking].s;
                   delete _lockerData[_unlocking].e;
                   creature = _creatures[_unlocking];
@@ -512,7 +525,7 @@ package
             SpeedUp = function(param1:MouseEvent = null):*
             {
                POPUPS.Next();
-               STORE.ShowB(3,1,["SP1","SP2","SP3","SP4"]);
+               STORE.SpeedUp("SP4");
             };
             _lockerData[creatureID] = {
                "t":1,
@@ -560,15 +573,8 @@ package
                _open = true;
                GLOBAL.BlockerAdd();
                _mc = GLOBAL._layerWindows.addChild(new CREATURELOCKERPOPUP());
-               _mc.x = 380;
-               _mc.y = 260;
-               _mc.scaleY = 0.8;
-               _mc.scaleX = 0.8;
-               TweenLite.to(_mc,0.2,{
-                  "scaleX":1,
-                  "scaleY":1,
-                  "ease":Quad.easeOut
-               });
+               _mc.Center();
+               _mc.ScaleUp();
             }
          }
          else

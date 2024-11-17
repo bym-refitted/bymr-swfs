@@ -31,7 +31,7 @@ package
       override public function TickFast(param1:Event = null) : *
       {
          super.TickFast(param1);
-         if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _producing && _canFunction)
+         if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _producing && _canFunction)
          {
             if((GLOBAL._mode == "build" || GLOBAL._mode == "help" || GLOBAL._mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
             {

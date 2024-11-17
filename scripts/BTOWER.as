@@ -125,7 +125,7 @@ package
       override public function Tick() : *
       {
          super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && !_repairing)
+         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && !_repairing)
          {
             CatchupRemove();
          }
@@ -135,7 +135,7 @@ package
       {
          var _loc1_:Boolean = false;
          var _loc2_:* = undefined;
-         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
+         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
             --this._fireTick;
             if(this._fireTick <= 0)
@@ -213,7 +213,13 @@ package
          {
             param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
          }
-         _hp.Add(-param1);
+         var _loc6_:int = param1;
+         if(_fortification.Get() > 0)
+         {
+            _loc6_ *= 100 - (_fortification.Get() * 10 + 10);
+            _loc6_ = _loc6_ / 100;
+         }
+         _hp.Add(-_loc6_);
          if(_hp.Get() <= 0)
          {
             _hp.Set(0);

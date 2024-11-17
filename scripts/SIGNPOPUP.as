@@ -148,7 +148,7 @@ package
       private function onAdd(param1:Event) : void
       {
          removeEventListener(Event.ADDED_TO_STAGE,this.onAdd);
-         this.Resize();
+         this.Center();
          stage.addEventListener(FullScreenEvent.FULL_SCREEN,this.detectFS);
          this.detectFS();
       }
@@ -195,10 +195,14 @@ package
          }
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = GLOBAL._SCREENCENTER.x;
-         this.y = GLOBAL._SCREENCENTER.y;
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

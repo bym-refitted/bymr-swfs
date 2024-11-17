@@ -90,14 +90,7 @@ package
                });
                _loc4_++;
             }
-            if(GLOBAL._flags.showProgressBar == 1)
-            {
-               UI_PROGRESSBAR.Update();
-            }
-            else
-            {
-               UI_WORKERS.Update();
-            }
+            UI_WORKERS.Update();
          }
       }
       
@@ -172,10 +165,10 @@ package
          while(_loc3_ < _stack.length)
          {
             _loc4_ = _stack[_loc3_].building;
-            if(_loc4_._type != 7 && _loc4_._countdownUpgrade.Get() + _loc4_._countdownBuild.Get() < _loc2_)
+            if(_loc4_._type != 7 && _loc4_._countdownUpgrade.Get() + _loc4_._countdownBuild.Get() + _loc4_._countdownFortify.Get() < _loc2_)
             {
                _loc1_ = _loc4_;
-               _loc2_ = _loc4_._countdownUpgrade.Get() + _loc4_._countdownBuild.Get();
+               _loc2_ = _loc4_._countdownUpgrade.Get() + _loc4_._countdownBuild.Get() + _loc4_._countdownFortify.Get();
             }
             _loc3_++;
          }
@@ -188,7 +181,7 @@ package
          var _loc1_:BFOUNDATION = GetBuilding();
          if(_loc1_)
          {
-            _loc2_ = _loc1_._countdownUpgrade.Get() + _loc1_._countdownBuild.Get();
+            _loc2_ = _loc1_._countdownUpgrade.Get() + _loc1_._countdownBuild.Get() + _loc1_._countdownFortify.Get();
             return STORE.GetTimeCost(_loc2_);
          }
          return 0;
@@ -258,6 +251,7 @@ package
       
       public static function Tick() : *
       {
+         var upgradingCount:int = 0;
          var i:int = 0;
          var s:* = undefined;
          var msg:String = null;
@@ -265,6 +259,7 @@ package
          try
          {
             _workingCount = 0;
+            upgradingCount = 0;
             i = 0;
             while(i < _stack.length)
             {
@@ -275,6 +270,10 @@ package
                if(s.active)
                {
                   ++_workingCount;
+                  if(Boolean(s.building) && s.building._countdownUpgrade.Get() > 0)
+                  {
+                     upgradingCount++;
+                  }
                   msg = "";
                   title = "";
                   if(s.building._hasWorker)
@@ -307,19 +306,16 @@ package
                }
                i++;
             }
+            if(upgradingCount < 3)
+            {
+               ACHIEVEMENTS.Check("upgrade_3",1);
+            }
          }
          catch(e:Error)
          {
             LOGGER.Log("err","Queue.Tick: " + e.message + " | " + e.getStackTrace());
          }
-         if(GLOBAL._flags.showProgressBar == 1)
-         {
-            UI_PROGRESSBAR.Update();
-         }
-         else
-         {
-            UI_WORKERS.Update();
-         }
+         UI_WORKERS.Update();
       }
       
       public static function Update(param1:String, param2:String, param3:String) : *
@@ -352,7 +348,7 @@ package
       
       public static function Speed(param1:MouseEvent) : *
       {
-         STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+         STORE.SpeedUp("SP4");
       }
       
       public static function Sort() : *

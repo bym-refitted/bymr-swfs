@@ -2,10 +2,9 @@ package
 {
    import com.adobe.crypto.MD5;
    import com.adobe.serialization.json.JSON;
+   import com.monsters.missions.*;
    import flash.events.MouseEvent;
    import flash.text.TextFieldAutoSize;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class QUESTS
    {
@@ -31,7 +30,6 @@ package
       public static function Setup() : *
       {
          var _loc2_:Object = null;
-         var _loc3_:Array = null;
          _displayedInstructions = false;
          _global = {
             "blvl":0,
@@ -108,6 +106,7 @@ package
             "name":"q_evil"
          }];
          _quests = [{
+            "order":1,
             "block":true,
             "list":false,
             "reward":[0,750,0,0,0],
@@ -116,12 +115,14 @@ package
             "name":"q_c0_name",
             "description":"q_c0_description",
             "hint":"q_c0_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-townhall.png",
+            "questicon":"icon_TH-L1.png",
             "streamTitle":"q_c0_streamtitle",
             "streamDescription":"q_c0_streamdescription",
             "streamImage":"quests/generic.png",
             "rules":{"b14lvl":1}
          },{
+            "order":2,
             "block":true,
             "list":false,
             "reward":[1100,800,0,0,0],
@@ -131,11 +132,13 @@ package
             "description":"q_c1_description",
             "hint":"q_c1_hint",
             "questimage":"completequest.png",
+            "questicon":"icon_twig.png",
             "streamTitle":"q_c1_streamtitle",
             "streamDescription":"q_c1_streamdescription",
             "streamImage":"quests/generic.png",
             "rules":{"brlvl":1}
          },{
+            "order":3,
             "block":true,
             "list":false,
             "reward":[500,25 * 60,500,500,1000],
@@ -144,12 +147,14 @@ package
             "name":"q_c8_name",
             "description":"q_c8_description",
             "hint":"q_c8_hint",
-            "questimage":"openforbusiness.v2.png",
+            "questimage":"building-store.png",
+            "questicon":"icon_store.png",
             "streamTitle":"q_c8_streamtitle",
             "streamDescription":"q_c8_streamdescription",
             "streamImage":"quests/openforbusiness.png",
             "rules":{"b12lvl":1}
          },{
+            "order":4,
             "list":true,
             "reward":[0xfa0,4600,500,0,0],
             "id":"U1",
@@ -158,11 +163,13 @@ package
             "description":"q_u1_description",
             "hint":"q_u1_hint",
             "questimage":"nextlevel.v2.png",
+            "questicon":"cat_construction.png",
             "streamTitle":"q_u1_streamtitle",
             "streamDescription":"q_u1_streamdescription",
             "streamImage":"quests/nextlevel.png",
             "rules":{"blvl":2}
          },{
+            "order":5,
             "list":true,
             "reward":[2000,2000,0,0,0],
             "id":"T1",
@@ -171,11 +178,13 @@ package
             "description":"q_t1_description",
             "hint":"q_t1_hint",
             "questimage":"building-sniper.png",
+            "questicon":"icon_sniper.png",
             "streamTitle":"q_t1_streamtitle",
             "streamDescription":"q_t1_streamdescription",
             "streamImage":"quests/sniper.png",
             "rules":{"b21lvl":1}
          },{
+            "order":6,
             "list":true,
             "reward":[800,800,1000,1000,0],
             "id":"D1",
@@ -183,12 +192,14 @@ package
             "name":"q_d1_name",
             "description":"q_d1_description",
             "hint":"q_d1_hint",
-            "questimage":"firstblood.png",
+            "questimage":"firstblood.v2.png",
+            "questicon":"icon_First-Blood.png",
             "streamTitle":"q_d1_streamtitle",
             "streamDescription":"q_d1_streamdescription",
-            "streamImage":"quests/firstblood.png",
+            "streamImage":"quests/firstblood.r3.png",
             "rules":{"kills":1}
          },{
+            "order":7,
             "list":true,
             "reward":[2000,2000,2000,2000,0],
             "id":"CR3",
@@ -197,11 +208,13 @@ package
             "description":"q_cr3_description",
             "hint":"q_cr3_hint",
             "questimage":"building-housing.png",
+            "questicon":"icon_housing.png",
             "streamTitle":"q_cr3_streamtitle",
             "streamDescription":"q_cr3_streamdescription",
             "streamImage":"quests/housing.png",
             "rules":{"b15lvl":1}
          },{
+            "order":8,
             "list":true,
             "reward":[0,0,0,1000,0],
             "id":"C18",
@@ -210,11 +223,13 @@ package
             "description":"q_c18_description",
             "hint":"q_c18_hint",
             "questimage":"building-flinger.png",
+            "questicon":"icon_flinger.png",
             "streamTitle":"q_c18_streamtitle",
             "streamDescription":"q_c18_streamdescription",
             "streamImage":"quests/flinger.png",
             "rules":{"b5lvl":1}
          },{
+            "order":9,
             "list":true,
             "reward":[0,0,0,1000,0],
             "id":"C17",
@@ -223,11 +238,13 @@ package
             "description":"q_c17_description",
             "hint":"q_c17_hint",
             "questimage":"building-map.png",
+            "questicon":"icon_maproom.png",
             "streamTitle":"q_c17_streamtitle",
             "streamDescription":"q_c17_streamdescription",
             "streamImage":"quests/maproom.png",
             "rules":{"b11lvl":1}
          },{
+            "order":10,
             "list":true,
             "reward":[6500,6500,500,25 * 60,0],
             "id":"WM1",
@@ -236,11 +253,13 @@ package
             "description":"q_wm1_description",
             "hint":"q_wm1_hint",
             "questimage":"tribe_legionnaire.v2.png",
+            "questicon":"icon_tribe_legonnaire.png",
             "streamTitle":"q_wm1_streamtitle",
             "streamDescription":"q_wm1_streamdescription",
             "streamImage":"quests/tribe-legionnaire.v2.png",
             "rules":{"destroy_tribe1":1}
          },{
+            "order":11,
             "list":true,
             "reward":[1000,1000,0,1000,0],
             "id":"CR2",
@@ -249,8 +268,10 @@ package
             "description":"q_cr2_description",
             "hint":"q_cr2_hint",
             "questimage":"building-hatchery.png",
+            "questicon":"icon_hatchery.png",
             "rules":{"b13lvl":1}
          },{
+            "order":36,
             "list":true,
             "reward":[20000,0,0,0,0],
             "id":"C51",
@@ -259,11 +280,13 @@ package
             "description":"q_c51_description",
             "hint":"q_c51_hint",
             "questimage":"building-catapult.png",
+            "questicon":"icon_catapult.png",
             "streamTitle":"q_c51_streamtitle",
             "streamDescription":"q_c51_streamdescription",
             "streamImage":"quests/catapult.png",
             "rules":{"b51lvl":1}
          },{
+            "order":15,
             "list":true,
             "reward":[2000,2000,1000,1000,0],
             "id":"S1",
@@ -271,12 +294,14 @@ package
             "name":"q_s1_name",
             "description":"q_s1_description",
             "hint":"q_s1_hint",
-            "questimage":"building-storage.png",
+            "questimage":"building-storage.v2.png",
+            "questicon":"icon_storage.png",
             "streamTitle":"q_s1_streamtitle",
             "streamDescription":"q_s1_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-storage.r3.png",
             "rules":{"b6lvl":1}
          },{
+            "order":13,
             "list":true,
             "reward":[1000,1000,500,500,0],
             "id":"M1",
@@ -285,11 +310,13 @@ package
             "description":"q_m1_description",
             "hint":"q_m1_hint",
             "questimage":"mushroomsoup.png",
+            "questicon":"icon_mushroomsoup.png",
             "streamTitle":"q_m1_streamtitle",
             "streamDescription":"q_m1_streamdescription",
-            "streamImage":"mushroomsoup.png",
+            "streamImage":"quests/mushroomsoup.png",
             "rules":{"mushroomspicked":5}
          },{
+            "order":19,
             "list":true,
             "reward":[1000,1000,5000,0,0],
             "id":"CR1",
@@ -297,12 +324,15 @@ package
             "name":"q_cr1_name",
             "description":"q_cr1_description",
             "hint":"q_cr1_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-monsterlocker.v2.png",
+            "questicon":"icon_monsterlocker.png",
             "streamTitle":"q_cr1_streamtitle",
             "streamDescription":"q_cr1_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-monsterlocker.r3.png",
+            "prereq":"C13",
             "rules":{"b8lvl":1}
          },{
+            "order":12,
             "list":true,
             "reward":[0x1f40,0x1f40,0x1f40,0x1f40,0],
             "id":"C3",
@@ -311,6 +341,7 @@ package
             "description":"q_c3_description",
             "hint":"q_c3_hint",
             "questimage":"nextlevel2.v2.png",
+            "questicon":"icon_nextlevel.png",
             "streamTitle":"q_c3_streamtitle",
             "streamDescription":"q_c3_streamdescription",
             "streamImage":"quests/nextlevel2.png",
@@ -321,6 +352,7 @@ package
                "b4lvl":2
             }
          },{
+            "order":16,
             "list":true,
             "reward":[0xfa0,0xfa0,0,500,0],
             "id":"C13",
@@ -329,11 +361,13 @@ package
             "description":"q_c13_description",
             "hint":"q_c13_hint",
             "questimage":"building-townhall.png",
+            "questicon":"icon_TH-L2.png",
             "streamTitle":"q_c13_streamtitle",
             "streamDescription":"q_c13_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-TH-L2.r3.png",
             "rules":{"b14lvl":2}
          },{
+            "order":14,
             "list":true,
             "reward":[2000,2000,0,0,0],
             "id":"T2",
@@ -341,12 +375,14 @@ package
             "name":"q_t2_name",
             "description":"q_t2_description",
             "hint":"q_t2_hint",
-            "questimage":"building-cannon.png",
+            "questimage":"building-cannon.v2.png",
+            "questicon":"icon_cannon.png",
             "streamTitle":"q_t2_streamtitle",
             "streamDescription":"q_t2_streamdescription",
-            "streamImage":"build-cannon.png",
+            "streamImage":"quests/building-cannon.r3.png",
             "rules":{"b20lvl":1}
          },{
+            "order":46,
             "list":true,
             "reward":[10000,10000,10000,0,0],
             "id":"T3",
@@ -354,12 +390,14 @@ package
             "name":"q_t3_name",
             "description":"q_t3_description",
             "hint":"q_t3_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-tesla.png",
+            "questicon":"icon_tesla.png",
             "streamTitle":"q_t3_streamtitle",
             "streamDescription":"q_t3_streamdescription",
             "streamImage":"build-lightning.png",
             "rules":{"b25lvl":1}
          },{
+            "order":23,
             "list":true,
             "reward":[20000,0,0,0,0],
             "id":"C9",
@@ -367,12 +405,14 @@ package
             "name":"q_c9_name",
             "description":"q_c9_description",
             "hint":"q_c9_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-twig-L3.png",
+            "questicon":"icon_B1-L3.png",
             "streamTitle":"q_c9_streamtitle",
             "streamDescription":"q_c9_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-twig-L3.r3.png",
             "rules":{"b1lvl":3}
          },{
+            "order":24,
             "list":true,
             "reward":[0,10000,0,0,0],
             "id":"C10",
@@ -380,12 +420,14 @@ package
             "name":"q_c10_name",
             "description":"q_c10_description",
             "hint":"q_c10_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-pebbles-L3.v2.png",
+            "questicon":"icon_B2-L3.png",
             "streamTitle":"q_c10_streamtitle",
             "streamDescription":"q_c10_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-pebble-L3.r3.png",
             "rules":{"b2lvl":3}
          },{
+            "order":25,
             "list":true,
             "reward":[0,0,2500,0,0],
             "id":"C11",
@@ -393,12 +435,14 @@ package
             "name":"q_c11_name",
             "description":"q_c11_description",
             "hint":"q_c11_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-putty-L3.v2.png",
+            "questicon":"icon_B3-L3.png",
             "streamTitle":"q_c11_streamtitle",
             "streamDescription":"q_c11_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-putty-L3.r3.png",
             "rules":{"b3lvl":3}
          },{
+            "order":26,
             "list":true,
             "reward":[0,0,0,2000,0],
             "id":"C12",
@@ -406,12 +450,14 @@ package
             "name":"q_c12_name",
             "description":"q_c12_description",
             "hint":"q_c12_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-goo-L3.v2.png",
+            "questicon":"icon_B4-L3.png",
             "streamTitle":"q_c12_streamtitle",
             "streamDescription":"q_c12_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-goo-L3.r3.png",
             "rules":{"b4lvl":3}
          },{
+            "order":27,
             "list":true,
             "reward":[0xfa0,0xfa0,2000,2000,0],
             "id":"S2",
@@ -419,25 +465,31 @@ package
             "name":"q_s2_name",
             "description":"q_s2_description",
             "hint":"q_s2_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-storage.v2.png",
+            "questicon":"icon_storage.png",
             "streamTitle":"q_s2_streamtitle",
             "streamDescription":"q_s2_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-storage.r3.png",
+            "prereq":"S1",
             "rules":{"b6lvl":2}
          },{
+            "order":70,
             "list":true,
+            "priority":1,
             "reward":[0,0,0,0,50],
             "id":"FAN",
             "group":3,
             "name":"q_fan_name",
             "description":"q_fan_description",
             "hint":"q_fan_hint",
-            "questimage":"fantastic.png",
+            "questimage":"fantastic.v2.png",
+            "questicon":"icon_fantastic.png",
             "streamTitle":"q_fan_streamtitle",
             "streamDescription":"q_fan_streamdescription",
-            "streamImage":"quests/fantastic.png",
+            "streamImage":"quests/fantastic.r3.png",
             "rules":{"bonus_fan":1}
          },{
+            "order":29,
             "list":true,
             "reward":[20000,0,0,0,0],
             "id":"C4",
@@ -445,12 +497,15 @@ package
             "name":"q_c4_name",
             "description":"q_c4_description",
             "hint":"q_c4_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-twig-L3.png",
+            "questicon":"icon_B1-L3.png",
             "streamTitle":"q_c4_streamtitle",
             "streamDescription":"q_c4_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-twig-L3.r3.png",
+            "prereq":"C9",
             "rules":{"b1lvl":4}
          },{
+            "order":62,
             "list":true,
             "reward":[1000,1000,500,500,0],
             "id":"M4",
@@ -459,11 +514,14 @@ package
             "description":"q_m4_description",
             "hint":"q_m4_hint",
             "questimage":"mushroombooty.png",
+            "questicon":"icon_mushroombooty.png",
             "streamTitle":"q_m4_streamtitle",
             "streamDescription":"q_m4_streamdescription",
             "streamImage":"quests/mushroombooty.png",
+            "prereq":"M1",
             "rules":{"goldmushroomspicked":5}
          },{
+            "order":30,
             "list":true,
             "reward":[0,20000,0,0,0],
             "id":"C5",
@@ -471,12 +529,15 @@ package
             "name":"q_c5_name",
             "description":"q_c5_description",
             "hint":"q_c5_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-pebbles-L3.v2.png",
+            "questicon":"icon_B2-L3.png",
             "streamTitle":"q_c5_streamtitle",
             "streamDescription":"q_c5_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-pebble-L3.r3.png",
+            "prereq":"C10",
             "rules":{"b2lvl":4}
          },{
+            "order":31,
             "list":true,
             "reward":[0,0,10000,0,0],
             "id":"C6",
@@ -484,12 +545,15 @@ package
             "name":"q_c6_name",
             "description":"q_c6_description",
             "hint":"q_c6_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-putty-L3.png",
+            "questicon":"icon_B3-L3.png",
             "streamTitle":"q_c6_streamtitle",
             "streamDescription":"q_c6_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-putty-L3.r3.png",
+            "prereq":"C11",
             "rules":{"b3lvl":4}
          },{
+            "order":32,
             "list":true,
             "reward":[0,0,0,10000,0],
             "id":"C7",
@@ -497,12 +561,15 @@ package
             "name":"q_c7_name",
             "description":"q_c7_description",
             "hint":"q_c7_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-goo-L3.png",
+            "questicon":"icon_B4-L3.png",
             "streamTitle":"q_c7_streamtitle",
             "streamDescription":"q_c7_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-goo-L3.r3.png",
+            "prereq":"C12",
             "rules":{"b4lvl":4}
          },{
+            "order":35,
             "list":true,
             "reward":[5000,5000,2500,2500,0],
             "id":"C14",
@@ -510,12 +577,15 @@ package
             "name":"q_c14_name",
             "description":"q_c14_description",
             "hint":"q_c14_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-townhall-L3.v4.png",
+            "questicon":"icon_TH-L3.png",
             "streamTitle":"q_c14_streamtitle",
             "streamDescription":"q_c14_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-TH-L3.r3.png",
+            "prereq":"C13",
             "rules":{"b14lvl":3}
          },{
+            "order":34,
             "list":true,
             "reward":[0x1f40,0x1f40,0xfa0,0xfa0,0],
             "id":"S3",
@@ -523,12 +593,15 @@ package
             "name":"q_s3_name",
             "description":"q_s3_description",
             "hint":"q_s3_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-storage.v2.png",
+            "questicon":"icon_storage.png",
             "streamTitle":"q_s3_streamtitle",
             "streamDescription":"q_s3_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-storage.r3.png",
+            "prereq":"S2",
             "rules":{"b6lvl":3}
          },{
+            "order":45,
             "list":true,
             "reward":[0,0,0,0,0],
             "id":"C15",
@@ -536,14 +609,17 @@ package
             "name":"q_c15_name",
             "description":"q_c15_description",
             "hint":"q_c15_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-townhall-L4.v2.png",
+            "questicon":"icon_TH-L4.png",
             "streamTitle":"q_c15_streamtitle",
             "streamDescription":"q_c15_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-TH-L4.r3.png",
             "reward_creatureid":"C9",
             "monster_reward":20,
+            "prereq":"C14",
             "rules":{"b14lvl":4}
          },{
+            "order":37,
             "list":true,
             "reward":[16000,16000,0x1f40,0x1f40,0],
             "id":"S4",
@@ -551,12 +627,15 @@ package
             "name":"q_s4_name",
             "description":"q_s4_description",
             "hint":"q_s4_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-storage.v2.png",
+            "questicon":"icon_storage.png",
             "streamTitle":"q_s4_streamtitle",
             "streamDescription":"q_s4_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-storage.r3.png",
+            "prereq":"S3",
             "rules":{"b6lvl":4}
          },{
+            "order":51,
             "list":true,
             "reward":[0,0,0,0,0],
             "id":"C16",
@@ -564,14 +643,17 @@ package
             "name":"q_c16_name",
             "description":"q_c16_description",
             "hint":"q_c16_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-townhall-L5.v2.png",
+            "questicon":"icon_TH-L5.png",
             "streamTitle":"q_c16_streamtitle",
             "streamDescription":"q_c16_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-TH-L5.r3.png",
             "reward_creatureid":"C14",
             "monster_reward":5,
+            "prereq":"C14",
             "rules":{"b14lvl":5}
          },{
+            "order":38,
             "list":true,
             "reward":[32000,32000,16000,16000,0],
             "id":"S5",
@@ -579,12 +661,15 @@ package
             "name":"q_s5_name",
             "description":"q_s5_description",
             "hint":"q_s5_hint",
-            "questimage":"completequest.png",
+            "questimage":"building-storage.v2.png",
+            "questicon":"icon_storage.png",
             "streamTitle":"q_s5_streamtitle",
             "streamDescription":"q_s5_streamdescription",
-            "streamImage":"quests/generic.png",
+            "streamImage":"quests/building-storage.r3.png",
+            "prereq":"S4",
             "rules":{"b6lvl":5}
          },{
+            "order":63,
             "list":true,
             "reward":[5000,5000,5000,5000,0],
             "id":"M2",
@@ -593,11 +678,14 @@ package
             "description":"q_m2_description",
             "hint":"q_m2_hint",
             "questimage":"mushroompizza.png",
+            "questicon":"icon_mushroompizza.png",
             "streamTitle":"q_m2_streamtitle",
             "streamDescription":"q_m2_streamdescription",
             "streamImage":"mushroompizza.png",
+            "prereq":"M1",
             "rules":{"mushroomspicked":100}
          },{
+            "order":64,
             "list":true,
             "reward":[5000,5000,5000,5000,0],
             "id":"M5",
@@ -606,11 +694,14 @@ package
             "description":"q_m5_description",
             "hint":"q_m5_hint",
             "questimage":"mushroombling.png",
+            "questicon":"icon_mushroombling.png",
             "streamTitle":"q_m5_streamtitle",
             "streamDescription":"q_m5_streamdescription",
             "streamImage":"quests/mushroombling.png",
+            "prereq":"M4",
             "rules":{"goldmushroomspicked":20}
          },{
+            "order":65,
             "list":true,
             "reward":[50000,50000,50000,50000,0],
             "id":"M6",
@@ -619,11 +710,14 @@ package
             "description":"q_m6_description",
             "hint":"q_m6_hint",
             "questimage":"slotmachine.png",
+            "questicon":"icon_slotmachine.png",
             "streamTitle":"q_m6_streamtitle",
             "streamDescription":"q_m6_streamdescription",
             "streamImage":"quests/slotmachine.png",
+            "prereq":"M5",
             "rules":{"goldmushroomspicked":50}
          },{
+            "order":66,
             "list":true,
             "reward":[10000,10000,20000,20000,0],
             "id":"M3",
@@ -632,11 +726,14 @@ package
             "description":"q_m3_description",
             "hint":"q_m3_hint",
             "questimage":"burger.png",
+            "questicon":"icon_burger.png",
             "streamTitle":"q_m3_streamtitle",
             "streamDescription":"q_m3_streamdescription",
             "streamImage":"quests/burger.png",
+            "prereq":"M2",
             "rules":{"mushroomspicked":200}
          },{
+            "order":44,
             "list":true,
             "reward":[0,0,1000,1000,0],
             "id":"BL1",
@@ -644,12 +741,14 @@ package
             "name":"q_bl1_name",
             "description":"q_bl1_description",
             "hint":"q_bl1_hint",
-            "questimage":"monsterjuice.png",
+            "questimage":"monsterjuice.v2.png",
+            "questicon":"icon_monsterjuice.png",
             "streamTitle":"q_bl1_streamtitle",
             "streamDescription":"q_bl1_streamdescription",
-            "streamImage":"quests/monsterjuice.png",
+            "streamImage":"quests/monsterjuice.r3.png",
             "rules":{"monstersblended":10}
          },{
+            "order":59,
             "list":true,
             "reward":[0,0,10000,10000,0],
             "id":"BL2",
@@ -657,12 +756,15 @@ package
             "name":"q_bl2_name",
             "description":"q_bl2_description",
             "hint":"q_bl2_hint",
-            "questimage":"smoothie.png",
+            "questimage":"smoothie.v2.png",
+            "questicon":"icon_smoothie.png",
             "streamTitle":"q_bl2_streamtitle",
             "streamDescription":"q_bl2_streamdescription",
-            "streamImage":"quests/smoothie.png",
+            "streamImage":"quests/smoothie.r3.png",
+            "prereq":"BL1",
             "rules":{"monstersblended":100}
          },{
+            "order":60,
             "list":true,
             "reward":[0,0,100000,100000,0],
             "id":"BL3",
@@ -670,12 +772,15 @@ package
             "name":"q_bl3_name",
             "description":"q_bl3_description",
             "hint":"q_bl3_hint",
-            "questimage":"monstershake.png",
+            "questimage":"monstershake.v2.png",
+            "questicon":"icon_monstershake.png",
             "streamTitle":"q_bl3_streamtitle",
             "streamDescription":"q_bl3_streamdescription",
-            "streamImage":"quests/monstershake.png",
+            "streamImage":"quests/monstershake.r3.png",
+            "prereq":"BL2",
             "rules":{"monstersblended":1000}
          },{
+            "order":61,
             "list":true,
             "reward":[0,0,1000000,1000000,0],
             "id":"BL4",
@@ -684,11 +789,14 @@ package
             "description":"q_bl4_description",
             "hint":"q_bl4_hint",
             "questimage":"margarita.png",
+            "questicon":"icon_magarita.png",
             "streamTitle":"q_bl4_streamtitle",
             "streamDescription":"q_bl4_streamdescription",
             "streamImage":"quests/margarita.png",
+            "prereq":"BL3",
             "rules":{"monstersblended":5000}
          },{
+            "order":28,
             "list":true,
             "reward":[1000,1000,1000,1000,0],
             "id":"BK1",
@@ -696,12 +804,14 @@ package
             "name":"q_bk1_name",
             "description":"q_bk1_description",
             "hint":"q_bk1_hint",
-            "questimage":"gatherer.png",
+            "questimage":"gatherer.v2.png",
+            "questicon":"icon_gatherer.png",
             "streamTitle":"q_bk1_streamtitle",
             "streamDescription":"q_bk1_streamdescription",
-            "streamImage":"quests/gatherer.png",
+            "streamImage":"quests/gatherer.r3.png",
             "rules":{"singleclickbank":1000}
          },{
+            "order":43,
             "list":true,
             "reward":[2000,2000,2000,2000,0],
             "id":"BK2",
@@ -709,12 +819,15 @@ package
             "name":"q_bk2_name",
             "description":"q_bk2_description",
             "hint":"q_bk2_hint",
-            "questimage":"trenchcoat.png",
+            "questimage":"trenchcoat.v2.png",
+            "questicon":"icon_trenchcoat.png",
             "streamTitle":"q_bk2_streamtitle",
             "streamDescription":"q_bk2_streamdescription",
-            "streamImage":"quests/trenchcoat.png",
+            "streamImage":"quests/trenchcoat.r3.png",
+            "prereq":"BK1",
             "rules":{"singleclickbank":20000}
          },{
+            "order":57,
             "list":true,
             "reward":[10000,10000,10000,10000,0],
             "id":"BK3",
@@ -722,12 +835,15 @@ package
             "name":"q_bk3_name",
             "description":"q_bk3_description",
             "hint":"q_bk3_hint",
-            "questimage":"wallstreet.png",
+            "questimage":"wallstreet.v2.png",
+            "questicon":"icon_wallstreet.png",
             "streamTitle":"q_bk3_streamtitle",
             "streamDescription":"q_bk3_streamdescription",
-            "streamImage":"quests/wallstreet.png",
+            "streamImage":"quests/wallstreet.r3.png",
+            "prereq":"BK2",
             "rules":{"singleclickbank":100000}
          },{
+            "order":58,
             "list":true,
             "reward":[50000,50000,50000,50000,0],
             "id":"BK4",
@@ -735,12 +851,15 @@ package
             "name":"q_bk4_name",
             "description":"q_bk4_description",
             "hint":"q_bk4_hint",
-            "questimage":"mogul.png",
+            "questimage":"mogul.v2.png",
+            "questicon":"icon_mogul.png",
             "streamTitle":"q_bk4_streamtitle",
             "streamDescription":"q_bk4_streamdescription",
-            "streamImage":"quests/mogul.png",
+            "streamImage":"quests/mogul.r3.png",
+            "prereq":"BK3",
             "rules":{"singleclickbank":500000}
          },{
+            "order":18,
             "list":true,
             "reward":[10000,10000,10000,10000,0],
             "id":"WM2",
@@ -749,11 +868,13 @@ package
             "description":"q_wm2_description",
             "hint":"q_wm2_hint",
             "questimage":"tribe_kozu.v2.png",
+            "questicon":"icon_tribe_kozu.png",
             "streamTitle":"q_wm2_streamtitle",
             "streamDescription":"q_wm2_streamdescription",
             "streamImage":"quests/tribe-kozu.v2.png",
             "rules":{"destroy_tribe2":1}
          },{
+            "order":33,
             "list":true,
             "reward":[20000,20000,20000,20000,0],
             "id":"WM3",
@@ -762,11 +883,13 @@ package
             "description":"q_wm3_description",
             "hint":"q_wm3_hint",
             "questimage":"tribe_abunakki.v2.png",
+            "questicon":"icon_tribe_abunakki.png",
             "streamTitle":"q_wm3_streamtitle",
             "streamDescription":"q_wm3_streamdescription",
             "streamImage":"quests/tribe-abunakki.v2.png",
             "rules":{"destroy_tribe3":1}
          },{
+            "order":50,
             "list":true,
             "reward":[40000,40000,40000,40000,0],
             "id":"WM4",
@@ -775,11 +898,13 @@ package
             "description":"q_wm4_description",
             "hint":"q_wm4_hint",
             "questimage":"tribe_dreadnaut.v2.png",
+            "questicon":"icon_tribe_deadnaut.png",
             "streamTitle":"q_wm4_streamtitle",
             "streamDescription":"q_wm4_streamdescription",
             "streamImage":"quests/tribe-dreadnaut.v2.png",
             "rules":{"destroy_tribe4":1}
          },{
+            "order":67,
             "list":true,
             "reward":[0,0,0,10000,0],
             "id":"HG1",
@@ -788,11 +913,13 @@ package
             "description":"q_cm1_description",
             "hint":"q_cm1_hint",
             "questimage":"G1_L1-150.png",
+            "questicon":"icon_G1-L1.png",
             "streamTitle":"q_cm1_streamtitle",
             "streamDescription":"q_cm1_streamdescription",
             "streamImage":"quests/champ_1_1.png",
             "rules":{"hatch_champ1":1}
          },{
+            "order":52,
             "list":true,
             "reward":[0,0,0,800000,0],
             "id":"UG1",
@@ -801,11 +928,14 @@ package
             "description":"q_cm2_description",
             "hint":"q_cm2_hint",
             "questimage":"G1_L6-150.png",
+            "questicon":"icon_G1-L6.png",
             "streamTitle":"q_cm2_streamtitle",
             "streamDescription":"q_cm2_streamdescription",
             "streamImage":"quests/champ_1_6.png",
+            "prereq":"HG1",
             "rules":{"upgrade_champ1":1}
          },{
+            "order":68,
             "list":true,
             "reward":[0,0,0,10000,0],
             "id":"HG2",
@@ -814,11 +944,13 @@ package
             "description":"q_cm3_description",
             "hint":"q_cm3_hint",
             "questimage":"G2_L1-150.png",
+            "questicon":"icon_G2-L1.png",
             "streamTitle":"q_cm3_streamtitle",
             "streamDescription":"q_cm3_streamdescription",
             "streamImage":"quests/champ_2_1.png",
             "rules":{"hatch_champ2":1}
          },{
+            "order":53,
             "list":true,
             "reward":[0,0,0,800000,0],
             "id":"UG2",
@@ -827,11 +959,14 @@ package
             "description":"q_cm4_description",
             "hint":"q_cm4_hint",
             "questimage":"G2_L6-150.png",
+            "questicon":"icon_G2-L6.png",
             "streamTitle":"q_cm4_streamtitle",
             "streamDescription":"q_cm4_streamdescription",
             "streamImage":"quests/champ_2_6.png",
+            "prereq":"HG2",
             "rules":{"upgrade_champ2":1}
          },{
+            "order":69,
             "list":true,
             "reward":[0,0,0,10000,0],
             "id":"HG3",
@@ -840,11 +975,13 @@ package
             "description":"q_cm5_description",
             "hint":"q_cm5_hint",
             "questimage":"G3_L1-150.png",
+            "questicon":"icon_G3-L1.png",
             "streamTitle":"q_cm5_streamtitle",
             "streamDescription":"q_cm5_streamdescription",
             "streamImage":"quests/champ_3_1.png",
             "rules":{"hatch_champ3":1}
          },{
+            "order":57,
             "list":true,
             "reward":[0,0,0,800000,0],
             "id":"UG3",
@@ -853,12 +990,16 @@ package
             "description":"q_cm6_description",
             "hint":"q_cm6_hint",
             "questimage":"G3_L6-150.png",
+            "questicon":"icon_G3-L6.png",
             "streamTitle":"q_cm6_streamtitle",
             "streamDescription":"q_cm6_streamdescription",
             "streamImage":"quests/champ_3_6.png",
+            "prereq":"HG3",
             "rules":{"upgrade_champ3":1}
          },{
+            "order":72,
             "list":true,
+            "priority":1,
             "reward":[1000,1000,1000,1000,0],
             "id":"GA1",
             "group":3,
@@ -866,12 +1007,15 @@ package
             "description":"q_ga1_description",
             "hint":"q_ga1_hint",
             "questimage":"brasscoin.png",
+            "questicon":"icon_brasscoin.png",
             "streamTitle":"q_ga1_streamtitle",
             "streamDescription":"q_ga1_streamdescription",
             "streamImage":"quests/brasscoin.png",
             "rules":{"gift_accept":5}
          },{
+            "order":73,
             "list":true,
+            "priority":1,
             "reward":[10000,10000,10000,10000,0],
             "id":"GA2",
             "group":3,
@@ -879,12 +1023,16 @@ package
             "description":"q_ga2_description",
             "hint":"q_ga2_hint",
             "questimage":"silvercoin.png",
+            "questicon":"icon_silvercoin.png",
             "streamTitle":"q_ga2_streamtitle",
             "streamDescription":"q_ga2_streamdescription",
             "streamImage":"quests/silvercoin.png",
+            "prereq":"GA1",
             "rules":{"gift_accept":25}
          },{
+            "order":73,
             "list":true,
+            "priority":1,
             "reward":[20000,20000,20000,20000,0],
             "id":"GA3",
             "group":3,
@@ -892,12 +1040,16 @@ package
             "description":"q_ga3_description",
             "hint":"q_ga3_hint",
             "questimage":"goldcoin.png",
+            "questicon":"icon_goldcoin.png",
             "streamTitle":"q_ga3_streamtitle",
             "streamDescription":"q_ga3_streamdescription",
             "streamImage":"quests/goldcoin.png",
+            "prereq":"GA2",
             "rules":{"gift_accept":50}
          },{
+            "order":17,
             "list":true,
+            "priority":1,
             "reward":[20000,20000,20000,20000,0],
             "id":"EM1",
             "group":0,
@@ -905,15 +1057,19 @@ package
             "description":"q_em1_description",
             "hint":"q_em1_hint",
             "questimage":"radiotower.png",
+            "questicon":"icon_radiotower.png",
             "streamTitle":"q_em1_streamtitle",
             "streamDescription":"q_em1_streamdescription",
             "streamImage":"quests/build-radio.png",
+            "prereq":"C13",
             "rules":{"b113lvl":1}
          }];
          if(!GLOBAL._flags.kongregate)
          {
             _quests.push({
+               "order":71,
                "list":true,
+               "priority":1,
                "reward":[0,0,0,0,25],
                "id":"INVITE1",
                "group":3,
@@ -921,13 +1077,16 @@ package
                "description":"q_invite1_description",
                "hint":"q_invite1_hint",
                "questimage":"friendlymonster.v2.png",
+               "questicon":"icon_shiny.png",
                "streamTitle":"q_invite1_streamtitle",
                "streamDescription":"q_invite1_streamdescription",
-               "streamImage":"quests/friendlymonster.v2.png",
+               "streamImage":"quests/friendlymonster.r3.png",
                "rules":{"bonus_invites":1}
             });
             _quests.push({
+               "order":74,
                "list":true,
+               "priority":1,
                "reward":[0,0,0,0,45],
                "id":"INVITE5",
                "group":3,
@@ -935,13 +1094,17 @@ package
                "description":"q_invite5_description",
                "hint":"q_invite5_hint",
                "questimage":"bandofmonsters.png",
+               "questicon":"icon_shiny.png",
                "streamTitle":"q_invite5_streamtitle",
                "streamDescription":"q_invite5_streamdescription",
                "streamImage":"quests/bandofmonsters.png",
+               "prereq":"INVITE1",
                "rules":{"bonus_invites":5}
             });
             _quests.push({
+               "order":76,
                "list":true,
+               "priority":1,
                "reward":[0,0,0,0,65],
                "id":"INVITE10",
                "group":3,
@@ -949,34 +1112,243 @@ package
                "description":"q_invite10_description",
                "hint":"q_invite10_hint",
                "questimage":"monsterparty.png",
+               "questicon":"icon_shiny.png",
                "streamTitle":"q_invite10_streamtitle",
                "streamDescription":"q_invite10_streamdescription",
                "streamImage":"quests/monsterparty.png",
+               "prereq":"INVITE5",
                "rules":{"bonus_invites":10}
             });
          }
-         var _loc1_:int = 2;
-         while(_loc1_ <= 13)
-         {
-            _loc2_ = CREATURELOCKER._creatures["C" + _loc1_];
-            _loc3_ = [0,0,10,10,10,2,15,15,15,20,20,5,2,5,5,1];
-            _quests.push({
-               "list":true,
-               "reward":[0,0,0,0,0],
-               "id":"UC" + _loc1_,
-               "group":1,
-               "name":"q_unlock_name",
-               "description":"q_unlock_description",
-               "keyvars":{"v1":_loc2_.name},
-               "hint":"q_unlock_hint",
-               "creatureid":"C" + _loc1_,
-               "questimage":"monster" + _loc1_ + ".v2.png",
-               "reward_creatureid":"C" + _loc1_,
-               "monster_reward":_loc3_[_loc1_],
-               "rules":{"UNLOCK":"C" + _loc1_}
-            });
-            _loc1_++;
-         }
+         var _loc1_:Array = [0,0,10,10,10,2,15,15,15,20,20,5,2,5,5,1];
+         _loc2_ = CREATURELOCKER._creatures["C2"];
+         _quests.push({
+            "order":20,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC2",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C2",
+            "questimage":"monster2.v2.png",
+            "questicon":"icon_C2.png",
+            "reward_creatureid":"C2",
+            "monster_reward":_loc1_[2],
+            "prereq":"CR1",
+            "rules":{"UNLOCK":"C2"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C3"];
+         _quests.push({
+            "order":21,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC3",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C3",
+            "questimage":"monster3.v2.png",
+            "questicon":"icon_C3.png",
+            "reward_creatureid":"C3",
+            "monster_reward":_loc1_[3],
+            "prereq":"UC2",
+            "rules":{"UNLOCK":"C3"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C4"];
+         _quests.push({
+            "order":22,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC4",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C4",
+            "questimage":"monster4.v2.png",
+            "questicon":"icon_C4.png",
+            "reward_creatureid":"C4",
+            "monster_reward":_loc1_[4],
+            "prereq":"UC3",
+            "rules":{"UNLOCK":"C2"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C5"];
+         _quests.push({
+            "order":39,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC5",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C5",
+            "questimage":"monster5.v2.png",
+            "questicon":"icon_C5.png",
+            "reward_creatureid":"C5",
+            "monster_reward":_loc1_[5],
+            "prereq":"C14",
+            "rules":{"UNLOCK":"C5"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C6"];
+         _quests.push({
+            "order":40,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC6",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C6",
+            "questimage":"monster6.v2.png",
+            "questicon":"icon_C6.png",
+            "reward_creatureid":"C6",
+            "monster_reward":_loc1_[6],
+            "prereq":"UC5",
+            "rules":{"UNLOCK":"C6"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C7"];
+         _quests.push({
+            "order":41,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC7",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C7",
+            "questimage":"monster7.v2.png",
+            "questicon":"icon_C7.png",
+            "reward_creatureid":"C7",
+            "monster_reward":_loc1_[7],
+            "prereq":"UC6",
+            "rules":{"UNLOCK":"C7"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C8"];
+         _quests.push({
+            "order":42,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC8",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C8",
+            "questimage":"monster8.v2.png",
+            "questicon":"icon_C8.png",
+            "reward_creatureid":"C8",
+            "monster_reward":_loc1_[8],
+            "prereq":"UC7",
+            "rules":{"UNLOCK":"C8"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C9"];
+         _quests.push({
+            "order":47,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC9",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C9",
+            "questimage":"monster9.v2.png",
+            "questicon":"icon_C9.png",
+            "reward_creatureid":"C9",
+            "monster_reward":_loc1_[9],
+            "prereq":"C15",
+            "rules":{"UNLOCK":"C9"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C10"];
+         _quests.push({
+            "order":48,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC10",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C10",
+            "questimage":"monster10.v2.png",
+            "questicon":"icon_C10.png",
+            "reward_creatureid":"C10",
+            "monster_reward":_loc1_[10],
+            "prereq":"UC9",
+            "rules":{"UNLOCK":"C10"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C11"];
+         _quests.push({
+            "order":49,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC11",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C11",
+            "questimage":"monster11.v2.png",
+            "questicon":"icon_C11.png",
+            "reward_creatureid":"C11",
+            "monster_reward":_loc1_[11],
+            "prereq":"UC10",
+            "rules":{"UNLOCK":"C11"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C12"];
+         _quests.push({
+            "order":56,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC12",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C12",
+            "questimage":"monster12.v2.png",
+            "questicon":"icon_C12.png",
+            "reward_creatureid":"C12",
+            "monster_reward":_loc1_[12],
+            "prereq":"UC13",
+            "rules":{"UNLOCK":"C12"}
+         });
+         _loc2_ = CREATURELOCKER._creatures["C13"];
+         _quests.push({
+            "order":55,
+            "list":true,
+            "reward":[0,0,0,0,0],
+            "id":"UC13",
+            "group":1,
+            "name":"q_unlock_name",
+            "description":"q_unlock_description",
+            "keyvars":{"v1":_loc2_.name},
+            "hint":"q_unlock_hint",
+            "creatureid":"C13",
+            "questimage":"monster13.v2.png",
+            "questicon":"icon_C13.png",
+            "reward_creatureid":"C13",
+            "monster_reward":_loc1_[13],
+            "prereq":"UC11",
+            "rules":{"UNLOCK":"C13"}
+         });
          _completed = {};
       }
       
@@ -1148,6 +1520,10 @@ package
          var h:int = 0;
          var questID:String = param1;
          var popup:Boolean = param2;
+         if(GLOBAL._mode != "build")
+         {
+            return false;
+         }
          if(BASE._pendingPurchase.length == 0)
          {
             found = false;
@@ -1433,15 +1809,8 @@ package
                BASE.BuildingDeselect();
                GLOBAL.BlockerAdd();
                _mc = GLOBAL._layerWindows.addChild(new QUESTSPOPUP());
-               _mc.x = GLOBAL._SCREENCENTER.x;
-               _mc.y = GLOBAL._SCREENCENTER.y;
-               _mc.scaleY = 0.9;
-               _mc.scaleX = 0.9;
-               TweenLite.to(_mc,0.2,{
-                  "scaleX":1,
-                  "scaleY":1,
-                  "ease":Quad.easeOut
-               });
+               _mc.Center();
+               _mc.ScaleUp();
             }
          }
       }
@@ -1450,11 +1819,15 @@ package
       {
          if(_open)
          {
-            GLOBAL.BlockerRemove();
             SOUNDS.Play("close");
             _open = false;
-            GLOBAL._layerWindows.removeChild(_mc);
-            _mc = null;
+            POPUPS.Next();
+            if(_mc)
+            {
+               GLOBAL.BlockerRemove();
+               GLOBAL._layerWindows.removeChild(_mc);
+               _mc = null;
+            }
          }
       }
       

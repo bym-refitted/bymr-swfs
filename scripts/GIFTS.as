@@ -99,16 +99,16 @@ package
          }
       }
       
-      public static function Show(param1:int, param2:Number, param3:String, param4:int, param5:String, param6:int) : *
+      public static function Show(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
       {
          var img:String;
          var LoadImageError:Function;
          var onImageLoaded:Function;
          var loader:Loader = null;
          var resourceID:int = param1;
-         var giftID:Number = param2;
+         var giftID:String = param2;
          var giftFromName:String = param3;
-         var giftFromID:int = param4;
+         var giftFromID:String = param4;
          var profilePic:String = param5;
          var giftValue:int = param6;
          _mc = new popup_gift();
@@ -161,16 +161,16 @@ package
          POPUPS.Push(_mc,GIFTS.Fund,[giftID,resourceID,giftValue],"",img,false,"gifts");
       }
       
-      public static function ShowSentGift(param1:int, param2:Number, param3:String, param4:int, param5:String, param6:int) : *
+      public static function ShowSentGift(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
       {
          var img:String;
          var LoadImageError:Function;
          var onImageLoaded:Function;
          var loader:Loader = null;
          var resourceID:int = param1;
-         var giftID:Number = param2;
+         var giftID:String = param2;
          var giftFromName:String = param3;
-         var giftFromID:int = param4;
+         var giftFromID:String = param4;
          var profilePic:String = param5;
          var giftValue:int = param6;
          var onePctNextLevelXP:int = 0;
@@ -213,16 +213,16 @@ package
          POPUPS.Push(_mc,GIFTS.AddXP,[giftID,giftValue],"",img,false,"gifts");
       }
       
-      public static function ShowSentInvite(param1:int, param2:Number, param3:String, param4:int, param5:String, param6:int) : *
+      public static function ShowSentInvite(param1:int, param2:String, param3:String, param4:String, param5:String, param6:int) : *
       {
          var img:String;
          var LoadImageError:Function;
          var onImageLoaded:Function;
          var loader:Loader = null;
          var resourceID:int = param1;
-         var giftID:Number = param2;
+         var giftID:String = param2;
          var giftFromName:String = param3;
-         var giftFromID:int = param4;
+         var giftFromID:String = param4;
          var profilePic:String = param5;
          var giftValue:int = param6;
          var onePctNextLevelXP:int = 0;
@@ -266,7 +266,7 @@ package
          POPUPS.Push(_mc,GIFTS.AddXP,[giftID,giftValue],"",img,false,"gifts");
       }
       
-      public static function Fund(param1:Number, param2:int, param3:int) : *
+      public static function Fund(param1:String, param2:int, param3:int) : *
       {
          _giftsAccepted.push(param1);
          BASE.Fund(param2,param3);
@@ -274,7 +274,7 @@ package
          LOGGER.Stat([19,param2,param3,int(100 / BASE._resources["r" + param2 + "max"] * param3)]);
       }
       
-      public static function AddXP(param1:Number, param2:uint) : void
+      public static function AddXP(param1:String, param2:uint) : void
       {
          _sentGiftsAccepted.push(param1);
          ++QUESTS._global.gift_accept;
@@ -283,20 +283,20 @@ package
          BASE.Save();
       }
       
-      public static function HelpFriend(param1:Number) : *
+      public static function HelpFriend(param1:String) : *
       {
-         var giftFromID:Number = param1;
+         var giftFromID:String = param1;
          return function(param1:MouseEvent = null):*
          {
             POPUPS.Next();
-            BASE.LoadBase(null,giftFromID,null,"help");
+            BASE.LoadBase(null,int(giftFromID),null,"help");
          };
       }
       
-      public static function GiveThanks(param1:int, param2:Number, param3:int) : *
+      public static function GiveThanks(param1:int, param2:String, param3:int) : *
       {
          var resourceID:int = param1;
-         var giftFromID:Number = param2;
+         var giftFromID:String = param2;
          var giftValue:int = param3;
          return function(param1:MouseEvent = null):*
          {

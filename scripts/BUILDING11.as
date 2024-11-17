@@ -52,6 +52,7 @@ package
       private function NewWorld() : *
       {
          PLEASEWAIT.Show("Entering New World....");
+         ACHIEVEMENTS.Check("map2",1);
          if(this.callPending)
          {
             return;
@@ -150,7 +151,7 @@ package
          Speedup = function(param1:MouseEvent = null):*
          {
             POPUPS.Next();
-            STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+            STORE.SpeedUp("SP4");
          };
          if(GLOBAL.StatGet("mrp") < n && !STORE._open)
          {
@@ -243,6 +244,10 @@ package
       override public function Setup(param1:Object) : *
       {
          super.Setup(param1);
+         if(_lvl.Get() > 1)
+         {
+            ACHIEVEMENTS.Check("map2",1);
+         }
          if(_countdownBuild.Get() == 0)
          {
             GLOBAL._bMap = this;

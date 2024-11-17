@@ -320,7 +320,8 @@ package com.monsters.ai
             {
                onImage = function(param1:String, param2:BitmapData):void
                {
-                  var _loc3_:Bitmap = new Bitmap(param2);
+                  var _loc3_:Bitmap = null;
+                  _loc3_ = new Bitmap(param2);
                   _loc3_.x = 155;
                   _loc3_.y = 196;
                   if(Boolean(_mc) && Boolean(_mc.parent))

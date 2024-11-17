@@ -138,7 +138,10 @@ package com.monsters.maproom_advanced
       public function Hide() : *
       {
          GLOBAL.BlockerRemove();
-         this.parent.removeChild(this);
+         if(this.parent)
+         {
+            this.parent.removeChild(this);
+         }
       }
       
       public function RelocateConfirm(param1:Boolean) : *
@@ -151,47 +154,55 @@ package com.monsters.maproom_advanced
             PLEASEWAIT.Hide();
             if(param1.error == 0)
             {
-               GLOBAL._resources.r1max -= GLOBAL._outpostCapacity.Get();
-               GLOBAL._resources.r2max -= GLOBAL._outpostCapacity.Get();
-               GLOBAL._resources.r3max -= GLOBAL._outpostCapacity.Get();
-               GLOBAL._resources.r4max -= GLOBAL._outpostCapacity.Get();
-               LOGGER.Stat([45,useShiny ? SHINYCOST.Get() : 0]);
-               Hide();
-               MapRoom._mc._popupInfoMine.Hide();
-               MapRoom.BookmarksClear();
-               GLOBAL._mapOutpost.shift();
-               if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+               if(param1.cantMoveTill)
                {
-                  GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                  MapRoom.Setup(GLOBAL._mapHome);
-               }
-               if(useShiny)
-               {
-                  GLOBAL._credits.Add(-SHINYCOST.Get());
+                  GLOBAL.Message(KEYS.Get("movebase_warning",{"v1":GLOBAL.ToTime(param1.cantMoveTill - param1.currenttime)}));
+                  Hide();
                }
                else
                {
-                  GLOBAL._resources.r1.Add(-RESOURCECOST.Get());
-                  GLOBAL._resources.r2.Add(-RESOURCECOST.Get());
-                  GLOBAL._resources.r3.Add(-RESOURCECOST.Get());
-                  GLOBAL._resources.r4.Add(-RESOURCECOST.Get());
+                  GLOBAL._resources.r1max -= GLOBAL._outpostCapacity.Get();
+                  GLOBAL._resources.r2max -= GLOBAL._outpostCapacity.Get();
+                  GLOBAL._resources.r3max -= GLOBAL._outpostCapacity.Get();
+                  GLOBAL._resources.r4max -= GLOBAL._outpostCapacity.Get();
+                  LOGGER.Stat([45,useShiny ? SHINYCOST.Get() : 0]);
+                  Hide();
+                  MapRoom._mc._popupInfoMine.Hide();
+                  MapRoom.BookmarksClear();
+                  GLOBAL._mapOutpost.shift();
+                  if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+                  {
+                     GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
+                     MapRoom.Setup(GLOBAL._mapHome);
+                  }
+                  if(useShiny)
+                  {
+                     GLOBAL._credits.Add(-SHINYCOST.Get());
+                  }
+                  else
+                  {
+                     GLOBAL._resources.r1.Add(-RESOURCECOST.Get());
+                     GLOBAL._resources.r2.Add(-RESOURCECOST.Get());
+                     GLOBAL._resources.r3.Add(-RESOURCECOST.Get());
+                     GLOBAL._resources.r4.Add(-RESOURCECOST.Get());
+                  }
+                  _cell._updated = false;
+                  _cell._dirty = true;
+                  _oldCell = MapRoom._homeCell;
+                  if(_oldCell)
+                  {
+                     _oldCell._updated = false;
+                     _oldCell._dirty = false;
+                  }
+                  else
+                  {
+                     LOGGER.Log("err","Null home cell when transfering base");
+                  }
+                  MapRoom.ClearCells();
+                  PLEASEWAIT.Show("Packing Up Yard");
+                  addEventListener(Event.ENTER_FRAME,RelocateComplete);
+                  MapRoom.Tick();
                }
-               _cell._updated = false;
-               _cell._dirty = true;
-               _oldCell = MapRoom._homeCell;
-               if(_oldCell)
-               {
-                  _oldCell._updated = false;
-                  _oldCell._dirty = false;
-               }
-               else
-               {
-                  LOGGER.Log("err","Null home cell when transfering base");
-               }
-               MapRoom.ClearCells();
-               PLEASEWAIT.Show("Packing Up Yard");
-               addEventListener(Event.ENTER_FRAME,RelocateComplete);
-               MapRoom.Tick();
             }
             else
             {

@@ -197,8 +197,8 @@ package com.monsters.radio
             }
             GLOBAL.BlockerAdd();
             _mc = new RADIOSETTINGSPOPUP();
-            _mc.x = GLOBAL._SCREENCENTER.x;
-            _mc.y = GLOBAL._SCREENCENTER.y;
+            _mc.Center();
+            _mc.ScaleUp();
             GLOBAL._layerWindows.addChild(_mc);
             _open = true;
          }

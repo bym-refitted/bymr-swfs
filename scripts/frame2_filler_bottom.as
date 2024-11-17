@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/958_frame2_filler_bottom_frame2_filler_bottom.png")]
+   [Embed(source="/_assets/969_frame2_filler_bottom_frame2_filler_bottom.png")]
    public dynamic class frame2_filler_bottom extends BitmapData
    {
       public function frame2_filler_bottom(param1:int = 81, param2:int = 23)

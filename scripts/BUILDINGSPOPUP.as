@@ -261,10 +261,14 @@ package
          }
       }
       
-      public function Resize() : void
+      public function Center() : void
       {
-         this.x = 0;
-         this.y = 0;
+         POPUPSETTINGS.AlignToUpperLeft(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

@@ -97,9 +97,7 @@ package com.monsters.mailbox
                _loc5_.y = _loc4_ * 60;
                _loc4_++;
             }
-            this.scroller.initWith(this.shell,mask_mc,mask_mc.y,mask_mc.height - 4,60);
-            this.scroller.hardObjectHeight = 60 * this.pool.length;
-            this.scroller.easing = 2;
+            this.scroller.Init(this.shell,mask_mc,0,mask_mc.y,mask_mc.height - 4,60);
          }
          if(this.currentSelection)
          {
@@ -108,7 +106,7 @@ package com.monsters.mailbox
          bg_mc.visible = true;
          addChild(this.shell);
          this.isOpen = true;
-         this.scroller.scrollTo(0);
+         this.scroller.ScrollTo(0);
          this.scroller.Show();
          stage.addEventListener(KeyboardEvent.KEY_DOWN,this.onKey);
       }
@@ -155,9 +153,7 @@ package com.monsters.mailbox
                _loc5_.y = _loc4_ * 60;
                _loc4_++;
             }
-            this.scroller.initWith(this.shell,mask_mc,mask_mc.y,mask_mc.height - 4,60);
-            this.scroller.hardObjectHeight = 60 * this.pool.length;
-            this.scroller.easing = 2;
+            this.scroller.Init(this.shell,mask_mc,0,mask_mc.y,mask_mc.height - 4,60);
          }
          if(this.currentSelection)
          {
@@ -166,7 +162,7 @@ package com.monsters.mailbox
          bg_mc.visible = true;
          addChild(this.shell);
          this.isOpen = true;
-         this.scroller.scrollTo(0);
+         this.scroller.ScrollTo(0);
          this.scroller.Show();
          stage.addEventListener(KeyboardEvent.KEY_DOWN,this.onKey);
       }
@@ -197,7 +193,7 @@ package com.monsters.mailbox
                {
                   _loc7_ = 0;
                }
-               this.scroller.scrollTo(_loc7_);
+               this.scroller.ScrollTo(_loc7_);
                return;
             }
             _loc5_++;

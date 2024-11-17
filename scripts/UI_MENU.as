@@ -110,6 +110,19 @@ package
          _loc4_ = this.bMap.x + this.bMap.width + this.woodmargin;
          this.wood.setSize(_loc4_,this.wood.height);
       }
+      
+      public function Resize() : void
+      {
+         if(this._loaded)
+         {
+            x = int(GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - (this.wood.width + 10));
+            y = int(GLOBAL._SCREENHUD.y - this.wood.height);
+            if(Boolean(UI_BOTTOM._missions) && Boolean(UI_BOTTOM._missions.frame))
+            {
+               y = int(UI_BOTTOM._missions.y + UI_BOTTOM._missions.frame.y - this.wood.height);
+            }
+         }
+      }
    }
 }
 

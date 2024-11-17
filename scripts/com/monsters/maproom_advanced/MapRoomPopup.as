@@ -85,7 +85,7 @@ package com.monsters.maproom_advanced
          {
             h = 768;
          }
-         r = new Rectangle(0 - (w - 760) / 2,0 - (h - 520) / 2,w,h);
+         r = new Rectangle(0 - (w - 760) / 2,0 - (h - 720) / 2,w,h);
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
             this._fullScreen = true;
@@ -887,7 +887,13 @@ package com.monsters.maproom_advanced
                _loc4_ = true;
             }
             _loc7_ = MapRoom.GetCell(_loc5_.X,_loc5_.Y);
-            if((_loc7_) && (!_loc5_._updated || param1) && _loc5_._dataAge <= 0)
+            if((_loc7_) && _loc5_.X == 10 && _loc5_.Y == 29)
+            {
+            }
+            if(_loc7_ && _loc5_.X == 10 && _loc5_.Y == 32)
+            {
+            }
+            if(_loc7_ && (!_loc5_._updated || param1) && _loc5_._dataAge <= 0)
             {
                _loc5_.Setup(_loc7_);
             }

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1802")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1830")]
    public dynamic class popup_prefab_enlarge_CLIP extends MovieClip
    {
       public var mcImage:MovieClip;

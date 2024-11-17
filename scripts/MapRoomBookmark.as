@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1846")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1900")]
    public dynamic class MapRoomBookmark extends MovieClip
    {
       public var tName:TextField;

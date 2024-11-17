@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1853")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1907")]
    public dynamic class MapRoomGuide_CLIP extends MovieClip
    {
       public var bContinue:Button_CLIP;

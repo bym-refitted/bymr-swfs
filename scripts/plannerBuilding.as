@@ -38,7 +38,7 @@ package
          mcSquare.mcOver.visible = false;
          if(this._building._class != "mushroom" && this._building._class != "immovable")
          {
-            if(this._building._countdownBuild.Get() + this._building._countdownUpgrade.Get() == 0)
+            if(this._building._countdownBuild.Get() + this._building._countdownUpgrade.Get() + this._building._countdownFortify.Get() == 0)
             {
                mcSquare.addEventListener(MouseEvent.CLICK,this.Click);
                mcSquare.buttonMode = true;
@@ -208,6 +208,10 @@ package
             if(this._building._countdownUpgrade.Get() > 0)
             {
                _loc2_ += " " + KEYS.Get("planner_bdgupgrading");
+            }
+            if(this._building._countdownFortify.Get() > 0)
+            {
+               _loc2_ += " " + KEYS.Get("planner_bdgfortifying");
             }
          }
          PLANNER._mc.tName.htmlText = _loc2_;

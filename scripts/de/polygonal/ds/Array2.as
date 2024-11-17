@@ -336,7 +336,7 @@ package de.polygonal.ds
          return _a[int(param1 / _w) * _w + int(param1 % _w)] = param2;
       }
       
-      public function method_2(param1:int, param2:int, param3:Object) : void
+      public function method_1(param1:int, param2:int, param3:Object) : void
       {
          _a[param2 * _w + param1] = param3;
       }
@@ -516,7 +516,7 @@ package de.polygonal.ds
          return _a;
       }
       
-      public function method_3(param1:int, param2:int) : Object
+      public function method_2(param1:int, param2:int) : Object
       {
          return _a[param2 * _w + param1];
       }

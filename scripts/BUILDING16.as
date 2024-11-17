@@ -225,7 +225,7 @@ package
                   }
                }
             }
-            BASE.Purchase("FQ",this._finishCost.Get(),"store");
+            BASE.Purchase("FQ",this._finishCost.Get(),"BUILDING16.FinishNow");
          }
          else
          {

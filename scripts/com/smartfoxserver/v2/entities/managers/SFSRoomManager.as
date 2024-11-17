@@ -45,8 +45,8 @@ package com.smartfoxserver.v2.entities.managers
       
       public function addRoom(param1:Room, param2:Boolean = true) : void
       {
-         this._roomsById.method_2(param1.id,param1);
-         this._roomsByName.method_2(param1.name,param1);
+         this._roomsById.method_1(param1.id,param1);
+         this._roomsByName.method_1(param1.name,param1);
          if(param2)
          {
             if(!this.containsGroup(param1.groupId))
@@ -76,7 +76,7 @@ package com.smartfoxserver.v2.entities.managers
       {
          var _loc3_:String = param1.name;
          param1.name = param2;
-         this._roomsByName.method_2(param2,param1);
+         this._roomsByName.method_1(param2,param1);
          this._roomsByName.clr(_loc3_);
       }
       
@@ -160,12 +160,12 @@ package com.smartfoxserver.v2.entities.managers
       
       public function getRoomById(param1:int) : Room
       {
-         return this._roomsById.method_3(param1) as Room;
+         return this._roomsById.method_2(param1) as Room;
       }
       
       public function getRoomByName(param1:String) : Room
       {
-         return this._roomsByName.method_3(param1) as Room;
+         return this._roomsByName.method_2(param1) as Room;
       }
       
       public function getRoomList() : Array
@@ -201,7 +201,7 @@ package com.smartfoxserver.v2.entities.managers
       
       public function removeRoomById(param1:int) : void
       {
-         var _loc2_:Room = this._roomsById.method_3(param1) as Room;
+         var _loc2_:Room = this._roomsById.method_2(param1) as Room;
          if(_loc2_ != null)
          {
             this._removeRoom(param1,_loc2_.name);
@@ -210,7 +210,7 @@ package com.smartfoxserver.v2.entities.managers
       
       public function removeRoomByName(param1:String) : void
       {
-         var _loc2_:Room = this._roomsByName.method_3(param1) as Room;
+         var _loc2_:Room = this._roomsByName.method_2(param1) as Room;
          if(_loc2_ != null)
          {
             this._removeRoom(_loc2_.id,param1);

@@ -207,7 +207,7 @@ package de.polygonal.ds
          }
       }
       
-      public function method_2(param1:int, param2:Object) : void
+      public function method_1(param1:int, param2:Object) : void
       {
          var _loc3_:LinkedStackNode = _head;
          param1 = _top - param1;
@@ -358,7 +358,7 @@ package de.polygonal.ds
          return _top == 0;
       }
       
-      public function method_3(param1:int) : Object
+      public function method_2(param1:int) : Object
       {
          var _loc2_:LinkedStackNode = _head;
          param1 = _top - param1;

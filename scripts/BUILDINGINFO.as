@@ -44,6 +44,10 @@ package
          if(_building._lvl.Get() > 0 && GLOBAL._buildingProps[param1._type - 1].costs && GLOBAL._buildingProps[param1._type - 1].costs.length > 1)
          {
             _loc2_ += "<br><b>" + KEYS.Get("bdg_infopop_levelnum",{"v1":param1._lvl.Get()}) + "</b>";
+            if(_building._fortification.Get() > 0)
+            {
+               _loc2_ += "<br><b>Fortified Level " + _building._fortification.Get() + "</b>";
+            }
             if(_building._class == "tower" && _building._type != 22 && GLOBAL._towerOverdrive && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp() && _building._countdownBuild.Get() == 0 && _building._countdownUpgrade.Get() == 0)
             {
                _loc2_ += "<font color=\"#0000ff\"> <br><b>(25% Boost)</b></font>";
@@ -124,6 +128,12 @@ package
                      _loc1_.push(["btn_stopupgrade",26]);
                   }
                }
+               else if(_building._countdownFortify.Get() > 0)
+               {
+                  _loc2_ = false;
+                  _loc1_.push(["btn_speedup",30,true]);
+                  _loc1_.push(["btn_stopfortify",26]);
+               }
                else
                {
                   if(_props.type == "resource" && TUTORIAL._stage != 20 && TUTORIAL._stage != 21)
@@ -140,7 +150,7 @@ package
                   if(_loc2_)
                   {
                      _loc10_ = false;
-                     if(_building._countdownBuild.Get() + _building._countdownUpgrade.Get() > 0 || _building._repairing > 0)
+                     if(_building._countdownBuild.Get() + _building._countdownUpgrade.Get() + _building._countdownFortify.Get() > 0 || _building._repairing > 0)
                      {
                         _loc1_.push(["btn_speedup",30,true]);
                         _loc10_ = true;
@@ -228,6 +238,10 @@ package
                      {
                         _loc1_.push(["btn_openlab",30,true]);
                      }
+                     else if(_props.id == 119)
+                     {
+                        _loc1_.push(["btn_openchamber",30,true]);
+                     }
                   }
                   if(_loc2_ && _props.type != "mushroom")
                   {
@@ -248,6 +262,10 @@ package
                      }
                      if(TUTORIAL._stage >= 200)
                      {
+                        if(_props.can_fortify)
+                        {
+                           _loc1_.push(["btn_fortify",30]);
+                        }
                         _loc1_.push(["btn_move",30]);
                         _loc1_.push(["btn_more",30]);
                      }
@@ -368,6 +386,10 @@ package
             {
                _loc7_ = KEYS.Get("ui_upgrading",{"v1":GLOBAL.ToTime(_building._countdownUpgrade.Get(),true,true)});
             }
+            else if(_building._countdownFortify.Get() > 0)
+            {
+               _loc7_ = KEYS.Get("ui_fortifying",{"v1":GLOBAL.ToTime(_building._countdownFortify.Get(),true,true)});
+            }
             else if(_building._class == "resource")
             {
                if(_building._producing)
@@ -439,7 +461,7 @@ package
             MAP._BUILDINGINFO.removeChild(_mc);
             _mc = null;
             _buttonsMC = null;
-            if(!STORE._open && !HATCHERY._open && !HATCHERYCC._open && !CREATURELOCKER._open && !ACADEMY._open && !MONSTERBUNKER._open)
+            if(!STORE._open && !HATCHERY._open && !HATCHERYCC._open && !CREATURELOCKER._open && !ACADEMY._open && !MONSTERBUNKER._open && !STORE._streamline)
             {
                BASE.BuildingDeselect();
             }
@@ -459,7 +481,7 @@ package
          {
             for each(_loc2_ in BASE._buildingsAll)
             {
-               if(_loc2_._class == "resource" && _loc2_._countdownUpgrade.Get() == 0 && _loc2_._countdownBuild.Get() == 0 && _loc2_._hp.Get() == _loc2_._hpMax.Get())
+               if(_loc2_._class == "resource" && _loc2_._countdownUpgrade.Get() == 0 && _loc2_._countdownBuild.Get() == 0 && _loc2_._countdownFortify.Get() == 0 && _loc2_._hp.Get() == _loc2_._hpMax.Get())
                {
                   _loc2_.Bank();
                }
@@ -489,7 +511,7 @@ package
          }
          if(param1.target.labelKey == "btn_juiceguardian")
          {
-            GUARDIANCAGE.ShowJuice();
+            CHAMPIONCAGE.ShowJuice();
          }
          if(param1.target.labelKey == "btn_openstore")
          {
@@ -510,6 +532,10 @@ package
          if(param1.target.labelKey == "btn_stopupgrade")
          {
             _building.UpgradeCancel();
+         }
+         if(param1.target.labelKey == "btn_stopfortify")
+         {
+            _building.FortifyCancel();
          }
          if(param1.target.labelKey == "btn_openhcc")
          {
@@ -541,7 +567,11 @@ package
          }
          if(param1.target.labelKey == "btn_opencage")
          {
-            GUARDIANCAGE.Show();
+            CHAMPIONCAGE.Show();
+         }
+         if(param1.target.labelKey == "btn_openchamber")
+         {
+            CHAMPIONCHAMBER.Show();
          }
          if(param1.target.labelKey == "btn_move")
          {
@@ -550,6 +580,10 @@ package
          if(param1.target.labelKey == "btn_upgrade")
          {
             BUILDINGOPTIONS.Show(_building,"upgrade");
+         }
+         if(param1.target.labelKey == "btn_fortify")
+         {
+            BUILDINGOPTIONS.Show(_building,"fortify");
          }
          if(param1.target.labelKey == "btn_upgradeall")
          {
@@ -565,13 +599,14 @@ package
          }
          if(param1.target.labelKey == "btn_speedup")
          {
-            if(Boolean(_building._repairing) || _building._countdownBuild.Get() + _building._countdownUpgrade.Get() > 0)
+            Update();
+            if(Boolean(_building._repairing) || _building._countdownBuild.Get() + _building._countdownUpgrade.Get() + _building._countdownFortify.Get() > 0)
             {
-               STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+               STORE.SpeedUp("SP4");
             }
             else if(_props.id == 8)
             {
-               STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+               STORE.SpeedUp("SP4");
             }
             else if(_props.id == 13 || _props.id == 16)
             {
@@ -579,7 +614,7 @@ package
             }
             else if(_props.id == 26)
             {
-               STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+               STORE.SpeedUp("SP4");
             }
             else if(_props.type == "resource")
             {

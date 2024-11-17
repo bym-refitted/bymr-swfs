@@ -26,7 +26,7 @@ package
       override public function Tick() : *
       {
          super.Tick();
-         if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _repairing != 1)
+         if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _repairing != 1)
          {
             delete BASE._buildingsCatchup["b" + _id];
          }
@@ -155,8 +155,9 @@ package
       
       override public function Constructed() : *
       {
-         super.Constructed();
          GLOBAL._bTownhall = this;
+         ACHIEVEMENTS.Check("thlevel",_lvl.Get());
+         super.Constructed();
       }
       
       override public function UpgradeB() : *
@@ -170,14 +171,16 @@ package
       
       override public function Upgraded() : *
       {
-         super.Upgraded();
          LOGGER.KongStat([2,_lvl.Get()]);
+         ACHIEVEMENTS.Check("thlevel",_lvl.Get());
+         super.Upgraded();
       }
       
       override public function Setup(param1:Object) : *
       {
          super.Setup(param1);
          GLOBAL._bTownhall = this;
+         ACHIEVEMENTS.Check("thlevel",_lvl.Get());
       }
    }
 }

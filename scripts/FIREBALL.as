@@ -148,7 +148,14 @@ package
                   if(this._targetBuilding._hp.Get() > 0)
                   {
                      this._targetBuilding.Damage(this._damage,this._targetBuilding._position.x,this._targetBuilding._position.y,1,true);
-                     ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage);
+                     if(this._targetBuilding._fortification.Get() > 0)
+                     {
+                        ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage * ((100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100));
+                     }
+                     else
+                     {
+                        ATTACK.Damage(this._startPoint.x,this._startPoint.y,this._damage);
+                     }
                   }
                }
             }

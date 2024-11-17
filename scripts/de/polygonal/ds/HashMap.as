@@ -47,7 +47,7 @@ package de.polygonal.ds
          {
             _loc6_ = _loc2_[_loc4_];
             _loc4_++;
-            _loc1_.method_2(_map[_loc6_]);
+            _loc1_.method_1(_map[_loc6_]);
          }
          return _loc1_;
       }
@@ -74,7 +74,7 @@ package de.polygonal.ds
          {
             _loc6_ = _loc2_[_loc4_];
             _loc4_++;
-            _loc1_.method_2(_loc6_);
+            _loc1_.method_1(_loc6_);
          }
          return _loc1_;
       }
@@ -134,7 +134,7 @@ package de.polygonal.ds
          return _size;
       }
       
-      public function method_2(param1:Object, param2:Object) : Boolean
+      public function method_1(param1:Object, param2:Object) : Boolean
       {
          var _loc3_:Object = param1;
          var _loc4_:Object = param2;
@@ -271,7 +271,7 @@ package de.polygonal.ds
          return _loc3_;
       }
       
-      public function method_3(param1:Object) : Object
+      public function method_2(param1:Object) : Object
       {
          var _loc2_:Object = param1;
          return _map[_loc2_];

@@ -2,14 +2,15 @@ package
 {
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
+   import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
+   import flash.display.Bitmap;
+   import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.*;
    import flash.geom.Rectangle;
    import flash.net.*;
-   import gs.TweenLite;
-   import gs.easing.Quad;
    
    public class STORE
    {
@@ -24,6 +25,12 @@ package
       public static var _storeData:Object;
       
       public static var _mc:STOREPOPUP;
+      
+      public static var _streamline:STREAMLINESPEEDUP_CLIP;
+      
+      public static var _streamline_time:Number;
+      
+      public static var _streamline_cost:Number;
       
       public static var _items:Object;
       
@@ -52,6 +59,8 @@ package
       public static var _facebookPurchaseItemCode:String;
       
       public static var _scroller:ScrollSet;
+      
+      public static var _zazzleMC:MovieClip;
       
       public static var _scrollPos:Number = 0;
       
@@ -113,36 +122,12 @@ package
       {
          var _loc3_:* = undefined;
          var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:* = undefined;
          if(param2 && param1 <= 5 * 60)
          {
             return 0;
          }
          _loc3_ = Math.ceil(param1 * 20 / 60 / 60);
          _loc4_ = int(Math.sqrt(param1 * 0.8));
-         if(GLOBAL._flags.split)
-         {
-            _loc5_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
-            _loc6_ = int(LOGIN._digits[LOGIN._digits.length - 3]);
-            _loc7_ = _loc5_ + _loc6_;
-            if(_loc7_ >= 10)
-            {
-               _loc7_ -= 10;
-            }
-            if(_loc7_ > 3)
-            {
-               if(_loc7_ <= 6)
-               {
-                  _loc4_ = int(Math.pow(param1 * 0.6,0.55));
-               }
-               else if(_loc7_ <= 9)
-               {
-                  _loc4_ = int(Math.pow(param1,0.55));
-               }
-            }
-         }
          return Math.min(_loc3_,_loc4_);
       }
       
@@ -250,6 +235,10 @@ package
             else if(GLOBAL._selectedBuilding._countdownUpgrade.Get() > 0)
             {
                _loc2_ = GetTimeCost(GLOBAL._selectedBuilding._countdownUpgrade.Get());
+            }
+            else if(GLOBAL._selectedBuilding._countdownFortify.Get() > 0)
+            {
+               _loc2_ = GetTimeCost(GLOBAL._selectedBuilding._countdownFortify.Get());
             }
             else if(GLOBAL._selectedBuilding._type == 8)
             {
@@ -501,15 +490,8 @@ package
                   {
                      _open = true;
                      _mc = new STOREPOPUP();
-                     _mc.x = GLOBAL._SCREENCENTER.x;
-                     _mc.y = GLOBAL._SCREENCENTER.y;
-                     _mc.scaleY = 0.9;
-                     _mc.scaleX = 0.9;
-                     TweenLite.to(_mc,0.2,{
-                        "scaleX":1,
-                        "scaleY":1,
-                        "ease":Quad.easeOut
-                     });
+                     _mc.Center();
+                     _mc.ScaleUp();
                      GLOBAL.BlockerAdd();
                      GLOBAL._layerWindows.addChild(_mc);
                      if(GLOBAL._newBuilding)
@@ -545,6 +527,8 @@ package
                   _mc.b3.addEventListener(MouseEvent.CLICK,SwitchClick(3,0,true));
                   _mc.b4.SetupKey("str_protection",false,0,0,"#ECBF88");
                   _mc.b4.addEventListener(MouseEvent.CLICK,SwitchClick(4,0,true));
+                  _mc.b5.SetupKey("str_zazzle",false,0,0,"#ECBF88");
+                  _mc.b5.addEventListener(MouseEvent.CLICK,SwitchClick(5,0,true));
                   Switch(param1,param2,_customPage);
                }
                else
@@ -560,6 +544,227 @@ package
          Update();
       }
       
+      public static function SpeedUp(param1:String) : void
+      {
+         var _loc2_:* = undefined;
+         var _loc3_:* = undefined;
+         var _loc4_:String = null;
+         var _loc5_:MONSTERLAB = null;
+         var _loc6_:String = null;
+         if(GLOBAL._showStreamlinedSpeedUps && TUTORIAL._completed)
+         {
+            CalcCost(param1);
+            _streamline = null;
+            _loc2_ = GLOBAL._selectedBuilding;
+            _loc3_ = _loc2_._countdownUpgrade.Get() + _loc2_._countdownBuild.Get() + _loc2_._countdownFortify.Get();
+            if(_loc2_._repairing)
+            {
+               _loc3_ = _loc2_._repairTime;
+            }
+            if(GLOBAL._mode == "build" && _loc2_)
+            {
+               _streamline = new STREAMLINESPEEDUP_CLIP();
+               if(_loc3_ > 0)
+               {
+                  if(_streamline_cost == 0)
+                  {
+                     _streamline.tTitle.x = -210;
+                     _streamline.tDescription.x = -210;
+                     _streamline.tTitle.htmlText = KEYS.Get("streamspd_close_title");
+                     _streamline.tDescription.htmlText = KEYS.Get("streamspd_close_desc");
+                     _streamline.mcInstant.tDescription.visible = false;
+                     _streamline.mcInstant.gCoin.visible = false;
+                     _streamline.mcInstant.gArrow.visible = false;
+                     _streamline.mcStoreIcon.visible = false;
+                     _streamline.mcInstant.bAction.Setup(KEYS.Get("str_finishnow"));
+                  }
+                  else
+                  {
+                     _streamline.tTitle.x = -100;
+                     _streamline.tDescription.x = -100;
+                     _streamline.tTitle.htmlText = KEYS.Get("streamspd_title");
+                     _streamline.tDescription.htmlText = KEYS.Get("streamspd_desc",{"v1":GLOBAL.ToTime(_streamline_time,false,false)});
+                     _streamline.mcInstant.tDescription.visible = true;
+                     _streamline.mcInstant.gCoin.visible = true;
+                     _streamline.mcInstant.gArrow.visible = true;
+                     _streamline.mcStoreIcon.visible = true;
+                     _streamline.mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("streamspd_upgrade") + "</b>";
+                     _streamline.mcInstant.bAction.Setup("Use " + _streamline_cost + " Shiny");
+                  }
+               }
+               else if(_loc2_._type == 8)
+               {
+                  if(CREATURELOCKER._unlocking != null)
+                  {
+                     _loc3_ = 0;
+                     _loc3_ = CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e - GLOBAL.Timestamp();
+                     _loc4_ = CREATURELOCKER._creatures[CREATURELOCKER._unlocking].name;
+                     if(_loc3_ > 0)
+                     {
+                        if(param1 == "SP1")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_closeenough");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_unlock",{"v1":_loc4_});
+                           if(_loc3_ <= 300)
+                           {
+                              _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_unlock",{"v1":_loc4_});
+                           }
+                        }
+                        else if(param1.substr(0,3) == "SP2")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_30minutes_unlocklabel");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_30minutes_unlockdesc",{"v1":_loc4_});
+                        }
+                        else if(param1.substr(0,3) == "SP3")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_60minutes_unlocklabel");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_60minutes_unlockdesc",{"v1":_loc4_});
+                        }
+                        else if(param1.substr(0,3) == "SP4")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_finishnow_unlocklabel",{"v1":_loc4_});
+                           _streamline.tDescription.htmlText = KEYS.Get("str_finishnow_unlocktimesave",{
+                              "v1":GLOBAL.ToTime(_loc3_,false,false),
+                              "v2":_loc4_
+                           });
+                        }
+                     }
+                  }
+               }
+               else if(_loc2_._type == 26)
+               {
+                  if(ACADEMY._monsterID != null)
+                  {
+                     _loc3_ = ACADEMY._upgrades[ACADEMY._monsterID].time.Get() - GLOBAL.Timestamp();
+                     _loc4_ = CREATURELOCKER._creatures[ACADEMY._monsterID].name;
+                     if(_loc3_ > 0)
+                     {
+                        if(param1 == "SP1")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_closeenough");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_traindesc",{"v1":_loc4_});
+                           if(_loc3_ <= 300)
+                           {
+                              _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_traindesc_ok",{"v1":_loc4_});
+                           }
+                        }
+                        else if(param1.substr(0,3) == "SP2")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_30minutes_trainlabel");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_30minutes_traindesc",{"v1":_loc4_});
+                        }
+                        else if(param1.substr(0,3) == "SP3")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_60minutes_trainlabel");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_60minutes_traindesc",{"v1":_loc4_});
+                        }
+                        else if(param1.substr(0,3) == "SP4")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_finishnow_trainlabel",{"v1":_loc4_});
+                           _streamline.tDescription.htmlText = KEYS.Get("str_finishnow_unlocktimesave",{
+                              "v1":GLOBAL.ToTime(_loc3_,false,false),
+                              "v2":_loc4_
+                           });
+                        }
+                     }
+                  }
+               }
+               else if(_loc2_._type == 116)
+               {
+                  _loc5_ = _loc2_ as MONSTERLAB;
+                  if(_loc5_._upgrading != null)
+                  {
+                     _loc3_ = _loc5_._upgradeFinishTime.Get() - GLOBAL.Timestamp();
+                     _loc4_ = KEYS.Get(CREATURELOCKER._creatures[_loc5_._upgrading].name);
+                     _loc6_ = KEYS.Get(MONSTERLAB._powerupProps[_loc5_._upgrading].name);
+                     if(_loc3_ > 0)
+                     {
+                        if(param1 == "SP1")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_closeenough");
+                           _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_powerupdesc",{
+                              "v1":_loc4_,
+                              "v2":_loc6_
+                           });
+                           if(_loc3_ <= 300)
+                           {
+                              _streamline.tDescription.htmlText = KEYS.Get("str_closeenough_powerupdesc_ok",{
+                                 "v1":_loc4_,
+                                 "v2":_loc6_
+                              });
+                           }
+                        }
+                        else if(param1.substr(0,3) == "SP2")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_30minutes_poweruplabel",{"v1":_loc6_});
+                           _streamline.tDescription.htmlText = KEYS.Get("str_30minutes_powerupdesc",{
+                              "v1":_loc4_,
+                              "v2":_loc6_
+                           });
+                        }
+                        else if(param1.substr(0,3) == "SP3")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_60minutes_poweruplabel",{"v1":_loc6_});
+                           _streamline.tDescription.htmlText = KEYS.Get("str_60minutes_powerupdesc",{
+                              "v1":_loc4_,
+                              "v2":_loc6_
+                           });
+                        }
+                        else if(param1.substr(0,3) == "SP4")
+                        {
+                           _streamline.tTitle.htmlText = KEYS.Get("str_finishnow_poweruplabel",{"v1":_loc6_});
+                           _streamline.tDescription.htmlText = KEYS.Get("str_finishnow_unlocktimesave",{
+                              "v1":GLOBAL.ToTime(_loc3_,false,false),
+                              "v2":_loc4_,
+                              "v3":_loc6_
+                           });
+                        }
+                     }
+                  }
+               }
+               if(_loc3_ <= 300)
+               {
+                  _streamline.mcInstant.bAction.Setup(KEYS.Get("str_finishnow"));
+               }
+               else
+               {
+                  _streamline.mcInstant.bAction.Setup("Use " + _streamline_cost + " Shiny");
+               }
+               _streamline.mcInstant.bAction.addEventListener(MouseEvent.CLICK,StreamlineBuy);
+               _streamline.mcInstant.gCoin.mouseEnabled = false;
+               POPUPS.Push(_streamline,null,null,null,null);
+            }
+         }
+         else if(param1 == "SP4")
+         {
+            STORE.ShowB(3,0,["SP1","SP2","SP3","SP4"]);
+         }
+         else if(param1 == "FIX")
+         {
+            STORE.ShowB(3,1,["FIX"]);
+         }
+      }
+      
+      public static function StreamlineBuy(param1:MouseEvent = null) : void
+      {
+         if(_streamline_time < 5 * 60)
+         {
+            STORE.BuyB("SP1");
+            POPUPS.Next();
+         }
+         else
+         {
+            if(_streamline_cost > BASE._credits.Get())
+            {
+               POPUPS.Next();
+               POPUPS.DisplayGetShiny(param1);
+               return;
+            }
+            STORE.BuyB("SP4");
+            POPUPS.Next();
+         }
+      }
+      
       public static function SwitchClick(param1:int, param2:int, param3:Boolean = false) : *
       {
          var tab:int = param1;
@@ -569,8 +774,493 @@ package
          {
             _customPage = null;
             Switch(tab,page,null,click);
-            _scroller.scrollTo(0,0);
+            _scroller.ScrollTo(0,0);
          };
+      }
+      
+      public static function CalcCost(param1:String, param2:Boolean = false) : *
+      {
+         var _loc4_:* = undefined;
+         var _loc5_:int = 0;
+         var _loc6_:* = undefined;
+         var _loc7_:* = undefined;
+         var _loc13_:String = null;
+         var _loc14_:String = null;
+         var _loc15_:String = null;
+         var _loc19_:String = null;
+         var _loc21_:* = null;
+         var _loc24_:MONSTERLAB = null;
+         var _loc25_:String = null;
+         var _loc26_:int = 0;
+         var _loc27_:int = 0;
+         var _loc28_:int = 0;
+         var _loc29_:int = 0;
+         var _loc30_:Boolean = false;
+         var _loc31_:Boolean = false;
+         var _loc32_:Boolean = false;
+         var _loc33_:Boolean = false;
+         var _loc34_:BFOUNDATION = null;
+         var _loc9_:String = param1;
+         var _loc10_:Object = _storeItems[_loc9_];
+         var _loc11_:Object = _storeData[_loc9_];
+         var _loc12_:int = 0;
+         var _loc16_:* = GLOBAL._selectedBuilding;
+         var _loc17_:Boolean = false;
+         var _loc18_:Array = _loc10_.c;
+         _loc19_ = _loc9_;
+         Variables();
+         if(_loc19_.substr(0,2) == "SP")
+         {
+            _loc19_ = _loc19_.substr(0,3);
+         }
+         if(Boolean(_storeInventory[_loc19_]) && _storeInventory[_loc19_].Get() > 0)
+         {
+         }
+         if(Boolean(_loc10_.fbc_cost) && _loc10_.fbc_cost[0] > 0)
+         {
+            _loc17_ = true;
+            _loc18_ = _loc10_.fbc_cost;
+         }
+         if(_loc9_.substr(0,2) == "SP")
+         {
+            if(_loc9_ != "SP1")
+            {
+               if(_loc9_.substr(0,3) != "SP2")
+               {
+                  if(_loc9_.substr(0,3) != "SP3")
+                  {
+                     if(_loc9_.substr(0,3) == "SP4")
+                     {
+                     }
+                  }
+               }
+            }
+            if(_loc16_)
+            {
+               _loc12_ = _loc16_._countdownUpgrade.Get() + _loc16_._countdownBuild.Get() + _loc16_._countdownFortify.Get();
+               if(_loc16_._repairing)
+               {
+                  _loc12_ = int(_loc16_._repairTime);
+               }
+               if(_loc12_ > 0)
+               {
+                  _loc14_ = "build";
+                  _loc15_ = "building";
+                  if(_loc16_._countdownUpgrade.Get() > 0)
+                  {
+                     _loc14_ = "upgrade";
+                     _loc15_ = "upgrading";
+                  }
+                  if(_loc16_._countdownFortify.Get() > 0)
+                  {
+                     _loc14_ = "fortify";
+                     _loc15_ = "fortifying";
+                  }
+                  if(_loc16_._repairing)
+                  {
+                     _loc14_ = "repair";
+                     _loc15_ = "repairing";
+                  }
+                  if(_loc9_ != "SP1")
+                  {
+                     if(_loc9_.substr(0,3) != "SP2")
+                     {
+                        if(_loc9_.substr(0,3) != "SP3")
+                        {
+                           if(_loc9_.substr(0,3) == "SP4")
+                           {
+                           }
+                        }
+                     }
+                  }
+               }
+               else if(_loc16_._type == 8)
+               {
+                  if(CREATURELOCKER._unlocking != null)
+                  {
+                     _loc12_ = 0;
+                     _loc12_ = CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e - GLOBAL.Timestamp();
+                     _loc13_ = CREATURELOCKER._creatures[CREATURELOCKER._unlocking].name;
+                     if(_loc12_ > 0)
+                     {
+                        if(_loc9_ != "SP1")
+                        {
+                           if(_loc9_.substr(0,3) != "SP2")
+                           {
+                              if(_loc9_.substr(0,3) != "SP3")
+                              {
+                                 if(_loc9_.substr(0,3) == "SP4")
+                                 {
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+               else if(_loc16_._type == 26)
+               {
+                  if(ACADEMY._monsterID != null)
+                  {
+                     _loc12_ = ACADEMY._upgrades[ACADEMY._monsterID].time.Get() - GLOBAL.Timestamp();
+                     _loc13_ = CREATURELOCKER._creatures[ACADEMY._monsterID].name;
+                     if(_loc12_ > 0)
+                     {
+                        if(_loc9_ != "SP1")
+                        {
+                           if(_loc9_.substr(0,3) != "SP2")
+                           {
+                              if(_loc9_.substr(0,3) != "SP3")
+                              {
+                                 if(_loc9_.substr(0,3) == "SP4")
+                                 {
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+               else if(_loc16_._type == 116)
+               {
+                  _loc24_ = _loc16_ as MONSTERLAB;
+                  if(_loc24_._upgrading != null)
+                  {
+                     _loc12_ = _loc24_._upgradeFinishTime.Get() - GLOBAL.Timestamp();
+                     _loc13_ = KEYS.Get(CREATURELOCKER._creatures[_loc24_._upgrading].name);
+                     _loc25_ = KEYS.Get(MONSTERLAB._powerupProps[_loc24_._upgrading].name);
+                     if(_loc12_ > 0)
+                     {
+                        if(_loc9_ != "SP1")
+                        {
+                           if(_loc9_.substr(0,3) != "SP2")
+                           {
+                              if(_loc9_.substr(0,3) != "SP3")
+                              {
+                                 if(_loc9_.substr(0,3) == "SP4")
+                                 {
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         else if(_loc9_.substr(0,3) == "BEW")
+         {
+            if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+            {
+               _loc26_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
+               _loc27_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
+               _loc28_ = _loc26_ + _loc27_;
+               _loc28_ = _loc28_ % 10;
+               if(_loc28_ < 2)
+               {
+                  _loc10_.c = [1000,1000,1000,1000];
+               }
+            }
+         }
+         else if(_loc9_ != "BST")
+         {
+            if(_loc9_ != "ENL")
+            {
+               if(_loc9_ != "BIP")
+               {
+                  if(_loc9_ != "MUSK")
+                  {
+                     if(_loc9_ != "HOD")
+                     {
+                        if(_loc9_ != "HOD2")
+                        {
+                           if(_loc9_ != "HOD3")
+                           {
+                              if(_loc9_ != "PRO1")
+                              {
+                                 if(_loc9_ != "PRO2")
+                                 {
+                                    if(_loc9_ != "PRO3")
+                                    {
+                                       if(_loc9_ != "TOD")
+                                       {
+                                          if(_loc9_ != "MOD")
+                                          {
+                                             if(_loc9_ != "MDOD")
+                                             {
+                                                if(_loc9_ == "MSOD")
+                                                {
+                                                }
+                                             }
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         _loc4_ = 0;
+         _loc5_ = int(_loc10_.c.length);
+         if(_loc11_)
+         {
+            _loc4_ = _loc11_.q;
+         }
+         if(_loc10_.i)
+         {
+            _loc4_ = 0;
+         }
+         _loc6_ = "<b>" + _loc10_.t + "</b><br>" + _loc10_.d;
+         if(_loc9_ == "BIP" && _storeData.BIP && _storeData.BIP.q < 10)
+         {
+            _loc6_ += " (Total increase of " + (_storeData.BIP.q + 1) * 10 + "%)";
+         }
+         var _loc20_:String = "";
+         if(_loc9_.substr(0,2) == "BR" && _loc10_.c[0] == 0)
+         {
+            _loc19_ = _loc9_;
+            if(_loc19_.substr(0,2) == "SP")
+            {
+               _loc19_ = _loc19_.substr(0,3);
+            }
+            if(!(_storeInventory[_loc19_] && _storeInventory[_loc19_].Get() > 0))
+            {
+               _loc20_ = KEYS.Get("str_prob_cantbuymore");
+            }
+         }
+         if(_loc9_.substr(0,2) == "SP")
+         {
+            if(!_loc16_)
+            {
+               _loc20_ = KEYS.Get("str_prob_nobuilding");
+            }
+            else if(_loc16_)
+            {
+               _loc12_ = 0;
+               if(_loc16_._repairing)
+               {
+                  _loc12_ = int(_loc16_._repairTime);
+               }
+               else if(_loc16_._countdownUpgrade.Get() + _loc16_._countdownBuild.Get() + _loc16_._countdownFortify.Get() > 0)
+               {
+                  _loc12_ = _loc16_._countdownUpgrade.Get() + _loc16_._countdownBuild.Get() + _loc16_._countdownFortify.Get();
+               }
+               else
+               {
+                  if(_loc16_._type == 8 && CREATURELOCKER._unlocking != null)
+                  {
+                     _loc12_ = CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e - GLOBAL.Timestamp();
+                  }
+                  if(_loc16_._type == 26 && ACADEMY._monsterID != null)
+                  {
+                     _loc12_ = ACADEMY._upgrades[ACADEMY._monsterID].time.Get() - GLOBAL.Timestamp();
+                  }
+                  if(_loc16_._type == 116 && (GLOBAL._bLab as MONSTERLAB)._upgrading != null)
+                  {
+                     _loc12_ = (GLOBAL._bLab as MONSTERLAB)._upgradeFinishTime.Get() - GLOBAL.Timestamp();
+                  }
+               }
+               if(_loc12_ == 0)
+               {
+                  _loc20_ = KEYS.Get("str_prob_nothing");
+               }
+               else if(_loc9_ == "SP1" && _loc12_ > 300)
+               {
+                  _loc20_ = KEYS.Get("str_prob_morethan5");
+               }
+               else if(_loc9_.substr(0,3) == "SP2" && (_loc12_ < 3600 && !_storeInventory.SP2 || _storeInventory.SP2 && _loc12_ <= 300))
+               {
+                  _loc20_ = KEYS.Get("str_prob_notneeded");
+               }
+               else if(_loc9_.substr(0,3) == "SP3" && (_loc12_ < 7200 && !_storeInventory.SP3 || _storeInventory.SP3 && _loc12_ <= 300))
+               {
+                  _loc20_ = KEYS.Get("str_prob_notneeded");
+               }
+               else if(_loc9_.substr(0,3) == "SP4" && _loc12_ <= 300)
+               {
+                  _loc20_ = KEYS.Get("str_prob_notneeded");
+               }
+            }
+            else
+            {
+               _loc20_ = KEYS.Get("str_prob_nothingselected");
+            }
+         }
+         if(_loc9_.substr(0,3) == "HOD" && !GLOBAL._bHatchery)
+         {
+            _loc20_ = KEYS.Get("str_prob_nohatcheries");
+         }
+         if(_loc9_ == "CLOD" && !GLOBAL._bLocker)
+         {
+            _loc20_ = KEYS.Get("str_prob_nolocker");
+         }
+         if(_loc9_ == "MUSK")
+         {
+            if(GLOBAL._bBaiter == null)
+            {
+               _loc20_ = KEYS.Get("str_prob_nobaiter");
+            }
+            else if(MONSTERBAITER._musk >= MONSTERBAITER._muskLimit)
+            {
+               _loc20_ = KEYS.Get("str_prob_muskfull");
+            }
+         }
+         if(_loc9_ == "FIX")
+         {
+            if(_storeItems["FIX"].c == 0)
+            {
+               _loc20_ = KEYS.Get("str_prob_notneeded");
+            }
+         }
+         if(_loc9_.substr(0,3) == "BLK")
+         {
+            _loc29_ = GLOBAL._bTownhall._lvl.Get();
+            if(BASE._isOutpost)
+            {
+               _loc29_ = 7;
+            }
+            if(!BASE._isOutpost && _loc29_ < 3 && _loc9_.substr(3,1) == "2")
+            {
+               _loc20_ = KEYS.Get("upgradeth",{"v1":3});
+            }
+            else if(!BASE._isOutpost && _loc29_ < 4 && _loc9_.substr(3,1) == "3")
+            {
+               _loc20_ = KEYS.Get("upgradeth",{"v1":4});
+            }
+            else if(!BASE._isOutpost && _loc29_ < 5 && _loc9_.substr(3,1) == "4")
+            {
+               _loc20_ = KEYS.Get("upgradeth",{"v1":5});
+            }
+            else if(!BASE._isOutpost && _loc29_ < 6 && _loc9_.substr(3,1) == "5")
+            {
+               _loc20_ = KEYS.Get("upgradeth",{"v1":6});
+            }
+            else
+            {
+               _loc30_ = false;
+               _loc31_ = false;
+               _loc32_ = false;
+               _loc33_ = false;
+               for each(_loc34_ in BASE._buildingsWalls)
+               {
+                  if(_loc34_._lvl.Get() == 1 && _loc29_ >= 3)
+                  {
+                     _loc30_ = true;
+                     _loc31_ = true;
+                     _loc32_ = true;
+                     _loc33_ = true;
+                     break;
+                  }
+                  if(_loc34_._lvl.Get() == 2 && _loc29_ >= 4)
+                  {
+                     _loc31_ = true;
+                     _loc32_ = true;
+                     _loc33_ = true;
+                  }
+                  if(_loc34_._lvl.Get() == 3 && _loc29_ >= 5)
+                  {
+                     _loc32_ = true;
+                     _loc33_ = true;
+                  }
+                  if(_loc34_._lvl.Get() == 4 && _loc29_ >= 6)
+                  {
+                     _loc33_ = true;
+                  }
+               }
+            }
+         }
+         var _loc22_:Number = 0;
+         var _loc23_:Number = 0;
+         if(_loc17_)
+         {
+            _loc21_ = "<b><font color=\"#335280\">" + GLOBAL.FormatNumber(_loc10_.fbc_cost[_loc4_]) + "</font></b>";
+            _loc22_ = Number(_loc10_.fbc_cost[_loc4_]);
+         }
+         else
+         {
+            _loc21_ = "<b>" + GLOBAL.FormatNumber(_loc10_.c[_loc4_]) + "</b>";
+            _loc22_ = Number(_loc10_.c[_loc4_]);
+            if(_loc10_.c[_loc4_] == 0 && _loc20_ == "")
+            {
+               _loc21_ = "<font color=\"#0000CC\"><b>" + KEYS.Get("str_buy_free") + "</b></font>";
+               _loc22_ = 0;
+            }
+         }
+         if(_loc20_ != "")
+         {
+            _loc19_ = _loc9_;
+            if(_loc19_.substr(0,2) == "SP")
+            {
+               _loc19_ = _loc19_.substr(0,3);
+            }
+            if(Boolean(_storeInventory[_loc19_]) && _storeInventory[_loc19_].Get() > 0)
+            {
+               _loc7_ = "<font color=\"#0000ff\"><b>" + _storeInventory[_loc19_].Get() + "</b></font>";
+               _loc23_ = Number(_storeInventory[_loc19_].Get());
+            }
+            else
+            {
+               _loc7_ = _loc21_;
+               _loc23_ = _loc22_;
+            }
+         }
+         else
+         {
+            if(BASE._pendingPurchase.length > 0)
+            {
+            }
+            if(_loc4_ >= _loc5_ && !_loc10_.i || _loc9_.substr(0,3) == "BEW" && QUEUE._workerCount >= 5 || _loc9_.substr(0,2) == "BR" && BASE._resources["r" + _loc9_.substr(2,1)].Get() >= BASE._resources["r" + _loc9_.substr(2,1) + "max"])
+            {
+               _loc19_ = _loc9_;
+               if(_loc19_.substr(0,2) == "SP")
+               {
+                  _loc19_ = _loc19_.substr(0,3);
+               }
+               if(Boolean(_storeInventory[_loc19_]) && _storeInventory[_loc19_].Get() > 0)
+               {
+                  _loc7_ = "<font color=\"#0000ff\"><b>" + _storeInventory[_loc19_].Get() + "</b></font>";
+                  _loc23_ = Number(_storeInventory[_loc19_].Get());
+               }
+               else
+               {
+                  _loc7_ = "<font color=\"#CC0000\">" + KEYS.Get("str_prob_soldout") + "</font>";
+                  _loc23_ = -1;
+               }
+            }
+            else
+            {
+               _loc19_ = _loc9_;
+               if(_loc19_.substr(0,2) == "SP")
+               {
+                  _loc19_ = _loc19_.substr(0,3);
+               }
+               if(Boolean(_storeInventory[_loc19_]) && Boolean(_storeInventory[_loc19_].Get()))
+               {
+                  _loc7_ = "<font color=\"#0000ff\"><b>" + _storeInventory[_loc19_].Get() + "</b></font>";
+                  _loc23_ = Number(_storeInventory[_loc19_].Get());
+               }
+               else
+               {
+                  if(_loc10_.i)
+                  {
+                     _loc4_ = 0;
+                  }
+                  _loc7_ = _loc21_;
+                  _loc23_ = _loc22_;
+               }
+            }
+         }
+         _streamline_time = _loc12_;
+         _streamline_cost = _loc23_;
+         if(param2)
+         {
+            return _loc23_;
+         }
+         return _loc7_;
       }
       
       public static function Switch(param1:int, param2:Number, param3:Array = null, param4:Boolean = false) : *
@@ -598,16 +1288,21 @@ package
          var _loc34_:MONSTERLAB = null;
          var _loc35_:String = null;
          var _loc36_:int = 0;
-         var _loc37_:Boolean = false;
-         var _loc38_:Boolean = false;
-         var _loc39_:Boolean = false;
-         var _loc40_:Boolean = false;
-         var _loc41_:BFOUNDATION = null;
+         var _loc37_:int = 0;
+         var _loc38_:int = 0;
+         var _loc39_:int = 0;
+         var _loc40_:int = 0;
+         var _loc41_:Boolean = false;
+         var _loc42_:Boolean = false;
+         var _loc43_:Boolean = false;
+         var _loc44_:Boolean = false;
+         var _loc45_:BFOUNDATION = null;
          if(param4)
          {
             SOUNDS.Play("click1");
          }
          Variables();
+         ZazzleClear();
          if(param1 < 1)
          {
             param1 = 1;
@@ -642,7 +1337,7 @@ package
          _tab = param1;
          _page = param2;
          var _loc5_:int = 1;
-         while(_loc5_ <= 4)
+         while(_loc5_ <= 5)
          {
             (_mc["b" + _loc5_] as ButtonBrown).Highlight = false;
             _loc5_++;
@@ -654,7 +1349,7 @@ package
          }
          else
          {
-            _mc.window.gotoAndStop(5);
+            _mc.window.gotoAndStop(6);
          }
          var _loc11_:int = 0;
          var _loc12_:int = 0;
@@ -679,11 +1374,16 @@ package
             _scroller.y = -200.05;
             _scroller.width = 21;
             _mc.addChild(_scroller);
-            _scroller.autoHide = false;
+            _scroller.AutoHideEnabled = false;
          }
          if(_customPage)
          {
             _loc13_ = _customPage;
+         }
+         else if(param1 == 5)
+         {
+            _loc13_ = [];
+            ZazzleAdd();
          }
          else
          {
@@ -742,7 +1442,7 @@ package
                _loc21_.d = KEYS.Get("str_speedup_na");
                if(_loc28_)
                {
-                  _loc24_ = _loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get();
+                  _loc24_ = _loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() + _loc28_._countdownFortify.Get();
                   if(_loc28_._repairing)
                   {
                      _loc24_ = int(_loc28_._repairTime);
@@ -755,6 +1455,11 @@ package
                      {
                         _loc26_ = "upgrade";
                         _loc27_ = "upgrading";
+                     }
+                     if(_loc28_._countdownFortify.Get() > 0)
+                     {
+                        _loc26_ = "fortify";
+                        _loc27_ = "fortifying";
                      }
                      if(_loc28_._repairing)
                      {
@@ -938,6 +1643,25 @@ package
             {
                _loc21_.t = KEYS.Get("str_code_bew_title2");
                _loc21_.d = KEYS.Get("str_code_bew_body2");
+               if(Boolean(GLOBAL._flags.split2) && LOGIN._playerID >= GLOBAL._flags.splituserid2)
+               {
+                  _loc36_ = GLOBAL.GetABTestHash("tutorial");
+                  if(_loc36_ < 14)
+                  {
+                     _loc21_.c = [1000,1000,1000,1000];
+                  }
+               }
+               else if(Boolean(GLOBAL._flags.split) && LOGIN._playerID >= GLOBAL._flags.splituserid)
+               {
+                  _loc37_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
+                  _loc38_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
+                  _loc39_ = _loc37_ + _loc38_;
+                  _loc39_ = _loc39_ % 10;
+                  if(_loc39_ < 2)
+                  {
+                     _loc21_.c = [1000,1000,1000,1000];
+                  }
+               }
             }
             else if(_loc20_ == "BST")
             {
@@ -1050,9 +1774,9 @@ package
                   {
                      _loc24_ = int(_loc28_._repairTime);
                   }
-                  else if(_loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() > 0)
+                  else if(_loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() + _loc28_._countdownFortify.Get() > 0)
                   {
-                     _loc24_ = _loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get();
+                     _loc24_ = _loc28_._countdownUpgrade.Get() + _loc28_._countdownBuild.Get() + _loc28_._countdownFortify.Get();
                   }
                   else
                   {
@@ -1123,72 +1847,72 @@ package
             }
             if(_loc20_.substr(0,3) == "BLK")
             {
-               _loc36_ = GLOBAL._bTownhall._lvl.Get();
+               _loc40_ = GLOBAL._bTownhall._lvl.Get();
                if(BASE._isOutpost)
                {
-                  _loc36_ = 7;
+                  _loc40_ = 7;
                }
-               if(!BASE._isOutpost && _loc36_ < 3 && _loc20_.substr(3,1) == "2")
+               if(!BASE._isOutpost && _loc40_ < 3 && _loc20_.substr(3,1) == "2")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":3});
                }
-               else if(!BASE._isOutpost && _loc36_ < 4 && _loc20_.substr(3,1) == "3")
+               else if(!BASE._isOutpost && _loc40_ < 4 && _loc20_.substr(3,1) == "3")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":4});
                }
-               else if(!BASE._isOutpost && _loc36_ < 5 && _loc20_.substr(3,1) == "4")
+               else if(!BASE._isOutpost && _loc40_ < 5 && _loc20_.substr(3,1) == "4")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":5});
                }
-               else if(!BASE._isOutpost && _loc36_ < 6 && _loc20_.substr(3,1) == "5")
+               else if(!BASE._isOutpost && _loc40_ < 6 && _loc20_.substr(3,1) == "5")
                {
                   _loc32_ = KEYS.Get("upgradeth",{"v1":6});
                }
                else
                {
-                  _loc37_ = false;
-                  _loc38_ = false;
-                  _loc39_ = false;
-                  _loc40_ = false;
-                  for each(_loc41_ in BASE._buildingsWalls)
+                  _loc41_ = false;
+                  _loc42_ = false;
+                  _loc43_ = false;
+                  _loc44_ = false;
+                  for each(_loc45_ in BASE._buildingsWalls)
                   {
-                     if(_loc41_._lvl.Get() == 1 && _loc36_ >= 3)
+                     if(_loc45_._lvl.Get() == 1 && _loc40_ >= 3)
                      {
-                        _loc37_ = true;
-                        _loc38_ = true;
-                        _loc39_ = true;
-                        _loc40_ = true;
+                        _loc41_ = true;
+                        _loc42_ = true;
+                        _loc43_ = true;
+                        _loc44_ = true;
                         break;
                      }
-                     if(_loc41_._lvl.Get() == 2 && _loc36_ >= 4)
+                     if(_loc45_._lvl.Get() == 2 && _loc40_ >= 4)
                      {
-                        _loc38_ = true;
-                        _loc39_ = true;
-                        _loc40_ = true;
+                        _loc42_ = true;
+                        _loc43_ = true;
+                        _loc44_ = true;
                      }
-                     if(_loc41_._lvl.Get() == 3 && _loc36_ >= 5)
+                     if(_loc45_._lvl.Get() == 3 && _loc40_ >= 5)
                      {
-                        _loc39_ = true;
-                        _loc40_ = true;
+                        _loc43_ = true;
+                        _loc44_ = true;
                      }
-                     if(_loc41_._lvl.Get() == 4 && _loc36_ >= 6)
+                     if(_loc45_._lvl.Get() == 4 && _loc40_ >= 6)
                      {
-                        _loc40_ = true;
+                        _loc44_ = true;
                      }
                   }
-                  if(_loc20_.substr(3,1) == "2" && !_loc37_)
+                  if(_loc20_.substr(3,1) == "2" && !_loc41_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "3" && !_loc38_)
+                  if(_loc20_.substr(3,1) == "3" && !_loc42_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "4" && !_loc39_)
+                  if(_loc20_.substr(3,1) == "4" && !_loc43_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
-                  if(_loc20_.substr(3,1) == "5" && !_loc40_)
+                  if(_loc20_.substr(3,1) == "5" && !_loc44_)
                   {
                      _loc32_ = KEYS.Get("str_prob_notneeded");
                   }
@@ -1359,10 +2083,10 @@ package
          _mc.window.content.mask = _mc.window.msk;
          if(_scrollUpdate)
          {
-            _scroller.initWith(_mc.window.content as Sprite,_mc.window.msk as MovieClip,0,391,30);
+            _scroller.Init(_mc.window.content as Sprite,_mc.window.msk as MovieClip,0,0,391,30);
             if(_scrollPosUpdate)
             {
-               _scroller.scrollTo(0,0);
+               _scroller.ScrollTo(0,0);
             }
          }
       }
@@ -1612,6 +2336,23 @@ package
                else
                {
                   LOGGER.Stat([2,_loc13_._type,_loc13_._lvl.Get() + 1,0,_loc4_]);
+               }
+            }
+            else if(_loc13_._countdownFortify.Get())
+            {
+               _loc13_._countdownFortify.Add(-_loc14_);
+               _loc8_ = 0;
+               if(_loc13_._countdownFortify.Get() <= 0 || param1.substr(2,1) == "4")
+               {
+                  _loc8_ = 1;
+                  _loc13_._countdownFortify.Set(0);
+                  _loc13_.Fortified();
+                  _loc13_.Update();
+                  LOGGER.Stat([67,_loc13_._type,_loc13_._lvl.Get(),1,_loc4_]);
+               }
+               else
+               {
+                  LOGGER.Stat([67,_loc13_._type,_loc13_._lvl.Get() + 1,0,_loc4_]);
                }
             }
             else if(_loc13_._type == 8)
@@ -2084,6 +2825,50 @@ package
          {
             GLOBAL.ErrorMessage(_loc2_.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
+      }
+      
+      public static function ZazzleAdd() : void
+      {
+         var img:*;
+         var ZazzleImageLoaded:Function = null;
+         ZazzleImageLoaded = function(param1:String, param2:BitmapData):void
+         {
+            var _loc4_:int = 0;
+            if(_zazzleMC.numChildren)
+            {
+               _loc4_ = _zazzleMC.numChildren;
+               while(_loc4_--)
+               {
+                  _zazzleMC.removeChildAt(_loc4_);
+               }
+            }
+            var _loc3_:* = new Bitmap(param2);
+            _loc3_.x = (670 - _loc3_.width) / 2;
+            _loc3_.y = (390 - _loc3_.height) / 2;
+            _zazzleMC.addChild(_loc3_);
+            _zazzleMC.buttonMode = true;
+            _zazzleMC.useHandCursor = true;
+            _zazzleMC.addEventListener(MouseEvent.CLICK,ZazzleClick);
+         };
+         ZazzleClear();
+         _zazzleMC = new MovieClip();
+         _mc.window.addChild(_zazzleMC);
+         img = "popups/ZAZZLE_AD.v2.jpg";
+         ImageCache.GetImageWithCallBack(img,ZazzleImageLoaded);
+      }
+      
+      public static function ZazzleClear() : void
+      {
+         if(Boolean(_zazzleMC) && Boolean(_zazzleMC.parent))
+         {
+            _zazzleMC.parent.removeChild(_zazzleMC);
+            _zazzleMC = null;
+         }
+      }
+      
+      public static function ZazzleClick(param1:Event = null) : void
+      {
+         GLOBAL.gotoURL("http://www.zazzle.com/backyardmonsters/",null,true,[63,1]);
       }
    }
 }

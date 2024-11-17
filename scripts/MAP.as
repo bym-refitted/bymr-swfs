@@ -77,7 +77,7 @@ package
       
       public static var _inited:Boolean = false;
       
-      public static var stage:* = GLOBAL._ROOT;
+      public static var stage:* = GLOBAL._ROOT.stage;
       
       public static var _creepCells:Object = {};
       
@@ -86,6 +86,8 @@ package
       public static var _sortTo:int = 0;
       
       public static var _canScroll:Boolean = true;
+      
+      private static var _catapultsSetup:Boolean = false;
       
       public static var vol:Number = 1;
       
@@ -103,8 +105,8 @@ package
          super();
          try
          {
-            tx = 380;
-            ty = 250;
+            tx = GLOBAL._SCREENINIT.width / 2;
+            ty = GLOBAL._SCREENINIT.height / 2;
             _GROUND = GLOBAL._layerMap.addChild(new MovieClip());
             tiles = [];
             tile = MAPBG.MakeTile(texture);
@@ -314,305 +316,27 @@ package
       
       public static function KeyDownLocal(param1:KeyboardEvent) : *
       {
-         var xdif:int = 0;
-         var ydif:int = 0;
-         var building:BFOUNDATION = null;
-         var tempPowerup:Array = null;
-         var testarr:Array = null;
-         var creepid:* = undefined;
-         var goEasy:Boolean = false;
-         var i:int = 0;
-         var brain:CREEP = null;
-         var creep:CREEP = null;
-         var e:KeyboardEvent = param1;
-         if(e.shiftKey)
+         if(param1.shiftKey)
          {
-            if(keyunlock == 0 && e.keyCode == 38)
+            if(keyunlock == 0 && param1.keyCode == 38)
             {
                keyunlock = 1;
             }
-            else if(keyunlock == 1 && e.keyCode == 40)
+            else if(keyunlock == 1 && param1.keyCode == 40)
             {
                keyunlock = 2;
             }
-            else if(keyunlock == 2 && e.keyCode == 37)
+            else if(keyunlock == 2 && param1.keyCode == 37)
             {
                keyunlock = 3;
             }
-            else if(keyunlock == 3 && e.keyCode == 39)
+            else if(keyunlock == 3 && param1.keyCode == 39)
             {
                screenshot.Show();
             }
             else
             {
                keyunlock = 0;
-            }
-         }
-         if(GLOBAL._bymChat.chatInputHasFocus())
-         {
-            return;
-         }
-         if(!GLOBAL._local)
-         {
-            return;
-         }
-         if(GLOBAL._local)
-         {
-            xdif = 0;
-            ydif = 0;
-            switch(e.keyCode)
-            {
-               case 65:
-                  if(e.shiftKey)
-                  {
-                     CUSTOMATTACKS.TrojanHorse();
-                     break;
-                  }
-                  if(WMATTACK._history)
-                  {
-                     WMATTACK._history.lastattack = 0;
-                  }
-                  if(AIATTACK._history)
-                  {
-                     AIATTACK._history.lastattack = 0;
-                  }
-                  WMATTACK.Trigger();
-                  break;
-               case 80:
-               case 81:
-               case 87:
-                  break;
-               case 69:
-                  for each(building in BASE._buildingsAll)
-                  {
-                     building.Damage(building._hp.Get() + 1,building._mc.x,building._mc.y);
-                  }
-                  break;
-               case 82:
-                  break;
-               case 84:
-                  BASE.RebuildTH();
-                  break;
-               case 66:
-                  BUILDINGS.Show();
-                  break;
-               case 188:
-                  if(e.shiftKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_declarewar",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     }];
-                     POWERUPS.Setup(null,tempPowerup);
-                     break;
-                  }
-                  if(e.ctrlKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_declarewar",
-                        "endtime":GLOBAL.Timestamp() + 10
-                     },{
-                        "id":"ap_conquest",
-                        "endtime":GLOBAL.Timestamp() + 15
-                     },{
-                        "id":"ap_armament",
-                        "endtime":GLOBAL.Timestamp() + 20
-                     }];
-                     POWERUPS.Setup(tempPowerup);
-                     break;
-                  }
-                  tempPowerup = [{
-                     "id":"ap_declarewar",
-                     "endtime":GLOBAL.Timestamp() + 60
-                  }];
-                  POWERUPS.Setup(tempPowerup);
-                  break;
-               case 190:
-                  if(e.shiftKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_conquest",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     }];
-                     POWERUPS.Setup(null,tempPowerup);
-                     break;
-                  }
-                  if(e.ctrlKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_declarewar",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     },{
-                        "id":"ap_conquest",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     },{
-                        "id":"ap_armament",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     }];
-                     POWERUPS.Setup(null,tempPowerup);
-                     break;
-                  }
-                  tempPowerup = [{
-                     "id":"ap_conquest",
-                     "endtime":GLOBAL.Timestamp() + 60
-                  }];
-                  POWERUPS.Setup(tempPowerup);
-                  break;
-               case 191:
-                  if(e.shiftKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_armament",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     }];
-                     POWERUPS.Setup(null,tempPowerup);
-                     break;
-                  }
-                  if(e.ctrlKey)
-                  {
-                     tempPowerup = [{
-                        "id":"ap_declarewar",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     },{
-                        "id":"ap_conquest",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     },{
-                        "id":"ap_armament",
-                        "endtime":GLOBAL.Timestamp() + 60
-                     }];
-                     POWERUPS.Setup(tempPowerup,tempPowerup);
-                     break;
-                  }
-                  tempPowerup = [{
-                     "id":"ap_armament",
-                     "endtime":GLOBAL.Timestamp() + 60
-                  }];
-                  POWERUPS.Setup(tempPowerup);
-                  break;
-            }
-            if(e.keyCode >= 48 && e.keyCode <= 57)
-            {
-               if(e.shiftKey)
-               {
-                  if(e.keyCode == 49)
-                  {
-                     WMATTACK.TriggerType(1);
-                  }
-                  if(e.keyCode == 50)
-                  {
-                     WMATTACK.TriggerType(2);
-                  }
-                  if(e.keyCode == 51)
-                  {
-                     WMATTACK.TriggerType(3);
-                  }
-                  if(e.keyCode == 52)
-                  {
-                     WMATTACK.TriggerType(4);
-                  }
-               }
-               else if(e.ctrlKey)
-               {
-                  if(e.keyCode == 49)
-                  {
-                     BASE.addBuildingB(17);
-                  }
-                  if(e.keyCode == 50)
-                  {
-                     BASE.addBuildingB(24);
-                  }
-                  if(e.keyCode == 51)
-                  {
-                     try
-                     {
-                        if(Boolean(GLOBAL._selectedBuilding._countdownBuild) && GLOBAL._selectedBuilding._countdownBuild.Get() > 0)
-                        {
-                           GLOBAL._selectedBuilding.Constructed();
-                        }
-                        else
-                        {
-                           GLOBAL._selectedBuilding.Upgraded();
-                        }
-                     }
-                     catch(e:Error)
-                     {
-                     }
-                  }
-                  if(e.keyCode == 52)
-                  {
-                     try
-                     {
-                        GLOBAL._selectedBuilding.RecycleC();
-                     }
-                     catch(e:Error)
-                     {
-                     }
-                  }
-                  if(e.keyCode == 53)
-                  {
-                     try
-                     {
-                        testarr = [["HOD2",5]];
-                        BUY.purchaseProcess(testarr);
-                     }
-                     catch(e:Error)
-                     {
-                     }
-                  }
-               }
-               else
-               {
-                  creepid = e.keyCode - 48;
-                  goEasy = false;
-                  if(creepid == 0)
-                  {
-                     creepid = 10;
-                  }
-                  i = 0;
-                  while(i < 1)
-                  {
-                     if(creepid == 9)
-                     {
-                        brain = CREEPS.Spawn("C" + creepid,_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1,goEasy);
-                     }
-                     else
-                     {
-                        CREEPS.Spawn("C" + creepid,_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1,goEasy);
-                     }
-                     i++;
-                  }
-               }
-            }
-            if(e.keyCode == 85)
-            {
-               if(GLOBAL._bCage)
-               {
-                  GLOBAL._bCage.SpawnGuardian(1,0,0,1,20000);
-               }
-            }
-            if(e.keyCode == 71)
-            {
-               CREEPS.SpawnGuardian(2,_BUILDINGTOPS,"bounce",6,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,60 * 1000,true);
-            }
-            if(e.keyCode == 189)
-            {
-               CREEPS.Spawn("C12",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
-            }
-            if(e.keyCode == 187)
-            {
-               CREEPS.Spawn("C13",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
-            }
-            if(e.keyCode == 88)
-            {
-               creep = CREEPS.Spawn("C11",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
-            }
-            if(e.keyCode == 72)
-            {
-               CREEPS.Spawn("C15",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1);
-            }
-            if(e.keyCode == 70)
-            {
-               CREEPS.Spawn("C14",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1);
             }
          }
       }
@@ -653,7 +377,7 @@ package
                param2 /= 3;
             }
             tx = 0 - (param1 - 380);
-            ty = 0 - (param2 - 225);
+            ty = 0 - (param2 - 335);
             if(GLOBAL._zoomed)
             {
                tx /= 3;
@@ -707,7 +431,7 @@ package
             }
             _autoScroll = true;
             tx = 0 - (X - 380);
-            ty = 0 - (Y - 250);
+            ty = 0 - (Y - 340);
             w = int(stage.stageWidth);
             h = GLOBAL.GetGameHeight();
             if(GLOBAL._zoomed)
@@ -756,25 +480,25 @@ package
       
       public static function Scroll(param1:Event = null) : *
       {
-         var _loc5_:int = 0;
-         var _loc6_:MovieClip = null;
-         var _loc7_:* = undefined;
-         var _loc8_:* = undefined;
+         var _loc7_:int = 0;
+         var _loc8_:MovieClip = null;
+         var _loc9_:* = undefined;
+         var _loc10_:* = undefined;
          if(_following)
          {
             tx = 0;
             ty = 0;
-            _loc5_ = 0;
-            for each(_loc6_ in CREEPS._creeps)
+            _loc7_ = 0;
+            for each(_loc8_ in CREEPS._creeps)
             {
-               if(_loc6_._behaviour == "attack" || _loc6_._behaviour == "loot")
+               if(_loc8_._behaviour == "attack" || _loc8_._behaviour == "loot")
                {
-                  _loc5_++;
-                  tx += _loc6_.x;
-                  ty += _loc6_.y;
+                  _loc7_++;
+                  tx += _loc8_.x;
+                  ty += _loc8_.y;
                }
             }
-            if(_loc5_ <= 0)
+            if(_loc7_ <= 0)
             {
                tx = _dragX;
                ty = _dragY;
@@ -784,8 +508,8 @@ package
                }
                return;
             }
-            tx /= _loc5_;
-            ty /= _loc5_;
+            tx /= _loc7_;
+            ty /= _loc7_;
             tx = 0 - tx + GLOBAL._ROOT.stage.stageWidth / 2;
             ty = 0 - ty + GLOBAL.GetGameHeight() / 2;
             _dragX = tx;
@@ -795,9 +519,9 @@ package
          {
             tx = int(stage.mouseX - _dragX);
             ty = int(stage.mouseY - _dragY);
-            _loc7_ = stage.mouseX - (_dragX + _startX);
-            _loc8_ = stage.mouseY - (_dragY + _startY);
-            _dragDistance = Math.abs(Math.sqrt(_loc7_ * _loc7_ + _loc8_ * _loc8_));
+            _loc9_ = stage.mouseX - (_dragX + _startX);
+            _loc10_ = stage.mouseY - (_dragY + _startY);
+            _dragDistance = Math.abs(Math.sqrt(_loc9_ * _loc9_ + _loc10_ * _loc10_));
             if(_dragDistance > 10)
             {
                _dragged = true;
@@ -820,12 +544,19 @@ package
          {
             tx = _loc4_;
          }
-         _loc4_ = (_loc3_ - 990) / 2 - 250;
+         var _loc5_:int = 990;
+         var _loc6_:int = 320;
+         if(GLOBAL._zoomed)
+         {
+            _loc5_ = 1210;
+            _loc6_ = 380;
+         }
+         _loc4_ = (_loc3_ - _loc5_) / 2 - _loc6_;
          if(ty < _loc4_)
          {
             ty = _loc4_;
          }
-         _loc4_ = 990 - _loc3_ / 2 + 250;
+         _loc4_ = _loc5_ - _loc3_ / 2 + _loc6_;
          if(ty > _loc4_)
          {
             ty = _loc4_;

@@ -78,6 +78,10 @@ package
             mc.mcR5.bAdd.mouseChildren = false;
             mc.mcOutposts.mcHit.addEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
             mc.mcOutposts.mcHit.addEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            mc.mcOutposts.bNext.addEventListener(MouseEvent.CLICK,BASE.LoadNext);
+            mc.mcOutposts.bNext.buttonMode = true;
+            mc.mcOutposts.bNext.mouseEnabled = true;
+            mc.mcOutposts.bNext.mouseChildren = false;
             mc.bInvite.buttonMode = true;
             mc.bInvite.mouseChildren = false;
             mc.bInvite.addEventListener(MouseEvent.CLICK,this.ButtonClick("invite"));
@@ -142,7 +146,7 @@ package
             this._creatureButtons = [];
             if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
             {
-               gb = this._creatureButtonsMC.addChild(new GUARDIANBUTTON("G" + GLOBAL._playerGuardianData.t,GLOBAL._playerGuardianData.l.Get()));
+               gb = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData.t,GLOBAL._playerGuardianData.l.Get()));
                gb.y = 25;
                this._creatureButtons.push(gb);
                count++;
@@ -406,7 +410,7 @@ package
                if(GLOBAL._advancedMap)
                {
                   mc.mcOutposts.visible = true;
-                  mc.mcOutposts.tR.htmlText = GLOBAL._mapOutpost.length + " Outposts";
+                  mc.mcOutposts.tR.htmlText = GLOBAL._mapOutpost.length;
                }
                else
                {
@@ -548,7 +552,7 @@ package
                {
                   if(_loc8_.substr(0,1) == "G")
                   {
-                     _loc7_ -= GUARDIANCAGE.GetGuardianProperty(_loc8_.substr(0,2),1,"bucket");
+                     _loc7_ -= CHAMPIONCAGE.GetGuardianProperty(_loc8_.substr(0,2),1,"bucket");
                   }
                   else
                   {
@@ -813,7 +817,7 @@ package
                _loc4_ = KEYS.Get("pop_alerts");
                break;
             case "mcHit":
-               _loc4_ = "<b>Outposts</b><br>The number of outposts under your control.";
+               _loc4_ = KEYS.Get("pop_outposts");
                _loc2_ = param1.target.parent.x + 140;
                _loc3_ = param1.target.parent.y + 20;
          }

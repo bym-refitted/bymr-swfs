@@ -78,18 +78,6 @@ package
          {
             GLOBAL.ErrorMessage("UI2.Setup A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
-         if(GLOBAL._flags.showProgressBar == 1)
-         {
-            try
-            {
-               _progressBars = GLOBAL._layerUI.addChild(new UI_PROGRESSBAR());
-               UI_PROGRESSBAR.Setup();
-            }
-            catch(e:Error)
-            {
-               GLOBAL.ErrorMessage("UI2.Setup A2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
-            }
-         }
          try
          {
             _top = GLOBAL._layerUI.addChild(new UI_TOP());
@@ -149,7 +137,50 @@ package
          }
          try
          {
-            if(GLOBAL.flagsShouldChatExist())
+            if(GLOBAL.flagsShouldChatExist() && GLOBAL._bymChat._open)
+            {
+               GLOBAL.initChat();
+            }
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.Setup A8 CHAT1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+         try
+         {
+            if(GLOBAL.flagsShouldChatDisplay())
+            {
+               GLOBAL.setChatPosition(GLOBAL._layerUI,10,5 * 60);
+            }
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+      }
+      
+      public static function SetupHUD() : *
+      {
+         try
+         {
+            _tutorial = GLOBAL._layerUI.addChild(new MovieClip());
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.SetupHUD A1: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+         try
+         {
+            UI_BOTTOM.Setup();
+            UI_BOTTOM.Hide();
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.SetupHUD A6: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+         try
+         {
+            if(GLOBAL.flagsShouldChatExist() && GLOBAL._bymChat._open)
             {
                GLOBAL.initChat();
             }
@@ -182,14 +213,7 @@ package
          {
             _showBottom = true;
             UI_BOTTOM.Show();
-            if(GLOBAL._flags.showProgressBar == 1)
-            {
-               if(TUTORIAL._stage >= 200)
-               {
-                  UI_PROGRESSBAR.Show();
-               }
-            }
-            else if(TUTORIAL._stage >= 200)
+            if(TUTORIAL._stage >= 200)
             {
                UI_WORKERS.Show();
             }
@@ -197,10 +221,6 @@ package
          else if(param1 == "warning" && !_showWarning)
          {
             _showWarning = true;
-            if(GLOBAL._bymChat)
-            {
-               GLOBAL._bymChat.hide();
-            }
             if(GLOBAL._render)
             {
                TweenLite.to(_warning.mc,1,{
@@ -218,10 +238,6 @@ package
             if(GLOBAL._render && !_scareAway)
             {
                _scareAway = GLOBAL._layerUI.addChild(new UI_BAITERSCAREAWAY());
-               if(GLOBAL._bymChat)
-               {
-                  GLOBAL._bymChat.hide();
-               }
                ResizeHandler();
             }
          }
@@ -270,10 +286,6 @@ package
             _wildMonsterBar.parent.removeChild(_wildMonsterBar);
             _wildMonsterBar = null;
          }
-         if(GLOBAL._bymChat)
-         {
-            GLOBAL._bymChat.hide();
-         }
       }
       
       public static function Hide(param1:String) : void
@@ -288,14 +300,7 @@ package
          {
             _showBottom = false;
             UI_BOTTOM.Hide();
-            if(GLOBAL._flags.showProgressBar == 1)
-            {
-               UI_PROGRESSBAR.Hide();
-            }
-            else
-            {
-               UI_WORKERS.Hide();
-            }
+            UI_WORKERS.Hide();
          }
          else if(what == "warning" && _showWarning)
          {
@@ -445,9 +450,13 @@ package
                   {
                      _top.mcBuffHolder.visible = true;
                   }
-                  if(!GLOBAL._chatInited && GLOBAL.flagsShouldChatExist())
+                  if(!GLOBAL._chatInited || !GLOBAL._bymChat.IsConnected)
                   {
                      GLOBAL.initChat();
+                  }
+                  if(GLOBAL._bymChat && GLOBAL._chatInited && GLOBAL._bymChat.IsConnected)
+                  {
+                     GLOBAL._bymChat.toggleVisibleB();
                   }
                }
                if(GLOBAL._mode != "build" || !GLOBAL._flags.saveicon)
@@ -465,14 +474,25 @@ package
             if(GLOBAL._mode == "build")
             {
                UI_BOTTOM.Update();
-               if(GLOBAL._flags.showProgressBar == 1)
+               UI_BOTTOM.Resize();
+               if(_scareAway)
                {
-                  UI_PROGRESSBAR.Update();
+                  GLOBAL.RefreshScreen();
+                  _scareAway.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - _scareAway.mcBG.width - 10;
+                  _scareAway.y = GLOBAL._SCREENHUD.y - (_scareAway.mcBG.height + 10);
                }
             }
-            else if(_visitor)
+            else
             {
-               _visitor.Update();
+               UI_BOTTOM.Resize();
+               if(_visitor)
+               {
+                  _visitor.Update();
+               }
+               if(UI_BOTTOM._missions)
+               {
+                  UI_BOTTOM._missions.Update();
+               }
             }
             BUILDINGINFO.Update();
          }
@@ -512,27 +532,15 @@ package
          }
          if(_visitor)
          {
-            if(GLOBAL._mode == "view" || GLOBAL._mode == "help")
-            {
-               if(GLOBAL._bymChat)
-               {
-                  _visitor.mc.x = GLOBAL._SCREEN.x + GLOBAL._bymChat.width + 10;
-               }
-               else
-               {
-                  _visitor.mc.x = GLOBAL._SCREEN.x + 10;
-               }
-            }
-            else
-            {
-               _visitor.mc.x = GLOBAL._SCREEN.x + 10;
-            }
-            _visitor.mc.y = 522 + (_loc3_ - 520) / 2 - 62;
+            _visitor.Update();
+            _visitor.mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - _visitor.mc.mcBG.width - 10;
+            _visitor.mc.y = GLOBAL._SCREENHUD.y - (_visitor.mc.height + 10);
          }
          if(_scareAway)
          {
-            _scareAway.x = _loc4_.x + 10;
-            _scareAway.y = 522 + (_loc3_ - 520) / 2 - 62;
+            GLOBAL.RefreshScreen();
+            _scareAway.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - _scareAway.mcBG.width - 10;
+            _scareAway.y = GLOBAL._SCREENHUD.y - (_scareAway.mcBG.height + 10);
          }
          if(GLOBAL._bymChat)
          {

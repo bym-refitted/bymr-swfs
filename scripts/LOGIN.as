@@ -8,7 +8,6 @@ package
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.net.*;
-   import package_1.class_1;
    
    public class LOGIN
    {
@@ -228,7 +227,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt(class_1.method_1(-390,-587));
+         return decodeSalt("TU1S0wu1T2S045ttu1WQB5VQ1B10Qsg1I");
       }
       
       public static function decodeSalt(param1:String) : String

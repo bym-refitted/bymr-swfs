@@ -1027,7 +1027,7 @@ package
          param2 = GRID.FromISO(param2.x,param2.y);
          for each(_loc3_ in BASE._buildingsTowers)
          {
-            if(_loc3_._countdownUpgrade.Get() == 0 && _loc3_._countdownBuild.Get() == 0)
+            if(_loc3_._countdownUpgrade.Get() == 0 && _loc3_._countdownBuild.Get() == 0 && Boolean(_loc3_._countdownFortify.Get()))
             {
                _loc5_ = GRID.FromISO(_loc3_.x,_loc3_.y);
                _loc5_.add(new Point(_loc3_._footprint[0].width * 0.5,_loc3_._footprint[0].height * 0.5));

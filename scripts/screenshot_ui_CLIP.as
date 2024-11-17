@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1918")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1972")]
    public dynamic class screenshot_ui_CLIP extends MovieClip
    {
       public var bContrastUp:Button_CLIP;

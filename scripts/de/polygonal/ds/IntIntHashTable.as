@@ -401,7 +401,7 @@ package de.polygonal.ds
          return true;
       }
       
-      public function method_2(param1:Object, param2:Object) : Boolean
+      public function method_1(param1:Object, param2:Object) : Boolean
       {
          var _loc8_:* = false;
          var _loc9_:int = 0;
@@ -761,7 +761,7 @@ package de.polygonal.ds
          return _loc1_;
       }
       
-      public function method_3(param1:Object) : Object
+      public function method_2(param1:Object) : Object
       {
          var _loc4_:int = 0;
          var _loc2_:int = int(param1);

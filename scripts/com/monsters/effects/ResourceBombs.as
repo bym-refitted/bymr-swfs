@@ -328,6 +328,10 @@ package com.monsters.effects
             }
             Trigger(MAP._BUILDINGBASES,new Point(MAP._GROUND.mouseX,MAP._GROUND.mouseY),_loc2_,2);
          }
+         if(_bombid == "pu3")
+         {
+            ACHIEVEMENTS.Check("hugerage",1);
+         }
          ATTACK.Log("bomb" + ResourceBombs._bombid,"<font color=\"#A800FF\">" + KEYS.Get("attack_log_catapulted",{
             "v1":GLOBAL.FormatNumber(_loc2_.cost),
             "v2":GLOBAL._resourceNames[_loc2_.resource - 1]

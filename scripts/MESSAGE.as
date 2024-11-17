@@ -7,7 +7,7 @@ package
    
    public class MESSAGE extends MESSAGE_CLIP
    {
-      public var _mc:*;
+      public var _mc:MESSAGE_CLIP;
       
       public var _action:Function;
       
@@ -58,23 +58,8 @@ package
          bAction2.y = mcBG.y + mcBG.height - 45;
          GLOBAL.BlockerAdd(GLOBAL._layerTop);
          this._mc = GLOBAL._layerTop.addChild(this);
-         if(GLOBAL._SCREENCENTER)
-         {
-            this._mc.x = GLOBAL._SCREENCENTER.x;
-            this._mc.y = GLOBAL._SCREENCENTER.y;
-         }
-         else
-         {
-            this._mc.x = GLOBAL._SCREENINIT.width / 2;
-            this._mc.y = GLOBAL._SCREENINIT.height / 2;
-         }
-         this._mc.scaleY = 0.9;
-         this._mc.scaleX = 0.9;
-         TweenLite.to(this._mc,0.2,{
-            "scaleX":1,
-            "scaleY":1,
-            "ease":Quad.easeOut
-         });
+         this._mc.Center();
+         this._mc.ScaleUp();
       }
       
       public function Action(param1:MouseEvent) : *
@@ -129,7 +114,7 @@ package
       {
          GLOBAL.BlockerRemove();
          SOUNDS.Play("close");
-         if(this._mc && Boolean(this._mc.parent))
+         if(Boolean(this._mc) && Boolean(this._mc.parent))
          {
             GLOBAL._layerTop.removeChild(this._mc);
          }
@@ -148,6 +133,16 @@ package
             this._mc.x = GLOBAL._SCREENINIT.width / 2;
             this._mc.y = GLOBAL._SCREENINIT.height / 2;
          }
+      }
+      
+      public function Center() : void
+      {
+         POPUPSETTINGS.AlignToCenter(this);
+      }
+      
+      public function ScaleUp() : void
+      {
+         POPUPSETTINGS.ScaleUp(this);
       }
    }
 }

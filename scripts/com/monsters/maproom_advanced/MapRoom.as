@@ -7,8 +7,10 @@ package com.monsters.maproom_advanced
    import com.monsters.mailbox.MailBox;
    import com.monsters.mailbox.Thread;
    import com.monsters.mailbox.model.Contact;
+   import com.monsters.ui.UI_BOTTOM;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.display.StageDisplayState;
    import flash.events.*;
    import flash.geom.Point;
    import flash.utils.getTimer;
@@ -221,7 +223,8 @@ package com.monsters.maproom_advanced
             _mc = new MapRoomPopup();
             _mc.Setup();
             BASE.Cleanup();
-            GLOBAL._layerWindows.addChild(_mc);
+            GLOBAL._layerUI.addChild(_mc);
+            UI2.SetupHUD();
             if(GLOBAL._currentCell)
             {
                GetCell(GLOBAL._currentCell.X,GLOBAL._currentCell.Y,true);
@@ -241,6 +244,16 @@ package com.monsters.maproom_advanced
             {
                GLOBAL.Message(KEYS.Get("empiredestroyed_newbase"));
                _empiredestroyed = false;
+            }
+            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
+            {
+               GLOBAL._bymChat.show();
+               UI_BOTTOM._missions.visible = true;
+            }
+            else
+            {
+               GLOBAL._bymChat.hide();
+               UI_BOTTOM._missions.visible = false;
             }
          }
       }
@@ -334,28 +347,43 @@ package com.monsters.maproom_advanced
                PLEASEWAIT.Hide();
                if(param1.error == 0)
                {
-                  if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+                  if(param1.cantMoveTill)
                   {
-                     GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                     MapRoom.Setup(GLOBAL._mapHome);
+                     if(_open)
+                     {
+                        GLOBAL.Message(KEYS.Get("movebase_warning",{"v1":GLOBAL.ToTime(param1.cantMoveTill - param1.currenttime)}),KEYS.Get("btn_returnhome"),ReturnFromFailedInvite);
+                     }
+                     else
+                     {
+                        GLOBAL.Message(KEYS.Get("movebase_warning",{"v1":GLOBAL.ToTime(param1.cantMoveTill - param1.currenttime)}));
+                        GLOBAL.BlockerRemove();
+                     }
                   }
-                  MapRoom.BookmarksClear();
-                  BASE._loadedFriendlyBaseID = 0;
-                  GLOBAL._homeBaseID = 0;
-                  GLOBAL._currentCell = null;
-                  GLOBAL._mapOutpost = [];
-                  if(_open)
+                  else
                   {
-                     Hide();
+                     if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
+                     {
+                        GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
+                        MapRoom.Setup(GLOBAL._mapHome);
+                     }
+                     MapRoom.BookmarksClear();
+                     BASE._loadedFriendlyBaseID = 0;
+                     GLOBAL._homeBaseID = 0;
+                     GLOBAL._currentCell = null;
+                     GLOBAL._mapOutpost = [];
+                     if(_open)
+                     {
+                        Hide();
+                     }
+                     ClearCells();
+                     Setup(GLOBAL._mapHome);
+                     _reposition = true;
+                     GLOBAL._showMapWaiting = true;
                   }
-                  ClearCells();
-                  Setup(GLOBAL._mapHome);
-                  _reposition = true;
-                  GLOBAL._showMapWaiting = true;
                }
                else
                {
-                  LOGGER.Log("err","MapRoom.AcceptInvitation",param1.error);
+                  GLOBAL.Message(param1.error);
                }
             };
             handleAcceptError = function(param1:IOErrorEvent):*
@@ -407,6 +435,12 @@ package com.monsters.maproom_advanced
             }
             new URLLoaderApi().load(url,loadvars,handleAcceptSuccessful,handleAcceptError);
          }
+      }
+      
+      public static function ReturnFromFailedInvite() : *
+      {
+         Hide();
+         BASE.Load();
       }
       
       public static function RejectInvitation(param1:MouseEvent = null) : void
@@ -676,7 +710,8 @@ package com.monsters.maproom_advanced
                var _loc2_:int = 0;
                var _loc3_:int = 0;
                var _loc4_:Array = null;
-               if(!_open)
+               var _loc5_:Object = null;
+               if(!_open && !BASE._needCurrentCell)
                {
                   return;
                }
@@ -705,7 +740,22 @@ package com.monsters.maproom_advanced
                      _loc4_ = param1.alliancedata;
                      ALLIANCES.ProcessAlliances(_loc4_);
                   }
-                  MapRoom._mc.Update(true);
+                  if(MapRoom._open)
+                  {
+                     MapRoom._mc.Update(true);
+                  }
+                  else if(BASE._needCurrentCell)
+                  {
+                     if(_zones && _zones[_loc2_] && Boolean(_zones[_loc2_].data) && Boolean(_zones[_loc2_].data[BASE._currentCellLoc.x]))
+                     {
+                        _loc5_ = _zones[_loc2_].data[BASE._currentCellLoc.x][BASE._currentCellLoc.y];
+                        GLOBAL._currentCell = new MapRoomCell();
+                        GLOBAL._currentCell.Setup(_loc5_);
+                        GLOBAL._currentCell.X = BASE._currentCellLoc.x;
+                        GLOBAL._currentCell.Y = BASE._currentCellLoc.y;
+                        _zones = {};
+                     }
+                  }
                }
                else if(Boolean(param1) && !param1.data)
                {

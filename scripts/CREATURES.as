@@ -17,7 +17,7 @@ package
       
       public static var _ticks:int;
       
-      public static var _guardian:GUARDIANMONSTER;
+      public static var _guardian:CHAMPIONMONSTER;
       
       public function CREATURES()
       {
