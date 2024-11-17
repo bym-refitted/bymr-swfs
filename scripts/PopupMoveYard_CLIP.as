@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2113")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2136")]
    public dynamic class PopupMoveYard_CLIP extends MovieClip
    {
       public var bMoveRes:Button_CLIP;

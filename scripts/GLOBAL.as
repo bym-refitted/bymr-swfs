@@ -207,6 +207,8 @@ package
       
       public static var _bCage:CHAMPIONCAGE;
       
+      public static var _bTotem:BTOTEM;
+      
       public static var _bTower:*;
       
       public static var _bTowerCount:int;
@@ -299,7 +301,7 @@ package
       
       public static var _localMode:int = 0;
       
-      public static var _version:SecNum = new SecNum(118);
+      public static var _version:SecNum = new SecNum(119);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -389,6 +391,10 @@ package
       
       public static var _advancedMap:int = 0;
       
+      public static var _wmCreaturePowerups:Array = new Array();
+      
+      public static var _wmCreatureLevels:Array = new Array();
+      
       public static var _playerGuardianData:Object = null;
       
       public static var _myMapRoom:int = 0;
@@ -447,7 +453,7 @@ package
       
       public static var _baseLoads:int = 0;
       
-      public static var _fbPromoTimer:Number = 432000;
+      public static var _fbPromoTimer:Number = 604800;
       
       public static const ERROR_OOPS_ONLY:int = 0;
       
@@ -2741,7 +2747,7 @@ package
                "1":{"img":"22.png"}
             },
             "quantity":[0,0,0,1,1,2,2,3,4,4],
-            "capacity":[380,450,9 * 60,640],
+            "capacity":[380,450,9 * 60,11 * 60],
             "hp":[10000,24500,52000,75000],
             "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60]
          },{
@@ -6465,6 +6471,166 @@ package
                "1":{
                   "top":["top.png",new Point(-27,-36)],
                   "shadow":["shadow.jpg",new Point(-35,16)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":121,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem1",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem1_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top1.png",new Point(-31,-23)],
+                  "shadow":["shadow1.jpg",new Point(-60,-18)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":122,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem2",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem2_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top2.png",new Point(-30,-60)],
+                  "shadow":["shadow2.jpg",new Point(-71,-44)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":123,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem3",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem3_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top3.png",new Point(-30,-90)],
+                  "shadow":["shadow3.jpg",new Point(-64,-61)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":124,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem4",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem4_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top4.png",new Point(-30,-110)],
+                  "shadow":["shadow4.jpg",new Point(-67,-82)]
+               }
+            },
+            "quantity":[0],
+            "hp":[100],
+            "repairTime":[1]
+         },{
+            "id":125,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem5",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem5_desc",
+            "block":true,
+            "costs":[{
+               "r1":0,
+               "r2":0,
+               "r3":0,
+               "r4":0,
+               "r5":0,
+               "time":0,
+               "re":[]
+            }],
+            "imageData":{
+               "baseurl":"buildings/decorations/wmitotem/",
+               "1":{
+                  "top":["top5.png",new Point(-30,-110)],
+                  "shadow":["shadow4.jpg",new Point(-67,-82)]
                }
             },
             "quantity":[0],
@@ -11955,6 +12121,76 @@ package
             "description":"bdg_biggulp_desc",
             "block":true,
             "quantity":[0]
+         },{
+            "id":121,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem1",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem1_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":122,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem2",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem2_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":123,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem3",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem3_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":124,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem4",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem4_desc",
+            "block":true,
+            "quantity":[0]
+         },{
+            "id":125,
+            "group":4,
+            "subgroup":4,
+            "order":7,
+            "type":"decoration",
+            "name":"bdg_wmitotem5",
+            "size":40,
+            "attackgroup":999,
+            "tutstage":200,
+            "sale":0,
+            "description":"bdg_wmitotem5_desc",
+            "block":true,
+            "quantity":[0]
          }];
          if(BASE._isOutpost)
          {
@@ -12003,9 +12239,9 @@ package
          _attackerMonsterOverdrive = new SecNum(0);
          if(_mode != "build")
          {
-            HOUSING.Cull();
             _attackerCreatures = HOUSING._creatures;
             _attackerCreatureUpgrades = _playerCreatureUpgrades;
+            HOUSING.Cull();
             _attackersResources = GLOBAL._resources;
             _hpAttackersResources = GLOBAL._hpResources;
             _attackerMonsterOverdrive = new SecNum(GLOBAL._playerMonsterOverdrive.Get());
@@ -13543,7 +13779,7 @@ package
          return _loc3_ * _loc3_ + _loc4_ * _loc4_;
       }
       
-      private static function UpdateAFKTimer() : *
+      public static function UpdateAFKTimer() : *
       {
          _afktimer.Set(Timestamp());
       }

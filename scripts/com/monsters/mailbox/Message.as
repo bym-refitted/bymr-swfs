@@ -41,15 +41,15 @@ package com.monsters.mailbox
          addChild(this.picker);
          sendBtn.SetupKey("btn_send");
          sendBtn.addEventListener(MouseEvent.CLICK,this.sendDown);
-         status_txt.text = "";
+         status_txt.htmlText = "";
          addEventListener(Event.ADDED_TO_STAGE,this.onAdd);
          addEventListener(Event.REMOVED_FROM_STAGE,this.onRemoved);
          this.timer = new Timer(100);
          this.timer.addEventListener(TimerEvent.TIMER,this.Validate);
          this.timer.start();
-         tolabel_txt.text = KEYS.Get("mail_new_to");
-         subjectlabel_txt.text = KEYS.Get("mail_new_subject");
-         messagelabel_txt.text = KEYS.Get("mail_new_message");
+         tolabel_txt.htmlText = KEYS.Get("mail_new_to");
+         subjectlabel_txt.htmlText = KEYS.Get("mail_new_subject");
+         messagelabel_txt.htmlText = KEYS.Get("mail_new_message");
       }
       
       public static function getNotWS(param1:String) : String
@@ -230,11 +230,11 @@ package com.monsters.mailbox
       {
          if(this.requestType == "migraterequest")
          {
-            status_txt.text = "Invitation already pending";
+            status_txt.htmlText = "Invitation already pending";
          }
          else
          {
-            status_txt.text = KEYS.Get("mail_messagefailed");
+            status_txt.htmlText = KEYS.Get("mail_messagefailed");
          }
          sendBtn.Enabled = true;
          sendBtn.addEventListener(MouseEvent.CLICK,this.sendDown);

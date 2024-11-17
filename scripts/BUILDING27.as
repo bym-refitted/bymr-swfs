@@ -101,6 +101,10 @@ package
          var _loc2_:MovieClip = null;
          if(GLOBAL._mode == "build")
          {
+            if(SPECIALEVENT.active)
+            {
+               return;
+            }
             if(!this._clicked)
             {
                CUSTOMATTACKS._started = true;

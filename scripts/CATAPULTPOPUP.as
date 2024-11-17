@@ -187,11 +187,11 @@ package
             });
             if(_loc2_.resource == 3)
             {
-               _bar._tA.text = KEYS.Get("bomb_target_monsters");
+               _bar._tA.htmlText = KEYS.Get("bomb_target_monsters");
             }
             else
             {
-               _bar._tA.text = KEYS.Get("bomb_target_buildings");
+               _bar._tA.htmlText = KEYS.Get("bomb_target_buildings");
             }
          }
       }

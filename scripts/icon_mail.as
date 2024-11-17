@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol928")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol940")]
    public dynamic class icon_mail extends MovieClip
    {
       public var mcHit:MovieClip;

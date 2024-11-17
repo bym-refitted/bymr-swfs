@@ -7,13 +7,25 @@ package
       public function UI_BAITERSCAREAWAY()
       {
          super();
-         bReturn.SetupKey("bait_scareaway");
+         if(SPECIALEVENT.active)
+         {
+            bReturn.SetupKey("wmi_surrenderbtn");
+         }
+         else
+         {
+            bReturn.SetupKey("bait_scareaway");
+         }
          bReturn.addEventListener(MouseEvent.CLICK,this.onReturnDown);
       }
       
       private function onReturnDown(param1:MouseEvent) : void
       {
-         MONSTERBAITER.End();
+         var _loc2_:Boolean = SPECIALEVENT.active;
+         if(_loc2_)
+         {
+            SPECIALEVENT.Surrender();
+         }
+         MONSTERBAITER.End(_loc2_);
       }
       
       public function Resize() : void

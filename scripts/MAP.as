@@ -309,8 +309,6 @@ package
       
       public static function KeyDownLocal(param1:KeyboardEvent) : *
       {
-         var _loc2_:int = 0;
-         var _loc3_:int = 0;
          if(param1.shiftKey)
          {
             if(keyunlock == 0 && param1.keyCode == 38)
@@ -334,18 +332,9 @@ package
                keyunlock = 0;
             }
          }
-         if(GLOBAL._bymChat.chatInputHasFocus())
+         if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._bymChat && GLOBAL._bymChat.chatInputHasFocus() && !GLOBAL._aiDesignMode)
          {
             return;
-         }
-         if(!GLOBAL._local)
-         {
-            return;
-         }
-         if(GLOBAL._local)
-         {
-            _loc2_ = 0;
-            _loc3_ = 0;
          }
       }
       

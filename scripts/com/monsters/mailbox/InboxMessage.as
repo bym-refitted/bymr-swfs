@@ -113,7 +113,7 @@ package com.monsters.mailbox
          }
          this.sendtime = this.data.sendtime;
          this.subject = this.data.subject;
-         replies_txt.text = KEYS.Get("mail_numreplies",{"v1":this.data.messagecount - 1});
+         replies_txt.htmlText = KEYS.Get("mail_numreplies",{"v1":this.data.messagecount - 1});
       }
       
       public function shouldLoadImage() : void

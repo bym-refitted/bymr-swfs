@@ -237,7 +237,7 @@ package com.monsters.maproom
                });
                _loc2_.picker.preloadSelection(_loc3_);
                _loc2_.subject_txt.htmlText = "<b>" + MapRoom.BRIDGE.KEYS.Get("map_trucesubject");
-               _loc2_.body_txt.text = MapRoom.BRIDGE.KEYS.Get("map_trucemessage");
+               _loc2_.body_txt.htmlText = MapRoom.BRIDGE.KEYS.Get("map_trucemessage");
                _loc2_.requestType = "trucerequest";
                _loc2_.truceShareHandler = MapRoom.BRIDGE.truceShareHandler;
                GLOBAL.BlockerAdd();

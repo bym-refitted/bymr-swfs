@@ -72,7 +72,7 @@ package
             this["hatchery" + _loc2_].buttonMode = true;
             _loc2_++;
          }
-         title_txt.text = KEYS.Get("hcc_title");
+         title_txt.htmlText = KEYS.Get("hcc_title");
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          mcMonsterInfo.health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
          mcMonsterInfo.damage_txt.htmlText = "<b>" + KEYS.Get("mon_att_damage") + "</b>";
@@ -180,19 +180,19 @@ package
             "ease":Circ.easeInOut,
             "delay":0.25
          });
-         mcMonsterInfo.tSpeed.text = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(_loc3_,"speed")});
-         mcMonsterInfo.tHealth.text = GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"health"));
+         mcMonsterInfo.tSpeed.htmlText = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(_loc3_,"speed")});
+         mcMonsterInfo.tHealth.htmlText = GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"health"));
          if(_loc12_ > 0)
          {
-            mcMonsterInfo.tDamage.text = _loc12_;
+            mcMonsterInfo.tDamage.htmlText = _loc12_;
          }
          else
          {
-            mcMonsterInfo.tDamage.text = -_loc12_ + " (" + KEYS.Get("str_heal") + ")";
+            mcMonsterInfo.tDamage.htmlText = -_loc12_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         mcMonsterInfo.tResource.text = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"cResource"))});
-         mcMonsterInfo.tStorage.text = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc3_,"cStorage")});
-         mcMonsterInfo.tTime.text = GLOBAL.ToTime(CREATURES.GetProperty(_loc3_,"cTime"),true);
+         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"cResource"))});
+         mcMonsterInfo.tStorage.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc3_,"cStorage")});
+         mcMonsterInfo.tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_loc3_,"cTime"),true);
          var _loc13_:int = 1;
          if(Boolean(ACADEMY._upgrades[_loc3_]) && ACADEMY._upgrades[_loc3_].level > 1)
          {

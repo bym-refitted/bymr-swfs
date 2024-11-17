@@ -131,6 +131,8 @@ package
       
       public var _altitude:int = 108;
       
+      private var _healerGiveUpTimer:int = 800;
+      
       private var _defenderRemoved:Boolean = false;
       
       internal var attackCooldown:int;
@@ -194,7 +196,7 @@ package
          this._house = param7;
          this._hits = 0;
          this._spawnPoint = new Point(int(param3.x / 100) * 100,int(param3.y / 100) * 100);
-         this._goeasy = param9;
+         this._goeasy = SPECIALEVENT.active ? false : param9;
          this._movement = CREATURELOCKER._creatures[param1].movement;
          this._pathing = CREATURELOCKER._creatures[param1].pathing;
          if(this._house)
@@ -213,16 +215,16 @@ package
          mouseEnabled = false;
          mouseChildren = false;
          this._speed = 0;
-         this._maxSpeed = CREATURES.GetProperty(this._creatureID,"speed") / 2;
+         this._maxSpeed = CREATURES.GetProperty(this._creatureID,"speed",0,this._friendly) / 2;
          this._maxSpeed *= 1.1;
          if(TUTORIAL._stage < 200)
          {
             this._maxSpeed *= 2;
          }
-         this._health = new SecNum(int(CREATURES.GetProperty(this._creatureID,"health") * param8));
+         this._health = new SecNum(int(CREATURES.GetProperty(this._creatureID,"health",0,this._friendly) * param8));
          this._maxHealth = this._health.Get();
-         this._damage = new SecNum(int(CREATURES.GetProperty(this._creatureID,"damage") * param8));
-         this._goo = CREATURES.GetProperty(this._creatureID,"cResource");
+         this._damage = new SecNum(int(CREATURES.GetProperty(this._creatureID,"damage",0,this._friendly) * param8));
+         this._goo = CREATURES.GetProperty(this._creatureID,"cResource",0,this._friendly);
          this._targetPosition = param3;
          this._targetCenter = param5;
          x = this._targetPosition.x;
@@ -705,6 +707,7 @@ package
             if(_loc2_._class != "decoration" && _loc2_._class != "immovable" && _loc2_._hp.Get() > 0 && _loc2_._class != "enemy")
             {
                _loc1_ = true;
+               break;
             }
          }
          if(!_loc1_)
@@ -713,7 +716,7 @@ package
             return;
          }
          var _loc4_:Boolean = false;
-         this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,25 * 60,1,this);
+         this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,10 * 60,1,this);
          if(this._targetCreeps.length > 0)
          {
             this._targetCreeps.sortOn(["dist"],Array.NUMERIC);
@@ -749,6 +752,19 @@ package
             this._waypoints = [this._targetCreep._tmpPoint];
             this._targetPosition = this._targetCreep._tmpPoint;
             this._behaviour = "heal";
+         }
+         else if(this._healerGiveUpTimer > 0)
+         {
+            --this._healerGiveUpTimer;
+         }
+         else if(this._behaviour != "retreat")
+         {
+            if(SPECIALEVENT.active && !this._friendly)
+            {
+               this._health.Set(0);
+               return;
+            }
+            this.ModeRetreat();
          }
          if(this._waypoints.length)
          {
@@ -1092,7 +1108,14 @@ package
       {
          if(!this._friendly)
          {
-            if(GLOBAL._mode != "build" && GLOBAL._playerCreatureUpgrades[this._creatureID] && Boolean(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup))
+            if(SPECIALEVENT.active || Boolean(GLOBAL._wmCreaturePowerups[this._creatureID]))
+            {
+               if(GLOBAL._wmCreaturePowerups[this._creatureID])
+               {
+                  return true;
+               }
+            }
+            else if(GLOBAL._mode != "build" && GLOBAL._playerCreatureUpgrades[this._creatureID] && Boolean(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup))
             {
                return true;
             }
@@ -1339,7 +1362,14 @@ package
          }
          if(!this._friendly)
          {
-            if(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup)
+            if(SPECIALEVENT.active || Boolean(GLOBAL._wmCreaturePowerups[this._creatureID]))
+            {
+               if(GLOBAL._wmCreaturePowerups[this._creatureID])
+               {
+                  return 100 + 40 * GLOBAL._wmCreaturePowerups[this._creatureID];
+               }
+            }
+            else if(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup)
             {
                return 100 + 40 * GLOBAL._playerCreatureUpgrades[this._creatureID].powerup;
             }
@@ -1359,7 +1389,14 @@ package
          }
          if(!this._friendly)
          {
-            if(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup)
+            if(SPECIALEVENT.active || Boolean(GLOBAL._wmCreaturePowerups[this._creatureID]))
+            {
+               if(GLOBAL._wmCreaturePowerups[this._creatureID])
+               {
+                  return GLOBAL._wmCreaturePowerups[this._creatureID];
+               }
+            }
+            else if(GLOBAL._playerCreatureUpgrades[this._creatureID].powerup)
             {
                return GLOBAL._playerCreatureUpgrades[this._creatureID].powerup;
             }
@@ -1537,12 +1574,6 @@ package
             }
             if(this._frameNumber % 30 == 0)
             {
-               if(this._maxHealth != CREATURES.GetProperty(this._creatureID,"health"))
-               {
-                  LOGGER.Log("hak","Regular monster health max incorrect");
-                  GLOBAL.ErrorMessage("CREEP hack 2");
-                  return false;
-               }
                if(this._secureSpeedMult.Get() != int(this._speedMult * 100))
                {
                   LOGGER.Log("hak","Regular monster speed buff incorrect");
@@ -1583,7 +1614,7 @@ package
          {
             this._invisibleTime = 0;
          }
-         if((GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && this._damage.Get() > int(CREATURES.GetProperty(this._creatureID,"damage")))
+         if((GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && !this._friendly && this._damage.Get() > int(CREATURES.GetProperty(this._creatureID,"damage",0,this._friendly)))
          {
             LOGGER.Log("log","Creep damage altered");
             GLOBAL.ErrorMessage("Creep damage altered");
@@ -2084,7 +2115,7 @@ package
                         this.ModeRetreat();
                         return false;
                      }
-                     if(!this._goeasy && GLOBAL._mode == "build" && this._hits > this._hitLimit)
+                     if(!this._goeasy && !SPECIALEVENT.active && GLOBAL._mode == "build" && this._hits > this._hitLimit)
                      {
                         return true;
                      }
@@ -2284,7 +2315,7 @@ package
                this._targetPosition = this._targetCreep._tmpPoint;
                this._attacking = true;
                this._intercepting = false;
-               if(this._targetCreep._behaviour != "heal" && this._invisibleTime == 0 && !this._targetCreep._explode && !this._explode)
+               if(this._targetCreep._behaviour != "heal" && this._invisibleTime == 0 && !this._targetCreep._explode && !this._explode && !this._targetCreep._targetCreep)
                {
                   this._waypoints = [];
                   this._targetCreep._targetCreep = this;

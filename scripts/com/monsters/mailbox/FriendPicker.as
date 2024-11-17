@@ -49,7 +49,7 @@ package com.monsters.mailbox
          this.shell.y = mask_mc.y;
          this.scroller.visible = false;
          bg_mc.visible = false;
-         name_txt.text = "";
+         name_txt.htmlText = "";
          photoRing.visible = false;
          arrowBtn.gotoAndStop(2);
          placeholder.visible = false;

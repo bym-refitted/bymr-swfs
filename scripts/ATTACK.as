@@ -938,6 +938,7 @@ package
       
       public static function WellDefended(param1:Boolean = true, param2:String = "") : *
       {
+         var popupMC:popup_defense;
          var tribe:Object = null;
          var Post:Function = null;
          var wildMonsters:Boolean = param1;
@@ -954,7 +955,12 @@ package
             }
             POPUPS.Next();
          };
-         var popupMC:popup_defense = new popup_defense();
+         if(SPECIALEVENT.active)
+         {
+            SPECIALEVENT.EndRound(true);
+            return;
+         }
+         popupMC = new popup_defense();
          tribe = TRIBES.TribeForBaseID(WMATTACK._attackersBaseID);
          if(wildMonsters)
          {
@@ -981,6 +987,11 @@ package
       {
          var RepairAll:Function;
          var mc:* = undefined;
+         if(SPECIALEVENT.active)
+         {
+            SPECIALEVENT.EndRound(false);
+            return;
+         }
          if(TUTORIAL._stage > 40)
          {
             RepairAll = function(param1:MouseEvent = null):*

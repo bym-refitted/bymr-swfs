@@ -68,11 +68,11 @@ package
       {
          if(this._count > 0)
          {
-            tInfo.text = KEYS.Get("bait_sending",{"v1":this._count});
+            tInfo.htmlText = KEYS.Get("bait_sending",{"v1":this._count});
          }
          else
          {
-            tInfo.text = "";
+            tInfo.htmlText = "";
          }
          dispatchEvent(new Event(Event.CHANGE));
       }

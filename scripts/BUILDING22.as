@@ -224,7 +224,7 @@ package
          this._used = 0;
          for(_loc2_ in this._monsters)
          {
-            this._used += CREATURES.GetProperty(_loc2_,"cStorage") * this._monsters[_loc2_];
+            this._used += CREATURES.GetProperty(_loc2_,"cStorage",0,true) * this._monsters[_loc2_];
             if(!this._monstersDispatched[_loc2_])
             {
                this._monstersDispatched[_loc2_] = 0;

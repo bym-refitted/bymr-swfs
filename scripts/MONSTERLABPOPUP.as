@@ -411,7 +411,7 @@ package
          var _loc12_:* = "<b>" + KEYS.Get("acad_mon_name") + "</b> " + KEYS.Get(CREATURELOCKER._creatures[_creatureID].name) + "<br>";
          _loc12_ = _loc12_ + ("<b>" + KEYS.Get("acad_mon_status") + "</b> " + _loc5_.status);
          _loc12_ = _loc12_ + ("<br>" + KEYS.Get(CREATURELOCKER._creatures[_creatureID].description));
-         var _loc13_:int = CREATURES.GetProperty(_creatureID,"damage");
+         var _loc13_:int = CREATURES.GetProperty(_creatureID,"damage",0,true);
          if(_loc13_ > 0)
          {
             _loc14_ = false;

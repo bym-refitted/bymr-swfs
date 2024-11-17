@@ -143,19 +143,19 @@ package
             "ease":Circ.easeInOut,
             "delay":0.25
          });
-         mcMonsterInfo.tSpeed.text = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(_loc2_,"speed")});
-         mcMonsterInfo.tHealth.text = GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"health"));
+         mcMonsterInfo.tSpeed.htmlText = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(_loc2_,"speed")});
+         mcMonsterInfo.tHealth.htmlText = GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"health"));
          if(_loc11_ > 0)
          {
-            mcMonsterInfo.tDamage.text = _loc11_;
+            mcMonsterInfo.tDamage.htmlText = _loc11_;
          }
          else
          {
-            mcMonsterInfo.tDamage.text = -_loc11_ + " (" + KEYS.Get("str_heal") + ")";
+            mcMonsterInfo.tDamage.htmlText = -_loc11_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         mcMonsterInfo.tResource.text = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cResource"))});
-         mcMonsterInfo.tStorage.text = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc2_,"cStorage")});
-         mcMonsterInfo.tTime.text = GLOBAL.ToTime(CREATURES.GetProperty(_loc2_,"cTime"),true);
+         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cResource"))});
+         mcMonsterInfo.tStorage.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc2_,"cStorage")});
+         mcMonsterInfo.tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_loc2_,"cTime"),true);
          var _loc12_:int = 1;
          if(Boolean(ACADEMY._upgrades[_loc2_]) && ACADEMY._upgrades[_loc2_].level > 1)
          {

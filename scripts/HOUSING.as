@@ -98,7 +98,7 @@ package
             }
             for(n in _creatures)
             {
-               _housingUsed.Add(CREATURES.GetProperty(n,"cStorage") * _creatures[n].Get());
+               _housingUsed.Add(CREATURES.GetProperty(n,"cStorage",0,true) * _creatures[n].Get());
             }
             _housingSpace.Set(_housingCapacity.Get() - _housingUsed.Get());
          }
@@ -127,7 +127,7 @@ package
          {
             param1 = "C12";
          }
-         var _loc5_:* = CREATURES.GetProperty(param1,"cStorage");
+         var _loc5_:* = CREATURES.GetProperty(param1,"cStorage",0,true);
          var _loc6_:Boolean = (GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview") && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice";
          if(_housingSpace.Get() < _loc5_ && !_loc6_)
          {
@@ -208,7 +208,7 @@ package
             }
             else
             {
-               _housingUsed.Add(CREATURES.GetProperty(_loc2_,"cStorage") * _creatures[_loc2_].Get());
+               _housingUsed.Add(CREATURES.GetProperty(_loc2_,"cStorage",0,true) * _creatures[_loc2_].Get());
             }
          }
          while(_housingUsed.Get() > _housingCapacity.Get())
@@ -219,7 +219,7 @@ package
                if(_creatures[_loc2_].Get() > 0)
                {
                   _creatures[_loc2_].Add(-1);
-                  _housingUsed.Add(CREATURES.GetProperty(_loc2_,"cStorage") * _creatures[_loc2_].Get());
+                  _housingUsed.Add(CREATURES.GetProperty(_loc2_,"cStorage",0,true) * _creatures[_loc2_].Get());
                }
                else
                {

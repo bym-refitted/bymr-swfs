@@ -5,6 +5,8 @@ package com.monsters.ui
    
    public class UI_BOTTOM
    {
+      public static var _nextwave:UI_NEXTWAVE;
+      
       public static var _mc:UI_MENU;
       
       public static var _missions:UI_MISSIONMENU;
@@ -42,6 +44,13 @@ package com.monsters.ui
          {
             Hide();
          }
+         _nextwave = new UI_NEXTWAVE();
+         _nextwave.Setup();
+         if(_nextwave)
+         {
+            GLOBAL._layerUI.addChild(_nextwave);
+         }
+         _nextwave.visible = false;
       }
       
       public static function ShowStarterKits(param1:MouseEvent = null) : *
@@ -99,6 +108,10 @@ package com.monsters.ui
          {
             _mc.Resize();
          }
+         if(_nextwave)
+         {
+            _nextwave.Resize();
+         }
       }
       
       public static function Clear() : void
@@ -131,6 +144,10 @@ package com.monsters.ui
                GLOBAL._bymChat.show();
             }
          }
+         if(_nextwave && SPECIALEVENT.EventActive() && UI_NEXTWAVE.ShouldDisplay())
+         {
+            _nextwave.visible = true;
+         }
       }
       
       public static function Hide() : *
@@ -146,6 +163,10 @@ package com.monsters.ui
             {
                GLOBAL._bymChat.hide();
             }
+         }
+         if(_nextwave)
+         {
+            _nextwave.visible = false;
          }
       }
    }

@@ -29,12 +29,13 @@ package
          _guardian = null;
       }
       
-      public static function GetProperty(param1:String, param2:String, param3:int = 0) : Number
+      public static function GetProperty(param1:String, param2:String, param3:int = 0, param4:Boolean = true) : Number
       {
          var stat:Array = null;
          var monsterID:String = param1;
          var statID:String = param2;
          var level:int = param3;
+         var friendly:Boolean = param4;
          if(!monsterID)
          {
             return 0;
@@ -66,14 +67,38 @@ package
                   {
                      GLOBAL._attackerCreatureUpgrades[monsterID] = {"level":1};
                   }
-                  if(level == 0 && Boolean(GLOBAL._attackerCreatureUpgrades[monsterID]))
+                  if(level == 0)
                   {
-                     level = int(GLOBAL._attackerCreatureUpgrades[monsterID].level);
+                     if(!friendly)
+                     {
+                        if(GLOBAL._attackerCreatureUpgrades[monsterID] != null)
+                        {
+                           level = int(GLOBAL._attackerCreatureUpgrades[monsterID].level);
+                        }
+                     }
+                     else if(ACADEMY._upgrades[monsterID] != null)
+                     {
+                        level = int(ACADEMY._upgrades[monsterID].level);
+                     }
                   }
                }
-               else if(level == 0 && Boolean(ACADEMY._upgrades[monsterID]))
+               else
                {
-                  level = int(ACADEMY._upgrades[monsterID].level);
+                  if(level == 0)
+                  {
+                     if(SPECIALEVENT.active && !friendly)
+                     {
+                        level = int(GLOBAL._wmCreatureLevels[monsterID]);
+                     }
+                     else if(ACADEMY._upgrades[monsterID] != null)
+                     {
+                        level = int(ACADEMY._upgrades[monsterID].level);
+                     }
+                  }
+                  if(level == 0 && ACADEMY._upgrades[monsterID] != null)
+                  {
+                     level = int(ACADEMY._upgrades[monsterID].level);
+                  }
                }
                if(stat.length < level)
                {

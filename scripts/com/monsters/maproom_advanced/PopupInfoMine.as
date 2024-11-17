@@ -396,8 +396,8 @@ package com.monsters.maproom_advanced
          });
          this._message = new Message("map2friends");
          this._message.requestType = "migraterequest";
-         this._message.subject_txt.text = KEYS.Get("invite_subject");
-         this._message.body_txt.text = KEYS.Get("invite_body");
+         this._message.subject_txt.htmlText = KEYS.Get("invite_subject");
+         this._message.body_txt.htmlText = KEYS.Get("invite_body");
          this._message.x = 0;
          this._message.y = -450;
          this._message.baseID = this._cell._baseID;

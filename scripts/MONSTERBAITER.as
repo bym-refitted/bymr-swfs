@@ -106,22 +106,25 @@ package
          UI2.Hide("bottom");
       }
       
-      public static function End() : void
+      public static function End(param1:Boolean = false) : void
       {
-         var _loc1_:Array = null;
-         var _loc2_:Number = 0;
+         var _loc2_:Array = null;
+         var _loc3_:Number = 0;
          _scaredAway = true;
-         SOUNDS.Play("wmbhorn");
+         if(!param1)
+         {
+            SOUNDS.Play("wmbhorn");
+         }
          UI2.Hide("scareAway");
          UI2.Hide("warning");
          SOUNDS.PlayMusic("musicbuild");
-         for each(_loc1_ in _currentAttackers)
+         for each(_loc2_ in _currentAttackers)
          {
-            _loc2_ = 0;
-            while(_loc2_ < _loc1_.length)
+            _loc3_ = 0;
+            while(_loc3_ < _loc2_.length)
             {
-               _loc1_[_loc2_].ModeRetreat();
-               _loc2_++;
+               _loc2_[_loc3_].ModeRetreat();
+               _loc3_++;
             }
          }
          _attacking = 0;

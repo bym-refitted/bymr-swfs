@@ -129,6 +129,13 @@ package
             "height":70,
             "middle":new Point(28,35)
          };
+         _sprites.IC1 = {
+            "key":"monsters/spurtz.png",
+            "sprite":null,
+            "width":24,
+            "height":28,
+            "middle":new Point(12,14)
+         };
          _sprites.G1_1 = {
             "key":"monsters/ape_1.png",
             "sprite":null,
@@ -484,6 +491,14 @@ package
                GetFrame(param1,_sprites.C15,int(param4 / 11.25));
             }
             return param4 / 11.25;
+         }
+         if(param2 == "IC1")
+         {
+            if(param6 != param4 / 12 + param5 % 9 / 3 * 30)
+            {
+               GetFrame(param1,_sprites.IC1,int(param4 / 12),param5 % 9 / 3);
+            }
+            return param4 / 12 + param5 % 9 / 3 * 30;
          }
          if(param2.substr(0,2) == "G1" || param2.substr(0,2) == "G2")
          {

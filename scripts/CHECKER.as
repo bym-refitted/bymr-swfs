@@ -21,28 +21,28 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "8f3d1b49db904b1dd9e02485cfe683c9")
+            if(GLOBAL.Check() != "5bfd9f7a961f2e4544209e3bc818ff1a")
             {
-               if(GLOBAL.Check() == "d52863a3eba3926cb9eb9582df91b144")
+               if(GLOBAL.Check() == "3d98775e6a82a8f2f189cb71cc6fb4d8")
                {
                   LOGGER.Log("err","CHECKER.buildingprops YARD outpost/yard mismatch " + GLOBAL.Check());
                }
                else
                {
-                  LOGGER.Log("err","CHECKER.buildingprops YARD " + GLOBAL.Check());
+                  LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
                   GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
                }
             }
          }
-         else if(GLOBAL.Check() != "d52863a3eba3926cb9eb9582df91b144")
+         else if(GLOBAL.Check() != "3d98775e6a82a8f2f189cb71cc6fb4d8")
          {
-            if(GLOBAL.Check() == "8f3d1b49db904b1dd9e02485cfe683c9")
+            if(GLOBAL.Check() == "5bfd9f7a961f2e4544209e3bc818ff1a")
             {
                LOGGER.Log("err","CHECKER.buildingprops OUTPOST yard/outpost mismatch " + GLOBAL.Check());
             }
             else
             {
-               LOGGER.Log("err","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
+               LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
                GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
             }
          }
@@ -217,8 +217,15 @@ package
                _loc3_.Tick();
                if(_loc3_._stored.Get() > _loc6_)
                {
-                  LOGGER.Log("hak","CHECKER.building-tick 2 expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
-                  GLOBAL.ErrorMessage("CHECKER.building-tick 2");
+                  if(_loc3_._stored.Get() / 2 > _loc6_)
+                  {
+                     LOGGER.Log("err","CHECKER.building-tick 2 expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
+                     GLOBAL.ErrorMessage("CHECKER.building-tick 2");
+                  }
+                  else
+                  {
+                     LOGGER.Log("err","CHECKER.building-tick 2 LOW ERROR expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
+                  }
                }
                if(_loc3_._countdownProduce.Get() <= 0)
                {

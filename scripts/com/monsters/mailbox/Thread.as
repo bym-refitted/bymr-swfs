@@ -113,7 +113,7 @@ package com.monsters.mailbox
             spinner.visible = true;
             param1.loadThread();
          }
-         this._mc.subject_txt.text = param1.subject.length > 30 ? param1.subject.substr(0,30) + "..." : param1.subject;
+         this._mc.subject_txt.htmlText = param1.subject.length > 30 ? param1.subject.substr(0,30) + "..." : param1.subject;
          this.scroller.visible = false;
          this.data = param1;
          this.Display(false);
@@ -418,7 +418,7 @@ package com.monsters.mailbox
             }
          }
          acceptBtn.Enabled = denyBtn.Enabled = sendBtn.Enabled = viewBtn.Enabled = false;
-         msg_txt.text = "";
+         msg_txt.htmlText = "";
          this.timer = new Timer(500);
          this.timer.addEventListener(TimerEvent.TIMER,this.Validate);
          this.timer.start();

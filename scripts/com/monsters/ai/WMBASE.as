@@ -239,7 +239,7 @@ package com.monsters.ai
             _mc.body_txt.htmlText = BaseForID(BASE._wmID).tribe.succ;
             _mc.b2.SetupKey("btn_brag");
             _mc.b2.Highlight = true;
-            _mc.title_txt.text = KEYS.Get("aibase_victory_title");
+            _mc.title_txt.htmlText = KEYS.Get("aibase_victory_title");
             _mc.headline_txt.htmlText = "<b>" + KEYS.Get("aibase_victory_headline") + "</b>";
             ImageCache.GetImageWithCallBack(BaseForID(BASE._wmID).tribe.splash,onImage);
             _mc.b2.addEventListener(MouseEvent.MOUSE_DOWN,shareDown);
@@ -313,15 +313,14 @@ package com.monsters.ai
                _mc.x = 0;
                _mc.y = 0;
             };
-            _mc.title_txt.text = KEYS.Get("aibase_defeat_title");
+            _mc.title_txt.htmlText = KEYS.Get("aibase_defeat_title");
             _mc.headline_txt.htmlText = "<b>" + KEYS.Get("aibase_defeat_headline") + "</b>";
             base = BaseForID(BASE._wmID);
             if(base.tribe)
             {
                onImage = function(param1:String, param2:BitmapData):void
                {
-                  var _loc3_:Bitmap = null;
-                  _loc3_ = new Bitmap(param2);
+                  var _loc3_:Bitmap = new Bitmap(param2);
                   _loc3_.x = 155;
                   _loc3_.y = 196;
                   if(Boolean(_mc) && Boolean(_mc.parent))

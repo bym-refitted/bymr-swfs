@@ -1,13 +1,18 @@
 package
 {
    import flash.display.MovieClip;
+   import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1269")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1284")]
    public dynamic class popup_catapult_mc extends MovieClip
    {
       public var pb2:CATAPULTITEM_view;
       
       public var pb3:CATAPULTITEM_view;
+      
+      public var tTitlePebble:TextField;
+      
+      public var tTitleTwig:TextField;
       
       public var _bg:MovieClip;
       
@@ -24,6 +29,8 @@ package
       public var pu2:CATAPULTITEM_view;
       
       public var pu3:CATAPULTITEM_view;
+      
+      public var tTitlePutty:TextField;
       
       public var pb0:CATAPULTITEM_view;
       

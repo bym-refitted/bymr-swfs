@@ -31,7 +31,7 @@ package
          this._capacity = GLOBAL._buildingProps[21].capacity[this._bunker._lvl.Get() - 1];
          this._selected = {};
          this._juiceList = {};
-         title_txt.text = KEYS.Get("bunker_title");
+         title_txt.htmlText = KEYS.Get("bunker_title");
          tCapacity.htmlText = "<b>" + KEYS.Get("bunker_capacity") + "</b>";
          bHousing.addEventListener(MouseEvent.CLICK,this.Switch("housing"));
          bHousing.SetupKey("bunker_btn_housing");
@@ -253,12 +253,12 @@ package
          }
          for(c in this._bunker._monsters)
          {
-            usedA += CREATURES.GetProperty(c,"cStorage") * this._bunker._monsters[c];
+            usedA += CREATURES.GetProperty(c,"cStorage",0,true) * this._bunker._monsters[c];
          }
          this._bunker._used = usedA;
          for(c in this._selected)
          {
-            usedB += CREATURES.GetProperty(c,"cStorage") * this._selected[c].Get();
+            usedB += CREATURES.GetProperty(c,"cStorage",0,true) * this._selected[c].Get();
          }
          p = 100 / this._capacity * (usedA + usedB);
          mcStorage.mcBar.width = 535 / this._capacity * usedA;
@@ -334,7 +334,7 @@ package
          var _loc3_:String = LOGIN._playerID.toString();
          if(this._mode == "housing")
          {
-            return CREATURES.GetProperty(param1,"cResource") * 0.5 * param2;
+            return CREATURES.GetProperty(param1,"cResource",0,true) * 0.5 * param2;
          }
          _loc5_ = {
             "C2":2,
@@ -465,11 +465,11 @@ package
          var _loc4_:int = 0;
          for(_loc5_ in this._bunker._monsters)
          {
-            _loc3_ += CREATURES.GetProperty(_loc5_,"cStorage") * this._bunker._monsters[_loc5_];
+            _loc3_ += CREATURES.GetProperty(_loc5_,"cStorage",0,true) * this._bunker._monsters[_loc5_];
          }
          for(_loc5_ in this._selected)
          {
-            _loc4_ += CREATURES.GetProperty(_loc5_,"cStorage") * this._selected[_loc5_].Get();
+            _loc4_ += CREATURES.GetProperty(_loc5_,"cStorage",0,true) * this._selected[_loc5_].Get();
          }
          _loc4_ += int(CREATURELOCKER._creatures["C" + param1].props.cStorage);
          if(_loc3_ + _loc4_ > this._capacity)

@@ -1030,9 +1030,11 @@ package
       public function Place(param1:MouseEvent = null) : *
       {
          var BragBiggulp:Function;
+         var BragTotem:Function;
          var tmpBuildTime:int = 0;
          var fromStorage:Boolean = false;
          var mc:MovieClip = null;
+         var totemImgUrl:String = null;
          var e:MouseEvent = param1;
          try
          {
@@ -1113,20 +1115,83 @@ package
                      {
                         LOGGER.Stat([75,"placedgoldenbiggulp"]);
                      }
-                     if(GLOBAL._mode == "build" && !BASE._isOutpost && this._type == 2 * 60)
+                     if(BTOTEM.IsTotem(this._type))
+                     {
+                        LOGGER.Stat([82,SPECIALEVENT.wave]);
+                     }
+                     if(GLOBAL._mode == "build" && !BASE._isOutpost)
                      {
                         BragBiggulp = function():*
                         {
                            GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
                            POPUPS.Next();
                         };
-                        mc = new popup_biggulp();
-                        mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
-                        mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
-                        mc.bPost.SetupKey("btn_brag");
-                        mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
-                        mc.bPost.Highlight = true;
-                        POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                        BragTotem = function(param1:int):*
+                        {
+                           var totemType:int = param1;
+                           return function(param1:MouseEvent = null):*
+                           {
+                              switch(totemType)
+                              {
+                                 case 121:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.1.png"]);
+                                    break;
+                                 case 122:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
+                                    break;
+                                 case 123:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
+                                    break;
+                                 case 124:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
+                                    break;
+                                 case 125:
+                                    GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
+                              }
+                              POPUPS.Next();
+                           };
+                        };
+                        if(this._type == 2 * 60)
+                        {
+                           mc = new popup_biggulp();
+                           mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
+                           mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
+                           mc.bPost.SetupKey("btn_brag");
+                           mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
+                           mc.bPost.Highlight = true;
+                           POPUPS.Push(mc,null,null,null,"building-biggulp.png");
+                        }
+                        if(BTOTEM.IsTotem(this._type))
+                        {
+                           mc = new popup_biggulp();
+                           mc.tA.htmlText = "<b>" + KEYS.Get("wmi_totemwon") + "</b>";
+                           mc.tB.htmlText = "";
+                           mc.bPost.SetupKey("btn_brag");
+                           mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                           mc.bPost.Highlight = true;
+                           totemImgUrl = "";
+                           switch(this._type)
+                           {
+                              case 121:
+                                 totemImgUrl = "building-wmitotem1.png";
+                                 break;
+                              case 122:
+                                 totemImgUrl = "building-wmitotem2.png";
+                                 break;
+                              case 123:
+                                 totemImgUrl = "building-wmitotem3.png";
+                                 break;
+                              case 124:
+                                 totemImgUrl = "building-wmitotem4.png";
+                                 break;
+                              case 125:
+                                 totemImgUrl = "building-wmitotem5.png";
+                                 break;
+                              default:
+                                 totemImgUrl = "building-wmitotem5.png";
+                           }
+                           POPUPS.Push(mc,null,null,null,totemImgUrl);
+                        }
                      }
                   }
                   if(BASE._pendingPurchase.length == 0)
@@ -1636,7 +1701,7 @@ package
                      };
                      GLOBAL._promptedInvite = true;
                      popupMC = new popup_helpme();
-                     popupMC.tB.text = KEYS.Get("pop_helpme");
+                     popupMC.tB.htmlText = KEYS.Get("pop_helpme");
                      popupMC.bAction.SetupKey("btn_invitefriends");
                      popupMC.bAction.addEventListener(MouseEvent.CLICK,GetFriends);
                      POPUPS.Push(popupMC);
@@ -2987,6 +3052,30 @@ package
          if(this._type == 119)
          {
             return new building119hit();
+         }
+         if(this._type == 2 * 60)
+         {
+            return new building120hit();
+         }
+         if(this._type == 121)
+         {
+            return new building121hit();
+         }
+         if(this._type == 122)
+         {
+            return new building122hit();
+         }
+         if(this._type == 123)
+         {
+            return new building123hit();
+         }
+         if(this._type == 124)
+         {
+            return new building124hit();
+         }
+         if(this._type == 125)
+         {
+            return new building125hit();
          }
          return new building1hit();
       }

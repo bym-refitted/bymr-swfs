@@ -1016,12 +1016,16 @@ package
          if(this._health.Get() <= 0)
          {
             MAP.CreepCellDelete(this._id,this.node);
-            this.ModeRetreat();
-            ATTACK.Log(this._creatureID,LOGIN._playerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " retreated.");
-            SOUNDS.Play("monsterland" + (1 + int(Math.random() * 3)));
-            if(GLOBAL._mode == "attack")
+            if(!SPECIALEVENT.active)
             {
-               LOGGER.Stat([54,this._creatureID,1,this._level.Get()]);
+               this.ModeRetreat();
+               this._venom.Set(0);
+               ATTACK.Log(this._creatureID,LOGIN._playerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " retreated.");
+               SOUNDS.Play("monsterland" + (1 + int(Math.random() * 3)));
+               if(GLOBAL._mode == "attack")
+               {
+                  LOGGER.Stat([54,this._creatureID,1,this._level.Get()]);
+               }
             }
             BASE.Save();
             return;
@@ -1151,6 +1155,7 @@ package
          if(this._health.Get() <= 0)
          {
             ATTACK.Log(this._creatureID,BASE._ownerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[this._creatureID].name + " was critically injured and fled the battle.");
+            this._venom.Set(0);
             this.ModeRetreat();
             if(GLOBAL._mode == "attack")
             {
@@ -1204,7 +1209,7 @@ package
                if(this._targetCreep._behaviour != "heal")
                {
                   this._targetCreep._targetCreep = this;
-                  if(this._targetCreep._creatureID == "C14" || this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
+                  if(this._targetCreep._creatureID == "C14" || this._targetCreep._creatureID == "C12" && this._targetCreep.PoweredUp() || this._targetCreep._creatureID == "G3" || (GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._creatureID.substr(0,1) == "G") && this._movement != "fly")
                   {
                      this._targetCreep._atTarget = true;
                   }
@@ -1366,6 +1371,7 @@ package
                this._lastHeal = GLOBAL.Timestamp();
             }
          }
+         this._venom.Set(0);
          if(this._behaviourMode == "defend" && this._frameNumber % 200 == 0)
          {
             this.FindDefenseTargets();
@@ -1442,6 +1448,7 @@ package
       
       public function TickBCage() : *
       {
+         this._venom.Set(0);
          if(this._atTarget)
          {
             this._behaviour = "pen";
@@ -1464,8 +1471,7 @@ package
       public function TickBBuff() : *
       {
          var _loc2_:* = undefined;
-         var _loc3_:CREEP = null;
-         var _loc4_:Point = null;
+         var _loc3_:Point = null;
          var _loc1_:Number = 1;
          if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
@@ -1489,8 +1495,7 @@ package
             {
                if(_loc2_ != this)
                {
-                  _loc3_ = _loc2_ as CREEP;
-                  if(_loc3_ && _loc3_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(this._tmpPoint,_loc3_._tmpPoint) < 250)
+                  if(_loc2_ && _loc2_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(this._tmpPoint,_loc2_._tmpPoint) < 250)
                   {
                      _loc2_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
                   }
@@ -1635,8 +1640,8 @@ package
                if(this._targetCreep && this._targetCreep._health.Get() > 0)
                {
                   this._attacking = true;
-                  _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                  FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
+                  _loc3_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
+                  FIREBALLS.Spawn2(_loc3_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
                   FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                   SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   this._targetCenter = this._targetCreep._tmpPoint;
@@ -1653,8 +1658,8 @@ package
                      this._attacking = true;
                      this._targetCenter = this._targetBuilding._position;
                      this._targetPosition = this._targetBuilding._position;
-                     _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                     FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
+                     _loc3_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
+                     FIREBALLS.Spawn(_loc3_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
                      FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
                      SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   }
@@ -1711,6 +1716,7 @@ package
       
       public function TickBRetreat() : *
       {
+         this._venom.Set(0);
          if(this._atTarget)
          {
             return true;
@@ -1915,6 +1921,10 @@ package
             case "attack":
             case "bounce":
                this.TickBAttack();
+               if(SPECIALEVENT.active && this._health.Get() <= 0)
+               {
+                  return true;
+               }
                break;
             case "defend":
                this.TickBDefend();
@@ -1949,7 +1959,7 @@ package
             default:
                this.TickDefault();
          }
-         if((this._behaviour == "attack" || this._behaviour == "retreat" && this._health.Get() > 0) && this._frameNumber % 5 == 0)
+         if((this._behaviour == "attack" || this._behaviour == "retreat" && this._health.Get() > 0 || this._behaviour == "buff") && this._frameNumber % 5 == 0)
          {
             this.newNode = MAP.CreepCellMove(this._tmpPoint,this._id,this,this.node);
             if(this.newNode)

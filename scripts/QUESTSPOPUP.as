@@ -29,7 +29,7 @@ package
          this._groupID = -1;
          this._questID = "";
          this.ListGroups();
-         title_txt.text = KEYS.Get("quests_title");
+         title_txt.htmlText = KEYS.Get("quests_title");
          var _loc1_:int = 0;
          while(_loc1_ < QUESTS._quests.length)
          {
@@ -317,7 +317,7 @@ package
                   c = 0;
                   while(c < 5)
                   {
-                     this._infoMC["tR" + (c + 1) + "title"].text = KEYS.Get(GLOBAL._resourceNames[c]);
+                     this._infoMC["tR" + (c + 1) + "title"].htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
                      this._infoMC["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(q.reward[c]) + "</b>";
                      c++;
                   }

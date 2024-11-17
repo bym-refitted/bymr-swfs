@@ -44,7 +44,7 @@ package
          this._ranges.mouseEnabled = false;
          this._ranges.visible = false;
          this.Setup();
-         title_txt.text = KEYS.Get("planner_title");
+         title_txt.htmlText = KEYS.Get("planner_title");
       }
       
       public function Setup() : *

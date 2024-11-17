@@ -52,7 +52,7 @@ package
             this["m" + _loc1_].visible = false;
             _loc1_++;
          }
-         title_txt.text = KEYS.Get("mh_title");
+         title_txt.htmlText = KEYS.Get("mh_title");
          capacity_desc_txt.htmlText = "<b>" + KEYS.Get("mh_capacity_desc") + "</b>";
          if(GLOBAL._bJuicer)
          {

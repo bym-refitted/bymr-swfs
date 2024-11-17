@@ -550,7 +550,37 @@ package
                   else if(data[0] == 77)
                   {
                      st1 = "711promo";
-                     name = "noticeshown";
+                     name = "tutorial";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 78)
+                  {
+                     st1 = "711promo";
+                     name = "redemption";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 79)
+                  {
+                     st1 = "WMI";
+                     name = "attempted";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 80)
+                  {
+                     st1 = "WMI";
+                     name = "success";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 81)
+                  {
+                     st1 = "WMI";
+                     name = "failed";
+                     val = int(data[1]);
+                  }
+                  else if(data[0] == 82)
+                  {
+                     st1 = "WMI";
+                     name = "totem_placed";
                      val = int(data[1]);
                   }
                }

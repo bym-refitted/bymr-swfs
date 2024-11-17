@@ -54,11 +54,19 @@ package
       
       public static function CreepSplat(param1:String, param2:int, param3:int) : *
       {
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:Number = NaN;
          var _loc7_:int = 0;
-         var _loc4_:int = CREATURES.GetProperty(param1,"cResource") / 100;
-         if(_loc4_ > 5)
+         if(param1.substr(0,1) == "G")
+         {
+            _loc4_ = 10;
+         }
+         else
+         {
+            _loc4_ = CREATURES.GetProperty(param1,"cResource") / 100;
+         }
+         if(_loc4_ > 5 && param1.substr(0,1) != "G")
          {
             _loc4_ = 5;
          }

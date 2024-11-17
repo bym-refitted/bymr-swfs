@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1531")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1546")]
    public dynamic class popup_horse extends MovieClip
    {
       public var bA:Button_CLIP;

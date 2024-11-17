@@ -200,13 +200,19 @@ package
       
       public static function logFB711PromoShown(param1:String = null) : void
       {
-         LOGGER.Log("pro7-11","POPUPS.CallbackShiny " + param1);
          LOGGER.Stat([74,"popupshow"]);
       }
       
-      public static function logFB711NoticeShown(param1:String = null) : void
+      public static function logFB711RedeemShown(param1:String = null) : void
       {
-         LOGGER.Stat([77,"noticeshow"]);
+         if(TUTORIAL._stage < 200)
+         {
+            LOGGER.Stat([77,TUTORIAL._stage]);
+         }
+         else
+         {
+            LOGGER.Stat([78,"claimed"]);
+         }
       }
    }
 }

@@ -1,0 +1,94 @@
+package
+{
+   import com.monsters.display.ImageCache;
+   import flash.display.Bitmap;
+   import flash.display.BitmapData;
+   import flash.events.MouseEvent;
+   
+   public class DEFENSEEVENTPOPUP extends DEFENSEEVENTPOPUP_CLIP
+   {
+      private static var _open:Boolean = false;
+      
+      private var bm:Bitmap;
+      
+      public function DEFENSEEVENTPOPUP(param1:int = 0)
+      {
+         var bannerComplete:Function = null;
+         var imageComplete:Function = null;
+         var popupnum:int = param1;
+         bannerComplete = function(param1:String, param2:BitmapData):void
+         {
+            bm = new Bitmap(param2);
+            mcBanner.addChild(bm);
+            mcBanner.width = 672;
+            mcBanner.height = 82;
+         };
+         imageComplete = function(param1:String, param2:BitmapData):void
+         {
+            var _loc3_:Bitmap = new Bitmap(param2);
+            _loc3_.smoothing = true;
+            mcImage.addChild(_loc3_);
+            mcImage.width = 200;
+            mcImage.height = 200;
+         };
+         super();
+         if(popupnum == -1)
+         {
+            popupnum = Math.floor(Math.random() * 3) + 1;
+         }
+         if(popupnum == 4)
+         {
+            if(SPECIALEVENT.wave == 1)
+            {
+               rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup2"),false,0,0);
+               rsvpBtn.addEventListener(MouseEvent.CLICK,this.startDown);
+            }
+            else
+            {
+               rsvpBtn.visible = false;
+            }
+         }
+         else
+         {
+            rsvpBtn.Setup(KEYS.Get("wmi_buttonpopup1"),false,0,0);
+            rsvpBtn.addEventListener(MouseEvent.CLICK,this.rsvpDown);
+         }
+         ImageCache.GetImageWithCallBack("specialevent/monsterinvasionbannerred.jpg",bannerComplete);
+         if(popupnum > 0 && popupnum < 5)
+         {
+            ImageCache.GetImageWithCallBack("specialevent/200x200_" + popupnum + ".jpg",imageComplete);
+         }
+         mcFrame.Setup(true);
+         rsvpBtn.stop();
+         mcText.text = KEYS.Get("wmi_popup" + popupnum);
+         _open = true;
+      }
+      
+      public static function get open() : Boolean
+      {
+         return _open;
+      }
+      
+      public static function LogPopupShown() : void
+      {
+      }
+      
+      public function rsvpDown(param1:MouseEvent) : void
+      {
+         GLOBAL.gotoURL("http://www.facebook.com/event.php?eid=141841065917218",null,true,[63,1]);
+         POPUPS.Next();
+      }
+      
+      public function startDown(param1:MouseEvent) : void
+      {
+         this.Hide();
+      }
+      
+      public function Hide() : void
+      {
+         _open = false;
+         POPUPS.Next();
+      }
+   }
+}
+

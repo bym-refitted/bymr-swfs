@@ -171,6 +171,7 @@ package
       
       public static function Resize() : *
       {
+         var _loc1_:int = 0;
          if(!GLOBAL.flagsShouldChatDisplay() && _canUseHorizontal)
          {
             if(_mc)
@@ -182,22 +183,8 @@ package
          else if(_mc)
          {
             _mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - _workerMCOffset;
-            if(BASE._isProtected - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
-            {
-               _mc.y = GLOBAL._SCREEN.top + 70;
-               if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
-               {
-                  _mc.y = GLOBAL._SCREEN.top + 100;
-               }
-            }
-            else
-            {
-               _mc.y = GLOBAL._SCREEN.top + 50;
-               if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
-               {
-                  _mc.y = GLOBAL._SCREEN.top + 80;
-               }
-            }
+            _loc1_ = !!UI2._wildMonsterBar ? 20 : 0;
+            _mc.y = GLOBAL._SCREEN.top + 50 + _loc1_ + 30 * UI2.TimersVisible();
          }
       }
       

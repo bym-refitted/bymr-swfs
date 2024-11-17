@@ -381,6 +381,20 @@ package
                   "targetGroup":[5]
                }
             },
+            "IC1":{
+               "name":"#m_spurtz#",
+               "blocked":true,
+               "props":{
+                  "speed":[1.2],
+                  "health":[400,425,450,475,510,550],
+                  "damage":[2 * 60,130,140,150,160,175],
+                  "cTime":[15,10,8,7,6,5],
+                  "cResource":[2133,2397,2693,3026,3400,3820],
+                  "cStorage":[21,21,21,21,21,21],
+                  "bucket":[20],
+                  "targetGroup":[1]
+               }
+            },
             "C200":{
                "name":"AI Looter 1",
                "blocked":true,

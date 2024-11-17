@@ -2,7 +2,7 @@ package ChatUI_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1663")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1685")]
    public dynamic class chat_window_box_10 extends MovieClip
    {
       public function chat_window_box_10()

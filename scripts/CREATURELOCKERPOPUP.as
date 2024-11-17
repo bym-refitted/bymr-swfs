@@ -44,7 +44,7 @@ package
             CREATURELOCKER._page = CREATURELOCKER._creatures[CREATURELOCKER._popupCreatureID].page;
             this.ShowB(CREATURELOCKER._popupCreatureID);
          }
-         title_txt.text = KEYS.Get("cloc_title");
+         title_txt.htmlText = KEYS.Get("cloc_title");
          prod_label_txt.htmlText = KEYS.Get("cloc_prodstats_label");
          speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
@@ -308,20 +308,20 @@ package
             "ease":Circ.easeInOut,
             "delay":0.25
          });
-         tSpeed.text = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(this._creatureID,"speed")});
-         tHealth.text = CREATURES.GetProperty(this._creatureID,"health").toString();
+         tSpeed.htmlText = KEYS.Get("mon_statsspeed",{"v1":CREATURES.GetProperty(this._creatureID,"speed")});
+         tHealth.htmlText = CREATURES.GetProperty(this._creatureID,"health").toString();
          dam = CREATURES.GetProperty(this._creatureID,"damage");
          if(dam > 0)
          {
-            tDamage.text = dam.toString();
+            tDamage.htmlText = dam.toString();
          }
          else
          {
-            tDamage.text = -dam + " (" + KEYS.Get("str_heal") + ")";
+            tDamage.htmlText = -dam + " (" + KEYS.Get("str_heal") + ")";
          }
-         tResource.text = CREATURES.GetProperty(this._creatureID,"cResource") + " " + KEYS.Get(GLOBAL._resourceNames[3]);
-         tStorage.text = KEYS.Get("mon_statsstorage",{"v1":CREATURES.GetProperty(this._creatureID,"cStorage")});
-         tTime.text = GLOBAL.ToTime(CREATURES.GetProperty(this._creatureID,"cTime"),true);
+         tResource.htmlText = CREATURES.GetProperty(this._creatureID,"cResource") + " " + KEYS.Get(GLOBAL._resourceNames[3]);
+         tStorage.htmlText = KEYS.Get("mon_statsstorage",{"v1":CREATURES.GetProperty(this._creatureID,"cStorage")});
+         tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(this._creatureID,"cTime"),true);
          if(CREATURELOCKER._lockerData[this._creatureID])
          {
             if(CREATURELOCKER._lockerData[this._creatureID].t == 2)

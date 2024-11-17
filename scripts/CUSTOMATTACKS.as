@@ -47,17 +47,25 @@ package
          }
       }
       
-      public static function CustomAttack(param1:Array) : Array
+      public static function CustomAttack(param1:Array, param2:Boolean = false) : Array
       {
          _started = true;
          WMATTACK._isAI = false;
          WMATTACK.AttackB();
          UI2.Show("scareAway");
-         var _loc2_:Array = WMATTACK.SpawnA(param1);
-         var _loc3_:* = _loc2_[0][0];
-         var _loc4_:* = Point.distance(new Point(GLOBAL._bBaiter.x,GLOBAL._bBaiter.y),new Point(_loc3_.x,_loc3_.y));
-         MAP.FocusTo(_loc3_.x,_loc3_.y,2);
-         return _loc2_;
+         var _loc3_:Array = WMATTACK.SpawnA(param1);
+         var _loc4_:* = _loc3_[0][0];
+         MAP.FocusTo(_loc4_.x,_loc4_.y,2);
+         return _loc3_;
+      }
+      
+      public static function WMIAttack(param1:Array) : Array
+      {
+         _started = true;
+         WMATTACK._isAI = false;
+         WMATTACK.AttackB();
+         UI2.Show("scareAway");
+         return WMATTACK.SpawnA(param1);
       }
       
       public static function TutorialAttack() : void

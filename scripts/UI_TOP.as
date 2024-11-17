@@ -3,6 +3,7 @@ package
    import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
+   import flash.events.Event;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.net.URLRequest;
@@ -70,7 +71,7 @@ package
                i++;
             }
             mc.mcR5.bAdd.txtAdd.autoSize = TextFieldAutoSize.LEFT;
-            mc.mcR5.bAdd.txtAdd.text = KEYS.Get("ui_topaddshiny");
+            mc.mcR5.bAdd.txtAdd.htmlText = KEYS.Get("ui_topaddshiny");
             mc.mcR5.bAdd.mcBG.width = mc.mcR5.bAdd.txtAdd.width + 11;
             mc.mcR5.mcBG.width = 82 + mc.mcR5.bAdd.width;
             mc.mcR5.bAdd.addEventListener(MouseEvent.CLICK,BUY.Show);
@@ -140,7 +141,7 @@ package
          else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
             this._creatureButtonsMC = mc.addChild(new flingerLevel());
-            this._creatureButtonsMC.tA.text = KEYS.Get("attack_flingerbar");
+            this._creatureButtonsMC.tA.htmlText = KEYS.Get("attack_flingerbar");
             this._creatureButtonsMC.y = 84;
             count = 0;
             this._creatureButtons = [];
@@ -229,6 +230,7 @@ package
       
       public function Setup() : *
       {
+         var onImageLoad:Function;
          var LoadImageError:Function;
          var loader:Loader = null;
          if(GLOBAL._mode != "build")
@@ -250,15 +252,28 @@ package
             }
             try
             {
+               onImageLoad = function(param1:Event):void
+               {
+                  mc.mcPic.mcBG.addChild(loader);
+                  if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+                  {
+                     loader.height = 50;
+                     loader.width = 50;
+                  }
+               };
                LoadImageError = function(param1:IOErrorEvent):*
                {
                };
                loader = new Loader();
                loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
-               mc.mcPic.mcBG.addChild(loader);
+               loader.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
                if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview")
                {
                   loader.load(new URLRequest(GLOBAL._storageURL + BASE._ownerPic));
+               }
+               else if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+               {
+                  loader.load(new URLRequest(BASE._ownerPic));
                }
                else
                {

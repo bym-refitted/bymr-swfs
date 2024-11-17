@@ -91,7 +91,7 @@ package com.monsters.mailbox
          removeChild(inBtn);
          removeChild(outBtn);
          addEventListener(Event.ADDED_TO_STAGE,this.onAdd);
-         title_txt.text = KEYS.Get("mail_title");
+         title_txt.htmlText = KEYS.Get("mail_title");
          noMessages_btn.label_txt.htmlText = "<b>" + KEYS.Get("mail_nomessages") + "</b>";
          _instance = this;
       }
@@ -270,7 +270,7 @@ package com.monsters.mailbox
       
       public function displayArray(param1:Array) : void
       {
-         var _loc4_:Number = 0;
+         var _loc5_:Number = 0;
          var _loc6_:InboxMessage = null;
          var _loc2_:Array = [];
          var _loc3_:Number = 0;
@@ -308,14 +308,13 @@ package com.monsters.mailbox
             bNext.visible = false;
             bPrevious.visible = false;
          }
-         _loc4_ = 50;
-         var _loc5_:Number = 0;
+         _loc5_ = 0;
          while(_loc5_ < _loc2_.length)
          {
             _loc6_ = _loc2_[_loc5_];
             this.shell.addChild(_loc6_);
             _loc6_.x = 76 + mask_mc.width * Math.floor(_loc5_ / this.rowsPerPage);
-            _loc6_.y = 126 + _loc5_ * _loc4_ - this.rowsPerPage * _loc4_ * Math.floor(_loc5_ / this.rowsPerPage);
+            _loc6_.y = 126 + _loc5_ * 50 - this.rowsPerPage * 50 * Math.floor(_loc5_ / this.rowsPerPage);
             _loc5_++;
          }
       }

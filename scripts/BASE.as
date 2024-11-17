@@ -285,6 +285,7 @@ package
       public static function Cleanup() : *
       {
          var _loc1_:BFOUNDATION = null;
+         SPECIALEVENT.ClearWildMonsterPowerups();
          CREATURES.Clear();
          CREEPS.Clear();
          GLOBAL._ROOT.removeChild(GLOBAL._layerMap);
@@ -328,6 +329,7 @@ package
          GLOBAL._bLocker = null;
          GLOBAL._bMap = null;
          GLOBAL._bStore = null;
+         GLOBAL._bTotem = null;
          UI2.Hide("warning");
          UI2.Hide("scareAway");
          WMATTACK._inProgress = false;
@@ -1113,6 +1115,14 @@ package
                      }
                      GLOBAL._baseURL = "http://bmdev.vx.casualcollective.com/base/";
                      break;
+                  case 4:
+                     if(GLOBAL._baseURL == "http://bym-vx2-vip.sjc.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "http://bym-vx2-vip.sjc.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "http://bym-vx2-vip.sjc.kixeye.com/base/";
+                     break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
                      {
@@ -1343,7 +1353,10 @@ package
                         o.l = 2;
                      }
                      b = addBuildingC(o.t);
-                     tmpType = b._type;
+                     if(b)
+                     {
+                        tmpType = b._type;
+                     }
                      if(o.t == 16 && _rawMonsters && Boolean(_rawMonsters.hcc))
                      {
                         o.mq = _rawMonsters.hcc;
@@ -1385,16 +1398,23 @@ package
                            ijx++;
                         }
                      }
-                     b.Setup(o);
-                     if(b._id > _buildingCount)
+                     if(BTOTEM.IsTotem(o.t))
                      {
-                        _buildingCount = b._id;
+                        o.t = SPECIALEVENT.TotemQualified(o.t);
                      }
-                     if(tmpType == 14)
+                     if(b)
                      {
-                        hasTownHall = true;
+                        b.Setup(o);
+                        if(b._id > _buildingCount)
+                        {
+                           _buildingCount = b._id;
+                        }
+                        if(tmpType == 14)
+                        {
+                           hasTownHall = true;
+                        }
+                        count++;
                      }
-                     count++;
                   }
                }
             }
@@ -1982,6 +2002,7 @@ package
             HOUSING.Cull();
             HOUSING.Populate();
             SOUNDS.Setup();
+            BTOTEM.CleanupStorage();
             GLOBAL._render = true;
             GLOBAL._catchup = false;
          }
@@ -1994,7 +2015,7 @@ package
          {
             upgradeCount = 0;
             helpedCount = 0;
-            if(!GLOBAL._flags.viximo)
+            if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
             {
                if(!GLOBAL._displayedWhatsNew && !BASE._isOutpost && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
                {
@@ -2143,10 +2164,10 @@ package
             }
             if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
             {
-               if((!GLOBAL._flags.viximo || !GLOBAL._flags.kongregate) && !GLOBAL._displayedPromoNew)
+               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && !GLOBAL._displayedPromoNew)
                {
                   fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
-                  if(GLOBAL.StatGet("fbpromotimer") == 0)
+                  if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
                   {
                      MoreInfo711 = function(param1:MouseEvent):void
                      {
@@ -2246,6 +2267,16 @@ package
                   GLOBAL.Message(KEYS.Get("base_nohelpneeded"));
                }
             }
+            if(GLOBAL._mode == "build" && !_isOutpost && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+            {
+               if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._countryCode != "ph")
+               {
+                  if(SPECIALEVENT.invasionpop > GLOBAL.StatGet("lasttdpopup") || SPECIALEVENT.invasionpop == -1)
+                  {
+                     SPECIALEVENT.ShowDefenseEventPopup("wait");
+                  }
+               }
+            }
          }
          catch(e:Error)
          {
@@ -2254,6 +2285,7 @@ package
          }
          try
          {
+            UI2.Update();
             PLEASEWAIT.Hide();
             CalcResources();
          }
@@ -2333,7 +2365,7 @@ package
                   };
                   popupMCdamaged = new popup_damagedbase_onvisit();
                   popupMCdamaged.title_txt.htmlText = "<b>" + KEYS.Get("base_damaged_title") + "</b>";
-                  popupMCdamaged.body_txt.text = KEYS.Get("base_damaged_body",{"v1":BASE._ownerName});
+                  popupMCdamaged.body_txt.htmlText = KEYS.Get("base_damaged_body",{"v1":BASE._ownerName});
                   popupMCdamaged.bAction.SetupKey("base_damaged_alert_btn");
                   popupMCdamaged.bAction.Highlight = true;
                   popupMCdamaged.bAction.addEventListener(MouseEvent.CLICK,Action);
@@ -2474,7 +2506,7 @@ package
             {
                CHECKER.Check();
             }
-            pageInterval = 25;
+            pageInterval = int(Math.random() * 10) + 25;
             if(GLOBAL._flags.pageinterval)
             {
                pageInterval = int(GLOBAL._flags.pageinterval);
@@ -2746,6 +2778,10 @@ package
                      }
                      hpMax += building._hpMax.Get();
                   }
+                  if(BTOTEM.IsTotem(building._type))
+                  {
+                     building._type = SPECIALEVENT.TotemQualified(building._type);
+                  }
                   tmpExport = building.Export();
                   if(tmpExport)
                   {
@@ -2912,6 +2948,10 @@ package
             else
             {
                loadObjects.monsters = com.adobe.serialization.json.JSON.encode(HOUSING.Export());
+            }
+            if(_saveOver)
+            {
+               loadObjects.over = _saveOver;
             }
             if(_guardianData)
             {
@@ -3365,6 +3405,10 @@ package
       
       public static function BuildingStorageAdd(param1:int) : *
       {
+         if(BTOTEM.IsTotem(param1))
+         {
+            param1 = SPECIALEVENT.TotemQualified(param1);
+         }
          if(!_buildingsStored["b" + param1])
          {
             _buildingsStored["b" + param1] = new SecNum(0);
@@ -3376,6 +3420,30 @@ package
       {
          if(_buildingsStored["b" + param1])
          {
+            if(param1 >= 121 && param1 <= 125)
+            {
+               if(_buildingsStored["b121"])
+               {
+                  delete _buildingsStored["b121"];
+               }
+               if(_buildingsStored["b122"])
+               {
+                  delete _buildingsStored["b122"];
+               }
+               if(_buildingsStored["b123"])
+               {
+                  delete _buildingsStored["b123"];
+               }
+               if(_buildingsStored["b124"])
+               {
+                  delete _buildingsStored["b124"];
+               }
+               if(_buildingsStored["b125"])
+               {
+                  delete _buildingsStored["b125"];
+               }
+               return true;
+            }
             if(_buildingsStored["b" + param1].Get() >= 1)
             {
                _buildingsStored["b" + param1].Add(-1);
@@ -3936,7 +4004,17 @@ package
          var _loc2_:BFOUNDATION = null;
          if(GLOBAL._buildingProps[param1 - 1].type == "decoration")
          {
-            _loc2_ = new BDECORATION(param1);
+            if(BTOTEM.IsTotem(param1))
+            {
+               if(GLOBAL._bTotem == null)
+               {
+                  _loc2_ = new BTOTEM(param1);
+               }
+            }
+            else
+            {
+               _loc2_ = new BDECORATION(param1);
+            }
          }
          else if(param1 == 1)
          {
@@ -4648,11 +4726,11 @@ package
       
       public static function BaseLevel() : Object
       {
-         var points:Number;
-         var levels:Array;
-         var i:int;
          var StreamPost:Function;
+         var points:Number = NaN;
          var lvl:Object = null;
+         var levels:Array = null;
+         var i:int = 0;
          var mc:popup_levelup = null;
          CalcBaseValue();
          points = _basePoints + Number(_baseValue);

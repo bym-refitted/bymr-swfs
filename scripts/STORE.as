@@ -70,6 +70,8 @@ package
       
       public static var _customPage:Array = [];
       
+      public static var _repairCount:int = 0;
+      
       public function STORE()
       {
          super();
@@ -134,10 +136,10 @@ package
       public static function Variables() : *
       {
          var _loc2_:int = 0;
-         var _loc5_:int = 0;
-         var _loc7_:BFOUNDATION = null;
-         var _loc8_:int = 0;
-         var _loc9_:* = undefined;
+         var _loc6_:BFOUNDATION = null;
+         var _loc7_:int = 0;
+         var _loc8_:* = undefined;
+         var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc11_:BFOUNDATION = null;
          var _loc12_:Number = 0;
@@ -262,27 +264,27 @@ package
             _storeItems.SP4.c = [_loc2_];
          }
          var _loc4_:int = 0;
-         _loc5_ = 0;
-         var _loc6_:int = 0;
-         for each(_loc7_ in BASE._buildingsAll)
+         _repairCount = 0;
+         var _loc5_:int = 0;
+         for each(_loc6_ in BASE._buildingsAll)
          {
-            if(_loc7_._repairing)
+            if(_loc6_._repairing)
             {
-               _loc5_ += 1;
-               if(_loc7_._repairTime > 5 * 60)
+               _repairCount += 1;
+               if(_loc6_._repairTime > 5 * 60)
                {
-                  _loc4_ += _loc7_._repairTime;
-                  _loc6_ += 1;
+                  _loc4_ += _loc6_._repairTime;
+                  _loc5_ += 1;
                }
             }
          }
-         _storeItems.FIX.c = [GetTimeCost(_loc4_) + _loc6_ * 10];
-         _storeItems.FIX.d = KEYS.Get("desc_repairbdgs",{"v1":_loc5_});
+         _storeItems.FIX.c = [GetTimeCost(_loc4_) + _loc5_ * 10];
+         _storeItems.FIX.d = KEYS.Get("desc_repairbdgs",{"v1":_repairCount});
          _storeItems.FIX.t = KEYS.Get("str_repairbdgs");
+         _loc7_ = 0;
          _loc8_ = 0;
          _loc9_ = 0;
          _loc10_ = 0;
-         _loc5_ = 0;
          _loc12_ = 3;
          _loc13_ = 6;
          _loc14_ = 10;
@@ -291,105 +293,105 @@ package
          {
             if(_loc11_._lvl == null || _loc11_._lvl.Get() <= 1)
             {
-               _loc9_ += _loc12_;
-               _loc10_ += 10000;
-               _loc5_ += 1;
+               _loc8_ += _loc12_;
+               _loc9_ += 10000;
+               _loc10_ += 1;
             }
          }
-         _storeItems.BLK2.c = [_loc9_];
+         _storeItems.BLK2.c = [_loc8_];
          _storeItems.BLK2.d = KEYS.Get("desc_stonewalls",{
-            "v1":_loc5_,
-            "v2":GLOBAL.FormatNumber(_loc10_)
+            "v1":_loc10_,
+            "v2":GLOBAL.FormatNumber(_loc9_)
          });
          _storeItems.BLK2.t = KEYS.Get("str_stonewalls");
-         _loc9_ = 0;
-         _loc5_ = 0;
+         _loc8_ = 0;
          _loc10_ = 0;
+         _loc9_ = 0;
          for each(_loc11_ in BASE._buildingsWalls)
          {
             if(_loc11_._lvl.Get() <= 1)
             {
-               _loc9_ += _loc12_ + _loc13_;
-               _loc10_ += 110000;
-               _loc5_ += 1;
+               _loc8_ += _loc12_ + _loc13_;
+               _loc9_ += 110000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 2)
             {
-               _loc9_ += _loc13_;
-               _loc10_ += 100000;
-               _loc5_ += 1;
+               _loc8_ += _loc13_;
+               _loc9_ += 100000;
+               _loc10_ += 1;
             }
          }
-         _storeItems.BLK3.c = [_loc9_];
+         _storeItems.BLK3.c = [_loc8_];
          _storeItems.BLK3.d = KEYS.Get("desc_metalwalls",{
-            "v1":_loc5_,
-            "v2":GLOBAL.FormatNumber(_loc10_)
+            "v1":_loc10_,
+            "v2":GLOBAL.FormatNumber(_loc9_)
          });
          _storeItems.BLK3.t = KEYS.Get("str_metalwalls");
-         _loc9_ = 0;
-         _loc5_ = 0;
+         _loc8_ = 0;
          _loc10_ = 0;
+         _loc9_ = 0;
          for each(_loc11_ in BASE._buildingsWalls)
          {
             if(_loc11_._lvl.Get() <= 1)
             {
-               _loc9_ += _loc12_ + _loc13_ + _loc14_;
-               _loc10_ += 310000;
-               _loc5_ += 1;
+               _loc8_ += _loc12_ + _loc13_ + _loc14_;
+               _loc9_ += 310000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 2)
             {
-               _loc9_ += _loc13_ + _loc14_;
-               _loc10_ += 300000;
-               _loc5_ += 1;
+               _loc8_ += _loc13_ + _loc14_;
+               _loc9_ += 300000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 3)
             {
-               _loc9_ += _loc14_;
-               _loc10_ += 200000;
-               _loc5_ += 1;
+               _loc8_ += _loc14_;
+               _loc9_ += 200000;
+               _loc10_ += 1;
             }
          }
-         _storeItems.BLK4.c = [_loc9_];
+         _storeItems.BLK4.c = [_loc8_];
          _storeItems.BLK4.d = KEYS.Get("desc_goldwalls",{
-            "v1":_loc5_,
-            "v2":GLOBAL.FormatNumber(_loc10_)
+            "v1":_loc10_,
+            "v2":GLOBAL.FormatNumber(_loc9_)
          });
          _storeItems.BLK4.t = KEYS.Get("str_goldwalls");
-         _loc9_ = 0;
-         _loc5_ = 0;
+         _loc8_ = 0;
          _loc10_ = 0;
+         _loc9_ = 0;
          for each(_loc11_ in BASE._buildingsWalls)
          {
             if(_loc11_._lvl.Get() <= 1)
             {
-               _loc9_ += _loc12_ + _loc13_ + _loc14_ + _loc15_;
-               _loc10_ += 710000;
-               _loc5_ += 1;
+               _loc8_ += _loc12_ + _loc13_ + _loc14_ + _loc15_;
+               _loc9_ += 710000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 2)
             {
-               _loc9_ += _loc13_ + _loc14_ + _loc15_;
-               _loc10_ += 700000;
-               _loc5_ += 1;
+               _loc8_ += _loc13_ + _loc14_ + _loc15_;
+               _loc9_ += 700000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 3)
             {
-               _loc9_ += _loc14_ + _loc15_;
-               _loc10_ += 600000;
-               _loc5_ += 1;
+               _loc8_ += _loc14_ + _loc15_;
+               _loc9_ += 600000;
+               _loc10_ += 1;
             }
             if(_loc11_._lvl.Get() == 4)
             {
-               _loc9_ += _loc15_;
-               _loc10_ += 400000;
-               _loc5_ += 1;
+               _loc8_ += _loc15_;
+               _loc9_ += 400000;
+               _loc10_ += 1;
             }
          }
-         _storeItems.BLK5.c = [_loc9_];
+         _storeItems.BLK5.c = [_loc8_];
          _storeItems.BLK5.d = KEYS.Get("desc_blackwalls",{
-            "v1":_loc5_,
-            "v2":GLOBAL.FormatNumber(_loc10_)
+            "v1":_loc10_,
+            "v2":GLOBAL.FormatNumber(_loc9_)
          });
          _storeItems.BLK5.t = KEYS.Get("str_blackwalls");
          if(GLOBAL._bBaiter != null)
@@ -466,25 +468,26 @@ package
          return 0;
       }
       
-      public static function Show(param1:int = 1, param2:int = 1, param3:Array = null) : *
+      public static function Show(param1:int = 1, param2:int = 1, param3:Array = null, param4:Boolean = false) : *
       {
          var tab:int = param1;
          var page:int = param2;
          var customPage:Array = param3;
+         var force:Boolean = param4;
          return function(param1:MouseEvent):*
          {
-            ShowB(tab,page,customPage);
+            ShowB(tab,page,customPage,force);
          };
       }
       
-      public static function ShowB(param1:int, param2:Number = 0, param3:Array = null) : *
+      public static function ShowB(param1:int, param2:Number = 0, param3:Array = null, param4:Boolean = false) : *
       {
          if(GLOBAL._mode == "build")
          {
             if(Boolean(GLOBAL._bStore) || Boolean(BASE._isOutpost))
             {
                SOUNDS.Play("click1");
-               if(Boolean(BASE._isOutpost) || GLOBAL._bStore._canFunction)
+               if(BASE._isOutpost || GLOBAL._bStore._canFunction || param4)
                {
                   if(!_open)
                   {
@@ -741,7 +744,7 @@ package
          }
          else if(param1 == "FIX")
          {
-            STORE.ShowB(3,1,["FIX"]);
+            STORE.ShowB(3,1,["FIX"],true);
          }
       }
       
@@ -1111,7 +1114,7 @@ package
          }
          if(_loc9_ == "FIX")
          {
-            if(_storeItems["FIX"].c == 0)
+            if(_repairCount == 0)
             {
                _loc20_ = KEYS.Get("str_prob_notneeded");
             }
@@ -1840,7 +1843,7 @@ package
             }
             if(_loc20_ == "FIX")
             {
-               if(_storeItems["FIX"].c == 0)
+               if(_repairCount == 0)
                {
                   _loc32_ = KEYS.Get("str_prob_notneeded");
                }

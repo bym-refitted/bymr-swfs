@@ -8,7 +8,7 @@ package
       {
          super();
          info.addEventListener(MouseEvent.CLICK,this.infoDown);
-         tA.text = KEYS.Get("ai_monsterbar_title");
+         tA.htmlText = KEYS.Get("ai_monsterbar_title");
          info.addEventListener(MouseEvent.MOUSE_OVER,this.infoOver);
          info.addEventListener(MouseEvent.MOUSE_OUT,this.infoOut);
          info.tA.htmlText = "<b>" + KEYS.Get("ai_monsterbar_sendnow_btn") + "</b>";

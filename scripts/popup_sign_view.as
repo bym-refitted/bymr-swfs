@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1784")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1806")]
    public dynamic class popup_sign_view extends MovieClip
    {
       public var subject_txt:TextField;

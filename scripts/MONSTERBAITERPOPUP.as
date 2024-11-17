@@ -26,7 +26,7 @@ package
       public function MONSTERBAITERPOPUP()
       {
          super();
-         title_txt.text = KEYS.Get("bait_title");
+         title_txt.htmlText = KEYS.Get("bait_title");
       }
       
       public function Setup(param1:Object, param2:int) : void

@@ -555,7 +555,7 @@ package
          }
          if(param1.target.labelKey == "btn_repairall")
          {
-            STORE.ShowB(3,1,["FIX"]);
+            STORE.ShowB(3,1,["FIX"],true);
          }
          if(param1.target.labelKey == "btn_help")
          {

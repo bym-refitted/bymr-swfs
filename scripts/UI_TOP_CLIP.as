@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol976")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol991")]
    public dynamic class UI_TOP_CLIP extends MovieClip
    {
       public var mcZoom:buttonZoom_CLIP;
@@ -15,13 +15,15 @@ package
       
       public var mcBuffHolder:MovieClip;
       
+      public var mcSpecialEvent:buttonDefenseEvent_CLIP;
+      
       public var mcSound:buttonSound_CLIP;
       
       public var mc:MovieClip;
       
-      public var mcReinforcements:buttonReinforcement_CLIP;
-      
       public var mcMusic:buttonMusic_CLIP;
+      
+      public var mcReinforcements:buttonReinforcement_CLIP;
       
       public function UI_TOP_CLIP()
       {

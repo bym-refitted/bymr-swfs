@@ -151,17 +151,27 @@ package com.monsters.maproom_advanced
             _profilePic.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false);
             _profilePic.contentLoaderInfo.removeEventListener(Event.COMPLETE,onImageLoad);
          };
-         if(!this._cell._facebookID && this._cell._base != 1)
+         if(!this._cell._facebookID && this._cell._base != 1 && !this._cell._pic_square)
          {
             return;
          }
          if(this._cell._base > 1)
          {
-            this._profilePic = new Loader();
-            this._profilePic.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
-            this._profilePic.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
-            this._profilePic.load(new URLRequest("http://graph.facebook.com/" + this._cell._facebookID + "/picture"));
-            this.mcProfilePic.mcBG.addChild(this._profilePic);
+            if(GLOBAL._flags.viximo)
+            {
+               this._profilePic.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
+               this._profilePic.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
+               if(this._cell._pic_square)
+               {
+                  this._profilePic.load(new URLRequest(this._cell._pic_square));
+               }
+            }
+            else
+            {
+               this._profilePic.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,LoadImageError,false,0,true);
+               this._profilePic.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageLoad);
+               this._profilePic.load(new URLRequest("http://graph.facebook.com/" + this._cell._facebookID + "/picture"));
+            }
          }
          else
          {

@@ -333,7 +333,7 @@ package
             _popup = new SALESPECIALSPOPUP(param1);
             if(param1 == "biggulp")
             {
-               POPUPS.Push(_popup,BUY.logFB711PromoShown,[param1],null,null,false,"wait");
+               POPUPS.Push(_popup,BUY.logFB711RedeemShown,[param1],null,null,false,"wait");
             }
             else
             {
@@ -498,7 +498,7 @@ package
          var _loc4_:MovieClip = null;
          var _loc5_:int = 0;
          var _loc6_:store_icon_CLIP = null;
-         this.gotoAndStop(1);
+         this.gotoAndStop("redeem");
          switch(param1)
          {
             case "text":

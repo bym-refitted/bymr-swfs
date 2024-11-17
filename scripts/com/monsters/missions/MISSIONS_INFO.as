@@ -114,7 +114,7 @@ package com.monsters.missions
             c = 0;
             while(c < 5)
             {
-               this["tR" + (c + 1) + "title"].text = KEYS.Get(GLOBAL._resourceNames[c]);
+               this["tR" + (c + 1) + "title"].htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
                this["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(this._missionObject.reward[c]) + "</b>";
                c++;
             }

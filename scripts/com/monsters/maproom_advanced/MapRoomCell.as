@@ -35,6 +35,8 @@ package com.monsters.maproom_advanced
       
       public var _facebookID:Number;
       
+      public var _pic_square:String;
+      
       public var _userID:int;
       
       public var _online:int;
@@ -354,6 +356,14 @@ package com.monsters.maproom_advanced
          else
          {
             this._damage = 0;
+         }
+         if(param1.pic_square)
+         {
+            this._pic_square = param1.pic_square;
+         }
+         if(param1.im)
+         {
+            this._pic_square = param1.im;
          }
          this.Update();
          var _loc2_:* = getTimer();

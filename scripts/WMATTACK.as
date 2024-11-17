@@ -257,6 +257,7 @@ package
          {
             if(GLOBAL._mode == "build")
             {
+               SPECIALEVENT.Tick();
                if(t % 10 == 0)
                {
                   count = 0;
@@ -277,7 +278,7 @@ package
                t += 1;
                if(_queued != null && !_inProgress)
                {
-                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled)
+                  if(!GLOBAL._catchup && !warningPopup && !_trojan && _queued.warned == 0 && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
                   {
                      try
                      {
@@ -288,7 +289,7 @@ package
                         LOGGER.Log("err","WMATTACK.TickB " + e.errorID + " " + e.getStackTrace() + " " + e.message + " " + e.name + " _history:" + com.adobe.serialization.json.JSON.encode(_history));
                      }
                   }
-                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled)
+                  if(!GLOBAL._catchup && !_trojan && _queued.warned == 1 && !UI2._wildMonsterBar && !_inProgress && !baseIsRepairing && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
                   {
                      try
                      {
@@ -343,7 +344,7 @@ package
                }
                else if(!_inProgress)
                {
-                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled)
+                  if(!GLOBAL._catchup && _history.sessionsSinceLastAttack >= _sessionsBetweenAttacks && !baseIsRepairing && !_processing && GLOBAL.Timestamp() > _history.nextAttack && BASE._baseLevel >= 9 && !_trojan && BASE._isSanctuary <= GLOBAL.Timestamp() && _enabled && !SPECIALEVENT.EventActive())
                   {
                      _processing = true;
                      try
@@ -360,7 +361,7 @@ package
                {
                   try
                   {
-                     if(CREEPS._creepCount == 0)
+                     if(CREEPS._creepCount == 0 && (!SPECIALEVENT.active || SPECIALEVENT.AllWavesSpawned()))
                      {
                         CleanUp();
                      }
@@ -369,12 +370,12 @@ package
                         a = 0;
                         for each(creep in CREEPS._creeps)
                         {
-                           if(creep._behaviour == "attack" || creep._behaviour == "bounce" || creep._behaviour == "loot")
+                           if(creep._behaviour == "attack" || creep._behaviour == "bounce" || creep._behaviour == "loot" || creep._behaviour == "heal" || creep._behaviour == "buff")
                            {
                               a++;
                            }
                         }
-                        if(a == 0)
+                        if(a == 0 && (!SPECIALEVENT.active || SPECIALEVENT.AllWavesSpawned()))
                         {
                            CleanUp();
                         }
@@ -469,7 +470,7 @@ package
             BASE.Save();
          };
          asp = new popup_attacksettings();
-         asp.title_txt.text = KEYS.Get("ai_settings_title");
+         asp.title_txt.htmlText = KEYS.Get("ai_settings_title");
          asp.bMore.SetupKey("ai_settings_more_btn");
          asp.bSame.SetupKey("ai_settings_same_btn");
          asp.bLess.SetupKey("ai_settings_less_btn");
@@ -892,6 +893,17 @@ package
          {
             ATTACK.PoorDefense();
          }
+         else if(SPECIALEVENT.active)
+         {
+            if(CREEPS._creepCount > 0 || !SPECIALEVENT.AllWavesSpawned() || _loc2_ <= _loc3_ * 0.1)
+            {
+               ATTACK.PoorDefense();
+            }
+            else
+            {
+               ATTACK.WellDefended(true);
+            }
+         }
          else if(_loc2_ < _loc3_ * 0.9 || TUTORIAL._stage < 200)
          {
             ATTACK.PoorDefense();
@@ -955,6 +967,17 @@ package
          if(MONSTERBAITER._scaredAway && _loc2_ < _loc3_)
          {
             ATTACK.PoorDefense();
+         }
+         else if(SPECIALEVENT.active)
+         {
+            if(CREEPS._creepCount > 0 || !SPECIALEVENT.AllWavesSpawned() || _loc2_ <= _loc3_ * 0.1)
+            {
+               ATTACK.PoorDefense();
+            }
+            else
+            {
+               ATTACK.WellDefended(true);
+            }
          }
          else if(_loc2_ < _loc3_ * 0.9 || TUTORIAL._stage < 200)
          {

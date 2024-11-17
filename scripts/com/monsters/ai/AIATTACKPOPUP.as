@@ -48,7 +48,7 @@ package com.monsters.ai
          this.d3.y = 306;
          addChild(this.d3);
          this._type = attackerType;
-         title_txt.text = KEYS.Get("ai_popupwarning_title");
+         title_txt.htmlText = KEYS.Get("ai_popupwarning_title");
          x = GLOBAL._SCREENCENTER.x;
          y = GLOBAL._SCREENCENTER.y;
       }
@@ -100,7 +100,7 @@ package com.monsters.ai
          while(_loc8_ < _loc3_.length)
          {
             ImageCache.GetImageWithCallBack("monsters/" + _loc3_[_loc8_] + "-medium.jpg",this.IconLoaded,true,1,"",[_loc7_[_loc8_].mcIcon]);
-            _loc7_[_loc8_].tInfo.text = "x" + _loc2_[_loc3_[_loc8_]];
+            _loc7_[_loc8_].tInfo.htmlText = "x" + _loc2_[_loc3_[_loc8_]];
             _loc7_[_loc8_].tName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[_loc3_[_loc8_]].name) + "</b>";
             _loc5_[_loc8_].gotoAndStop(_loc3_[_loc8_]);
             _loc5_[_loc8_].visible = false;

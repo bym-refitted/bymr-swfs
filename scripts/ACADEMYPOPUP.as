@@ -270,19 +270,19 @@ package
          bResourceA.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource");
          bStorageA.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage");
          bTimeA.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime");
-         tSpeedA.text = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed")});
-         tHealthA.text = CREATURES.GetProperty(_monsterID,"health").toString();
+         tSpeedA.htmlText = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed")});
+         tHealthA.htmlText = CREATURES.GetProperty(_monsterID,"health").toString();
          if(!_loc7_)
          {
-            tDamageA.text = _loc6_.toString();
+            tDamageA.htmlText = _loc6_.toString();
          }
          else
          {
-            tDamageA.text = -_loc6_ + " (" + KEYS.Get("str_heal") + ")";
+            tDamageA.htmlText = -_loc6_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         tResourceA.text = KEYS.Get("mon_att_costvalue",{"v1":CREATURES.GetProperty(_monsterID,"cResource")});
-         tStorageA.text = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage")});
-         tTimeA.text = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime"),true);
+         tResourceA.htmlText = KEYS.Get("mon_att_costvalue",{"v1":CREATURES.GetProperty(_monsterID,"cResource")});
+         tStorageA.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage")});
+         tTimeA.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime"),true);
          var _loc8_:int = ACADEMY._upgrades[_monsterID].level + 1;
          _loc6_ = CREATURES.GetProperty(_monsterID,"damage",_loc8_);
          if(_loc7_)
@@ -295,19 +295,19 @@ package
          bResourceB.mcBar.width = 100 / _maxResource * CREATURES.GetProperty(_monsterID,"cResource",_loc8_);
          bStorageB.mcBar.width = 100 / _maxStorage * CREATURES.GetProperty(_monsterID,"cStorage",_loc8_);
          bTimeB.mcBar.width = 100 / _maxTime * CREATURES.GetProperty(_monsterID,"cTime",_loc8_);
-         tSpeedB.text = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed",_loc8_)});
-         tHealthB.text = CREATURES.GetProperty(_monsterID,"health",_loc8_).toString();
+         tSpeedB.htmlText = KEYS.Get("mon_att_speedvalue",{"v1":CREATURES.GetProperty(_monsterID,"speed",_loc8_)});
+         tHealthB.htmlText = CREATURES.GetProperty(_monsterID,"health",_loc8_).toString();
          if(!_loc7_)
          {
-            tDamageB.text = _loc6_.toString();
+            tDamageB.htmlText = _loc6_.toString();
          }
          else
          {
-            tDamageB.text = _loc6_ + " (" + KEYS.Get("str_heal") + ")";
+            tDamageB.htmlText = _loc6_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         tResourceB.text = KEYS.Get("mon_att_costvalue",{"v1":CREATURES.GetProperty(_monsterID,"cResource",_loc8_)});
-         tStorageB.text = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage",_loc8_)});
-         tTimeB.text = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime",_loc8_),true);
+         tResourceB.htmlText = KEYS.Get("mon_att_costvalue",{"v1":CREATURES.GetProperty(_monsterID,"cResource",_loc8_)});
+         tStorageB.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage",_loc8_)});
+         tTimeB.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime",_loc8_),true);
          if(CREATURES.GetProperty(_monsterID,"speed") != CREATURES.GetProperty(_monsterID,"speed",_loc8_))
          {
             bSpeedB.mcBar.gotoAndStop(2);

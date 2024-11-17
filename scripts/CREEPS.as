@@ -82,8 +82,11 @@ package
                {
                   try
                   {
-                     SOUNDS.Play("splat" + (int(Math.random() * 3) + 1));
-                     EFFECTS.CreepSplat(tmpMonster._creatureID,tmpMonster._tmpPoint.x,tmpMonster._tmpPoint.y);
+                     if(tmpMonster._creatureID.substr(0,1) != "G" || SPECIALEVENT.active)
+                     {
+                        SOUNDS.Play("splat" + (int(Math.random() * 3) + 1));
+                        EFFECTS.CreepSplat(tmpMonster._creatureID,tmpMonster._tmpPoint.x,tmpMonster._tmpPoint.y);
+                     }
                   }
                   catch(e:Error)
                   {

@@ -3,7 +3,12 @@ package
    import com.monsters.ui.*;
    import flash.display.MovieClip;
    import flash.events.Event;
+   import flash.events.MouseEvent;
    import flash.geom.Rectangle;
+   import flash.text.TextField;
+   import flash.text.TextFieldAutoSize;
+   import flash.text.TextFormat;
+   import flash.text.TextFormatAlign;
    import gs.*;
    import gs.easing.*;
    
@@ -62,6 +67,12 @@ package
       public static var _showProtected:Boolean;
       
       public static var _wildMonsterBar:UI_WILDMONSTERBAR;
+      
+      public static var _debugWarningTxt:TextField;
+      
+      private static var _timers:Array = new Array();
+      
+      public static var _debugWarningTxtVal:String = "DEBUG MODE";
       
       public function UI2()
       {
@@ -153,6 +164,37 @@ package
          catch(e:Error)
          {
             GLOBAL.ErrorMessage("UI2.Setup A9 CHAT2: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+         try
+         {
+            _timers = new Array();
+            _timers.push(_top.mcProtected);
+            _timers.push(_top.mcReinforcements);
+            if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+            {
+               _timers.push(_top.mcSpecialEvent);
+               if(GLOBAL._countryCode != "ph")
+               {
+                  _top.mcSpecialEvent.buttonMode = true;
+                  _top.mcSpecialEvent.mouseChildren = false;
+                  _top.mcSpecialEvent.addEventListener(MouseEvent.CLICK,SPECIALEVENT.TimerClicked);
+               }
+            }
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.Setup A10 TIMERS: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
+         }
+         try
+         {
+            if(GLOBAL._aiDesignMode)
+            {
+               DebugWarning();
+            }
+         }
+         catch(e:Error)
+         {
+            GLOBAL.ErrorMessage("UI2.Setup A11 Debug Warning: " + e.message + " | " + e.getStackTrace(),GLOBAL.ERROR_OOPS_AND_ORANGE_BOX);
          }
       }
       
@@ -283,6 +325,11 @@ package
             _wildMonsterBar.parent.removeChild(_wildMonsterBar);
             _wildMonsterBar = null;
          }
+         if(Boolean(_debugWarningTxt) && Boolean(_debugWarningTxt.parent))
+         {
+            _debugWarningTxt.parent.removeChild(_debugWarningTxt);
+            _debugWarningTxt = null;
+         }
       }
       
       public static function Hide(param1:String) : void
@@ -342,6 +389,7 @@ package
                      {
                         _wildMonsterBar.parent.removeChild(_wildMonsterBar);
                         _wildMonsterBar = null;
+                        ResizeHandler();
                      }
                   });
                }
@@ -382,6 +430,11 @@ package
       
       public static function Update() : void
       {
+         var _loc1_:Number = NaN;
+         var _loc2_:MovieClip = null;
+         var _loc3_:Number = NaN;
+         var _loc4_:Number = NaN;
+         var _loc5_:Number = NaN;
          if(!GLOBAL._catchup)
          {
             if(_top)
@@ -396,6 +449,10 @@ package
                   if(_top.mcReinforcements.visible)
                   {
                      _top.mcReinforcements.visible = false;
+                  }
+                  if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                  {
+                     _top.mcSpecialEvent.visible = false;
                   }
                   if(_top.mcSave.visible)
                   {
@@ -454,6 +511,58 @@ package
                   {
                      _top.mcReinforcements.visible = false;
                   }
+                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 || SPECIALEVENT.wave > 31)
+                  {
+                     if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = false;
+                        UI_BOTTOM._nextwave.visible = false;
+                     }
+                  }
+                  else if(SPECIALEVENT.EventActive() && GLOBAL._mode == "build" && !BASE._isOutpost && (!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate))
+                  {
+                     if(!_top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = true;
+                     }
+                     if(SPECIALEVENT.GetTimeUntilEnd() > 86400)
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(SPECIALEVENT.GetTimeUntilEnd(),true,false);
+                     }
+                     else
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(SPECIALEVENT.GetTimeUntilEnd(),true);
+                     }
+                  }
+                  else if(GLOBAL._mode == "build" && !BASE._isOutpost && (!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate))
+                  {
+                     if(!_top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = true;
+                     }
+                     _loc3_ = SPECIALEVENT.GetTimeUntilStart();
+                     _loc4_ = Math.ceil(_loc3_ / 86400);
+                     if(_loc4_ > 1)
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = _loc4_ + " " + KEYS.Get("global_days");
+                     }
+                     else
+                     {
+                        _loc5_ = Math.ceil(_loc3_ / 3600);
+                        if(_loc5_ > 1)
+                        {
+                           _top.mcSpecialEvent.tCountdown.htmlText = _loc5_ + " " + KEYS.Get("global_hours");
+                        }
+                        else
+                        {
+                           _top.mcSpecialEvent.tCountdown.htmlText = "&lt; 1 " + KEYS.Get("global_hour");
+                        }
+                     }
+                  }
+                  else if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                  {
+                     _top.mcSpecialEvent.visible = false;
+                  }
                   if(!_top.mcSave.visible)
                   {
                      _top.mcSave.visible = true;
@@ -483,8 +592,15 @@ package
                {
                   _top.mcSave.visible = false;
                }
-               _top.mcProtected.y = 35;
-               _top.mcReinforcements.y = 65;
+               _loc1_ = 35;
+               for each(_loc2_ in _timers)
+               {
+                  if(_loc2_.visible)
+                  {
+                     _loc2_.y = _loc1_;
+                     _loc1_ += 30;
+                  }
+               }
                _top.mcSave.y = 3;
                _top.mcZoom.y = 3;
                _top.mcFullscreen.y = 3;
@@ -540,6 +656,7 @@ package
             _top.y = _loc4_.y + 4;
             _top.mcProtected.x = _loc4_.width - 125;
             _top.mcReinforcements.x = _loc4_.width - 125;
+            _top.mcSpecialEvent.x = _loc4_.width - 125;
             _top.mcSave.x = _loc4_.width - 160;
             _top.mcZoom.x = _loc4_.width - 130;
             _top.mcFullscreen.x = _loc4_.width - 100;
@@ -568,8 +685,76 @@ package
          {
             GLOBAL._bymChat.position();
          }
+         if(_debugWarningTxt)
+         {
+            DebugWarning();
+         }
          UI_BOTTOM.Resize();
          UI_WORKERS.Resize();
+      }
+      
+      public static function TimersVisible() : int
+      {
+         var _loc2_:MovieClip = null;
+         var _loc1_:int = 0;
+         for each(_loc2_ in _timers)
+         {
+            if(_loc2_.visible)
+            {
+               _loc1_++;
+            }
+         }
+         return _loc1_;
+      }
+      
+      public static function DebugWarning() : void
+      {
+         var _loc2_:TextFormat = new TextFormat();
+         _loc2_.font = "Verdana";
+         _loc2_.bold = true;
+         _loc2_.size = 72;
+         _loc2_.align = TextFormatAlign.CENTER;
+         _loc2_.color = 0xff0000;
+         _loc2_.letterSpacing = -11;
+         if(!_debugWarningTxt)
+         {
+            _debugWarningTxt = new TextField();
+         }
+         _debugWarningTxt.mouseEnabled = false;
+         _debugWarningTxt.alpha = 0.8;
+         _debugWarningTxt.width = 400;
+         _debugWarningTxt.height = 100;
+         _debugWarningTxt.autoSize = TextFieldAutoSize.LEFT;
+         _debugWarningTxt.text = "DEBUG MODE";
+         _debugWarningTxt.setTextFormat(_loc2_);
+         _debugWarningTxt.x = GLOBAL._SCREEN.x + 15;
+         _debugWarningTxt.y = GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - _debugWarningTxt.height * 0.75;
+         GLOBAL._layerUI.addChild(_debugWarningTxt);
+      }
+      
+      public static function DebugWarningEdit(param1:String = null) : void
+      {
+         var _loc2_:String = "DEBUG MODE";
+         if(param1)
+         {
+            _loc2_ = param1;
+         }
+         var _loc3_:TextFormat = new TextFormat();
+         _loc3_.font = "Verdana";
+         _loc3_.bold = true;
+         _loc3_.size = 36;
+         _loc3_.align = TextFormatAlign.CENTER;
+         _loc3_.color = 0xff0000;
+         _loc3_.letterSpacing = -2;
+         _debugWarningTxt.mouseEnabled = false;
+         _debugWarningTxt.alpha = 0.8;
+         _debugWarningTxt.width = 400;
+         _debugWarningTxt.height = 100;
+         _debugWarningTxt.autoSize = TextFieldAutoSize.LEFT;
+         _debugWarningTxt.text = _loc2_;
+         _debugWarningTxt.setTextFormat(_loc3_);
+         _debugWarningTxt.x = GLOBAL._SCREEN.x + 15;
+         _debugWarningTxt.y = GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - _debugWarningTxt.height * 0.75;
       }
    }
 }
