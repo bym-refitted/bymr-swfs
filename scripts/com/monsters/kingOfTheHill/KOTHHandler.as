@@ -67,7 +67,7 @@ package com.monsters.kingOfTheHill
       
       public function initialize(param1:Object = null) : void
       {
-         if(!GLOBAL._flags[this.name] || GLOBAL._mode != "build" || BASE._yardType != BASE.MAIN_YARD)
+         if(!GLOBAL._flags[this.name] || GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || !BASE.isMainYard)
          {
             return;
          }
@@ -218,7 +218,7 @@ package com.monsters.kingOfTheHill
       private function addHUDGraphic() : void
       {
          var _loc1_:* = 0;
-         if(!this.doesQualify || GLOBAL._mode != "build" || BASE._yardType != BASE.MAIN_YARD)
+         if(!this.doesQualify || GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || !BASE.isMainYard)
          {
             return;
          }
@@ -302,7 +302,7 @@ package com.monsters.kingOfTheHill
       
       public function get doesQualify() : Boolean
       {
-         return TUTORIAL.hasFinished && GLOBAL._bTownhall._lvl.Get() >= 6;
+         return TUTORIAL.hasFinished && Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= 6;
       }
       
       public function exportData() : Object

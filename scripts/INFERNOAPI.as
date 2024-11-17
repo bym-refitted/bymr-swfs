@@ -140,7 +140,7 @@ package
                      MAPROOM_DESCENT._loot.r4 = new SecNum(int(0));
                   }
                }
-               else if(BASE.isInferno())
+               else if(BASE.isInfernoMainYardOrOutpost)
                {
                   _infernoLoadData = param1;
                }
@@ -168,14 +168,14 @@ package
          PLEASEWAIT.Hide();
          Cleanup();
          PLEASEWAIT.Show(KEYS.Get("msg_loading"));
-         tmpMode = GLOBAL._mode;
+         tmpMode = GLOBAL.mode;
          _loadType = mode;
          loadVars = [["userid",userid > 0 ? userid : ""],["baseid",_baseID],["type",_loadType]];
          if(url)
          {
             new URLLoaderApi().load(url + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
-         else if(isInferno())
+         else if(BASE.isInfernoMainYardOrOutpost)
          {
             new URLLoaderApi().load(GLOBAL._infBaseURL + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
@@ -207,11 +207,6 @@ package
       public static function DescentDataReady() : void
       {
          dispatchEvent(new Event(EVENT_DESCENTLOADED));
-      }
-      
-      public static function isInferno() : Boolean
-      {
-         return BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
       }
       
       public static function addEventListener(param1:String, param2:Function, param3:Boolean = false, param4:int = 0, param5:Boolean = false) : void

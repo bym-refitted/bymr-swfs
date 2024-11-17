@@ -2,7 +2,9 @@ package com.monsters.ai
 {
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -45,34 +47,35 @@ package com.monsters.ai
       
       public static function Setup() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         var _loc2_:int = 0;
+         var _loc2_:BFOUNDATION = null;
+         var _loc3_:int = 0;
          _mc = null;
          _destroyed = false;
          _startTime = GLOBAL.Timestamp();
          repairing = true;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._hp.Get() < _loc1_._hpMax.Get() && _loc1_._repairing != 1)
+            if(_loc2_.health < _loc2_.maxHealth && _loc2_._repairing != 1)
             {
                repairing = false;
             }
          }
-         _loc2_ = 0;
-         while(_loc2_ < 6)
+         _loc3_ = 0;
+         while(_loc3_ < 6)
          {
             GLOBAL._mapWidth *= 1.1;
             GLOBAL._mapHeight *= 1.1;
             GLOBAL._mapWidth = Math.ceil(GLOBAL._mapWidth / 20) * 20;
             GLOBAL._mapHeight = Math.ceil(GLOBAL._mapHeight / 20) * 20;
-            _loc2_++;
+            _loc3_++;
          }
-         if(BASE.isInferno() && BASE._wmID || GLOBAL.InfernoMode(GLOBAL._loadmode))
+         if(BASE.isInfernoMainYardOrOutpost && BASE._wmID || GLOBAL.InfernoMode(GLOBAL._loadmode))
          {
             return;
          }
-         var _loc3_:Object = TRIBES.TribeForBaseID(BASE._wmID);
-         if(Boolean(_loc3_) && _loc3_.behaviour == "juice")
+         var _loc4_:Object = TRIBES.TribeForBaseID(BASE._wmID);
+         if((Boolean(_loc4_)) && _loc4_.behaviour == "juice")
          {
             GLOBAL._hatcheryOverdrivePower = new SecNum(10);
          }
@@ -90,7 +93,7 @@ package com.monsters.ai
          var _loc2_:Array = null;
          var _loc3_:Object = null;
          _descentMode = false;
-         if(GLOBAL._mode == "build" && Boolean(param1))
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && Boolean(param1))
          {
             _bases = [];
             for each(_loc2_ in param1)
@@ -113,7 +116,7 @@ package com.monsters.ai
          var _loc3_:Array = null;
          var _loc4_:Object = null;
          _descentMode = true;
-         if(GLOBAL._mode == "build" && Boolean(param1))
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && Boolean(param1))
          {
             _loc2_ = 1;
             _descentBases = [];
@@ -157,16 +160,18 @@ package com.monsters.ai
       
       public static function Tick() : void
       {
-         var _loc1_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = null;
+         var _loc2_:BFOUNDATION = null;
          if(!repairing)
          {
             if(GLOBAL.Timestamp() > _startTime + _repairDelay)
             {
-               for each(_loc1_ in BASE._buildingsAll)
+               _loc1_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+               for each(_loc2_ in _loc1_)
                {
-                  if(_loc1_._hp.Get() < _loc1_._hpMax.Get() && _loc1_._repairing == 0)
+                  if(_loc2_.health < _loc2_.maxHealth && _loc2_._repairing == 0)
                   {
-                     _loc1_.Repair();
+                     _loc2_.Repair();
                   }
                }
                repairing = true;
@@ -174,14 +179,18 @@ package com.monsters.ai
          }
          if(!GLOBAL._catchup && Boolean(GLOBAL._bJuicer))
          {
-            if(tick % juiceQ == 0 && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice" && GLOBAL._bJuicer._hp.Get() > 0.5 * GLOBAL._bJuicer._hpMax.Get() && GLOBAL._bTownhall._hp.Get() > 0)
+            if(tick % juiceQ == 0 && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice" && GLOBAL._bJuicer.health > 0.5 * GLOBAL._bJuicer.maxHealth && GLOBAL.townHall.health > 0)
             {
-               for each(_loc1_ in BASE._buildingsAll)
+               if(!_loc1_)
                {
-                  if(_loc1_._type == 13 && _loc1_._canFunction && _loc1_._inProduction != "C1")
+                  _loc1_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+               }
+               for each(_loc2_ in _loc1_)
+               {
+                  if(_loc2_._type == 13 && _loc2_._canFunction && _loc2_._inProduction != "C1")
                   {
-                     _loc1_._inProduction = "C1";
-                     _loc1_._productionStage.Set(3);
+                     _loc2_._inProduction = "C1";
+                     _loc2_._productionStage.Set(3);
                   }
                }
             }
@@ -213,33 +222,35 @@ package com.monsters.ai
       
       public static function JuiceOne() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:String = null;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:String = null;
-         var _loc5_:* = undefined;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:* = undefined;
          var _loc1_:Array = [];
-         for each(_loc2_ in BASE._buildingsAll)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BUILDING15);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._type == 15)
-            {
-               _loc1_.push(_loc2_);
-            }
+            _loc1_.push(_loc3_);
          }
-         for(_loc4_ in HOUSING._creatures)
+         _loc5_ = int(GLOBAL.player.monsterList.length);
+         _loc6_ = 0;
+         while(_loc6_ < _loc5_)
          {
-            if(HOUSING._creatures[_loc4_].Get() > 0)
+            if(GLOBAL.player.monsterList[_loc6_].numCreeps > 0)
             {
-               _loc3_ = _loc4_;
+               _loc4_ = GLOBAL.player.monsterList[_loc6_].m_creatureID;
             }
+            _loc6_++;
          }
-         if(_loc3_ && GLOBAL._bJuicer && GLOBAL._bJuicer._hp.Get() > 0.5 * GLOBAL._bJuicer._hpMax.Get())
+         if(_loc4_ && GLOBAL._bJuicer && GLOBAL._bJuicer.health > 0.5 * GLOBAL._bJuicer.maxHealth)
          {
-            HOUSING._creatures[_loc3_].Add(-1);
-            for each(_loc5_ in CREATURES._creatures)
+            GLOBAL.player.monsterListByID(_loc4_).add(-1);
+            for each(_loc7_ in CREATURES._creatures)
             {
-               if(_loc5_._creatureID == _loc3_ && _loc5_._behaviour != "juice")
+               if(_loc7_._creatureID == _loc4_ && _loc7_._behaviour != "juice")
                {
-                  _loc5_.ModeJuice();
+                  _loc7_.ModeJuice();
                   return;
                }
             }
@@ -255,7 +266,7 @@ package com.monsters.ai
          {
             if(_loc1_[_loc2_].destroyed == 1)
             {
-               if(GLOBAL._mode == "build")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
                   _loc3_ = 0;
                   _loc3_ = int(_loc1_[_loc2_].tribe.id);
@@ -291,10 +302,13 @@ package com.monsters.ai
       {
          var onImage:Function;
          var shareDown:Function;
-         if(GLOBAL._advancedMap)
+         if(MapRoomManager.instance.isInMapRoom2or3 && !BASE.isInfernoMainYardOrOutpost)
          {
             GLOBAL.Message(KEYS.Get("msg_yarddestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
-            MapRoom._mc.ShowInfoEnemy(GLOBAL._currentCell);
+            if(MapRoomManager.instance.isInMapRoom2)
+            {
+               MapRoom.ShowInfoEnemy(GLOBAL._currentCell);
+            }
          }
          else
          {
@@ -324,7 +338,7 @@ package com.monsters.ai
             ImageCache.GetImageWithCallBack(BaseForID(BASE._wmID).tribe.splash,onImage);
             _mc.b2.addEventListener(MouseEvent.MOUSE_DOWN,shareDown);
             _destroyed = true;
-            if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
+            if(MapRoomManager.instance.isInMapRoom2or3 && !BASE.isInfernoMainYardOrOutpost)
             {
                _mc.b1.SetupKey("btn_openmap");
             }
@@ -363,12 +377,14 @@ package com.monsters.ai
       
       public static function End() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         if(!GLOBAL._catchup && GLOBAL._mode == "wmattack")
+         var _loc1_:Vector.<Object> = null;
+         var _loc2_:BUILDING14 = null;
+         if(!GLOBAL._catchup && GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
-            for each(_loc1_ in BASE._buildingsMain)
+            _loc1_ = InstanceManager.getInstancesByClass(BUILDING14);
+            for each(_loc2_ in _loc1_)
             {
-               if(_loc1_._hp.Get() == 0 && _loc1_._repairing == 0 && _loc1_._type == 14 && GLOBAL._mode == "wmattack")
+               if(_loc2_.health == 0 && _loc2_._repairing == 0 && GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   TownHallDestroyed();
                   return;
@@ -382,7 +398,7 @@ package com.monsters.ai
       {
          var onImage:Function;
          var base:Object = null;
-         if(GLOBAL._advancedMap)
+         if(MapRoomManager.instance.isInMapRoom2or3 && !BASE.isInfernoMainYardOrOutpost)
          {
             GLOBAL.Message(KEYS.Get("msg_notdestroyed"),KEYS.Get("btn_showmap"),ShowMapAgain);
          }
@@ -412,7 +428,7 @@ package com.monsters.ai
                ImageCache.GetImageWithCallBack(base.tribe.splash,onImage);
                _mc.body_txt.htmlText = BaseForID(BASE._wmID).tribe.fail;
             }
-            if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
+            if(MapRoomManager.instance.isInMapRoom2or3 && !BASE.isInfernoMainYardOrOutpost)
             {
                _mc.b1.SetupKey("btn_openmap");
             }
@@ -438,7 +454,7 @@ package com.monsters.ai
          {
             _loc1_ = _descentBases;
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _loc1_ = _bases;
          }

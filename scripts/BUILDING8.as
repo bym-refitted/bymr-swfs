@@ -33,7 +33,7 @@ package
          super.TickFast(param1);
          if(GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && CREATURELOCKER._unlocking != null)
          {
-            if((GLOBAL._mode == "build" || GLOBAL._mode == "help" || GLOBAL._mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
+            if((GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == "help" || GLOBAL.mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
             {
                AnimFrame();
             }
@@ -64,7 +64,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bLocker = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -86,7 +86,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {

@@ -108,7 +108,7 @@ package com.monsters.ai
             _loc7_[_loc8_].addEventListener(MouseEvent.MOUSE_OUT,this.hideDescription);
             _loc8_++;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             name_txt.htmlText = "<b>" + KEYS.Get("inf_ai_tribe_mapview",{"v1":TRIBES.TribeForBaseID(WMATTACK._attackersBaseID).name}) + "</b>";
          }

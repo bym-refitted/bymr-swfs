@@ -41,21 +41,7 @@ package
          _setup = true;
          cbf = param1;
          var _loc2_:URLLoader = new URLLoader();
-         if(GLOBAL._local)
-         {
-            if(GLOBAL._localMode == 6)
-            {
-               _loc2_.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/game/assets/" + _language + ".v" + _languageVersion + ".txt"));
-            }
-            else
-            {
-               _loc2_.load(new URLRequest("http://bym-netdna.s3.amazonaws.com/gamestage/assets/" + _language + ".v" + _languageVersion + ".txt"));
-            }
-         }
-         else
-         {
-            _loc2_.load(new URLRequest(_storageURL + _language + ".v" + _languageVersion + ".txt"));
-         }
+         _loc2_.load(new URLRequest(_storageURL + _language + ".v" + _languageVersion + ".txt"));
          _loc2_.addEventListener(Event.COMPLETE,handleSucc);
          _loc2_.addEventListener(IOErrorEvent.IO_ERROR,GLOBAL.handleLoadError);
       }
@@ -137,7 +123,10 @@ package
                for(k in values)
                {
                   tk = "#" + k + "#";
-                  tmp = tmp.replace(tk,values[k]);
+                  while(tmp.search(tk) != -1)
+                  {
+                     tmp = tmp.replace(tk,values[k]);
+                  }
                }
                if(tmp.lastIndexOf("#") != -1)
                {

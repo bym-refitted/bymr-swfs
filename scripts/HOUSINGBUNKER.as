@@ -1,6 +1,8 @@
 package
 {
-   import com.cc.utils.SecNum;
+   import com.monsters.interfaces.ITargetable;
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.creeps.CreepBase;
    import flash.display.Shape;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -10,7 +12,7 @@ package
    import gs.TweenLite;
    import gs.easing.Expo;
    
-   public class HOUSINGBUNKER extends BFOUNDATION
+   public class HOUSINGBUNKER extends Bunker
    {
       public var bragPopUp:popup_building;
       
@@ -22,21 +24,15 @@ package
       
       public var _monsters:Object;
       
-      public var _monstersDispatched:Object;
-      
       public var _dispatchedMonsters:Array;
       
       public var _targetCreeps:Array;
       
       public var _targetFlyers:Array;
       
-      public var _used:int;
-      
       public var _tickNumber:int;
       
       public var _isLogged:Boolean;
-      
-      public var _monstersDispatchedTotal:int;
       
       private var _radiusGraphic:Shape;
       
@@ -50,7 +46,7 @@ package
          _spoutPoint = new Point(0,0);
          _spoutHeight = 40;
          this._monsters = {};
-         this._monstersDispatched = {};
+         _monstersDispatched = {};
          this._dispatchedMonsters = [];
          this._targetCreeps = [];
          this._targetFlyers = [];
@@ -75,7 +71,7 @@ package
             _recycleDescription = "<b>" + KEYS.Get("bdg_housing_recycledesc") + "</b><br>" + _recycleCosts;
          }
          HOUSING.HousingSpace();
-         if(BASE._yardType != BASE.OUTPOST)
+         if(!BASE.isOutpost)
          {
             _blockRecycle = false;
          }
@@ -139,7 +135,7 @@ package
          {
             if(_creatures[_loc2_]._behaviour == "pen")
             {
-               _creatures[_loc2_]._health.Set(0);
+               _creatures[_loc2_].setHealth(0);
             }
             _loc2_++;
          }
@@ -157,9 +153,9 @@ package
       {
          param1.t = _type;
          super.Setup(param1);
-         if(_hp.Get() > 10 && _hp.Get() < _hpMax.Get() && _hp.Get() % 1000 == 0)
+         if(health > 10 && health < maxHealth && health % 1000 == 0)
          {
-            _hp.Set(_hpMax.Get());
+            setHealth(maxHealth);
          }
          if(_countdownBuild.Get() == 0)
          {
@@ -173,17 +169,17 @@ package
       public function FindTargets(param1:int, param2:int = 1) : void
       {
          this._hasTargets = false;
-         if(_lvl.Get() <= 0 && _hp.Get() <= 0)
+         if(_lvl.Get() <= 0 && health <= 0)
          {
             this._targetCreeps = [];
             this._targetFlyers = [];
             return;
          }
-         var _loc3_:Array = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range);
+         var _loc3_:Array = Targeting.getCreepsInRange(GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range,_position.add(new Point(0,_footprint[0].height / 2)),Targeting.getOldStyleTargets(0));
          this._targetCreeps = this.addTargetCreeps(param1,_loc3_,param2);
          if(this.canTargetAir())
          {
-            _loc3_ = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range,2);
+            _loc3_ = Targeting.getCreepsInRange(GLOBAL._buildingProps[127].stats[_lvl.Get() - 1].range,_position.add(new Point(0,_footprint[0].height / 2)),Targeting.getOldStyleTargets(2));
             this._targetFlyers = this.addTargetCreeps(param1,_loc3_,param2);
          }
          else
@@ -283,7 +279,7 @@ package
          var _loc8_:* = 0;
          var _loc9_:int = 0;
          super.TickAttack();
-         if(_hp.Get() > 0)
+         if(health > 0)
          {
             this._capacity = _buildingProps.capacity[_lvl.Get() - 1];
          }
@@ -292,7 +288,7 @@ package
          var _loc3_:int = 0;
          while(_loc3_ < this._targetCreeps.length)
          {
-            if(this._targetCreeps[_loc3_].creep._health.Get() <= 0)
+            if(this._targetCreeps[_loc3_].creep.health <= 0)
             {
                _loc2_ = true;
             }
@@ -301,7 +297,7 @@ package
          _loc3_ = 0;
          while(_loc3_ < this._targetFlyers.length)
          {
-            if(this._targetFlyers[_loc3_].creep._health.Get() <= 0)
+            if(this._targetFlyers[_loc3_].creep.health <= 0)
             {
                _loc2_ = true;
             }
@@ -400,17 +396,17 @@ package
                _loc3_ = _loc5_ / 2;
             }
          }
-         var _loc7_:* = param1;
+         var _loc7_:CreepBase = param1;
          if(_loc7_)
          {
             _loc7_._targetRotation = Math.random() * 360;
-            _loc7_.ModeDefend();
+            _loc7_.changeModeDefend();
             _loc7_._targetCreep = param2;
             _loc7_._homeBunker = this;
             _loc7_._hasTarget = true;
             if(_loc7_._pathing == "direct")
             {
-               _loc7_.alpha = 0;
+               _loc7_.graphic.alpha = 0;
                _loc7_._phase = 1;
             }
             _loc7_.WaypointTo(_loc7_._targetCreep._tmpPoint);
@@ -424,35 +420,17 @@ package
          ++this._frameNumber;
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
+      override public function modifyHealth(param1:Number, param2:ITargetable = null) : Number
       {
-         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"defense"))
-         {
-            param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
-         }
-         _hp.Add(-param1);
-         if(_hp.Get() <= 0)
-         {
-            _hp.Set(0);
-            if(!_destroyed)
-            {
-               this.Destroyed(param5);
-            }
-         }
-         else
+         if(health <= 0)
          {
             ATTACK.Log("b" + _id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
                "v1":_lvl.Get(),
                "v2":KEYS.Get(_buildingProps.name),
-               "v3":100 - int(100 / _hpMax.Get() * _hp.Get())
+               "v3":100 - int(100 / maxHealth * health)
             }) + "</font>");
          }
-         Update();
-         if(param7)
-         {
-            BASE.Save();
-         }
-         return param1;
+         return super.modifyHealth(param1);
       }
       
       public function Cull() : void
@@ -462,7 +440,7 @@ package
       
       override public function Over(param1:MouseEvent) : void
       {
-         if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && health > 0)
          {
             TweenLite.delayedCall(0.25,this.RangeIndicator);
          }
@@ -495,7 +473,7 @@ package
       
       override public function Out(param1:MouseEvent) : void
       {
-         if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && Boolean(this._radiusGraphic))
          {
             if(this._radiusGraphic.parent)
             {
@@ -508,24 +486,27 @@ package
       
       public function RemoveCreature(param1:String) : void
       {
-         --this._monsters[param1];
-         if(this._monsters[param1] < 0)
+         if(!MapRoomManager.instance.isInMapRoom3 || !BASE.isMainYardOrInfernoMainYard)
          {
-            this._monsters[param1] = 0;
+            --this._monsters[param1];
+            if(this._monsters[param1] < 0)
+            {
+               this._monsters[param1] = 0;
+            }
+            if(GLOBAL.player.monsterListByID(param1).numCreeps > 0)
+            {
+               GLOBAL.player.monsterListByID(param1).add(-1);
+            }
          }
-         --this._monstersDispatched[param1];
-         if(this._monstersDispatched[param1] < 0)
+         --_monstersDispatched[param1];
+         if(_monstersDispatched[param1] < 0)
          {
-            this._monstersDispatched[param1] = 0;
+            _monstersDispatched[param1] = 0;
          }
-         --this._monstersDispatchedTotal;
-         if(this._monstersDispatchedTotal < 0)
+         --_monstersDispatchedTotal;
+         if(_monstersDispatchedTotal < 0)
          {
-            this._monstersDispatchedTotal = 0;
-         }
-         if(HOUSING._creatures[param1].Get() > 0)
-         {
-            HOUSING._creatures[param1].Add(-1);
+            _monstersDispatchedTotal = 0;
          }
          HOUSING.HousingSpace();
          BASE.Save();

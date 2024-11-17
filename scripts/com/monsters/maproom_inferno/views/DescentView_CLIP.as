@@ -2,7 +2,7 @@ package com.monsters.maproom_inferno.views
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2309")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2405")]
    public dynamic class DescentView_CLIP extends MovieClip
    {
       public var mask_mc:MovieClip;

@@ -3,6 +3,7 @@ package com.monsters.effects
    import com.cc.utils.SecNum;
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.geom.Point;
@@ -240,7 +241,7 @@ package com.monsters.effects
          var _loc2_:String = "tw0";
          _bombid = "tw0";
          _launchedBomb = false;
-         if(GLOBAL._mode == "attack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK)
          {
             for(_loc4_ in _bombs)
             {
@@ -312,6 +313,10 @@ package com.monsters.effects
          var _loc4_:Object = null;
          var _loc2_:Object = _bombs[_bombid];
          var _loc3_:Boolean = false;
+         if(Boolean(_mc) && _mc.waitTime > GLOBAL.Timestamp())
+         {
+            return;
+         }
          ATTACK.RemoveDropZone();
          if(GLOBAL._attackersResources)
          {
@@ -385,7 +390,8 @@ package com.monsters.effects
       {
          var _loc1_:String = null;
          var _loc3_:ResourceBomb = null;
-         var _loc4_:BFOUNDATION = null;
+         var _loc4_:Vector.<Object> = null;
+         var _loc5_:BFOUNDATION = null;
          var _loc2_:int = 0;
          for(_loc1_ in _activeBombs)
          {
@@ -397,13 +403,14 @@ package com.monsters.effects
                _loc3_.Freeze();
                delete _activeBombs[_loc1_];
                _loc2_--;
-               if(_loc2_ == 0 && GLOBAL._mode == "build")
+               if(_loc2_ == 0 && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
-                  for each(_loc4_ in BASE._buildingsAll)
+                  _loc4_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+                  for each(_loc5_ in _loc4_)
                   {
-                     if(_loc4_._hp.Get() < _loc4_._hpMax.Get() && _loc4_._repairing == 0)
+                     if(_loc5_.health < _loc5_.maxHealth && _loc5_._repairing == 0)
                      {
-                        _loc4_.Repair();
+                        _loc5_.Repair();
                      }
                   }
                   MARKETING.Show("catapult");

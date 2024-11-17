@@ -46,7 +46,7 @@ package
          _loc1_.bAction.useHandCursor = true;
          _loc1_.bAction.mouseChildren = false;
          _loc1_.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
-         if(GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
+         if(GLOBAL.townHall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
          {
             _loc1_.bAction.visible = false;
          }
@@ -56,8 +56,8 @@ package
       
       private static function EmergeUpgradeCB(param1:MouseEvent) : void
       {
-         GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-         BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+         GLOBAL._selectedBuilding = GLOBAL.townHall;
+         BUILDINGOPTIONS.Show(GLOBAL.townHall,"upgrade");
          POPUPS.Next();
       }
       
@@ -220,7 +220,7 @@ package
             showRSVP.bAction.Setup(btnLabel);
             showRSVP.bAction.addEventListener(MouseEvent.CLICK,RSVPLink);
          }
-         else if(GLOBAL._bTownhall._lvl.Get() < INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
+         else if(GLOBAL.townHall._lvl.Get() < INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
          {
             showRSVP.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
             showRSVP.bAction.addEventListener(MouseEvent.CLICK,EmergeUpgradeCB);
@@ -305,13 +305,13 @@ package
          var action:Function = POPUPS.Next;
          completeEmerge = new popup_infernoemerge_complete();
          completeEmerge.tBody.htmlText = KEYS.Get("entercavern_popup");
-         if(GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
+         if(GLOBAL.townHall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
          {
             completeEmerge.bAction.buttonMode = true;
             completeEmerge.bAction.useHandCursor = true;
             completeEmerge.bAction.mouseChildren = false;
             completeEmerge.bAction.Highlight = true;
-            completeEmerge.bAction.Setup(BASE.isInferno() ? KEYS.Get(INFERNOPORTAL.EXIT_BUTTON) : KEYS.Get(INFERNOPORTAL.ENTER_BUTTON));
+            completeEmerge.bAction.Setup(BASE.isInfernoMainYardOrOutpost ? KEYS.Get(INFERNOPORTAL.EXIT_BUTTON) : KEYS.Get(INFERNOPORTAL.ENTER_BUTTON));
             completeEmerge.bAction.addEventListener(MouseEvent.CLICK,INFERNOPORTAL.EnterPortal);
          }
          else

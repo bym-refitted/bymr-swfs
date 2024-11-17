@@ -2,9 +2,10 @@ package com.monsters.siege.weapons
 {
    import com.monsters.display.SpriteData;
    import com.monsters.display.SpriteSheetAnimation;
-   import com.monsters.monsters.MonsterBase;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.monsters.components.statusEffects.DecoyEffect;
+   import com.monsters.monsters.creeps.CreepBase;
    import com.monsters.siege.SiegeWeaponProperty;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -249,15 +250,18 @@ package com.monsters.siege.weapons
       
       private function updateDecoy() : void
       {
-         var _loc2_:MonsterBase = null;
+         var _loc2_:CreepBase = null;
          var _loc1_:Array = this.getDefendingCreepsInRange();
          var _loc3_:int = 0;
          while(_loc3_ < _loc1_.length)
          {
-            _loc2_ = _loc1_[_loc3_];
-            if(this._attractedCreeps.indexOf(_loc2_) == -1)
+            if(_loc1_[_loc3_] is CreepBase)
             {
-               this.attractCreep(_loc2_);
+               _loc2_ = CreepBase(_loc1_[_loc3_]);
+               if(this._attractedCreeps.indexOf(_loc2_) == -1)
+               {
+                  this.attractCreep(_loc2_);
+               }
             }
             _loc3_++;
          }
@@ -274,42 +278,43 @@ package com.monsters.siege.weapons
          this.ejectDefendersFromBunkers();
       }
       
-      private function attractCreep(param1:*) : void
+      private function attractCreep(param1:CreepBase) : void
       {
          this._attractedCreeps.push(param1);
          param1.addStatusEffect(new DecoyEffect(param1));
-         param1.ModeDecoy();
+         param1.changeModeDecoy();
       }
       
-      private function detractCreep(param1:*, param2:int) : void
+      private function detractCreep(param1:CreepBase, param2:int) : void
       {
          this._attractedCreeps.splice(param2,1);
-         param1.FindDefenseTargets();
+         param1.findDefenseTargets();
          param1.removeStatusEffect(DecoyEffect);
          TweenLite.killDelayedCallsTo(this.startFuseAnimation);
       }
       
       override public function onDeactivation() : void
       {
-         var _loc3_:BFOUNDATION = null;
-         var _loc4_:int = 0;
-         var _loc5_:* = undefined;
+         var _loc4_:BFOUNDATION = null;
+         var _loc5_:int = 0;
+         var _loc6_:* = undefined;
          var _loc1_:Point = new Point(this.x,this.y);
          var _loc2_:Array = this.getDefendingCreepsInRange();
-         for each(_loc3_ in BASE._buildingsAll)
+         var _loc3_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc3_)
          {
-            if(GLOBAL.QuickDistance(_loc1_,new Point(_loc3_.x,_loc3_.y)) < range * 0.65)
+            if(_loc4_ is BMUSHROOM === false && GLOBAL.QuickDistance(_loc1_,new Point(_loc4_.x,_loc4_.y)) < range * 0.65)
             {
-               _loc2_.push(_loc3_);
+               _loc2_.push(_loc4_);
             }
          }
-         MAP.DealLinearAEDamage(_loc1_,range,this.damage,_loc2_);
-         _loc4_ = int(this._attractedCreeps.length - 1);
-         while(_loc4_ >= 0)
+         Targeting.DealLinearAEDamage(_loc1_,range,this.damage,_loc2_);
+         _loc5_ = int(this._attractedCreeps.length - 1);
+         while(_loc5_ >= 0)
          {
-            _loc5_ = this._attractedCreeps[_loc4_];
-            this.detractCreep(_loc5_,_loc4_);
-            _loc4_--;
+            _loc6_ = this._attractedCreeps[_loc5_];
+            this.detractCreep(_loc6_,_loc5_);
+            _loc5_--;
          }
          SOUNDS.Play(EXPLOSION_SOUND);
          if(this._loopingChannel)

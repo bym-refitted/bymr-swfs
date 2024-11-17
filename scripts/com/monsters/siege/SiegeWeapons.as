@@ -1,6 +1,5 @@
 package com.monsters.siege
 {
-   import com.monsters.debug.Console;
    import com.monsters.siege.weapons.*;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
@@ -57,12 +56,12 @@ package com.monsters.siege
       
       public static function activateWeapon(param1:String, param2:Number = 0, param3:Number = 0) : Boolean
       {
-         if(param1 == Vacuum.ID && GLOBAL._bTownhall._destroyed == true)
+         var _loc4_:SiegeWeapon = getWeapon(param1);
+         if(!_loc4_.activate(param2,param3))
          {
             return false;
          }
          activeWeaponID = param1;
-         var _loc4_:SiegeWeapon = getWeapon(param1);
          ATTACK.Log("siegeWeaponActivation","<font color=\"#0000FF\">" + _loc4_.logMessage + "</font>");
          if(_loc4_.duration > 0)
          {
@@ -70,7 +69,6 @@ package com.monsters.siege
             activeWeaponTimer.addEventListener(TimerEvent.TIMER_COMPLETE,onDurationTimerComplete);
             activeWeaponTimer.start();
          }
-         _loc4_.activate(param2,param3);
          --_loc4_.quantity;
          didActivatWeapon = true;
          LOGGER.Stat([93,param1,_loc4_.level]);
@@ -86,7 +84,6 @@ package com.monsters.siege
       {
          if(!activeWeapon)
          {
-            Console.warning("there is no active weapon to deactivate, wtf you doin?");
             return;
          }
          if(activeWeaponTimer)
@@ -126,12 +123,16 @@ package com.monsters.siege
       
       public static function exportWeapons() : Object
       {
+         var _loc1_:Object = null;
          var _loc2_:SiegeWeapon = null;
-         var _loc1_:Object = {};
          for each(_loc2_ in weapons)
          {
             if(_loc2_.level > 0)
             {
+               if(!_loc1_)
+               {
+                  _loc1_ = {};
+               }
                _loc1_[_loc2_.weaponID] = _loc2_.exportVariables();
             }
          }

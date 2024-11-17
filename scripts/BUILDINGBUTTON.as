@@ -2,6 +2,7 @@ package
 {
    import com.monsters.display.ImageCache;
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -27,9 +28,8 @@ package
       
       public function Setup(param1:int, param2:Boolean = true) : void
       {
-         var _loc6_:String = null;
-         var _loc7_:* = null;
-         var _loc9_:BFOUNDATION = null;
+         var _loc7_:BFOUNDATION = null;
+         var _loc8_:* = null;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
          var _loc12_:String = null;
@@ -55,10 +55,10 @@ package
          var _loc3_:int = GLOBAL.GetBuildingTownHallLevel(this._buildingProps);
          var _loc4_:int = _loc3_ < this._buildingProps.quantity.length ? int(this._buildingProps.quantity[_loc3_]) : int(this._buildingProps.quantity[this._buildingProps.quantity.length - 1]);
          var _loc5_:int = 0;
-         for(_loc6_ in BASE._buildingsAll)
+         var _loc6_:Vector.<Object> = InstanceManager.getInstancesByClass(!!this._buildingProps.cls ? this._buildingProps.cls : BFOUNDATION);
+         for each(_loc7_ in _loc6_)
          {
-            _loc9_ = BASE._buildingsAll[_loc6_];
-            if(_loc9_._type == this._id)
+            if(_loc7_._type === this._id)
             {
                _loc5_++;
             }
@@ -99,33 +99,33 @@ package
             }
             if(_loc11_ != int.MAX_VALUE && this._buildingProps.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(this._buildingProps.costs[0]) && !this._buildingProps.rewarded)
             {
-               _loc7_ = this._buildingProps.upgradeImgData.baseurl + this._buildingProps.upgradeImgData[_loc11_].silhouette_img;
+               _loc8_ = this._buildingProps.upgradeImgData.baseurl + this._buildingProps.upgradeImgData[_loc11_].silhouette_img;
             }
          }
-         if(!_loc7_)
+         if(!_loc8_)
          {
             if(Boolean(this._buildingProps.buildingbuttons) && Boolean(BASE._buildingsStored["bl" + this._id]) && this._buildingProps.buildingbuttons.length >= BASE._buildingsStored["bl" + this._id].Get())
             {
-               _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._id].Get() - 1] + ".jpg";
+               _loc8_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[BASE._buildingsStored["bl" + this._id].Get() - 1] + ".jpg";
             }
             else if(Boolean(this._buildingProps.buildingbuttons) && this._buildingProps.buildingbuttons.length > 0)
             {
-               _loc7_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[0] + ".jpg";
+               _loc8_ = "buildingbuttons/" + this._buildingProps.buildingbuttons[0] + ".jpg";
             }
             else
             {
-               _loc7_ = "buildingbuttons/" + this._id + ".jpg";
+               _loc8_ = "buildingbuttons/" + this._id + ".jpg";
             }
          }
-         var _loc8_:int = int(Math.max.apply(Math,this._buildingProps.quantity));
+         var _loc9_:int = int(Math.max.apply(Math,this._buildingProps.quantity));
          mcShroud.visible = _loc5_ >= _loc4_ && _loc4_ > 0;
-         mcCheck.visible = _loc5_ >= _loc8_ && _loc8_ > 0;
+         mcCheck.visible = _loc5_ >= _loc9_ && _loc9_ > 0;
          mcNew.visible = false;
          if(GLOBAL._newThings && Boolean(this._buildingProps.isNew))
          {
             mcNew.visible = true;
          }
-         ImageCache.GetImageWithCallBack(_loc7_,this.ImageLoaded);
+         ImageCache.GetImageWithCallBack(_loc8_,this.ImageLoaded);
          if(this.isLocked)
          {
             mcShroud.visible = true;

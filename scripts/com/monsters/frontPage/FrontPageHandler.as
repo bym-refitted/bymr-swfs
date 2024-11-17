@@ -89,7 +89,7 @@ package com.monsters.frontPage
       public static function showPopup(param1:Boolean = false) : Boolean
       {
          var _loc2_:DisplayObject = null;
-         if(GLOBAL._mode != "build" || BASE.isOutpost || !TUTORIAL.hasFinished || _hasBeenSeenThisSession || BASE._yardType != BASE.MAIN_YARD || INFERNO_EMERGENCE_EVENT.isGoingToAttack)
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isOutpost || !TUTORIAL.hasFinished || _hasBeenSeenThisSession || !BASE.isMainYard || INFERNO_EMERGENCE_EVENT.isGoingToAttack)
          {
             return false;
          }

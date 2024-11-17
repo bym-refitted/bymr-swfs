@@ -1,7 +1,7 @@
 package com.monsters.missions
 {
    import com.monsters.display.ImageCache;
-   import com.monsters.maproom_advanced.MapRoomPopupInfoMonster;
+   import com.monsters.maproom_advanced.PopupInfoMonster;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
@@ -15,7 +15,7 @@ package com.monsters.missions
       
       private var _textCur:int = 0;
       
-      private var _monsterRewardMC:MapRoomPopupInfoMonster;
+      private var _monsterRewardMC:PopupInfoMonster;
       
       private var _specialReward:SpecialRewardInfo;
       
@@ -98,7 +98,7 @@ package com.monsters.missions
             qq = 0;
             while(qq < 5)
             {
-               if(GLOBAL._mode == GLOBAL._loadmode)
+               if(GLOBAL.mode == GLOBAL._loadmode)
                {
                   this["R" + (qq + 1)].gotoAndStop(c + 1);
                }
@@ -111,7 +111,7 @@ package com.monsters.missions
                this["R" + (qq + 1)].visible = false;
                qq++;
             }
-            this._monsterRewardMC = new MapRoomPopupInfoMonster();
+            this._monsterRewardMC = new PopupInfoMonster();
             this._monsterRewardMC.Setup(R1.x,R1.y,this._missionObject.reward_creatureid,this._missionObject.monster_reward);
             this.addChild(this._monsterRewardMC);
          }
@@ -135,7 +135,7 @@ package com.monsters.missions
             c = 0;
             while(c < 5)
             {
-               if(GLOBAL._mode == GLOBAL._loadmode)
+               if(GLOBAL.mode == GLOBAL._loadmode)
                {
                   this["R" + (c + 1)].gotoAndStop(c + 1);
                }

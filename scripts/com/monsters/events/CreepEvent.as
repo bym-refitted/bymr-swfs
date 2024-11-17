@@ -5,7 +5,7 @@ package com.monsters.events
    
    public class CreepEvent extends Event
    {
-      public static const ATTACKING_CREEP_SPAWNED:String = "attackingCreepSpawned";
+      public static const ATTACKING_MONSTER_SPAWNED:String = "attackingCreepSpawned";
       
       public static const DEFENDING_CREEP_SPAWNED:String = "defendingCreepSpawned";
       

@@ -38,7 +38,7 @@ package
          title_txt.htmlText = KEYS.Get(GLOBAL._bHatchery._buildingProps.name);
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
          }
@@ -66,7 +66,7 @@ package
          var _loc2_:int = 0;
          this._monsterSlots = [];
          _loc5_ = CREATURELOCKER.GetSortedCreatures(true);
-         var _loc6_:int = !BASE.isInferno() ? CREATURELOCKER.maxCreatures("above") : CREATURELOCKER.maxCreatures("inferno");
+         var _loc6_:int = !BASE.isInfernoMainYardOrOutpost ? CREATURELOCKER.maxCreatures("above") : CREATURELOCKER.maxCreatures("inferno");
          _loc7_ = 0;
          while(_loc7_ < _loc6_)
          {
@@ -133,7 +133,7 @@ package
       {
          var _loc10_:String = null;
          var _loc11_:int = 0;
-         var _loc2_:String = BASE.isInferno() ? "IC" + param1 : "C" + param1;
+         var _loc2_:String = BASE.isInfernoMainYardOrOutpost ? "IC" + param1 : "C" + param1;
          var _loc3_:Object = CREATURELOCKER._creatures[_loc2_];
          ImageCache.GetImageWithCallBack("monsters/" + _loc2_ + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
          var _loc4_:Number = 0;
@@ -217,9 +217,9 @@ package
          mcMonsterInfo.tStorage.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc2_,"cStorage")});
          mcMonsterInfo.tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_loc2_,"cTime"),true);
          var _loc12_:int = 1;
-         if(Boolean(ACADEMY._upgrades[_loc2_]) && ACADEMY._upgrades[_loc2_].level > 1)
+         if(Boolean(GLOBAL.player.m_upgrades[_loc2_]) && GLOBAL.player.m_upgrades[_loc2_].level > 1)
          {
-            _loc12_ = int(ACADEMY._upgrades[_loc2_].level);
+            _loc12_ = int(GLOBAL.player.m_upgrades[_loc2_].level);
          }
          mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("hatcherypopup_level",{"v1":_loc12_}) + " " + KEYS.Get(_loc3_.name) + "</b><br>" + KEYS.Get(_loc3_.description);
          if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
@@ -228,7 +228,7 @@ package
          }
          else
          {
-            mcMonsterInfo.mcLocked.tText.htmlText = KEYS.Get(BASE.isInferno() ? "incubator_unlockinlocker" : "hat_unlockinlocker",{
+            mcMonsterInfo.mcLocked.tText.htmlText = KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "incubator_unlockinlocker" : "hat_unlockinlocker",{
                "v1":KEYS.Get(CREATURELOCKER._creatures[_loc2_].name),
                "v2":KEYS.Get(GLOBAL._bHatchery._buildingProps.name)
             });
@@ -254,12 +254,12 @@ package
          {
             var _loc4_:* = undefined;
             var _loc5_:* = undefined;
-            var _loc2_:* = BASE.isInferno() ? "I" : "";
+            var _loc2_:* = BASE.isInfernoMainYardOrOutpost ? "I" : "";
             _loc2_ += "C" + n;
             var _loc3_:* = 1 + _hatchery._lvl.Get();
             if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true))
             {
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   GLOBAL.Message("Not enough Magma.");
                }
@@ -326,7 +326,7 @@ package
       private function Charge(param1:String) : void
       {
          BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"));
-         ResourcePackages.Create(BASE.isInferno() ? 8 : 4,this._hatchery,CREATURES.GetProperty(param1,"cResource"),true);
+         ResourcePackages.Create(BASE.isInfernoMainYardOrOutpost ? 8 : 4,this._hatchery,CREATURES.GetProperty(param1,"cResource"),true);
          BASE.Save();
       }
       
@@ -503,7 +503,7 @@ package
          {
             if(this._hatchery._productionStage.Get() == 2 && this._hatchery._inProduction && !HOUSING.HousingStore(this._hatchery._inProduction,new Point(this._hatchery._mc.x,this._hatchery._mc.y),true))
             {
-               _loc2_ = [2,KEYS.Get(BASE.isInferno() ? "incubator_needhousing" : "hat_needhousing")];
+               _loc2_ = [2,KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "incubator_needhousing" : "hat_needhousing")];
             }
             else
             {
@@ -627,7 +627,7 @@ package
          }
          else if(this._hatchery._finishCost.Get() <= 0)
          {
-            GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_compoundfull" : "msg_housingfull"));
+            GLOBAL.Message(KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "msg_compoundfull" : "msg_housingfull"));
          }
       }
       

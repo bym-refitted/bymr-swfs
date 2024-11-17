@@ -37,11 +37,11 @@ package
          var shroom:Object = null;
          var replace:Boolean = false;
          var spawnCount:int = 0;
-         if(!GLOBAL._flags.mushrooms && GLOBAL._mode == "build")
+         if(!GLOBAL._flags.mushrooms && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             return;
          }
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return;
          }
@@ -179,11 +179,11 @@ package
          var _loc6_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
-         if(!GLOBAL._flags.mushrooms && GLOBAL._mode == "build")
+         if(!GLOBAL._flags.mushrooms && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             return;
          }
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return;
          }
@@ -253,7 +253,6 @@ package
          {
             return false;
          }
-         param1.RecycleC();
          var _loc4_:Rndm = new Rndm(int(param1.x * param1.y));
          var _loc5_:int = 0;
          var _loc6_:int = 0;
@@ -299,6 +298,7 @@ package
          LOGGER.Stat([34,_loc6_]);
          QUESTS.Check();
          WORKERS.Say(_loc3_,QUEUE.Remove("mushroom" + _loc2_,true),50 * 60);
+         param1.RecycleC();
          return true;
       }
    }

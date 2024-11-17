@@ -4,9 +4,8 @@ package
    import com.monsters.events.CreepEvent;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.champions.ChampionBase;
-   import com.monsters.monsters.champions.KOTHChampion;
-   import com.monsters.monsters.creeps.CREEP;
-   import com.monsters.monsters.creeps.CREEP_INFERNO;
+   import com.monsters.monsters.champions.Krallen;
+   import com.monsters.monsters.creeps.CreepBase;
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.utils.getTimer;
@@ -25,9 +24,11 @@ package
       
       private static var _creepOverlap:Object;
       
+      public static var m_attackingCreeps:Vector.<MonsterBase> = new Vector.<MonsterBase>();
+      
       public static var _bmdHPbar:BitmapData = new bmp_healthbarsmall(0,0);
       
-      public static var _flungGuardian:Vector.<Boolean> = new Vector.<Boolean>();
+      public static var _flungGuardian:Array = [];
       
       public static var _guardianList:Vector.<ChampionBase> = new Vector.<ChampionBase>();
       
@@ -35,16 +36,17 @@ package
       {
          super();
          _creeps = {};
+         m_attackingCreeps.length = 0;
          _creepID = 0;
          _flungCount = 0;
          _creepCount = 0;
          _ticks = 0;
          _creepOverlap = {};
-         _flungGuardian = new Vector.<Boolean>(GLOBAL._playerGuardianData.length);
+         _flungGuardian = new Array();
          _guardianList.length = 0;
       }
       
-      public static function get krallen() : KOTHChampion
+      public static function get krallen() : Krallen
       {
          var _loc2_:ChampionBase = null;
          var _loc1_:Vector.<ChampionBase> = CREEPS._guardianList;
@@ -52,7 +54,7 @@ package
          {
             if(_loc2_._creatureID === "G5")
             {
-               return _loc2_ as KOTHChampion;
+               return _loc2_ as Krallen;
             }
          }
          return null;
@@ -60,7 +62,7 @@ package
       
       public static function Tick() : void
       {
-         var _loc2_:* = undefined;
+         var _loc2_:MonsterBase = null;
          var _loc3_:String = null;
          var _loc5_:String = null;
          var _loc1_:int = getTimer();
@@ -73,7 +75,7 @@ package
             if(!_creepOverlap[_loc5_])
             {
                _creepOverlap[_loc5_] = 1;
-               if(!_loc2_._mc.visible)
+               if(Boolean(_loc2_._mc) && !_loc2_._mc.visible)
                {
                   _loc2_._mc.visible = true;
                }
@@ -93,39 +95,37 @@ package
                   _loc2_._mc.visible = true;
                }
             }
-            if(_loc2_._mc.visible)
+            if(Boolean(_loc2_._mc) && _loc2_._mc.visible)
             {
                _loc4_ += 1;
             }
-            if(_loc2_.Tick(1))
+            if(_loc2_.tick(1))
             {
-               if(_loc2_._health.Get() <= 0)
+               if(!_loc2_.dying)
                {
-                  if(_loc2_._creatureID.substr(0,1) != "G")
+                  _loc2_.die();
+               }
+               if(_loc2_.dead)
+               {
+                  if(!BYMConfig.instance.RENDERER_ON)
                   {
-                     SOUNDS.Play("splat" + (int(Math.random() * 3) + 1));
-                     EFFECTS.CreepSplat(_loc2_._creatureID,_loc2_._tmpPoint.x,_loc2_._tmpPoint.y);
+                     MAP._BUILDINGTOPS.removeChild(_loc2_.graphic);
                   }
+                  --_creepCount;
+                  if(_loc2_._creatureID.substr(0,1) == "G" || (GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK) && !_loc2_.isDisposable)
+                  {
+                     --_flungCount;
+                     ATTACK._creaturesFlung.Add(-1);
+                  }
+                  delete _creeps[_loc3_];
                }
-               _loc2_.Clear();
-               if(!BYMConfig.instance.RENDERER_ON)
-               {
-                  MAP._BUILDINGTOPS.removeChild(_loc2_);
-               }
-               --_creepCount;
-               if(_loc2_._creatureID.substr(0,1) == "G" || (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && !_loc2_.isDisposable)
-               {
-                  --_flungCount;
-                  ATTACK._creaturesFlung.Add(-1);
-               }
-               delete _creeps[_loc3_];
             }
          }
          if(_creepCount <= 0)
          {
             _flungCount = _creepCount = 0;
          }
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             if(ATTACK._creaturesFlung.Get() < _flungCount && ATTACK._creaturesFlung.Get() > 0)
             {
@@ -144,28 +144,20 @@ package
             ++_flungCount;
          }
          ++_creepCount;
-         if(param1.substr(0,1) == "I")
+         var _loc10_:Class = CREATURELOCKER._creatures[param1].classType;
+         if(!_loc10_)
          {
-            if(!BYMConfig.instance.RENDERER_ON)
-            {
-               _loc9_ = param2.addChild(new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7));
-            }
-            else
-            {
-               _loc9_ = new CREEP_INFERNO(param1,param3,param4,param5,null,false,null,param6,param7);
-            }
+            _loc10_ = CreepBase;
          }
-         else if(!BYMConfig.instance.RENDERER_ON)
+         _loc9_ = new _loc10_(param1,param3,param4,param5,0,int.MAX_VALUE,null,false,null,param6,param7);
+         if(!BYMConfig.instance.RENDERER_ON)
          {
-            _loc9_ = param2.addChild(new CREEP(param1,param3,param4,param5,null,false,null,param6,param7));
-         }
-         else
-         {
-            _loc9_ = new CREEP(param1,param3,param4,param5,null,false,null,param6,param7);
+            param2.addChild(_loc9_.graphic);
          }
          _loc9_.isDisposable = param8;
          _creeps[_creepID] = _loc9_;
-         GLOBAL.eventDispatcher.dispatchEvent(new CreepEvent(CreepEvent.ATTACKING_CREEP_SPAWNED,_loc9_));
+         m_attackingCreeps.push(_loc9_);
+         GLOBAL.eventDispatcher.dispatchEvent(new CreepEvent(CreepEvent.ATTACKING_MONSTER_SPAWNED,_loc9_));
          return _loc9_;
       }
       
@@ -184,14 +176,17 @@ package
          else
          {
             _loc13_ = GLOBAL.getPlayerGuardianIndex(param1);
-            _loc12_ = new _loc11_(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData[_loc13_].fd,GLOBAL._playerGuardianData[_loc13_].ft,param1,param7,param8,param9);
-            if(_loc11_ == ChampionBase)
+            if(GLOBAL._playerGuardianData[_loc13_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
             {
-               _guardian = _loc12_;
-            }
-            else if(!addGuardian(_loc12_))
-            {
-               _loc12_ = null;
+               _loc12_ = new _loc11_(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData[_loc13_].fd,GLOBAL._playerGuardianData[_loc13_].ft,param1,param7,param8,param9);
+               if(CHAMPIONCAGE.getGuardianClassType(param1) == CHAMPIONCAGE.CLASS_TYPE_BASIC)
+               {
+                  _guardian = _loc12_;
+               }
+               else if(!addGuardian(_loc12_))
+               {
+                  _loc12_ = null;
+               }
             }
          }
          if(_loc12_)
@@ -199,24 +194,25 @@ package
             _creeps[_creepID] = _loc12_;
             if(!BYMConfig.instance.RENDERER_ON)
             {
-               param2.addChild(_loc12_);
+               param2.addChild(_loc12_.graphic);
             }
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new CreepEvent(CreepEvent.ATTACKING_MONSTER_SPAWNED,_loc12_));
          return _loc12_;
       }
       
       public static function Retreat() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:MonsterBase = null;
          for each(_loc1_ in _creeps)
          {
-            _loc1_.ModeRetreat();
+            _loc1_.changeModeRetreat();
          }
       }
       
       public static function CreepOverlap(param1:Point, param2:int) : Boolean
       {
-         var _loc3_:* = undefined;
+         var _loc3_:MonsterBase = null;
          var _loc4_:Object = null;
          var _loc5_:Point = null;
          var _loc6_:Number = NaN;
@@ -229,7 +225,7 @@ package
          {
             if(_loc3_._creatureID.substr(0,1) == "G")
             {
-               _loc4_ = SPRITES._sprites[_loc3_._spriteID];
+               _loc4_ = SPRITES._sprites[(_loc3_ as ChampionBase)._spriteID];
             }
             else
             {
@@ -253,31 +249,34 @@ package
       
       public static function Clear() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:MonsterBase = null;
          var _loc2_:String = null;
-         var _loc3_:int = 0;
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         if(m_attackingCreeps)
+         {
+            m_attackingCreeps.length = 0;
+         }
          for(_loc2_ in _creeps)
          {
             _loc1_ = _creeps[_loc2_];
-            _loc1_.Clear();
+            _loc1_.clear();
             if(!BYMConfig.instance.RENDERER_ON)
             {
-               MAP._BUILDINGTOPS.removeChild(_loc1_);
+               MAP._BUILDINGTOPS.removeChild(_loc1_.graphic);
             }
          }
          _creeps = {};
          _creepCount = _flungCount = 0;
-         _loc3_ = 0;
-         while(_loc3_ < _flungGuardian.length)
+         for(_loc3_ in _flungGuardian)
          {
             _flungGuardian[_loc3_] = false;
-            _loc3_++;
          }
-         _loc3_ = 0;
-         while(_loc3_ < _guardianList.length)
+         _loc4_ = 0;
+         while(_loc4_ < _guardianList.length)
          {
-            _guardianList[_loc3_] = null;
-            _loc3_++;
+            _guardianList[_loc4_] = null;
+            _loc4_++;
          }
          _guardianList.length = 0;
       }

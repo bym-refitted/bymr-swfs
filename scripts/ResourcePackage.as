@@ -37,7 +37,7 @@ package
          super();
          Sound = function():void
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                SOUNDS.Play("ibankfire");
             }
@@ -102,7 +102,7 @@ package
       
       private function Arrived() : void
       {
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.Play("ibankland");
          }

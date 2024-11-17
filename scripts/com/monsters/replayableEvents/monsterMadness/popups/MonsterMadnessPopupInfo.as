@@ -100,12 +100,12 @@ package com.monsters.replayableEvents.monsterMadness.popups
       protected function setupUpgradeButton(param1:Button) : void
       {
          var _loc3_:Function = null;
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             this.setupRSVPButton(param1);
             return;
          }
-         var _loc2_:BFOUNDATION = GLOBAL._bTownhall;
+         var _loc2_:BFOUNDATION = GLOBAL.townHall;
          var _loc4_:String = "btn_upgradenow";
          if(_loc2_._lvl.Get() >= 6)
          {
@@ -148,8 +148,8 @@ package com.monsters.replayableEvents.monsterMadness.popups
       {
          this.close();
          param1.target.removeEventListener(MouseEvent.CLICK,this.onClickUpgradeTownhall);
-         GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-         BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+         GLOBAL._selectedBuilding = GLOBAL.townHall;
+         BUILDINGOPTIONS.Show(GLOBAL.townHall,"upgrade");
       }
       
       protected function setupRSVPButton(param1:Button) : void
@@ -173,7 +173,7 @@ package com.monsters.replayableEvents.monsterMadness.popups
       
       protected function setupMapButtton(param1:Button) : void
       {
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             this.setupExitButton(param1);
             return;

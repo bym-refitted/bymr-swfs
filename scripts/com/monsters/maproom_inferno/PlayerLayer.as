@@ -132,10 +132,9 @@ package com.monsters.maproom_inferno
       public function Get() : void
       {
          var loadVars:Array;
-         var r:Object;
-         var handleLoadSuccessful:Function = null;
-         var handleLoadError:Function = null;
-         handleLoadSuccessful = function(param1:Object):void
+         var r:URLLoaderApi;
+         var a:int = 0;
+         var handleLoadSuccessful:Function = function(param1:Object):void
          {
             var aib:Object = null;
             var ai:String = null;
@@ -212,7 +211,7 @@ package com.monsters.maproom_inferno
                LOGGER.Log("err","PlayerLayer: " + e.message);
             }
          };
-         handleLoadError = function(param1:IOErrorEvent):void
+         var handleLoadError:Function = function(param1:IOErrorEvent):void
          {
             GLOBAL.WaitHide();
             LOGGER.Log("err","MAPROOMPOPUP.Get HTTP");

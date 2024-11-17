@@ -1,6 +1,7 @@
 package com.monsters.mailbox
 {
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.StageDisplayState;
    import flash.events.Event;
    import flash.events.FullScreenEvent;
@@ -169,7 +170,7 @@ package com.monsters.mailbox
          var _loc2_:String = body_txt.text;
          var _loc3_:Number = this.picker.getCurrentData().userid;
          var _loc4_:Array = [["threadid",0],["targetid",_loc3_],["targetbaseid",0],["type",this.requestType],["subject",subject_txt.text],["message",_loc2_]];
-         var _loc5_:Object = new URLLoaderApi();
+         var _loc5_:URLLoaderApi = new URLLoaderApi();
          if(this.requestType == "migraterequest" && this.baseID != 0)
          {
             _loc4_.push(["baseid",this.baseID]);
@@ -206,10 +207,10 @@ package com.monsters.mailbox
             }
             this.closeDown();
             dispatchEvent(new Event(Event.COMPLETE));
-            if(this.requestType == "migraterequest")
+            if(this.requestType == "migraterequest" && MapRoomManager.instance.isInMapRoom2)
             {
                MapRoom.SetPendingInvitation();
-               MapRoom._mc.HideInfoMine();
+               MapRoom.HideInfoMine();
             }
             try
             {

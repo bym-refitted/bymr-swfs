@@ -1,6 +1,10 @@
 package
 {
-   import flash.display.MovieClip;
+   import com.monsters.debug.Console;
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.siege.weapons.Vacuum;
+   import flash.display.Sprite;
    import flash.geom.Point;
    
    public class FIREBALLS
@@ -27,109 +31,113 @@ package
          Clear();
       }
       
-      public static function Spawn(param1:Point, param2:Point, param3:BFOUNDATION, param4:Number, param5:int, param6:int = 0, param7:int = 0, param8:String = "fireball") : void
+      public static function Spawn(param1:Point, param2:Point, param3:BFOUNDATION, param4:Number, param5:int, param6:int = 0, param7:int = 0, param8:String = "fireball", param9:IAttackable = null) : FIREBALL
       {
+         var _loc10_:FIREBALL = null;
          if(!param8)
          {
             param8 = FIREBALL.TYPE_FIREBALL;
          }
          _type = param8;
-         var _loc9_:FIREBALL = PoolGet();
+         _loc10_ = PoolGet();
          if(param8 == TYPE_FIREBALL || param8 == TYPE_MAGMA)
          {
             if(param5 > 0)
             {
-               _loc9_._graphic.gotoAndStop(1);
+               _loc10_._graphic.gotoAndStop(1);
             }
             else
             {
-               _loc9_._graphic.gotoAndStop(2);
+               _loc10_._graphic.gotoAndStop(2);
             }
          }
          if(!GLOBAL._catchup)
          {
-            MAP._FIREBALLS.addChild(_loc9_._graphic);
+            MAP._FIREBALLS.addChild(_loc10_._graphic);
          }
-         _loc9_._id = _id;
-         _loc9_._startPoint = param1;
-         _loc9_._targetType = 2;
-         _loc9_._targetBuilding = param3;
-         _loc9_._maxSpeed = param4;
-         _loc9_._damage = param5;
-         _loc9_._splash = param6;
-         _loc9_._tmpX = param1.x;
-         _loc9_._tmpY = param1.y;
-         _loc9_._glaves = param7;
-         _loc9_._speed = param4;
-         _loc9_._startDistance = 0;
+         _loc10_._id = _id;
+         if(!param9)
+         {
+            Console.warning("you created a fireball with no source",true);
+         }
+         _loc10_._source = param9;
+         _loc10_._startPoint = param1;
+         _loc10_._targetType = 2;
+         _loc10_._targetBuilding = param3;
+         _loc10_._maxSpeed = param4;
+         _loc10_._damage = param5;
+         _loc10_._splash = param6;
+         _loc10_._tmpX = param1.x;
+         _loc10_._tmpY = param1.y;
+         _loc10_._glaves = param7;
+         _loc10_._speed = param4;
+         _loc10_._startDistance = 0;
          if(!_fireballs)
          {
             _fireballs = {};
          }
-         _fireballs[_id] = _loc9_;
+         _fireballs[_id] = _loc10_;
          ++_id;
          ++_fireballCount;
+         return _loc10_;
       }
       
-      public static function Spawn2(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0, param7:String = "fireball", param8:int = 1) : FIREBALL
+      public static function Spawn2(param1:Point, param2:Point, param3:IAttackable, param4:Number, param5:int, param6:int = 0, param7:String = "fireball", param8:int = 1, param9:IAttackable = null) : FIREBALL
       {
-         var _loc10_:MovieClip = null;
+         var _loc10_:FIREBALL = null;
          if(!param7)
          {
             param7 = FIREBALL.TYPE_FIREBALL;
          }
          _type = param7;
-         var _loc9_:FIREBALL = PoolGet();
+         _loc10_ = PoolGet();
          if(!GLOBAL._catchup)
          {
-            MAP._FIREBALLS.addChild(_loc9_._graphic);
+            MAP._FIREBALLS.addChild(_loc10_._graphic);
          }
          if(param5 > 0)
          {
-            _loc9_._graphic.gotoAndStop(1);
+            _loc10_._graphic.gotoAndStop(1);
          }
          else
          {
-            _loc9_._graphic.gotoAndStop(2);
+            _loc10_._graphic.gotoAndStop(2);
          }
-         _loc9_._type = param7;
-         _loc9_._id = _id;
-         _loc9_._startPoint = param1;
-         if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall is BUILDING14)
+         _loc10_._type = param7;
+         _loc10_._id = _id;
+         if(!param9)
          {
-            _loc10_ = BUILDING14(GLOBAL._bTownhall)._vacuum;
+            Console.warning("you created a fireball with no source",true);
          }
-         _loc9_._targetType = Boolean(_loc10_) && param3 == _loc10_ ? 4 : param8;
-         _loc9_._targetPoint = param2;
-         _loc9_._targetCreep = param3;
-         _loc9_._maxSpeed = param4;
-         _loc9_._damage = param5;
-         _loc9_._glaves = 0;
-         if(param3 && param3._movement != "fly")
+         _loc10_._source = param9;
+         _loc10_._startPoint = param1;
+         var _loc11_:Sprite = !!Vacuum.getHose() ? Vacuum.getHose()._vacuum : null;
+         _loc10_._targetType = !!_loc11_ ? 4 : param8;
+         _loc10_._targetPoint = param2;
+         _loc10_._targetCreep = param3;
+         _loc10_._maxSpeed = param4;
+         _loc10_._damage = param5;
+         _loc10_._glaves = 0;
+         if(param3 && param3 is MonsterBase && MonsterBase(param3)._movement != "fly")
          {
-            _loc9_._splash = param6;
+            _loc10_._splash = param6;
          }
          else
          {
-            _loc9_._splash = 0;
+            _loc10_._splash = 0;
          }
-         _loc9_._tmpX = param1.x;
-         _loc9_._tmpY = param1.y;
-         _loc9_._speed = param4;
-         _loc9_._startDistance = 0;
+         _loc10_._tmpX = param1.x;
+         _loc10_._tmpY = param1.y;
+         _loc10_._speed = param4;
+         _loc10_._startDistance = 0;
          if(!_fireballs)
          {
             _fireballs = {};
          }
-         _fireballs[_id] = _loc9_;
+         _fireballs[_id] = _loc10_;
          ++_id;
          ++_fireballCount;
-         return _loc9_;
-      }
-      
-      public static function Spawn3(param1:Point, param2:Point, param3:*, param4:Number, param5:int, param6:int = 0) : void
-      {
-         Spawn2(param1,param2,param3,param4,param5,param6);
+         return _loc10_;
       }
       
       public static function Remove(param1:int) : void

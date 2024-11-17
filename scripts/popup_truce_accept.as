@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1495")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1542")]
    public dynamic class popup_truce_accept extends MovieClip
    {
       public var mcIcon1:MovieClip;

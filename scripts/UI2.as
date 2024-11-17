@@ -57,7 +57,7 @@ package
          _tutorial = GLOBAL._layerUI.addChild(new MovieClip()) as MovieClip;
          _top = GLOBAL._layerUI.addChild(new UI_TOP()) as UI_TOP;
          _warning = GLOBAL._layerUI.addChild(new UI_WARNING()) as UI_WARNING;
-         if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD && GLOBAL.mode != GLOBAL.e_BASE_MODE.IBUILD)
          {
             _visitor = GLOBAL._layerUI.addChild(new UI_VISITOR()) as UI_VISITOR;
          }
@@ -72,7 +72,10 @@ package
          _showProtected = false;
          _showWarning = false;
          UI_BOTTOM.Setup();
-         UI_WORKERS.Setup();
+         if(BASE.isMainYardOrInfernoMainYard)
+         {
+            UI_WORKERS.Setup();
+         }
          _top.Setup();
          if(Chat.flagsShouldChatExist() && Chat._bymChat._open)
          {
@@ -300,13 +303,12 @@ package
       {
          var _loc1_:Number = NaN;
          var _loc2_:MovieClip = null;
-         var _loc3_:int = 0;
          if(!GLOBAL._catchup)
          {
             if(_top)
             {
                _top.Update();
-               if(TUTORIAL._stage < 190)
+               if(TUTORIAL._stage < TUTORIAL.k_STAGE_DAMAGE_PROTECT)
                {
                   if(_top.mcProtected.visible)
                   {
@@ -339,7 +341,7 @@ package
                }
                else
                {
-                  if(BASE._isProtected - GLOBAL.Timestamp() > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
+                  if(BASE._isProtected - GLOBAL.Timestamp() > 0 && (GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == GLOBAL.e_BASE_MODE.IBUILD))
                   {
                      if(!_top.mcProtected.visible)
                      {
@@ -358,7 +360,7 @@ package
                   {
                      _top.mcProtected.visible = false;
                   }
-                  if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && (GLOBAL._mode == "build" || GLOBAL._mode == "ibuild"))
+                  if(BASE._isReinforcements - GLOBAL.Timestamp() > 0 && (GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == GLOBAL.e_BASE_MODE.IBUILD))
                   {
                      if(!_top.mcReinforcements.visible)
                      {
@@ -410,7 +412,7 @@ package
                      Chat._bymChat.toggleVisibleB();
                   }
                }
-               if(GLOBAL._mode != "build" && GLOBAL._mode != "ibuild" || !GLOBAL._flags.saveicon)
+               if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD && GLOBAL.mode != GLOBAL.e_BASE_MODE.IBUILD || !GLOBAL._flags.saveicon)
                {
                   _top.mcSave.visible = false;
                }
@@ -423,49 +425,9 @@ package
                      _loc1_ += 30;
                   }
                }
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
-               {
-                  _loc3_ = 6;
-                  _top.mcZoom.y = _loc3_;
-                  _top.mcFullscreen.y = _loc3_;
-                  _top.mcSound.y = _loc3_ + 24;
-                  _top.mcMusic.y = _loc3_ + 24;
-                  _top.mcSave.y = _loc3_ + 24 + 24;
-                  UI2._top.mcFullscreen.gotoAndStop(3);
-                  if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
-                  {
-                     UI2._top.mcZoom.gotoAndStop(4);
-                  }
-                  if(GLOBAL._ROOT.stage.displayState != StageDisplayState.FULL_SCREEN)
-                  {
-                     if(GLOBAL._zoomed)
-                     {
-                        UI2._top.mcZoom.gotoAndStop(5);
-                     }
-                  }
-               }
-               else
-               {
-                  _top.mcZoom.y = _loc3_;
-                  _top.mcFullscreen.y = _loc3_;
-                  _top.mcSound.y = _loc3_;
-                  _top.mcMusic.y = _loc3_;
-                  _top.mcSave.y = _loc3_;
-                  UI2._top.mcFullscreen.gotoAndStop(1);
-                  if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
-                  {
-                     UI2._top.mcZoom.gotoAndStop(1);
-                  }
-                  if(GLOBAL._ROOT.stage.displayState != StageDisplayState.FULL_SCREEN)
-                  {
-                     if(GLOBAL._zoomed)
-                     {
-                        UI2._top.mcZoom.gotoAndStop(2);
-                     }
-                  }
-               }
+               updateZoom();
             }
-            if(GLOBAL._mode == "build" || GLOBAL._mode == "ibuild")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == GLOBAL.e_BASE_MODE.IBUILD)
             {
                UI_BOTTOM.Update();
                UI_BOTTOM.Resize();
@@ -492,6 +454,60 @@ package
          }
       }
       
+      public static function updateZoom() : void
+      {
+         var _loc1_:int = 0;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
+         {
+            _loc1_ = 6;
+            _top.mcZoom.y = _loc1_;
+            _top.mcFullscreen.y = _loc1_;
+            _top.mcSound.y = _loc1_ + 24;
+            _top.mcMusic.y = _loc1_ + 24;
+            _top.mcSave.y = _loc1_ + 24 + 24;
+            UI2._top.mcFullscreen.gotoAndStop(3);
+            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
+            {
+               UI2._top.mcZoom.gotoAndStop(4);
+            }
+            else
+            {
+               UI2._top.mcZoom.gotoAndStop(6);
+            }
+            if(GLOBAL._ROOT.stage.displayState != StageDisplayState.FULL_SCREEN)
+            {
+               if(GLOBAL._zoomed)
+               {
+                  UI2._top.mcZoom.gotoAndStop(5);
+               }
+            }
+         }
+         else
+         {
+            _top.mcZoom.y = _loc1_;
+            _top.mcFullscreen.y = _loc1_;
+            _top.mcSound.y = _loc1_;
+            _top.mcMusic.y = _loc1_;
+            _top.mcSave.y = _loc1_;
+            UI2._top.mcFullscreen.gotoAndStop(1);
+            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
+            {
+               UI2._top.mcZoom.gotoAndStop(1);
+            }
+            else
+            {
+               UI2._top.mcZoom.gotoAndStop(3);
+            }
+            if(GLOBAL._ROOT.stage.displayState != StageDisplayState.FULL_SCREEN)
+            {
+               if(GLOBAL._zoomed)
+               {
+                  UI2._top.mcZoom.gotoAndStop(2);
+               }
+            }
+         }
+      }
+      
       public static function ResizeHandler(param1:Event = null) : void
       {
          var _loc4_:Rectangle = null;
@@ -509,32 +525,7 @@ package
          }
          if(_top)
          {
-            _top.x = _loc4_.x + 10;
-            _top.y = _loc4_.y + 4;
-            _top.mcProtected.x = _loc4_.width - 125;
-            _top.mcReinforcements.x = _loc4_.width - 125;
-            _top.mcSpecialEvent.x = _loc4_.width - 125;
-            _top.mcBuffHolder.x = _loc4_.width - 200;
-            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
-            {
-               _top.mcZoom.x = _loc4_.width - 38 - 24;
-               _top.mcFullscreen.x = _loc4_.width - 38;
-               _top.mcSound.x = _loc4_.width - 38 - 24;
-               _top.mcMusic.x = _loc4_.width - 38;
-               _top.mcSave.x = _loc4_.width - 38 - 24;
-            }
-            else
-            {
-               _top.mcZoom.x = _loc4_.width - 130;
-               _top.mcFullscreen.x = _loc4_.width - 100;
-               _top.mcSound.x = _loc4_.width - 70;
-               _top.mcMusic.x = _loc4_.width - 40;
-               _top.mcSave.x = _loc4_.width - 160;
-            }
-            if(_top._descentDebuff)
-            {
-               _top._descentDebuff.x = _loc4_.width - 160;
-            }
+            _top.resize(_loc4_);
          }
          if(_warning)
          {

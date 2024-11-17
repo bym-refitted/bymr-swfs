@@ -10,6 +10,8 @@ package com.monsters.configs
       
       public static const k_sLOCAL_MODE_VIXTEST:int = 3;
       
+      public static const k_sLOCAL_MODE_VIXSTAGE:int = 4;
+      
       public static const k_sLOCAL_MODE_INF_TRUNK:int = 5;
       
       public static const k_sLOCAL_MODE_LIVE:int = 6;
@@ -24,7 +26,11 @@ package com.monsters.configs
       
       public static const k_sLOCAL_MODE_KONGSTAGE:int = 11;
       
-      public static const k_sLOCAL_MODE_STAGE:int = 12;
+      public static const k_sLOCAL_MODE_PREVIEW:int = 12;
+      
+      public static const k_sLOCAL_MODE_STAGE:int = 13;
+      
+      public static const k_sVICTORY_THRESHOLD:Number = 90;
       
       public static const k_sMAX_FORTIFICATION_LEVEL:int = 4;
       
@@ -40,6 +46,11 @@ package com.monsters.configs
       }
       
       public function get RENDERER_ON() : Boolean
+      {
+         return true;
+      }
+      
+      public function get OPTIMIZED_SHADOWS() : Boolean
       {
          return false;
       }
@@ -57,6 +68,11 @@ package com.monsters.configs
       public function get BRUKKARG_WAR_ON() : Boolean
       {
          return true;
+      }
+      
+      public function get INVITE_BUTTON() : Boolean
+      {
+         return false;
       }
       
       public function get LOCAL_MODE() : int

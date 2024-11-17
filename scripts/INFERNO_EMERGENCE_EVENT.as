@@ -1,6 +1,7 @@
 package
 {
-   import flash.display.MovieClip;
+   import com.monsters.managers.InstanceManager;
+   import flash.display.Sprite;
    import flash.events.Event;
    import gs.TweenLite;
    
@@ -64,13 +65,13 @@ package
       
       public static function Initialize() : Boolean
       {
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }
          _lastLevel = GLOBAL.StatGet(_LAST_LEVEL_LABEL);
          _currentDate = new Date();
-         if(ShouldShowPortal() && _maxLevel > 5 || BASE.isInferno() && MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "build")
+         if(ShouldShowPortal() && _maxLevel > 5 || BASE.isInfernoMainYardOrOutpost && MAPROOM_DESCENT.DescentPassed && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             INFERNOPORTAL.AddPortal(5);
             return false;
@@ -90,7 +91,7 @@ package
       
       private static function ShowUpgradePopup() : void
       {
-         if(GLOBAL.StatGet(INFERNO_EMERGENCE_POPUPS.INFERNO_UPGRADE_SHOWN) == 0 && GLOBAL._bTownhall._lvl.Get() >= 5)
+         if(GLOBAL.StatGet(INFERNO_EMERGENCE_POPUPS.INFERNO_UPGRADE_SHOWN) == 0 && GLOBAL.townHall._lvl.Get() >= 5)
          {
             INFERNO_EMERGENCE_POPUPS.ShowUpgrade();
             GLOBAL.StatSet(INFERNO_EMERGENCE_POPUPS.INFERNO_UPGRADE_SHOWN,1);
@@ -166,7 +167,7 @@ package
          UI2.Hide("top");
          UI2.Hide("wmbar");
          UI2.Hide("bottom");
-         var _loc1_:MovieClip = INFERNOPORTAL.building._mc;
+         var _loc1_:Sprite = INFERNOPORTAL.building._mc;
          MAP.FocusTo(_loc1_.x,_loc1_.y,2,0,0,true,FocusedOnPortal);
       }
       
@@ -226,30 +227,31 @@ package
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:BFOUNDATION = null;
-         var _loc5_:Number = NaN;
-         for each(_loc4_ in BASE._buildingsMain)
+         var _loc5_:BFOUNDATION = null;
+         var _loc6_:Number = NaN;
+         var _loc4_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc5_ in _loc4_)
          {
-            _loc2_ += _loc4_._hp.Get();
-            _loc3_ += _loc4_._hpMax.Get();
+            _loc2_ += _loc5_.health;
+            _loc3_ += _loc5_.maxHealth;
          }
-         _loc5_ = _loc2_ / _loc3_;
+         _loc6_ = _loc2_ / _loc3_;
          return _loc2_ / _loc3_ > _MINIMUM_BASE_HEALTH;
       }
       
       public static function ShouldShowPortal() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && GLOBAL.townHall && (ns == duringEvent || ns == postEvent && GLOBAL.townHall && GLOBAL.townHall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && BASE.isMainYardOrInfernoMainYard && TUTORIAL._stage > 200;
       }
       
       public static function ShouldRunEvent() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && _lastLevel < 5 && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && GLOBAL.townHall && (ns == duringEvent || ns == postEvent && GLOBAL.townHall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && _lastLevel < 5 && BASE.isMainYard && TUTORIAL._stage > 200;
       }
       
       public static function ShouldShowUpgradePopup() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL._mode == "build" && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _maxLevel > 0 && BASE.isMainYardOrInfernoMainYard && TUTORIAL._stage > 200;
       }
       
       public static function IsPostEvent() : Boolean

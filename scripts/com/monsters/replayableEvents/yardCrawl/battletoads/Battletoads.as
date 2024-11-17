@@ -31,13 +31,13 @@ package com.monsters.replayableEvents.yardCrawl.battletoads
       
       override public function doesQualify() : Boolean
       {
-         var _loc1_:uint = GLOBAL._bTownhall._lvl.Get();
+         var _loc1_:uint = GLOBAL.townHall._lvl.Get();
          return _loc1_ >= 2 && _loc1_ <= 4;
       }
       
       public function doesAutomaticalyGetReward() : Boolean
       {
-         return GLOBAL._bTownhall._lvl.Get() >= 5 && !startDate;
+         return Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= 5 && !startDate;
       }
       
       override protected function onImport() : void

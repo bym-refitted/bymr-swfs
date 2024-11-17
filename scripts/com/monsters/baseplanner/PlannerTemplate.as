@@ -1,5 +1,6 @@
 package com.monsters.baseplanner
 {
+   import com.monsters.managers.InstanceManager;
    import flash.geom.Point;
    
    public class PlannerTemplate
@@ -139,16 +140,17 @@ package com.monsters.baseplanner
       
       private function getNodesFromUnusedBuildings(param1:BaseTemplate) : Vector.<PlannerNode>
       {
-         var _loc3_:BFOUNDATION = null;
-         var _loc2_:Vector.<PlannerNode> = new Vector.<PlannerNode>();
-         for each(_loc3_ in BASE._buildingsAll)
+         var _loc4_:BFOUNDATION = null;
+         var _loc2_:Vector.<BFOUNDATION> = BASE.getYardPlannerBuildings();
+         var _loc3_:Vector.<PlannerNode> = new Vector.<PlannerNode>();
+         for each(_loc4_ in _loc2_)
          {
-            if(!param1.getNodeFromBuildingID(_loc3_._id))
+            if(!param1.getNodeFromBuildingID(_loc4_._id))
             {
-               _loc2_.push(new PlannerNode(_loc3_));
+               _loc3_.push(new PlannerNode(_loc4_));
             }
          }
-         return _loc2_;
+         return _loc3_;
       }
       
       private function getNodesFromStoredBuildings() : Vector.<PlannerNode>
@@ -188,6 +190,7 @@ package com.monsters.baseplanner
                      }
                      _loc8_.l = _loc9_;
                      _loc10_ = new BFOUNDATION();
+                     InstanceManager.removeInstance(_loc10_);
                      _loc10_._id = _DECORATION_ID;
                      _loc10_._type = _loc5_;
                      _loc10_._lvl.Set(_loc9_);

@@ -1,6 +1,7 @@
 package com.monsters.replayableEvents.yardCrawl
 {
    import com.monsters.events.AttackEvent;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.replayableEvents.ReplayableEvent;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    
@@ -69,9 +70,9 @@ package com.monsters.replayableEvents.yardCrawl
             GLOBAL.Message("You need a working Maproom, Flinger, Housing and some monsters to participate in this event");
             return;
          }
-         if(GLOBAL._advancedMap)
+         if(MapRoomManager.instance.isInMapRoom2or3)
          {
-            GLOBAL._advancedMap = 0;
+            MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
             _loc2_ = GLOBAL._infBaseURL;
          }
          var _loc3_:uint = uint(this._intactBaseList[0].id);

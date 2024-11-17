@@ -16,7 +16,7 @@ package com.monsters.frontPage.messages.buildtree
          {
             return false;
          }
-         return GLOBAL._bTownhall._lvl.Get() >= 3 && BASE.hasNumBuildings(PLANNER.TYPE) <= 0;
+         return GLOBAL.townHall._lvl.Get() >= 3 && BASE.hasNumBuildings(PLANNER.TYPE) <= 0;
       }
       
       override protected function onButtonClick() : void

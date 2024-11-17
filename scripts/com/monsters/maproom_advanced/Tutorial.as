@@ -6,7 +6,7 @@ package com.monsters.maproom_advanced
    import flash.events.Event;
    import flash.events.MouseEvent;
    
-   public class Tutorial
+   internal class Tutorial
    {
       private static var _instance:Tutorial;
       

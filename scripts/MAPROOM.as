@@ -40,7 +40,7 @@ package
          _mc = null;
          loadState = 0;
          _open = false;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _visitingFriend = false;
             bridge_obj = {
@@ -97,7 +97,7 @@ package
          bridge_obj._lastSort = _lastSort;
          bridge_obj._lastSortReversed = _lastSortReversed;
          andShow = true;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(GLOBAL._flags.maproom == 1)
             {

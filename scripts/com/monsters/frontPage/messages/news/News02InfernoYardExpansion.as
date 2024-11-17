@@ -7,7 +7,7 @@ package com.monsters.frontPage.messages.news
       public function News02InfernoYardExpansion()
       {
          var _loc1_:String = null;
-         if(!BASE.isInferno() && MAPROOM_DESCENT.DescentPassed)
+         if(!BASE.isInfernoMainYardOrOutpost && MAPROOM_DESCENT.DescentPassed)
          {
             _loc1_ = "btn_gotoinferno";
          }

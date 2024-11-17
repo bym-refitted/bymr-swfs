@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -44,7 +45,7 @@ package
       {
          var _loc2_:String = null;
          super();
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             _monsterString = "IC";
             _maxMonsters = this._infernoMaxMonsters;
@@ -66,7 +67,7 @@ package
          while(_loc1_ < 5)
          {
             bB["mcR" + _loc1_].visible = false;
-            bB["mcR" + _loc1_].gotoAndStop(_loc1_ + (BASE.isInferno() ? this._infernoFrameOffset : 0));
+            bB["mcR" + _loc1_].gotoAndStop(_loc1_ + (BASE.isInfernoMainYardOrOutpost ? this._infernoFrameOffset : 0));
             if(_loc1_ != 3)
             {
                bB["mcR" + _loc1_].alpha = 0.25;
@@ -76,7 +77,7 @@ package
             _loc1_++;
          }
          bB.mcTime.visible = false;
-         bB.mcTime.gotoAndStop((BASE.isInferno() ? this._infernoFrameOffset : 0) + 6);
+         bB.mcTime.gotoAndStop((BASE.isInfernoMainYardOrOutpost ? this._infernoFrameOffset : 0) + 6);
          bB.mcTime.tTitle.htmlText = "<b>" + KEYS.Get("#r_time#") + "</b>";
          for(_loc2_ in CREATURELOCKER._creatures)
          {
@@ -114,7 +115,7 @@ package
          health_txt.htmlText = "<b>" + KEYS.Get("acad_att_health") + "</b>";
          damage_txt.htmlText = "<b>" + KEYS.Get("acad_att_damage") + "</b>";
          cost_txt.htmlText = "<b>" + KEYS.Get("acad_att_cost") + "</b>";
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             cost_txt.htmlText = "<b>" + KEYS.Get("infacad_att_cost") + "</b>";
          }
@@ -127,9 +128,9 @@ package
       public function Setup(param1:String) : void
       {
          _monsterID = param1;
-         if(!ACADEMY._upgrades[_monsterID])
+         if(!GLOBAL.player.m_upgrades[_monsterID])
          {
-            ACADEMY._upgrades[_monsterID] = {"level":1};
+            GLOBAL.player.m_upgrades[_monsterID] = {"level":1};
          }
          this.Update(true);
          lastAction = 0;
@@ -150,7 +151,7 @@ package
       
       private function CalculateInstantCost() : void
       {
-         var _loc1_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[ACADEMY._upgrades[_monsterID].level - 1];
+         var _loc1_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[GLOBAL.player.m_upgrades[_monsterID].level - 1];
          var _loc2_:String = KEYS.Get(CREATURELOCKER._creatures[_monsterID].name);
          var _loc3_:int = int(_loc1_[0]);
          var _loc4_:int = int(_loc1_[1]);
@@ -163,9 +164,9 @@ package
       {
          var _loc7_:Boolean = false;
          var _loc11_:Object = null;
-         var _loc2_:Object = ACADEMY._upgrades[_monsterID];
+         var _loc2_:Object = GLOBAL.player.m_upgrades[_monsterID];
          var _loc3_:Object = ACADEMY.StartMonsterUpgrade(_monsterID,true);
-         var _loc4_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[ACADEMY._upgrades[_monsterID].level - 1];
+         var _loc4_:Array = CREATURELOCKER._creatures[_monsterID].trainingCosts[GLOBAL.player.m_upgrades[_monsterID].level - 1];
          if(Boolean(this._portraitImage) && Boolean(this._portraitImage.parent))
          {
             this._portraitImage.parent.removeChild(this._portraitImage);
@@ -317,7 +318,7 @@ package
          });
          tStorageA.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_monsterID,"cStorage")});
          tTimeA.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_monsterID,"cTime"),true);
-         var _loc8_:int = int(ACADEMY._upgrades[_monsterID].level);
+         var _loc8_:int = int(GLOBAL.player.m_upgrades[_monsterID].level);
          var _loc9_:* = false;
          var _loc10_:int = 1;
          for each(_loc11_ in GLOBAL._buildingProps)
@@ -330,14 +331,14 @@ package
                }
             }
          }
-         _loc9_ = ACADEMY._upgrades[_monsterID].level <= _loc10_;
+         _loc9_ = GLOBAL.player.m_upgrades[_monsterID].level <= _loc10_;
          if(_loc9_)
          {
-            _loc8_ = ACADEMY._upgrades[_monsterID].level + 1;
+            _loc8_ = GLOBAL.player.m_upgrades[_monsterID].level + 1;
          }
          else
          {
-            _loc8_ = int(ACADEMY._upgrades[_monsterID].level);
+            _loc8_ = int(GLOBAL.player.m_upgrades[_monsterID].level);
          }
          _loc6_ = CREATURES.GetProperty(_monsterID,"damage",_loc8_);
          if(_loc7_)
@@ -424,6 +425,7 @@ package
       
       public function InstantMonsterUpgrade(param1:MouseEvent) : void
       {
+         var buildingInstances:Vector.<Object>;
          var Post:Function;
          var building:BFOUNDATION = null;
          var bragImage:String = null;
@@ -435,51 +437,42 @@ package
             POPUPS.DisplayGetShiny();
             return;
          }
-         if(ACADEMY._upgrades[_monsterID].time)
+         if(GLOBAL.player.m_upgrades[_monsterID].time)
          {
-            delete ACADEMY._upgrades[_monsterID].time;
+            delete GLOBAL.player.m_upgrades[_monsterID].time;
          }
-         if(ACADEMY._upgrades[_monsterID].duration)
+         if(GLOBAL.player.m_upgrades[_monsterID].duration)
          {
-            delete ACADEMY._upgrades[_monsterID].duration;
+            delete GLOBAL.player.m_upgrades[_monsterID].duration;
          }
-         ++ACADEMY._upgrades[_monsterID].level;
-         if(GLOBAL._playerCreatureUpgrades[_monsterID])
+         ++GLOBAL.player.m_upgrades[_monsterID].level;
+         GLOBAL.player.upgradeHealthData(_monsterID);
+         buildingInstances = InstanceManager.getInstancesByClass(BUILDING26);
+         for each(building in buildingInstances)
          {
-            ++GLOBAL._playerCreatureUpgrades[_monsterID].level;
-         }
-         else
-         {
-            GLOBAL._playerCreatureUpgrades[_monsterID].level = ACADEMY._upgrades[_monsterID].level;
-         }
-         for each(building in BASE._buildingsAll)
-         {
-            if(building._type == 26)
-            {
-            }
-            if(building._type == 26 && building._upgrading == _monsterID)
+            if(building._upgrading == _monsterID)
             {
                building._upgrading = null;
                break;
             }
          }
-         LOGGER.Stat([47,_monsterID,ACADEMY._upgrades[_monsterID].level]);
-         if(GLOBAL._mode == "build")
+         LOGGER.Stat([47,_monsterID,GLOBAL.player.m_upgrades[_monsterID].level]);
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Post = function():void
             {
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   GLOBAL.CallJS("sendFeed",["academy-training",KEYS.Get("acad_stream_title_inf",{
                      "v1":monsterName,
-                     "v2":ACADEMY._upgrades[_monsterID].level
+                     "v2":GLOBAL.player.m_upgrades[_monsterID].level
                   }),KEYS.Get("acad_stream_description"),bragImage,0]);
                }
                else
                {
                   GLOBAL.CallJS("sendFeed",["academy-training",KEYS.Get("acad_stream_title",{
                      "v1":monsterName,
-                     "v2":ACADEMY._upgrades[_monsterID].level
+                     "v2":GLOBAL.player.m_upgrades[_monsterID].level
                   }),KEYS.Get("acad_stream_description"),bragImage,0]);
                }
                POPUPS.Next();

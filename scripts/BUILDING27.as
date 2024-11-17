@@ -26,7 +26,7 @@ package
          _gridCost = [[new Rectangle(0,0,140,140),200]];
          _exists = true;
          SetProps();
-         if(GLOBAL._mode != "wmattack" && GLOBAL._mode != "wmview")
+         if(GLOBAL.mode != "wmattack" && GLOBAL.mode != "wmview")
          {
             Render();
          }
@@ -84,11 +84,11 @@ package
       
       public function StartAttack(param1:MouseEvent = null) : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(!this._spewed)
             {
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   SOUNDS.PlayMusic("musicipanic");
                }
@@ -115,7 +115,7 @@ package
       override public function Click(param1:MouseEvent = null) : void
       {
          var _loc2_:MovieClip = null;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(INFERNO_EMERGENCE_EVENT.isAttackActive)
             {

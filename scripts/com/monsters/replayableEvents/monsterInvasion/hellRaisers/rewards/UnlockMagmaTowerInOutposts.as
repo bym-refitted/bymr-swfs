@@ -32,7 +32,7 @@ package com.monsters.replayableEvents.monsterInvasion.hellRaisers.rewards
       
       override public function canBeApplied() : Boolean
       {
-         return GLOBAL._mode == "build" && BASE.isOutpost;
+         return GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isOutpost;
       }
    }
 }

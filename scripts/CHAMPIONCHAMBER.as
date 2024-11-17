@@ -122,9 +122,10 @@ package
       {
          var _loc1_:int = 0;
          var _loc2_:int = 0;
+         var _loc3_:int = 0;
          if(CREATURES._guardian)
          {
-            if(CREATURES._guardian._health.Get() < CREATURES._guardian._maxHealth)
+            if(CREATURES._guardian.health < CREATURES._guardian.maxHealth)
             {
                GLOBAL.Message(KEYS.Get("bdg_chamber_injured"));
                return;
@@ -141,23 +142,25 @@ package
                if(BASE._guardianData[_loc2_].t == CREATURES._guardian._type)
                {
                   _loc1_ = _loc2_;
+                  break;
                }
                _loc2_++;
             }
             LOGGER.Stat([69,BASE._guardianData[_loc1_].t,BASE._guardianData[_loc1_].l.Get()]);
-            CREATURES._guardian.Export();
-            CREATURES._guardian.ModeFreeze();
             BASE._guardianData[_loc1_].ft -= GLOBAL.Timestamp();
+            CREATURES._guardian.export();
+            CREATURES._guardian.changeModeFreeze();
             this._frozen.push(BASE._guardianData[_loc1_]);
             BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
             BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
-               _loc1_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
-               if(_loc1_ != -1)
+               _loc3_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
+               if(_loc3_ != -1 && GLOBAL._playerGuardianData[_loc3_] != BASE._guardianData[_loc1_])
                {
-                  GLOBAL._playerGuardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
-                  GLOBAL._playerGuardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                  GLOBAL._playerGuardianData[_loc3_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                  GLOBAL._playerGuardianData[_loc3_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                  GLOBAL._playerGuardianData[_loc3_].ft -= GLOBAL.Timestamp();
                }
             }
             CREATURES._guardian = null;
@@ -174,10 +177,11 @@ package
          var target:Point = null;
          var newFrozen:Array = null;
          var j:int = 0;
+         var spawnClass:Class = null;
          var obj:Object = null;
          var mc:popup_monster = null;
          var type:int = param1;
-         if(_hp.Get() < _hpMax.Get())
+         if(health < maxHealth)
          {
             GLOBAL.Message(KEYS.Get("bdg_chamber_damaged"));
             return;
@@ -195,13 +199,6 @@ package
                p = new Point(x,y + 80);
                level = int(this._frozen[i].l.Get());
                target = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
-               CREATURES._guardian = new ChampionBase("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
-               CREATURES._guardian.Export();
-               if(!BYMConfig.instance.RENDERER_ON)
-               {
-                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
-               }
-               CREATURES._guardian.ModeCage();
                newFrozen = [];
                j = 0;
                while(j < this._frozen.length)
@@ -212,6 +209,8 @@ package
                   }
                   j++;
                }
+               spawnClass = CHAMPIONCAGE.getGuardianSpawnClass(type);
+               CREATURES._guardian = new spawnClass("cage",p,0,target,true,this,this._frozen[i].l.Get(),this._frozen[i].fd,this._frozen[i].ft + GLOBAL.Timestamp(),this._frozen[i].t,this._frozen[i].hp.Get(),this._frozen[i].fb.Get(),this._frozen[i].pl.Get());
                for each(obj in BASE._guardianData)
                {
                   if(obj.t == type)
@@ -230,8 +229,14 @@ package
                      break;
                   }
                }
+               CREATURES._guardian.export();
+               CREATURES._guardian.changeModeCage();
+               if(!BYMConfig.instance.RENDERER_ON)
+               {
+                  MAP._BUILDINGTOPS.addChild(CREATURES._guardian.graphic);
+               }
                this._frozen = newFrozen;
-               if(GLOBAL._mode == "build")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
                   StreamPost = function(param1:String, param2:String, param3:String):Function
                   {
@@ -263,102 +268,101 @@ package
       override public function Setup(param1:Object) : void
       {
          var _loc2_:Object = null;
-         var _loc3_:Vector.<Object> = null;
-         var _loc4_:Array = null;
-         var _loc5_:Dictionary = null;
+         var _loc3_:Array = null;
+         var _loc4_:Dictionary = null;
+         var _loc5_:Object = null;
          var _loc6_:Object = null;
-         var _loc7_:Object = null;
-         var _loc9_:int = 0;
+         var _loc8_:int = 0;
          super.Setup(param1);
          if(param1.fz)
          {
-            _loc4_ = JSON.decode(param1.fz) as Array;
+            _loc3_ = JSON.decode(param1.fz) as Array;
             this._frozen = [];
-            _loc5_ = new Dictionary();
-            _loc6_ = null;
-            _loc9_ = 0;
-            while(_loc9_ < _loc4_.length)
+            _loc4_ = new Dictionary();
+            _loc5_ = null;
+            _loc8_ = 0;
+            while(_loc8_ < _loc3_.length)
             {
-               _loc7_ = _loc4_[_loc9_];
+               _loc6_ = _loc3_[_loc8_];
                for each(_loc2_ in BASE._guardianData)
                {
-                  if(_loc2_.t == _loc7_.t)
+                  if(_loc2_.t == _loc6_.t)
                   {
-                     _loc6_ = _loc2_;
+                     _loc5_ = _loc2_;
                      break;
                   }
                }
-               if(_loc6_ == null)
+               if(_loc5_ == null)
                {
-                  _loc6_ = {};
-                  if(_loc7_.nm)
+                  _loc5_ = {};
+                  if(_loc6_.nm)
                   {
-                     _loc6_.nm = _loc7_.nm;
+                     _loc5_.nm = _loc6_.nm;
                   }
-                  _loc6_.t = _loc7_.t;
-                  if(_loc7_.ft)
+                  _loc5_.t = _loc6_.t;
+                  if(_loc6_.ft)
                   {
-                     _loc6_.ft = _loc7_.ft;
+                     _loc5_.ft = _loc6_.ft;
                   }
-                  if(_loc7_.fd)
+                  if(_loc6_.fd)
                   {
-                     _loc6_.fd = _loc7_.fd;
-                  }
-                  else
-                  {
-                     _loc6_.fd = 0;
-                  }
-                  if(_loc7_.l)
-                  {
-                     _loc6_.l = new SecNum(_loc7_.l);
+                     _loc5_.fd = _loc6_.fd;
                   }
                   else
                   {
-                     _loc6_.l = new SecNum(0);
+                     _loc5_.fd = 0;
                   }
-                  if(_loc7_.hp)
+                  if(_loc6_.l)
                   {
-                     _loc6_.hp = new SecNum(_loc7_.hp);
-                  }
-                  else
-                  {
-                     _loc6_.hp = new SecNum(0);
-                  }
-                  if(_loc7_.fb)
-                  {
-                     _loc6_.fb = new SecNum(_loc7_.fb);
+                     _loc5_.l = new SecNum(_loc6_.l);
                   }
                   else
                   {
-                     _loc6_.fb = new SecNum(0);
+                     _loc5_.l = new SecNum(0);
                   }
-                  if(_loc7_.pl)
+                  if(_loc6_.hp)
                   {
-                     _loc6_.pl = new SecNum(_loc7_.pl);
+                     _loc5_.hp = new SecNum(_loc6_.hp);
                   }
                   else
                   {
-                     _loc6_.pl = new SecNum(0);
+                     _loc5_.hp = new SecNum(0);
                   }
-                  _loc6_.status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
-                  _loc6_.log = ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
-                  BASE._guardianData.push(_loc6_);
-                  if(GLOBAL.getPlayerGuardianIndex(_loc6_.t) == -1)
+                  if(_loc6_.fb)
                   {
-                     GLOBAL._playerGuardianData.push(_loc6_);
+                     _loc5_.fb = new SecNum(_loc6_.fb);
+                  }
+                  else
+                  {
+                     _loc5_.fb = new SecNum(0);
+                  }
+                  if(_loc6_.pl)
+                  {
+                     _loc5_.pl = new SecNum(_loc6_.pl);
+                  }
+                  else
+                  {
+                     _loc5_.pl = new SecNum(0);
+                  }
+                  _loc5_.status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                  _loc5_.log = ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                  BASE._guardianData.push(_loc5_);
+                  if(GLOBAL.getPlayerGuardianIndex(_loc5_.t) == -1)
+                  {
+                     GLOBAL._playerGuardianData.push(_loc5_);
                   }
                }
-               _loc5_[_loc6_.t] = true;
-               if(_loc6_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN)
+               _loc4_[_loc5_.t] = true;
+               if(_loc5_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN)
                {
-                  this._frozen.push(_loc6_);
+                  this._frozen.push(_loc5_);
                }
-               _loc6_ = null;
-               _loc9_++;
+               _loc5_ = null;
+               _loc8_++;
             }
             for each(_loc2_ in BASE._guardianData)
             {
-               if(_loc2_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN && !_loc5_[_loc2_.t])
+               if(_loc2_.status == ChampionBase.k_CHAMPION_STATUS_FROZEN && !_loc4_[_loc2_.t])
                {
                   this._frozen.push(_loc2_);
                }
@@ -374,7 +378,6 @@ package
                }
             }
          }
-         _loc3_ = BASE._guardianData;
       }
       
       override public function Export() : Object

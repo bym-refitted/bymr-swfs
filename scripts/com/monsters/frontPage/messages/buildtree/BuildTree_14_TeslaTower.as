@@ -12,7 +12,7 @@ package com.monsters.frontPage.messages.buildtree
       
       override public function get areRequirementsMet() : Boolean
       {
-         return GLOBAL._bTownhall._lvl.Get() >= 4 && BASE.hasNumBuildings(BUILDING25.TYPE) <= 0;
+         return GLOBAL.townHall._lvl.Get() >= 4 && BASE.hasNumBuildings(BUILDING25.TYPE) <= 0;
       }
       
       override protected function onButtonClick() : void

@@ -1,5 +1,7 @@
 package
 {
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.creeps.CreepBase;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import flash.geom.Rectangle;
@@ -41,7 +43,7 @@ package
             _recycleDescription = "<b>" + KEYS.Get("bdg_housing_recycledesc") + "</b><br>" + _recycleCosts;
          }
          HOUSING.HousingSpace();
-         if(BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD)
+         if(BASE.isMainYardOrInfernoMainYard)
          {
             _blockRecycle = false;
          }
@@ -66,7 +68,7 @@ package
          var mc:MovieClip = null;
          super.Upgraded();
          HOUSING.HousingSpace();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -81,6 +83,11 @@ package
             mc.bPost.Highlight = true;
             POPUPS.Push(mc,null,null,null,"build.v2.png");
          }
+      }
+      
+      override public function Tick(param1:int) : void
+      {
+         super.Tick(param1);
       }
       
       override public function Update(param1:Boolean = false) : void
@@ -99,22 +106,30 @@ package
       override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
-         var _loc2_:int = 0;
-         while(_loc2_ < _creatures.length)
+         var _loc2_:Boolean = MapRoomManager.instance.isInMapRoom3;
+         var _loc4_:int = 0;
+         while(_loc4_ < _creatures.length)
          {
-            _creatures[_loc2_]._health.Set(0);
-            _loc2_++;
+            _creatures[_loc4_].setHealth(_loc2_ ? _creatures[_loc4_].health * 0.5 : 0);
+            _loc4_++;
          }
-         HOUSING.Cull();
-         HOUSING.RemoveHouse(this);
+         if(!MapRoomManager.instance.isInMapRoom3)
+         {
+            HOUSING.Cull();
+            HOUSING.RemoveHouse(this);
+         }
       }
       
       override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
-         if(_hp.Get() > 10 && _hp.Get() < _hpMax.Get() && _hp.Get() % 1000 == 0)
+         if(m_isCleared)
          {
-            _hp.Set(_hpMax.Get());
+            return;
+         }
+         if(health > 10 && health < maxHealth && health % 1000 == 0)
+         {
+            setHealth(maxHealth);
          }
          if(_countdownBuild.Get() == 0)
          {

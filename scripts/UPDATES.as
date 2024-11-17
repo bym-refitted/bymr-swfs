@@ -1,9 +1,11 @@
 package
 {
-   import com.cc.utils.SecNum;
    import com.monsters.configs.BYMConfig;
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.rewarding.Reward;
+   import com.monsters.rewarding.RewardHandler;
    import flash.display.MovieClip;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
@@ -105,6 +107,7 @@ package
       public static function Action(param1:Object) : Boolean
       {
          var building:BFOUNDATION = null;
+         var reward:Reward = null;
          var popupMC:MovieClip = null;
          var time:int = 0;
          var length:int = 0;
@@ -128,9 +131,9 @@ package
             var _loc2_:int = 0;
             if(CREATURES._guardian)
             {
-               CREATURES._guardian._health.Set(CREATURES._guardian._maxHealth);
-               CREATURES._guardian.Export();
-               CREATURES._guardian.ModeFreeze();
+               CREATURES._guardian.modifyHealth(CREATURES._guardian.maxHealth);
+               CREATURES._guardian.export();
+               CREATURES._guardian.changeModeFreeze();
                _loc1_ = 0;
                _loc2_ = 0;
                while(_loc2_ < BASE._guardianData.length)
@@ -145,11 +148,15 @@ package
                (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.push(BASE._guardianData[_loc1_]);
                BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
                BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
-               if(GLOBAL._mode == "build")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
                   _loc2_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
-                  GLOBAL._playerGuardianData[_loc2_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
-                  GLOBAL._playerGuardianData[_loc2_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                  if(_loc2_ != -1)
+                  {
+                     GLOBAL._playerGuardianData[_loc2_].status = ChampionBase.k_CHAMPION_STATUS_FROZEN;
+                     GLOBAL._playerGuardianData[_loc2_].log += "," + ChampionBase.k_CHAMPION_STATUS_FROZEN.toString();
+                     GLOBAL._playerGuardianData[_loc2_].ft -= GLOBAL.Timestamp();
+                  }
                }
                CREATURES._guardian = null;
             }
@@ -162,6 +169,7 @@ package
             var _loc6_:Array = null;
             var _loc7_:int = 0;
             var _loc8_:Object = null;
+            var _loc9_:Class = null;
             var _loc2_:int = 0;
             while(_loc2_ < (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.length)
             {
@@ -172,22 +180,33 @@ package
                   _loc5_ = GRID.FromISO(GLOBAL._bCage.x,GLOBAL._bCage.y + 20);
                   if(refundLevel > 0)
                   {
-                     CREATURES._guardian = new ChampionBase("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
                      for each(_loc8_ in BASE._guardianData)
                      {
                         if(_loc8_.t == (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t)
                         {
+                           _loc9_ = CHAMPIONCAGE.getGuardianSpawnClass(param1);
+                           CREATURES._guardian = new _loc9_("cage",_loc3_,0,_loc5_,true,GLOBAL._bChamber,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].l.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fd,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].ft + GLOBAL.Timestamp(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t,(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].hp.Get(),(GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].fb.Get());
                            _loc8_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
                            _loc8_.log += "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
                            break;
                         }
                      }
-                     CREATURES._guardian.Export();
+                     for each(_loc8_ in GLOBAL._playerGuardianData)
+                     {
+                        if(_loc8_.t == (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen[_loc2_].t)
+                        {
+                           _loc8_.ft += GLOBAL.Timestamp();
+                           _loc8_.status = ChampionBase.k_CHAMPION_STATUS_NORMAL;
+                           _loc8_.log += "," + ChampionBase.k_CHAMPION_STATUS_NORMAL.toString();
+                           break;
+                        }
+                     }
+                     CREATURES._guardian.export();
                      if(!BYMConfig.instance.RENDERER_ON)
                      {
-                        MAP._BUILDINGTOPS.addChild(CREATURES._guardian);
+                        MAP._BUILDINGTOPS.addChild(CREATURES._guardian.graphic);
                      }
-                     CREATURES._guardian.ModeCage();
+                     CREATURES._guardian.changeModeCage();
                   }
                   _loc6_ = [];
                   _loc7_ = 0;
@@ -209,13 +228,13 @@ package
          {
             return false;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             return false;
          }
-         if(_actions[update.data[1]])
+         if(update.data[1] == RewardHandler.k_UPDATE_ADD || update.data[1] == RewardHandler.k_UPDATE_REMOVE || update.data[1] === RewardHandler.k_UPDATE_VALUE)
          {
-            return _actions[update.data[1]]();
+            RewardHandler.instance.processUpdate(update);
          }
          if(update.data[1] == "BU")
          {
@@ -252,23 +271,19 @@ package
          if(update.data[1] == "BMU")
          {
             length = int(update.data.length);
-            if(HOUSING._creatures)
+            if(GLOBAL.player.monsterList.length)
             {
                i = 2;
                while(i < length)
                {
                   monsterdata = update.data[i];
-                  if(Boolean(HOUSING._creatures[monsterdata.creatureID]) && HOUSING._creatures[monsterdata.creatureID].Get() > 0)
+                  if(Boolean(GLOBAL.player.monsterListByID(monsterdata.creatureID)) && GLOBAL.player.monsterListByID(monsterdata.creatureID).numCreeps > 0)
                   {
-                     HOUSING._creatures[monsterdata.creatureID].Add(-monsterdata.count);
-                     if(HOUSING._creatures[monsterdata.creatureID].Get() <= 0)
-                     {
-                        HOUSING._creatures[monsterdata.creatureID].Set(0);
-                     }
+                     GLOBAL.player.monsterListByID(monsterdata.creatureID).add(-monsterdata.count,null,true);
                   }
                   else if(monsterdata.count < 0)
                   {
-                     HOUSING._creatures[monsterdata.creatureID] = new SecNum(-monsterdata.count);
+                     GLOBAL.player.monsterListByID(monsterdata.creatureID).setNum(-monsterdata.count);
                   }
                   i++;
                }
@@ -285,14 +300,14 @@ package
             {
                time = building.HelpB();
             }
-            if(time > 0 && GLOBAL._mode == "build")
+            if(time > 0 && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
-               _catchupList.push(["build",update.fbid,update.name,GLOBAL._buildingProps[building._type - 1].name,time]);
+               _catchupList.push([GLOBAL.e_BASE_MODE.BUILD,update.fbid,update.name,GLOBAL._buildingProps[building._type - 1].name,time]);
             }
          }
          if(update.data[1] == "BP")
          {
-            if(GLOBAL._mode != "build")
+            if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
             {
                building = BASE.addBuildingC(update.data[2]);
                building.Setup(update.data[3]);
@@ -351,9 +366,9 @@ package
          }
          if(update.data[1] == "CMR")
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
-               LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",Boolean(BASE._yardType));
+               LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",true);
                return false;
             }
             refundType = int(update.data[2]);
@@ -365,13 +380,13 @@ package
             refundName = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"name");
             refundHealth = CHAMPIONCAGE.GetGuardianProperty(refundID,refundLevel,"health");
             refundFeedtime = GLOBAL.Timestamp();
-            if(CREATURES._guardian && CREATURES._guardian.parent == MAP._BUILDINGTOPS && !BYMConfig.instance.RENDERER_ON)
+            if(CREATURES._guardian && CREATURES._guardian.graphic.parent == MAP._BUILDINGTOPS && !BYMConfig.instance.RENDERER_ON)
             {
-               MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
+               MAP._BUILDINGTOPS.removeChild(CREATURES._guardian.graphic);
             }
             if(Boolean(CREATURES._guardian) && CREATURES._guardian._creatureID == refundID)
             {
-               CREATURES._guardian.Clear();
+               CREATURES._guardian.clear();
             }
             else if(GLOBAL._bChamber)
             {
@@ -386,8 +401,8 @@ package
             }
             if(CREATURES._guardian)
             {
-               CREATURES._guardian._health.Set(-10);
-               CREATURES._guardian.Tick(1);
+               CREATURES._guardian.modifyHealth(-Number.MIN_VALUE);
+               CREATURES._guardian.tick(1);
                CREATURES.removeGuardianType(CREATURES._guardian._type);
             }
             if(GLOBAL._bCage)
@@ -417,7 +432,7 @@ package
          {
             return;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             return;
          }
@@ -527,7 +542,7 @@ package
       
       public static function Create(param1:Array, param2:int = 0) : void
       {
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             return;
          }
@@ -543,6 +558,7 @@ package
       {
          var url:String;
          var loadVars:Array;
+         var isHelping:Boolean = false;
          var handleLoadSuccessful:Function = null;
          var handleLoadError:Function = null;
          var update:Array = param1;
@@ -568,7 +584,7 @@ package
          {
             return;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             return;
          }
@@ -576,7 +592,7 @@ package
          {
             return;
          }
-         if(GLOBAL._mode == "build" && GLOBAL._friendCount == 0)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && GLOBAL._friendCount == 0)
          {
             return;
          }
@@ -586,18 +602,23 @@ package
          {
             url = GLOBAL._baseURL2;
          }
-         loadVars = [["baseid",id],["data",JSON.encode([update])],["lastupdate",lastupdate]];
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.HELP || GLOBAL.mode == GLOBAL.e_BASE_MODE.IHELP)
+         {
+            isHelping = true;
+         }
+         loadVars = [["baseid",id],["data",JSON.encode([update])],["lastupdate",lastupdate],["help",isHelping]];
          new URLLoaderApi().load(url + "saveupdate",loadVars,handleLoadSuccessful,handleLoadError);
       }
       
       public static function GetBuilding(param1:int) : BFOUNDATION
       {
-         var _loc2_:BFOUNDATION = null;
-         for each(_loc2_ in BASE._buildingsAll)
+         var _loc3_:BFOUNDATION = null;
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._id == param1)
+            if(_loc3_._id == param1)
             {
-               return _loc2_;
+               return _loc3_;
             }
          }
          return null;

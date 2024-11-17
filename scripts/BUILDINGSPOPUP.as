@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
@@ -38,7 +39,7 @@ package
          bPrevious.buttonMode = true;
          bNext.addEventListener(MouseEvent.CLICK,this.Next);
          bNext.buttonMode = true;
-         if(!GLOBAL._bTownhall)
+         if(!GLOBAL.townHall)
          {
             this.SwitchB(2,1,0);
          }
@@ -46,7 +47,7 @@ package
          {
             this.SwitchB(BUILDINGS._menuA,BUILDINGS._menuB,BUILDINGS._page);
          }
-         if(BASE._yardType == BASE.MAIN_YARD)
+         if(BASE.isMainYard)
          {
             if(!GLOBAL._flags.radio)
             {
@@ -105,11 +106,12 @@ package
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
+         var _loc8_:int = 0;
          var _loc10_:Object = null;
          var _loc11_:BUILDINGBUTTON = null;
-         BUILDINGS._menuA = param1;
-         BUILDINGS._menuB = param2;
-         BUILDINGS._page = param3;
+         BUILDINGS._menuA = int(param1);
+         BUILDINGS._menuB = int(param2);
+         BUILDINGS._page = int(param3);
          var _loc4_:int = 1;
          while(_loc4_ < 5)
          {
@@ -132,10 +134,7 @@ package
          this._thumbnailsMC = this.addChild(new MovieClip()) as MovieClip;
          this._thumbnailsMC.x = 60;
          this._thumbnailsMC.y = 140;
-         _loc5_ = 0;
-         _loc6_ = 0;
          var _loc7_:Array = GLOBAL._buildingProps.concat();
-         var _loc8_:int = 0;
          if(TUTORIAL.hasFinished)
          {
             this.SortBuildings(_loc7_);
@@ -148,14 +147,14 @@ package
          while(param2 < _loc7_.length)
          {
             _loc10_ = _loc7_[param2];
-            if(_loc10_.group == param1 && (_loc10_.subgroup == null || _loc10_.subgroup == BUILDINGS._menuB) && (!_loc10_.block || InventoryManager.buildingStorageCount(_loc10_.id)))
+            if(int(_loc10_.group) == param1 && (_loc10_.subgroup == null || int(_loc10_.subgroup) == BUILDINGS._menuB) && (!_loc10_.block || InventoryManager.buildingStorageCount(int(_loc10_.id))))
             {
                if(_loc8_ >= 10 * BUILDINGS._page && _loc8_ < 10 + 10 * BUILDINGS._page)
                {
                   _loc11_ = this._thumbnailsMC.addChild(new BUILDINGBUTTON()) as BUILDINGBUTTON;
                   _loc11_.x = _loc5_ * 130;
                   _loc11_.y = _loc6_ * 170;
-                  _loc11_.Setup(_loc10_.id);
+                  _loc11_.Setup(int(_loc10_.id));
                   _loc5_++;
                   if(_loc5_ == 5)
                   {
@@ -198,64 +197,63 @@ package
       
       public function SortBuildings(param1:Array) : void
       {
-         var _loc2_:Object = null;
-         var _loc4_:Object = null;
-         var _loc5_:int = 0;
+         var _loc3_:Object = null;
+         var _loc5_:Object = null;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:String = null;
-         var _loc9_:int = 0;
-         var _loc10_:BFOUNDATION = null;
+         var _loc8_:int = 0;
+         var _loc9_:BFOUNDATION = null;
+         var _loc10_:int = 0;
          var _loc11_:int = 0;
          var _loc12_:String = null;
-         var _loc3_:int = 0;
-         while(_loc3_ < param1.length)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         var _loc4_:int = 0;
+         while(_loc4_ < param1.length)
          {
-            _loc4_ = param1[_loc3_];
-            if(_loc4_.group == BUILDINGS._menuA && (_loc4_.subgroup == null || _loc4_.subgroup == BUILDINGS._menuB) && (!_loc4_.block || InventoryManager.buildingStorageCount(_loc4_.id)))
+            _loc5_ = param1[_loc4_];
+            if(_loc5_.group == BUILDINGS._menuA && (_loc5_.subgroup == null || _loc5_.subgroup == BUILDINGS._menuB) && (!_loc5_.block || InventoryManager.buildingStorageCount(_loc5_.id)))
             {
-               _loc2_ = GLOBAL._buildingProps[_loc4_.id - 1];
-               if(_loc2_.type != "decoration")
+               _loc3_ = GLOBAL._buildingProps[_loc5_.id - 1];
+               if(_loc3_.type != "decoration")
                {
-                  _loc5_ = GLOBAL.GetBuildingTownHallLevel(_loc2_);
-                  _loc6_ = _loc5_ < _loc2_.quantity.length ? int(_loc2_.quantity[_loc5_]) : int(_loc2_.quantity[_loc2_.quantity.length - 1]);
-                  _loc7_ = 0;
-                  _loc2_.buildStatus = 1;
-                  for(_loc8_ in BASE._buildingsAll)
+                  _loc6_ = GLOBAL.GetBuildingTownHallLevel(_loc3_);
+                  _loc7_ = _loc6_ < _loc3_.quantity.length ? int(_loc3_.quantity[_loc6_]) : int(_loc3_.quantity[_loc3_.quantity.length - 1]);
+                  _loc8_ = 0;
+                  _loc3_.buildStatus = 1;
+                  for each(_loc9_ in _loc2_)
                   {
-                     _loc10_ = BASE._buildingsAll[_loc8_];
-                     if(_loc10_._type == _loc4_.id)
+                     if(_loc9_._type == _loc5_.id)
                      {
-                        _loc7_++;
+                        _loc8_++;
                      }
                   }
-                  if(_loc7_ <= 0 && Boolean(_loc2_.upgradeImgData))
+                  if(_loc8_ <= 0 && Boolean(_loc3_.upgradeImgData))
                   {
                      _loc11_ = int.MAX_VALUE;
-                     for(_loc12_ in _loc2_.upgradeImgData)
+                     for(_loc12_ in _loc3_.upgradeImgData)
                      {
                         if(!isNaN(Number(_loc12_)))
                         {
                            _loc11_ = Math.min(_loc11_,Number(_loc12_));
                         }
                      }
-                     if(_loc11_ != int.MAX_VALUE && _loc2_.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(_loc2_.costs[0]) && !_loc2_.rewarded)
+                     if(_loc11_ != int.MAX_VALUE && _loc3_.upgradeImgData[_loc11_].silhouette_img && !BASE.HasRequirements(_loc3_.costs[0]) && !_loc3_.rewarded)
                      {
-                        _loc2_.buildStatus = 2;
+                        _loc3_.buildStatus = 2;
                      }
                   }
-                  else if(_loc7_ >= _loc6_)
+                  else if(_loc8_ >= _loc7_)
                   {
-                     _loc2_.buildStatus = 3;
+                     _loc3_.buildStatus = 3;
                   }
-                  _loc9_ = int(Math.max.apply(Math,_loc2_.quantity));
-                  if(_loc7_ >= _loc9_ && _loc9_ > 0)
+                  _loc10_ = int(Math.max.apply(Math,_loc3_.quantity));
+                  if(_loc8_ >= _loc10_ && _loc10_ > 0)
                   {
-                     _loc2_.buildStatus = 4;
+                     _loc3_.buildStatus = 4;
                   }
                }
             }
-            _loc3_++;
+            _loc4_++;
          }
          param1.sortOn(["buildStatus","order"],Array.NUMERIC);
       }

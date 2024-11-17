@@ -3,8 +3,10 @@ package com.monsters.maproom_advanced
    import com.cc.utils.SecNum;
    import com.monsters.alliances.*;
    import com.monsters.display.ImageCache;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.mailbox.Message;
    import com.monsters.mailbox.model.Contact;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -16,7 +18,7 @@ package com.monsters.maproom_advanced
    import flash.geom.Point;
    import flash.net.URLRequest;
    
-   public class PopupInfoEnemy extends PopupInfoEnemy_CLIP
+   internal class PopupInfoEnemy extends PopupInfoEnemy_CLIP
    {
       private static var _takeoverCost:SecNum;
       
@@ -166,7 +168,7 @@ package com.monsters.maproom_advanced
          this.bAlliance.visible = true;
          for each(_loc5_ in GLOBAL._attackerCellsInRange)
          {
-            _loc10_ = _loc5_.cell;
+            _loc10_ = _loc5_.cell as MapRoomCell;
             _loc11_ = _loc5_.range;
             if(_loc10_ && _loc10_._mine && _loc10_._flingerRange.Get() + _loc4_ >= _loc11_)
             {
@@ -180,8 +182,8 @@ package com.monsters.maproom_advanced
          if(this._cell._destroyed && !this._cell._protected && (this._cell._locked == 0 || this._cell._locked == LOGIN._playerID) && MapRoom._flingerInRange)
          {
             this.bAttack.SetupKey("btn_takeover");
-            this.bAttack.Enabled = true;
-            this.bAttack.Highlight = true;
+            this.bAttack.Enabled = !this.doesHaveMaxOutposts();
+            this.bAttack.Highlight = !this.doesHaveMaxOutposts();
          }
          else
          {
@@ -527,7 +529,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
+      private function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
       {
          var k:int = 0;
          var allyinfo:AllyInfo = null;
@@ -585,6 +587,11 @@ package com.monsters.maproom_advanced
          }
       }
       
+      private function doesHaveMaxOutposts() : Boolean
+      {
+         return Boolean(GLOBAL._mapOutpost) && GLOBAL._mapOutpost.length >= GLOBAL.k_MAX_NUMBER_OF_OUTPOSTS;
+      }
+      
       public function Attack(param1:MouseEvent) : void
       {
          var _loc2_:Number = NaN;
@@ -601,6 +608,11 @@ package com.monsters.maproom_advanced
             if(GLOBAL._mapOutpost)
             {
                _loc3_ = int(GLOBAL._mapOutpost.length);
+               if(this.doesHaveMaxOutposts())
+               {
+                  GLOBAL.Message(KEYS.Get("mr2_opcap"));
+                  return;
+               }
                if(_loc3_ > 0 && _loc3_ <= 4)
                {
                   _loc2_ = _takeoverCoeff1.Get() * _loc3_;
@@ -665,7 +677,7 @@ package com.monsters.maproom_advanced
          MapRoom._mc.ShowAttack(this._cell);
       }
       
-      public function TakeOverConfirm() : void
+      private function TakeOverConfirm() : void
       {
          var empire:Object = null;
          var takeoverSuccessful:Function = null;
@@ -684,13 +696,13 @@ package com.monsters.maproom_advanced
                GLOBAL._resources.r3max += GLOBAL._outpostCapacity.Get();
                GLOBAL._resources.r4max += GLOBAL._outpostCapacity.Get();
                MapRoom.ClearCells();
-               MapRoom.Hide();
+               MapRoomManager.instance.Hide();
                GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
                GLOBAL._currentCell = _cell;
-               GLOBAL._currentCell._base = 3;
-               BASE._yardType = BASE.OUTPOST;
+               (GLOBAL._currentCell as MapRoomCell).baseType = 3;
+               BASE.yardType = EnumYardType.OUTPOST;
                GLOBAL.BlockerRemove();
-               BASE.LoadBase(null,0,_cell._baseID,"build",false,BASE.OUTPOST);
+               BASE.LoadBase(null,0,_cell._baseID,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
             else
@@ -742,7 +754,7 @@ package com.monsters.maproom_advanced
       {
          var _loc1_:int = 0;
          MapRoom._mc.HideInfoEnemy();
-         MapRoom.Hide();
+         MapRoomManager.instance.Hide();
          if(MapRoom._mc)
          {
             GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10);
@@ -750,18 +762,18 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE.LoadBase(null,0,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,this._cell._baseID,GLOBAL.e_BASE_MODE.WMVIEW,false,EnumYardType.MAIN_YARD);
          }
          else
          {
-            _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+            _loc1_ = this._cell._base == 3 ? int(EnumYardType.OUTPOST) : int(EnumYardType.MAIN_YARD);
             if(this._cell._friend)
             {
-               BASE.LoadBase(null,0,this._cell._baseID,"help",false,_loc1_);
+               BASE.LoadBase(null,0,this._cell._baseID,GLOBAL.e_BASE_MODE.HELP,false,_loc1_);
             }
             else
             {
-               BASE.LoadBase(null,0,this._cell._baseID,"view",false,_loc1_);
+               BASE.LoadBase(null,0,this._cell._baseID,GLOBAL.e_BASE_MODE.VIEW,false,_loc1_);
             }
          }
       }
@@ -828,7 +840,7 @@ package com.monsters.maproom_advanced
             GLOBAL.Message(KEYS.Get("newmap_wmtruce",{"v1":this._cell._name}));
             return;
          }
-         ALLIANCES.AllianceInvite(this._cell);
+         ALLIANCES.AllianceInvite(this._cell._userID);
       }
       
       public function ButtonInfo(param1:MouseEvent) : void
@@ -884,7 +896,7 @@ package com.monsters.maproom_advanced
          this.PopupShow(_loc3_,_loc4_,_loc2_);
       }
       
-      public function PopupShow(param1:int, param2:int, param3:String) : void
+      private function PopupShow(param1:int, param2:int, param3:String) : void
       {
          this.PopupHide();
          _popupmc = new bubblepopupRight();
@@ -895,14 +907,6 @@ package com.monsters.maproom_advanced
             _popupmc.mcArrow.x = _popupmc.mcBG.x + _popupmc.mcBG.width - 5;
          }
          _popupdo = this.parent.addChild(_popupmc);
-      }
-      
-      public function PopupUpdate(param1:String) : void
-      {
-         if(_popupmc)
-         {
-            _popupmc.Update(param1);
-         }
       }
       
       public function PopupHide() : void
@@ -917,7 +921,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Update() : void
+      private function Update() : void
       {
          var _loc1_:String = "";
          _loc1_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flingerRange.Get() + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + JSON.encode(this._cell._resources) + "<br>_ticks:" + JSON.encode(this._cell._ticks) + "<br>_monsters:" + JSON.encode(this._cell._monsters);
@@ -930,7 +934,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Center() : void
+      private function Center() : void
       {
          POPUPSETTINGS.AlignToCenter(this);
       }

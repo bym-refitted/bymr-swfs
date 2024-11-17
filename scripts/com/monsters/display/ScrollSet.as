@@ -108,6 +108,10 @@ package com.monsters.display
             this.ResizeScrollBar();
          }
          this._ContainerHeight = this._Container.height;
+         if(mcScroller.height + mcScroller.y > this._Mask.height)
+         {
+            mcScroller.y = this._Mask.height - mcScroller.height;
+         }
          if(this.isHiddenWhileUnnecessary)
          {
             if(this._ContainerHeight <= this._Mask.height)

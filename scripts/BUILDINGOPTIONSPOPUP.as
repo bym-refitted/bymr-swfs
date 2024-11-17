@@ -4,6 +4,7 @@ package
    import com.monsters.display.BuildingAssetContainer;
    import com.monsters.display.ImageCache;
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -35,6 +36,7 @@ package
          if(param1 == "build")
          {
             this._building = new BFOUNDATION();
+            InstanceManager.removeInstance(this._building);
             this._building._type = param2;
             if(!STORE._storeItems["BUILDING" + this._building._type])
             {
@@ -73,22 +75,23 @@ package
       
       private function Switch(param1:String) : void
       {
-         var _loc5_:Array = null;
-         var _loc6_:int = 0;
-         var _loc7_:String = null;
+         var _loc6_:Array = null;
+         var _loc7_:int = 0;
          var _loc8_:String = null;
-         var _loc9_:BFOUNDATION = null;
-         var _loc11_:int = 0;
+         var _loc9_:String = null;
+         var _loc10_:BFOUNDATION = null;
          var _loc12_:int = 0;
          var _loc13_:int = 0;
-         var _loc14_:MovieClip = null;
-         var _loc15_:Boolean = false;
-         var _loc16_:Object = null;
-         var _loc17_:Array = null;
+         var _loc14_:int = 0;
+         var _loc15_:MovieClip = null;
+         var _loc16_:Boolean = false;
+         var _loc17_:Object = null;
+         var _loc18_:Array = null;
          var _loc2_:* = "";
          var _loc3_:Object = {};
          var _loc4_:* = "";
          SOUNDS.Play("click1");
+         var _loc5_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
          if(param1 == "build")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceBuild);
@@ -101,70 +104,70 @@ package
             {
                mcResources.bAction.SetupKey("btn_build");
             }
-            for each(_loc5_ in GLOBAL._buildingProps[this._building._type - 1].costs[0].re)
+            for each(_loc6_ in GLOBAL._buildingProps[this._building._type - 1].costs[0].re)
             {
-               _loc6_ = 0;
-               _loc7_ = "#CC0000";
-               if(_loc5_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
+               _loc7_ = 0;
+               _loc8_ = "#CC0000";
+               if(_loc6_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                {
-                  _loc8_ = "#bi_townhall#";
-                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc5_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
+                  _loc9_ = "#bi_townhall#";
+                  if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
                   {
-                     _loc6_ = 1;
+                     _loc7_ = 1;
                   }
                }
                else
                {
-                  _loc8_ = GLOBAL._buildingProps[_loc5_[0] - 1].name;
-                  for each(_loc9_ in BASE._buildingsAll)
+                  _loc9_ = GLOBAL._buildingProps[_loc6_[0] - 1].name;
+                  for each(_loc10_ in _loc5_)
                   {
-                     if(_loc9_._type == _loc5_[0] && _loc9_._lvl.Get() >= _loc5_[2])
+                     if(_loc10_._type == _loc6_[0] && _loc10_._lvl.Get() >= _loc6_[2])
                      {
-                        _loc6_++;
+                        _loc7_++;
                      }
                   }
                }
-               if(_loc6_ >= _loc5_[1])
+               if(_loc7_ >= _loc6_[1])
                {
-                  _loc7_ = "#333333";
+                  _loc8_ = "#333333";
                }
-               _loc4_ += "<font color=\"" + _loc7_ + "\">";
-               if(_loc5_[1] == 1)
+               _loc4_ += "<font color=\"" + _loc8_ + "\">";
+               if(_loc6_[1] == 1)
                {
-                  if(_loc5_[2] == 1)
+                  if(_loc6_[2] == 1)
                   {
-                     _loc4_ += "• " + KEYS.Get(_loc8_);
+                     _loc4_ += "• " + KEYS.Get(_loc9_);
                   }
                   else
                   {
                      _loc4_ += "• " + KEYS.Get("bdg_buildingrequirement",{
-                        "v1":_loc5_[2],
-                        "v2":KEYS.Get(_loc8_)
+                        "v1":_loc6_[2],
+                        "v2":KEYS.Get(_loc9_)
                      });
                   }
                }
-               else if(_loc5_[2] == 1)
+               else if(_loc6_[2] == 1)
                {
-                  _loc4_ += "• " + KEYS.Get(_loc8_) + " x" + _loc5_[1];
+                  _loc4_ += "• " + KEYS.Get(_loc9_) + " x" + _loc6_[1];
                }
                else
                {
                   _loc4_ += "• " + KEYS.Get("bdg_buildingsrequirement",{
-                     "v1":_loc5_[2],
-                     "v2":KEYS.Get(_loc8_),
-                     "v3":_loc5_[1]
+                     "v1":_loc6_[2],
+                     "v2":KEYS.Get(_loc9_),
+                     "v3":_loc6_[1]
                   });
                }
                _loc4_ += "</font><br>";
             }
             if(Boolean(GLOBAL._buildingProps[this._building._type - 1].names) && GLOBAL._buildingProps[this._building._type - 1].names.length > 1)
             {
-               _loc11_ = this._building._lvl.Get();
-               if(_loc11_ < 1)
+               _loc12_ = this._building._lvl.Get();
+               if(_loc12_ < 1)
                {
-                  _loc11_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
+                  _loc12_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
                }
-               _loc2_ = "<b>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].names[_loc11_ - 1]) + "</b><br>";
+               _loc2_ = "<b>" + KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].names[_loc12_ - 1]) + "</b><br>";
             }
             else
             {
@@ -172,12 +175,12 @@ package
             }
             if(Boolean(GLOBAL._buildingProps[this._building._type - 1].descriptions) && GLOBAL._buildingProps[this._building._type - 1].descriptions.length > 1)
             {
-               _loc11_ = this._building._lvl.Get();
-               if(_loc11_ < 1)
+               _loc12_ = this._building._lvl.Get();
+               if(_loc12_ < 1)
                {
-                  _loc11_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
+                  _loc12_ = int(BASE._buildingsStored["bl" + this._building._type].Get());
                }
-               _loc2_ += KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].descriptions[_loc11_ - 1]);
+               _loc2_ += KEYS.Get(GLOBAL._buildingProps[this._building._type - 1].descriptions[_loc12_ - 1]);
             }
             else
             {
@@ -208,58 +211,58 @@ package
             {
                if(this._building._type != 14)
                {
-                  for each(_loc5_ in this._building._buildingProps.costs[this._building._lvl.Get()].re)
+                  for each(_loc6_ in this._building._buildingProps.costs[this._building._lvl.Get()].re)
                   {
-                     _loc6_ = 0;
-                     _loc7_ = "#CC0000";
-                     if(_loc5_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
+                     _loc7_ = 0;
+                     _loc8_ = "#CC0000";
+                     if(_loc6_[0] == INFERNOQUAKETOWER.UNDERHALL_ID)
                      {
-                        _loc8_ = "#bi_townhall#";
-                        if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc5_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
+                        _loc9_ = "#bi_townhall#";
+                        if(GLOBAL.StatGet(BUILDING14.UNDERHALL_LEVEL) >= _loc6_[2] || Boolean(GLOBAL._buildingProps[this._building._type - 1].rewarded))
                         {
-                           _loc6_ = 1;
+                           _loc7_ = 1;
                         }
                      }
                      else
                      {
-                        _loc8_ = GLOBAL._buildingProps[_loc5_[0] - 1].name;
-                        for each(_loc9_ in BASE._buildingsAll)
+                        _loc9_ = GLOBAL._buildingProps[_loc6_[0] - 1].name;
+                        for each(_loc10_ in _loc5_)
                         {
-                           if(_loc9_._type == _loc5_[0] && _loc9_._lvl.Get() >= _loc5_[2])
+                           if(_loc10_._type == _loc6_[0] && _loc10_._lvl.Get() >= _loc6_[2])
                            {
-                              _loc6_++;
+                              _loc7_++;
                            }
                         }
                      }
-                     if(_loc6_ >= _loc5_[1])
+                     if(_loc7_ >= _loc6_[1])
                      {
-                        _loc7_ = "#333333";
+                        _loc8_ = "#333333";
                      }
-                     _loc4_ += "<font color=\"" + _loc7_ + "\">";
-                     if(_loc5_[1] == 1)
+                     _loc4_ += "<font color=\"" + _loc8_ + "\">";
+                     if(_loc6_[1] == 1)
                      {
-                        if(_loc5_[2] == 1)
+                        if(_loc6_[2] == 1)
                         {
-                           _loc4_ += "• " + KEYS.Get(_loc8_);
+                           _loc4_ += "• " + KEYS.Get(_loc9_);
                         }
                         else
                         {
                            _loc4_ += "• " + KEYS.Get("bdg_buildingrequirement",{
-                              "v1":_loc5_[2],
-                              "v2":KEYS.Get(_loc8_)
+                              "v1":_loc6_[2],
+                              "v2":KEYS.Get(_loc9_)
                            });
                         }
                      }
-                     else if(_loc5_[2] == 1)
+                     else if(_loc6_[2] == 1)
                      {
-                        _loc4_ += "• " + KEYS.Get(_loc8_) + " x" + _loc5_[1];
+                        _loc4_ += "• " + KEYS.Get(_loc9_) + " x" + _loc6_[1];
                      }
                      else
                      {
                         _loc4_ += "• " + KEYS.Get("bdg_buildingsrequirement",{
-                           "v1":_loc5_[2],
-                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc5_[0] - 1].name),
-                           "v3":_loc5_[1]
+                           "v1":_loc6_[2],
+                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name),
+                           "v3":_loc6_[1]
                         });
                      }
                      _loc4_ += "</font><br>";
@@ -290,46 +293,46 @@ package
             mcResources.bAction.Setup(KEYS.Get("buildoptions_resources"));
             if(Boolean(this._building._buildingProps.can_fortify) && this._building._fortification.Get() < this._building._buildingProps.fortify_costs.length)
             {
-               for each(_loc5_ in this._building._buildingProps.fortify_costs[this._building._fortification.Get()].re)
+               for each(_loc6_ in this._building._buildingProps.fortify_costs[this._building._fortification.Get()].re)
                {
-                  _loc6_ = 0;
-                  _loc7_ = "#CC0000";
-                  for each(_loc9_ in BASE._buildingsAll)
+                  _loc7_ = 0;
+                  _loc8_ = "#CC0000";
+                  for each(_loc10_ in _loc5_)
                   {
-                     if(_loc9_._type == _loc5_[0] && _loc9_._lvl.Get() >= _loc5_[2])
+                     if(_loc10_._type == _loc6_[0] && _loc10_._lvl.Get() >= _loc6_[2])
                      {
-                        _loc6_++;
+                        _loc7_++;
                      }
                   }
-                  if(_loc6_ >= _loc5_[1])
+                  if(_loc7_ >= _loc6_[1])
                   {
-                     _loc7_ = "#333333";
+                     _loc8_ = "#333333";
                   }
-                  _loc4_ += "<font color=\"" + _loc7_ + "\">";
-                  if(_loc5_[1] == 1)
+                  _loc4_ += "<font color=\"" + _loc8_ + "\">";
+                  if(_loc6_[1] == 1)
                   {
-                     if(_loc5_[2] == 1)
+                     if(_loc6_[2] == 1)
                      {
-                        _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc5_[0] - 1].name);
+                        _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name);
                      }
                      else
                      {
                         _loc4_ += "• " + KEYS.Get("bdg_buildingrequirement",{
-                           "v1":_loc5_[2],
-                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc5_[0] - 1].name)
+                           "v1":_loc6_[2],
+                           "v2":KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name)
                         });
                      }
                   }
-                  else if(_loc5_[2] == 1)
+                  else if(_loc6_[2] == 1)
                   {
-                     _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc5_[0] - 1].name) + " x" + _loc5_[1];
+                     _loc4_ += "• " + KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name) + " x" + _loc6_[1];
                   }
                   else
                   {
                      _loc4_ += "• " + KEYS.Get("bdg_buildingsrequirement",{
-                        "v1":_loc5_[2],
-                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc5_[0] - 1].name),
-                        "v3":_loc5_[1]
+                        "v1":_loc6_[2],
+                        "v2":KEYS.Get(GLOBAL._buildingProps[_loc6_[0] - 1].name),
+                        "v3":_loc6_[1]
                      });
                   }
                   _loc4_ += "</font><br>";
@@ -395,43 +398,43 @@ package
             this.toggleCheckbox();
          }
          tDescription.htmlText = _loc2_;
-         var _loc10_:int = 0;
+         var _loc11_:int = 0;
          if(_loc3_)
          {
-            _loc12_ = int(_loc3_.time);
-            _loc13_ = 1;
-            while(_loc13_ < 5)
+            _loc13_ = int(_loc3_.time);
+            _loc14_ = 1;
+            while(_loc14_ < 5)
             {
-               _loc14_ = this.mcResources["mcR" + _loc13_];
-               _loc15_ = BASE.isInfernoBuilding(this._building._type);
-               _loc16_ = _loc15_ ? BASE._iresources : BASE._resources;
-               _loc17_ = _loc15_ ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
-               _loc14_.gotoAndStop(_loc15_ || BASE.isInferno() ? _loc13_ + 6 : _loc13_);
-               _loc14_.tTitle.htmlText = "<b>" + KEYS.Get(_loc17_[_loc13_ - 1]) + "</b>";
-               _loc14_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc13_] > _loc16_["r" + _loc13_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc13_]) + "</font></b>";
-               if(Boolean(_loc3_["r" + _loc13_]) && _loc3_["r" + _loc13_] > 0)
+               _loc15_ = this.mcResources["mcR" + _loc14_];
+               _loc16_ = BASE.isInfernoBuilding(this._building._type);
+               _loc17_ = _loc16_ ? BASE._iresources : BASE._resources;
+               _loc18_ = _loc16_ ? GLOBAL.iresourceNames : GLOBAL._resourceNames;
+               _loc15_.gotoAndStop(_loc16_ || BASE.isInfernoMainYardOrOutpost ? _loc14_ + 6 : _loc14_);
+               _loc15_.tTitle.htmlText = "<b>" + KEYS.Get(_loc18_[_loc14_ - 1]) + "</b>";
+               _loc15_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc14_] > _loc17_["r" + _loc14_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc14_]) + "</font></b>";
+               if(Boolean(_loc3_["r" + _loc14_]) && _loc3_["r" + _loc14_] > 0)
                {
-                  _loc14_.alpha = 1;
+                  _loc15_.alpha = 1;
                }
                else
                {
-                  _loc14_.alpha = 0.25;
+                  _loc15_.alpha = 0.25;
                }
-               _loc13_++;
+               _loc14_++;
             }
-            _loc14_ = this.mcResources.mcTime;
-            _loc14_.gotoAndStop(BASE.isInfernoBuilding(this._building._type) || BASE.isInferno() ? 12 : 6);
+            _loc15_ = this.mcResources.mcTime;
+            _loc15_.gotoAndStop(BASE.isInfernoBuilding(this._building._type) || BASE.isInfernoMainYardOrOutpost ? 12 : 6);
             if(TUTORIAL._stage >= 200 && _loc3_.time > 0)
             {
-               _loc14_.visible = true;
-               _loc14_.tTitle.htmlText = "<b>" + KEYS.Get(_loc17_[5]) + "</b>";
-               _loc14_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc12_,true,false) + "</b>";
+               _loc15_.visible = true;
+               _loc15_.tTitle.htmlText = "<b>" + KEYS.Get(_loc18_[5]) + "</b>";
+               _loc15_.tValue.htmlText = "<b>" + GLOBAL.ToTime(_loc13_,true,false) + "</b>";
             }
             else
             {
-               _loc14_.visible = false;
+               _loc15_.visible = false;
             }
-            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+            if(this._doStreamPost && BASE.isMainYard)
             {
                if(_loc3_.time > 10 * 60)
                {
@@ -446,38 +449,38 @@ package
                   this.streampost_cb.alpha = 0.25;
                }
             }
-            if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade" && param1 != "fortify")
+            if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != GLOBAL.e_BASE_MODE.BUILD && param1 != "upgrade" && param1 != "fortify")
             {
                mcInstant.visible = false;
-               _loc10_ = tDescription.height + 53;
+               _loc11_ = tDescription.height + 53;
             }
             else
             {
-               _loc10_ = tDescription.height + 93;
+               _loc11_ = tDescription.height + 93;
             }
-            _loc10_ += 30;
+            _loc11_ += 30;
          }
          else
          {
             mcResources.visible = false;
             mcInstant.visible = false;
          }
-         if(_loc10_ < 200)
+         if(_loc11_ < 200)
          {
-            _loc10_ = 200;
+            _loc11_ = 200;
          }
-         mcBG.height = _loc10_;
+         mcBG.height = _loc11_;
          mcBG.Setup();
-         if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade" && param1 != "fortify")
+         if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != GLOBAL.e_BASE_MODE.BUILD && param1 != "upgrade" && param1 != "fortify")
          {
-            mcResources.y = mcBG.y + _loc10_ - 63;
+            mcResources.y = mcBG.y + _loc11_ - 63;
          }
          else
          {
-            mcResources.y = mcBG.y + _loc10_ - 63;
-            mcInstant.y = mcBG.y + _loc10_ - 100;
+            mcResources.y = mcBG.y + _loc11_ - 63;
+            mcInstant.y = mcBG.y + _loc11_ - 100;
          }
-         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+         if(this._doStreamPost && BASE.isMainYard)
          {
             mcCBBG.y = mcResources.y + (mcResources.height + 2);
             this.streampost_cb.y = mcResources.y + (mcResources.height + 2);
@@ -524,7 +527,7 @@ package
          }
          else
          {
-            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+            if(this._doStreamPost && BASE.isMainYard)
             {
                if(this.streampost_cb.Checked)
                {
@@ -630,7 +633,7 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message(_loc6_ || BASE.isInferno() ? KEYS.Get("inf_buildoptions_err_moresilosupgrade") : KEYS.Get("buildoptions_err_moresilosupgrade"));
+               GLOBAL.Message(_loc6_ || BASE.isInfernoMainYardOrOutpost ? KEYS.Get("inf_buildoptions_err_moresilosupgrade") : KEYS.Get("buildoptions_err_moresilosupgrade"));
             }
             else
             {
@@ -642,7 +645,7 @@ package
          }
          else
          {
-            if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+            if(this._doStreamPost && BASE.isMainYard)
             {
                if(this.streampost_cb.Checked)
                {
@@ -827,7 +830,7 @@ package
                   }
                   _loc8_++;
                }
-               if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+               if(this._doStreamPost && BASE.isMainYard)
                {
                   if(this.streampost_cb.Checked)
                   {
@@ -1096,7 +1099,7 @@ package
       
       private function onPostRollOver(param1:MouseEvent) : void
       {
-         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+         if(this._doStreamPost && BASE.isMainYard)
          {
             mcInfoCB.visible = true;
          }
@@ -1104,7 +1107,7 @@ package
       
       private function onPostRollOut(param1:MouseEvent) : void
       {
-         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+         if(this._doStreamPost && BASE.isMainYard)
          {
             mcInfoCB.visible = false;
          }
@@ -1112,7 +1115,7 @@ package
       
       public function toggleCheckbox(param1:Boolean = false) : void
       {
-         if(this._doStreamPost && BASE._yardType == BASE.MAIN_YARD)
+         if(this._doStreamPost && BASE.isMainYard)
          {
             mcInfoCB.visible = false;
             mcCBBG.visible = param1;

@@ -104,7 +104,7 @@ package
       {
          if(GLOBAL._fbcncp > 0 && (GLOBAL._flags && GLOBAL._flags.fbcncpshow != -1))
          {
-            if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
             {
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && ExternalInterface.available)
                {
@@ -187,7 +187,7 @@ package
       {
          var _loc3_:Object = null;
          var _loc4_:int = 0;
-         var _loc2_:BFOUNDATION = GLOBAL._bTownhall;
+         var _loc2_:BFOUNDATION = GLOBAL.townHall;
          if(param1 == "1")
          {
             _loc3_ = BASE.CanUpgrade(_loc2_);
@@ -224,10 +224,10 @@ package
       
       public static function FBCNcpUpgradeCB() : void
       {
-         if(GLOBAL._mode == "build" && !GLOBAL.isMapOpen())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !GLOBAL.isMapOpen())
          {
-            GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-            BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+            GLOBAL._selectedBuilding = GLOBAL.townHall;
+            BUILDINGOPTIONS.Show(GLOBAL.townHall,"upgrade");
          }
       }
       
@@ -250,7 +250,7 @@ package
          var j:int = 0;
          var str:String = param1;
          var imageContainer:MovieClip = param2;
-         var _building:BFOUNDATION = GLOBAL._bTownhall;
+         var _building:BFOUNDATION = GLOBAL.townHall;
          var buildingProps:Object = GLOBAL._buildingProps[_building._type - 1];
          if(str == "fortify")
          {

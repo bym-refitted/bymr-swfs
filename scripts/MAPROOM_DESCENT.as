@@ -71,7 +71,7 @@ package
          _mc = null;
          loadState = 0;
          _open = false;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _visitingFriend = false;
             _descentLvl = GLOBAL.StatGet("descentLvl");
@@ -181,9 +181,9 @@ package
       {
          if(_inDescent)
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
-               if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.IWMATTACK)
                {
                }
             }
@@ -448,7 +448,7 @@ package
       public static function get DescentLevel() : int
       {
          var _loc1_:int = _descentLvl;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(Boolean(WMBASE._descentBases) && WMBASE._descentBases.length > 0)
             {
@@ -467,7 +467,7 @@ package
       public static function get InDescent() : Boolean
       {
          var _loc1_:Boolean = false;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _descentLvl = GLOBAL.StatGet("descentLvl");
          }
@@ -478,11 +478,11 @@ package
       {
          var _loc2_:int = 0;
          var _loc1_:Boolean = false;
-         if(GLOBAL._mode == "build" && GLOBAL.StatGet("descentLvl") < 1)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && GLOBAL.StatGet("descentLvl") < 1)
          {
             return false;
          }
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _loc2_ = GLOBAL.StatGet("descentLvl");
             _descentLvl = _descentLvl < _loc2_ ? _loc2_ : _descentLvl;

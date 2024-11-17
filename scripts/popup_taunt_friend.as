@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1584")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1624")]
    public dynamic class popup_taunt_friend extends MovieClip
    {
       public var mcIcon1:MovieClip;

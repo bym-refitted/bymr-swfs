@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2710")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2975")]
    public dynamic class BasePlannerPopup_ExplorerCanvas extends MovieClip
    {
       public var mcMask:MovieClip;

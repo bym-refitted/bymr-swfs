@@ -16,13 +16,13 @@ package com.monsters.frontPage.messages.buildtree
          {
             return false;
          }
-         return GLOBAL._bTownhall._lvl.Get() >= 3 && BASE.hasNumBuildings(17,1) > 0;
+         return Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= 3 && BASE.hasNumBuildings(17,1) > 0;
       }
       
       override protected function onButtonClick() : void
       {
          FrontPageHandler.closeAll();
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             STORE.ShowB(1,0,["BLK2I","BLK3I"]);
          }

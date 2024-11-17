@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1775")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1802")]
    public dynamic class ResourcePackage_CLIP extends MovieClip
    {
       public var mcShadow:MovieClip;

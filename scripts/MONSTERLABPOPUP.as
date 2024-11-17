@@ -211,9 +211,9 @@ package
          }
          var _loc3_:Object = MONSTERLAB._powerupProps[_creatureID];
          var _loc4_:int = 0;
-         if(Boolean(ACADEMY._upgrades[_creatureID]) && Boolean(ACADEMY._upgrades[_creatureID].powerup))
+         if(Boolean(GLOBAL.player.m_upgrades[_creatureID]) && Boolean(GLOBAL.player.m_upgrades[_creatureID].powerup))
          {
-            _loc4_ = int(ACADEMY._upgrades[_creatureID].powerup);
+            _loc4_ = int(GLOBAL.player.m_upgrades[_creatureID].powerup);
          }
          else
          {
@@ -366,7 +366,7 @@ package
                this.btn_instant.visible = true;
                this.btn_resource.visible = true;
             }
-            else if(Boolean(ACADEMY._upgrades[_creatureID]) && ACADEMY._upgrades[_creatureID].powerup == _maxLevel)
+            else if(Boolean(GLOBAL.player.m_upgrades[_creatureID]) && GLOBAL.player.m_upgrades[_creatureID].powerup == _maxLevel)
             {
                this.btn_instant.bAction.SetupKey("acad_err_fullytrained");
                this.btn_instant.bAction.Enabled = false;
@@ -395,7 +395,7 @@ package
                   this.tf_statsWarning.htmlText = KEYS.Get("monsterlab_requiredlevel",{"v1":_unlockLevel});
                   this.tf_statsWarning.visible = true;
                }
-               else if(CREATURELOCKER._lockerData[_creatureID] == null || CREATURELOCKER._lockerData[_creatureID].t < 2 || ACADEMY._upgrades[_creatureID] == null || ACADEMY._upgrades[_creatureID].level <= _unlockLevel)
+               else if(CREATURELOCKER._lockerData[_creatureID] == null || CREATURELOCKER._lockerData[_creatureID].t < 2 || GLOBAL.player.m_upgrades[_creatureID] == null || GLOBAL.player.m_upgrades[_creatureID].level <= _unlockLevel)
                {
                   if(_bMonsterLab._lvl.Get() < _unlockLevel)
                   {
@@ -538,9 +538,9 @@ package
             item.buttonMode = true;
             item.mouseChildren = false;
             item.mouseEnabled = true;
-            if(Boolean(ACADEMY._upgrades[cr]) && Boolean(ACADEMY._upgrades[cr].powerup))
+            if(Boolean(GLOBAL.player.m_upgrades[cr]) && Boolean(GLOBAL.player.m_upgrades[cr].powerup))
             {
-               item.mcLevel.tLevel.htmlText = "" + ACADEMY._upgrades[cr].powerup + "";
+               item.mcLevel.tLevel.htmlText = "" + GLOBAL.player.m_upgrades[cr].powerup + "";
             }
             else
             {

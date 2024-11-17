@@ -2,7 +2,9 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.interfaces.ILootable;
-   import com.monsters.maproom_advanced.MapRoomCell;
+   import com.monsters.maproom_manager.IMapRoomCell;
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.components.CModifiableProperty;
    import flash.display.MovieClip;
    import flash.events.*;
    
@@ -28,23 +30,27 @@ package
       
       private static const _RESOURCE_ALLIANCE_BONUS:Number = 1.15;
       
+      public var productionRateProperty:CModifiableProperty;
+      
+      public var productionCapacityProperty:CModifiableProperty;
+      
       public function BRESOURCE()
       {
          super();
       }
       
-      public static function AdjustProduction(param1:MapRoomCell, param2:int) : int
+      public static function AdjustProduction(param1:IMapRoomCell, param2:int) : int
       {
-         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST && param1 && param1._height && param1._height >= 100)
+         if(MapRoomManager.instance.isInMapRoom2 && BASE.isOutpostMapRoom2Only && param1 && param1.cellHeight && param1.cellHeight >= 100)
          {
-            return Math.max(int(param2 * GLOBAL._averageAltitude.Get() / param1._height),1);
+            return Math.max(int(param2 * GLOBAL._averageAltitude.Get() / param1.cellHeight),1);
          }
          return param2;
       }
       
       public static function GetResourceNameKey(param1:uint) : String
       {
-         if(param1 <= 3 && BASE.isInferno())
+         if(param1 <= 3 && BASE.isInfernoMainYardOrOutpost)
          {
             param1 += 4;
          }
@@ -80,6 +86,8 @@ package
          _spriteAlert.cacheAsBitmap = true;
          _spriteAlert.mouseChildren = false;
          _spriteAlert.mouseEnabled = false;
+         this.productionRateProperty = new CModifiableProperty();
+         this.productionCapacityProperty = new CModifiableProperty();
       }
       
       override public function PlaceB() : void
@@ -92,32 +100,7 @@ package
          super.Click(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
-      {
-         var _loc9_:Number = NaN;
-         var _loc8_:int = param1;
-         if(_fortification.Get() > 0)
-         {
-            _loc8_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc8_ = _loc8_ / 100;
-         }
-         if(param5)
-         {
-            _loc9_ = !!param6 ? param6.Get() * 0.01 : 1;
-            if(param4 == 3)
-            {
-               this.Loot(_loc8_ * 2 * _loc9_);
-            }
-            else
-            {
-               this.Loot(_loc8_ * 0.5 * _loc9_);
-            }
-         }
-         super.Damage(param1,param2,param3,param4,param5,param6,param7);
-         return _loc8_;
-      }
-      
-      override public function Loot(param1:int) : void
+      override public function Loot(param1:int) : uint
       {
          var _loc2_:int = 0;
          if(_stored.Get() >= param1)
@@ -159,7 +142,7 @@ package
             _canFunction = false;
             _producing = 0;
          }
-         super.Loot(_loc2_);
+         return super.Loot(_loc2_);
       }
       
       override public function Destroyed(param1:Boolean = true) : void
@@ -189,7 +172,7 @@ package
          {
             this.StartProduction();
          }
-         if(GLOBAL._mode == "build" && _lvl.Get() >= 3 && TUTORIAL._stage > 200 && !BASE.isInferno())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _lvl.Get() >= 3 && TUTORIAL._stage > 200 && !BASE.isInfernoMainYardOrOutpost)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -245,24 +228,24 @@ package
          var _loc10_:Number = NaN;
          super.Description();
          var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
-         if(BASE._yardType == BASE.OUTPOST)
+         if(BASE.isOutpost)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);
          }
-         if(_hp.Get() < _hpMax.Get())
+         if(health < maxHealth)
          {
             if(_countdownUpgrade.Get() + _countdownFortify.Get() <= 0)
             {
-               _loc5_ = _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / _hpMax.Get() * _hp.Get()));
+               _loc5_ = _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / maxHealth * health));
                _loc6_ = _buildingProps.produce[_lvl.Get() - 1] / _loc5_ * 60 * 60;
-               if(BASE._yardType == BASE.OUTPOST)
+               if(BASE.isOutpost)
                {
                   _loc6_ = AdjustProduction(GLOBAL._currentCell,_loc6_);
                }
-               _loc7_ = 100 - Math.ceil(100 / _hpMax.Get() * _hp.Get());
+               _loc7_ = 100 - Math.ceil(100 / maxHealth * health);
                _loc8_ = _lvl.Get() == 0 ? int(_buildingProps.repairTime[0]) : int(_buildingProps.repairTime[_lvl.Get() - 1]);
                _loc8_ = Math.min(60 * 60,_loc8_);
-               if(_hp.Get() > _hpMax.Get() * 0.5)
+               if(health > maxHealth * 0.5)
                {
                   _repairDescription = "<font color=\"#FF0000\">" + KEYS.Get("bdg_resourcedamaged_reduced",{"v1":_loc7_}) + "</font><br>";
                }
@@ -276,8 +259,8 @@ package
                }
                else
                {
-                  _loc8_ = Math.ceil(_hpMax.Get() / _loc8_);
-                  _repairDescription += KEYS.Get("bdg_resourcedamaged_remaining",{"v1":GLOBAL.ToTime(int((_hpMax.Get() - _hp.Get()) / _loc8_))});
+                  _loc8_ = Math.ceil(maxHealth / _loc8_);
+                  _repairDescription += KEYS.Get("bdg_resourcedamaged_remaining",{"v1":GLOBAL.ToTime(int((maxHealth - health) / _loc8_))});
                }
             }
          }
@@ -286,14 +269,14 @@ package
             _specialDescription = KEYS.Get("bdg_resource_produces",{
                "v1":GLOBAL.FormatNumber(_loc1_),
                "v2":KEYS.Get(GLOBAL._resourceNames[_type - 1]),
-               "v3":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1]),
+               "v3":GLOBAL.FormatNumber(this.productionCapacity),
                "v4":GLOBAL._resourceNames[_type - 1]
             });
             if(_producing)
             {
-               _loc2_ = _buildingProps.capacity[_lvl.Get() - 1] - _stored.Get();
+               _loc2_ = this.productionCapacity - _stored.Get();
                _loc3_ = 60 / _buildingProps.cycleTime[_lvl.Get() - 1] * _buildingProps.produce[_lvl.Get() - 1];
-               if(BASE._yardType == BASE.OUTPOST)
+               if(BASE.isOutpost)
                {
                   _loc3_ = AdjustProduction(GLOBAL._currentCell,_loc3_);
                }
@@ -310,7 +293,7 @@ package
             _loc9_ = _buildingProps.produce[_lvl.Get()] / _buildingProps.cycleTime[_lvl.Get()] * 60 * 60;
             _loc10_ = _loc4_;
             _loc2_ = int(_buildingProps.capacity[_lvl.Get()]);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpost)
             {
                _loc3_ = 60 / _buildingProps.cycleTime[_lvl.Get()] * AdjustProduction(GLOBAL._currentCell,_buildingProps.produce[_lvl.Get()]);
             }
@@ -327,7 +310,7 @@ package
             if(!BASE.isOutpost)
             {
                _upgradeDescription += KEYS.Get("bdg_resource_upcapacity",{
-                  "v1":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1]),
+                  "v1":GLOBAL.FormatNumber(this.productionCapacity),
                   "v2":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get()])
                });
             }
@@ -341,7 +324,7 @@ package
          {
             return super.tickLimit;
          }
-         _loc1_ = _buildingProps.capacity[_lvl.Get() - 1] - _stored.Get();
+         _loc1_ = this.productionCapacity - _stored.Get();
          if(_loc1_ > 0)
          {
             return Math.min(this.productionValue * this.productionTimeout,super.tickLimit);
@@ -355,14 +338,14 @@ package
          super.Tick(param1);
          if(BASE.isOutpost)
          {
-            _canFunction = _hp.Get() >= 0;
+            _canFunction = health >= 0;
             if(!GLOBAL._catchup)
             {
                if(_countdownProduce.Add(-1) <= 0 && _canFunction)
                {
-                  if(_hp.Get() > 0)
+                  if(health > 0)
                   {
-                     ResourcePackages.Create(BASE.isInferno() ? _type + 4 : _type,this,1);
+                     ResourcePackages.Create(BASE.isInfernoMainYardOrOutpost ? _type + 4 : _type,this,1);
                   }
                   _countdownProduce.Set(10 + Math.random() * 10);
                }
@@ -370,7 +353,7 @@ package
          }
          else if(_countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
-            _canFunction = _hp.Get() >= _hpMax.Get() * 0.5;
+            _canFunction = health >= maxHealth * 0.5;
             if(_canFunction)
             {
                if(_producing)
@@ -391,19 +374,19 @@ package
                      }
                   }
                }
-               else if(_stored.Get() > _buildingProps.capacity[_lvl.Get() - 1])
+               else if(_stored.Get() > this.productionCapacity)
                {
                   LOGGER.Log("hak","Resource gatherer storage capacity exceeded");
                   GLOBAL.ErrorMessage("BRESOURCE overcapacity hack");
-                  _stored.Set(_buildingProps.capacity[_lvl.Get() - 1]);
+                  _stored.Set(this.productionCapacity);
                }
-               else if(_stored.Get() < _buildingProps.capacity[_lvl.Get() - 1] && _hp.Get() > 0)
+               else if(_stored.Get() < this.productionCapacity && health > 0)
                {
                   this.StartProduction();
                }
             }
          }
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             if(_stored.Get() < 0)
             {
@@ -418,20 +401,21 @@ package
          super.Update(param1);
          if(GLOBAL._render || param1)
          {
-            if(_producing == 0 && GLOBAL._mode == "build" && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && _hp.Get() > _hpMax.Get() * 0.5)
+            if(_producing == 0 && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0 && health > maxHealth * 0.5)
             {
                if(!_mcAlert)
                {
-                  _mcAlert = _mc.addChild(_spriteAlert);
+                  _mcAlert = _spriteAlert;
                   _mcAlert.x = -3;
                   _mcAlert.y = -50;
+                  addChild(_mcAlert);
                }
             }
             else
             {
                if(_mcAlert)
                {
-                  _mc.removeChild(_spriteAlert);
+                  removeChild(_mcAlert);
                }
                _mcAlert = null;
             }
@@ -440,9 +424,9 @@ package
       
       override public function StartProduction() : void
       {
-         if(_hp.Get() > 0)
+         if(health > 0)
          {
-            if(_stored.Get() >= _buildingProps.capacity[_lvl.Get() - 1])
+            if(_stored.Get() >= this.productionCapacity)
             {
                _producing = 0;
             }
@@ -456,14 +440,14 @@ package
       
       public function get productionTimeout() : int
       {
-         return _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / _hpMax.Get() * _hp.Get()));
+         return _buildingProps.cycleTime[_lvl.Get() - 1] + Math.ceil(_buildingProps.cycleTime[_lvl.Get() - 1] * (4 - 4 / maxHealth * health));
       }
       
       private function ApplyTerrainBonus(param1:int) : int
       {
          var _loc3_:Number = NaN;
          var _loc2_:* = "r" + _type + "bonus";
-         if(BASE._yardType == BASE.INFERNO_YARD && BASE._resources[_loc2_] == 1)
+         if(BASE.isMainYardInfernoOnly && BASE._resources[_loc2_] == 1)
          {
             _loc3_ = _RESOURCE_BONUS;
             param1 *= _loc3_;
@@ -477,7 +461,7 @@ package
          {
             _producing = 0;
          }
-         if(_hp.Get() <= 0)
+         if(health <= 0)
          {
             _producing = 0;
          }
@@ -493,8 +477,8 @@ package
          }
          if(_producing)
          {
-            _stored.Set(Math.min(_stored.Get() + this.productionValue,_buildingProps.capacity[_lvl.Get() - 1]));
-            if(_stored.Get() >= _buildingProps.capacity[_lvl.Get() - 1])
+            _stored.Set(Math.min(_stored.Get() + this.productionValue,this.productionCapacity));
+            if(_stored.Get() >= this.productionCapacity)
             {
                _producing = 0;
             }
@@ -508,7 +492,7 @@ package
       public function get productionValue() : int
       {
          var _loc1_:int = int(_buildingProps.produce[_lvl.Get() - 1]);
-         if(Boolean(GLOBAL._advancedMap) && BASE._yardType == BASE.OUTPOST)
+         if(BASE.isOutpost)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);
          }
@@ -516,7 +500,14 @@ package
          {
             _loc1_ *= GLOBAL._harvesterOverdrivePower.Get();
          }
-         return this.ApplyTerrainBonus(_loc1_);
+         _loc1_ = this.ApplyTerrainBonus(_loc1_);
+         this.productionRateProperty.value = _loc1_;
+         return this.productionRateProperty.value;
+      }
+      
+      public function get productionCapacity() : Number
+      {
+         return this.productionCapacityProperty.value;
       }
       
       override public function Bank() : void
@@ -533,7 +524,7 @@ package
             _loc3_ = new SecNum(BASE.Fund(_type,_loc1_.Get(),false,this));
             if(_loc3_.Get() > 0)
             {
-               ResourcePackages.Create(BASE.isInferno() ? _type + 4 : _type,this,_loc1_.Get());
+               ResourcePackages.Create(BASE.isInfernoMainYardOrOutpost ? _type + 4 : _type,this,_loc1_.Get());
                if(TUTORIAL._stage < 200)
                {
                   BASE.PointsAdd(_loc3_.Get());
@@ -570,40 +561,6 @@ package
          super.Repaired();
       }
       
-      public function Fund(param1:int, param2:int) : int
-      {
-         var _loc3_:int = 0;
-         if(param1 < 4)
-         {
-            _loc3_ = int(_buildingProps.capacity[_lvl.Get()]);
-            if(_stored.Get() + param2 < _loc3_)
-            {
-               _stored.Add(param2);
-               this.Update();
-               return 0;
-            }
-            param2 -= _loc3_ - _stored.Get();
-            _stored.Set(_loc3_);
-            this.Update();
-            return param2;
-         }
-         if(_type != 4)
-         {
-            _loc3_ = Math.ceil(_buildingProps.capacity[_lvl.Get()] / 2);
-            if(_energy + param2 < _loc3_)
-            {
-               _energy += param2;
-               this.Update();
-               return 0;
-            }
-            param2 -= _loc3_ - _energy;
-            _energy = _loc3_;
-            this.Update();
-            return param2;
-         }
-         return param2;
-      }
-      
       override public function Export() : Object
       {
          var _loc1_:Object = null;
@@ -625,21 +582,30 @@ package
       {
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
+         if(Boolean(param1.l) && param1.l <= int.MAX_VALUE)
+         {
+            _lvl.Set(int(param1.l));
+         }
+         else
+         {
+            _lvl.Set(1);
+         }
+         this.productionCapacityProperty.value = _buildingProps.capacity[Math.max(0,_lvl.Get() - 1)];
          super.Setup(param1);
          if(BASE.isOutpost)
          {
-            _loc3_ = _hp.Get() / _hpMax.Get();
+            _loc3_ = health / maxHealth;
             if(_loc3_ <= 0)
             {
                _loc2_ = 0;
             }
             else if(_loc3_ <= 0.5)
             {
-               _loc2_ = 0.25 * _buildingProps.capacity[_lvl.Get() - 1];
+               _loc2_ = 0.25 * this.productionCapacity;
             }
             else
             {
-               _loc2_ = 0.5 * _buildingProps.capacity[_lvl.Get() - 1];
+               _loc2_ = 0.5 * this.productionCapacity;
             }
             _producing = 1;
             _countdownProduce.Set(Math.random() * 10);
@@ -657,7 +623,7 @@ package
          else
          {
             _stored.Set(0);
-            LOGGER.Log("err","Harvester storage < 0 mode: " + GLOBAL._mode);
+            LOGGER.Log("err","Harvester storage < 0 mode: " + GLOBAL.mode);
          }
       }
    }

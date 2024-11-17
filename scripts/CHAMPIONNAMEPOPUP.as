@@ -1,6 +1,5 @@
 package
 {
-   import flash.display.StageDisplayState;
    import flash.events.MouseEvent;
    
    public class CHAMPIONNAMEPOPUP extends GUARDIANNAMEPOPUP_CLIP
@@ -25,18 +24,6 @@ package
                _loc2_ = CHAMPIONCAGE._guardians["G" + CREATURES._guardian._type].name;
                CREATURES._guardian._name = _loc2_;
             }
-         }
-         if(GLOBAL._ROOT.stage.displayState != StageDisplayState.NORMAL)
-         {
-            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
-            {
-               UI2._top.mcZoom.gotoAndStop(4);
-            }
-            else
-            {
-               UI2._top.mcZoom.gotoAndStop(1);
-            }
-            GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
       }
       

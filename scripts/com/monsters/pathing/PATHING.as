@@ -1,5 +1,6 @@
 package com.monsters.pathing
 {
+   import com.monsters.managers.InstanceManager;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
@@ -157,6 +158,7 @@ package com.monsters.pathing
          var _loc9_:int = 0;
          var _loc10_:BFOUNDATION = null;
          var _loc11_:Array = null;
+         var _loc12_:Vector.<Object> = null;
          var _loc1_:int = getTimer();
          var _loc2_:int = 0;
          var _loc3_:int = 0;
@@ -178,9 +180,10 @@ package com.monsters.pathing
                _loc8_ += 1;
             }
             _loc2_ = getTimer() - _loc1_;
-            for each(_loc10_ in BASE._buildingsAll)
+            _loc12_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(_loc10_ in _loc12_)
             {
-               if(Boolean(_loc10_._gridCost) && _loc10_._hp.Get() > 0)
+               if(Boolean(_loc10_._gridCost) && (_loc10_.health > 0 || _loc10_ is BMUSHROOM))
                {
                   for each(_loc11_ in _loc10_._gridCost)
                   {
@@ -191,18 +194,6 @@ package com.monsters.pathing
                }
             }
             _loc3_ = getTimer() - _loc1_;
-            for each(_loc10_ in BASE._buildingsMushrooms)
-            {
-               if(_loc10_._gridCost)
-               {
-                  for each(_loc11_ in _loc10_._gridCost)
-                  {
-                     _loc5_.x = _loc10_.x;
-                     _loc5_.y = _loc10_.y;
-                     PATHING.Cost(_loc5_,_loc11_[0],_loc11_[1]);
-                  }
-               }
-            }
             _loc4_ = getTimer() - _loc1_;
          }
          ProcessFlood();
@@ -541,7 +532,7 @@ package com.monsters.pathing
                               _loc18_ = _costs[_loc12_].building;
                               if(_loc18_)
                               {
-                                 if(_loc18_._hp.Get() > 0)
+                                 if(_loc18_.health > 0)
                                  {
                                     _loc22_ = (_loc18_._lvl.Get() ^ 2) + 1;
                                     _loc23_ = 0;
@@ -709,7 +700,7 @@ package com.monsters.pathing
                return true;
             }
             _loc9_ = _costs[_loc8_].building;
-            if((Boolean(_loc9_)) && _loc9_._hp.Get() > 0)
+            if((Boolean(_loc9_)) && _loc9_.health > 0)
             {
                if(!(Boolean(param5) && _loc9_ == param5))
                {

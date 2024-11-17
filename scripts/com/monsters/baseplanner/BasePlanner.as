@@ -8,6 +8,7 @@ package com.monsters.baseplanner
    import com.monsters.baseplanner.popups.transfer.BasePlannerLoadPopup;
    import com.monsters.baseplanner.popups.transfer.BasePlannerSavePopup;
    import com.monsters.baseplanner.popups.transfer.BasePlannerTransferPopup;
+   import com.monsters.managers.InstanceManager;
    import flash.events.Event;
    import flash.events.MouseEvent;
    
@@ -134,6 +135,7 @@ package com.monsters.baseplanner
             if(_loc3_.building._id != PlannerTemplate._DECORATION_ID && _loc3_.category == BuildingItem.TYPE_DECORATION)
             {
                _loc3_.building.RecycleC();
+               InstanceManager.removeInstance(_loc3_.building);
             }
             _loc2_++;
          }

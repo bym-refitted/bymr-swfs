@@ -33,8 +33,8 @@ package
       
       public function Launch() : void
       {
-         var _loc2_:BUILDING14 = null;
-         _loc2_ = GLOBAL._bTownhall as BUILDING14;
+         var _loc2_:BFOUNDATION = null;
+         _loc2_ = GLOBAL.townHall as BFOUNDATION;
          var _loc3_:Number = this._resourcePackage.x;
          var _loc4_:Number = this._resourcePackage.y + _loc2_._spoutPoint.y - 200;
          this._resourcePackage.x += (Math.random() * 2 - 1) * 10;

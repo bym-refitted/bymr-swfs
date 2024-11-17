@@ -252,7 +252,7 @@ package
          }
          else if(Boolean(CREATURELOCKER._lockerData[this._creatureID]) && CREATURELOCKER._lockerData[this._creatureID].t == 2)
          {
-            str = KEYS.Get(BASE.isInferno() ? "inf_mon_infounlocked" : "mon_infounlocked");
+            str = KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "inf_mon_infounlocked" : "mon_infounlocked");
          }
          else
          {
@@ -270,7 +270,7 @@ package
             {
                str += "<font color=\"#CC0000\">";
             }
-            str += KEYS.Get(BASE.isInferno() ? "mon_strongboxlevelrequired" : "mon_infolockerlevelrequired",{"v1":data.level});
+            str += KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "mon_strongboxlevelrequired" : "mon_infolockerlevelrequired",{"v1":data.level});
             if(GLOBAL._bLocker._lvl.Get() < data.level)
             {
                str += "</font>";
@@ -457,7 +457,7 @@ package
             delete CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e;
          }
          creature = CREATURELOCKER._creatures[this._creatureID];
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             img = "quests/monster" + this._creatureID.substr(1) + ".v2.png";
          }
@@ -470,9 +470,8 @@ package
             img = creature.stream[2];
          }
          CREATURELOCKER._lockerData[this._creatureID] = {"t":2};
-         ACADEMY._upgrades[this._creatureID] = {"level":1};
-         GLOBAL._playerCreatureUpgrades[this._creatureID] = {"level":1};
-         if(!BASE.isInferno())
+         GLOBAL.player.m_upgrades[this._creatureID] = {"level":1};
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             LOGGER.Stat([46,int(this._creatureID.substr(1))]);
          }
@@ -480,7 +479,7 @@ package
          {
             LOGGER.Stat([46,int(this._creatureID.substr(2))]);
          }
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             StreamPost = function(param1:String, param2:String, param3:String):Function
             {

@@ -2,7 +2,8 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.configs.BYMDevConfig;
-   import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.player.Player;
    import com.monsters.radio.RADIO;
    import flash.events.*;
@@ -43,16 +44,29 @@ package
       
       public static function Login() : void
       {
+         PLEASEWAIT.Show("Logging in...");
+         new URLLoaderApi().load(GLOBAL._apiURL + "bm/getnewmap",null,OnGetNewMap);
+      }
+      
+      private static function OnGetNewMap(param1:Object) : void
+      {
+         _Login(param1.newmap,param1.mapheaderurl);
+      }
+      
+      private static function _Login(param1:Boolean, param2:String) : void
+      {
          var handleLoadSuccessful:Function;
          var handleLoadError:Function;
-         PLEASEWAIT.Show("Logging in...");
+         var a_NewMap:Boolean = param1;
+         var a_MapHeaderURL:String = param2;
+         MapRoomManager.instance.init(a_NewMap,a_MapHeaderURL);
          if(GLOBAL._local)
          {
             handleLoadSuccessful = function(param1:Object):void
             {
                if(param1.error == 0)
                {
-                  Process(param1);
+                  LOGIN.Process(param1);
                }
                else
                {
@@ -74,9 +88,9 @@ package
                GLOBAL.WaitHide();
                if(_loc2_.error == 0)
                {
-                  if(checkHash(param1))
+                  if(LOGIN.checkHash(param1))
                   {
-                     Process(_loc2_);
+                     LOGIN.Process(_loc2_);
                   }
                   else
                   {
@@ -152,11 +166,11 @@ package
             GLOBAL._currencyURL = param1.currency_url;
             if(param1.bookmarks)
             {
-               MapRoom._bookmarkData = param1.bookmarks;
+               MapRoomManager.instance.bookmarkData = param1.bookmarks;
             }
             else
             {
-               MapRoom._bookmarkData = {};
+               MapRoomManager.instance.bookmarkData = {};
             }
             if(param1.settings)
             {
@@ -184,7 +198,7 @@ package
             {
                GLOBAL._fbcncp = param1.ncpCandidate;
             }
-            KEYS._storageURL = GLOBAL._storageURL;
+            KEYS._storageURL = GLOBAL.languageUrl;
             KEYS._logFunction = LOGGER.Log;
             KEYS._languageVersion = GLOBAL._languageVersion;
             KEYS._language = param1.language;
@@ -221,7 +235,7 @@ package
          GLOBAL.Setup();
          if(GLOBAL._openBase && GLOBAL._openBase.url && (Boolean(GLOBAL._openBase.userid) || Boolean(GLOBAL._openBase.baseid)) && GLOBAL._openBase.userid != LOGIN._playerID)
          {
-            BASE._yardType = BASE.MAIN_YARD;
+            BASE.yardType = MapRoomManager.instance.isInMapRoom3 ? int(EnumYardType.PLAYER) : int(EnumYardType.MAIN_YARD);
             if(!GLOBAL._openBase.userid)
             {
                GLOBAL._openBase.userid = 0;
@@ -231,7 +245,7 @@ package
                GLOBAL._openBase.baseid = 0;
             }
             GLOBAL._currentCell = null;
-            GLOBAL._mode = "help";
+            GLOBAL.setMode(GLOBAL.e_BASE_MODE.HELP);
             _loc1_ = 1;
             while(_loc1_ < 5)
             {
@@ -243,13 +257,13 @@ package
          }
          else if(_inferno != 0)
          {
-            GLOBAL._advancedMap = 0;
-            BASE._yardType = BASE.INFERNO_YARD;
-            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+            MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
+            BASE.yardType = EnumYardType.INFERNO_YARD;
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,EnumYardType.INFERNO_YARD);
          }
          else
          {
-            BASE._yardType = BASE.MAIN_YARD;
+            BASE.yardType = MapRoomManager.instance.isInMapRoom3 ? int(EnumYardType.PLAYER) : int(EnumYardType.MAIN_YARD);
             BASE.Load();
          }
       }
@@ -291,7 +305,7 @@ package
       
       public static function getSalt() : String
       {
-         return decodeSalt("WWV20U6V73U94167ZV451447ZY3VY693");
+         return decodeSalt("84V37530976X4W7175W9Z02U3483Y6VW");
       }
       
       public static function decodeSalt(param1:String) : String

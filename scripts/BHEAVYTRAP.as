@@ -20,7 +20,7 @@ package
          var _loc5_:Point = null;
          var _loc8_:String = null;
          var _loc9_:int = 0;
-         var _loc7_:Array = MAP.CreepCellFind(_position,_range,-1);
+         var _loc7_:Array = Targeting.getCreepsInRange(_range,_position,Targeting.getOldStyleTargets(-1));
          _hasTargets = false;
          _targetCreeps = [];
          for(_loc3_ in _loc7_)
@@ -54,38 +54,38 @@ package
          var _loc3_:String = null;
          var _loc4_:Number = NaN;
          var _loc5_:Point = null;
-         var _loc7_:Array = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
+         var _loc7_:Array = Targeting.getCreepsInRange(_size,new Point(_mc.x,_mc.y),Targeting.getOldStyleTargets(-1));
          var _loc8_:int = 0;
          var _loc9_:int = 0;
          for(_loc3_ in _loc7_)
          {
             _loc1_ = _loc7_[_loc3_];
             _loc2_ = _loc1_.creep;
-            if(_loc2_._health.Get() > 0)
+            if(_loc2_.health > 0)
             {
                _loc8_++;
                _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
-               _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
-               if(_loc2_._health.Get() <= 0)
+               _loc2_.modifyHealth(-(_buildingProps.damage[0] / _buildingProps.size * (_buildingProps.size - _loc4_ * 0.5)));
+               if(_loc2_.health <= 0)
                {
                   _loc9_++;
                   GIBLETS.Create(new Point(_mc.x,_mc.y + 3),0.8,75,2);
                }
             }
          }
-         _loc7_ = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,2);
+         _loc7_ = Targeting.getCreepsInRange(_size,new Point(_mc.x,_mc.y),Targeting.getOldStyleTargets(2));
          for(_loc3_ in _loc7_)
          {
             _loc1_ = _loc7_[_loc3_];
             _loc2_ = _loc1_.creep;
-            if(_loc2_._health.Get() > 0)
+            if(_loc2_.health > 0)
             {
                _loc8_++;
                _loc4_ = Number(_loc1_.dist);
                _loc5_ = _loc1_.pos;
-               _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] * 0.5 / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
-               if(_loc2_._health.Get() <= 0)
+               _loc2_.modifyHealth(-(_buildingProps.damage[0] * 0.5 / _buildingProps.size * (_buildingProps.size - _loc4_ * 0.5)));
+               if(_loc2_.health <= 0)
                {
                   _loc9_++;
                   GIBLETS.Create(new Point(_mc.x,_mc.y + 3),0.8,75,2);
@@ -120,11 +120,10 @@ package
             EFFECTS.Scorch(new Point(_mc.x,_mc.y + 5));
          }
          _hasTargets = false;
-         _mc.gotoAndStop(2);
          _mc.visible = true;
-         _hp.Set(0);
+         setHealth(0);
          SOUNDS.Play("trap");
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             RecycleC();
          }

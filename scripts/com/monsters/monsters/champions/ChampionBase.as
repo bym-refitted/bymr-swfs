@@ -3,8 +3,11 @@ package com.monsters.monsters.champions
    import com.cc.utils.SecNum;
    import com.monsters.configs.BYMConfig;
    import com.monsters.interfaces.ILootable;
+   import com.monsters.interfaces.ITargetable;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.monsters.MonsterBase;
-   import com.monsters.monsters.components.statusEffects.FlameEffect;
+   import com.monsters.monsters.components.CModifiableProperty;
+   import com.monsters.monsters.components.modifiers.AdditionPropertyModifier;
    import com.monsters.pathing.PATHING;
    import com.monsters.rendering.RasterData;
    import com.monsters.siege.SiegeWeapons;
@@ -14,7 +17,6 @@ package com.monsters.monsters.champions
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
    import flash.events.MouseEvent;
-   import flash.filters.GlowFilter;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    import flash.utils.getTimer;
@@ -34,12 +36,6 @@ package com.monsters.monsters.champions
       public static const k_CHAMPION_STATUS_REFUND:int = 4;
       
       public static const k_CHAMPION_STATUS_MIGRATED:int = 5;
-      
-      public static const KORATH_POWER_NORMAL:int = 1;
-      
-      public static const KORATH_POWER_FIREBALL:int = 2;
-      
-      public static const KORATH_POWER_STOMP:int = 3;
       
       public var _behaviourMode:String = "defend";
       
@@ -65,13 +61,9 @@ package com.monsters.monsters.champions
       
       public var _regen:int;
       
-      public var _range:int;
-      
       public var _buff:Number = 0;
       
       public var _buffRadius:Number = 0;
-      
-      public var _quaking:Boolean;
       
       public var _helpCreep:*;
       
@@ -83,20 +75,20 @@ package com.monsters.monsters.champions
       
       public const DEFENSE_MODIFIER:Number = 1;
       
-      private var _dying:Boolean = false;
-      
-      private var _dead:Boolean = false;
-      
-      public var _attackNum:int;
+      public var m_status:int;
       
       public function ChampionBase(param1:String, param2:Point, param3:Number, param4:Point = null, param5:Boolean = false, param6:BFOUNDATION = null, param7:int = 1, param8:int = 0, param9:int = 0, param10:int = 1, param11:int = 20000, param12:int = 0, param13:int = 0)
       {
          super();
          var _loc14_:int = getTimer();
-         _mc = this;
-         _id = GLOBAL.NextCreepID().toString();
          _friendly = param5;
+         setInitialFriendlyFlags(_friendly);
+         if(param7 < 1)
+         {
+            param7 = 1;
+         }
          this._level = new SecNum(param7);
+         this.m_status = k_CHAMPION_STATUS_NORMAL;
          _middle = param7 * 5;
          _creatureID = "G" + param10;
          this._feeds = new SecNum(param8);
@@ -135,48 +127,47 @@ package com.monsters.monsters.champions
          _waypoints = [];
          _targetCreeps = [];
          _targetCreep = null;
-         mouseEnabled = false;
-         mouseChildren = false;
+         graphic.mouseEnabled = false;
+         graphic.mouseChildren = false;
          _speed = 0;
          if(this._foodBonus.Get() > 0)
          {
-            _maxSpeed = (CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusSpeed")) / 2;
+            moveSpeedProperty.value = (CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusSpeed")) / 2;
          }
          else
          {
-            _maxSpeed = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
+            moveSpeedProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
          }
-         _maxSpeed *= 1.1;
          if(this._foodBonus.Get() > 0)
          {
-            _maxHealth = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth");
+            maxHealthProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth");
          }
          else
          {
-            _maxHealth = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
+            maxHealthProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
          }
          this._regen = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"healtime");
-         if(param11 > 0 && param11 <= _maxHealth)
+         if(param11 > 0 && param11 <= maxHealth)
          {
-            _health = new SecNum(param11);
+            setHealth(param11);
          }
-         else if(param11 >= _maxHealth)
+         else if(param11 >= maxHealth)
          {
-            _health = new SecNum(_maxHealth);
+            setHealth(maxHealth);
          }
          else
          {
-            _health = new SecNum(1);
+            setHealth(1);
          }
          if(this._foodBonus.Get() > 0)
          {
-            _damage = new SecNum(int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")) + int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusDamage")));
-            this._range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange");
+            damageProperty.value = int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")) + int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusDamage"));
+            m_range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange");
          }
          else
          {
-            _damage = new SecNum(int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")));
-            this._range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
+            damageProperty.value = int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage"));
+            m_range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
          }
          _movement = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"movement");
          if(this._foodBonus.Get() > 0)
@@ -191,24 +182,12 @@ package com.monsters.monsters.champions
          {
             this._buffRadius = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"buffRadius");
          }
-         _goo = 250000;
          _behaviour = param1;
-         if(_creatureID == "G3")
-         {
-            _attackDelay = 8;
-         }
-         else if(_creatureID == "G4")
-         {
-            _attackDelay = 72;
-         }
-         else
-         {
-            _attackDelay = 56;
-         }
+         attackDelayProperty.value = 56;
          _targetPosition = param2;
          _targetCenter = param4;
-         x = _targetPosition.x;
-         y = _targetPosition.y;
+         graphic.x = _targetPosition.x;
+         graphic.y = _targetPosition.y;
          _tmpPoint.x = x;
          _tmpPoint.y = y;
          if(param3)
@@ -219,78 +198,30 @@ package com.monsters.monsters.champions
          {
             _targetRotation = 0;
          }
-         mcMarker.rotation = _targetRotation;
+         m_rotation = _targetRotation;
          _attacking = false;
-         this._quaking = false;
-         _frameNumber = Math.random() * 7;
-         if(this is KOTHChampion)
-         {
-            this._spriteID = _creatureID + "_" + this._powerLevel.Get();
-         }
-         else
-         {
-            this._spriteID = _creatureID + "_" + Math.min(this._level.Get(),CHAMPIONCAGE.GetGuardianProperties(_creatureID,"health").length);
-         }
-         SPRITES.SetupSprite(this._spriteID);
-         if(_movement == "fly")
-         {
-            SPRITES.SetupSprite("bigshadow");
-            _shadow = new BitmapData(52,50,true,0xffffff);
-            _shadowMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(_shadow) : addChild(new Bitmap(_shadow));
-            _shadowMC.x = -21;
-            _shadowMC.y = -26;
-            _frameNumber = int(Math.random() * 1000);
-         }
-         var _loc15_:Object = SPRITES.GetSpriteDescriptor(this._spriteID);
-         _graphic = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
-         _graphicMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(_graphic) : addChild(new Bitmap(_graphic)) as Bitmap;
-         if(this is KOTHChampion)
-         {
-            _graphicMC.x = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._powerLevel.Get(),"offset_x");
-            _graphicMC.y = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._powerLevel.Get(),"offset_y");
-         }
-         else
-         {
-            _graphicMC.x = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"offset_x");
-            _graphicMC.y = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"offset_y");
-         }
-         if(BYMConfig.instance.RENDERER_ON)
-         {
-            _rasterData = new RasterData(_graphicMC,_rasterPt,int.MAX_VALUE);
-            if(_movement === "fly")
-            {
-               _shadowData = new RasterData(_shadow,_shadowPt,MAP.DEPTH_SHADOW,null,true);
-            }
-         }
+         attackFlags |= Targeting.k_TARGETS_GROUND;
+         this.setupSprite();
          if(_movement == "fly")
          {
             _altitude = 108;
+            defenseFlags |= Targeting.k_TARGETS_FLYING;
          }
          else
          {
             _altitude = 0;
+            defenseFlags |= Targeting.k_TARGETS_GROUND;
          }
          if(_behaviour == "bounce")
          {
             if(GLOBAL._render && _movement != "fly")
             {
                _graphicMC.y -= 90;
-               if(_creatureID == "G3")
-               {
-                  TweenLite.to(_graphicMC,0.6,{
-                     "y":_graphicMC.y + 90,
-                     "ease":Bounce.easeOut,
-                     "onComplete":this.ModeBuff
-                  });
-               }
-               else
-               {
-                  TweenLite.to(_graphicMC,0.6,{
-                     "y":_graphicMC.y + 90,
-                     "ease":Bounce.easeOut,
-                     "onComplete":this.ModeAttack
-                  });
-               }
+               TweenLite.to(_graphicMC,0.6,{
+                  "y":_graphicMC.y + 90,
+                  "ease":Bounce.easeOut,
+                  "onComplete":this.changeModeAttack
+               });
             }
             else
             {
@@ -302,70 +233,92 @@ package com.monsters.monsters.champions
                {
                   _altitude = 0;
                }
-               if(_creatureID == "G3")
-               {
-                  this.ModeBuff();
-               }
-               else
-               {
-                  this.ModeAttack();
-               }
+               this.changeModeAttack();
             }
          }
          else if(_behaviour == "defend")
          {
             _altitude = 0;
-            this.ModeDefend();
+            this.changeModeDefend();
          }
          else if(_behaviour == "decoy")
          {
-            this.ModeDecoy();
+            this.changeModeDecoy();
          }
          if(_behaviour == "juice")
          {
-            this.ModeJuice();
+            this.changeModeJuice();
          }
-         this.ApplyInfernoVenom();
-         this.Render();
-         mouseEnabled = false;
-         mouseChildren = false;
+         render();
+         graphic.mouseEnabled = false;
+         graphic.mouseChildren = false;
+         CModifiableProperty(getComponentByName(k_LOOT_PROPERTY)).addModifier(new AdditionPropertyModifier(1.5));
       }
       
-      public static function Show() : void
+      public static function show() : void
       {
       }
       
-      public function ModeJuice() : void
+      protected function setupSprite() : void
+      {
+         _frameNumber = Math.random() * 7;
+         this._spriteID = _creatureID + "_" + Math.min(this._level.Get(),CHAMPIONCAGE.GetGuardianProperties(_creatureID,"health").length);
+         SPRITES.SetupSprite(this._spriteID);
+         if(_movement == "fly")
+         {
+            SPRITES.SetupSprite("bigshadow");
+            _shadow = new BitmapData(52,50,true,0xffffff);
+            _shadowMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(_shadow) : graphic.addChild(new Bitmap(_shadow));
+            _shadowMC.x = -21;
+            _shadowMC.y = -26;
+            _frameNumber = int(Math.random() * 1000);
+         }
+         var _loc1_:Object = SPRITES.GetSpriteDescriptor(this._spriteID);
+         _graphic = new BitmapData(_loc1_.width,_loc1_.height,true,0xffffff);
+         _graphicMC = BYMConfig.instance.RENDERER_ON ? new Bitmap(_graphic) : graphic.addChild(new Bitmap(_graphic)) as Bitmap;
+         _graphicMC.x = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"offset_x");
+         _graphicMC.y = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"offset_y");
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            _rasterData = new RasterData(_graphicMC,_rasterPt,int.MAX_VALUE);
+            if(_movement === "fly")
+            {
+               _shadowData = new RasterData(_shadow,_shadowPt,MAP.DEPTH_SHADOW,null,true);
+            }
+         }
+      }
+      
+      override public function changeModeJuice() : void
       {
          _behaviour = "juice";
-         _hasTarget = false;
-         _atTarget = false;
-         _hasPath = false;
+         changeMode();
          _targetBuilding = GLOBAL._bJuicer;
          if(_movement == "fly" && _altitude < 60)
          {
-            TweenLite.to(_graphicMC,2,{
-               "y":_graphicMC.y - (108 - _altitude),
-               "ease":Sine.easeIn,
-               "onComplete":this.FlyerTakeOff
-            });
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               TweenLite.to(_rasterPt,2,{
+                  "y":_rasterPt.y - (108 - _altitude),
+                  "ease":Sine.easeIn,
+                  "onComplete":this.flyerTakeOff
+               });
+            }
+            else
+            {
+               TweenLite.to(_graphicMC,2,{
+                  "y":_graphicMC.y - (108 - _altitude),
+                  "ease":Sine.easeIn,
+                  "onComplete":this.flyerTakeOff
+               });
+            }
          }
          ++CREATURES._creatureID;
          ++CREATURES._creatureCount;
          CREATURES._creatures[CREATURES._creatureID] = this;
-         var _loc1_:int = 0;
-         _loc1_ = 0;
-         while(_loc1_ < BASE._guardianData.length)
-         {
-            if(BASE._guardianData[_loc1_].t == CREATURES._guardian._type)
-            {
-               break;
-            }
-            _loc1_++;
-         }
+         var _loc1_:int = BASE.getGuardianIndex(CREATURES._guardian._type);
          BASE._guardianData[_loc1_].status = ChampionBase.k_CHAMPION_STATUS_JUICED;
          BASE._guardianData[_loc1_].log += "," + ChampionBase.k_CHAMPION_STATUS_JUICED.toString();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _loc1_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
             if(_loc1_ != -1)
@@ -376,87 +329,46 @@ package com.monsters.monsters.champions
          }
          CREATURES._guardian = null;
          BASE.Save();
-         PATHING.GetPath(_tmpPoint,new Rectangle(_targetBuilding._mc.x,_targetBuilding._mc.y,80,80),this.SetWaypoints,true);
+         PATHING.GetPath(_tmpPoint,new Rectangle(_targetBuilding._mc.x,_targetBuilding._mc.y,80,80),this.setWaypoints,true);
       }
       
-      override public function ModeAttack() : void
+      override public function changeModeAttack() : void
       {
-         _behaviour = "attack";
-         _hasTarget = false;
-         _atTarget = false;
-         _hasPath = false;
-         node = MAP.CreepCellAdd(_tmpPoint,_id,this);
+         changeMode();
+         _behaviour = GLOBAL.e_BASE_MODE.ATTACK;
          _targetCreep = null;
-         this.FindTarget(0,true);
+         this.findTarget(0);
       }
       
-      public function ModeCage() : void
+      public function changeModeCage() : void
       {
+         changeMode();
          _behaviour = "cage";
-         _hasTarget = false;
-         _atTarget = false;
          _attacking = false;
-         this._quaking = false;
-         _hasPath = false;
          var _loc1_:Point = new Point(_house._mc.x + 50,_house._mc.y + 60);
          _targetCenter = GRID.FromISO(GLOBAL._bCage._mc.x,GLOBAL._bCage._mc.y);
-         PATHING.GetPath(_tmpPoint,new Rectangle(_loc1_.x,_loc1_.y,10,10),this.SetWaypoints,true);
+         PATHING.GetPath(_tmpPoint,new Rectangle(_loc1_.x,_loc1_.y,10,10),this.setWaypoints,true);
          _house = GLOBAL._bCage;
       }
       
-      public function ModeFreeze() : void
+      public function changeModeFreeze() : void
       {
+         changeMode();
          _behaviour = "freeze";
-         _hasTarget = false;
-         _atTarget = false;
          _attacking = false;
-         this._quaking = false;
-         _hasPath = false;
          ++CREATURES._creatureID;
          ++CREATURES._creatureCount;
          CREATURES._creatures[CREATURES._creatureID] = this;
-         PATHING.GetPath(_tmpPoint,new Rectangle(GLOBAL._bChamber._mc.x,GLOBAL._bChamber._mc.y,80,80),this.SetWaypoints,true);
+         PATHING.GetPath(_tmpPoint,new Rectangle(GLOBAL._bChamber._mc.x,GLOBAL._bChamber._mc.y,80,80),this.setWaypoints,true);
       }
       
-      override public function ModeEnrage(param1:Number, param2:Number, param3:Number) : void
+      public function changeModeDefend() : void
       {
-         _enraged = param1;
-         _speedMult = param2;
-         _damageMult = param3;
-         _secureSpeedMult = new SecNum(int(param2 * 100));
-         _secureDamageMult = new SecNum(int(param3 * 100));
-         if(_enraged > 0)
-         {
-            if(_enraged > 0 && filters.length == 0)
-            {
-               filters = [new GlowFilter(16724735,1,3,3,5,1)];
-            }
-         }
-         else
-         {
-            filters = [];
-         }
-      }
-      
-      public function ModeBuff() : void
-      {
-         _behaviour = k_sBHVR_BUFF;
-         _hasTarget = false;
-         _atTarget = false;
-         _hasPath = false;
-         node = MAP.CreepCellAdd(_tmpPoint,_id,this);
-         this.FindBuffTargets();
-      }
-      
-      public function ModeDefend() : void
-      {
+         changeMode();
          _behaviour = k_sBHVR_DEFEND;
-         _hasTarget = false;
-         _atTarget = false;
-         _hasPath = false;
       }
       
-      public function ModeDecoy() : void
+      public function changeModeDecoy() : void
       {
          var _loc2_:Decoy = null;
          var _loc3_:Rectangle = null;
@@ -471,12 +383,9 @@ package com.monsters.monsters.champions
          var _loc1_:SiegeWeapon = SiegeWeapons.activeWeapon;
          if(Boolean(_loc1_) && _loc1_ is Decoy)
          {
+            changeMode();
             _behaviour = "decoy";
-            _hasTarget = false;
-            _atTarget = false;
-            _hasPath = false;
             _attacking = false;
-            this._quaking = false;
             _targetCreep = null;
             _loc2_ = _loc1_ as Decoy;
             _loc3_ = new Rectangle(_loc2_.x,_loc2_.y + _loc2_.decoyGraphic.height / 2,40,40);
@@ -553,15 +462,15 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function Click(param1:MouseEvent) : void
+      public function click(param1:MouseEvent) : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == "build")
          {
-            Show();
+            show();
          }
       }
       
-      public function CanShootCreep() : Boolean
+      override public function canShootCreep() : Boolean
       {
          if(_targetCreep == null)
          {
@@ -569,20 +478,10 @@ package com.monsters.monsters.champions
          }
          if(_targetCreep._movement == "fly")
          {
-            if(_creatureID != "G3")
-            {
-               if(_creatureID != "G4")
-               {
-                  return false;
-               }
-               if(this._powerLevel.Get() < KORATH_POWER_FIREBALL || this._level.Get() < 4)
-               {
-                  return false;
-               }
-            }
+            return false;
          }
          var _loc1_:Number = GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint);
-         if(_loc1_ > this._range)
+         if(_loc1_ > m_range)
          {
             return false;
          }
@@ -597,14 +496,14 @@ package com.monsters.monsters.champions
          return false;
       }
       
-      private function CanHitBuilding() : Boolean
+      protected function canHitBuilding() : Boolean
       {
          if(_targetBuilding == null)
          {
             return false;
          }
          var _loc1_:Number = GLOBAL.QuickDistance(_targetBuilding._position,_tmpPoint);
-         if(_loc1_ > this._range)
+         if(_loc1_ > m_range)
          {
             return false;
          }
@@ -633,9 +532,8 @@ package com.monsters.monsters.champions
          _rasterPt = null;
       }
       
-      override public function Clear() : void
+      override public function clear() : void
       {
-         _health.Set(0);
          if(CREATURES._guardian == this)
          {
             CREATURES._guardian = null;
@@ -644,28 +542,39 @@ package com.monsters.monsters.champions
          {
             CREEPS._guardian = null;
          }
-         this.clearRasterData();
+         super.clear();
       }
       
-      public function InterceptTarget() : void
+      public function interceptTarget() : void
       {
          _intercepting = false;
          _looking = true;
          if(_movement == "fly" && _altitude < 60)
          {
-            TweenLite.to(_graphicMC,2,{
-               "y":_graphicMC.y - (108 - _altitude),
-               "ease":Sine.easeIn,
-               "onComplete":this.FlyerTakeOff
-            });
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               TweenLite.to(_rasterPt,2,{
+                  "y":_rasterPt.y - (108 - _altitude),
+                  "ease":Sine.easeIn,
+                  "onComplete":this.flyerTakeOff
+               });
+            }
+            else
+            {
+               TweenLite.to(_graphicMC,2,{
+                  "y":_graphicMC.y - (108 - _altitude),
+                  "ease":Sine.easeIn,
+                  "onComplete":this.flyerTakeOff
+               });
+            }
             _altitude = 61;
          }
-         if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range)
+         if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range)
          {
             _atTarget = true;
             _looking = false;
          }
-         else if(_noDefensePath || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range * 2 || _movement == "fly")
+         else if(_noDefensePath || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range * 2 || _movement == "fly")
          {
             _waypoints = [_targetCreep._tmpPoint];
             _targetPosition = _targetCreep._tmpPoint;
@@ -682,102 +591,14 @@ package com.monsters.monsters.champions
          _hasTarget = true;
       }
       
-      public function FindBuffTargets() : void
+      protected function getTargetCreeps() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:Boolean = false;
-         var _loc1_:Object = BASE._buildingsMain;
-         for each(_loc2_ in _loc1_)
-         {
-            if(_loc2_._class !== "decoration" && _loc2_._class !== "immovable" && _loc2_._hp.Get() > 0 && _loc2_._class !== "enemy")
-            {
-               _loc3_ = true;
-            }
-         }
-         if(!_loc3_)
-         {
-            ModeRetreat();
-            return;
-         }
-         _looking = true;
-         var _loc5_:Boolean = false;
-         _targetCreeps = MAP.CreepCellFind(_tmpPoint,25 * 60,1,this);
-         if(_targetCreeps.length > 0)
-         {
-            _targetCreeps.sortOn(["dist"],Array.NUMERIC);
-            if(!(_targetCreep && _targetCreep._health.Get() > 0 && _targetCreep._health.Get() < _targetCreep._maxHealth))
-            {
-               _loc5_ = true;
-               while(_targetCreeps.length > 0 && (_targetCreeps[0].creep._behaviour == "heal" || _targetCreeps[0].creep._health.Get() == _targetCreeps[0].creep._maxHealth))
-               {
-                  _targetCreeps.shift();
-               }
-               if(_targetCreeps.length > 0)
-               {
-                  this._helpCreep = _targetCreeps[0].creep;
-                  if(_movement == "fly")
-                  {
-                     _waypoints = [this._helpCreep._tmpPoint];
-                     _targetPosition = this._helpCreep._tmpPoint;
-                  }
-                  else
-                  {
-                     WaypointTo(this._helpCreep._tmpPoint,null);
-                  }
-               }
-            }
-         }
-         if(_targetCreeps.length > 0)
-         {
-            _loc5_ = false;
-            this._helpCreep = _targetCreeps[0].creep;
-            if(_movement == "fly")
-            {
-               _waypoints = [this._helpCreep._tmpPoint];
-               _targetPosition = this._helpCreep._tmpPoint;
-            }
-            else
-            {
-               WaypointTo(this._helpCreep._tmpPoint,null);
-            }
-            _behaviour = k_sBHVR_BUFF;
-         }
-         else if(this._helpCreep && this._helpCreep._health.Get() > 0 && this._helpCreep._health.Get() < this._helpCreep._maxHealth)
-         {
-            _loc5_ = false;
-            if(_movement == "fly")
-            {
-               _waypoints = [this._helpCreep._tmpPoint];
-               _targetPosition = this._helpCreep._tmpPoint;
-            }
-            else
-            {
-               WaypointTo(this._helpCreep._tmpPoint,null);
-            }
-            _behaviour = k_sBHVR_BUFF;
-         }
-         else if(_targetCreeps.length == 0)
-         {
-            this.ModeAttack();
-            return;
-         }
-         if(_waypoints.length)
-         {
-            _hasTarget = true;
-            _hasPath = true;
-         }
+         _targetCreeps = Targeting.getCreepsInRange(800,_tmpPoint,attackFlags);
       }
       
       public function FindDefenseTargets() : void
       {
-         if(_creatureID == "G3" || _creatureID == "G4" && this._powerLevel.Get() >= KORATH_POWER_FIREBALL && this._level.Get() > 3)
-         {
-            _targetCreeps = MAP.CreepCellFind(_tmpPoint,800,1);
-         }
-         else
-         {
-            _targetCreeps = MAP.CreepCellFind(_tmpPoint,800);
-         }
+         this.getTargetCreeps();
          if(_targetCreeps.length > 0)
          {
             _targetCreeps.sortOn(["dist"],Array.NUMERIC);
@@ -789,158 +610,175 @@ package com.monsters.monsters.champions
          if(_targetCreeps.length > 0)
          {
             _targetCreep = _targetCreeps[0].creep;
-            this.InterceptTarget();
+            this.interceptTarget();
             if(_movement == "fly" && _altitude < 60)
             {
-               TweenLite.to(_graphicMC,2,{
-                  "y":_graphicMC.y - (108 - _altitude),
-                  "ease":Sine.easeIn,
-                  "onComplete":this.FlyerTakeOff
-               });
+               if(BYMConfig.instance.RENDERER_ON)
+               {
+                  TweenLite.to(_rasterPt,2,{
+                     "y":_rasterPt.y - (108 - _altitude),
+                     "ease":Sine.easeIn,
+                     "onComplete":this.flyerTakeOff
+                  });
+               }
+               else
+               {
+                  TweenLite.to(_graphicMC,2,{
+                     "y":_graphicMC.y - (108 - _altitude),
+                     "ease":Sine.easeIn,
+                     "onComplete":this.flyerTakeOff
+                  });
+               }
             }
             _behaviour = "defend";
          }
-         else if(_targetCreep && _targetCreep._health.Get() > 0)
+         else if(Boolean(_targetCreep) && _targetCreep.health > 0)
          {
             if(_movement == "fly")
             {
-               this.InterceptTarget();
+               this.interceptTarget();
             }
             _behaviour = "defend";
          }
          else if(_behaviour != "cage" && _behaviour != "pen")
          {
             _atTarget = false;
-            this.ModeCage();
+            this.changeModeCage();
          }
       }
       
-      override public function FindTarget(param1:int = 0, param2:Boolean = false) : void
+      override public function findTarget(param1:int = 0) : void
       {
-         var _loc5_:BFOUNDATION = null;
-         var _loc9_:Point = null;
-         var _loc10_:Point = null;
-         var _loc11_:int = 0;
-         var _loc13_:* = undefined;
-         var _loc14_:int = 0;
-         var _loc15_:Point = null;
-         var _loc16_:int = 0;
+         var _loc4_:BFOUNDATION = null;
+         var _loc7_:Point = null;
+         var _loc8_:Point = null;
+         var _loc9_:int = 0;
+         var _loc10_:Array = null;
+         var _loc11_:Object = null;
+         var _loc13_:Vector.<Object> = null;
+         var _loc14_:Vector.<Object> = null;
+         var _loc15_:int = 0;
+         var _loc16_:Point = null;
          var _loc17_:int = 0;
          var _loc18_:int = 0;
-         var _loc19_:Number = NaN;
+         var _loc19_:int = 0;
          var _loc20_:Number = NaN;
-         var _loc21_:Point = null;
-         var _loc3_:int = getTimer();
-         var _loc12_:Array = [];
+         var _loc21_:Number = NaN;
+         var _loc22_:Point = null;
+         var _loc2_:int = getTimer();
+         _loc10_ = [];
          _looking = true;
-         _loc9_ = PATHING.FromISO(_tmpPoint);
-         for each(_loc5_ in BASE._buildingsMain)
+         _loc7_ = PATHING.FromISO(_tmpPoint);
+         var _loc12_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc12_)
          {
-            if(_loc5_._hp.Get() > 0 && (_loc5_._class == "resource" || _loc5_._type == 6 || _loc5_._type == 14 || _loc5_._type == 112))
+            if(_loc4_.health > 0 && (_loc4_._class == "resource" || _loc4_._type == 6 || _loc4_._type == 14 || _loc4_._type == 112))
             {
-               _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
-               _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc5_._middle;
-               _loc12_.push({
-                  "building":_loc5_,
-                  "distance":_loc11_
+               _loc8_ = GRID.FromISO(_loc4_._mc.x,_loc4_._mc.y + _loc4_._middle);
+               _loc9_ = GLOBAL.QuickDistance(_loc7_,_loc8_) - _loc4_._middle;
+               _loc10_.push({
+                  "building":_loc4_,
+                  "distance":_loc9_
                });
             }
          }
-         for each(_loc5_ in BASE._buildingsTowers)
+         _loc13_ = InstanceManager.getInstancesByClass(BTOWER);
+         for each(_loc4_ in _loc13_)
          {
-            if(MONSTERBUNKER.isBunkerBuilding(_loc5_._type))
+            if(_loc4_.health > 0 && !(_loc4_ as BTOWER).isJard)
             {
-               _loc13_ = _loc5_;
-               if(_loc13_._hp.Get() > 0 && (_loc13_._used > 0 || _loc13_._monstersDispatchedTotal > 0))
-               {
-                  _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
-                  _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc5_._middle;
-                  _loc12_.push({
-                     "building":_loc5_,
-                     "distance":_loc11_,
-                     "expand":false
-                  });
-               }
-            }
-            else if(_loc5_._class != "trap" && _loc5_._hp.Get() > 0 && !(_loc5_ as BTOWER).isJard)
-            {
-               _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
-               _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc5_._middle;
-               _loc12_.push({
-                  "building":_loc5_,
-                  "distance":_loc11_,
+               _loc8_ = GRID.FromISO(_loc4_._mc.x,_loc4_._mc.y + _loc4_._middle);
+               _loc9_ = GLOBAL.QuickDistance(_loc7_,_loc8_) - _loc4_._middle;
+               _loc10_.push({
+                  "building":_loc4_,
+                  "distance":_loc9_,
                   "expand":false
                });
             }
          }
-         if(_loc12_.length == 0)
+         _loc14_ = InstanceManager.getInstancesByClass(Bunker);
+         for each(_loc4_ in _loc14_)
          {
-            for each(_loc5_ in BASE._buildingsMain)
+            _loc11_ = _loc4_;
+            if(_loc11_.health > 0 && (_loc11_._used > 0 || _loc11_._monstersDispatchedTotal > 0))
             {
-               if(_loc5_._class != "decoration" && _loc5_._class != "immovable" && _loc5_._hp.Get() > 0 && _loc5_._class != "enemy")
+               _loc8_ = GRID.FromISO(_loc4_._mc.x,_loc4_._mc.y + _loc4_._middle);
+               _loc9_ = GLOBAL.QuickDistance(_loc7_,_loc8_) - _loc4_._middle;
+               _loc10_.push({
+                  "building":_loc4_,
+                  "distance":_loc9_,
+                  "expand":false
+               });
+            }
+         }
+         if(_loc10_.length == 0)
+         {
+            for each(_loc4_ in BASE._buildingsMain)
+            {
+               if(_loc4_ is BMUSHROOM === false && _loc4_._class != "decoration" && _loc4_._class != "immovable" && _loc4_.health > 0 && _loc4_._class != "enemy")
                {
-                  if(_loc5_._class == "tower" && !MONSTERBUNKER.isBunkerBuilding(_loc5_._type))
+                  if(_loc4_._class == "tower" && _loc4_ is Bunker === false)
                   {
-                     if((_loc5_ as BTOWER).isJard)
+                     if((_loc4_ as BTOWER).isJard)
                      {
                         continue;
                      }
                   }
-                  _loc10_ = GRID.FromISO(_loc5_._mc.x,_loc5_._mc.y + _loc5_._middle);
-                  _loc11_ = GLOBAL.QuickDistance(_loc9_,_loc10_) - _loc5_._middle;
-                  _loc12_.push({
-                     "building":_loc5_,
-                     "distance":_loc11_,
+                  _loc8_ = GRID.FromISO(_loc4_._mc.x,_loc4_._mc.y + _loc4_._middle);
+                  _loc9_ = GLOBAL.QuickDistance(_loc7_,_loc8_) - _loc4_._middle;
+                  _loc10_.push({
+                     "building":_loc4_,
+                     "distance":_loc9_,
                      "expand":true
                   });
                }
             }
          }
-         if(_loc12_.length == 0)
+         if(_loc10_.length == 0)
          {
-            ModeRetreat();
+            changeModeRetreat();
          }
          else
          {
-            _loc12_.sortOn("distance",Array.NUMERIC);
-            _loc14_ = 0;
+            _loc10_.sortOn("distance",Array.NUMERIC);
+            _loc15_ = 0;
             if(_movement == "burrow")
             {
                _hasTarget = true;
                _hasPath = true;
-               _loc15_ = GRID.FromISO(_loc12_[_loc14_].building._mc.x,_loc12_[_loc14_].building._mc.y);
-               _loc16_ = int(Math.random() * 4);
-               _loc17_ = int(_loc12_[_loc14_].building._footprint[0].height);
-               _loc18_ = int(_loc12_[_loc14_].building._footprint[0].width);
-               if(_loc16_ == 0)
+               _loc16_ = GRID.FromISO(_loc10_[_loc15_].building._mc.x,_loc10_[_loc15_].building._mc.y);
+               _loc17_ = int(Math.random() * 4);
+               _loc18_ = int(_loc10_[_loc15_].building._footprint[0].height);
+               _loc19_ = int(_loc10_[_loc15_].building._footprint[0].width);
+               if(_loc17_ == 0)
                {
-                  _loc15_.x += Math.random() * _loc17_;
-                  _loc15_.y += _loc18_;
+                  _loc16_.x += Math.random() * _loc18_;
+                  _loc16_.y += _loc19_;
                }
-               else if(_loc16_ == 1)
+               else if(_loc17_ == 1)
                {
-                  _loc15_.x += _loc17_;
-                  _loc15_.y += _loc18_;
+                  _loc16_.x += _loc18_;
+                  _loc16_.y += _loc19_;
                }
-               else if(_loc16_ == 2)
+               else if(_loc17_ == 2)
                {
-                  _loc15_.x += _loc17_ - Math.random() * _loc17_ / 2;
-                  _loc15_.y -= _loc18_ / 4;
+                  _loc16_.x += _loc18_ - Math.random() * _loc18_ / 2;
+                  _loc16_.y -= _loc19_ / 4;
                }
-               else if(_loc16_ == 3)
+               else if(_loc17_ == 3)
                {
-                  _loc15_.x -= _loc17_ / 4;
-                  _loc15_.y += _loc18_ - Math.random() * _loc18_ / 2;
+                  _loc16_.x -= _loc18_ / 4;
+                  _loc16_.y += _loc19_ - Math.random() * _loc19_ / 2;
                }
-               _waypoints = [GRID.ToISO(_loc15_.x,_loc15_.y,0)];
+               _waypoints = [GRID.ToISO(_loc16_.x,_loc16_.y,0)];
                _targetPosition = _waypoints[0];
-               _targetBuilding = _loc12_[_loc14_].building;
+               _targetBuilding = _loc10_[_loc15_].building;
             }
             else if(_movement == "fly")
             {
                _hasTarget = true;
                _hasPath = true;
-               _targetBuilding = _loc12_[_loc14_].building;
+               _targetBuilding = _loc10_[_loc15_].building;
                _targetCenter = _targetBuilding._position;
                if(GLOBAL.QuickDistance(_tmpPoint,_targetCenter) < 170)
                {
@@ -950,50 +788,50 @@ package com.monsters.monsters.champions
                }
                else
                {
-                  _loc19_ = Math.atan2(_tmpPoint.y - _targetCenter.y,_tmpPoint.x - _targetCenter.x) * 57.2957795;
-                  _loc19_ = _loc19_ + (Math.random() * 40 - 20);
-                  _loc19_ = _loc19_ / (180 / Math.PI);
-                  _loc20_ = 2 * 60 + Math.random() * 10;
-                  _loc21_ = new Point(_targetCenter.x + Math.cos(_loc19_) * _loc20_ * 1.7,_targetCenter.y + Math.sin(_loc19_) * _loc20_);
-                  _waypoints = [_loc21_];
+                  _loc20_ = Math.atan2(_tmpPoint.y - _targetCenter.y,_tmpPoint.x - _targetCenter.x) * 57.2957795;
+                  _loc20_ = _loc20_ + (Math.random() * 40 - 20);
+                  _loc20_ = _loc20_ / (180 / Math.PI);
+                  _loc21_ = 2 * 60 + Math.random() * 10;
+                  _loc22_ = new Point(_targetCenter.x + Math.cos(_loc20_) * _loc21_ * 1.7,_targetCenter.y + Math.sin(_loc20_) * _loc21_);
+                  _waypoints = [_loc22_];
                   _targetPosition = _waypoints[0];
                }
             }
             else if(GLOBAL._catchup)
             {
-               WaypointTo(new Point(_loc12_[0].building._mc.x,_loc12_[0].building._mc.y),_loc12_[0].building);
+               WaypointTo(new Point(_loc10_[0].building._mc.x,_loc10_[0].building._mc.y),_loc10_[0].building);
             }
             else
             {
-               _loc14_ = 0;
-               while(_loc14_ < 2)
+               _loc15_ = 0;
+               while(_loc15_ < 2)
                {
-                  if(_loc12_.length > _loc14_)
+                  if(_loc10_.length > _loc15_)
                   {
-                     WaypointTo(new Point(_loc12_[_loc14_].building._mc.x,_loc12_[_loc14_].building._mc.y),_loc12_[_loc14_].building);
+                     WaypointTo(new Point(_loc10_[_loc15_].building._mc.x,_loc10_[_loc15_].building._mc.y),_loc10_[_loc15_].building);
                   }
-                  _loc14_++;
+                  _loc15_++;
                }
             }
          }
       }
       
-      override public function SetWaypoints(param1:Array, param2:BFOUNDATION = null, param3:Boolean = false) : void
+      override public function setWaypoints(param1:Array, param2:BFOUNDATION = null, param3:Boolean = false) : void
       {
          var _loc4_:Boolean = false;
          if(param3)
          {
-            if(_behaviour == "attack")
+            if(_behaviour == GLOBAL.e_BASE_MODE.ATTACK)
             {
-               this.FindTarget();
+               this.findTarget();
             }
             if(_behaviour == "cage")
             {
-               this.ModeCage();
+               this.changeModeCage();
             }
             if(_behaviour == "retreat")
             {
-               ModeRetreat();
+               changeModeRetreat();
             }
          }
          else
@@ -1031,13 +869,13 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function LevelSet(param1:int, param2:int = 0) : void
+      public function levelSet(param1:int, param2:int = 0) : void
       {
          var _loc3_:Object = null;
          if(param1 != this._level.Get())
          {
             this._level = new SecNum(param1);
-            if(this is KOTHChampion)
+            if(this is Krallen)
             {
                this._spriteID = _creatureID + "_" + this._powerLevel.Get();
             }
@@ -1052,12 +890,12 @@ package com.monsters.monsters.champions
             SPRITES.SetupSprite(this._spriteID);
             _loc3_ = SPRITES.GetSpriteDescriptor(this._spriteID);
             _graphic = new BitmapData(_loc3_.width,_loc3_.height,true,0xffffff);
-            _graphicMC = !BYMConfig.instance.RENDERER_ON ? addChild(new Bitmap(_graphic)) as Bitmap : new Bitmap(_graphic);
+            _graphicMC = !BYMConfig.instance.RENDERER_ON ? graphic.addChild(new Bitmap(_graphic)) as Bitmap : new Bitmap(_graphic);
             if(BYMConfig.instance.RENDERER_ON && Boolean(_rasterData))
             {
                _rasterData.data = _graphic;
             }
-            if(this is KOTHChampion)
+            if(this is Krallen)
             {
                _graphicMC.x = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._powerLevel.Get(),"offset_x");
                _graphicMC.y = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._powerLevel.Get(),"offset_y");
@@ -1070,13 +908,12 @@ package com.monsters.monsters.champions
             this._feeds = new SecNum(0);
             this._feedTime = new SecNum(int(GLOBAL.Timestamp() + CHAMPIONCAGE.GetGuardianProperty(_creatureID,param1,"feedTime")));
             LOGGER.Log("fed","level " + this._level.Get());
-            _maxHealth = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
-            _maxSpeed = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
-            _maxSpeed *= 1.1;
+            maxHealthProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
+            moveSpeedProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
             this._regen = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"healtime");
-            _health.Set(_maxHealth);
-            _damage = new SecNum(int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")));
-            this._range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
+            setHealth(maxHealth);
+            damageProperty.value = int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage"));
+            m_range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
             _movement = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"movement");
             if(param1 >= 6)
             {
@@ -1087,149 +924,48 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function TickBAttack() : void
+      protected function tickBAttack() : void
       {
-         var _loc2_:Object = null;
-         var _loc3_:* = undefined;
-         var _loc4_:MonsterBase = null;
-         var _loc5_:Point = null;
-         if(_health.Get() <= 0)
+         if(health <= 0)
          {
-            MAP.CreepCellDelete(_id,node);
-            ModeRetreat();
-            _venom.Set(0);
+            Targeting.CreepCellDelete(_id,node);
+            changeModeRetreat();
             ATTACK.Log(_creatureID,LOGIN._playerName + "\'s Level " + this._level.Get() + " " + CHAMPIONCAGE._guardians[_creatureID].name + " retreated.");
             SOUNDS.Play("monsterland" + (1 + int(Math.random() * 3)));
-            if(GLOBAL._mode == "attack")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK)
             {
                LOGGER.Stat([54,_creatureID,1,this._level.Get()]);
             }
             BASE.Save();
             return;
          }
-         if(this.DoQuakeCheck())
-         {
-            return;
-         }
-         var _loc1_:Number = 1;
-         if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
-         {
-            _loc1_ *= 1.25;
-         }
-         if(_creatureID == "G3" && _frameNumber % 100 == 0)
-         {
-            this.FindBuffTargets();
-            if(_behaviour == k_sBHVR_BUFF)
-            {
-               this.TickBBuff();
-               return;
-            }
-            _loc2_ = CREEPS._creeps;
-            for each(_loc3_ in _loc2_)
-            {
-               if(_loc3_ != this)
-               {
-                  _loc4_ = _loc3_ as MonsterBase;
-                  if((_loc4_) && _loc4_._damageMult >= 1 - this._buff && GLOBAL.QuickDistanceSquared(_tmpPoint,_loc4_._tmpPoint) < 62500)
-                  {
-                     _loc3_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
-                  }
-               }
-            }
-         }
          if(_hasTarget)
          {
             if(!_targetCreep)
             {
-               if(_targetBuilding == null || _targetBuilding._hp.Get() <= 0 || _targetBuilding._class == "tower" && !MONSTERBUNKER.isBunkerBuilding(_targetBuilding._type) && (_targetBuilding as BTOWER).isJard)
+               if(_targetBuilding == null || _targetBuilding.health <= 0 || _targetBuilding._class == "tower" && !MONSTERBUNKER.isBunkerBuilding(_targetBuilding._type) && (_targetBuilding as BTOWER).isJard)
                {
-                  _hasTarget = false;
-                  _attacking = false;
-                  _atTarget = false;
-                  this.FindTarget();
+                  loseTarget();
+                  this.findTarget();
                }
             }
-            else if(_targetCreep._health.Get() <= 0)
+            else if(_targetCreep.health <= 0)
             {
-               _hasTarget = false;
-               _attacking = false;
-               _atTarget = false;
-               _targetCreep = null;
-               this.FindTarget();
+               loseTarget();
+               this.findTarget();
             }
          }
-         if(!_looking && _frameNumber % (GLOBAL._catchup ? 200 : 100) == 0 && !_attacking)
+         if(!_looking && !_attacking && _frameNumber % (GLOBAL._catchup ? 200 : 100) == 0)
          {
-            this.FindTarget(0,true);
+            this.findTarget(0);
          }
          if(_atTarget)
          {
             _attacking = true;
             if(attackCooldown <= 0)
             {
-               attackCooldown += int(_attackDelay / _speedMult);
-               if(_creatureID == "G3" || _creatureID == "G4" && _targetCreep && _targetCreep._movement == "fly" && this._powerLevel.Get() >= KORATH_POWER_FIREBALL && this._level.Get() > 3)
-               {
-                  if(_targetCreep && _targetCreep._health.Get() > 0)
-                  {
-                     _loc5_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetPosition,0.8);
-                     if(_creatureID == "G4")
-                     {
-                        FIREBALLS.Spawn2(_loc5_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() * _loc1_ / 4,0,FIREBALLS.TYPE_MAGMA);
-                        this.AddFlameDOT(_targetCreep);
-                     }
-                     else
-                     {
-                        FIREBALLS.Spawn2(_loc5_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() * _loc1_);
-                        FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
-                     }
-                  }
-                  else if(_targetBuilding)
-                  {
-                     _loc5_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetPosition,0.8);
-                     FIREBALLS.Spawn(_loc5_,_targetPosition,_targetBuilding,8,_damage.Get() * _loc1_);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
-                  }
-                  else
-                  {
-                     this.FindBuffTargets();
-                  }
-               }
-               else
-               {
-                  ++this._attackNum;
-                  if(Boolean(_targetBuilding) && _targetBuilding._fortification.Get() > 0)
-                  {
-                     ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,_damage.Get() * _loc1_ * (100 - (_targetBuilding._fortification.Get() * 10 + 10)) / 100,_mc.visible);
-                  }
-                  else
-                  {
-                     ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,_damage.Get() * _loc1_,_mc.visible);
-                  }
-                  if(_targetCreep)
-                  {
-                     _targetCreep._health.Add(-(_damage.Get() * _loc1_ * _targetCreep._damageMult));
-                     if(_creatureID == "G4")
-                     {
-                        this.AddFlameDOT(_targetCreep);
-                     }
-                  }
-                  else if(_targetBuilding)
-                  {
-                     _targetBuilding.Damage(_damage.Get() * _loc1_,_tmpPoint.x,_tmpPoint.y,_targetGroup,true,_secureLootMult);
-                     if(_creatureID === "G5" && _targetBuilding is ILootable)
-                     {
-                        if(_targetBuilding._looted)
-                        {
-                           this.FindTarget();
-                        }
-                     }
-                  }
-                  else
-                  {
-                     this.FindTarget();
-                  }
-               }
+               attackCooldown += int(attackDelay);
+               this.doAttackDamage();
                SOUNDS.Play("hit" + int(4 + Math.random() * 1),0.1 + Math.random() * 0.1);
             }
             else
@@ -1243,69 +979,74 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function TickBDefend() : void
+      protected function doAttackDamage() : void
       {
-         var _loc1_:Object = null;
-         var _loc2_:Vector.<ChampionBase> = null;
-         var _loc3_:Object = null;
-         var _loc4_:Array = null;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:Point = null;
-         if(_health.Get() <= 0)
+         if(Boolean(_targetBuilding) && _targetBuilding._fortification.Get() > 0)
+         {
+            ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,damage * 1 * (100 - (_targetBuilding._fortification.Get() * 10 + 10)) / 100,_mc.visible);
+         }
+         else
+         {
+            ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,damage * 1,_mc.visible);
+         }
+         if(_targetCreep)
+         {
+            _targetCreep.modifyHealth(-(damage * 1));
+         }
+         else if(_targetBuilding)
+         {
+            _targetBuilding.modifyHealth(damage * 1,this);
+            if(_creatureID === "G5" && _targetBuilding is ILootable)
+            {
+               if(_targetBuilding._looted)
+               {
+                  this.findTarget();
+               }
+            }
+         }
+         else
+         {
+            this.findTarget();
+         }
+      }
+      
+      override public function modifyHealth(param1:Number, param2:ITargetable = null) : Number
+      {
+         return super.modifyHealth(param1,param2);
+      }
+      
+      protected function tickBDefend() : void
+      {
+         if(health <= 0)
          {
             ATTACK.Log(_creatureID,KEYS.Get("attacklog_champ_injured",{
                "v1":BASE._ownerName,
                "v2":this._level.Get(),
                "v3":CHAMPIONCAGE._guardians[_creatureID].name
             }));
-            _venom.Set(0);
-            ModeRetreat();
-            if(GLOBAL._mode == "attack")
+            changeModeRetreat();
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK)
             {
                LOGGER.Stat([56,_creatureID,1,this._level.Get()]);
             }
             BASE.Save();
             return;
          }
-         if(this.DoQuakeCheck())
-         {
-            return;
-         }
-         if(_creatureID == "G3" && _frameNumber % 100 == 0)
-         {
-            _loc2_ = CREATURES._guardianList;
-            _loc3_ = CREATURES._creatures;
-            for each(_loc1_ in _loc2_)
-            {
-               if(_loc1_._behaviour === k_sBHVR_DEFEND && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,_tmpPoint) < 250 && _loc1_ != this)
-               {
-                  _loc1_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
-               }
-            }
-            for each(_loc1_ in _loc3_)
-            {
-               if(_loc1_._behaviour === k_sBHVR_DEFEND && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,_tmpPoint) < 250 && _loc1_ != this)
-               {
-                  _loc1_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
-               }
-            }
-         }
          if(_hasTarget)
          {
-            if(_targetCreep._health.Get() <= 0)
+            if(_targetCreep.health <= 0)
             {
                _hasTarget = false;
                _atTarget = false;
-               _attacking = false;
                _hasPath = false;
+               _attacking = false;
                this.FindDefenseTargets();
             }
-            else if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range)
+            else if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range)
             {
                _atTarget = true;
             }
-            else if(_creatureID == "G4" && _targetCreep._movement == "fly" && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range * 2)
+            else if(_creatureID == "G4" && _targetCreep._movement == "fly" && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range * 2)
             {
                _atTarget = true;
             }
@@ -1313,7 +1054,7 @@ package com.monsters.monsters.champions
             {
                this.FindDefenseTargets();
             }
-            else if(_attacking && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) > this._range * 2)
+            else if(_attacking && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) > m_range * 2)
             {
                _attacking = false;
                _atTarget = false;
@@ -1325,12 +1066,12 @@ package com.monsters.monsters.champions
          {
             _attacking = true;
             _intercepting = false;
-            if(_movement != "fly" || _targetCreep._creatureID == "C14" || _targetCreep._creatureID == "C12" && _targetCreep.PoweredUp() || _targetCreep._creatureID == "G3" || _targetCreep._creatureID == "G4" || _targetCreep._creatureID == "IC7" || _targetCreep._creatureID == "IC5")
+            if(_movement != "fly" || _targetCreep._creatureID == "C14" || _targetCreep._creatureID == "C12" && _targetCreep.poweredUp() || _targetCreep._creatureID == "G3" || _targetCreep._creatureID == "G4" || _targetCreep._creatureID == "IC7" || _targetCreep._creatureID == "IC5")
             {
                if(_targetCreep._behaviour != "heal")
                {
                   _targetCreep._targetCreep = this;
-                  if(_targetCreep._creatureID == "C14" || _targetCreep._creatureID == "IC7" || _targetCreep._creatureID == "C12" && _targetCreep.PoweredUp() || _targetCreep._creatureID == "G3" || _targetCreep._creatureID == "G4" || (GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 || _targetCreep._creatureID.substr(0,1) == "G") && _movement != "fly")
+                  if(_targetCreep._creatureID == "C14" || _targetCreep._creatureID == "IC7" || _targetCreep._creatureID == "C12" && _targetCreep.poweredUp() || _targetCreep._creatureID == "G3" || _targetCreep._creatureID == "G4" || (GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 || _targetCreep._creatureID.substr(0,1) == "G") && _movement != "fly")
                   {
                      _targetCreep._atTarget = true;
                   }
@@ -1341,74 +1082,13 @@ package com.monsters.monsters.champions
                   }
                   _targetCreep._hasTarget = true;
                   _targetCreep._looking = false;
-                  _targetCreep._hasTarget = true;
                }
             }
             if(attackCooldown <= 0)
             {
-               attackCooldown += int(_attackDelay / _speedMult);
-               if(_creatureID == "G3" || _creatureID == "G4" && this._powerLevel.Get() >= KORATH_POWER_FIREBALL && this._level.Get() > 3 && _targetCreep._movement == "fly")
-               {
-                  _loc7_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetCreep._tmpPoint,0.8);
-                  if(_creatureID == "G4")
-                  {
-                     FIREBALLS.Spawn2(_loc7_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() / 4,0,FIREBALLS.TYPE_MAGMA);
-                     this.AddFlameDOT(_targetCreep);
-                  }
-                  else
-                  {
-                     FIREBALLS.Spawn2(_loc7_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get(),0);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
-                  }
-               }
-               else
-               {
-                  ++this._attackNum;
-                  ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,_damage.Get() * _targetCreep._damageMult,_mc.visible);
-                  _targetCreep._health.Add(-(_damage.Get() * _targetCreep._damageMult));
-                  if(_creatureID == "G4")
-                  {
-                     this.AddFlameDOT(_targetCreep);
-                  }
-               }
-               if(_targetCreep._creatureID == "C14" || _targetCreep._creatureID == "G3" || _targetCreep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
-               {
-                  if(!_targetCreep._explode && !_targetCreep._targetCreep && _targetCreep._behaviour != "heal")
-                  {
-                     _targetCreep._targetCreep = this;
-                     if(_targetCreep._creatureID == "C14" || _targetCreep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
-                     {
-                        _targetCreep._atTarget = true;
-                     }
-                     else
-                     {
-                        _targetCreep._atTarget = false;
-                        _targetCreep._waypoints = [_tmpPoint];
-                     }
-                     _targetCreep._hasTarget = true;
-                     _targetCreep._looking = false;
-                     _targetCreep._hasTarget = true;
-                  }
-               }
-               _loc4_ = MAP.CreepCellFind(_tmpPoint,50);
-               _loc5_ = int(_loc4_.length);
-               _loc6_ = 0;
-               while(_loc6_ < 5 && _loc6_ < _loc5_)
-               {
-                  if(_movement != "fly" || _loc4_[_loc6_].creep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
-                  {
-                     if(!_loc4_[_loc6_].creep._explode && _loc4_[_loc6_].creep._behaviour != "heal")
-                     {
-                        _loc4_[_loc6_].creep._targetCreep = this;
-                        if(_loc4_[_loc6_].creep.CanShootCreep() || GLOBAL.QuickDistance(_loc4_[_loc6_].creep._tmpPoint,_tmpPoint) < 50 && _movement != "fly" || _loc4_[_loc6_].creep._creatureID == "C14")
-                        {
-                           _loc4_[_loc6_].creep._atTarget = true;
-                        }
-                        _loc4_[_loc6_].creep._hasTarget = true;
-                     }
-                  }
-                  _loc6_++;
-               }
+               attackCooldown += int(attackDelay);
+               this.doDefenseDamage();
+               this.aggro();
             }
             else
             {
@@ -1421,29 +1101,100 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function TickBJuice(param1:int) : Boolean
+      protected function aggro() : void
       {
-         if(_health.Get() <= 0)
+         if(_targetCreep.canShootCreep() || _targetCreep._creatureID == "G3" || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50)
          {
-            _health.Set(0);
-            MAP.CreepCellDelete(_id,node);
-            ModeRetreat();
+            if(!_targetCreep._explode && !_targetCreep._targetCreep && _targetCreep._behaviour != "heal")
+            {
+               _targetCreep._targetCreep = this;
+               if(_targetCreep.canShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50)
+               {
+                  _targetCreep._atTarget = true;
+               }
+               else
+               {
+                  _targetCreep._atTarget = false;
+                  _targetCreep._waypoints = [_tmpPoint];
+               }
+               _targetCreep._hasTarget = true;
+               _targetCreep._looking = false;
+            }
+         }
+         var _loc1_:Array = Targeting.getCreepsInRange(50,_tmpPoint,Targeting.getOldStyleTargets(0));
+         var _loc2_:int = int(_loc1_.length);
+         var _loc3_:int = 0;
+         while(_loc3_ < 5 && _loc3_ < _loc2_)
+         {
+            if(Boolean(_loc1_[_loc3_].creep.canShootCreep()) || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50)
+            {
+               if(!_loc1_[_loc3_].creep._explode && _loc1_[_loc3_].creep._behaviour != "heal")
+               {
+                  _loc1_[_loc3_].creep._targetCreep = this;
+                  if(_loc1_[_loc3_].creep.canShootCreep() || GLOBAL.QuickDistance(_loc1_[_loc3_].creep._tmpPoint,_tmpPoint) < 50 || _loc1_[_loc3_].creep._creatureID == "C14")
+                  {
+                     _loc1_[_loc3_].creep._atTarget = true;
+                  }
+                  _loc1_[_loc3_].creep._hasTarget = true;
+               }
+            }
+            _loc3_++;
+         }
+      }
+      
+      protected function doDefenseDamage() : void
+      {
+         var _loc1_:Point = null;
+         if(_creatureID == "G3")
+         {
+            _loc1_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetCreep._tmpPoint,0.8);
+            FIREBALLS.Spawn2(_loc1_,_targetCreep._tmpPoint,_targetCreep,8,damage,0,FIREBALLS.TYPE_FIREBALL,1,this);
+            FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
+         }
+         else
+         {
+            ATTACK.Damage(_tmpPoint.x,_tmpPoint.y - 5,damage,_mc.visible);
+            _targetCreep.modifyHealth(-damage);
+         }
+      }
+      
+      public function tickBJuice(param1:int) : Boolean
+      {
+         if(health <= 0)
+         {
+            setHealth(0);
+            Targeting.CreepCellDelete(_id,node);
+            changeModeRetreat();
             return false;
          }
          if(_atTarget)
          {
-            if(_movement == "fly" && !this._dying)
+            if(_movement == "fly")
             {
-               this._dying = true;
-               TweenLite.to(_graphicMC,0.9,{
-                  "y":_graphicMC.y + _altitude,
-                  "ease":Sine.easeOut,
-                  "onComplete":this.FlyerDeath
-               });
-            }
-            if(_movement == "fly" && !this._dead)
-            {
-               return false;
+               if(!dying)
+               {
+                  _dying = true;
+                  if(BYMConfig.instance.RENDERER_ON)
+                  {
+                     TweenLite.to(_rasterPt,0.9,{
+                        "y":_rasterPt.y + _altitude,
+                        "ease":Sine.easeOut,
+                        "onComplete":flyerJuice
+                     });
+                  }
+                  else
+                  {
+                     TweenLite.to(_graphicMC,0.9,{
+                        "y":_graphicMC.y + _altitude,
+                        "ease":Sine.easeOut,
+                        "onComplete":flyerJuice
+                     });
+                  }
+               }
+               if(!m_juiceReady)
+               {
+                  return false;
+               }
             }
             GLOBAL._bJuicer.BlendGuardian(1000 ^ this._level.Get() / 2);
             return true;
@@ -1451,40 +1202,26 @@ package com.monsters.monsters.champions
          return false;
       }
       
-      public function TickBFreeze(param1:int) : Boolean
+      public function tickBFreeze(param1:int) : Boolean
       {
          if(_atTarget)
          {
-            if(_movement == "fly" && !this._dying)
-            {
-               this._dying = true;
-               TweenLite.to(_graphicMC,0.9,{
-                  "y":_graphicMC.y + _altitude,
-                  "ease":Sine.easeOut,
-                  "onComplete":this.FlyerDeath
-               });
-            }
-            if(_movement == "fly" && !this._dead)
-            {
-               return false;
-            }
             return true;
          }
          return false;
       }
       
-      public function TickBDecoy() : Boolean
+      public function tickBDecoy() : Boolean
       {
-         if(_health.Get() <= 0)
+         if(health <= 0)
          {
             ATTACK.Log(_creatureID,KEYS.Get("attacklog_champ_injured",{
                "v1":BASE._ownerName,
                "v2":this._level.Get(),
                "v3":CHAMPIONCAGE._guardians[_creatureID].name
             }));
-            _venom.Set(0);
-            ModeRetreat();
-            if(GLOBAL._mode == "attack")
+            changeModeRetreat();
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK)
             {
                LOGGER.Stat([56,_creatureID,1,this._level.Get()]);
             }
@@ -1502,41 +1239,35 @@ package com.monsters.monsters.champions
          return false;
       }
       
-      public function FlyerDeath() : void
-      {
-         this._dead = true;
-      }
-      
-      public function FlyerLanded() : void
+      public function flyerLanded() : void
       {
          _altitude = 0;
       }
       
-      public function FlyerTakeOff() : void
+      public function flyerTakeOff() : void
       {
          _altitude = 108;
       }
       
-      override public function PoweredUp() : Boolean
+      override public function poweredUp() : Boolean
       {
          return false;
       }
       
-      public function TickBPen(param1:int) : void
+      public function tickBPen(param1:int) : void
       {
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:Number = NaN;
-         if(_health.Get() < _maxHealth)
+         if(health < maxHealth)
          {
             if(this._lastHeal <= GLOBAL.Timestamp() - 5 || GLOBAL._catchup && BASE.firstBaseLoaded)
             {
-               _health.Add(int(_maxHealth * 5 / this._regen) * param1);
-               _health.Set(Math.min(_health.Get(),_maxHealth));
+               this.modifyHealth(int(maxHealth * 5 / this._regen) * param1);
+               setHealth(Math.min(health,maxHealth));
                this._lastHeal = GLOBAL.Timestamp();
             }
          }
-         _venom.Set(0);
          if(this._behaviourMode == "defend" && _frameNumber % 200 == 0)
          {
             this.FindDefenseTargets();
@@ -1546,7 +1277,7 @@ package com.monsters.monsters.champions
             _targetPosition = CHAMPIONCAGE.PointInCage(_targetCenter);
             _hasPath = true;
          }
-         if(GLOBAL._mode == "build" && this._level.Get() < 6)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && this._level.Get() < 6)
          {
             if(!this._warnStarve)
             {
@@ -1581,15 +1312,15 @@ package com.monsters.monsters.champions
             }
             if(this._feeds.Get() >= CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"feeds"))
             {
-               this.LevelSet(this._level.Get() + 1);
+               this.levelSet(this._level.Get() + 1);
             }
          }
-         else if(GLOBAL._mode == "build" && this._level.Get() == 6)
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && this._level.Get() == 6)
          {
             if(GLOBAL.Timestamp() > this._feedTime.Get() + CHAMPIONCAGE.STARVETIMER)
             {
                CHAMPIONCAGE.Hide();
-               _loc2_ = _health.Get();
+               _loc2_ = health;
                _loc3_ = Math.max(1,this._foodBonus.Get() - 1);
                _loc4_ = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,_loc3_,"bonusHealth");
                if(_loc2_ < 1)
@@ -1600,7 +1331,7 @@ package com.monsters.monsters.champions
                {
                   _loc2_ = _loc4_;
                }
-               _health.Set(_loc2_);
+               setHealth(_loc2_);
                this._foodBonus.Add(-param1);
                if(this._foodBonus.Get() < 0)
                {
@@ -1611,19 +1342,29 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function TickBCage(param1:int) : void
+      public function tickBCage(param1:int) : void
       {
-         _venom.Set(0);
          if(_atTarget)
          {
             _behaviour = k_sBHVR_PEN;
             if(_movement == "fly" && _altitude > 60)
             {
-               TweenLite.to(_graphicMC,1.2,{
-                  "y":_graphicMC.y + _altitude,
-                  "ease":Sine.easeOut,
-                  "onComplete":this.FlyerLanded
-               });
+               if(BYMConfig.instance.RENDERER_ON)
+               {
+                  TweenLite.to(_rasterPt,1.2,{
+                     "y":_rasterPt.y + _altitude,
+                     "ease":Sine.easeOut,
+                     "onComplete":this.flyerLanded
+                  });
+               }
+               else
+               {
+                  TweenLite.to(_graphicMC,1.2,{
+                     "y":_graphicMC.y + _altitude,
+                     "ease":Sine.easeOut,
+                     "onComplete":this.flyerLanded
+                  });
+               }
             }
             _waypoints[0] = CHAMPIONCAGE.PointInCage(_targetCenter);
          }
@@ -1633,259 +1374,8 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function TickBBuff() : void
+      public function tickBRetreat() : Boolean
       {
-         var _loc2_:* = undefined;
-         var _loc3_:Point = null;
-         var _loc1_:Number = 1;
-         if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
-         {
-            _loc1_ *= 1.25;
-         }
-         if(_health.Get() <= 0)
-         {
-            MAP.CreepCellDelete(_id,node);
-            ModeRetreat();
-            ATTACK.Log(_creatureID,KEYS.Get("attacklog_champ_retreated",{
-               "v1":LOGIN._playerName,
-               "v2":this._level.Get(),
-               "v3":CHAMPIONCAGE._guardians[_creatureID].name
-            }));
-            if(GLOBAL._mode == "attack")
-            {
-               LOGGER.Stat([54,_creatureID,1,this._level.Get()]);
-            }
-            SOUNDS.Play("monsterland" + (1 + int(Math.random() * 3)));
-            return;
-         }
-         if(_frameNumber % 100 == 0)
-         {
-            for each(_loc2_ in CREEPS._creeps)
-            {
-               if(_loc2_ != this)
-               {
-                  if(_loc2_ && _loc2_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_tmpPoint,_loc2_._tmpPoint) < 250)
-                  {
-                     _loc2_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
-                  }
-               }
-            }
-            if(!_attacking)
-            {
-               this.FindBuffTargets();
-            }
-         }
-         if(_hasTarget)
-         {
-            if(_targetCreep)
-            {
-               if(_targetCreep._health.Get() <= 0 || _targetCreep._health.Get() == _targetCreep._maxHealth && _frameNumber % 20 == 0)
-               {
-                  _hasTarget = false;
-                  _attacking = false;
-                  _atTarget = false;
-                  _hasPath = false;
-                  this._helpCreep = null;
-                  if(_targetCreep && _targetCreep._health.Get() <= 0)
-                  {
-                     _targetCreep = null;
-                  }
-                  this.FindBuffTargets();
-               }
-               else if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range)
-               {
-                  _atTarget = true;
-               }
-               else
-               {
-                  _atTarget = false;
-               }
-            }
-            else if(this._helpCreep)
-            {
-               if(this._helpCreep._targetBuilding)
-               {
-                  _targetBuilding = this._helpCreep._targetBuilding;
-               }
-               if(this._helpCreep._health.Get() <= 0 || this._helpCreep._health.Get() == this._helpCreep._maxHealth && _frameNumber % 20 == 0)
-               {
-                  _hasTarget = false;
-                  _attacking = false;
-                  _atTarget = false;
-                  _hasPath = false;
-                  if(this._helpCreep && this._helpCreep._health.Get() <= 0)
-                  {
-                     this._helpCreep = null;
-                  }
-                  this.FindBuffTargets();
-               }
-               else if(this._helpCreep && GLOBAL.QuickDistance(this._helpCreep._tmpPoint,_tmpPoint) < this._range && Boolean(this._helpCreep._targetBuilding) && GLOBAL.QuickDistance(this._helpCreep._targetBuilding._position,_tmpPoint) < this._range)
-               {
-                  _atTarget = true;
-               }
-               else if(!_attacking && !_looking && _frameNumber % 120 == 0)
-               {
-                  this.FindBuffTargets();
-               }
-               else if(_attacking && this._helpCreep && GLOBAL.QuickDistance(this._helpCreep._tmpPoint,_tmpPoint) > this._range * 1.25)
-               {
-                  _attacking = false;
-                  _atTarget = false;
-               }
-               else if(_waypoints.length == 0 && !_atTarget)
-               {
-                  if(this.CanHitBuilding())
-                  {
-                     _atTarget = true;
-                  }
-                  else if(!_looking)
-                  {
-                     if(_movement == "fly")
-                     {
-                        _hasPath = true;
-                        _waypoints = [_targetBuilding._position];
-                        _targetPosition = _targetBuilding._position;
-                     }
-                     else if(!_looking)
-                     {
-                        _hasPath = false;
-                        _hasTarget = false;
-                        WaypointTo(_targetBuilding._position,_targetBuilding);
-                     }
-                  }
-               }
-            }
-            else if(Boolean(_targetBuilding) && _targetBuilding._hp.Get() > 0)
-            {
-               if(this.CanHitBuilding())
-               {
-                  _atTarget = true;
-               }
-               else
-               {
-                  _atTarget = false;
-                  _attacking = false;
-                  if(_waypoints.length == 0 && !_looking)
-                  {
-                     _hasPath = false;
-                     if(_movement == "fly")
-                     {
-                        _waypoints = [this._helpCreep._tmpPoint];
-                        _targetPosition = this._helpCreep._tmpPoint;
-                     }
-                     else
-                     {
-                        WaypointTo(this._helpCreep._tmpPoint,_targetBuilding);
-                     }
-                  }
-               }
-            }
-            else
-            {
-               _attacking = false;
-               _atTarget = false;
-               _hasPath = false;
-               _targetCreep = null;
-               this._helpCreep = null;
-               _targetBuilding = null;
-               this.FindBuffTargets();
-            }
-         }
-         else
-         {
-            _attacking = false;
-            _atTarget = false;
-            _hasPath = false;
-            _targetCreep = null;
-            this._helpCreep = null;
-            _targetBuilding = null;
-            this.FindBuffTargets();
-         }
-         if(_atTarget)
-         {
-            if(attackCooldown <= 0)
-            {
-               attackCooldown += int(_attackDelay / _speedMult);
-               if(_targetCreep && _targetCreep._health.Get() > 0)
-               {
-                  _attacking = true;
-                  _loc3_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetPosition,0.8);
-                  FIREBALLS.Spawn2(_loc3_,_targetCreep._tmpPoint,_targetCreep,8,_damage.Get() * _loc1_);
-                  FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
-                  SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
-                  _targetCenter = _targetCreep._tmpPoint;
-                  _targetPosition = _targetCreep._tmpPoint;
-               }
-               else if(this._helpCreep && this._helpCreep._targetBuilding && this._helpCreep._targetBuilding._hp.Get() > 0 || _targetBuilding && _targetBuilding._hp.Get() > 0)
-               {
-                  if(this._helpCreep)
-                  {
-                     _targetBuilding = this._helpCreep._targetBuilding;
-                  }
-                  if(Boolean(_targetBuilding) && GLOBAL.QuickDistance(_targetBuilding._position,_tmpPoint) < this._range)
-                  {
-                     _attacking = true;
-                     _targetCenter = _targetBuilding._position;
-                     _targetPosition = _targetBuilding._position;
-                     _loc3_ = Point.interpolate(_tmpPoint.add(new Point(0,-_altitude)),_targetPosition,0.8);
-                     FIREBALLS.Spawn(_loc3_,_targetPosition,_targetBuilding,8,_damage.Get() * _loc1_);
-                     FIREBALLS._fireballs[FIREBALLS._id - 1]._graphic.gotoAndStop(3);
-                     SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
-                  }
-                  else if(_targetBuilding)
-                  {
-                     _attacking = false;
-                     _atTarget = false;
-                     if(_movement == "fly")
-                     {
-                        _hasPath = true;
-                        _waypoints = [_targetBuilding._position];
-                        _targetPosition = _targetBuilding._position;
-                     }
-                     else if(!_looking)
-                     {
-                        _hasPath = false;
-                        _hasTarget = false;
-                        WaypointTo(_targetBuilding._position,_targetBuilding);
-                     }
-                  }
-                  else
-                  {
-                     _attacking = false;
-                     _atTarget = false;
-                     _hasPath = false;
-                     _targetCreep = null;
-                     this._helpCreep = null;
-                     _targetBuilding = null;
-                     this.FindBuffTargets();
-                  }
-               }
-               else
-               {
-                  _attacking = false;
-                  _atTarget = false;
-                  _hasTarget = false;
-                  _hasPath = false;
-                  _targetBuilding = null;
-                  _targetCreep = null;
-                  this._helpCreep = null;
-                  this.FindBuffTargets();
-               }
-            }
-            else
-            {
-               --attackCooldown;
-            }
-         }
-         else
-         {
-            _attacking = false;
-         }
-      }
-      
-      public function TickBRetreat() : Boolean
-      {
-         _venom.Set(0);
          if(_atTarget)
          {
             return true;
@@ -1893,11 +1383,11 @@ package com.monsters.monsters.champions
          return false;
       }
       
-      public function TickDefault() : void
+      public function tickDefault() : void
       {
       }
       
-      public function Export(param1:Boolean = true) : void
+      public function export(param1:Boolean = true) : void
       {
          var _loc4_:int = 0;
          var _loc5_:String = null;
@@ -1910,7 +1400,7 @@ package com.monsters.monsters.champions
          var _loc2_:int = 0;
          var _loc3_:Boolean = false;
          _loc2_ = 0;
-         while(Boolean(CREATURES._guardianList) && _loc2_ < CREATURES._guardianList.length)
+         while(_loc2_ < CREATURES._guardianList.length)
          {
             if(CREATURES._guardianList[_loc2_] == this)
             {
@@ -1924,9 +1414,9 @@ package com.monsters.monsters.champions
             _loc6_ = int(BASE._guardianData.length);
             _loc7_ = false;
             _loc2_ = 0;
-            while(_loc2_ < BASE._guardianData.length)
+            while(_loc2_ < _loc6_)
             {
-               if(BASE._guardianData[_loc2_].t == _creatureID.substr(1))
+               if(BASE._guardianData[_loc2_].t == int(_creatureID.substr(1)))
                {
                   _loc7_ = true;
                   break;
@@ -1944,18 +1434,18 @@ package com.monsters.monsters.champions
                _loc5_ = _loc4_.toString();
             }
             BASE._guardianData[_loc2_] = {};
-            BASE._guardianData[_loc2_].hp = new SecNum(_health.Get());
+            BASE._guardianData[_loc2_].hp = new SecNum(health);
             BASE._guardianData[_loc2_].l = new SecNum(this._level.Get());
             BASE._guardianData[_loc2_].fd = this._feeds.Get();
             BASE._guardianData[_loc2_].ft = this._feedTime.Get();
             BASE._guardianData[_loc2_].nm = this._name;
-            BASE._guardianData[_loc2_].t = int(_creatureID.substr(1,1));
+            BASE._guardianData[_loc2_].t = int(_creatureID.substr(1));
             BASE._guardianData[_loc2_].fb = new SecNum(this._foodBonus.Get());
             BASE._guardianData[_loc2_].pl = new SecNum(this._powerLevel.Get());
             BASE._guardianData[_loc2_].status = _loc4_;
             BASE._guardianData[_loc2_].log = _loc5_;
          }
-         if(!param1 && GLOBAL._mode != "build" || param1 && _loc3_ && GLOBAL._mode == "build")
+         if(!param1 && GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || param1 && _loc3_ && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _loc2_ = GLOBAL.getPlayerGuardianIndex(int(_creatureID.substr(1)));
             if(_loc2_ < 0)
@@ -1969,12 +1459,12 @@ package com.monsters.monsters.champions
                _loc5_ = _loc4_.toString();
             }
             GLOBAL._playerGuardianData[_loc2_] = {};
-            GLOBAL._playerGuardianData[_loc2_].hp = new SecNum(_health.Get());
+            GLOBAL._playerGuardianData[_loc2_].hp = new SecNum(health);
             GLOBAL._playerGuardianData[_loc2_].l = new SecNum(this._level.Get());
             GLOBAL._playerGuardianData[_loc2_].fd = this._feeds.Get();
             GLOBAL._playerGuardianData[_loc2_].ft = this._feedTime.Get();
             GLOBAL._playerGuardianData[_loc2_].nm = this._name;
-            GLOBAL._playerGuardianData[_loc2_].t = int(_creatureID.substr(1,1));
+            GLOBAL._playerGuardianData[_loc2_].t = int(_creatureID.substr(1));
             GLOBAL._playerGuardianData[_loc2_].fb = new SecNum(this._foodBonus.Get());
             GLOBAL._playerGuardianData[_loc2_].pl = new SecNum(this._powerLevel.Get());
             GLOBAL._playerGuardianData[_loc2_].status = _loc4_;
@@ -1982,88 +1472,87 @@ package com.monsters.monsters.champions
          }
       }
       
-      public function Heal() : void
+      public function heal() : void
       {
          var _loc1_:int = 0;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
-            _loc1_ = this.GetHealCost();
+            _loc1_ = this.getHealCost();
             if(_loc1_ > 0)
             {
-               GLOBAL.Message(KEYS.Get("msg_healchampion",{"v1":_loc1_}),KEYS.Get("str_heal"),this.HealB);
+               GLOBAL.Message(KEYS.Get("msg_healchampion",{"v1":_loc1_}),KEYS.Get("str_heal"),this.healB);
             }
          }
       }
       
-      public function HealB() : void
+      public function healB() : void
       {
          var _loc1_:int = 0;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
-            _loc1_ = this.GetHealCost();
+            _loc1_ = this.getHealCost();
             if(_loc1_ > BASE._credits.Get())
             {
                POPUPS.DisplayGetShiny();
                return;
             }
-            _health.Set(_maxHealth);
+            setHealth(maxHealth);
             BASE.Purchase("IHE",_loc1_,"CHAMPION.Heal");
-            this.Export(_friendly);
+            this.export(_friendly);
             LOGGER.Stat([58,_creatureID,_loc1_,this._level.Get()]);
             BASE.Save();
          }
       }
       
-      public function GetHealCost() : int
+      public function getHealCost() : int
       {
-         var _loc1_:Number = (_maxHealth - _health.Get()) / _maxHealth;
+         var _loc1_:Number = (maxHealth - health) / maxHealth;
          var _loc2_:int = int(_loc1_ * CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"healtime"));
          return STORE.GetTimeCost(_loc2_,false);
       }
       
-      override public function UpdateBuffs() : void
+      override public function updateBuffs() : void
       {
-         super.UpdateBuffs();
+         super.updateBuffs();
          if(this._foodBonus.Get() > 0)
          {
-            _maxSpeed = (CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusSpeed")) / 2;
+            moveSpeedProperty.value = (CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusSpeed")) / 2;
          }
          else
          {
-            _maxSpeed = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
+            moveSpeedProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2;
          }
-         _maxSpeed *= 1.1;
-         if(_speed > _maxSpeed)
+         if(_speed > moveSpeed)
          {
-            _speed = _maxSpeed;
-         }
-         if(this._foodBonus.Get() > 0)
-         {
-            _maxHealth = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth");
-         }
-         else
-         {
-            _maxHealth = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
-         }
-         if(_health.Get() > _maxHealth)
-         {
-            _health.Set(_maxHealth);
+            _speed = moveSpeed;
          }
          if(this._foodBonus.Get() > 0)
          {
-            _damage = new SecNum(int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")) + int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusDamage")));
+            maxHealthProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth");
          }
          else
          {
-            _damage = new SecNum(int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")));
+            maxHealthProperty.value = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health");
+         }
+         if(health > maxHealth)
+         {
+            setHealth(maxHealth);
          }
          if(this._foodBonus.Get() > 0)
          {
-            this._range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange");
+            damageProperty.value = int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage")) + int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusDamage"));
          }
          else
          {
-            this._range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
+            damageProperty.value = int(CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"damage"));
+         }
+         if(this._foodBonus.Get() > 0)
+         {
+            m_range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange");
+         }
+         else
+         {
+            m_range = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range");
          }
          if(this._foodBonus.Get() > 0)
          {
@@ -2072,22 +1561,6 @@ package com.monsters.monsters.champions
          else
          {
             this._buff = CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"buffs");
-         }
-      }
-      
-      private function ApplyInfernoVenom() : void
-      {
-         var _loc1_:int = 0;
-         var _loc2_:Array = null;
-         if(BASE.isInferno() && (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack"))
-         {
-            _loc2_ = [0,0,0,0,0,0,0,0,0,5 * 60,270,4 * 60,210,2 * 60,60,10,5,1];
-            if(MAPROOM_DESCENT._descentLvl >= _loc2_.length)
-            {
-               _loc1_ = _health.Get() / 40;
-            }
-            _loc1_ = Math.max(_health.Get() / (40 * _loc2_[MAPROOM_DESCENT._descentLvl - 1]),1);
-            _venom.Add(_loc1_);
          }
       }
       
@@ -2100,66 +1573,40 @@ package com.monsters.monsters.champions
          return int.MAX_VALUE;
       }
       
-      override public function Tick(param1:int = 1) : Boolean
+      override protected function hackCheck() : Boolean
       {
-         var _loc2_:Number = NaN;
-         super.Tick(param1);
-         this.UpdateBuffs();
-         _frameNumber += 1;
-         if(_venom.Get() > 0)
-         {
-            _health.Add(-(_venom.Get() * _damageMult) * param1);
-         }
-         if(_health.Get() > _maxHealth)
-         {
-            LOGGER.Log("hak","Champion monster health exceeds maximum");
-            GLOBAL.ErrorMessage("GUARDIANMONSTER hack 1");
-            return false;
-         }
          if(_frameNumber % 30 == 0)
          {
-            if(_maxHealth != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health"))
+            if(maxHealth != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health"))
             {
-               if(_maxHealth != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth"))
+               if(maxHealth != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"health") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusHealth"))
                {
                   LOGGER.Log("hak","Champion monster health max incorrect");
                   GLOBAL.ErrorMessage("GUARDIANMONSTER hack 2");
                   return false;
                }
             }
-            if(_maxSpeed != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") / 2 * 1.1)
+            if(m_range != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range"))
             {
-               if(_maxSpeed != (CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"speed") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusSpeed")) / 2 * 1.1)
-               {
-                  LOGGER.Log("hak","Champion monster speed incorrect");
-                  GLOBAL.ErrorMessage("GUARDIANMONSTER hack 3");
-                  return false;
-               }
-            }
-            if(this._range != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range"))
-            {
-               if(this._range != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange"))
+               if(m_range != CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._level.Get(),"range") + CHAMPIONCAGE.GetGuardianProperty(_creatureID,this._foodBonus.Get(),"bonusRange"))
                {
                   LOGGER.Log("hak","Champion monster range incorrect");
                   GLOBAL.ErrorMessage("GUARDIANMONSTER hack 4");
                   return false;
                }
             }
-            if(_secureSpeedMult.Get() != int(_speedMult * 100))
-            {
-               LOGGER.Log("hak","Champion monster speed buff incorrect");
-               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 5");
-               return false;
-            }
-            if(_secureDamageMult.Get() != int(_damageMult * 100))
-            {
-               LOGGER.Log("hak","Champion monster damage buff incorrect");
-               GLOBAL.ErrorMessage("GUARDIANMONSTER hack 6");
-               return false;
-            }
          }
-         this.Export(_friendly);
-         if(_movement == "fly" && _health.Get() > 0 && _behaviour != "pen")
+         return true;
+      }
+      
+      override protected function tickState(param1:int = 1) : Boolean
+      {
+         var _loc2_:Number = NaN;
+         super.tickState(param1);
+         this.updateBuffs();
+         this.hackCheck();
+         this.export(_friendly);
+         if(_movement == "fly" && health > 0 && _behaviour != "pen")
          {
             if(_altitude >= 60)
             {
@@ -2172,67 +1619,58 @@ package com.monsters.monsters.champions
          {
             case k_sBHVR_ATTACK:
             case k_sBHVR_BOUNCE:
-               this.TickBAttack();
+               this.tickBAttack();
                break;
             case k_sBHVR_DEFEND:
-               this.TickBDefend();
-               break;
-            case k_sBHVR_BUFF:
-               this.TickBBuff();
+               this.tickBDefend();
                break;
             case k_sBHVR_PEN:
-               this.TickBPen(param1);
+               this.tickBPen(param1);
                break;
             case "cage":
-               this.TickBCage(param1);
+               this.tickBCage(param1);
                break;
             case k_sBHVR_JUICE:
-               if(this.TickBJuice(param1))
+               if(this.tickBJuice(param1))
                {
                   return true;
                }
                break;
             case "freeze":
-               if(this.TickBFreeze(param1))
+               if(this.tickBFreeze(param1))
                {
                   return true;
                }
                break;
             case k_sBHVR_RETREAT:
-               if(this.TickBRetreat())
+               if(this.tickBRetreat())
                {
                   return true;
                }
                break;
             case k_sBHVR_DECOY:
-               if(this.TickBDecoy())
+               if(this.tickBDecoy())
                {
                   return true;
                }
                break;
             default:
-               this.TickDefault();
+               this.tickDefault();
          }
-         if((_behaviour == "attack" || _behaviour == "retreat" && _health.Get() > 0 || _behaviour == "buff") && _frameNumber % 5 == 0)
+         if((_behaviour == GLOBAL.e_BASE_MODE.ATTACK || _behaviour == "retreat" && health > 0 || _behaviour == "buff") && _frameNumber % 5 == 0)
          {
-            newNode = MAP.CreepCellMove(_tmpPoint,_id,this,node);
+            newNode = Targeting.CreepCellMove(_tmpPoint,_id,this,node);
             if(newNode)
             {
                node = newNode;
             }
          }
-         if(_enraged != 0 && _enraged <= GLOBAL.Timestamp())
-         {
-            this.ModeEnrage(0,1,1);
-         }
-         this.Move();
-         this.Render();
          return false;
       }
       
-      public function Move() : Boolean
+      override protected function move() : void
       {
-         _speed = _maxSpeed * 0.5 * _speedMult;
+         _speed = moveSpeed * 0.5;
          if(_behaviour == "pen")
          {
             _speed *= 0.5;
@@ -2264,7 +1702,7 @@ package com.monsters.monsters.champions
                _speed *= 2;
             }
          }
-         if(!_atTarget && _behaviour != "cage" && _behaviour != "pen" && _behaviour != "juice" && (_targetCreep && this.CanShootCreep() || this.CanHitBuilding()))
+         if(!_atTarget && _behaviour != "cage" && _behaviour != "pen" && _behaviour != "juice" && (_targetCreep && this.canShootCreep() || this.canHitBuilding()))
          {
             _atTarget = true;
             if(_targetCreep)
@@ -2286,12 +1724,12 @@ package com.monsters.monsters.champions
                _targetPosition = _waypoints[_waypoints.length - 1];
             }
          }
-         else if(_targetCreep && _behaviour == "attack")
+         else if(Boolean(_targetCreep) && _behaviour == GLOBAL.e_BASE_MODE.ATTACK)
          {
             _xd = _targetCreep._tmpPoint.x - _tmpPoint.x;
             _yd = _targetCreep._tmpPoint.y - _tmpPoint.y;
             _targetPosition = _targetCreep._tmpPoint;
-            if(GLOBAL.QuickDistance(_targetPosition,_tmpPoint) > this._range)
+            if(GLOBAL.QuickDistance(_targetPosition,_tmpPoint) > m_range)
             {
                _tmpPoint.x += Math.cos(Math.atan2(_yd,_xd)) * _speed;
                _tmpPoint.y += Math.sin(Math.atan2(_yd,_xd)) * _speed;
@@ -2318,15 +1756,15 @@ package com.monsters.monsters.champions
                      if(_behaviour != "defend")
                      {
                         _atTarget = true;
-                        return false;
+                        return;
                      }
-                     if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range)
+                     if(GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range)
                      {
                         _atTarget = true;
                         if(_targetCreep._behaviour != "heal")
                         {
                            _targetCreep._targetCreep = this;
-                           if(_targetCreep._creatureID == "C14" || _targetCreep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
+                           if(_targetCreep._creatureID == "C14" || _targetCreep.canShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
                            {
                               _targetCreep._atTarget = true;
                            }
@@ -2337,22 +1775,21 @@ package com.monsters.monsters.champions
                            }
                            _targetCreep._hasTarget = true;
                            _targetCreep._looking = false;
-                           _targetCreep._hasTarget = true;
                         }
-                        return false;
+                        return;
                      }
                   }
                }
                if(_behaviour == k_sBHVR_DEFEND)
                {
-                  if(_creatureID != "G3" && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < this._range || this.CanShootCreep())
+                  if(_creatureID != "G3" && GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < m_range || this.canShootCreep())
                   {
                      _atTarget = true;
                      _targetPosition = _targetCreep._tmpPoint;
                      if(!_targetCreep._explode && _targetCreep._behaviour != "heal")
                      {
                         _targetCreep._targetCreep = this;
-                        if(_targetCreep._creatureID == "C14" || _targetCreep.CanShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
+                        if(_targetCreep._creatureID == "C14" || _targetCreep.canShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50 && _movement != "fly")
                         {
                            _targetCreep._atTarget = true;
                         }
@@ -2363,9 +1800,8 @@ package com.monsters.monsters.champions
                         }
                         _targetCreep._hasTarget = true;
                         _targetCreep._looking = false;
-                        _targetCreep._hasTarget = true;
                      }
-                     return false;
+                     return;
                   }
                   if(_targetCreep && _waypoints.length == 0 && _hasPath)
                   {
@@ -2383,14 +1819,14 @@ package com.monsters.monsters.champions
                else if(_waypoints.length == 0 && _hasPath && (_targetCreep || _behaviour == "cage" || _behaviour == "juice" || _behaviour == "retreat" || _behaviour == "pen"))
                {
                   _atTarget = true;
-                  return false;
+                  return;
                }
             }
             if(_waypoints.length > 0)
             {
                _targetPosition = _waypoints[0];
             }
-            if(_behaviour == "attack" && _targetCreep)
+            if(_behaviour == GLOBAL.e_BASE_MODE.ATTACK && Boolean(_targetCreep))
             {
                _xd = _targetCreep._tmpPoint.x - _tmpPoint.x;
                _yd = _targetCreep._tmpPoint.y - _tmpPoint.y;
@@ -2439,231 +1875,27 @@ package com.monsters.monsters.champions
                }
             }
          }
-         return false;
       }
       
-      public function Render() : void
+      override protected function getNextSprite() : void
       {
-         var _loc1_:Number = NaN;
-         var _loc2_:Number = NaN;
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:Object = null;
-         if(!GLOBAL._catchup)
+         if(_behaviour == "pen" && !_hasPath)
          {
-            _targetRotation = Math.atan2(_yd,_xd) * 57.2957795 - 90;
-            _loc1_ = mcMarker.rotation - _targetRotation;
-            if(_loc1_ > 3 * 60)
-            {
-               _targetRotation += 6 * 60;
-            }
-            else if(_loc1_ < -180)
-            {
-               _targetRotation -= 360;
-            }
-            _targetRotation += 90;
-            _loc2_ = (_targetRotation - mcMarker.rotation) / 5;
-            _loc2_ = _loc2_ * 0.5 * GLOBAL._loops;
-            if(_loc2_ != 0)
-            {
-               mcMarker.rotation += _loc2_;
-            }
-            if(x != int(_tmpPoint.x) || y != int(_tmpPoint.y))
-            {
-               x = int(_tmpPoint.x);
-               y = int(_tmpPoint.y);
-            }
-            _graphic.lock();
-            if(_shadow)
-            {
-               _shadow.lock();
-            }
-            _loc4_ = 0;
-            _visible = true;
-            if(BYMConfig.instance.RENDERER_ON)
-            {
-               _rasterData.visible = true;
-            }
-            if(!alpha)
-            {
-               alpha = 1;
-            }
-            if(_behaviour == "pen" && !_hasPath)
-            {
-               SPRITES.GetSprite(_graphic,this._spriteID,"idle",mcMarker.rotation - 45);
-            }
-            else if(this._quaking)
-            {
-               SPRITES.GetSprite(_graphic,this._spriteID,"stomp",mcMarker.rotation - 45,_frameNumber);
-            }
-            else if(_attacking)
-            {
-               SPRITES.GetSprite(_graphic,this._spriteID,"attack",mcMarker.rotation - 45,_frameNumber);
-            }
-            else
-            {
-               SPRITES.GetSprite(_graphic,this._spriteID,"walking",mcMarker.rotation - 45,_frameNumber);
-            }
-            if(_movement == "fly")
-            {
-               SPRITES.GetSprite(_shadow,"bigshadow","bigshadow",0);
-            }
-            _lastRotation = int(mcMarker.rotation / 12);
-            if(_health.Get() < _maxHealth)
-            {
-               _loc5_ = 11 - int(11 / _maxHealth * _health.Get());
-               _loc6_ = SPRITES.GetSpriteDescriptor(this._spriteID);
-               _graphic.copyPixels(CREEPS._bmdHPbar,new Rectangle(0,5 * _loc5_,17,5),new Point(-_graphicMC.x - CREEPS._bmdHPbar.width / 2,6));
-            }
-            _graphic.unlock();
-            if(_shadow)
-            {
-               _shadow.unlock();
-            }
-            updateRasterData();
+            SPRITES.GetSprite(_graphic,this._spriteID,"idle",m_rotation - 45);
          }
-      }
-      
-      private function AddFlameDOT(param1:MonsterBase) : Boolean
-      {
-         param1.addStatusEffect(new FlameEffect(param1,_damage.Get() * 0.1));
-         return true;
-      }
-      
-      private function DoQuakeCheck() : Boolean
-      {
-         var _loc1_:Number = NaN;
-         if(_creatureID != "G4")
+         else if(_attacking)
          {
-            return false;
-         }
-         if(this._quaking)
-         {
-            if(_frameNumber / 8 % 10 + 20 == 26)
-            {
-               _loc1_ = 1;
-               if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _loc1_ *= 1.25;
-               }
-               this._attackNum = 0;
-               SOUNDS.Play("quake",0.4);
-               this.Quake(_damage.Get() * _loc1_);
-            }
-            else if(_frameNumber / 8 % 10 + 20 == 29)
-            {
-               this._quaking = false;
-            }
-         }
-         else if(attackCooldown <= 0)
-         {
-            if(this._powerLevel.Get() >= KORATH_POWER_STOMP && this._level.Get() > 4 && this._attackNum >= 3)
-            {
-               this._quaking = true;
-               _frameNumber = 0;
-            }
-         }
-         return this._quaking;
-      }
-      
-      private function Quake(param1:int) : void
-      {
-         var _loc7_:BFOUNDATION = null;
-         var _loc2_:Point = new Point(_mc.x,_mc.y);
-         var _loc3_:Array = [];
-         if(_behaviour == "attack")
-         {
-            _loc3_ = MAP.getDefendingCreepsInRange(this._range * 2.5,new Point(_mc.x,_mc.y));
-            for each(_loc7_ in BASE._buildingsAll)
-            {
-               if(_loc7_._class != "cage" && _loc7_._class != "decoration")
-               {
-                  if(GLOBAL.QuickDistance(_loc2_,new Point(_loc7_.x,_loc7_.y)) < this._range * 2.5)
-                  {
-                     _loc3_.push(_loc7_);
-                  }
-               }
-            }
+            SPRITES.GetSprite(_graphic,this._spriteID,GLOBAL.e_BASE_MODE.ATTACK,m_rotation - 45,_frameNumber);
          }
          else
          {
-            _loc3_ = MAP.getAttackingCreepsInRange(this._range * 2.5,new Point(_mc.x,_mc.y));
+            SPRITES.GetSprite(_graphic,this._spriteID,"walking",m_rotation - 45,_frameNumber);
          }
-         var _loc5_:int = int(_loc3_.length - 1);
-         while(_loc5_ >= 0)
+         if(_movement == "fly" && Boolean(_shadow))
          {
-            if(_loc3_[_loc5_] is MonsterBase && MonsterBase(_loc3_[_loc5_])._altitude > 0)
-            {
-               _loc3_.splice(_loc5_,1);
-            }
-            _loc5_--;
-         }
-         if(_loc3_)
-         {
-            MAP.DealLinearAEDamage(_loc2_,this._range * 2.5,_damage.Get(),_loc3_,this._range * 1.5);
-         }
-         var _loc6_:G4QuakeGraphic = new G4QuakeGraphic(20,this._range * 2.5,BYMConfig.instance.RENDERER_ON ? new Point(_rasterPt.x,_rasterPt.y + _graphic.height * 0.6) : null);
-         _loc6_.graphic.y = _loc6_.graphic.y + 0;
-         if(!BYMConfig.instance.RENDERER_ON)
-         {
-            _mc.addChildAt(_loc6_.graphic,getChildIndex(_graphicMC) - 1);
+            SPRITES.GetSprite(_shadow,"bigshadow","bigshadow",0);
          }
       }
    }
 }
 
-import com.monsters.configs.BYMConfig;
-import com.monsters.rendering.RasterData;
-import flash.display.Shape;
-import flash.display.Sprite;
-import flash.filters.GlowFilter;
-import flash.geom.Point;
-import gs.TweenLite;
-
-class G4QuakeGraphic
-{
-   public var graphic:Shape;
-   
-   protected var m_rasterData:RasterData;
-   
-   protected var m_rasterPt:Point;
-   
-   public function G4QuakeGraphic(param1:uint, param2:uint, param3:Point = null)
-   {
-      var _loc5_:Sprite = null;
-      super();
-      this.graphic = new Shape();
-      this.graphic.graphics.lineStyle(0.3,15893760,0.5);
-      this.graphic.graphics.drawEllipse(-param1,-param1 / 2,param1 * 2,param1);
-      this.graphic.graphics.drawEllipse(-param1 * 0.8,-param1 / 2.5,param1 * 1.6,param1 * 0.8);
-      this.graphic.graphics.drawEllipse(-param1 * 0.6,-param1 / 3.333333,param1 * 1.2,param1 * 0.6);
-      var _loc4_:GlowFilter = new GlowFilter(0xff6600,1,20,20,5 + Math.random() * 5,1,false,false);
-      this.graphic.filters = [_loc4_];
-      TweenLite.to(this.graphic,1,{
-         "width":param2 * 2,
-         "height":param2,
-         "alpha":0,
-         "onComplete":this.onComplete
-      });
-      if(BYMConfig.instance.RENDERER_ON && Boolean(param3))
-      {
-         _loc5_ = new Sprite();
-         _loc5_.addChild(this.graphic);
-         this.m_rasterPt = new Point(param3.x + _loc5_.width,param3.y + _loc5_.height);
-         this.m_rasterData = new RasterData(_loc5_,this.m_rasterPt,MAP.DEPTH_SHADOW + 1);
-      }
-   }
-   
-   private function onComplete() : void
-   {
-      this.graphic.parent.removeChild(this.graphic);
-      this.graphic.filters = [];
-      this.graphic = null;
-      if(this.m_rasterData)
-      {
-         this.m_rasterData.clear();
-      }
-      this.m_rasterData = null;
-      this.m_rasterPt = null;
-   }
-}

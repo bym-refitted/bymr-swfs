@@ -102,7 +102,7 @@ package
          this._speed = 0;
          this._size = 10;
          this._frameNumber = int(Math.random() * 200);
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             this._graphic = new BitmapData(52,50,true,0xffffff);
          }
@@ -181,7 +181,7 @@ package
       {
       }
       
-      public function SetWaypoints(param1:Array, param2:BFOUNDATION = null, param3:int = 0) : void
+      public function setWaypoints(param1:Array, param2:BFOUNDATION = null, param3:int = 0) : void
       {
          if(this._pathID == param3)
          {
@@ -210,7 +210,7 @@ package
                _loc3_ = new Rectangle(param2._mc.x,param2._mc.y,param2._footprint[0].width,param2._footprint[0].height);
             }
             this._hasPath = false;
-            PATHING.GetPath(new Point(x,y),_loc3_,this.SetWaypoints,true,param2);
+            PATHING.GetPath(new Point(x,y),_loc3_,this.setWaypoints,true,param2);
          }
          else
          {
@@ -233,7 +233,7 @@ package
                building = PATHING.GetBuildingFromISO(this._targetPosition);
                if(building)
                {
-                  if(building._hp.Get() > 0)
+                  if(building.health > 0)
                   {
                      TweenLite.to(this._graphicMC,0.4,{
                         "y":this._graphicMC.y - 40,

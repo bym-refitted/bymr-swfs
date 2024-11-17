@@ -27,17 +27,6 @@ package com.monsters.debug
       
       public static function initialize(param1:Stage) : void
       {
-         if(!GLOBAL._aiDesignMode)
-         {
-            return;
-         }
-         view = new ConsoleView();
-         _commands = new Dictionary();
-         param1.addChild(view);
-         param1.tabChildren = false;
-         view.deactivate();
-         param1.addEventListener(KeyboardEvent.KEY_UP,onKeyDown);
-         ConsoleCommands.initialize();
       }
       
       protected static function onKeyDown(param1:KeyboardEvent) : void
@@ -106,13 +95,30 @@ package com.monsters.debug
       
       public static function getSource(param1:uint = 4) : String
       {
-         var lineNumber:String;
-         var stackTrace:String = null;
-         var depth:uint = param1;
          if(ExternalInterface.available)
          {
             return "";
          }
+         var _loc2_:String = getStackTrace();
+         _loc2_ = _loc2_.split("at ")[param1];
+         if(!_loc2_)
+         {
+            return "invalid stack trace";
+         }
+         var _loc3_:String = _loc2_.substring(_loc2_.lastIndexOf(":"),_loc2_.indexOf("]"));
+         _loc2_ = _loc2_.substring(0,_loc2_.indexOf("()") + 2);
+         _loc2_ = _loc2_.replace("Function","");
+         _loc2_ = _loc2_.replace("$","");
+         while(_loc2_.search("/") != -1)
+         {
+            _loc2_ = _loc2_.replace("/",".");
+         }
+         return _loc2_ + _loc3_;
+      }
+      
+      public static function getStackTrace() : String
+      {
+         var stackTrace:String = null;
          try
          {
             throw new Error();
@@ -121,16 +127,7 @@ package com.monsters.debug
          {
             stackTrace = e.getStackTrace();
          }
-         stackTrace = stackTrace.split("at ")[depth];
-         lineNumber = stackTrace.substring(stackTrace.lastIndexOf(":"),stackTrace.indexOf("]"));
-         stackTrace = stackTrace.substring(0,stackTrace.indexOf("()") + 2);
-         stackTrace = stackTrace.replace("Function","");
-         stackTrace = stackTrace.replace("$","");
-         while(stackTrace.search("/") != -1)
-         {
-            stackTrace = stackTrace.replace("/",".");
-         }
-         return stackTrace + lineNumber;
+         return stackTrace;
       }
       
       public static function isKey(param1:uint) : Boolean

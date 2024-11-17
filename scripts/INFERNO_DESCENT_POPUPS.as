@@ -1,6 +1,8 @@
 package
 {
    import com.monsters.ai.WMBASE;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -150,8 +152,8 @@ package
       
       private static function ClosedCapturePopup(param1:MouseEvent) : void
       {
-         GLOBAL._advancedMap = 0;
-         BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+         MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
+         BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,EnumYardType.INFERNO_YARD);
       }
       
       private static function ShowAttackEndDialog(param1:String, param2:String, param3:String) : MovieClip
@@ -169,7 +171,7 @@ package
       
       public static function isInDescent() : Boolean
       {
-         return BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "wmattack";
+         return BASE.isInfernoMainYardOrOutpost && !MAPROOM_DESCENT.DescentPassed && GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK;
       }
    }
 }

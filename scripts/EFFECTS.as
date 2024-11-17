@@ -4,7 +4,9 @@ package
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.Particles;
    import flash.display.BitmapData;
-   import flash.display.MovieClip;
+   import flash.display.DisplayObject;
+   import flash.display.DisplayObjectContainer;
+   import flash.display.Shape;
    import flash.filters.GlowFilter;
    import flash.geom.ColorTransform;
    import flash.geom.Matrix;
@@ -118,33 +120,37 @@ package
          MAP.effectsBMD.copyPixels(_burns,new Rectangle(_loc3_,0,80,40),new Point(param1 + MAP.effectsBMD.width * 0.5 - 40,param2 + MAP.effectsBMD.height * 0.5 - 20),null,null,true);
       }
       
-      public static function Lightning(param1:int, param2:int, param3:int, param4:int) : void
+      public static function Lightning(param1:int, param2:int, param3:int, param4:int, param5:DisplayObjectContainer = null) : void
       {
-         var _loc7_:int = 0;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
-         var _loc5_:int = Point.distance(new Point(param1,param2),new Point(param3,param4));
-         var _loc6_:MovieClip = MAP._PROJECTILES.addChild(new MovieClip()) as MovieClip;
-         _loc6_.graphics.lineStyle(1,3197178,1);
-         _loc6_.graphics.moveTo(param1,param2);
          var _loc11_:int = 0;
-         while(_loc11_ < int(_loc5_ / 30))
+         if(!param5)
          {
-            _loc7_ = param3 - param1;
-            _loc8_ = param4 - param2;
-            _loc9_ = Math.cos(Math.atan2(_loc8_,_loc7_)) * (_loc5_ / int(_loc5_ / 30) * _loc11_);
-            _loc10_ = Math.sin(Math.atan2(_loc8_,_loc7_)) * (_loc5_ / int(_loc5_ / 30) * _loc11_);
-            _loc6_.graphics.lineTo(_loc9_ + param1 - 7 + Math.random() * 15,_loc10_ + param2 - 7 + Math.random() * 15);
-            _loc6_.filters = [new GlowFilter(3197178,1,4,4,2,2,false,false)];
-            _loc11_++;
+            param5 = MAP._PROJECTILES;
          }
-         _loc6_.graphics.lineTo(param3 - 5 + Math.random() * 10,param4 - Math.random() * 10);
-         _loc6_.blendMode = "add";
+         var _loc6_:int = Point.distance(new Point(param1,param2),new Point(param3,param4));
+         var _loc7_:Shape = param5.addChild(new Shape()) as Shape;
+         _loc7_.graphics.lineStyle(1,3197178,1);
+         _loc7_.graphics.moveTo(param1,param2);
+         var _loc12_:int = 0;
+         while(_loc12_ < int(_loc6_ / 30))
+         {
+            _loc8_ = param3 - param1;
+            _loc9_ = param4 - param2;
+            _loc10_ = Math.cos(Math.atan2(_loc9_,_loc8_)) * (_loc6_ / int(_loc6_ / 30) * _loc12_);
+            _loc11_ = Math.sin(Math.atan2(_loc9_,_loc8_)) * (_loc6_ / int(_loc6_ / 30) * _loc12_);
+            _loc7_.graphics.lineTo(_loc10_ + param1 - 7 + Math.random() * 15,_loc11_ + param2 - 7 + Math.random() * 15);
+            _loc7_.filters = [new GlowFilter(3197178,1,4,4,2,2,false,false)];
+            _loc12_++;
+         }
+         _loc7_.graphics.lineTo(param3 - 5 + Math.random() * 10,param4 - Math.random() * 10);
+         _loc7_.blendMode = "add";
          _trash["i" + _itemCount] = {
             "counter":0,
-            "container":MAP._PROJECTILES,
-            "mc":_loc6_
+            "container":param5,
+            "mc":_loc7_
          };
          ++_itemCount;
       }
@@ -212,15 +218,9 @@ package
          }
       }
       
-      public static function Remove(param1:*, param2:*) : void
+      public static function Remove(param1:DisplayObjectContainer, param2:DisplayObject) : void
       {
-         try
-         {
-            param1.removeChild(param2);
-         }
-         catch(e:Error)
-         {
-         }
+         param1.removeChild(param2);
       }
       
       public static function Process(param1:*) : void

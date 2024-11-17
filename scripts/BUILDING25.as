@@ -1,9 +1,10 @@
 package
 {
+   import com.monsters.interfaces.IAttackable;
    import com.monsters.monsters.MonsterBase;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
-   import flash.display.MovieClip;
    import flash.events.Event;
    import flash.geom.Rectangle;
    
@@ -21,7 +22,7 @@ package
       
       public var _shotsFired:int;
       
-      public var _laserTarget:MovieClip;
+      public var _laserTarget:IAttackable;
       
       public function BUILDING25()
       {
@@ -52,7 +53,7 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpost)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
@@ -90,7 +91,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          super.Fire(param1);
          if(param1 is MonsterBase)
@@ -131,7 +132,7 @@ package
             }
             else if(this._fireStage == 2)
             {
-               if(_hp.Get() <= 0)
+               if(health <= 0)
                {
                   this._fireStage = 3;
                }
@@ -146,7 +147,7 @@ package
                   {
                      if(_hasTargets || _targetVacuum)
                      {
-                        _loc2_ = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+                        _loc2_ = 0.5 + 0.5 / maxHealth * health;
                         _loc3_ = 1;
                         if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
                         {
@@ -154,8 +155,8 @@ package
                         }
                         if(isJard)
                         {
-                           _jarHealth.Add(-int(_damage * _loc2_ * _loc3_));
-                           ATTACK.Damage(_mc.x,_mc.y + _top,_damage * _loc2_ * _loc3_);
+                           _jarHealth.Add(-int(damage * _loc2_ * _loc3_));
+                           ATTACK.Damage(_mc.x,_mc.y + _top,damage * _loc2_ * _loc3_);
                            if(_jarHealth.Get() <= 0)
                            {
                               KillJar();
@@ -165,22 +166,22 @@ package
                         {
                            if(this._laserTarget)
                            {
-                              if(this._laserTarget._movement == "fly")
+                              if(this._laserTarget is MonsterBase && MonsterBase(this._laserTarget)._movement == "fly")
                               {
-                                 EFFECTS.Lightning(_mc.x,_mc.y - 50,this._laserTarget.x,this._laserTarget.y - this._laserTarget._altitude);
+                                 EFFECTS.Lightning(_mc.x,_mc.y - 50,this._laserTarget.x,this._laserTarget.y - MonsterBase(this._laserTarget)._altitude);
                               }
                               else
                               {
                                  EFFECTS.Lightning(_mc.x,_mc.y - 50,this._laserTarget.x,this._laserTarget.y);
                               }
-                              this._laserTarget._health.Add(-(this._laserTarget._damageMult * int(_damage * _loc2_ * _loc3_)));
-                              ATTACK.Damage(_mc.x,_mc.y - 50,this._laserTarget._damageMult * int(_damage * _loc2_ * _loc3_));
+                              this._laserTarget.modifyHealth(-int(damage * _loc2_ * _loc3_));
+                              ATTACK.Damage(_mc.x,_mc.y - 50,int(damage * _loc2_ * _loc3_));
                            }
-                           else if(_targetVacuum)
+                           else if(_targetVacuum && canShootVacuumHose())
                            {
-                              EFFECTS.Lightning(_mc.x,_mc.y - 50,GLOBAL._bTownhall._mc.x,GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height);
-                              (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * _loc2_ * _loc3_));
-                              ATTACK.Damage(_mc.x,_mc.y - 50,int(_damage * _loc2_ * _loc3_));
+                              EFFECTS.Lightning(_mc.x,_mc.y - 50,GLOBAL.townHall._mc.x,GLOBAL.townHall._mc.y - GLOBAL.townHall._mc.height);
+                              Vacuum.getHose().modifyHealth(-int(damage * _loc2_ * _loc3_));
+                              ATTACK.Damage(_mc.x,_mc.y - 50,int(damage * _loc2_ * _loc3_));
                            }
                         }
                      }
@@ -191,9 +192,9 @@ package
                         this._fireStage = 3;
                         SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
                      }
-                     else if(_targetVacuum && (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Get() <= 0)
+                     else if(_targetVacuum)
                      {
-                        if(Boolean((GLOBAL._bTownhall as BUILDING14)._vacuum) && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range)
+                        if(canShootVacuumHose())
                         {
                            _targetVacuum = true;
                         }
@@ -208,9 +209,9 @@ package
                            SOUNDS.Play("lightningend",!isJard ? 0.8 : 0.4);
                         }
                      }
-                     else if(Boolean(this._laserTarget) && this._laserTarget._health.Get() <= 0)
+                     else if(Boolean(this._laserTarget) && (this._laserTarget.health <= 0 || this._laserTarget is MonsterBase && !MonsterBase(this._laserTarget).isTargetable))
                      {
-                        if(BASE._yardType == BASE.MAIN_YARD && GLOBAL._bTownhall && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range)
+                        if(canShootVacuumHose())
                         {
                            _targetVacuum = true;
                         }

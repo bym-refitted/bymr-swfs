@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
@@ -15,6 +16,7 @@ package
       
       public function WMIROUNDCOMPLETE(param1:int = -1, param2:Boolean = false)
       {
+         var buildingInstances:Vector.<Object> = null;
          var bannerComplete:Function = null;
          var imageComplete:Function = null;
          var numDamagedBuildings:int = 0;
@@ -62,9 +64,10 @@ package
             }
             mcStats.htmlText = "";
             numDamagedBuildings = 0;
-            for each(b in BASE._buildingsAll)
+            buildingInstances = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(b in buildingInstances)
             {
-               if(b._hp.Get() < b._hpMax.Get())
+               if(b.health < b.maxHealth)
                {
                   numDamagedBuildings++;
                }
@@ -99,9 +102,10 @@ package
             mcText.htmlText = KEYS.Get("wmi_winwave");
             mcStats.htmlText = KEYS.Get("wmi_completedwaves",{"v1":wave});
             numDamagedBuildings = 0;
-            for each(b in BASE._buildingsAll)
+            buildingInstances = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(b in buildingInstances)
             {
-               if(b._hp.Get() < b._hpMax.Get())
+               if(b.health < b.maxHealth)
                {
                   numDamagedBuildings++;
                }
@@ -247,12 +251,13 @@ package
       
       private function StartRepairsClicked(param1:MouseEvent) : void
       {
-         var _loc2_:BFOUNDATION = null;
-         for each(_loc2_ in BASE._buildingsAll)
+         var _loc3_:BFOUNDATION = null;
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+            if(_loc3_.health < _loc3_.maxHealth && _loc3_._repairing == 0)
             {
-               _loc2_.Repair();
+               _loc3_.Repair();
             }
          }
          SOUNDS.Play("repair1",0.25);

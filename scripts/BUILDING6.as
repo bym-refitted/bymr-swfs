@@ -78,7 +78,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {

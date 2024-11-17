@@ -20,7 +20,7 @@ package com.monsters.rewarding
    
    public class RewardLibrary
    {
-      public static var rewardTypes:Object = {};
+      public static var rewardTypes:Object;
       
       public function RewardLibrary()
       {
@@ -29,6 +29,7 @@ package com.monsters.rewarding
       
       public static function initialize() : void
       {
+         rewardTypes = {};
          addRewardType(UnlockVorgReward.ID,UnlockVorgReward);
          addRewardType(UnlockSlimeattikusReward.ID,UnlockSlimeattikusReward);
          addRewardType(UnblockSlimeattikusReward.ID,UnblockSlimeattikusReward);

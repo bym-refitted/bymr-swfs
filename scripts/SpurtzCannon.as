@@ -2,12 +2,13 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.display.BuildingAssetContainer;
+   import com.monsters.interfaces.IAttackable;
    import com.monsters.monsters.MonsterBase;
-   import com.monsters.monsters.creeps.CREEP_INFERNO;
+   import com.monsters.monsters.creeps.inferno.Spurtz;
    import com.monsters.utils.MathUtils;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
-   import flash.display.MovieClip;
+   import flash.display.Sprite;
    import flash.events.Event;
    import flash.filters.ColorMatrixFilter;
    import flash.filters.GlowFilter;
@@ -40,7 +41,7 @@ package
       
       private const _ANGLE_THRESHOLD_TO_START_SHOOTING:Number = 20;
       
-      private var _spurts:Vector.<CREEP_INFERNO>;
+      private var _spurts:Vector.<Spurtz>;
       
       private var _targetCreepIndex:int;
       
@@ -60,7 +61,7 @@ package
          SetProps();
          this._projectileType = FIREBALL.TYPE_SPURTZ;
          SPRITES.SetupSprite(SPURTZ_PROJECTILE);
-         this._spurts = new Vector.<CREEP_INFERNO>();
+         this._spurts = new Vector.<Spurtz>();
          _buildInstant = true;
          _buildInstantCost = new SecNum(0);
       }
@@ -81,7 +82,7 @@ package
          this.renderRotation();
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          super.Fire(param1);
          FindTargets(_maxTargets,_priority);
@@ -101,16 +102,16 @@ package
       
       private function killSpurts() : void
       {
-         var _loc2_:CREEP_INFERNO = null;
+         var _loc2_:Spurtz = null;
          var _loc1_:int = int(this._spurts.length - 1);
          while(_loc1_ >= 0)
          {
             _loc2_ = this._spurts[_loc1_];
             if(_loc2_._frameNumber > 100 && (Math.random() > 0.9 || !_loc2_._hasTarget))
             {
-               _loc2_._health.Set(0);
+               _loc2_.setHealth(0);
             }
-            if(_loc2_._health.Get() <= 0)
+            if(_loc2_.health <= 0)
             {
                this._spurts.splice(_loc1_,1);
             }
@@ -173,7 +174,7 @@ package
       
       private function hasValidTarget() : Boolean
       {
-         return Boolean(_targetCreeps) && _targetCreeps.length > 0 && MonsterBase(_targetCreeps[0].creep)._health.Get() > 0;
+         return Boolean(_targetCreeps) && _targetCreeps.length > 0 && MonsterBase(_targetCreeps[0].creep).health > 0;
       }
       
       private function rotateBarrelTowardsTarget() : void
@@ -206,7 +207,7 @@ package
             this.shootJar();
             return;
          }
-         var _loc1_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc1_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc2_:Number = 1;
          var _loc3_:Number = MathUtils.getDistanceBetweenTwoPoints(_position,new Point(_target.x,_target.y));
          var _loc4_:Number = (this._barrelRotation + 3 * 60) * (Math.PI / 180);
@@ -216,7 +217,7 @@ package
          {
             _loc2_ = 1.25;
          }
-         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),_loc5_,null,_speed,int(_damage * _loc1_ * _loc2_),_splash,this._projectileType,3);
+         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),_loc5_,null,_speed,int(damage * _loc1_ * _loc2_),_splash,this._projectileType,3,this);
          this._projectile.addEventListener(FIREBALL.COLLIDED,this.collidedWithTarget,false,0,true);
          ++this._shotsFired;
          this.scaleDisplayObjectRandomly(this._projectile._graphic);
@@ -224,13 +225,13 @@ package
       
       private function shootJar() : void
       {
-         var _loc1_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc1_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc2_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc2_ = 1.25;
          }
-         var _loc3_:int = _damage * 0.25 * _loc1_ * _loc2_;
+         var _loc3_:int = damage * 0.25 * _loc1_ * _loc2_;
          _jarHealth.Add(-int(_loc3_));
          ATTACK.Damage(_mc.x,_mc.y + _top,_loc3_);
       }
@@ -242,7 +243,7 @@ package
          param1.scaleY = _loc2_;
       }
       
-      private function makeItSperm(param1:MovieClip) : void
+      private function makeItSperm(param1:Sprite) : void
       {
          var _loc2_:Array = new Array();
          _loc2_ = _loc2_.concat([1,1,1,1,1]);
@@ -274,29 +275,28 @@ package
       {
          var _loc2_:uint = this._projectile._graphic.width + this._projectile._graphic.height;
          var _loc3_:Point = new Point(param1._tmpX,this._projectile._tmpY);
-         var _loc4_:Array = MAP.CreepCellFind(_loc3_,_loc2_);
+         var _loc4_:Array = Targeting.getCreepsInRange(_loc2_,_loc3_,Targeting.getOldStyleTargets(0));
          if(_loc4_.length > 0)
          {
-            MAP.DealLinearAEDamage(_loc3_,_loc2_,this._projectile._damage,_loc4_);
+            Targeting.DealLinearAEDamage(_loc3_,_loc2_,this._projectile._damage,_loc4_);
          }
       }
       
       private function spawnSpurtzAt(param1:int, param2:int, param3:Number, param4:Number) : void
       {
-         var _loc5_:CREEP_INFERNO = CREATURES.Spawn("IC1",MAP._BUILDINGTOPS,"defend",new Point(param1,param2),param3) as CREEP_INFERNO;
-         _loc5_.FindDefenseTargets();
-         this.makeItSperm(_loc5_._mc as MovieClip);
-         _loc5_.scaleX = param4;
-         _loc5_.scaleY = param4;
+         var _loc5_:Spurtz = CREATURES.Spawn("IC1",MAP._BUILDINGTOPS,"defend",new Point(param1,param2),param3) as Spurtz;
+         _loc5_.isDisposable = true;
+         _loc5_.findDefenseTargets();
+         _loc5_.graphic.scaleX = param4;
+         _loc5_.graphic.scaleY = param4;
          this._spurts.push(_loc5_);
       }
       
-      private function makeSuperSpurtz(param1:CREEP_INFERNO) : void
+      private function makeSuperSpurtz(param1:Spurtz) : void
       {
-         param1.scaleX = 2;
-         param1.scaleY = 2;
-         param1.filters = [new GlowFilter(16759349,1,10,10,6,3)];
-         param1._damage = new SecNum(param1._damage.Get() * 2);
+         param1.graphic.scaleX = 2;
+         param1.graphic.scaleY = 2;
+         param1.graphic.filters = [new GlowFilter(16759349,1,10,10,6,3)];
       }
    }
 }

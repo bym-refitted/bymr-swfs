@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1499")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1546")]
    public dynamic class RAILGUNPROJECTILE_CLIP extends MovieClip
    {
       public function RAILGUNPROJECTILE_CLIP()

@@ -1,11 +1,13 @@
 package
 {
    import com.monsters.ai.WMBASE;
+   import com.monsters.interfaces.ICoreBuilding;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   public class BUILDING112 extends BSTORAGE
+   public class BUILDING112 extends BSTORAGE implements ICoreBuilding
    {
       public function BUILDING112()
       {
@@ -34,7 +36,7 @@ package
       
       override public function Cancel() : void
       {
-         GLOBAL._bTownhall = null;
+         GLOBAL.setTownHall(null);
          super.Cancel();
       }
       
@@ -56,7 +58,7 @@ package
       override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
-         if(GLOBAL._advancedMap == 0 && GLOBAL._mode == "wmattack")
+         if((!MapRoomManager.instance.isInMapRoom2or3 || BASE.isInfernoMainYardOrOutpost) && GLOBAL.mode == "wmattack")
          {
             WMBASE._destroyed = true;
          }
@@ -77,13 +79,13 @@ package
       override public function Constructed() : void
       {
          super.Constructed();
-         GLOBAL._bTownhall = this;
+         GLOBAL.setTownHall(this);
       }
       
       override public function Setup(param1:Object) : void
       {
          super.Setup(param1);
-         GLOBAL._bTownhall = this;
+         GLOBAL.setTownHall(this);
       }
    }
 }

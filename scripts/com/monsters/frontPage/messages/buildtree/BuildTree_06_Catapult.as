@@ -16,7 +16,7 @@ package com.monsters.frontPage.messages.buildtree
          {
             return false;
          }
-         return GLOBAL._bTownhall._lvl.Get() >= 3;
+         return Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= 3;
       }
       
       override protected function onButtonClick() : void

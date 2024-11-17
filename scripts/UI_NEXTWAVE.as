@@ -15,11 +15,11 @@ package
       
       public static function ShouldDisplay() : Boolean
       {
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode !== GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return false;
          }

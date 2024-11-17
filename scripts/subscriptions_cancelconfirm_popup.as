@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2937")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol3063")]
    public dynamic class subscriptions_cancelconfirm_popup extends MovieClip
    {
       public var bConfirm:Button_CLIP;

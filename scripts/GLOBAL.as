@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.tests.ABTest;
    import com.cc.utils.SecNum;
    import com.computus.model.Timekeeper;
    import com.gskinner.utils.Rndm;
@@ -10,8 +11,18 @@ package
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
+   import com.monsters.enums.EnumBaseMode;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.interfaces.ICoreBuilding;
+   import com.monsters.interfaces.ITickable;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom3.MapRoom3AssetCache;
+   import com.monsters.maproom3.tiles.MapRoom3TileSetManager;
    import com.monsters.maproom_advanced.CellData;
-   import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.IMapRoomCell;
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.pathing.PATHING;
    import com.monsters.player.Player;
    import com.monsters.siege.SiegeFactory;
@@ -90,6 +101,8 @@ package
       
       public static var _storageURL:String;
       
+      public static var languageUrl:String;
+      
       public static var _allianceURL:String;
       
       public static var _soundPathURL:String;
@@ -114,7 +127,7 @@ package
       
       public static var _render:Boolean;
       
-      public static var _mode:String;
+      private static var _mode:String;
       
       public static var _loadmode:String;
       
@@ -124,7 +137,7 @@ package
       
       public static var _resourceNames:Array;
       
-      public static var _bTownhall:BFOUNDATION;
+      private static var _bTownhall:BFOUNDATION;
       
       public static var _bRadio:BFOUNDATION;
       
@@ -166,6 +179,10 @@ package
       
       public static var _bTowerCount:int;
       
+      public static var _newThings:Boolean;
+      
+      public static var _reloadonerror:Boolean;
+      
       public static var _catchup:Boolean;
       
       public static var _researchTime:Number;
@@ -192,13 +209,9 @@ package
       
       public static var _fps:int;
       
+      public static var _FPStimestamp:int;
+      
       public static var _mapHome:Point;
-      
-      public static var _attackerCreatures:Object;
-      
-      public static var _attackerCreatureUpgrades:Object;
-      
-      public static var _playerCreatureUpgrades:Object;
       
       public static var _attackersResources:Object;
       
@@ -210,7 +223,11 @@ package
       
       public static var _attackersCatapult:int;
       
-      public static var _currentCell:*;
+      public static var _currentCell:IMapRoomCell;
+      
+      public static var _empireDestroyed:int;
+      
+      public static var _empireDestroyedShown:Boolean;
       
       public static var _savedAttackersDeltaResources:Object;
       
@@ -224,6 +241,8 @@ package
       
       public static var _unreadMessages:int;
       
+      public static var _mr2TutorialId:int;
+      
       public static var _outpostCapacity:SecNum;
       
       public static var _displayedPromoNew:Boolean;
@@ -232,15 +251,25 @@ package
       
       public static var _credits:SecNum;
       
+      public static var __:uint;
+      
+      public static var ___:uint;
+      
       private static var _player:Player;
       
       private static var _attackingPlayer:Player;
+      
+      public static var _buildingMousedOver:BFOUNDATION;
+      
+      private static var tickables:Vector.<ITickable>;
+      
+      private static var fastTickables:Vector.<ITickable>;
       
       public static var _local:Boolean = false;
       
       public static var _save:Boolean = true;
       
-      public static var _localMode:int = BYMConfig.k_sLOCAL_MODE_TRUNK;
+      public static var _localMode:int = BYMConfig.k_sLOCAL_MODE_PREVIEW;
       
       public static var _version:SecNum = new SecNum(128);
       
@@ -270,13 +299,9 @@ package
       
       public static const _radtodeg:Number = 57.2957795;
       
-      public static const MODE_ATTACK:String = "attack";
+      public static const e_BASE_MODE:EnumBaseMode = new EnumBaseMode();
       
       public static var iresourceNames:Array = ["#r_bone#","#r_coal#","#r_sulfur#","#r_magma#","#r_shiny#","#r_time#"];
-      
-      public static var _newThings:Boolean = false;
-      
-      public static var _reloadonerror:Boolean = false;
       
       public static var _hatcheryOverdrivePower:SecNum = new SecNum(0);
       
@@ -304,17 +329,15 @@ package
       
       public static var _playerMonsterSpeedOverdrive:SecNum = new SecNum(0);
       
-      public static var _FPSframecount:int = 0;
+      public static const k_STAGE_FPS:uint = 24;
       
-      public static var _FPStimestamp:int = 0;
+      public static var _FPSframecount:int = 0;
       
       public static var _FPSarray:Array = [];
       
       public static var _mapOutpost:Array = [];
       
       public static var _mapOutpostIDs:Array = [];
-      
-      public static var _advancedMap:int = 0;
       
       public static var _wmCreaturePowerups:Array = new Array();
       
@@ -324,11 +347,7 @@ package
       
       public static var _playerCatapultLevel:SecNum = new SecNum(0);
       
-      public static var _empireDestroyed:int = 0;
-      
-      public static var _empireDestroyedShown:Boolean = false;
-      
-      public static var _attackerMapCreatures:Object = {};
+      public static var _playerFlingerLevel:SecNum = new SecNum(0);
       
       public static var _attackerMapResources:Object = {};
       
@@ -370,8 +389,6 @@ package
       
       public static var _lastWhatsNew:int = 1048;
       
-      public static var _mr2TutorialId:int = 0;
-      
       public static var _afktimer:SecNum = new SecNum(0);
       
       public static var _oldMousePoint:Point = new Point(0,0);
@@ -406,9 +423,28 @@ package
       
       private static const _MAGNIFICATION_BOUNDS:Point = new Point(0.6,2.75);
       
+      public static var k_MAX_NUMBER_OF_OUTPOSTS:uint = 3500;
+      
       public function GLOBAL()
       {
          super();
+      }
+      
+      public static function get townHall() : BFOUNDATION
+      {
+         return _bTownhall;
+      }
+      
+      public static function setTownHall(param1:ICoreBuilding) : void
+      {
+         var _loc2_:BFOUNDATION = param1 as BFOUNDATION;
+         if(Boolean(_bTownhall) && Boolean(_loc2_))
+         {
+         }
+         if(Boolean(_loc2_) || !param1)
+         {
+            _bTownhall = _loc2_;
+         }
       }
       
       public static function get player() : Player
@@ -423,26 +459,162 @@ package
       
       public static function get attackingPlayer() : Player
       {
-         return _player;
+         return _attackingPlayer;
       }
       
       public static function set attackingPlayer(param1:Player) : void
       {
-         _player = param1;
+         _attackingPlayer = param1;
+         if(Boolean(_attackingPlayer) && _attackingPlayer != player)
+         {
+            _attackingPlayer.isAttacking = true;
+         }
+      }
+      
+      public static function get mode() : String
+      {
+         return _mode;
+      }
+      
+      public static function setMode(param1:String) : void
+      {
+         _mode = param1;
+      }
+      
+      public static function get isInAttackMode() : Boolean
+      {
+         return GLOBAL.mode === GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode === GLOBAL.e_BASE_MODE.IWMATTACK || GLOBAL.mode === GLOBAL.e_BASE_MODE.IATTACK || GLOBAL.mode === GLOBAL.e_BASE_MODE.ATTACK;
+      }
+      
+      private static function changeNotMaproom3SpecificBuildings() : void
+      {
+         _buildingProps[8].costs = [{
+            "r1":1000000,
+            "r2":1000000,
+            "r3":1000000,
+            "r4":0,
+            "time":12 * 60 * 60,
+            "re":[[14,1,3],[15,1,1]]
+         },{
+            "r1":250000,
+            "r2":250000,
+            "r3":0,
+            "r4":0,
+            "time":6 * 60 * 60,
+            "re":[[14,1,3],[15,1,1]]
+         },{
+            "r1":500000,
+            "r2":500000,
+            "r3":0,
+            "r4":0,
+            "time":12 * 60 * 60,
+            "re":[[14,1,3],[15,1,1]]
+         }];
+         _buildingProps[8].quantity = [0,0,0,1,1,1,1,1,1,1,1];
+         _buildingProps[14].costs = [{
+            "r1":36 * 60,
+            "r2":36 * 60,
+            "r3":0,
+            "r4":0,
+            "time":5 * 60,
+            "re":[[14,1,1]]
+         },{
+            "r1":144 * 60,
+            "r2":144 * 60,
+            "r3":0,
+            "r4":0,
+            "time":75 * 60,
+            "re":[[14,1,3],[8,1,1]]
+         },{
+            "r1":576 * 60,
+            "r2":576 * 60,
+            "r3":0,
+            "r4":0,
+            "time":3 * 60 * 60,
+            "re":[[14,1,4],[8,1,1]]
+         },{
+            "r1":138240,
+            "r2":138240,
+            "r3":0,
+            "r4":0,
+            "time":0x7080,
+            "re":[[14,1,5],[8,1,1]]
+         },{
+            "r1":552960,
+            "r2":552960,
+            "r3":0,
+            "r4":0,
+            "time":20 * 60 * 60,
+            "re":[[14,1,6],[8,1,1]]
+         },{
+            "r1":2211840,
+            "r2":2211840,
+            "r3":0,
+            "r4":0,
+            "time":40 * 60 * 60,
+            "re":[[14,1,6],[8,1,1]]
+         }];
+         _buildingProps[14].capacity = [200,260,320,380,450,9 * 60];
+         _buildingProps[14].hp = [0xfa0,14000,25000,43000,75000,130000];
+         _buildingProps[14].repairTime = [100,200,5 * 60,400,500,10 * 60];
+         _buildingProps[21].capacity = [380,450,9 * 60,11 * 60,800];
+         _buildingProps[4].costs = [{
+            "r1":1000,
+            "r2":1000,
+            "r3":500,
+            "r4":0,
+            "time":15 * 60,
+            "re":[[14,1,1]]
+         },{
+            "r1":64300,
+            "r2":64300,
+            "r3":32150,
+            "r4":0,
+            "time":3 * 60 * 60,
+            "re":[[14,1,3],[11,1,1]]
+         },{
+            "r1":283600,
+            "r2":283600,
+            "r3":141800,
+            "r4":0,
+            "time":9 * 60 * 60,
+            "re":[[14,1,4],[11,1,1]]
+         },{
+            "r1":1247840,
+            "r2":1247840,
+            "r3":623920,
+            "r4":0,
+            "time":27 * 60 * 60,
+            "re":[[14,1,4],[11,1,1]]
+         },{
+            "r1":1247840,
+            "r2":1247840,
+            "r3":623920,
+            "r4":0,
+            "time":27 * 60 * 60,
+            "re":[[14,1,4],[11,1,1]]
+         }];
+         _buildingProps[4].hp = [0xfa0,0x1f40,16000,28000,28000];
+         _buildingProps[4].capacity = [500,1000,1750,2250,50 * 60,0xfa0,0xfa0];
       }
       
       public static function SetBuildingProps() : void
       {
-         switch(BASE._yardType)
+         switch(BASE.yardType)
          {
-            case BASE.INFERNO_YARD:
+            case EnumYardType.INFERNO_YARD:
                _buildingProps = INFERNOYARDPROPS._infernoYardProps;
                break;
-            case BASE.OUTPOST:
+            case EnumYardType.OUTPOST:
                _buildingProps = OUTPOST_YARD_PROPS._outpostProps;
                break;
             default:
                _buildingProps = YARD_PROPS._yardProps;
+               if(!MapRoomManager.instance.isInMapRoom3)
+               {
+                  changeNotMaproom3SpecificBuildings();
+                  break;
+               }
          }
          if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
          {
@@ -451,49 +623,53 @@ package
          }
       }
       
+      public static function isInfernoMode(param1:String) : Boolean
+      {
+         return param1 == e_BASE_MODE.IBUILD || param1 == GLOBAL.e_BASE_MODE.IVIEW || param1 == GLOBAL.e_BASE_MODE.IATTACK || param1 == GLOBAL.e_BASE_MODE.IHELP || param1 == GLOBAL.e_BASE_MODE.IWMVIEW || param1 == GLOBAL.e_BASE_MODE.IWMATTACK;
+      }
+      
+      public static function isValidMode(param1:String) : Boolean
+      {
+         return param1 == e_BASE_MODE.BUILD || param1 == e_BASE_MODE.ATTACK || param1 == e_BASE_MODE.WMATTACK || param1 == e_BASE_MODE.VIEW || param1 == e_BASE_MODE.WMVIEW || param1 == e_BASE_MODE.HELP || param1 == e_BASE_MODE.IBUILD || param1 == GLOBAL.e_BASE_MODE.IVIEW || param1 == GLOBAL.e_BASE_MODE.IATTACK || param1 == GLOBAL.e_BASE_MODE.IHELP || param1 == GLOBAL.e_BASE_MODE.IWMVIEW || param1 == GLOBAL.e_BASE_MODE.IWMATTACK;
+      }
+      
+      public static function infernoToDefaultMode(param1:String) : String
+      {
+         switch(param1)
+         {
+            case GLOBAL.e_BASE_MODE.IBUILD:
+               return GLOBAL.e_BASE_MODE.BUILD;
+            case GLOBAL.e_BASE_MODE.IVIEW:
+               return GLOBAL.e_BASE_MODE.VIEW;
+            case GLOBAL.e_BASE_MODE.IATTACK:
+               return GLOBAL.e_BASE_MODE.ATTACK;
+            case GLOBAL.e_BASE_MODE.IHELP:
+               return GLOBAL.e_BASE_MODE.HELP;
+            case GLOBAL.e_BASE_MODE.IWMVIEW:
+               return GLOBAL.e_BASE_MODE.WMVIEW;
+            case GLOBAL.e_BASE_MODE.IWMATTACK:
+               return GLOBAL.e_BASE_MODE.WMATTACK;
+            default:
+               return param1;
+         }
+      }
+      
       public static function Setup(param1:String = "build") : void
       {
-         var _loc3_:String = null;
-         if(param1 != "build")
-         {
-            attackingPlayer = player;
-         }
          player = new Player();
          _loadmode = param1;
-         var _loc2_:String = param1;
-         if(_loc2_ == "build" || _loc2_ == "view" || _loc2_ == "attack" || _loc2_ == "help" || _loc2_ == "wmview" || _loc2_ == "wmattack")
+         if(isValidMode(param1))
          {
-            _mode = param1;
-         }
-         else if(param1 == "ibuild" || param1 == "iview" || param1 == "iattack" || param1 == "ihelp" || param1 == "iwmview" || param1 == "iwmattack")
-         {
-            switch(param1)
-            {
-               case "ibuild":
-                  _loc2_ = "build";
-                  break;
-               case "iview":
-                  _loc2_ = "view";
-                  break;
-               case "iattack":
-                  _loc2_ = "attack";
-                  break;
-               case "ihelp":
-                  _loc2_ = "help";
-                  break;
-               case "iwmview":
-                  _loc2_ = "wmview";
-                  break;
-               case "iwmattack":
-                  _loc2_ = "wmattack";
-            }
-            _mode = _loc2_;
+            setMode(infernoToDefaultMode(param1));
          }
          _fps = 40;
          _FPSframecount = 0;
          _FPSarray = [];
          _FPStimestamp = 0;
          ImageCache.prependImagePath = GLOBAL._storageURL;
+         MapRoom3AssetCache.instance.Load();
+         var _loc2_:Array = MapRoom3TileSetManager.DEFAULT_TILE_SET;
+         MapRoom3TileSetManager.instance.SetCurrentTileSet(_loc2_);
          if(!_timekeeper)
          {
             _timekeeper = new Timekeeper();
@@ -515,10 +691,8 @@ package
          };
          _attackersDeltaResources = {"dirty":false};
          _attackerMonsterOverdrive = new SecNum(0);
-         if(_mode != "build")
+         if(_mode != GLOBAL.e_BASE_MODE.BUILD)
          {
-            _attackerCreatures = HOUSING._creatures;
-            _attackerCreatureUpgrades = _playerCreatureUpgrades;
             HOUSING.Cull();
             _attackersResources = GLOBAL._resources;
             _hpAttackersResources = GLOBAL._hpResources;
@@ -541,47 +715,60 @@ package
             {
                _attackersCatapult = GLOBAL._bCatapult._lvl.Get();
             }
-            if(BASE.isInferno() && GLOBAL._bHousing != null)
+            if(BASE.isInfernoMainYardOrOutpost && GLOBAL._bHousing != null)
             {
                _attackersFlinger = GLOBAL._bHousing._lvl.Get();
             }
             ATTACK._countdown = 300;
-            if(Boolean(GLOBAL._advancedMap) && Boolean(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL")))
+            if(MapRoomManager.instance.isInMapRoom2or3 && Boolean(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL")))
             {
                ATTACK._countdown = 420;
             }
-            if(_mode == _loadmode)
+            if(MapRoomManager.instance.isInMapRoom3 && (param1 == GLOBAL.e_BASE_MODE.ATTACK || param1 == GLOBAL.e_BASE_MODE.WMATTACK || param1 == GLOBAL.e_BASE_MODE.VIEW || param1 == GLOBAL.e_BASE_MODE.WMVIEW))
             {
-               if(Boolean(_advancedMap) && (_mode == "attack" || _mode == "wmattack"))
+               GLOBAL._attackersResources = {
+                  "r1":new SecNum(GLOBAL._resources.r1.Get()),
+                  "r2":new SecNum(GLOBAL._resources.r2.Get()),
+                  "r3":new SecNum(GLOBAL._resources.r3.Get()),
+                  "r4":new SecNum(GLOBAL._resources.r4.Get()),
+                  "catapult":new SecNum(0),
+                  "flinger":new SecNum(0)
+               };
+               GLOBAL._attackersResources.catapult.Set(GLOBAL._playerCatapultLevel.Get());
+               _attackersCatapult = GLOBAL._playerCatapultLevel.Get();
+               GLOBAL._attackersResources.flinger.Set(GLOBAL._playerFlingerLevel.Get());
+               _attackersFlinger = GLOBAL._playerFlingerLevel.Get();
+            }
+            else if(_mode == _loadmode)
+            {
+               if(MapRoomManager.instance.isInMapRoom2 && (param1 == GLOBAL.e_BASE_MODE.ATTACK || param1 == GLOBAL.e_BASE_MODE.WMATTACK || param1 == GLOBAL.e_BASE_MODE.VIEW || param1 == GLOBAL.e_BASE_MODE.WMVIEW))
                {
-                  _attackerMapCreaturesStart = {};
-                  for(_loc3_ in _attackerMapCreatures)
+                  if(_attackerMapResources.catapult)
                   {
-                     _attackerMapCreaturesStart[_loc3_] = new SecNum(_attackerMapCreatures[_loc3_].Get());
+                     _attackersCatapult = _attackerMapResources.catapult.Get();
                   }
-                  _attackersCatapult = _attackerMapResources.catapult.Get();
-                  _attackersFlinger = _attackerMapResources.flinger.Get();
                }
+               _attackersFlinger = 4;
             }
          }
          switch(_loadmode)
          {
-            case "iattack":
-            case "iwmattack":
+            case e_BASE_MODE.IATTACK:
+            case e_BASE_MODE.IWMATTACK:
                SOUNDS.PlayMusic("musiciattack");
                break;
-            case "ibuild":
-            case "ihelp":
-            case "iview":
+            case e_BASE_MODE.IBUILD:
+            case e_BASE_MODE.IHELP:
+            case e_BASE_MODE.IVIEW:
                SOUNDS.PlayMusic("musicibuild");
                break;
-            case "attack":
-            case "wmattack":
+            case e_BASE_MODE.ATTACK:
+            case e_BASE_MODE.WMATTACK:
                SOUNDS.PlayMusic("musicattack");
                break;
-            case "build":
-            case "help":
-            case "view":
+            case e_BASE_MODE.BUILD:
+            case e_BASE_MODE.HELP:
+            case e_BASE_MODE.VIEW:
             default:
                SOUNDS.PlayMusic("musicbuild");
          }
@@ -601,7 +788,7 @@ package
       
       public static function getResourceFrame(param1:String, param2:Boolean = false) : String
       {
-         if(param2 || BASE.isInferno())
+         if(param2 || BASE.isInfernoMainYardOrOutpost)
          {
             switch(param1)
             {
@@ -680,6 +867,8 @@ package
          _bSiegeLab = null;
          _bSiegeFactory = null;
          _bCage = null;
+         tickables = new Vector.<ITickable>();
+         fastTickables = new Vector.<ITickable>();
       }
       
       public static function WaitShow(param1:String = "") : void
@@ -692,6 +881,21 @@ package
          PLEASEWAIT.Hide();
       }
       
+      public static function getNumNormalPlayerGuardianDataChamps() : int
+      {
+         var _loc1_:int = int(_playerGuardianData.length);
+         var _loc2_:int = _loc1_;
+         while(_loc2_ >= 0)
+         {
+            if(_playerGuardianData[_loc2_].status != ChampionBase.k_CHAMPION_STATUS_NORMAL)
+            {
+               _loc1_--;
+            }
+            _loc2_--;
+         }
+         return _loc1_;
+      }
+      
       public static function get isFullScreen() : Boolean
       {
          return _ROOT.stage.displayState === StageDisplayState.FULL_SCREEN;
@@ -702,7 +906,7 @@ package
          if(_ROOT.stage.displayState == StageDisplayState.NORMAL)
          {
             _ROOT.stage.displayState = StageDisplayState.FULL_SCREEN;
-            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            if(GLOBAL.mode == e_BASE_MODE.ATTACK || GLOBAL.mode == e_BASE_MODE.WMATTACK)
             {
                UI2._top.mcZoom.gotoAndStop(6);
             }
@@ -715,7 +919,7 @@ package
          }
          else
          {
-            if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            if(GLOBAL.mode == e_BASE_MODE.ATTACK || GLOBAL.mode == e_BASE_MODE.WMATTACK)
             {
                UI2._top.mcZoom.gotoAndStop(4);
             }
@@ -724,10 +928,14 @@ package
                UI2._top.mcZoom.gotoAndStop(1);
             }
             _ROOT.stage.displayState = StageDisplayState.NORMAL;
-            ThrowStackTrace("goFullScreen");
+            print("leaving fullscreen: " + Console.getStackTrace());
          }
          _zoomed = false;
          magnification = 1;
+         if(MapRoomManager.instance.isOpen)
+         {
+            MapRoomManager.instance.ResizeHandler();
+         }
       }
       
       public static function Zoom(param1:MouseEvent = null) : void
@@ -739,7 +947,7 @@ package
             if(_zoomed)
             {
                _zoomed = false;
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == e_BASE_MODE.ATTACK || GLOBAL.mode == e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcZoom.gotoAndStop(4);
                }
@@ -757,7 +965,7 @@ package
             else
             {
                _zoomed = true;
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == e_BASE_MODE.ATTACK || GLOBAL.mode == e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcZoom.gotoAndStop(5);
                }
@@ -777,44 +985,60 @@ package
       
       public static function Tick() : void
       {
-         var _loc1_:Object = null;
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:int = 0;
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
+         var _loc3_:Vector.<Object> = null;
+         var _loc4_:BFOUNDATION = null;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc7_:* = false;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
          if(!_halt && !GLOBAL._catchup)
          {
             t += 1;
-            if(MapRoom._open)
+            if(MapRoomManager.instance.isOpen)
             {
-               MapRoom.Tick();
+               MapRoomManager.instance.Tick();
                LOGGER.Tick();
                MAILBOX.Tick();
                AFK();
             }
             else
             {
+               MapRoomManager.instance.CheckForAndForceUpgradeFromMapRoom1();
                ++_timePlayed;
-               _loc1_ = BASE._buildingsAll;
-               for each(_loc2_ in _loc1_)
+               _loc1_ = int(tickables.length - 1);
+               _loc2_ = 0;
+               while(_loc2_ < _loc1_)
                {
-                  if(_loc2_._class === "resource")
+                  tickables[_loc2_].tick();
+                  _loc2_++;
+               }
+               _loc3_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+               _loc5_ = 0;
+               _loc6_ = 0;
+               for each(_loc4_ in _loc3_)
+               {
+                  _loc7_ = _loc4_ is BRESOURCE;
+                  if(_loc7_)
                   {
-                     _loc3_ = _loc2_._stored.Get();
-                     _loc4_ = _loc2_._countdownProduce.Get();
+                     _loc5_ = _loc4_._stored.Get();
+                     _loc6_ = _loc4_._countdownProduce.Get();
                   }
-                  _loc2_.Tick(1);
-                  if(_loc2_._class === "resource")
+                  _loc4_.Tick(1);
+                  if(_loc7_)
                   {
-                     if(_loc4_ > 1 && _loc3_ != _loc2_._stored.Get())
+                     if(_loc6_ > 1 && _loc5_ != _loc4_._stored.Get())
                      {
-                        LOGGER.Log("log","BRESOURCE.StoredB " + _loc3_ + " - " + _loc2_._stored.Get());
+                        LOGGER.Log("log","BRESOURCE.StoredB " + _loc5_ + " - " + _loc4_._stored.Get());
                         GLOBAL.ErrorMessage("BRESOURCE.StoredB");
                         return;
                      }
                   }
                }
+               HOUSING.catchupTick(1);
                UPDATES.Check();
                CREATURELOCKER.Tick();
                HATCHERY.Tick();
@@ -823,7 +1047,7 @@ package
                BASE.Tick();
                HOUSING.Update();
                ACADEMY.Tick();
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == e_BASE_MODE.ATTACK || GLOBAL.mode == e_BASE_MODE.WMATTACK)
                {
                   ATTACK.Tick();
                }
@@ -834,7 +1058,7 @@ package
                AFK();
                MONSTERBAITER.Tick();
                MONSTERBUNKER.Tick();
-               if(_mode == "wmattack" || _mode == "wmview")
+               if(_mode == GLOBAL.e_BASE_MODE.WMATTACK || _mode == GLOBAL.e_BASE_MODE.WMVIEW)
                {
                   WMBASE.Tick();
                }
@@ -844,7 +1068,7 @@ package
                _toggleYardWaiting = 0;
                _nextOutpostWaiting = 0;
                _showMapWaiting = 0;
-               GLOBAL._advancedMap = 0;
+               MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
                if(MAPROOM_INFERNO._open)
                {
                   MAPROOM_INFERNO.Hide();
@@ -853,13 +1077,14 @@ package
                {
                   MAPROOM.Hide();
                }
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
-                  BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+                  _loc8_ = MapRoomManager.instance.isInMapRoom3 ? int(EnumYardType.PLAYER) : int(EnumYardType.MAIN_YARD);
+                  BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,_loc8_);
                }
                else
                {
-                  BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+                  BASE.LoadBase(GLOBAL._infBaseURL,0,0,GLOBAL.e_BASE_MODE.IBUILD,false,EnumYardType.INFERNO_YARD);
                }
             }
             else if(_nextOutpostWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
@@ -868,20 +1093,48 @@ package
                _showMapWaiting = 0;
                BASE.LoadNext();
             }
-            else if(_showMapWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading)
+            else if(_showMapWaiting && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving && !BASE._loading && MapRoomManager.instance.ReadyToShow())
             {
-               _loc5_ = _showMapWaiting;
+               _loc9_ = _showMapWaiting;
                _showMapWaiting = 0;
                PLEASEWAIT.Hide();
-               MapRoom.ShowDelayed();
+               MapRoomManager.instance.ShowDelayed();
             }
-            if(BASE._needCurrentCell && GLOBAL._currentCell)
+            if(BASE._needCurrentCell && GLOBAL._currentCell && !MapRoomManager.instance.isInMapRoom3)
             {
                PLEASEWAIT.Hide();
                BASE._needCurrentCell = false;
-               _loc6_ = GLOBAL._currentCell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-               BASE.LoadBase(null,0,GLOBAL._currentCell._baseID,"build",false,_loc6_);
+               _loc10_ = GLOBAL._currentCell.baseType == EnumYardType.INFERNO_OUTPOST ? int(EnumYardType.OUTPOST) : int(EnumYardType.MAIN_YARD);
+               BASE.LoadBase(null,0,GLOBAL._currentCell.baseID,GLOBAL.e_BASE_MODE.BUILD,false,_loc10_);
             }
+         }
+      }
+      
+      public static function addTickable(param1:ITickable) : void
+      {
+         tickables.push(param1);
+      }
+      
+      public static function removeTickable(param1:ITickable) : void
+      {
+         var _loc2_:int = int(tickables.indexOf(param1));
+         if(_loc2_ >= 0)
+         {
+            tickables.splice(_loc2_,1);
+         }
+      }
+      
+      public static function addFastTickable(param1:ITickable) : void
+      {
+         fastTickables.push(param1);
+      }
+      
+      public static function removeFastTickable(param1:ITickable) : void
+      {
+         var _loc2_:int = int(fastTickables.indexOf(param1));
+         if(_loc2_ >= 0)
+         {
+            fastTickables.splice(_loc2_,1);
          }
       }
       
@@ -893,11 +1146,19 @@ package
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
-         var _loc8_:BFOUNDATION = null;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:Vector.<Object> = null;
+         var _loc11_:Vector.<Object> = null;
+         var _loc12_:Vector.<Object> = null;
+         var _loc13_:Bunker = null;
+         var _loc14_:BTRAP = null;
+         var _loc15_:BFOUNDATION = null;
          if(!_halt)
          {
             _loc2_ = getTimer();
             SOUNDS.Tick();
+            MapRoomManager.instance.TickFast();
             if(_render)
             {
                _loc3_ = getTimer();
@@ -927,7 +1188,7 @@ package
                }
                lastTime = _loc3_;
                _loc5_ = getTimer();
-               if(!MapRoom._open)
+               if(!MapRoomManager.instance.isOpen)
                {
                   _loc7_ = 0;
                   while(_loc7_ < _loops)
@@ -940,20 +1201,37 @@ package
                      if(CREEPS._creepCount > 0 || Boolean(SiegeWeapons.activeWeapon))
                      {
                         CREEPS.Tick();
-                        for each(_loc8_ in BASE._buildingsTowers)
+                        _loc10_ = InstanceManager.getInstancesByClass(BTOWER);
+                        _loc11_ = InstanceManager.getInstancesByClass(BTRAP);
+                        _loc12_ = InstanceManager.getInstancesByClass(Bunker);
+                        for each(_loc15_ in _loc10_)
                         {
-                           _loc8_.TickAttack();
+                           _loc15_.TickAttack();
+                        }
+                        for each(_loc14_ in _loc11_)
+                        {
+                           _loc14_.TickAttack();
+                        }
+                        for each(_loc13_ in _loc12_)
+                        {
+                           _loc13_.TickAttack();
                         }
                      }
                      CREATURES.Tick();
+                     _loc9_ = _loc8_ = int(fastTickables.length - 1);
+                     while(_loc9_ >= 0)
+                     {
+                        fastTickables[_loc9_].tick();
+                        _loc9_--;
+                     }
                      _loc6_ = 0;
                      while(_loc6_ < CREATURES._guardianList.length)
                      {
-                        if(Boolean(CREATURES._guardianList[_loc6_]) && CREATURES._guardianList[_loc6_].Tick(1))
+                        if(Boolean(CREATURES._guardianList[_loc6_]) && CREATURES._guardianList[_loc6_].tick(1))
                         {
                            if(!BYMConfig.instance.RENDERER_ON)
                            {
-                              MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc6_]);
+                              MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc6_].graphic);
                            }
                            CREATURES._guardianList[_loc6_].clearRasterData();
                            if(CREATURES._guardianList[_loc6_] == CREATURES._guardian)
@@ -979,18 +1257,21 @@ package
                }
                ++_frameNumber;
                _loc2_ = getTimer();
-               if(!MapRoom._open)
+               if(!MapRoomManager.instance.isOpen)
                {
                   WORKERS.Tick();
                   EFFECTS.Tick();
                   WMATTACK.Tick();
                   MAPROOM.Tick();
-                  TUTORIAL.Tick();
                   PATHING.Tick();
                   Smoke.Tick();
                   Fire.Tick();
                   BASE.ShakeB();
                   _player.tick();
+               }
+               if(!TUTORIAL.hasFinished)
+               {
+                  TUTORIAL.Tick();
                }
                if(_flags.logfps)
                {
@@ -1042,7 +1323,7 @@ package
             _loc1_ = int(_FPSarray[0].fps);
             _loc2_ = int(_FPSarray[_FPSarray.length - 1].fps);
             _loc3_ = int(_FPSarray[_FPSarray.length * 0.5].fps);
-            LOGGER.Log("fr" + GLOBAL._mode.substr(0,1),GLOBAL.dd(_loc1_) + "," + GLOBAL.dd(_loc2_) + "," + GLOBAL.dd(_loc3_));
+            LOGGER.Log("fr" + GLOBAL.mode.substr(0,1),GLOBAL.dd(_loc1_) + "," + GLOBAL.dd(_loc2_) + "," + GLOBAL.dd(_loc3_));
          }
       }
       
@@ -1055,17 +1336,16 @@ package
       {
          if(!BASE._loading)
          {
-            if(BASE._yardType >= BASE.INFERNO_YARD)
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                BASE._needCurrentCell = false;
                MAPROOM_INFERNO.Setup();
                MAPROOM_INFERNO.Show();
             }
-            else if(GLOBAL._advancedMap)
+            else if(MapRoomManager.instance.isInMapRoom2or3)
             {
                BASE._needCurrentCell = false;
-               MapRoom.Setup(_mapHome,MapRoom._worldID,MapRoom._inviteBaseID,MapRoom._viewOnly);
-               MapRoom.Show();
+               MapRoomManager.instance.SetupAndShow();
             }
             else
             {
@@ -1077,7 +1357,7 @@ package
       
       public static function isMapOpen() : Boolean
       {
-         return MAPROOM_INFERNO._open || MapRoom._open || MAPROOM._open;
+         return MAPROOM_INFERNO._open || MapRoomManager.instance.isOpen || MAPROOM._open;
       }
       
       public static function OpenMap(param1:String) : void
@@ -1239,10 +1519,10 @@ package
          };
       }
       
-      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : void
+      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1, param9:Boolean = true) : MESSAGE
       {
-         var _loc9_:MESSAGE = new MESSAGE();
-         _loc9_.Show(param1,param2,param3,param4,param5,param6,param7,param8);
+         var _loc10_:MESSAGE = new MESSAGE();
+         return _loc10_.Show(param1,param2,param3,param4,param5,param6,param7,param8,param9);
       }
       
       public static function Confirm(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:int = 1) : void
@@ -1371,17 +1651,9 @@ package
          {
             print("CallJS> func: " + param1 + " \n     args: " + JSON.encode(param2) + " \n     exitFS: " + param3);
          }
-         if(param3)
-         {
-            ThrowStackTrace("CallJS dropping out of full screen");
-         }
          if(GLOBAL._local)
          {
             return;
-         }
-         if(param3 && _ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
-         {
-            GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
          if(ExternalInterface.available)
          {
@@ -1402,17 +1674,9 @@ package
          {
             print("CallJS> func: " + param1 + " \n     args: " + JSON.encode(param3) + " \n     exitFS: " + param4);
          }
-         if(param4)
-         {
-            ThrowStackTrace("CallJS dropping out of full screen");
-         }
          if(GLOBAL._local)
          {
             return;
-         }
-         if(param4 && _ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
-         {
-            GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
          if(ExternalInterface.available)
          {
@@ -1467,6 +1731,29 @@ package
          return _loc2_;
       }
       
+      public static function getShinyCostFromResourceAmt(param1:Number) : int
+      {
+         return Math.ceil(Math.pow(Math.sqrt(param1 / 2),0.75));
+      }
+      
+      public static function ABTestHealingTimeShinyMod() : Number
+      {
+         var _loc1_:Number = 1;
+         if(ABTest.isInTestGroup("healcosts",84))
+         {
+            _loc1_ = 0.8625;
+         }
+         else if(ABTest.isInTestGroup("healcosts",168))
+         {
+            _loc1_ = 1.4375;
+         }
+         else if(ABTest.isInTestGroup("healcosts",256))
+         {
+            _loc1_ = 1.15;
+         }
+         return _loc1_;
+      }
+      
       public static function GetGameHeight() : int
       {
          return _ROOT.stage.stageHeight;
@@ -1481,7 +1768,7 @@ package
                _oldMousePoint = new Point(_ROOT.mouseX,_ROOT.mouseY);
                UpdateAFKTimer();
             }
-            if(Timestamp() - _afktimer.Get() == 360 && !MapRoom._open)
+            if(Timestamp() - _afktimer.Get() == 360 && !MapRoomManager.instance.isOpen)
             {
                POPUPS.AFK();
             }
@@ -1505,6 +1792,10 @@ package
       public static function StatSet(param1:String, param2:int, param3:Boolean = true) : void
       {
          var _loc4_:Boolean = false;
+         if(MapRoomManager.instance.isInMapRoom3 && param1 === "mrl" && param2 !== 3)
+         {
+            return;
+         }
          if(!_otherStats)
          {
             _otherStats = {};
@@ -1856,13 +2147,6 @@ package
             }
             _loc4_++;
          }
-         if(BASE._buildingsMushrooms["m" + param1._id])
-         {
-            LOGGER.Log("log","Shinyshroom not recycled");
-            GLOBAL.ErrorMessage("GLOBAL mushroom hack 3");
-            _shinyShroomValid = false;
-            return;
-         }
          _shinyShrooms.push({
             "x":param1.x,
             "y":param1.y
@@ -1882,6 +2166,54 @@ package
          var _loc3_:Number = param1.x - param2.x;
          var _loc4_:Number = param1.y - param2.y;
          return _loc3_ * _loc3_ + _loc4_ * _loc4_;
+      }
+      
+      public static function getEnemyCreepsInRange(param1:Number, param2:Point, param3:Boolean = false, param4:int = 2147483647) : Array
+      {
+         var _loc6_:Object = null;
+         var _loc7_:ChampionBase = null;
+         var _loc9_:MonsterBase = null;
+         var _loc10_:Number = NaN;
+         var _loc5_:Array = [];
+         var _loc8_:Point = new Point(0,0);
+         param1 *= param1;
+         if(isAtHomeOrInOutpost())
+         {
+            _loc6_ = CREEPS._creeps;
+            _loc7_ = CREEPS._guardian;
+         }
+         else
+         {
+            _loc6_ = CREATURES._creatures;
+            _loc7_ = CREATURES._guardian;
+         }
+         if(_loc7_)
+         {
+            if(CREATURES._guardian != CREEPS._guardian)
+            {
+               _loc8_.x = _loc7_._mc.x;
+               _loc8_.y = _loc7_._mc.y;
+               if(GLOBAL.QuickDistanceSquared(_loc8_,param2) <= param1)
+               {
+                  _loc5_.push(_loc7_);
+               }
+            }
+         }
+         for each(_loc9_ in _loc6_)
+         {
+            _loc8_.x = _loc9_._mc.x;
+            _loc8_.y = _loc9_._mc.y;
+            _loc10_ = GLOBAL.QuickDistanceSquared(_loc8_,param2);
+            if(_loc10_ <= param1 && (param3 || _loc9_._movement != "flying"))
+            {
+               _loc5_.push(_loc9_);
+               if(_loc5_.length >= param4)
+               {
+                  return _loc5_;
+               }
+            }
+         }
+         return _loc5_;
       }
       
       public static function UpdateAFKTimer() : void
@@ -1958,8 +2290,8 @@ package
             case "iwmview":
                _loc3_ = true;
                break;
-            case "build":
-            case "attack":
+            case GLOBAL.e_BASE_MODE.BUILD:
+            case GLOBAL.e_BASE_MODE.ATTACK:
             case "view":
             case "help":
             case "wmattack":
@@ -2039,12 +2371,17 @@ package
       
       public static function isAtHome() : Boolean
       {
-         return _mode == "build" && BASE._yardType == BASE.MAIN_YARD;
+         return _mode == "build" && BASE.isMainYard;
       }
       
       public static function isAtHomeOrInOutpost() : Boolean
       {
-         return _mode == "build" && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.OUTPOST);
+         return _mode == "build" && (BASE.isMainYard || BASE.isOutpost);
+      }
+      
+      public static function isDefending() : Boolean
+      {
+         return _mode == e_BASE_MODE.BUILD || _mode == e_BASE_MODE.IBUILD;
       }
       
       public static function isNoob() : Boolean
@@ -2058,6 +2395,26 @@ package
          var _loc2_:String = "Error loading: " + param1.text;
          LOGGER.Log("log",_loc2_);
          Console.warning(_loc2_,true);
+      }
+      
+      public static function get StageX() : int
+      {
+         return Math.ceil((760 - _ROOT.stage.stageWidth) / 2);
+      }
+      
+      public static function get StageY() : int
+      {
+         return Math.ceil((670 - _ROOT.stage.stageHeight) / 2);
+      }
+      
+      public static function get StageWidth() : int
+      {
+         return _ROOT.stage.stageWidth;
+      }
+      
+      public static function get StageHeight() : int
+      {
+         return _ROOT.stage.stageHeight;
       }
    }
 }

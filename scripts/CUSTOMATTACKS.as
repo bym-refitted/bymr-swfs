@@ -1,7 +1,7 @@
 package
 {
-   import com.cc.utils.SecNum;
    import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.creeps.CreepBase;
    import flash.geom.Point;
    
    public class CUSTOMATTACKS
@@ -34,7 +34,7 @@ package
          var _loc2_:int = 0;
          var _loc3_:Point = null;
          var _loc4_:BFOUNDATION = null;
-         if(!BUILDING27._exists && !BASE.isInferno())
+         if(!BUILDING27._exists && !BASE.isInfernoMainYardOrOutpost)
          {
             _loc1_ = GLOBAL._mapHeight;
             _loc2_ = -800 - (GLOBAL._mapHeight - 800) / 2;
@@ -86,7 +86,7 @@ package
          var _loc1_:Array = null;
          var _loc2_:* = undefined;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:CreepBase = null;
          _started = true;
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",1,3 * 60,-10,0,1]]);
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",2,190,-5,0,1]]);
@@ -95,7 +95,7 @@ package
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",2,190,0,0,1]]);
          _loc2_ = _loc1_[0][0];
          _loc3_ = Point.distance(new Point(GLOBAL._bTower.x,GLOBAL._bTower.y),new Point(_loc2_.x,_loc2_.y));
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicipanic");
          }
@@ -108,9 +108,8 @@ package
          MAP.FocusTo(GLOBAL._bTower.x,GLOBAL._bTower.y,int(_loc3_ / 100),0,0,false);
          for each(_loc4_ in CREEPS._creeps)
          {
-            _loc4_._health = new SecNum(1);
-            _loc4_._maxHealth = 1;
-            _loc4_._damage = new SecNum(50);
+            _loc4_.maxHealthProperty.value = 1;
+            _loc4_.setHealth(1);
          }
          WMATTACK._isAI = false;
          WMATTACK._inProgress = true;

@@ -1,5 +1,6 @@
 package com.monsters.ai
 {
+   import com.monsters.managers.InstanceManager;
    import com.monsters.pathing.PATHING;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -40,13 +41,14 @@ package com.monsters.ai
       
       public function Process(param1:Solution, param2:Function) : void
       {
-         var _loc3_:* = undefined;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:Point = null;
          var _loc6_:Number = NaN;
          var _loc5_:Array = [];
-         for each(_loc3_ in BASE._buildingsMain)
+         var _loc7_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc3_ in _loc7_)
          {
-            if(_loc3_._hp.Get() > 0 && !_loc3_._looted)
+            if(_loc3_.health > 0 && !_loc3_._looted && (_loc3_ is BTOWER === false && _loc3_ is BTRAP === false))
             {
                _loc4_ = GRID.FromISO(_loc3_.x,_loc3_.y);
                _loc6_ = Point.distance(param1.entryPoint,_loc4_);
@@ -117,16 +119,17 @@ package com.monsters.ai
       
       public function ProcessC(param1:Solution) : void
       {
-         var _loc5_:String = null;
          var _loc6_:Number = NaN;
-         var _loc7_:Number = NaN;
+         var _loc7_:BFOUNDATION = null;
          var _loc8_:Number = NaN;
          var _loc9_:Number = NaN;
          var _loc10_:Number = NaN;
          var _loc11_:Number = NaN;
          var _loc12_:Number = NaN;
          var _loc13_:Number = NaN;
-         var _loc26_:BFOUNDATION = null;
+         var _loc14_:Number = NaN;
+         var _loc15_:Number = NaN;
+         var _loc28_:String = null;
          var _loc2_:Object = {};
          var _loc3_:int = 0;
          while(_loc3_ < WMATTACK._monsterKeys.length)
@@ -134,114 +137,108 @@ package com.monsters.ai
             _loc2_[WMATTACK._monsterKeys[_loc3_]] = 0;
             _loc3_ += 1;
          }
-         var _loc4_:Number = 0;
-         for(_loc5_ in BASE._buildingsAll)
+         var _loc4_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         var _loc5_:Number = 0;
+         for each(_loc7_ in _loc4_)
          {
-            _loc26_ = BASE._buildingsAll[_loc5_];
-            if(_loc26_._class != "trap" && _loc26_._class != "wall")
-            {
-               _loc4_ += 1 * WMATTACK._attackVolumeAmplifier;
-            }
-            else if(_loc26_._class == "trap" || _loc26_._class == "wall")
-            {
-               _loc4_ += 0.15 * WMATTACK._attackVolumeAmplifier;
-            }
+            _loc6_ = _loc7_._class == "trap" || _loc7_._class == "wall" ? 0.15 : 1;
+            _loc5_ += _loc6_ * WMATTACK._attackVolumeAmplifier;
          }
-         _loc6_ = this._intelligence * 0.5 + 0.5;
-         _loc4_ = int(_loc4_ * _loc6_);
-         _loc7_ = 2;
-         _loc12_ = 0.25;
-         _loc8_ = _loc4_ * _loc12_;
-         _loc9_ = _loc8_ / _loc7_;
-         _loc11_ = _loc4_ - (_loc8_ + _loc9_);
-         _loc13_ = BASE.BaseLevel().level / 40;
-         if(_loc13_ < 0)
+         _loc8_ = this._intelligence * 0.5 + 0.5;
+         _loc5_ = int(_loc5_ * _loc8_);
+         _loc9_ = 2;
+         _loc14_ = 0.25;
+         _loc10_ = _loc5_ * _loc14_;
+         _loc11_ = _loc10_ / _loc9_;
+         _loc13_ = _loc5_ - (_loc10_ + _loc11_);
+         _loc15_ = BASE.BaseLevel().level / 40;
+         if(_loc15_ < 0)
          {
-            _loc13_ = 0;
+            _loc15_ = 0;
          }
-         if(_loc13_ > 1)
+         if(_loc15_ > 1)
          {
-            _loc13_ = 1;
+            _loc15_ = 1;
          }
-         var _loc14_:String = WMATTACK._infernoAnything[int((WMATTACK._infernoAnything.length - 1) * _loc13_)];
-         var _loc15_:String = WMATTACK._infernoTanks[int((WMATTACK._tanks.length - 1) * _loc13_)];
-         var _loc16_:String = WMATTACK._infernoDps[int((WMATTACK._dps.length - 1) * _loc13_)];
-         var _loc17_:String = WMATTACK._infernoHunters[int((WMATTACK._infernoHunters.length - 1) * _loc13_)];
-         var _loc18_:Number = 0;
-         var _loc19_:Object = {};
-         var _loc20_:Number = GLOBAL._mapWidth * 0.25;
-         var _loc22_:Number = Point.distance(param1.entryPoint,new Point(param1.targetBuilding.x,param1.targetBuilding.y));
-         if(_loc22_ < 100)
+         var _loc16_:String = WMATTACK._infernoAnything[int((WMATTACK._infernoAnything.length - 1) * _loc15_)];
+         var _loc17_:String = WMATTACK._infernoTanks[int((WMATTACK._tanks.length - 1) * _loc15_)];
+         var _loc18_:String = WMATTACK._infernoDps[int((WMATTACK._dps.length - 1) * _loc15_)];
+         var _loc19_:String = WMATTACK._infernoHunters[int((WMATTACK._infernoHunters.length - 1) * _loc15_)];
+         var _loc20_:Number = 0;
+         var _loc21_:Object = {};
+         var _loc22_:Number = GLOBAL._mapWidth * 0.25;
+         var _loc24_:Number = Point.distance(param1.entryPoint,new Point(param1.targetBuilding.x,param1.targetBuilding.y));
+         if(_loc24_ < 100)
          {
-            _loc20_ += 100 - _loc22_;
-         }
-         if(_loc8_ >= 1)
-         {
-            if(_loc18_ == 0)
-            {
-               _loc18_ = _loc20_ / CREATURELOCKER._creatures[_loc15_].props.speed[0];
-            }
-            _loc19_[_loc15_] = _loc18_ * CREATURELOCKER._creatures[_loc15_].props.speed[0];
-         }
-         if(_loc9_ >= 1)
-         {
-            if(_loc18_ == 0)
-            {
-               _loc18_ = _loc20_ / CREATURELOCKER._creatures[_loc16_].props.speed[0];
-            }
-            _loc19_[_loc16_] = _loc18_ * CREATURELOCKER._creatures[_loc16_].props.speed[0];
+            _loc22_ += 100 - _loc24_;
          }
          if(_loc10_ >= 1)
          {
-            if(_loc18_ == 0)
+            if(_loc20_ == 0)
             {
-               _loc18_ = _loc20_ / CREATURELOCKER._creatures[_loc14_].props.speed[0];
+               _loc20_ = _loc22_ / CREATURELOCKER._creatures[_loc17_].props.speed[0];
             }
-            _loc19_[_loc14_] = _loc18_ * CREATURELOCKER._creatures[_loc14_].props.speed[0];
+            _loc21_[_loc17_] = _loc20_ * CREATURELOCKER._creatures[_loc17_].props.speed[0];
          }
          if(_loc11_ >= 1)
          {
-            if(_loc18_ == 0)
+            if(_loc20_ == 0)
             {
-               _loc18_ = _loc20_ / CREATURELOCKER._creatures[_loc17_].props.speed[0];
+               _loc20_ = _loc22_ / CREATURELOCKER._creatures[_loc18_].props.speed[0];
             }
-            _loc19_[_loc17_] = _loc18_ * CREATURELOCKER._creatures[_loc17_].props.speed[0];
+            _loc21_[_loc18_] = _loc20_ * CREATURELOCKER._creatures[_loc18_].props.speed[0];
          }
-         _loc2_[_loc15_] = int(_loc8_);
-         if(_loc15_ == _loc16_)
+         if(_loc12_ >= 1)
          {
-            _loc2_[_loc15_] += int(_loc9_);
-         }
-         else
-         {
-            _loc2_[_loc16_] = int(_loc9_);
-         }
-         if(_loc15_ == _loc17_)
-         {
-            _loc2_[_loc15_] += int(_loc11_);
-         }
-         else
-         {
-            _loc2_[_loc17_] = int(_loc11_);
-         }
-         var _loc23_:Object = {};
-         _loc23_[_loc15_] = int(_loc8_);
-         var _loc24_:Object = {};
-         _loc24_[_loc16_] = int(_loc9_);
-         var _loc25_:Object = {};
-         _loc25_[_loc17_] = int(_loc11_);
-         for(_loc5_ in _loc2_)
-         {
-            if(_loc2_[_loc5_] == 0)
+            if(_loc20_ == 0)
             {
-               delete _loc2_[_loc5_];
+               _loc20_ = _loc22_ / CREATURELOCKER._creatures[_loc16_].props.speed[0];
+            }
+            _loc21_[_loc16_] = _loc20_ * CREATURELOCKER._creatures[_loc16_].props.speed[0];
+         }
+         if(_loc13_ >= 1)
+         {
+            if(_loc20_ == 0)
+            {
+               _loc20_ = _loc22_ / CREATURELOCKER._creatures[_loc19_].props.speed[0];
+            }
+            _loc21_[_loc19_] = _loc20_ * CREATURELOCKER._creatures[_loc19_].props.speed[0];
+         }
+         _loc2_[_loc17_] = int(_loc10_);
+         if(_loc17_ == _loc18_)
+         {
+            _loc2_[_loc17_] += int(_loc11_);
+         }
+         else
+         {
+            _loc2_[_loc18_] = int(_loc11_);
+         }
+         if(_loc17_ == _loc19_)
+         {
+            _loc2_[_loc17_] += int(_loc13_);
+         }
+         else
+         {
+            _loc2_[_loc19_] = int(_loc13_);
+         }
+         var _loc25_:Object = {};
+         _loc25_[_loc17_] = int(_loc10_);
+         var _loc26_:Object = {};
+         _loc26_[_loc18_] = int(_loc11_);
+         var _loc27_:Object = {};
+         _loc27_[_loc19_] = int(_loc13_);
+         for(_loc28_ in _loc2_)
+         {
+            if(_loc2_[_loc28_] == 0)
+            {
+               delete _loc2_[_loc28_];
             }
          }
          param1.attack = _loc2_;
-         param1.tanks = _loc23_;
-         param1.dps = _loc24_;
-         param1.anything = _loc25_;
-         param1.distances = _loc19_;
+         param1.tanks = _loc25_;
+         param1.dps = _loc26_;
+         param1.anything = _loc27_;
+         param1.distances = _loc21_;
       }
    }
 }

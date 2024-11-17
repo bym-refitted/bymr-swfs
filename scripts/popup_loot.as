@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol269")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol294")]
    public dynamic class popup_loot extends MovieClip
    {
       public var tA:TextField;

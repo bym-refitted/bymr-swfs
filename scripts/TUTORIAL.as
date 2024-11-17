@@ -1,7 +1,11 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.debug.Console;
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom3.MapRoom3Tutorial;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
@@ -12,15 +16,15 @@ package
    
    public class TUTORIAL
    {
-      private static var _doBob:DisplayObject;
+      public static var _doBob:DisplayObject;
       
-      private static var _doArrow:DisplayObject;
+      public static var _doArrow:DisplayObject;
       
-      private static var _container:*;
+      public static var _container:*;
       
-      private static var _timer:int;
+      public static var _timer:int;
       
-      private static var _setupDone:Boolean;
+      public static var _setupDone:Boolean;
       
       public static var _mcBob:TUTORIALPOPUPMC;
       
@@ -30,11 +34,15 @@ package
       
       public static var _currentStage:int = 0;
       
-      public static var _endstage:int = 205;
+      public static const _endstage:int = 205;
       
       public static var _arrowRotation:int = 0;
       
       public static var _isSmallSizeOffset:int = 0;
+      
+      public static const k_STAGE_SNIPER_SPEEDUP:uint = 37;
+      
+      public static const k_STAGE_DAMAGE_PROTECT:uint = 190;
       
       private static const ARROW_STORE_BUY_1:Point = new Point(215,200);
       
@@ -54,25 +62,25 @@ package
       
       private static const ARROW_BUILDINGS_HATCHERY:Point = new Point(610,4 * 60);
       
-      private static var _advanceCondition:Function = null;
+      public static var BOBBOTTOMLEFTLOW:Point = new Point(10,560);
       
-      private static var _rewindCondition:Function = null;
+      public static var BOBBOTTOMLEFTHIGH:Point = new Point(10,560);
       
-      private static var BOBBOTTOMLEFTLOW:Point = new Point(10,560);
+      public static var POINT_QUEST:Point = new Point(583,481 + _isSmallSizeOffset);
       
-      private static var BOBBOTTOMLEFTHIGH:Point = new Point(10,560);
+      public static var POINT_BUILDINGS:Point = new Point(496,483 + _isSmallSizeOffset);
       
-      private static var POINT_QUEST:Point = new Point(583,481 + _isSmallSizeOffset);
+      public static var POINT_MAP:Point = new Point(706,474 + _isSmallSizeOffset);
       
-      private static var POINT_BUILDINGS:Point = new Point(496,483 + _isSmallSizeOffset);
+      public static var POINT_FULLSCREEN:Point = new Point(640,14 + _isSmallSizeOffset);
       
-      private static var POINT_MAP:Point = new Point(706,474 + _isSmallSizeOffset);
+      public static var _advanceCondition:Function = null;
       
-      private static var POINT_FULLSCREEN:Point = new Point(640,14 + _isSmallSizeOffset);
+      public static var _rewindCondition:Function = null;
       
-      private static var _secondWorker:Boolean = true;
+      public static var _secondWorker:Boolean = false;
       
-      private static var _freeSpeedup:Boolean = true;
+      public static var _freeSpeedup:Boolean = true;
       
       public function TUTORIAL()
       {
@@ -102,20 +110,18 @@ package
       
       public static function Process() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         var _loc2_:int = 0;
-         if(GLOBAL._flags.showProgressBar == 0)
-         {
-            if(BASE._yardType)
-            {
-               _stage = _endstage;
-               UI_WORKERS.Show();
-            }
-         }
          if(_stage < 200)
          {
-            if(GLOBAL._mode == "build")
+            if(BASE.isInfernoMainYardOrOutpost)
             {
+               _stage = _endstage;
+            }
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+            {
+               if(_stage > 1 && _stage < 31)
+               {
+                  _stage = 31;
+               }
                if(Boolean(GLOBAL._bHousing) && _stage < 57)
                {
                   _stage = 57;
@@ -136,36 +142,17 @@ package
                {
                   _stage = 3 * 60;
                }
-               if(_stage > 59)
+               if(_stage > 58 && _stage < 65)
                {
-                  if(QUESTS._global.worder_count > 1 && !_secondWorker)
-                  {
-                     _stage = _endstage;
-                  }
+                  _stage = 65;
                }
-               if(_stage >= 110 && _stage < 130)
+               if(_stage >= 113 && _stage <= 116 || _stage == 2 * 60)
+               {
+                  _stage = 130;
+               }
+               else if(_stage >= 110 && _stage < 130)
                {
                   _stage = 99;
-               }
-               if(_stage >= 80 && _stage < 110)
-               {
-                  if(GLOBAL._bHousing)
-                  {
-                     _loc1_ = GLOBAL._bHousing;
-                     if(CREATURES._creatureCount < 50)
-                     {
-                        _loc2_ = 50;
-                        while(_loc2_ > CREATURES._creatureCount)
-                        {
-                           HOUSING.HousingStore("C1",new Point(_loc1_.x,_loc1_.y + 80),false);
-                           _loc2_--;
-                        }
-                     }
-                  }
-                  else
-                  {
-                     _stage = _endstage;
-                  }
                }
                if(_stage < 150 && Boolean(GLOBAL._bHatchery))
                {
@@ -179,7 +166,7 @@ package
                   }
                }
             }
-            else if(GLOBAL._mode == "wmattack")
+            else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
             {
                _stage = 110;
             }
@@ -188,21 +175,17 @@ package
       
       public static function Advance(param1:MouseEvent = null) : void
       {
-         if(Boolean(_doBob) && Boolean(_doBob.parent))
+         if(MapRoomManager.instance.isInMapRoom3 && MapRoom3Tutorial.instance.isStarted && !MapRoom3Tutorial.instance.isHolding && param1 && TUTORIAL._stage < 150)
          {
-            _container.removeChild(_doBob);
+            MapRoom3Tutorial.instance.advance();
+            return;
          }
-         if(Boolean(_doArrow) && Boolean(_doArrow.parent))
-         {
-            _container.removeChild(_doArrow);
-         }
-         if(_mcArrow.rotation != 0)
-         {
-            _mcArrow.rotation = 0;
-         }
-         _advanceCondition = null;
-         _rewindCondition = null;
+         clearStage();
          _stage += 1;
+         if(_stage > 1 && _stage < 31)
+         {
+            _stage = 31;
+         }
          QUESTS.Check();
          Tick();
       }
@@ -223,9 +206,47 @@ package
          Tick();
       }
       
+      public static function clearStage() : void
+      {
+         if(Boolean(_doBob) && Boolean(_doBob.parent))
+         {
+            _container.removeChild(_doBob);
+         }
+         if(Boolean(_doArrow) && Boolean(_doArrow.parent))
+         {
+            _container.removeChild(_doArrow);
+         }
+         if(_mcArrow.rotation != 0)
+         {
+            _mcArrow.rotation = 0;
+         }
+         _advanceCondition = null;
+         _rewindCondition = null;
+      }
+      
+      public static function set stage(param1:int) : void
+      {
+         if(Boolean(_doBob) && Boolean(_doBob.parent))
+         {
+            _container.removeChild(_doBob);
+         }
+         if(Boolean(_doArrow) && Boolean(_doArrow.parent))
+         {
+            _container.removeChild(_doArrow);
+         }
+         if(_mcArrow.rotation != 0)
+         {
+            _mcArrow.rotation = 0;
+         }
+         _advanceCondition = null;
+         _rewindCondition = null;
+         _stage = param1;
+         Tick();
+      }
+      
       public static function Tick() : void
       {
-         if(GLOBAL._mode == "build" || GLOBAL._mode == "wmattack")
+         if(!BASE.isInfernoMainYardOrOutpost && (GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMVIEW))
          {
             if(_stage < 1)
             {
@@ -254,8 +275,9 @@ package
          }
       }
       
-      private static function Show() : void
+      public static function Show() : void
       {
+         var _loc1_:Point = null;
          var _loc2_:BFOUNDATION = null;
          var _loc3_:int = 0;
          var _loc5_:Point = null;
@@ -263,15 +285,16 @@ package
          var _loc7_:BFOUNDATION = null;
          var _loc8_:Boolean = false;
          var _loc9_:int = 0;
-         var _loc10_:SecNum = null;
-         var _loc1_:Point = new Point();
+         var _loc10_:String = null;
+         if(BASE.isInfernoMainYardOrOutpost)
+         {
+            return;
+         }
+         Console.print("TUTORIAL STAGE:" + TUTORIAL._stage + " " + TUTORIAL._currentStage);
+         _loc1_ = new Point();
          var _loc4_:MovieClip = new MovieClip();
          if(_stage > 59)
          {
-            if(QUESTS._global.worder_count > 1 && !_secondWorker)
-            {
-               _stage = _endstage;
-            }
          }
          switch(_stage)
          {
@@ -290,18 +313,7 @@ package
                _mcBob.addFullScreenButton(clickedFullScreen);
                break;
             case 3:
-               MAP._canScroll = false;
-               for each(_loc2_ in BASE._buildingsAll)
-               {
-                  if(_loc2_._type == 1)
-                  {
-                     MAP.Focus(_loc2_.x,_loc2_.y);
-                     _loc1_.x = _loc2_.x + MAP._GROUND.x;
-                     _loc1_.y = _loc2_.y + MAP._GROUND.y + 20;
-                     break;
-                  }
-               }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_3"),_loc1_,["mc",_loc2_._mc,new Point(0,20),-25],false,false,ConditionSelectTwig);
+               _stage = 31;
                break;
             case 4:
                MAP._canScroll = false;
@@ -330,7 +342,7 @@ package
                      break;
                   }
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_20"),_loc1_,["mc",_loc2_._mc,new Point(0,20),-25],false,false,ConditionSelectTwig);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_20"),_loc1_,["mc",_loc2_._mcHit,new Point(0,20),-25],false,false,ConditionSelectTwig);
                break;
             case 21:
                if(QUESTS._global.b1lvl == 2)
@@ -374,7 +386,7 @@ package
                      break;
                   }
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_23"),_loc1_,["mc",_loc2_._mc,new Point(0,20),-35],false,false,ConditionSelectTwig,ConditionRewindNotUpgrading);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_23"),_loc1_,["mc",_loc2_._mcHit,new Point(0,20),-35],false,false,ConditionSelectTwig,ConditionRewindNotUpgrading);
                break;
             case 24:
                if(QUESTS._global.b1lvl == 2)
@@ -421,27 +433,31 @@ package
                break;
             case 31:
                SPRITES.SetupSprite("C2");
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_31"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step2"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 32:
                if(BUILDINGS._open)
                {
                   _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b3 as MovieClip;
-                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_32"),new Point(445,52),["mc",_loc4_,new Point(60,2),-160],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step3"),new Point(445,52),["mc",_loc4_,new Point(60,2),-160],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_32"),new Point(445,52),["percent",new Point(445,52),-160],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step3"),new Point(445,52),["percent",new Point(445,52),-160],false,false,ConditionBuildingsDefense,ConditionRewindBuildingsClosed);
                break;
             case 33:
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_33"),new Point(166,242),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(160,247),150],false,false,ConditionBuildingsSniper,ConditionRewindBuildingsClosed);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step4"),new Point(166,242),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(160,247),150],false,false,ConditionBuildingsSniper,ConditionRewindBuildingsClosed);
                break;
             case 34:
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_34"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-50],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
+               BASE.Fund(1,Math.max(GLOBAL._buildingProps[20].costs[0].r1 - BASE._resources.r1.Get(),0),false,null,false,false);
+               BASE.Fund(2,Math.max(GLOBAL._buildingProps[20].costs[0].r2 - BASE._resources.r2.Get(),0),false,null,false,false);
+               BASE.Fund(3,Math.max(GLOBAL._buildingProps[20].costs[0].r3 - BASE._resources.r3.Get(),0),false,null,false,false);
+               BASE.Fund(4,Math.max(GLOBAL._buildingProps[20].costs[0].r4 - BASE._resources.r4.Get(),0),false,null,false,false);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step5"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-50],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect21);
                break;
             case 35:
                MAP._canScroll = true;
                QUEUE._placed = 0;
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_35"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuilding);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step6"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuilding);
                break;
             case 36:
                if(QUESTS._global.b21lvl > 0)
@@ -458,12 +474,12 @@ package
                   _loc1_.x = _loc2_.x + MAP._GROUND.x;
                   _loc1_.y = _loc2_.y + MAP._GROUND.y + 20;
                }
-               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_36"),_loc1_,["mc",_loc2_._mc,new Point(0,0),-150],false,false,ConditionStoreOpen,ConditionConstructed21);
+               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step7"),_loc1_,["mc",_loc2_._mcHit,new Point(30,0),-150],false,false,ConditionStoreOpen,ConditionConstructed21);
                break;
-            case 37:
+            case k_STAGE_SNIPER_SPEEDUP:
                if(_freeSpeedup)
                {
-                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_25"),ARROW_STORE_BUY_1,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-160,-72),-120],false,false,ConditionConstructed21,ConditionStoreClose);
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step8"),ARROW_STORE_BUY_1,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-160,-72),-120],false,false,ConditionConstructed21,ConditionStoreClose);
                   break;
                }
                Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_25_b"),ARROW_STORE_BUY_3,null,false,false,ConditionConstructed21,ConditionStoreClose);
@@ -472,22 +488,22 @@ package
                MAP._canScroll = true;
                if(GLOBAL._flags.viximo)
                {
-                  Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
+                  Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step9"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
                   break;
                }
-               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_38"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
+               Add(1,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step9"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectT1);
                break;
             case 39:
                _advanceCondition = ConditionQuestCollectT1;
                break;
             case 40:
                CUSTOMATTACKS.TutorialAttack();
-               Add(4,BOBBOTTOMLEFTLOW,KEYS.Get("tut_40"),null,null,false,false,ConditionAttackOver);
+               Add(4,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step10"),null,null,false,false,ConditionAttackOver);
                break;
             case 41:
                for each(_loc7_ in BASE._buildingsAll)
                {
-                  if(_loc7_._hp.Get() < _loc7_._hpMax.Get() && _loc7_._repairing == 0)
+                  if(_loc7_.health < _loc7_.maxHealth && _loc7_._repairing == 0)
                   {
                      _loc7_.Repair();
                   }
@@ -496,38 +512,49 @@ package
                break;
             case 42:
                BUILDINGS._buildingID = 0;
+               if(!("D1" in QUESTS._completed))
+               {
+                  QUESTS._completed.D1 = 1;
+               }
                if(GLOBAL._flags.viximo)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step11"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_42"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step11"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectD1);
                break;
             case 43:
                _advanceCondition = ConditionQuestCollectD1;
                break;
             case 44:
-               Add(8,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_44"),null,null,true,true);
+               Add(8,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step12"),null,null,true,true);
                break;
             case 50:
                ImageCache.GetImageWithCallBack("buildingbuttons/15.jpg");
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_50"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step13"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 51:
-               _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b2 as MovieClip;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_51"),new Point(322,51),["mc",_loc4_,new Point(60,22),160],false,false,ConditionBuildingsBuildings,ConditionRewindBuildingsClosedB);
+               if(BUILDINGS._mc)
+               {
+                  _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b2 as MovieClip;
+               }
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step14"),new Point(322,51),["mc",_loc4_,new Point(60,22),160],false,false,ConditionBuildingsBuildings,ConditionRewindBuildingsClosedB);
                break;
             case 52:
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_52"),ARROW_BUILDINGS_HOUSING,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(500,4 * 60),-120],false,false,ConditionBuildingsHousing,ConditionRewindBuildingsClosedB);
+               BASE.Fund(1,Math.max(GLOBAL._buildingProps[14].costs[0].r1 - BASE._resources.r1.Get(),0),false,null,false,false);
+               BASE.Fund(2,Math.max(GLOBAL._buildingProps[14].costs[0].r2 - BASE._resources.r2.Get(),0),false,null,false,false);
+               BASE.Fund(3,Math.max(GLOBAL._buildingProps[14].costs[0].r3 - BASE._resources.r3.Get(),0),false,null,false,false);
+               BASE.Fund(4,Math.max(GLOBAL._buildingProps[14].costs[0].r4 - BASE._resources.r4.Get(),0),false,null,false,false);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step15"),ARROW_BUILDINGS_HOUSING,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(500,4 * 60),-120],false,false,ConditionBuildingsHousing,ConditionRewindBuildingsClosedB);
                break;
             case 53:
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_53"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-40],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step16"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-40],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect15);
                break;
             case 54:
                SPRITES.SetupSprite("C1");
                MAP._canScroll = true;
                QUEUE._placed = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_54"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingB);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step17"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingB);
                break;
             case 55:
                if(QUESTS._global.b15lvl > 0)
@@ -550,10 +577,10 @@ package
                }
                if(Boolean(_loc2_) && _loc8_)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_55"),_loc1_,["mc",_loc2_._mc,new Point(0,80),-50],false,false,ConditionStoreOpen,ConditionConstructed15);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step18"),_loc1_,["mc",_loc2_._mcHit,new Point(0,80),-50],false,false,ConditionStoreOpen,ConditionConstructed15);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_55"),null,null,false,false,ConditionStoreOpen,ConditionConstructed15);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step18"),null,null,false,false,ConditionStoreOpen,ConditionConstructed15);
                break;
             case 56:
                if(QUESTS._global.b15lvl > 0)
@@ -568,7 +595,7 @@ package
                }
                if(_freeSpeedup)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_56"),ARROW_STORE_BUY_1,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-160,-72),160],false,false,ConditionConstructed15,ConditionRewindStoreClosed);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step19"),ARROW_STORE_BUY_1,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-160,-72),160],false,false,ConditionConstructed15,ConditionRewindStoreClosed);
                   break;
                }
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_56_b"),ARROW_STORE_BUY_3,null,false,false,ConditionConstructed15,ConditionRewindStoreClosed);
@@ -578,7 +605,7 @@ package
                _loc5_ = GRID.ToISO(-600,0,0);
                _loc6_ = Point.distance(new Point(GLOBAL._bHousing.x,GLOBAL._bHousing.y),_loc5_);
                _loc9_ = 0;
-               while(_loc9_ < 50)
+               while(_loc9_ < 15)
                {
                   HOUSING.HousingStore("C1",new Point(_loc5_.x - 200 + Math.random() * 400,_loc5_.y - 100 + Math.random() * 200),false);
                   _loc9_++;
@@ -587,10 +614,10 @@ package
                MAP.FocusTo(GLOBAL._bHousing.x,GLOBAL._bHousing.y,int(_loc6_ / 120),0,0,false);
                if(GLOBAL._flags.viximo)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step20"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_57"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step20"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],false,false,ConditionQuestsOpen,ConditionQuestCollectCR3);
                break;
             case 58:
                _advanceCondition = ConditionQuestCollectCR3;
@@ -635,7 +662,7 @@ package
                }
                MAP._canScroll = true;
                BUILDINGS._buildingID = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_65"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step21"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 66:
                if(QUESTS._global.b5lvl > 0)
@@ -652,7 +679,11 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_67"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(225,330),-30],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
+               BASE.Fund(1,Math.max(GLOBAL._buildingProps[4].costs[0].r1 - BASE._resources.r1.Get(),0),false,null,false,false);
+               BASE.Fund(2,Math.max(GLOBAL._buildingProps[4].costs[0].r2 - BASE._resources.r2.Get(),0),false,null,false,false);
+               BASE.Fund(3,Math.max(GLOBAL._buildingProps[4].costs[0].r3 - BASE._resources.r3.Get(),0),false,null,false,false);
+               BASE.Fund(4,Math.max(GLOBAL._buildingProps[4].costs[0].r4 - BASE._resources.r4.Get(),0),false,null,false,false);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step22"),ARROW_BUILDINGS_FLINGER,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(225,330),-30],false,false,ConditionBuildingsFlinger,ConditionRewindBuildingsClosedC);
                break;
             case 68:
                if(QUESTS._global.b5lvl > 0)
@@ -660,7 +691,7 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_68"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-150],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step23"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-150],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect5);
                break;
             case 69:
                if(QUESTS._global.b5lvl > 0)
@@ -670,12 +701,12 @@ package
                }
                QUEUE._placed = 0;
                MAP._canScroll = true;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_69"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingC);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step24"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingC);
                break;
             case 80:
                if(!_secondWorker)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_69_b"),null,null,false,false,ConditionStoreOpen);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step25"),null,null,false,false,ConditionStoreOpen);
                   break;
                }
                Advance();
@@ -685,10 +716,10 @@ package
                {
                   if(_freeSpeedup)
                   {
-                     Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_98"),ARROW_STORE_BUY_4,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-150,100),-30],false,false,ConditionConstructed5);
+                     Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step26"),ARROW_STORE_BUY_4,["mc",STORE._mc as STOREPOPUP as MovieClip,new Point(-150,100),-30],false,false,ConditionConstructed5);
                      break;
                   }
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_98"),ARROW_STORE_BUY_3,null,false,false,ConditionConstructed5);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step26"),ARROW_STORE_BUY_3,null,false,false,ConditionConstructed5);
                   break;
                }
                Advance();
@@ -705,7 +736,7 @@ package
                   Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_90"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_90_b"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step27"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 91:
                if(QUESTS._global.b11lvl > 0)
@@ -714,7 +745,7 @@ package
                   break;
                }
                _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b2 as MovieClip;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_91"),new Point(322,51),["mc",_loc4_,new Point(60,22),170],false,false,ConditionBuildingsBuildings,ConditionRewindBuildingsClosedD);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step27"),new Point(322,51),["mc",_loc4_,new Point(60,22),170],false,false,ConditionBuildingsBuildings,ConditionRewindBuildingsClosedD);
                break;
             case 92:
                if(QUESTS._global.b11lvl > 0)
@@ -722,12 +753,16 @@ package
                   Advance();
                   break;
                }
+               BASE.Fund(1,Math.max(GLOBAL._buildingProps[10].costs[0].r1 - BASE._resources.r1.Get(),0),false,null,false,false);
+               BASE.Fund(2,Math.max(GLOBAL._buildingProps[10].costs[0].r2 - BASE._resources.r2.Get(),0),false,null,false,false);
+               BASE.Fund(3,Math.max(GLOBAL._buildingProps[10].costs[0].r3 - BASE._resources.r3.Get(),0),false,null,false,false);
+               BASE.Fund(4,Math.max(GLOBAL._buildingProps[10].costs[0].r4 - BASE._resources.r4.Get(),0),false,null,false,false);
                if(GAME._isSmallSize)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_92"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,340),-30],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step28"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,340),-30],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_92"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,330),-30],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step28"),ARROW_BUILDINGS_MAPROOM,["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(8 * 60,330),-30],false,false,ConditionBuildingsMapRoom,ConditionRewindBuildingsDeselectBuildingsD);
                break;
             case 93:
                if(QUESTS._global.b11lvl > 0)
@@ -735,7 +770,7 @@ package
                   Advance();
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_93"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-50],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step29"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-50],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect11);
                break;
             case 94:
                if(QUESTS._global.b11lvl > 0)
@@ -744,7 +779,7 @@ package
                   break;
                }
                QUEUE._placed = 0;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_94"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingD);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step30"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingD);
                break;
             case 95:
                if(QUESTS._global.b5lvl > 0 || !_secondWorker)
@@ -763,7 +798,7 @@ package
                   }
                }
                MAP._canScroll = false;
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_95"),_loc1_,["mc",_loc2_._mc,new Point(0,20),-40],false,false,ConditionStoreOpen,ConditionConstructed5);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_95"),_loc1_,["mc",_loc2_._mcHit,new Point(0,20),-40],false,false,ConditionStoreOpen,ConditionConstructed5);
                break;
             case 96:
                MAP._canScroll = true;
@@ -793,10 +828,10 @@ package
                }
                if(GAME._isSmallSize)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_97"),_loc1_,["mc",_loc2_._mc,new Point(0,0),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step31"),_loc1_,["mc",_loc2_._mcHit,new Point(50,100),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_97"),_loc1_,["mc",_loc2_._mc,new Point(0,30),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step31"),_loc1_,["mc",_loc2_._mcHit,new Point(0,30),-160],false,false,ConditionStoreOpen,ConditionConstructed11);
                break;
             case 98:
                MAP._canScroll = true;
@@ -826,6 +861,11 @@ package
                _rewindCondition = ConditionRewindQuestsClose;
                break;
             case 101:
+               if(MapRoomManager.instance.isInMapRoom3)
+               {
+                  MapRoom3Tutorial.instance.start();
+                  break;
+               }
                BASE.BuildingDeselect();
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_101"),POINT_MAP,["mc",UI_BOTTOM._mc.bMap,new Point(15,15),-30],false,false,ConditionMapRoomOpen);
                break;
@@ -844,12 +884,13 @@ package
                });
                break;
             case 110:
+               MapRoom3Tutorial.instance.advance();
                MAP.Focus(-200,0);
                MAP.FocusTo(200,0,5,0,0,false);
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_110"),null,null,true,true);
                break;
             case 111:
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   if(UI2._top._creatureButtons[0])
                   {
@@ -872,15 +913,16 @@ package
                      break;
                   }
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_112"),_loc1_,["mc",_loc2_._mc,new Point(0,-200),-160],false,false,ConditionFlung);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_112"),_loc1_,["mc",_loc2_._mcHit,new Point(0,-200),-160],false,false,ConditionFlung);
                break;
             case 113:
+               MapRoom3Tutorial.instance.clear();
                MAP._canScroll = true;
                _timer = 0;
                _loc3_ = 0;
-               for each(_loc10_ in GLOBAL._attackerCreatures)
+               for(_loc10_ in ATTACK._curCreaturesAvailable)
                {
-                  _loc3_ += _loc10_.Get();
+                  _loc3_ += ATTACK._curCreaturesAvailable[_loc10_];
                }
                if(_loc3_ > 0)
                {
@@ -905,6 +947,7 @@ package
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_120"),null,null,false,false,ConditionReturnToYard);
                break;
             case 130:
+               MapRoom3Tutorial.instance.finish();
                QUESTS.Check("destroy_tribe1",1);
                MAP._canScroll = false;
                Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_130"),new Point(84,60),null,false,false,ConditionPopupClose);
@@ -986,10 +1029,10 @@ package
                }
                if(GAME._isSmallSize)
                {
-                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_145"),_loc1_,["mc",_loc2_._mc,new Point(0,0),-160],false,false,ConditionStoreOpen,ConditionConstructed13);
+                  Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_145"),_loc1_,["mc",_loc2_._mcHit,new Point(50,100),-160],false,false,ConditionStoreOpen,ConditionConstructed13);
                   break;
                }
-               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_145"),_loc1_,["mc",_loc2_._mc,new Point(0,30),-160],false,false,ConditionStoreOpen,ConditionConstructed13);
+               Add(6,BOBBOTTOMLEFTLOW,KEYS.Get("tut_145"),_loc1_,["mc",_loc2_._mcHit,new Point(0,30),-160],false,false,ConditionStoreOpen,ConditionConstructed13);
                break;
             case 146:
                MAP._canScroll = true;
@@ -1019,10 +1062,10 @@ package
                }
                if(GAME._isSmallSize)
                {
-                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mc,new Point(0,0),-160],false,false,ConditionHatcheryOpen);
+                  Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mcHit,new Point(50,100),-160],false,false,ConditionHatcheryOpen);
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mc,new Point(0,30),-160],false,false,ConditionHatcheryOpen);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_150"),_loc1_,["mc",_loc2_._mcHit,new Point(0,30),-160],false,false,ConditionHatcheryOpen);
                break;
             case 151:
                MAP._canScroll = true;
@@ -1054,7 +1097,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_160"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step51"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 161:
                if(QUESTS._global.b3lvl > 0)
@@ -1063,7 +1106,7 @@ package
                   break;
                }
                _loc4_ = (BUILDINGS._mc as BUILDINGSPOPUP).b1 as MovieClip;
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_161"),new Point(216,50),["mc",_loc4_,new Point(60,22),170],false,false,ConditionBuildingsResources,ConditionRewindBuildingsClosedF);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step52"),new Point(216,50),["mc",_loc4_,new Point(60,22),170],false,false,ConditionBuildingsResources,ConditionRewindBuildingsClosedF);
                break;
             case 162:
                if(QUESTS._global.b3lvl > 0)
@@ -1071,7 +1114,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_162"),new Point(363,256),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(356,253),-155],false,false,ConditionBuildingsPutty,ConditionRewindBuildingsClosedF);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step53"),new Point(363,256),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(356,253),-155],false,false,ConditionBuildingsPutty,ConditionRewindBuildingsClosedF);
                break;
             case 163:
                if(QUESTS._global.b3lvl > 0)
@@ -1079,7 +1122,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_163"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-120],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step54"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-120],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect3);
                break;
             case 164:
                if(QUESTS._global.b3lvl > 0)
@@ -1088,7 +1131,7 @@ package
                   break;
                }
                QUEUE._placed = 0;
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_164"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingF);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step55"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingF);
                break;
             case 170:
                if(QUESTS._global.b4lvl > 0)
@@ -1096,7 +1139,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_170"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step56"),POINT_BUILDINGS,["mc",UI_BOTTOM._mc.bBuild,new Point(15,15),-30],false,false,ConditionBuildingsOpen);
                break;
             case 171:
                if(QUESTS._global.b4lvl > 0)
@@ -1113,7 +1156,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_172"),new Point(488,245),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(470,4 * 60),-160],false,false,ConditionBuildingsGoo,ConditionRewindBuildingsClosedG);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step57"),new Point(488,245),["mc",BUILDINGS._mc as BUILDINGSPOPUP as MovieClip,new Point(470,4 * 60),-160],false,false,ConditionBuildingsGoo,ConditionRewindBuildingsClosedG);
                break;
             case 173:
                if(QUESTS._global.b4lvl > 0)
@@ -1121,7 +1164,7 @@ package
                   Advance();
                   break;
                }
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_173"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-30],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step58"),new Point(595,430 + _isSmallSizeOffset * 0.7),["mc",BUILDINGOPTIONS._do as BUILDINGOPTIONSPOPUP as MovieClip,new Point(500,230),-30],false,false,ConditionNewBuilding,ConditionRewindBuildingsDeselect4);
                break;
             case 174:
                if(QUESTS._global.b4lvl > 0)
@@ -1130,17 +1173,18 @@ package
                   break;
                }
                QUEUE._placed = 0;
-               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_174"),null,null,false,false,ConditionPlacedBuilding,ConditionRewindNoNewBuildingG);
+               Add(2,BOBBOTTOMLEFTLOW,KEYS.Get("tut_NWM_Step59"),null,null,false,false,ConditionPlacedGooFactory,ConditionRewindNoNewBuildingG);
                break;
             case 3 * 60:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_180"),null,null,true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step60"),null,null,true,true);
                break;
             case 181:
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_181"),null,null,true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step61"),null,null,true,true);
                break;
-            case 190:
+            case k_STAGE_DAMAGE_PROTECT:
+               BASE._isProtected = GLOBAL.Timestamp() + 7 * 24 * 60 * 60;
                UI2.Update();
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_190"),new Point(740,70),["mc",UI2._top.mcProtected,new Point(5,20),-160],true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step62"),new Point(740,70),["mc",UI2._top.mcProtected,new Point(5,20),-160],true,true);
                break;
             case 191:
                Advance();
@@ -1148,10 +1192,10 @@ package
             case 192:
                if(GLOBAL._flags.viximo)
                {
-                  Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],true,true);
+                  Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step63"),POINT_QUEST,["mc",UI_BOTTOM._mc.bQuests,new Point(15,15),-30],true,true);
                   break;
                }
-               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_191"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],true,true);
+               Add(1,BOBBOTTOMLEFTHIGH,KEYS.Get("tut_NWM_Step63"),POINT_QUEST,["mc",UI_BOTTOM._missions,new Point(35,-150),-30],true,true);
                break;
             case 193:
                UI_WORKERS.Show();
@@ -1177,7 +1221,7 @@ package
       {
       }
       
-      private static function Add(param1:int, param2:Point, param3:String, param4:Point = null, param5:Array = null, param6:Boolean = false, param7:Boolean = false, param8:Function = null, param9:Function = null) : void
+      public static function Add(param1:int, param2:Point, param3:String, param4:Point = null, param5:Array = null, param6:Boolean = false, param7:Boolean = false, param8:Function = null, param9:Function = null) : void
       {
          param2 = AdjustPoint(param2,"bob");
          _mcBob.SetPos(param2.x,param2.y);
@@ -1527,7 +1571,7 @@ package
       private static function ConditionHatcheryProducing() : void
       {
          ++_timer;
-         if(Boolean((GLOBAL._bHatchery as BUILDING13)._inProduction) && _timer > 160)
+         if(Boolean((GLOBAL._bHatchery as BUILDING13)._inProduction) && _timer > 80)
          {
             Advance();
          }
@@ -1544,6 +1588,20 @@ package
       private static function ConditionPlacedBuilding() : void
       {
          if(QUEUE._placed > 0)
+         {
+            Advance();
+         }
+      }
+      
+      private static function ConditionPlacedGooFactory() : void
+      {
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BUILDING4);
+         if(!_loc1_ || _loc1_.length <= 0)
+         {
+            return;
+         }
+         var _loc2_:BUILDING4 = _loc1_[0] as BUILDING4;
+         if(Boolean(_loc2_) && !_loc2_._placing)
          {
             Advance();
          }
@@ -1662,7 +1720,7 @@ package
       private static function ConditionTimer5() : void
       {
          ++_timer;
-         if(_timer == 200)
+         if(_timer == 120)
          {
             Advance();
          }
@@ -1671,7 +1729,7 @@ package
       private static function ConditionTimer10() : void
       {
          ++_timer;
-         if(_timer == 400)
+         if(_timer == 280)
          {
             Advance();
          }
@@ -1679,7 +1737,7 @@ package
       
       private static function ConditionFightBack() : void
       {
-         if(GLOBAL._mode == "wmattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             Advance();
          }
@@ -1687,7 +1745,7 @@ package
       
       private static function ConditionReturnToYard() : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Advance();
          }
@@ -1724,7 +1782,7 @@ package
          {
             if(_loc3_._class != "wall")
             {
-               _loc1_ += _loc3_._hp.Get();
+               _loc1_ += _loc3_.health;
                _loc2_ += 1;
             }
          }

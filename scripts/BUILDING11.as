@@ -2,7 +2,7 @@ package
 {
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.events.BuildingEvent;
-   import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -25,7 +25,7 @@ package
       
       override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
+         if(_countdownBuild.Get() > 0 || health < maxHealth * 0.5)
          {
             _canFunction = false;
          }
@@ -33,13 +33,20 @@ package
          {
             _canFunction = true;
          }
-         if(_lvl.Get() < 2 && GLOBAL.StatGet("mrl") == 2)
+         if(MapRoomManager.instance.isInMapRoom3)
          {
-            GLOBAL.StatSet("mrl",1);
+            GLOBAL.StatSet("mrl",3);
          }
-         if(GLOBAL._mode == "build" && _lvl.Get() == 2 && GLOBAL.StatGet("mrl") != 2 && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
+         else
          {
-            this.NewWorld();
+            if(_lvl.Get() < 2 && GLOBAL.StatGet("mrl") == 2)
+            {
+               GLOBAL.StatSet("mrl",1);
+            }
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _lvl.Get() == 2 && GLOBAL.StatGet("mrl") != 2 && BASE._saveCounterA == BASE._saveCounterB && !BASE._saving)
+            {
+               this.NewWorld();
+            }
          }
          if(!GLOBAL._catchup && GLOBAL._render && _countdownUpgrade.Get() && _countdownUpgrade.Get() < 172800)
          {
@@ -51,7 +58,7 @@ package
       private function NewWorld() : void
       {
          var _loc1_:Array = null;
-         if(GLOBAL._mode == GLOBAL._loadmode)
+         if(!MapRoomManager.instance.isInMapRoom3 && GLOBAL.mode == GLOBAL._loadmode)
          {
             PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
             ACHIEVEMENTS.Check("map2",1);
@@ -70,19 +77,20 @@ package
          var _loc2_:int = 0;
          if(param1.error == 0)
          {
-            if(GLOBAL._mode != GLOBAL._loadmode)
+            if(GLOBAL.mode != GLOBAL._loadmode)
             {
                return;
             }
             GLOBAL.StatSet(CHANGED_TO_MR2,1);
             GLOBAL.StatSet("mrl",2,true);
-            GLOBAL._advancedMap = 1;
+            MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_2;
             GLOBAL._baseURL = param1.baseurl;
             GLOBAL._homeBaseID = param1.homebaseid;
             BASE._loadedBaseID = param1.homebaseid;
             BASE._baseID = 0;
             BASE._loadedFriendlyBaseID = GLOBAL._homeBaseID;
-            MapRoom.BookmarksClear();
+            MapRoomManager.instance.BookmarksClear();
+            LOGGER.StatB({"st1":"NWM"},"migration");
             if(param1.basesaveid != 1)
             {
                BASE._lastSaveID = param1.basesaveid;
@@ -91,8 +99,8 @@ package
             {
                if(param1.worldsize)
                {
-                  MapRoom._mapWidth = param1.worldsize[0];
-                  MapRoom._mapHeight = param1.worldsize[1];
+                  MapRoomManager.instance.mapWidth = param1.worldsize[0];
+                  MapRoomManager.instance.mapHeight = param1.worldsize[1];
                }
                GLOBAL._mapHome = new Point(param1.homebase[0],param1.homebase[1]);
                if(param1.outposts)
@@ -178,20 +186,23 @@ package
       
       override public function Upgraded() : void
       {
-         var Brag:Function = null;
-         Brag = function():void
+         var Brag:Function;
+         if(!MapRoomManager.instance.isInMapRoom3)
          {
-            GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("newmap_upgraded3"),KEYS.Get("newmap_upgraded1"),"build-maproom.png"]);
-            POPUPS.Next();
-         };
-         POPUPS.DisplayGeneric(KEYS.Get("newmap_upgraded1"),KEYS.Get("newmap_upgraded2"),KEYS.Get("btn_brag"),"building-map.png",Brag);
-         PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
+            Brag = function():void
+            {
+               GLOBAL.CallJS("sendFeed",["upgrade-mr",KEYS.Get("newmap_upgraded3"),KEYS.Get("newmap_upgraded1"),"build-maproom.png"]);
+               POPUPS.Next();
+            };
+            POPUPS.DisplayGeneric(KEYS.Get("newmap_upgraded1"),KEYS.Get("newmap_upgraded2"),KEYS.Get("btn_brag"),"building-map.png",Brag);
+            PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
+         }
          super.Upgraded();
       }
       
       override public function Recycle() : void
       {
-         if(GLOBAL._advancedMap)
+         if(MapRoomManager.instance.isInMapRoom2)
          {
             if(ALLIANCES._myAlliance != null)
             {
@@ -203,6 +214,11 @@ package
          }
          else
          {
+            if(MapRoomManager.instance.isInMapRoom3 && !GLOBAL._aiDesignMode)
+            {
+               GLOBAL.Message(KEYS.Get("map_cannot_recycle_map_room3"));
+               return;
+            }
             GLOBAL.Message(KEYS.Get("newmap_recycle2"),KEYS.Get("btn_recycle"),this.RecycleD);
          }
          GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ATTEMPT_RECYCLE,this));
@@ -210,11 +226,16 @@ package
       
       private function RecycleD() : void
       {
-         if(GLOBAL._mode != GLOBAL._loadmode)
+         if(GLOBAL.mode != GLOBAL._loadmode)
          {
             return;
          }
          var _loc1_:Array = [["version",1]];
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            RecycleB();
+            return;
+         }
          new URLLoaderApi().load(GLOBAL._mapURL + "setmapversion",_loc1_,this.RecycleDSuccess,this.RecycleDFail);
          PLEASEWAIT.Show(KEYS.Get("wait_processing"));
       }
@@ -223,15 +244,18 @@ package
       {
          var _loc2_:int = 0;
          PLEASEWAIT.Hide();
-         if(param1.error == 0 && GLOBAL._mode == GLOBAL._loadmode)
+         if(param1.error == 0 && GLOBAL.mode == GLOBAL._loadmode)
          {
             LOGGER.StatB({
                "st1":"world_map",
                "st2":"leave"
-            },MapRoom._worldID);
-            GLOBAL.StatSet("mrl",1,true);
+            },MapRoomManager.instance.worldID);
+            if(!MapRoomManager.instance.isInMapRoom3)
+            {
+               GLOBAL.StatSet("mrl",1,true);
+            }
             GLOBAL._bMap = null;
-            GLOBAL._advancedMap = 0;
+            MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
             GLOBAL._baseURL = param1.baseurl;
             BASE._baseID = 0;
             BASE._loadedFriendlyBaseID = 0;
@@ -249,7 +273,7 @@ package
             {
                BASE._lastSaveID = param1.basesaveid;
             }
-            MapRoom.BookmarksClear();
+            MapRoomManager.instance.BookmarksClear();
             RecycleB();
             if(_lvl.Get() == 2)
             {

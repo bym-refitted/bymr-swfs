@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.enums.EnumYardType;
    import flash.events.IOErrorEvent;
    
    public class LOGGER
@@ -73,7 +74,7 @@ package
                }
                if(data[0] == 1)
                {
-                  st2 = "build";
+                  st2 = GLOBAL.e_BASE_MODE.BUILD;
                }
                if(data[0] == 2)
                {
@@ -109,7 +110,7 @@ package
                }
                else
                {
-                  monsterID = BASE.isInferno() ? "IC" : "C";
+                  monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                   st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                }
                name = "speedup";
@@ -118,14 +119,14 @@ package
             else if(data[0] == 5)
             {
                st1 = "buildings";
-               st2 = "build";
+               st2 = GLOBAL.e_BASE_MODE.BUILD;
                st3 = KEYS.Get(GLOBAL._buildingProps[data[1] - 1].name);
                name = "build_start";
             }
             else if(data[0] == 6)
             {
                st1 = "buildings";
-               st2 = "build";
+               st2 = GLOBAL.e_BASE_MODE.BUILD;
                st3 = KEYS.Get(GLOBAL._buildingProps[data[1] - 1].name);
                name = "build_finish";
             }
@@ -149,7 +150,7 @@ package
             {
                st1 = "monsters";
                st2 = "unlock";
-               monsterID = BASE.isInferno() ? "IC" : "C";
+               monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "start";
             }
@@ -157,7 +158,7 @@ package
             {
                st1 = "monsters";
                st2 = "unlock";
-               monsterID = BASE.isInferno() ? "IC" : "C";
+               monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "finish";
             }
@@ -165,7 +166,7 @@ package
             {
                st1 = "monsters";
                st2 = "train";
-               monsterID = BASE.isInferno() ? "IC" : "C";
+               monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "start";
                val = int(data[2]);
@@ -174,7 +175,7 @@ package
             {
                st1 = "monsters";
                st2 = "train";
-               monsterID = BASE.isInferno() ? "IC" : "C";
+               monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "finish";
                val = int(data[2]);
@@ -363,7 +364,7 @@ package
                   {
                      st1 = "monsters";
                      st2 = "unlock";
-                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                      st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "instant";
                   }
@@ -379,7 +380,7 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                      st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "shiny";
                      val = int(data[2]);
@@ -388,7 +389,7 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                      st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "start";
                      val = int(data[2]);
@@ -397,7 +398,7 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     monsterID = BASE.isInfernoMainYardOrOutpost ? "IC" : "C";
                      st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "finish";
                      val = int(data[2]);
@@ -476,7 +477,7 @@ package
                   }
                   else if(data[0] == 61)
                   {
-                     if(BASE.isInferno())
+                     if(BASE.isInfernoMainYardOrOutpost)
                      {
                         st1 = "storeinf";
                      }
@@ -541,7 +542,7 @@ package
                   else if(data[0] == 71)
                   {
                      st1 = "buildings";
-                     st2 = "build";
+                     st2 = GLOBAL.e_BASE_MODE.BUILD;
                      st3 = KEYS.Get(GLOBAL._buildingProps[data[2] - 1].name);
                      name = "build_instant";
                      val = int(data[1]);
@@ -645,16 +646,16 @@ package
                      name = data[1];
                      switch(data[2])
                      {
-                        case BASE.MAIN_YARD:
+                        case EnumYardType.MAIN_YARD:
                            yardType = "main_yard";
                            break;
-                        case BASE.OUTPOST:
+                        case EnumYardType.OUTPOST:
                            yardType = "outpost";
                            break;
-                        case BASE.INFERNO_YARD:
+                        case EnumYardType.INFERNO_YARD:
                            yardType = "inferno_yard";
                            break;
-                        case BASE.INFERNO_OUTPOST:
+                        case EnumYardType.INFERNO_OUTPOST:
                            yardType = "outpost";
                            break;
                         default:
@@ -693,7 +694,7 @@ package
                   else if(data[0] == 92)
                   {
                      st1 = "siege-weapon";
-                     st2 = "build";
+                     st2 = GLOBAL.e_BASE_MODE.BUILD;
                      st3 = data[1] + data[2];
                      name = data[3];
                      if(data[4])
@@ -768,11 +769,11 @@ package
                if(st1)
                {
                   o.st1 = st1.toLowerCase().replace(" ","_");
-                  if(BASE._yardType == BASE.OUTPOST)
+                  if(BASE.isOutpost)
                   {
                      o.st1 = "outpost-" + o.st1;
                   }
-                  if(BASE._yardType == BASE.INFERNO_YARD)
+                  if(BASE.isMainYardInfernoOnly)
                   {
                      o.st1 = "inferno-" + o.st1;
                   }
@@ -804,7 +805,7 @@ package
       
       public static function StatB(param1:Object, param2:*) : void
       {
-         if(!GLOBAL._flags.gamestatsb)
+         if(!GLOBAL._flags || !GLOBAL._flags.gamestatsb)
          {
             return;
          }

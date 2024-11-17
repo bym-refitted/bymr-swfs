@@ -2,6 +2,7 @@ package com.monsters.chat.ui
 {
    import com.monsters.chat.Chat;
    import com.monsters.display.ScrollSet;
+   import com.monsters.maproom3.MapRoom3;
    import flash.display.*;
    import flash.events.*;
    import flash.text.*;
@@ -399,6 +400,7 @@ package com.monsters.chat.ui
          this._scrollbar.visible = false;
          TweenLite.to(this.background,0.5,{
             "y":_loc4_.y,
+            "onUpdate":this.toggleOnUpdate,
             "onComplete":this.toggleVisibleB
          });
          TweenLite.to(this.background.mcScreen,0.5,{"height":_loc4_.screenHeight});
@@ -446,6 +448,14 @@ package com.monsters.chat.ui
                   "ease":Expo.easeOut
                });
             }
+         }
+      }
+      
+      private function toggleOnUpdate() : void
+      {
+         if(MapRoom3.mapRoom3Window)
+         {
+            MapRoom3.mapRoom3WindowHUD.PositionLeftMenuButtonsBar();
          }
       }
       
@@ -661,7 +671,7 @@ package com.monsters.chat.ui
             this.background.arrowUp.visible = TUTORIAL.hasFinished;
             this.background.mcToggle.visible = TUTORIAL.hasFinished;
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             this.background.arrowUp.visible = TUTORIAL.hasFinished;
             this.background.mcToggle.visible = TUTORIAL.hasFinished;

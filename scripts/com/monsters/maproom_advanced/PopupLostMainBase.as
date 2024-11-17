@@ -1,5 +1,6 @@
 package com.monsters.maproom_advanced
 {
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -60,10 +61,10 @@ package com.monsters.maproom_advanced
                   if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
                   {
                      GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                     MapRoom.BookmarksClear();
-                     MapRoom.Setup(GLOBAL._mapHome);
-                     MapRoom._empiredestroyed = true;
-                     MapRoom.ShowDelayed(true);
+                     MapRoomManager.instance.BookmarksClear();
+                     MapRoom._Setup(GLOBAL._mapHome);
+                     MapRoom.empireDestroyed = true;
+                     MapRoomManager.instance.ShowDelayed(true);
                   }
                }
             }

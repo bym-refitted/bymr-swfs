@@ -22,7 +22,7 @@ package
          _spoutPoint = new Point(-28,-58);
          _spoutHeight = 97;
          _taken = new SecNum(0);
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             _animRandomStart = false;
          }
@@ -40,7 +40,7 @@ package
          {
             if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _canFunction)
             {
-               if(GLOBAL._mode == "build" && this._frameNumber % 2 == 0 && CREEPS._creepCount == 0)
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && this._frameNumber % 2 == 0 && CREEPS._creepCount == 0)
                {
                   this.AnimFrame();
                }
@@ -162,7 +162,7 @@ package
             _loc6_ = 0;
             while(_loc6_ < _loc4_)
             {
-               ResourcePackages.Spawn(this,GLOBAL._bTownhall,BASE.isInferno() || Boolean(_loc3_) ? 8 : 4,_loc6_);
+               ResourcePackages.Spawn(this,GLOBAL.townHall,BASE.isInfernoMainYardOrOutpost || Boolean(_loc3_) ? 8 : 4,_loc6_);
                _loc6_++;
             }
             _loc3_++;
@@ -325,7 +325,7 @@ package
          {
             return;
          }
-         if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
+         if(_countdownBuild.Get() > 0 || health < maxHealth * 0.5)
          {
             _canFunction = false;
          }
@@ -390,7 +390,7 @@ package
                   _finishCost.Set(0);
                }
             }
-            if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && _hp.Get() > 10)
+            if(_countdownBuild.Get() + _countdownUpgrade.Get() == 0 && health > 10)
             {
                if(_inProduction != "" && _productionStage.Get() == 1)
                {
@@ -521,7 +521,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bHatchery = this;
-         if(GLOBAL._mode == "build" && TUTORIAL._stage > 200 && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && TUTORIAL._stage > 200 && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -555,7 +555,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !BASE.isInfernoMainYardOrOutpost)
          {
             Brag = function(param1:MouseEvent):void
             {

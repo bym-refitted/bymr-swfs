@@ -78,7 +78,7 @@ package
                else
                {
                   UI2._warning.Update("<font size=\"28\">" + int(_attPrep - 1) + "</font>");
-                  if(BASE.isInferno())
+                  if(BASE.isInfernoMainYardOrOutpost)
                   {
                      SOUNDS.PlayMusic("musicipanic");
                   }
@@ -116,7 +116,7 @@ package
          }
          UI2.Hide("scareAway");
          UI2.Hide("warning");
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicibuild");
          }
@@ -129,7 +129,7 @@ package
             _loc3_ = 0;
             while(_loc3_ < _loc2_.length)
             {
-               _loc2_[_loc3_].ModeRetreat();
+               _loc2_[_loc3_].changeModeRetreat();
                _loc3_++;
             }
          }

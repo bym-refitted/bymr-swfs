@@ -2,6 +2,8 @@ package com.monsters.maproom_advanced
 {
    import com.monsters.alliances.AllyInfo;
    import com.monsters.display.ImageCache;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.Loader;
@@ -15,7 +17,7 @@ package com.monsters.maproom_advanced
    import flash.net.URLRequest;
    import flash.utils.getTimer;
    
-   public class MapRoomPopup extends MapRoomPopup_CLIP
+   internal class MapRoomPopup extends MapRoomPopup_CLIP
    {
       private var mapOffset:Point;
       
@@ -47,13 +49,13 @@ package com.monsters.maproom_advanced
       
       public var _popupInfoMine:PopupInfoMine;
       
-      public var _popupInfoEnemy:PopupInfoEnemy;
+      private var _popupInfoEnemy:PopupInfoEnemy;
       
-      public var _popupMonsters:PopupMonstersA;
+      private var _popupMonsters:PopupMonstersA;
       
-      public var _popupInfoViewOnly:PopupInfoViewOnly;
+      private var _popupInfoViewOnly:PopupInfoViewOnly;
       
-      public var _popupBuff:bubblepopupBuff;
+      private var _popupBuff:bubblepopupBuff;
       
       private var _popupBookmarkMenu:Array;
       
@@ -63,11 +65,11 @@ package com.monsters.maproom_advanced
       
       private var _fallbackHomeCell:MapRoomCell;
       
-      public var _popupAttackA:PopupAttackA;
+      private var _popupAttackA:PopupAttackA;
       
       public var _dragged:Boolean;
       
-      public var _popupMonstersB:PopupMonstersB;
+      private var _popupMonstersB:PopupMonstersB;
       
       public function MapRoomPopup()
       {
@@ -492,17 +494,17 @@ package com.monsters.maproom_advanced
          GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
          if(BASE._loadedFriendlyBaseID)
          {
-            BASE._yardType = BASE._loadedYardType;
-            BASE.LoadBase(null,0,BASE._loadedFriendlyBaseID,"build",false,BASE._loadedYardType);
+            BASE.yardType = BASE._loadedYardType;
+            BASE.LoadBase(null,0,BASE._loadedFriendlyBaseID,GLOBAL.e_BASE_MODE.BUILD,false,BASE._loadedYardType);
          }
          else
          {
-            BASE._yardType = BASE.MAIN_YARD;
-            BASE.LoadBase(null,0,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
+            BASE.yardType = EnumYardType.MAIN_YARD;
+            BASE.LoadBase(null,0,GLOBAL._homeBaseID,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.MAIN_YARD);
          }
          SOUNDS.Play("close");
          this.Cleanup();
-         MapRoom.Hide();
+         MapRoomManager.instance.Hide();
       }
       
       public function Cleanup() : void
@@ -637,7 +639,7 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            MapRoom.BookmarksClear();
+            MapRoomManager.instance.BookmarksClear();
          }
          if(MapRoom._bookmarks.length > 0 || MapRoom._viewOnly)
          {
@@ -856,7 +858,7 @@ package com.monsters.maproom_advanced
          var _loc2_:int = getTimer();
          if(this._fullScreen && GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
          {
-            MapRoom.ResizeHandler();
+            MapRoomManager.instance.ResizeHandler();
             this._fullScreen = false;
             return;
          }
@@ -1048,7 +1050,7 @@ package com.monsters.maproom_advanced
                _loc4_ = this.GetCellsInRange(param1.X,param1.Y,param2);
                for each(_loc3_ in _loc4_)
                {
-                  _loc5_ = _loc3_.cell;
+                  _loc5_ = _loc3_.cell as MapRoomCell;
                   if((Boolean(_loc5_)) && !_loc5_._water)
                   {
                      if(!_loc5_._over)
@@ -1779,7 +1781,7 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            MapRoom.BookmarksClear();
+            MapRoomManager.instance.BookmarksClear();
             this._menuShown = false;
          }
       }
@@ -1972,7 +1974,7 @@ package com.monsters.maproom_advanced
          {
             this._fullScreen = false;
          }
-         MapRoom.ResizeHandler();
+         MapRoomManager.instance.ResizeHandler();
       }
       
       public function Resize() : void
@@ -1991,7 +1993,7 @@ package com.monsters.maproom_advanced
          }
          if(_loc1_)
          {
-            MapRoom.ResizeHandler();
+            MapRoomManager.instance.ResizeHandler();
          }
       }
    }

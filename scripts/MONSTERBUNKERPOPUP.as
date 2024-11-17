@@ -3,6 +3,9 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.creeps.CreepBase;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -317,7 +320,7 @@ package
                      transferBtnA.id = monsterID;
                      transferBtnA._id = monsterID.substring(monsterID.indexOf("C") + 1);
                      transferBtnA.index = monsterID.substring(monsterID.indexOf("C") + 1);
-                     v = int(HOUSING._creatures[monsterID].Get());
+                     v = GLOBAL.player.monsterListByID(monsterID).numCreeps;
                      if(this._selected[monsterID])
                      {
                         v -= this._selected[monsterID].Get();
@@ -376,9 +379,9 @@ package
                      transferBtnA.id = monsterID;
                      transferBtnA._id = monsterID.substring(monsterID.indexOf("C") + 1);
                      transferBtnA.index = monsterID.substring(monsterID.indexOf("C") + 1);
-                     if(HOUSING._creatures[monsterID])
+                     if(GLOBAL.player.monsterListByID(monsterID))
                      {
-                        v = int(HOUSING._creatures[monsterID].Get());
+                        v = GLOBAL.player.monsterListByID(monsterID).numCreeps;
                      }
                      if(Boolean(CREATURELOCKER._lockerData[monsterID]) && CREATURELOCKER._lockerData[monsterID].t == 2)
                      {
@@ -675,9 +678,9 @@ package
          }
          if(this._mode == "housing")
          {
-            if(Boolean(HOUSING._creatures["C" + param1]) && HOUSING._creatures["C" + param1].Get() > 0)
+            if(Boolean(GLOBAL.player.monsterListByID("C" + param1)) && GLOBAL.player.monsterListByID("C" + param1).numCreeps > 0)
             {
-               _loc2_ = int(HOUSING._creatures["C" + param1].Get());
+               _loc2_ = GLOBAL.player.monsterListByID("C" + param1).numCreeps;
             }
             if(this._selected["C" + param1])
             {
@@ -728,9 +731,9 @@ package
          }
          if(this._mode == "housing")
          {
-            if(Boolean(HOUSING._creatures[param1]) && HOUSING._creatures[param1].Get() > 0)
+            if(Boolean(GLOBAL.player.monsterListByID(param1)) && GLOBAL.player.monsterListByID(param1).numCreeps > 0)
             {
-               _loc3_ = int(HOUSING._creatures[param1].Get());
+               _loc3_ = GLOBAL.player.monsterListByID(param1).numCreeps;
             }
             if(this._selected[param1])
             {
@@ -761,37 +764,37 @@ package
       
       private function BunkerStore(param1:String) : void
       {
-         var _loc3_:BFOUNDATION = null;
+         var _loc3_:Object = null;
          var _loc4_:int = 0;
-         var _loc5_:* = undefined;
-         var _loc6_:* = undefined;
-         var _loc2_:Array = [];
+         var _loc5_:CreepBase = null;
+         var _loc6_:MonsterBase = null;
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
          for each(_loc3_ in BASE._buildingsHousing)
          {
             _loc2_.push(_loc3_);
          }
          _loc4_ = int(CREATURELOCKER._creatures[param1].props.cStorage);
-         if(Boolean(HOUSING._creatures[param1]) && _loc4_ <= this._bunker._capacity - this._bunker._used)
+         if(Boolean(GLOBAL.player.monsterListByID(param1)) && _loc4_ <= this._bunker._capacity - this._bunker._used)
          {
             _loc5_ = null;
             for each(_loc6_ in CREATURES._creatures)
             {
                if(_loc6_._creatureID == param1 && (_loc6_._behaviour == "housing" || _loc6_._behaviour == "pen"))
                {
-                  _loc5_ = _loc6_;
+                  _loc5_ = _loc6_ as CreepBase;
                   break;
                }
             }
             if(_loc5_ == null)
             {
                _loc3_ = _loc2_[int(Math.random() * _loc2_.length)];
-               _loc5_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunker",new Point(_loc3_.x,_loc3_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360);
+               _loc5_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunker",new Point(_loc3_.x,_loc3_.y).add(new Point(-60 + Math.random() * 135,65 + Math.random() * 50)),Math.random() * 360) as CreepBase;
             }
             if(_loc5_)
             {
                _loc5_._homeBunker = this._bunker;
-               _loc5_.ModeBunker();
-               HOUSING._creatures[param1].Add(-1);
+               _loc5_.changeModeBunker();
+               GLOBAL.player.monsterListByID(param1).add(-1);
                if(Boolean(this._bunker._monsters[param1]) && this._bunker._monsters[param1] > 0)
                {
                   this._bunker._monsters[param1] += 1;
@@ -832,13 +835,13 @@ package
       private function BunkerJuiceById(param1:String) : void
       {
          var _loc3_:Boolean = false;
-         var _loc4_:* = undefined;
+         var _loc4_:MonsterBase = null;
          var _loc2_:* = param1.substring(0,2) == "IC";
          if(Boolean(GLOBAL._bJuicer) && !_loc2_)
          {
             if(Boolean(GLOBAL._bJuicer) && GLOBAL._bJuicer._countdownUpgrade.Get() == 0)
             {
-               if(GLOBAL._bJuicer._hp.Get() > GLOBAL._bJuicer._hpMax.Get() * 0.5)
+               if(GLOBAL._bJuicer.health > GLOBAL._bJuicer.maxHealth * 0.5)
                {
                   if(this._bunker._monsters[param1])
                   {
@@ -847,7 +850,7 @@ package
                      {
                         if(_loc4_._creatureID == param1 && _loc4_._behaviour == "bunker")
                         {
-                           _loc4_.ModeJuice();
+                           _loc4_.changeModeJuice();
                            --this._bunker._monstersDispatched[param1];
                            if(this._bunker._monstersDispatched[param1] < 0)
                            {
@@ -901,7 +904,7 @@ package
          var _loc3_:Array = [];
          var _loc4_:Array = [];
          var _loc5_:Object = CREATURELOCKER.GetCreatures("above");
-         var _loc6_:* = !BASE.isInferno();
+         var _loc6_:* = !BASE.isInfernoMainYardOrOutpost;
          if(_loc6_)
          {
             for(_loc9_ in _loc5_)

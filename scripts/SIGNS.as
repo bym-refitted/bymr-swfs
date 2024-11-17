@@ -35,7 +35,7 @@ package
             _mc._mode = "create";
             _mc.Setup();
          }
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             _loc2_ = param1._buildingProps.costs[0];
             _loc3_ = _loc2_.r5 != undefined ? int(_loc2_.r5) : 0;
@@ -46,7 +46,7 @@ package
       public static function ShowMessage(param1:BFOUNDATION) : void
       {
          SOUNDS.Play("click1");
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             MAILBOX.ShowWithThreadId(param1._threadid);
          }

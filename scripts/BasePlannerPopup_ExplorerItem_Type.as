@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2969")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol3097")]
    public dynamic class BasePlannerPopup_ExplorerItem_Type extends MovieClip
    {
       public var tLabel:TextField;

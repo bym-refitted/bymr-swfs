@@ -9,8 +9,13 @@ package com.monsters.frontPage
    import com.monsters.frontPage.messages.news.News04Slimeattikus;
    import com.monsters.frontPage.messages.news.News05YardPlanner2;
    import com.monsters.frontPage.messages.news.News06TownHallLevel10;
+   import com.monsters.frontPage.messages.promotions.Maproom3OptInPopup;
    import com.monsters.frontPage.messages.promotions.Promo01DaveClub;
    import com.monsters.frontPage.messages.promotions.Promo02DaveClub;
+   import com.monsters.frontPage.messages.promotions.Promo03RecapturedGorgo;
+   import com.monsters.frontPage.messages.promotions.Promo04RecapturedDrull;
+   import com.monsters.frontPage.messages.promotions.Promo05RecapturedFomor;
+   import com.monsters.frontPage.messages.promotions.Promo06RecapturedKorath;
    import com.monsters.frontPage.messages.underusedFeatures.Underused01MonsterLocker;
    import com.monsters.frontPage.messages.underusedFeatures.Underused02Academy;
    
@@ -51,8 +56,13 @@ package com.monsters.frontPage
          NEWS.addMessage(new News04Slimeattikus());
          NEWS.addMessage(new News05YardPlanner2());
          NEWS.addMessage(new News06TownHallLevel10());
+         PROMOTIONS.addMessage(new Maproom3OptInPopup());
          PROMOTIONS.addMessage(new Promo01DaveClub());
          PROMOTIONS.addMessage(new Promo02DaveClub());
+         PROMOTIONS.addMessage(new Promo03RecapturedGorgo());
+         PROMOTIONS.addMessage(new Promo04RecapturedDrull());
+         PROMOTIONS.addMessage(new Promo05RecapturedFomor());
+         PROMOTIONS.addMessage(new Promo06RecapturedKorath());
          UNDERUSED_FEATURES.addMessage(new Underused01MonsterLocker());
          UNDERUSED_FEATURES.addMessage(new Underused02Academy());
          WHATS_AVAILABLE.addMessage(new BuildTree_01_SniperCannonTowers());

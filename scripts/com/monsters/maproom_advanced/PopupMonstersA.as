@@ -6,7 +6,7 @@ package com.monsters.maproom_advanced
    import flash.events.Event;
    import flash.events.MouseEvent;
    
-   public class PopupMonstersA extends PopupMonstersA_CLIP
+   internal class PopupMonstersA extends PopupMonstersA_CLIP
    {
       private var _cell:MapRoomCell;
       
@@ -57,7 +57,7 @@ package com.monsters.maproom_advanced
          var _loc6_:int = 0;
          var _loc7_:String = null;
          var _loc8_:MonsterTransferBar = null;
-         var _loc9_:MapRoomPopupInfoMonster = null;
+         var _loc9_:PopupInfoMonster = null;
          this._cell = param1;
          this._transfer = {};
          this._transferMonsters = {};
@@ -79,7 +79,7 @@ package com.monsters.maproom_advanced
             for(_loc7_ in this._cell._monsters)
             {
                _loc8_ = new MonsterTransferBar();
-               _loc9_ = new MapRoomPopupInfoMonster();
+               _loc9_ = new PopupInfoMonster();
                _loc9_.Setup(0,0,_loc7_,0);
                _loc8_.addChild(_loc9_);
                _loc8_.y = _loc5_ * _loc8_.height;

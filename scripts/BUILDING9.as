@@ -1,6 +1,5 @@
 package
 {
-   import com.cc.utils.SecNum;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -27,7 +26,7 @@ package
       
       public var _blending:Boolean;
       
-      public var _bank:SecNum;
+      private var _lastType:int;
       
       public var _guardian:int = 0;
       
@@ -41,39 +40,38 @@ package
          _gridCost = [[new Rectangle(0,0,80,80),50]];
          _spoutPoint = new Point(0,12);
          _spoutHeight = 28;
-         this._bank = new SecNum(0);
          SetProps();
       }
       
       public function Prep(param1:String) : void
       {
-         this._bank.Add(Math.ceil(CREATURES.GetProperty(param1,"cResource") * 0.7));
          ++QUESTS._global.monstersblended;
          QUESTS._global.monstersblendedgoo += Math.ceil(CREATURES.GetProperty(param1,"cResource") * 0.7);
          ACHIEVEMENTS.Check("monstersblended",QUESTS._global.monstersblended);
          QUESTS.Check();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             BASE.Save();
          }
       }
       
-      public function Blend(param1:int, param2:String) : void
+      public function Blend(param1:int, param2:String, param3:Number = 1) : void
       {
+         var _loc4_:* = param2.substr(0,2) == "IC";
          this._blend += param1;
-         var _loc3_:Number = 0.6;
+         var _loc5_:Number = 0.6;
          if(_lvl.Get() == 2)
          {
-            _loc3_ = 0.8;
+            _loc5_ = 0.8;
          }
          else if(_lvl.Get() == 3)
          {
-            _loc3_ = 1;
+            _loc5_ = 1;
          }
          this._guardian = 0;
-         BASE.Fund(4,Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc3_));
-         this._bank.Add(0 - Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc3_));
-         ResourcePackages.Create(4,this,Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc3_));
+         BASE.Fund(4,Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc5_ * param3),false,null,param2.substr(0,1) == "I" && !BASE.isInfernoMainYardOrOutpost);
+         this._lastType = _loc4_ ? 8 : 4;
+         ResourcePackages.Create(this._lastType,this,Math.ceil(CREATURES.GetProperty(param2,"cResource") * _loc5_));
       }
       
       public function BlendGuardian(param1:int) : void
@@ -97,7 +95,7 @@ package
                this._blend = 0;
                if(!this._guardian)
                {
-                  ResourcePackages.Create(4,this,1);
+                  ResourcePackages.Create(this._lastType,this,1);
                }
             }
             if(_animTick == 52)
@@ -172,7 +170,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bJuicer = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -195,7 +193,7 @@ package
          var percent:int = 0;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Brag = function(param1:MouseEvent):void
             {

@@ -1,28 +1,51 @@
 package
 {
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom3.MapRoom3Cell;
+   import com.monsters.maproom3.popups.Maproom3AttackCostPopup;
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_advanced.MapRoomCell;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.MovieClip;
+   import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.geom.Rectangle;
    
    public class UI_VISITOR extends UI_VISITOR_CLIP
    {
       public static var _helpButtons:MovieClip;
       
+      private static var s_mc:MovieClip;
+      
+      protected var m_resourceBar1:ResourceBar1;
+      
+      protected var m_resourceBar2:ResourceBar2;
+      
+      protected var m_resourceBar3:ResourceBar3;
+      
+      protected var m_resourceBar4:ResourceBar4;
+      
+      protected var m_oldScreen:Rectangle;
+      
+      private var attackCostPopup:Maproom3AttackCostPopup;
+      
       public function UI_VISITOR()
       {
          super();
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         s_mc = mc;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             mc.mcBG.width = 100;
             mc.bReturn.SetupKey("btn_endattack");
             mc.bAttack.visible = false;
          }
-         else if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
+         else if(MapRoomManager.instance.isInMapRoom2or3 && !BASE.isInfernoMainYardOrOutpost)
          {
             mc.bReturn.SetupKey("btn_openmap");
-            if(GLOBAL._mode != "help" && !MapRoom._viewOnly && GLOBAL._currentCell && MapRoom._flingerInRange)
+            if((GLOBAL.mode != GLOBAL.e_BASE_MODE.HELP || MapRoomManager.instance.isInMapRoom3) && !MapRoomManager.instance.viewOnly && GLOBAL._currentCell && MapRoomManager.instance.flingerInRange)
             {
-               if(GLOBAL._currentCell._destroyed)
+               if(GLOBAL._currentCell.isDestroyed)
                {
                   mc.bAttack.SetupKey("newmap_take_btn");
                }
@@ -30,9 +53,16 @@ package
                {
                   mc.bAttack.SetupKey("map_attack_btn");
                }
-               mc.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
                mc.bAttack.visible = true;
-               if(GLOBAL._currentCell._locked != 0 && GLOBAL._currentCell._locked != LOGIN._playerID)
+               if(MapRoomManager.instance.isInMapRoom3)
+               {
+                  mc.bAttack.addEventListener(MouseEvent.CLICK,this.AttackMR3);
+               }
+               else
+               {
+                  mc.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
+               }
+               if(GLOBAL._currentCell.isLocked || this.isLevelLimited || !ATTACK.hasCreaturesToAttackWith)
                {
                   mc.bAttack.Enabled = false;
                }
@@ -44,7 +74,7 @@ package
             else
             {
                mc.bAttack.visible = false;
-               if(GLOBAL._mode != "help")
+               if(GLOBAL.mode != GLOBAL.e_BASE_MODE.HELP || MapRoomManager.instance.isInMapRoom3)
                {
                   mc.mcBG.width = 100;
                }
@@ -52,16 +82,24 @@ package
          }
          else
          {
-            if(GLOBAL._mode != "help")
+            if(GLOBAL.mode != GLOBAL.e_BASE_MODE.HELP || MapRoomManager.instance.isInMapRoom3)
             {
                mc.mcBG.width = 100;
             }
             mc.bReturn.SetupKey("btn_returnhome");
             mc.bAttack.visible = false;
          }
+         if(MapRoomManager.instance.isInMapRoom3 && mc.bAttack.visible && Boolean(mc.bAttack.Enabled))
+         {
+         }
          mc.bReturn.addEventListener(MouseEvent.CLICK,this.ReturnCB);
          mc.gotoAndStop(1);
          this.Update();
+      }
+      
+      public static function get mc() : MovieClip
+      {
+         return s_mc;
       }
       
       public static function Focus(param1:BFOUNDATION) : Function
@@ -72,6 +110,11 @@ package
             MAP.FocusTo(building._mc.x,building._mc.y,0.6);
             BASE.BuildingSelect(building,true);
          };
+      }
+      
+      public function get isLevelLimited() : Boolean
+      {
+         return BASE.loadObject["canattack"] == false;
       }
       
       public function Taunt(param1:MouseEvent = null) : void
@@ -86,44 +129,109 @@ package
       
       public function ReturnCB(param1:MouseEvent) : void
       {
+         var _loc2_:int = 0;
          if(GLOBAL._newBuilding)
          {
             GLOBAL._newBuilding.Cancel();
          }
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             ATTACK.End();
          }
-         else if(Boolean(GLOBAL._advancedMap) && GLOBAL._loadmode == GLOBAL._mode)
+         else if(MapRoomManager.instance.isInMapRoom2or3 && GLOBAL._loadmode == GLOBAL.mode)
          {
-            MapRoom.Setup(GLOBAL._mapHome,MapRoom._worldID,MapRoom._inviteBaseID,MapRoom._viewOnly);
-            MapRoom.Show();
+            MapRoomManager.instance.SetupAndShow();
          }
-         else if(BASE.isInferno())
+         else if(BASE.isInfernoMainYardOrOutpost)
          {
+            _loc2_ = MapRoomManager.instance.isInMapRoom3 ? int(EnumYardType.PLAYER) : int(EnumYardType.MAIN_YARD);
             if(MAPROOM_DESCENT.InDescent)
             {
-               BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+               BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,_loc2_);
             }
             else
             {
-               BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+               BASE.LoadBase(GLOBAL._infBaseURL,0,0,GLOBAL.e_BASE_MODE.IBUILD,false,EnumYardType.INFERNO_YARD);
             }
          }
          else
          {
-            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,_loc2_);
          }
+      }
+      
+      public function AttackMR3(param1:MouseEvent) : void
+      {
+         var _loc2_:MapRoom3Cell = GLOBAL._currentCell as MapRoom3Cell;
+         if(!_loc2_)
+         {
+            return;
+         }
+         if(!ATTACK.hasCreaturesToAttackWith)
+         {
+            GLOBAL.Message(KEYS.Get("msg_nocreaturesattack"));
+            return;
+         }
+         if(_loc2_.isLocked)
+         {
+            GLOBAL.Message(KEYS.Get("mr3_base_locked_cannot_attack"));
+            return;
+         }
+         if(this.isLevelLimited)
+         {
+            GLOBAL.Message(KEYS.Get("map_msg_leveltoolow"));
+            return;
+         }
+         if(_loc2_.hasTruce)
+         {
+            GLOBAL.Message(KEYS.Get("newmap_truce"));
+            return;
+         }
+         if(_loc2_.hasDamageProtection)
+         {
+            GLOBAL.Message(KEYS.Get("newmap_dp"));
+            return;
+         }
+         if(_loc2_.isInAttackRange)
+         {
+            this.loadAttack();
+         }
+         else
+         {
+            if(!this.attackCostPopup)
+            {
+               this.attackCostPopup = new Maproom3AttackCostPopup(_loc2_);
+               this.attackCostPopup.addEventListener(Maproom3AttackCostPopup.k_LOAD_ATTACK,this.clickedLoadAttack);
+            }
+            POPUPS.Push(this.attackCostPopup.graphic);
+         }
+      }
+      
+      protected function clickedLoadAttack(param1:Event) : void
+      {
+         this.attackCostPopup.removeEventListener(Maproom3AttackCostPopup.k_LOAD_ATTACK,this.clickedLoadAttack);
+         POPUPS.Next();
+         this.loadAttack(this.attackCostPopup.addtionalLoadParameters);
+         this.attackCostPopup = null;
+      }
+      
+      private function loadAttack(param1:Object = null) : void
+      {
+         var _loc2_:MapRoom3Cell = null;
+         _loc2_ = GLOBAL._currentCell as MapRoom3Cell;
+         var _loc3_:Number = _loc2_.cellY * 100 + _loc2_.cellX + 1;
+         BASE.LoadBase(null,0,_loc2_.baseID,!_loc2_.userID ? GLOBAL.e_BASE_MODE.WMATTACK : GLOBAL.e_BASE_MODE.ATTACK,false,_loc2_.cellType,_loc3_,!!param1 ? ["attackcost",JSON.encode(param1)] : null);
       }
       
       public function Attack(param1:MouseEvent) : void
       {
-         if(GLOBAL._currentCell)
+         var _loc2_:MapRoomCell = GLOBAL._currentCell as MapRoomCell;
+         if(_loc2_)
          {
          }
-         if(GLOBAL._currentCell && GLOBAL._currentCell._locked != 0 && GLOBAL._currentCell._locked != LOGIN._playerID)
+         if(Boolean(_loc2_) && _loc2_.isLocked)
          {
-            if(GLOBAL._currentCell._online)
+            if(_loc2_.online)
             {
                GLOBAL.Message(KEYS.Get("msg_cantattackoccupied"));
             }
@@ -132,23 +240,23 @@ package
                GLOBAL.Message(KEYS.Get("msg_cantattackbeingattacked"));
             }
          }
-         else if(GLOBAL._currentCell)
+         else if(_loc2_)
          {
-            if(GLOBAL._currentCell._destroyed)
+            if(_loc2_.isDestroyed)
             {
-               MapRoom._showEnemyWait = true;
-               MapRoom.Show();
+               MapRoom.showEnemyWait = true;
+               MapRoomManager.instance.Show();
             }
-            else if(!GLOBAL._currentCell._protected && !(GLOBAL._currentCell._truce && GLOBAL._currentCell._truce > GLOBAL.Timestamp()))
+            else if(!_loc2_.isProtected && !(_loc2_.truce && _loc2_.truce > GLOBAL.Timestamp()))
             {
-               MapRoom._showAttackWait = true;
-               MapRoom.Show();
+               MapRoom.showAttackWait = true;
+               MapRoomManager.instance.Show();
             }
-            else if(GLOBAL._currentCell._protected)
+            else if(_loc2_.isProtected)
             {
                GLOBAL.Message(KEYS.Get("newmap_dp"));
             }
-            else if(Boolean(GLOBAL._currentCell._truce) && GLOBAL._currentCell._truce > GLOBAL.Timestamp())
+            else if(Boolean(_loc2_.truce) && _loc2_.truce > GLOBAL.Timestamp())
             {
                GLOBAL.Message(KEYS.Get("newmap_truce"));
             }
@@ -158,61 +266,67 @@ package
       public function Update() : void
       {
          var _loc1_:int = 0;
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:Boolean = false;
-         var _loc4_:int = 0;
-         var _loc5_:MovieClip = null;
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         var _loc2_:Vector.<Object> = null;
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:Boolean = false;
+         var _loc5_:int = 0;
+         var _loc6_:MovieClip = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             if(ATTACK._countdown < 0)
             {
                mc.bReturn.Highlight = true;
             }
          }
-         else if(GLOBAL._mode == "help")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.HELP)
          {
             if(Boolean(_helpButtons) && mc.contains(_helpButtons))
             {
                mc.removeChild(_helpButtons);
             }
             _helpButtons = mc.addChild(new MovieClip()) as MovieClip;
-            _helpButtons.x = 210;
+            _helpButtons.x = MapRoomManager.instance.isInMapRoom3 ? 310 : 210;
             _helpButtons.y = 5;
             _loc1_ = 0;
-            for each(_loc2_ in BASE._buildingsAll)
+            _loc2_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(_loc3_ in _loc2_)
             {
-               if(_loc2_._countdownBuild.Get() + _loc2_._countdownUpgrade.Get() + _loc2_._countdownFortify.Get() > 0)
+               if(_loc3_._countdownBuild.Get() + _loc3_._countdownUpgrade.Get() + _loc3_._countdownFortify.Get() > 0)
                {
-                  _loc3_ = false;
-                  for each(_loc4_ in _loc2_._helpList)
+                  _loc4_ = false;
+                  for each(_loc5_ in _loc3_._helpList)
                   {
-                     if(_loc4_ == LOGIN._playerID)
+                     if(_loc5_ == LOGIN._playerID)
                      {
-                        _loc3_ = true;
+                        _loc4_ = true;
                         break;
                      }
                   }
                   mc.gotoAndStop(2);
-                  _loc5_ = new button_buildings();
-                  _loc5_.gotoAndStop(_loc2_._type);
-                  _loc5_.x = _loc1_ * 45;
-                  if(!_loc3_)
+                  if(MapRoomManager.instance.isInMapRoom3)
                   {
-                     _loc5_.buttonMode = true;
-                     _loc5_.addEventListener(MouseEvent.CLICK,Focus(_loc2_));
-                     _loc5_.mcTick.visible = false;
+                     mc.getChildAt(2).x = 200;
                   }
-                  _helpButtons.addChild(_loc5_);
+                  _loc6_ = new button_buildings();
+                  _loc6_.gotoAndStop(_loc3_._type);
+                  _loc6_.x = _loc1_ * 45;
+                  if(!_loc4_)
+                  {
+                     _loc6_.buttonMode = true;
+                     _loc6_.addEventListener(MouseEvent.CLICK,Focus(_loc3_));
+                     _loc6_.mcTick.visible = false;
+                  }
+                  _helpButtons.addChild(_loc6_);
                   _loc1_++;
                }
             }
             if(_loc1_ > 0)
             {
-               mc.mcBG.width = 220 + _loc1_ * 45;
+               mc.mcBG.width = (MapRoomManager.instance.isInMapRoom3 ? 320 : 220) + _loc1_ * 45;
             }
             else
             {
-               mc.mcBG.width = 100;
+               mc.mcBG.width = MapRoomManager.instance.isInMapRoom3 ? 210 : 100;
                mc.gotoAndStop(1);
             }
          }
@@ -221,7 +335,11 @@ package
       
       public function Resize() : void
       {
-         GLOBAL.RefreshScreen();
+         if(!this.m_oldScreen || !GLOBAL._SCREEN.equals(this.m_oldScreen))
+         {
+            GLOBAL.RefreshScreen();
+            this.m_oldScreen = GLOBAL._SCREEN.clone();
+         }
          mc.x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - mc.mcBG.width - 10;
          if(GLOBAL._flags.viximo)
          {
@@ -231,24 +349,30 @@ package
          {
             mc.y = GLOBAL._SCREENHUD.y - (mc.mcBG.height + 10);
          }
+         var _loc1_:int = 4;
+         while(_loc1_ > 0)
+         {
+            if(this["m_resourceBar" + _loc1_])
+            {
+               this["m_resourceBar" + _loc1_].x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - 10 - this["m_resourceBar" + _loc1_].width * 0.5;
+               this["m_resourceBar" + _loc1_].y = GLOBAL._SCREEN.y + _loc1_ * 40;
+            }
+            _loc1_--;
+         }
       }
       
       public function checkMapRoomHealth() : void
       {
-         var _loc2_:Object = null;
-         var _loc3_:BUILDING11 = null;
-         var _loc1_:Object = BASE._buildingsAll;
-         for each(_loc2_ in _loc1_)
+         var _loc1_:BUILDING11 = null;
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BUILDING11);
+         if(_loc2_.length === 0)
          {
-            _loc3_ = _loc2_ as BUILDING11;
-            if(_loc3_)
-            {
-               if(_loc3_._hp.Get() < _loc3_._hpMax.Get() / 2)
-               {
-                  mc.bReturn.SetupKey("btn_returnhome");
-               }
-               return;
-            }
+            return;
+         }
+         _loc1_ = _loc2_[0] as BUILDING11;
+         if(_loc1_.health < _loc1_.maxHealth / 2)
+         {
+            mc.bReturn.SetupKey("btn_returnhome");
          }
       }
    }

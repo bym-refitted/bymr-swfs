@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1362")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1423")]
    public dynamic class GUARDIANSELECTPOPUP_CLIP extends MovieClip
    {
       public var mcMask:MovieClip;

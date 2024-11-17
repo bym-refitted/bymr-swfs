@@ -4,9 +4,13 @@ package com.monsters.maproom_advanced
    import com.monsters.alliances.ALLIANCES;
    import com.monsters.chat.Chat;
    import com.monsters.effects.smoke.Smoke;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.mailbox.FriendPicker;
    import com.monsters.mailbox.MailBox;
    import com.monsters.mailbox.Thread;
-   import com.monsters.mailbox.model.Contact;
+   import com.monsters.maproom_manager.IMapRoom;
+   import com.monsters.maproom_manager.IMapRoomCell;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.BitmapData;
    import flash.display.DisplayObjectContainer;
@@ -14,20 +18,21 @@ package com.monsters.maproom_advanced
    import flash.display.StageDisplayState;
    import flash.events.*;
    import flash.geom.Point;
+   import flash.utils.Dictionary;
    import flash.utils.getTimer;
    import flash.xml.XMLDocument;
    
-   public class MapRoom
+   public class MapRoom implements IMapRoom
    {
-      public static var _homePoint:Point;
+      internal static var _homePoint:Point;
       
-      public static var _mc:MapRoomPopup;
+      internal static var _mc:MapRoomPopup;
       
-      public static var _currentPosition:Point;
+      internal static var _currentPosition:Point;
       
-      public static var _open:Boolean;
+      internal static var _open:Boolean;
       
-      public static var _homeCell:MapRoomCell;
+      internal static var _homeCell:MapRoomCell;
       
       private static var _saveErrors:int;
       
@@ -37,43 +42,39 @@ package com.monsters.maproom_advanced
       
       private static var _requestedZones:Array;
       
-      private static var _mcTransferRes:PopupTransferB_CLIP;
+      private static var _bubbleAcceptInvite:bubble_acceptInvite;
       
-      private static var _mcTransferMon:PopupMonstersB_CLIP;
+      private static var _popupRelocateMe:PopupRelocateMe;
       
-      public static var _bubbleAcceptInvite:bubble_acceptInvite;
+      internal static var _smokeBMD:BitmapData;
       
-      public static var _popupRelocateMe:PopupRelocateMe;
+      internal static var _smokeParticles:Array;
       
-      public static var _smokeBMD:BitmapData;
+      internal static var _frame:int;
       
-      public static var _smokeParticles:Array;
+      private static var _zoneWidth:int = 10;
       
-      public static var _frame:int;
+      private static var _zoneHeight:int = 10;
       
-      public static var _zoneWidth:int = 10;
+      internal static var _mapWidth:int = 100;
       
-      public static var _zoneHeight:int = 10;
+      internal static var _mapHeight:int = 100;
       
-      public static var _mapWidth:int = 100;
+      internal static var _bookmarks:Array = [];
       
-      public static var _mapHeight:int = 100;
+      internal static var _monsterTransferInProgress:Boolean = false;
       
-      public static var _bookmarks:Array = [];
+      internal static var _resourceTransferInProgress:Boolean = false;
       
-      public static var _monsterTransferInProgress:Boolean = false;
+      private static var _resourceTransfer:Object = {};
       
-      public static var _resourceTransferInProgress:Boolean = false;
+      internal static var _monsterTransfer:Object = {};
       
-      public static var _resourceTransfer:Object = {};
-      
-      public static var _monsterTransfer:Object = {};
-      
-      public static var _bookmarkData:Object = {};
+      private static var _bookmarkData:Object = {};
       
       private static var _zones:Object = {};
       
-      public static var _showEnemyWait:Boolean = false;
+      private static var _showEnemyWait:Boolean = false;
       
       private static var _resourceCounter:int = 0;
       
@@ -81,25 +82,23 @@ package com.monsters.maproom_advanced
       
       private static var _allMonstersTransferred:Boolean = false;
       
-      public static var _flingerInRange:Boolean = false;
+      internal static var _flingerInRange:Boolean = false;
       
-      public static var _contacts:Array = [];
+      private static var _worldID:int = 0;
       
-      public static var _worldID:int = 0;
+      internal static var _inviteBaseID:int = 0;
       
-      public static var _inviteBaseID:int = 0;
+      internal static var _inviteLocation:Point = new Point();
       
-      public static var _inviteLocation:Point = new Point();
+      internal static var _viewOnly:Boolean = false;
       
-      public static var _viewOnly:Boolean = false;
+      private static var _migrateThread:Thread = null;
       
-      public static var _migrateThread:Thread = null;
+      private static var _reposition:Boolean = false;
       
-      public static var _reposition:Boolean = false;
+      private static var _empiredestroyed:Boolean = false;
       
-      public static var _empiredestroyed:Boolean = false;
-      
-      public static var _showAttackWait:Boolean = false;
+      private static var _showAttackWait:Boolean = false;
       
       private static var _pendingMapCellDataRequests:Array = [];
       
@@ -108,7 +107,37 @@ package com.monsters.maproom_advanced
          super();
       }
       
-      public static function Setup(param1:Point, param2:int = 0, param3:int = 0, param4:Boolean = false, param5:Thread = null) : void
+      public static function get homeCell() : IMapRoomCell
+      {
+         return _homeCell;
+      }
+      
+      public static function set migrateThread(param1:Thread) : void
+      {
+         _migrateThread = param1;
+      }
+      
+      public static function set inviteBaseID(param1:int) : void
+      {
+         _inviteBaseID = param1;
+      }
+      
+      public static function set showAttackWait(param1:Boolean) : void
+      {
+         _showAttackWait = param1;
+      }
+      
+      public static function set showEnemyWait(param1:Boolean) : void
+      {
+         _showEnemyWait = param1;
+      }
+      
+      public static function set empireDestroyed(param1:Boolean) : void
+      {
+         _empiredestroyed = param1;
+      }
+      
+      public static function _Setup(param1:Point, param2:int = 0, param3:int = 0, param4:Boolean = false, param5:Thread = null) : void
       {
          _homePoint = param1;
          _worldID = param2;
@@ -136,180 +165,19 @@ package com.monsters.maproom_advanced
          _showEnemyWait = false;
          _showAttackWait = false;
          _requestedZones = [];
-         _contacts = [];
+         FriendPicker.ClearContacts();
       }
       
-      public static function Show(param1:MouseEvent = null) : void
+      internal static function HideFromViewOnly() : void
       {
-         var onTargetsSuccess:Function = null;
-         var onTargetsFail:Function = null;
-         var me:Contact = null;
-         var system:Contact = null;
-         var r:URLLoaderApi = null;
-         var e:MouseEvent = param1;
-         onTargetsSuccess = function(param1:Object):void
-         {
-            var _loc3_:String = null;
-            var _loc4_:Contact = null;
-            for(_loc3_ in param1.targets)
-            {
-               _loc4_ = new Contact(_loc3_,param1.targets[_loc3_]);
-               if(Boolean(param1.targets[_loc3_].friend) && param1.targets[_loc3_].mapver == 2)
-               {
-                  _contacts.push(_loc4_);
-               }
-            }
-         };
-         onTargetsFail = function(param1:IOErrorEvent):void
-         {
-         };
-         if(GLOBAL._mode === "build")
-         {
-            GLOBAL.m_mapRoomFunctional = true;
-         }
-         if(WMATTACK._inProgress || Boolean(MONSTERBAITER._attacking))
-         {
-            return;
-         }
-         if(GLOBAL._flags.maproom2 != 1)
-         {
-            GLOBAL.Message(KEYS.Get("map_msg_disabled"));
-            return;
-         }
-         if((BASE._yardType || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
-         {
-            PLEASEWAIT.Show(KEYS.Get("newmap_opening"));
-            if(_open)
-            {
-               Hide();
-            }
-            GLOBAL._showMapWaiting = 1;
-         }
-         else
-         {
-            if(!GLOBAL._bMap)
-            {
-               GLOBAL.Message(KEYS.Get("map_msg_notbuilt"));
-               return;
-            }
-            if(!GLOBAL._bMap._canFunction)
-            {
-               GLOBAL.Message(KEYS.Get("map_msg_damaged"));
-               return;
-            }
-         }
-         if(MapRoom._contacts.length == 0)
-         {
-            _contacts = [];
-            me = new Contact(String(LOGIN._playerID),{
-               "first_name":"Me",
-               "last_name":"",
-               "pic_square":LOGIN._playerPic
-            },true);
-            system = new Contact("0",{
-               "first_name":"D.A.V.E.",
-               "last_name":"",
-               "pic_square":""
-            },true);
-            system.picClass = system_message;
-            r = new URLLoaderApi();
-            r.load(GLOBAL._apiURL + "player/getmessagetargets",null,onTargetsSuccess,onTargetsFail);
-         }
-      }
-      
-      public static function ShowDelayed(param1:Boolean = false) : void
-      {
-         if(GLOBAL._mode === "build")
-         {
-            GLOBAL.m_mapRoomFunctional = true;
-         }
-         if(param1 || _reposition || (BASE._yardType || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL._mode != "build") && (GLOBAL._mode == "help" || !_open))
-         {
-            SOUNDS.Play("click1");
-            _open = true;
-            _reposition = false;
-            if(_mc != null)
-            {
-               _mc.Cleanup();
-               _mc = null;
-            }
-            _mc = new MapRoomPopup();
-            _mc.Setup();
-            BASE.Cleanup();
-            GLOBAL._layerUI.addChild(_mc);
-            UI2.SetupHUD();
-            if(GLOBAL._currentCell)
-            {
-               GetCell(GLOBAL._currentCell.X,GLOBAL._currentCell.Y,true);
-               _mc.JumpTo(new Point(GLOBAL._currentCell.X,GLOBAL._currentCell.Y));
-               if(_showEnemyWait)
-               {
-                  _mc.ShowInfoEnemy(GLOBAL._currentCell,true);
-                  _showEnemyWait = false;
-               }
-               else if(_showAttackWait)
-               {
-                  _mc.ShowAttack(GLOBAL._currentCell);
-                  _showAttackWait = false;
-               }
-            }
-            if(_empiredestroyed)
-            {
-               GLOBAL.Message(KEYS.Get("empiredestroyed_newbase"));
-               _empiredestroyed = false;
-            }
-            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
-            {
-               if(Chat._bymChat)
-               {
-                  Chat._bymChat.show();
-               }
-               if(UI_BOTTOM._missions)
-               {
-                  UI_BOTTOM._missions.visible = true;
-               }
-            }
-            else
-            {
-               if(Chat._bymChat)
-               {
-                  Chat._bymChat.hide();
-               }
-               if(UI_BOTTOM._missions)
-               {
-                  UI_BOTTOM._missions.visible = false;
-               }
-            }
-         }
-         Tutorial.ShowIfNeeded();
-      }
-      
-      public static function Hide(param1:MouseEvent = null) : void
-      {
-         if(_open && GLOBAL._mode != "attack" && GLOBAL._mode != "wmattack")
-         {
-            SOUNDS.Play("close");
-            if(_mc.parent)
-            {
-               _mc.parent.removeChild(_mc);
-            }
-            ClearCells();
-            _mc.Cleanup();
-            _mc = null;
-         }
-         _open = false;
-      }
-      
-      public static function HideFromViewOnly() : void
-      {
-         if(_open && GLOBAL._mode != "attack" && GLOBAL._mode != "wmattack")
+         if(_open && GLOBAL.mode != GLOBAL.e_BASE_MODE.ATTACK && GLOBAL.mode != GLOBAL.e_BASE_MODE.WMATTACK)
          {
             SOUNDS.Play("close");
             _worldID = 0;
             _inviteBaseID = 0;
             _viewOnly = false;
             GLOBAL._currentCell = null;
-            Setup(GLOBAL._mapHome);
+            _Setup(GLOBAL._mapHome);
             if(_mc.parent)
             {
                _mc.parent.removeChild(_mc);
@@ -321,12 +189,12 @@ package com.monsters.maproom_advanced
          _open = false;
       }
       
-      public static function ClearCells() : void
+      internal static function ClearCells() : void
       {
          _zones = {};
       }
       
-      public static function JumpTo(param1:Point) : void
+      internal static function JumpTo(param1:Point) : void
       {
          if(_mc.parent)
          {
@@ -355,7 +223,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function AcceptInvitation(param1:Boolean = false) : void
+      internal static function AcceptInvitation(param1:Boolean = false) : void
       {
          var handleAcceptSuccessful:Function;
          var handleAcceptError:Function;
@@ -393,19 +261,19 @@ package com.monsters.maproom_advanced
                      if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
                      {
                         GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                        MapRoom.Setup(GLOBAL._mapHome);
+                        _Setup(GLOBAL._mapHome);
                      }
-                     MapRoom.BookmarksClear();
+                     MapRoomManager.instance.BookmarksClear();
                      BASE._loadedFriendlyBaseID = 0;
                      GLOBAL._homeBaseID = 0;
                      GLOBAL._currentCell = null;
                      GLOBAL._mapOutpost = [];
                      if(_open)
                      {
-                        Hide();
+                        MapRoomManager.instance.Hide();
                      }
                      ClearCells();
-                     Setup(GLOBAL._mapHome);
+                     _Setup(GLOBAL._mapHome);
                      _reposition = true;
                      GLOBAL._showMapWaiting = 1;
                   }
@@ -466,9 +334,9 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function ReturnFromFailedInvite() : void
+      internal static function ReturnFromFailedInvite() : void
       {
-         Hide();
+         MapRoomManager.instance.Hide();
          BASE.Load();
       }
       
@@ -489,10 +357,10 @@ package com.monsters.maproom_advanced
                   GLOBAL._currentCell = null;
                   if(_open)
                   {
-                     Hide();
+                     MapRoomManager.instance.Hide();
                      ClearCells();
-                     Setup(GLOBAL._mapHome);
-                     BASE.LoadBase(null,0,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
+                     _Setup(GLOBAL._mapHome);
+                     BASE.LoadBase(null,0,GLOBAL._homeBaseID,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.MAIN_YARD);
                   }
                   else
                   {
@@ -526,7 +394,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function BookmarkDataGet(param1:String) : int
+      internal static function BookmarkDataGet(param1:String) : int
       {
          var _loc2_:int = 0;
          if(_bookmarkData[param1])
@@ -536,7 +404,7 @@ package com.monsters.maproom_advanced
          return _loc2_;
       }
       
-      public static function BookmarkDataSet(param1:String, param2:int, param3:Boolean = true) : void
+      internal static function BookmarkDataSet(param1:String, param2:int, param3:Boolean = true) : void
       {
          var _loc4_:Boolean = false;
          if(!_bookmarkData)
@@ -572,7 +440,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function BookmarkDataGetStr(param1:String) : String
+      internal static function BookmarkDataGetStr(param1:String) : String
       {
          var _loc2_:String = "";
          if(_bookmarkData[param1])
@@ -582,7 +450,7 @@ package com.monsters.maproom_advanced
          return _loc2_;
       }
       
-      public static function BookmarkDataSetStr(param1:String, param2:String, param3:Boolean = true) : void
+      internal static function BookmarkDataSetStr(param1:String, param2:String, param3:Boolean = true) : void
       {
          var _loc4_:Boolean = false;
          if(!_bookmarkData)
@@ -618,7 +486,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function BookmarksSave() : void
+      internal static function BookmarksSave() : void
       {
          var handleBMSaveSuccessful:Function = null;
          var handleBMSaveError:Function = null;
@@ -638,14 +506,7 @@ package com.monsters.maproom_advanced
          new URLLoaderApi().load(url,loadvars,handleBMSaveSuccessful,handleBMSaveError);
       }
       
-      public static function BookmarksClear() : void
-      {
-         MapRoom._bookmarkData = {};
-         MapRoom._bookmarks = [];
-         MapRoom.BookmarksSave();
-      }
-      
-      public static function AddBookmark(param1:String, param2:Boolean = true) : Object
+      internal static function AddBookmark(param1:String, param2:Boolean = true) : Object
       {
          param1 = param1.replace(/\<.*?>/g,"");
          var _loc4_:XMLDocument = new XMLDocument(param1);
@@ -714,7 +575,7 @@ package com.monsters.maproom_advanced
          };
       }
       
-      public static function RequestData(param1:Point, param2:Boolean = false) : void
+      private static function RequestData(param1:Point, param2:Boolean = false) : void
       {
          var z:objZone = null;
          var loadvars:Array = null;
@@ -799,9 +660,9 @@ package com.monsters.maproom_advanced
                      {
                         _loc7_ = _zones[_loc4_].data[BASE._currentCellLoc.x][BASE._currentCellLoc.y];
                         GLOBAL._currentCell = new MapRoomCell();
-                        GLOBAL._currentCell.Setup(_loc7_);
-                        GLOBAL._currentCell.X = BASE._currentCellLoc.x;
-                        GLOBAL._currentCell.Y = BASE._currentCellLoc.y;
+                        (GLOBAL._currentCell as MapRoomCell).Setup(_loc7_);
+                        (GLOBAL._currentCell as MapRoomCell).cellX = BASE._currentCellLoc.x;
+                        (GLOBAL._currentCell as MapRoomCell).cellY = BASE._currentCellLoc.y;
                         _zones = {};
                      }
                   }
@@ -843,7 +704,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function GetCell(param1:int, param2:int, param3:Boolean = false) : Object
+      internal static function GetCell(param1:int, param2:int, param3:Boolean = false) : Object
       {
          var _loc4_:Point = new Point(int(param1 / _zoneWidth) * _zoneWidth,int(param2 / _zoneHeight) * _zoneHeight);
          var _loc5_:int = _loc4_.x * 10000 + _loc4_.y;
@@ -855,28 +716,7 @@ package com.monsters.maproom_advanced
          return null;
       }
       
-      public static function Tick() : void
-      {
-         if(_open && _mc && Boolean(_mc.parent))
-         {
-            _mc.Tick();
-         }
-         if(_open && (!_mc || _mc && !_mc.parent) && BASE._saveCounterA == BASE._saveCounterB)
-         {
-            PLEASEWAIT.Hide();
-            if(_mc)
-            {
-               _mc.Cleanup();
-               _mc = null;
-            }
-            _mc = new MapRoomPopup();
-            _mc.Setup();
-            BASE.Cleanup();
-            GLOBAL._layerWindows.addChild(_mc);
-         }
-      }
-      
-      public static function Update() : void
+      internal static function Update() : void
       {
          if(_open && _mc && Boolean(_mc.parent))
          {
@@ -884,11 +724,11 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function Cleanup() : void
+      internal static function Cleanup() : void
       {
       }
       
-      public static function TransferMonstersA(param1:MapRoomCell, param2:Object) : void
+      internal static function TransferMonstersA(param1:MapRoomCell, param2:Object) : void
       {
          var _loc4_:String = null;
          _monsterTransfer = {};
@@ -918,7 +758,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function TransferMonstersB(param1:MapRoomCell) : void
+      internal static function TransferMonstersB(param1:MapRoomCell) : void
       {
          if(_monsterTransferInProgress)
          {
@@ -938,7 +778,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public static function TransferMonstersC(param1:MapRoomCell) : String
+      internal static function TransferMonstersC(param1:MapRoomCell) : String
       {
          var transferSuccessful:Function;
          var transferError:Function;
@@ -1123,7 +963,7 @@ package com.monsters.maproom_advanced
          return KEYS.Get("newmap_tr_err3");
       }
       
-      public static function TransferCancel(param1:MouseEvent = null) : void
+      internal static function TransferCancel(param1:MouseEvent = null) : void
       {
          if(_bubbleSelectTarget.parent)
          {
@@ -1135,27 +975,14 @@ package com.monsters.maproom_advanced
          _monsterTransferInProgress = false;
       }
       
-      public static function Resize() : void
+      internal static function Resize() : void
       {
          _mc.x = 0;
          _mc.y = 0;
-         ResizeHandler();
+         MapRoomManager.instance.ResizeHandler();
       }
       
-      public static function ResizeHandler() : void
-      {
-         if(!_viewOnly)
-         {
-            Hide();
-         }
-         else
-         {
-            HideFromViewOnly();
-         }
-         ShowDelayed(true);
-      }
-      
-      public static function SmokeAdd() : void
+      internal static function SmokeAdd() : void
       {
          if(_smokeBMD)
          {
@@ -1166,12 +993,12 @@ package com.monsters.maproom_advanced
          _smokeParticles = [];
       }
       
-      public static function SmokeRemove() : void
+      internal static function SmokeRemove() : void
       {
          _smokeBMD = null;
       }
       
-      public static function SmokeTick(param1:Event = null) : void
+      internal static function SmokeTick(param1:Event = null) : void
       {
          var _loc2_:int = 0;
          var _loc3_:Object = null;
@@ -1225,6 +1052,219 @@ package com.monsters.maproom_advanced
                _loc2_++;
             }
          }
+      }
+      
+      public static function ShowInfoEnemy(param1:IMapRoomCell, param2:Boolean = false) : void
+      {
+         _mc.ShowInfoEnemy(param1 as MapRoomCell,param2);
+      }
+      
+      public static function HideInfoMine() : void
+      {
+         _mc.HideInfoMine();
+      }
+      
+      public function set bookmarkData(param1:Object) : void
+      {
+         _bookmarkData = param1;
+      }
+      
+      public function set mapWidth(param1:int) : void
+      {
+         _mapWidth = param1;
+      }
+      
+      public function set mapHeight(param1:int) : void
+      {
+         _mapHeight = param1;
+      }
+      
+      public function get worldID() : int
+      {
+         return _worldID;
+      }
+      
+      public function set worldID(param1:int) : void
+      {
+         _worldID = param1;
+      }
+      
+      public function get isOpen() : Boolean
+      {
+         return _open;
+      }
+      
+      public function get flingerInRange() : Boolean
+      {
+         return _flingerInRange;
+      }
+      
+      public function get viewOnly() : Boolean
+      {
+         return _viewOnly;
+      }
+      
+      public function get playerOwnedCells() : Vector.<IMapRoomCell>
+      {
+         return null;
+      }
+      
+      public function get allianceDataById() : Dictionary
+      {
+         return null;
+      }
+      
+      public function Setup() : void
+      {
+         _Setup(GLOBAL._mapHome,this.worldID,_inviteBaseID,this.viewOnly);
+      }
+      
+      public function ReadyToShow() : Boolean
+      {
+         return true;
+      }
+      
+      public function ShowDelayed(param1:Boolean = false) : void
+      {
+         if(GLOBAL.mode === GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL.m_mapRoomFunctional = true;
+         }
+         if(param1 || _reposition || (!BASE.isMainYard || GLOBAL._bMap && GLOBAL._bMap._canFunction || GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD) && (GLOBAL.mode == GLOBAL.e_BASE_MODE.HELP || !_open))
+         {
+            SOUNDS.Play("click1");
+            _open = true;
+            _reposition = false;
+            if(_mc != null)
+            {
+               _mc.Cleanup();
+               _mc = null;
+            }
+            _mc = new MapRoomPopup();
+            _mc.Setup();
+            BASE.Cleanup();
+            GLOBAL._layerUI.addChild(_mc);
+            UI2.SetupHUD();
+            if(GLOBAL._currentCell)
+            {
+               GetCell(GLOBAL._currentCell.cellX,GLOBAL._currentCell.cellY,true);
+               _mc.JumpTo(new Point(GLOBAL._currentCell.cellX,GLOBAL._currentCell.cellY));
+               if(_showEnemyWait)
+               {
+                  _mc.ShowInfoEnemy(GLOBAL._currentCell as MapRoomCell,true);
+                  _showEnemyWait = false;
+               }
+               else if(_showAttackWait)
+               {
+                  _mc.ShowAttack(GLOBAL._currentCell as MapRoomCell);
+                  _showAttackWait = false;
+               }
+            }
+            if(_empiredestroyed)
+            {
+               GLOBAL.Message(KEYS.Get("empiredestroyed_newbase"));
+               _empiredestroyed = false;
+            }
+            if(GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
+            {
+               if(Chat._bymChat)
+               {
+                  Chat._bymChat.show();
+               }
+               if(UI_BOTTOM._missions)
+               {
+                  UI_BOTTOM._missions.visible = true;
+               }
+            }
+            else
+            {
+               if(Chat._bymChat)
+               {
+                  Chat._bymChat.hide();
+               }
+               if(UI_BOTTOM._missions)
+               {
+                  UI_BOTTOM._missions.visible = false;
+               }
+            }
+         }
+         Tutorial.ShowIfNeeded();
+      }
+      
+      public function Hide() : void
+      {
+         if(_open && GLOBAL.mode != GLOBAL.e_BASE_MODE.ATTACK && GLOBAL.mode != GLOBAL.e_BASE_MODE.WMATTACK)
+         {
+            SOUNDS.Play("close");
+            if(_mc.parent)
+            {
+               _mc.parent.removeChild(_mc);
+            }
+            ClearCells();
+            _mc.Cleanup();
+            _mc = null;
+         }
+         _open = false;
+      }
+      
+      public function BookmarksClear() : void
+      {
+         MapRoom._bookmarkData = {};
+         MapRoom._bookmarks = [];
+         MapRoom.BookmarksSave();
+      }
+      
+      public function FindCell(param1:int, param2:int) : IMapRoomCell
+      {
+         return GetCell(param1,param2) as IMapRoomCell;
+      }
+      
+      public function LoadCell(param1:int, param2:int, param3:Boolean = false) : void
+      {
+         GetCell(param1,param2,param3);
+      }
+      
+      public function CalculateCellId(param1:int, param2:int) : int
+      {
+         return param2 * _mapWidth + param1 + 1;
+      }
+      
+      public function Tick() : void
+      {
+         if(_open && _mc && Boolean(_mc.parent))
+         {
+            _mc.Tick();
+         }
+         if(_open && (!_mc || _mc && !_mc.parent) && BASE._saveCounterA == BASE._saveCounterB)
+         {
+            PLEASEWAIT.Hide();
+            if(_mc)
+            {
+               _mc.Cleanup();
+               _mc = null;
+            }
+            _mc = new MapRoomPopup();
+            _mc.Setup();
+            BASE.Cleanup();
+            GLOBAL._layerWindows.addChild(_mc);
+         }
+      }
+      
+      public function TickFast() : void
+      {
+      }
+      
+      public function ResizeHandler() : void
+      {
+         if(!_viewOnly)
+         {
+            MapRoomManager.instance.Hide();
+         }
+         else
+         {
+            HideFromViewOnly();
+         }
+         MapRoomManager.instance.ShowDelayed(true);
       }
    }
 }

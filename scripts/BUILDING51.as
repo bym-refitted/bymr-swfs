@@ -18,7 +18,7 @@ package
       
       override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
+         if(_countdownBuild.Get() > 0 || health < maxHealth * 0.5)
          {
             _canFunction = false;
          }
@@ -41,12 +41,20 @@ package
       override public function Cancel() : void
       {
          GLOBAL._bCatapult = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerCatapultLevel.Set(0);
+         }
          super.Cancel();
       }
       
       override public function RecycleC() : void
       {
          GLOBAL._bCatapult = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerCatapultLevel.Set(0);
+         }
          super.RecycleC();
       }
       
@@ -67,7 +75,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bCatapult = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -82,6 +90,10 @@ package
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
             POPUPS.Push(mc,null,null,null,"build.v2.png");
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+            {
+               GLOBAL._playerCatapultLevel.Set(_lvl.Get());
+            }
          }
       }
       
@@ -90,7 +102,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -104,6 +116,7 @@ package
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
             POPUPS.Push(mc,null,null,null,"build.v2.png");
+            GLOBAL._playerCatapultLevel.Set(_lvl.Get());
          }
       }
       
@@ -120,9 +133,9 @@ package
          if(_countdownBuild.Get() <= 0)
          {
             this.LoadEffects();
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
-               GLOBAL._playerCatapultLevel = _lvl;
+               GLOBAL._playerCatapultLevel.Set(_lvl.Get());
             }
             GLOBAL._bCatapult = this;
          }

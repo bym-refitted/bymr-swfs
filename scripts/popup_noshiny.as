@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol199")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol224")]
    public dynamic class popup_noshiny extends MovieClip
    {
       public var bGet:Button_CLIP;

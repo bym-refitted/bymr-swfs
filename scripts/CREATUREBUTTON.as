@@ -3,6 +3,7 @@ package
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObjectContainer;
    import flash.events.Event;
    import flash.events.MouseEvent;
    
@@ -16,34 +17,52 @@ package
       
       public var _description:bubblepopup3;
       
-      public function CREATUREBUTTON(param1:String)
+      protected var m_index:int;
+      
+      public function CREATUREBUTTON(param1:String, param2:int, param3:DisplayObjectContainer)
       {
+         var _loc4_:String = null;
          super();
          this._creatureID = param1;
          this._creatureData = CREATURELOCKER._creatures[this._creatureID];
          ImageCache.GetImageWithCallBack("monsters/" + this._creatureID + "-small.png",this.IconLoaded,true,1);
-         txtName.htmlText = "<b>" + KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name) + "</b>";
-         this._description = new bubblepopup3();
-         this._description.Setup(118,26,KEYS.Get(CREATURELOCKER._creatures[this._creatureID].description),5);
-         addChild(this._description);
-         this._description.visible = false;
-         bMore.Setup("+");
-         bMore.addEventListener(MouseEvent.MOUSE_DOWN,this.More);
-         bMore.addEventListener(MouseEvent.MOUSE_UP,this.Clear);
-         bMore.addEventListener(MouseEvent.ROLL_OVER,this.Over);
-         bLess.Setup("-");
-         bLess.addEventListener(MouseEvent.MOUSE_DOWN,this.Less);
-         bLess.addEventListener(MouseEvent.MOUSE_UP,this.Clear);
-         bLess.addEventListener(MouseEvent.ROLL_OVER,this.Over);
-         addEventListener(MouseEvent.ROLL_OVER,this.Over);
-         addEventListener(MouseEvent.ROLL_OUT,this.Out);
-         if(Boolean(GLOBAL._attackerCreatureUpgrades[param1]) && Boolean(GLOBAL._attackerCreatureUpgrades[param1].level))
+         _loc4_ = KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name);
+         var _loc5_:uint = Math.max(0.8,Math.min(1,1 / (_loc4_.length / 10))) * 12;
+         if(Boolean(GLOBAL.attackingPlayer.m_upgrades[param1]) && Boolean(GLOBAL.attackingPlayer.m_upgrades[param1].level))
          {
-            mcMonsterLevel.tLevel.htmlText = "<b>" + GLOBAL._attackerCreatureUpgrades[param1].level + "</b>";
+            txtName.htmlText = "<b><font size=\"" + _loc5_ + "\">" + _loc4_ + " Level " + GLOBAL.attackingPlayer.m_upgrades[param1].level + "</font></b>";
          }
          else
          {
-            mcMonsterLevel.tLevel.htmlText = "<b>1</b>";
+            txtName.htmlText = "<b><font size=\"" + _loc5_ + "\">" + _loc4_ + " Level 1</font></b>";
+         }
+         this._description = new bubblepopup3();
+         this._description.Setup(190,26,KEYS.Get(CREATURELOCKER._creatures[this._creatureID].description),5);
+         param3.addChild(this._description);
+         this._description.visible = false;
+         this.m_index = param2;
+         _bg.gotoAndStop("bg" + String(this.m_index % 2 + 1));
+         addEventListener(MouseEvent.ROLL_OVER,this.Over);
+         addEventListener(MouseEvent.ROLL_OUT,this.Out);
+         if(!GLOBAL.isInAttackMode)
+         {
+            bMore.visible = false;
+            bMore.Enabled = false;
+            bLess.visible = false;
+            bLess.Enabled = false;
+            txtNumber.x = 40;
+         }
+         else
+         {
+            bMore.Setup("+");
+            bMore.addEventListener(MouseEvent.MOUSE_DOWN,this.More);
+            bMore.addEventListener(MouseEvent.MOUSE_UP,this.Clear);
+            bMore.addEventListener(MouseEvent.ROLL_OVER,this.Over);
+            bLess.Setup("-");
+            bLess.addEventListener(MouseEvent.MOUSE_DOWN,this.Less);
+            bLess.addEventListener(MouseEvent.MOUSE_UP,this.Clear);
+            bLess.addEventListener(MouseEvent.ROLL_OVER,this.Over);
+            txtNumber.x = 110;
          }
          this._tick = 0;
          this.Update();
@@ -51,40 +70,35 @@ package
       
       public function IconLoaded(param1:String, param2:BitmapData) : void
       {
-         mcImage.addChild(new Bitmap(param2));
+         var _loc3_:Bitmap = new Bitmap(param2);
+         _creatureImage.addChild(_loc3_);
       }
       
       public function Update() : void
       {
          var _loc1_:int = 0;
-         if(GLOBAL._advancedMap)
-         {
-            _loc1_ = int(GLOBAL._attackerMapCreatures[this._creatureID].Get());
-         }
-         else
-         {
-            _loc1_ = int(GLOBAL._attackerCreatures[this._creatureID].Get());
-         }
+         _loc1_ = int(ATTACK._curCreaturesAvailable[this._creatureID]);
          var _loc2_:* = "<b>";
          if(ATTACK._flingerBucket[this._creatureID])
          {
             _loc2_ = "<font color=\"#FF0000\">" + ATTACK._flingerBucket[this._creatureID].Get() + "</font> / ";
          }
          _loc2_ += _loc1_ + "</b>";
-         tNumber.htmlText = _loc2_;
+         txtNumber.htmlText = _loc2_;
          if(_loc1_ > 0)
          {
             bMore.enabled = true;
+            _bg.gotoAndStop("bg" + String(this.m_index % 2 + 1));
          }
          if(_loc1_ <= 0)
          {
             bMore.enabled = false;
+            _bg.gotoAndStop("full" + String(this.m_index % 2 + 1));
          }
       }
       
       public function Over(param1:MouseEvent) : void
       {
-         dispatchEvent(new Event(UI_TOP.CREATUREBUTTONOVER));
          this._description.visible = true;
       }
       
@@ -95,8 +109,14 @@ package
       
       public function Clear(param1:MouseEvent = null) : void
       {
-         removeEventListener(Event.ENTER_FRAME,this.MoreTick);
-         removeEventListener(Event.ENTER_FRAME,this.LessTick);
+         if(hasEventListener(Event.ENTER_FRAME))
+         {
+            removeEventListener(Event.ENTER_FRAME,this.MoreTick);
+         }
+         if(hasEventListener(Event.ENTER_FRAME))
+         {
+            removeEventListener(Event.ENTER_FRAME,this.LessTick);
+         }
       }
       
       public function More(param1:MouseEvent) : void
@@ -113,7 +133,7 @@ package
          {
             this.MoreTickB();
          }
-         this.MovedOut();
+         this.MoreMovedOut();
          ++this._tick;
       }
       
@@ -138,7 +158,7 @@ package
          {
             this.LessTickB();
          }
-         this.MovedOut();
+         this.LessMovedOut();
          ++this._tick;
       }
       
@@ -149,9 +169,17 @@ package
          ATTACK.BucketUpdate();
       }
       
-      public function MovedOut() : void
+      public function MoreMovedOut() : void
       {
-         if(mouseY < 31 || mouseY > 51)
+         if(mouseX < bMore.x || mouseX > bMore.x + bMore.width || mouseY < bMore.y || mouseY > bMore.y + bMore.height)
+         {
+            this.Clear();
+         }
+      }
+      
+      public function LessMovedOut() : void
+      {
+         if(mouseX < bLess.x || mouseX > bLess.x + bLess.width || mouseY < bLess.y || mouseY > bLess.y + bLess.height)
          {
             this.Clear();
          }

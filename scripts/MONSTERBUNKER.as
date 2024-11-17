@@ -1,6 +1,8 @@
 package
 {
    import com.monsters.ai.TRIBES;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -8,6 +10,8 @@ package
    public class MONSTERBUNKER
    {
       public static var _mc:MONSTERBUNKERPOPUP;
+      
+      public static var s_PersistantBunker:PersistentMonsterBunker;
       
       public static var _open:Boolean;
       
@@ -43,9 +47,18 @@ package
          Hide(param1);
          _open = true;
          GLOBAL.BlockerAdd();
-         _mc = GLOBAL._layerWindows.addChild(new MONSTERBUNKERPOPUP()) as MONSTERBUNKERPOPUP;
-         _mc.Center();
-         _mc.ScaleUp();
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            s_PersistantBunker = GLOBAL._layerWindows.addChild(new PersistentMonsterBunker()) as PersistentMonsterBunker;
+            s_PersistantBunker.Center();
+            s_PersistantBunker.ScaleUp();
+         }
+         else
+         {
+            _mc = GLOBAL._layerWindows.addChild(new MONSTERBUNKERPOPUP()) as MONSTERBUNKERPOPUP;
+            _mc.Center();
+            _mc.ScaleUp();
+         }
       }
       
       public static function Hide(param1:MouseEvent = null) : void
@@ -54,9 +67,17 @@ package
          {
             GLOBAL.BlockerRemove();
             SOUNDS.Play("close");
-            GLOBAL._layerWindows.removeChild(_mc);
+            if(_mc)
+            {
+               GLOBAL._layerWindows.removeChild(_mc);
+            }
+            if(s_PersistantBunker)
+            {
+               GLOBAL._layerWindows.removeChild(s_PersistantBunker);
+            }
             _open = false;
             _mc = null;
+            s_PersistantBunker = null;
          }
       }
       
@@ -64,16 +85,17 @@ package
       {
          var _loc6_:* = undefined;
          var _loc7_:Array = null;
-         var _loc8_:BFOUNDATION = null;
-         var _loc9_:Number = NaN;
+         var _loc8_:Vector.<Object> = null;
+         var _loc9_:BFOUNDATION = null;
          var _loc10_:Number = NaN;
-         var _loc11_:int = 0;
+         var _loc11_:Number = NaN;
+         var _loc12_:int = 0;
          if(param1 == "C100")
          {
             param1 = "C12";
          }
          var _loc4_:int = CREATURES.GetProperty(param1,"cStorage");
-         var _loc5_:Boolean = (GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview") && TRIBES.TribeForID(BASE._wmID).behaviour == "juice";
+         var _loc5_:Boolean = (GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMVIEW) && TRIBES.TribeForID(BASE._wmID).behaviour == "juice";
          if(_bunkerSpace < _loc4_ && !_loc5_)
          {
             return false;
@@ -101,16 +123,17 @@ package
                else
                {
                   _loc7_ = [];
-                  for each(_loc8_ in BASE._buildingsHousing)
+                  _loc8_ = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+                  for each(_loc9_ in _loc8_)
                   {
-                     if(_loc8_._countdownBuild.Get() <= 0 && _loc8_._hp.Get() > 0)
+                     if(_loc9_._countdownBuild.Get() <= 0 && _loc9_.health > 0)
                      {
-                        _loc9_ = _loc8_._mc.x - param2.x;
-                        _loc10_ = _loc8_._mc.y - param2.y;
-                        _loc11_ = int(Math.sqrt(_loc9_ * _loc9_ + _loc10_ * _loc10_));
+                        _loc10_ = _loc9_._mc.x - param2.x;
+                        _loc11_ = _loc9_._mc.y - param2.y;
+                        _loc12_ = int(Math.sqrt(_loc10_ * _loc10_ + _loc11_ * _loc11_));
                         _loc7_.push({
-                           "mc":_loc8_,
-                           "dist":_loc11_
+                           "mc":_loc9_,
+                           "dist":_loc12_
                         });
                      }
                   }
@@ -119,8 +142,8 @@ package
                      return false;
                   }
                   _loc7_.sortOn(["dist"],Array.NUMERIC);
-                  _loc8_ = _loc7_[0].mc;
-                  CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunkering",new Point(param2._mc.x,param2._mc.y),0,GRID.FromISO(_loc8_._mc.x,_loc8_._mc.y),_loc8_);
+                  _loc9_ = _loc7_[0].mc;
+                  CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"bunkering",new Point(param2._mc.x,param2._mc.y),0,GRID.FromISO(_loc9_._mc.x,_loc9_._mc.y),_loc9_);
                }
             }
          }
@@ -136,38 +159,39 @@ package
       
       public static function Populate() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:String = null;
-         var _loc4_:int = 0;
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:String = null;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:BFOUNDATION = null;
-         var _loc8_:Point = null;
+         var _loc7_:int = 0;
+         var _loc8_:BFOUNDATION = null;
+         var _loc9_:Point = null;
          var _loc1_:Array = [];
-         for each(_loc2_ in BASE._buildingsHousing)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._hp.Get() > 0)
+            if(_loc3_.health > 0)
             {
-               _loc1_.push(_loc2_);
+               _loc1_.push(_loc3_);
             }
          }
          if(_loc1_.length > 0)
          {
-            for(_loc3_ in _creatures)
+            for(_loc4_ in _creatures)
             {
-               _loc4_ = int(_creatures[_loc3_]);
-               if(_loc4_ > 50)
+               _loc5_ = int(_creatures[_loc4_]);
+               if(_loc5_ > 50)
                {
-                  _loc4_ = 50;
+                  _loc5_ = 50;
                }
-               _loc5_ = 0;
-               while(_loc5_ < _loc4_)
+               _loc6_ = 0;
+               while(_loc6_ < _loc5_)
                {
-                  _loc6_ = Math.random() * _loc1_.length;
-                  _loc7_ = _loc1_[_loc6_];
-                  _loc8_ = GRID.FromISO(_loc7_.x,_loc7_.y);
-                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,"pen",PointInBunker(_loc8_),Math.random() * 360,_loc8_,_loc7_);
-                  _loc5_++;
+                  _loc7_ = Math.random() * _loc1_.length;
+                  _loc8_ = _loc1_[_loc7_];
+                  _loc9_ = GRID.FromISO(_loc8_.x,_loc8_.y);
+                  CREATURES.Spawn(_loc4_,MAP._BUILDINGTOPS,"pen",PointInBunker(_loc9_),Math.random() * 360,_loc9_,_loc8_);
+                  _loc6_++;
                }
             }
          }

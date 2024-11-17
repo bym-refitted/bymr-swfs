@@ -44,7 +44,7 @@ package com.monsters.replayableEvents.monsterMadness
          bActionTxt.mouseEnabled = false;
          bAction.addEventListener(MouseEvent.CLICK,ShowEventPopup);
          var _loc1_:int = 1;
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             _loc1_ = 2;
          }

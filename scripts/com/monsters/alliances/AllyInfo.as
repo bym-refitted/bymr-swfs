@@ -8,7 +8,11 @@ package com.monsters.alliances
    
    public class AllyInfo
    {
-      public static var _relationProps:Object = {
+      private static var _forceRelations:Boolean = true;
+      
+      private static var _useIconRelations:Boolean = false;
+      
+      private static var _relationProps:Object = {
          "hostile":-1,
          "hostileleader":-2,
          "neutral":0,
@@ -18,11 +22,7 @@ package com.monsters.alliances
          "leader":5
       };
       
-      public static var _forceRelations:Boolean = true;
-      
-      public static var _useIconRelations:Boolean = false;
-      
-      public static var _picPropsL:Object = {
+      private static var _picPropsL:Object = {
          "picX":0,
          "picY":0,
          "picW":75,
@@ -33,7 +33,7 @@ package com.monsters.alliances
          "relY":0
       };
       
-      public static var _picPropsM:Object = {
+      private static var _picPropsM:Object = {
          "picX":2,
          "picY":2,
          "picW":46,
@@ -44,7 +44,7 @@ package com.monsters.alliances
          "relY":0
       };
       
-      public static var _picPropsS:Object = {
+      private static var _picPropsS:Object = {
          "picX":0,
          "picY":0,
          "picW":25,
@@ -55,7 +55,7 @@ package com.monsters.alliances
          "relY":0
       };
       
-      public static var _picPropsXS:Object = {
+      private static var _picPropsXS:Object = {
          "picX":0,
          "picY":0,
          "picW":12,
@@ -85,43 +85,15 @@ package com.monsters.alliances
          "ext":".png"
       };
       
-      public var alliance_id:int;
+      private var alliance_id:int;
       
       public var name:String;
       
-      public var desc:String;
-      
-      public var created_at:Number;
-      
-      public var rank:Number;
-      
-      public var points:Number;
-      
-      public var avg_level:Number;
-      
       public var image:int;
-      
-      public var membercount:int;
-      
-      public var creator_userid:int;
-      
-      public var leader_userid:int;
-      
-      public var sectorid:int;
-      
-      public var worldid:int;
-      
-      public var leader_name:String;
-      
-      public var leader_baseid:int;
       
       public var relationship:int = 0;
       
-      public var relationships:Object;
-      
-      public var hostiles:Array;
-      
-      public var friendlies:Array;
+      private var relationships:Object;
       
       private var _relCheckSelf:Boolean = true;
       
@@ -131,19 +103,8 @@ package com.monsters.alliances
       {
          super();
          this.alliance_id = param1.alliance_id;
-         this.created_at = param1.created_at;
          this.name = param1.name;
-         this.desc = param1.description;
-         this.rank = param1.rank;
-         this.avg_level = param1.avg_level;
          this.image = param1.image;
-         this.membercount = param1.number_of_members;
-         this.creator_userid = param1.creator_user_id;
-         this.leader_userid = param1.leader_user_id;
-         this.sectorid = param1.sector;
-         this.worldid = param1.world;
-         this.leader_name = param1.leader_name;
-         this.leader_baseid = param1.leader_base_id;
          this.relationships = param1.relationships;
          if(_forceRelations)
          {
@@ -311,7 +272,7 @@ package com.monsters.alliances
          }
       }
       
-      public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
+      private function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
          var _loc4_:Bitmap = new Bitmap(param2);
          if(param3[0])
@@ -323,9 +284,10 @@ package com.monsters.alliances
          }
       }
       
-      public function IconRelationLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
+      private function IconRelationLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
       {
-         var _loc4_:Bitmap = new Bitmap(param2);
+         var _loc4_:Bitmap = null;
+         _loc4_ = new Bitmap(param2);
          if(param3[0])
          {
             param3[0].addChild(_loc4_);

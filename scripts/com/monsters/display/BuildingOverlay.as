@@ -8,10 +8,14 @@ package com.monsters.display
    import flash.filters.GlowFilter;
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   import flash.text.TextField;
+   import flash.text.TextFormat;
    import flash.utils.getTimer;
    
    public class BuildingOverlay
    {
+      private static var debugHealth:TextField;
+      
       private static var u_bmd:BitmapData;
       
       private static var r_bmd:BitmapData;
@@ -23,6 +27,8 @@ package com.monsters.display
       private static var labelWidth:int;
       
       private static var _textDO:DisplayObject;
+      
+      private static const k_SHOW_DEBUG_HEALTH:Boolean = false;
       
       private static var _buildings:Object = {};
       
@@ -96,6 +102,11 @@ package com.monsters.display
             _loc3_.y = param1._mc.y;
             MAP._BUILDINGTOPS.addChild(_loc3_);
          }
+         if(GLOBAL._aiDesignMode && k_SHOW_DEBUG_HEALTH)
+         {
+            debugHealth = new TextField();
+            debugHealth.defaultTextFormat = new TextFormat("Arial",10,0xffffff,true);
+         }
          Update(param1);
       }
       
@@ -125,7 +136,7 @@ package com.monsters.display
             }
             if(param1._repairing)
             {
-               _loc3_ = 49 / param1._hpMax.Get() * param1._hp.Get();
+               _loc3_ = 49 / param1.maxHealth * param1.health;
                _loc4_ = "repairing";
             }
             else if(param1._countdownBuild.Get() > 0)
@@ -208,15 +219,21 @@ package com.monsters.display
                   _loc5_.copyPixels(_bmpProgressBarLarge,new Rectangle(0,6 * _loc3_,51,6),new Point(0,0));
                }
             }
-            if(param1._hp.Get() <= 0)
+            if(debugHealth)
+            {
+               debugHealth.text = param1.health + "/" + param1.maxHealth;
+               debugHealth.visible = param1.isDamaged;
+               param1.graphic.addChild(debugHealth);
+            }
+            if(param1.health <= 0)
             {
                _loc8_.indexhp = -1;
                _loc5_ = _loc8_.bmdhp;
                _loc5_.fillRect(_loc5_.rect,0);
             }
-            else if(param1._hp.Get() < param1._hpMax.Get())
+            else if(param1.health < param1.maxHealth)
             {
-               _loc3_ = 19 - int(19 / param1._hpMax.Get() * param1._hp.Get());
+               _loc3_ = 19 - int(19 / param1.maxHealth * param1.health);
                if(_loc3_ != _loc8_.indexhp)
                {
                   _loc8_.indexhp = _loc3_;
@@ -233,8 +250,46 @@ package com.monsters.display
          }
       }
       
+      public static function clearBuilding(param1:BFOUNDATION) : void
+      {
+         var _loc2_:Object = _buildings[param1._id];
+         if(!_loc2_)
+         {
+            return;
+         }
+         clearOverlay(_loc2_);
+         delete _buildings[param1._id];
+      }
+      
+      protected static function clearOverlay(param1:Object) : void
+      {
+         if(Boolean(param1.container) && param1.container.parent == MAP._BUILDINGTOPS)
+         {
+            MAP._BUILDINGTOPS.removeChild(param1.container);
+         }
+         if(param1.bmdtext is BitmapData)
+         {
+            param1.bmdtext.dispose();
+         }
+         if(param1.bmdprogress is BitmapData)
+         {
+            param1.bmdprogress.dispose();
+         }
+         if(param1.bmdhp is BitmapData)
+         {
+            param1.bmdhp.dispose();
+         }
+         param1.container = null;
+         param1.indextext = null;
+      }
+      
       public static function Clear() : void
       {
+         var _loc1_:Object = null;
+         for each(_loc1_ in _buildings)
+         {
+            clearOverlay(_loc1_);
+         }
          _buildings = {};
       }
    }

@@ -1,6 +1,7 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.MovieClip;
@@ -1471,7 +1472,7 @@ package
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:String = null;
+         var _loc7_:Vector.<Object> = null;
          var _loc8_:BFOUNDATION = null;
          if(param1)
          {
@@ -1498,16 +1499,13 @@ package
          {
             _loc4_ = 0;
             _loc5_ = 0;
-            for(_loc7_ in BASE._buildingsAll)
+            _loc7_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(_loc8_ in _loc7_)
             {
-               _loc8_ = BASE._buildingsAll[_loc7_];
-               if(!(_loc8_._class == "trap" && _loc8_._fired || _loc8_._type == 53 && _loc8_._expireTime < GLOBAL.Timestamp()))
+               if(_loc8_._class != "wall" && (_loc8_._type == 53 && _loc8_._expireTime < GLOBAL.Timestamp()) === false && (_loc8_._class == "trap" && _loc8_._fired) === false)
                {
-                  if(_loc8_._class != "wall")
-                  {
-                     _loc4_ += _loc8_._hp.Get();
-                     _loc5_ += _loc8_._hpMax.Get();
-                  }
+                  _loc4_ += _loc8_.health;
+                  _loc5_ += _loc8_.maxHealth;
                }
             }
             _loc6_ = 100 - 100 / _loc5_ * _loc4_;
@@ -1526,12 +1524,13 @@ package
       
       private static function StartRepairs() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._hp.Get() < _loc1_._hpMax.Get() && _loc1_._repairing == 0)
+            if(_loc2_.health < _loc2_.maxHealth && _loc2_._repairing == 0)
             {
-               _loc1_.Repair();
+               _loc2_.Repair();
             }
          }
       }
@@ -1552,7 +1551,7 @@ package
          {
             return;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicipanic");
          }
@@ -1657,7 +1656,7 @@ package
          {
             return;
          }
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return;
          }
@@ -1761,7 +1760,7 @@ package
       
       public static function EventActive() : Boolean
       {
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return false;
          }
@@ -1802,7 +1801,7 @@ package
          {
             return;
          }
-         if(GLOBAL._mode != "build" || BASE._yardType != BASE.MAIN_YARD || TUTORIAL._stage <= 200 || GLOBAL._sessionCount < 5)
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || !BASE.isMainYard || TUTORIAL._stage <= 200 || GLOBAL._sessionCount < 5)
          {
             return;
          }

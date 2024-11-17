@@ -61,7 +61,7 @@ package
       {
          this._mushroomFrame = param1.frame;
          super.Setup(param1);
-         _hp.Set(_hpMax.Get());
+         setHealth(maxHealth);
       }
       
       override public function Export() : Object
@@ -107,7 +107,13 @@ package
       
       override public function Render(param1:String = "") : void
       {
+         if(GLOBAL._catchup || param1 === _renderState && _lvl.Get() == _renderLevel)
+         {
+            return;
+         }
          updateRasterData();
+         _renderState = k_STATE_DEFAULT;
+         _renderLevel = _lvl.Get();
       }
       
       public function SoundGood() : void

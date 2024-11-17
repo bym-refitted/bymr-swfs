@@ -1,5 +1,6 @@
 package com.monsters.replayableEvents.attackDefend.brukkargWar.rewards
 {
+   import com.monsters.managers.InstanceManager;
    import com.monsters.rewarding.Reward;
    import flash.geom.Point;
    
@@ -14,12 +15,13 @@ package com.monsters.replayableEvents.attackDefend.brukkargWar.rewards
       
       override protected function onApplication() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsTowers)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(SpurtzCannon);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._type == SpurtzCannon.TYPE)
+            if(_loc2_ is BlackSpurtzCannon === false)
             {
-               this.swapBuildings(_loc1_,BASE.addBuildingC(BlackSpurtzCannon.TYPE));
+               this.swapBuildings(_loc2_,BASE.addBuildingC(BlackSpurtzCannon.TYPE));
             }
          }
          GLOBAL._buildingProps[BlackSpurtzCannon.TYPE - 1].block = false;

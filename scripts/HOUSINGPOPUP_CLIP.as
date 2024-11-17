@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1735")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1768")]
    public dynamic class HOUSINGPOPUP_CLIP extends MovieClip
    {
       public var juicefooter_desc_txt:TextField;

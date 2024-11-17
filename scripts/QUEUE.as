@@ -37,7 +37,7 @@ package
       public static function Spawn(param1:int = 0) : void
       {
          var _loc3_:int = 0;
-         if(BASE._yardType)
+         if(!BASE.isMainYard)
          {
             if(_workerCount > 0)
             {
@@ -54,7 +54,7 @@ package
             param1 = 1;
             if(STORE._storeData.BEW)
             {
-               if(BASE._yardType)
+               if(!BASE.isMainYard)
                {
                   if(STORE._storeData.BEW.q > 0)
                   {
@@ -69,7 +69,7 @@ package
          }
          _workerCount += param1;
          var _loc2_:Object = {};
-         if(GLOBAL._mode != "wmattack" && GLOBAL._mode != "wmview")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.WMATTACK && GLOBAL.mode != GLOBAL.e_BASE_MODE.WMVIEW)
          {
             _loc3_ = 0;
             while(_loc3_ < param1)
@@ -148,7 +148,7 @@ package
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:BFOUNDATION = null;
-         if(BASE._yardType)
+         if(!BASE.isMainYard)
          {
             if(_stack[0].active)
             {

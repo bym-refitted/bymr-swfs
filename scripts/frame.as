@@ -55,7 +55,7 @@ package
          var _loc5_:int = 0;
          this.Clear();
          this._customCloseFunction = param2;
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             this._bottomLeft = new Bitmap(new frame3_bottom_left(0,0));
             this._bottomRight = new Bitmap(new frame3_bottom_right(0,0));
@@ -219,7 +219,7 @@ package
       
       public function resize() : void
       {
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             this._topLeft.x = x - 31;
             this._topLeft.y = y - 18;

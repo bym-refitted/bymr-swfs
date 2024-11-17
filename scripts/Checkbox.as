@@ -32,9 +32,10 @@ package
       
       public static function Replace(param1:MovieClip) : Checkbox
       {
+         var _loc2_:Checkbox = null;
          var _loc3_:int = 0;
          var _loc4_:* = undefined;
-         var _loc2_:Checkbox = new Checkbox();
+         _loc2_ = new Checkbox();
          _loc2_.x = param1.x;
          _loc2_.y = param1.y;
          _loc2_.scaleX = param1.scaleX;

@@ -20,7 +20,7 @@ package
       public static function Setup() : void
       {
          _workers = [];
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             _sayings = {
                "assign":[KEYS.Get("ai_worker_comment1"),KEYS.Get("ai_worker_comment2"),KEYS.Get("ai_worker_comment3"),KEYS.Get("ai_worker_comment5"),KEYS.Get("ai_worker_comment6"),KEYS.Get("ai_worker_comment7")],

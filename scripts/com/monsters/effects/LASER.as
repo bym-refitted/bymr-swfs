@@ -194,7 +194,7 @@ package com.monsters.effects
          var _loc5_:Number = NaN;
          var _loc6_:Point = null;
          var _loc8_:Number = NaN;
-         var _loc9_:Array = MAP.CreepCellFind(param1,this._splash,-1);
+         var _loc9_:Array = Targeting.getCreepsInRange(this._splash,param1,Targeting.getOldStyleTargets(-1));
          var _loc10_:int = 0;
          for(_loc4_ in _loc9_)
          {
@@ -204,7 +204,7 @@ package com.monsters.effects
             _loc6_ = _loc2_.pos;
             _loc8_ = this._damage * 0.5 / this._splash * (this._splash - _loc5_);
             _loc10_ += _loc8_;
-            _loc3_._health.Add(-(_loc3_._damageMult * _loc8_));
+            _loc3_.modifyHealth(-_loc8_);
          }
       }
    }

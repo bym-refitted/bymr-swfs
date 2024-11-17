@@ -1,6 +1,8 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.siege.SiegeFactory;
    import com.monsters.siege.SiegeLab;
    import flash.events.MouseEvent;
@@ -14,6 +16,10 @@ package
       public static var building:INFERNOPORTAL;
       
       public static var _ascensionData:Object;
+      
+      private static var _ogInfernoData:Object;
+      
+      private static var _ogAscensionData:Object;
       
       public static const ENTER_BUTTON:String = "btn_entercavern";
       
@@ -64,12 +70,15 @@ package
          {
             var _loc2_:String = null;
             PLEASEWAIT.Hide();
+            _ogInfernoData = param1.imonsters;
             _ascensionData = {};
+            _ogAscensionData = {};
             for(_loc2_ in param1.imonsters)
             {
                if(_loc2_.substr(0,2) == "IC")
                {
-                  _ascensionData[_loc2_] = new SecNum(int(param1.imonsters[_loc2_]));
+                  _ascensionData[_loc2_] = new SecNum(int(param1.imonsters[_loc2_] is Number ? param1.imonsters[_loc2_] : numHealthyCreeps(_loc2_,param1.imonsters[_loc2_])));
+                  _ogAscensionData[_loc2_] = _ascensionData[_loc2_].Get();
                }
             }
             ShowAscendMonstersDialog();
@@ -79,13 +88,29 @@ package
             LOGGER.Log("err","INFERNOPORTAL.AscendMonsters No inferno monster data");
             GLOBAL.ErrorMessage("INFERNOPORTAL.AscendMonsters No inferno monster data");
          };
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             return;
          }
          PLEASEWAIT.Show(KEYS.Get("msg_loading"));
          loader = new URLLoaderApi();
          loader.load(GLOBAL._infBaseURL + "infernomonsters",[["type","get"]],onLoad,onError);
+      }
+      
+      private static function numHealthyCreeps(param1:String, param2:Array) : int
+      {
+         var _loc3_:int = int(param2.length);
+         var _loc4_:int = CREATURES.GetProperty(param1,"health");
+         var _loc5_:int = _loc3_ - 1;
+         while(_loc5_ >= 0)
+         {
+            if(param2[_loc5_].health < _loc4_)
+            {
+               _loc3_--;
+            }
+            _loc5_--;
+         }
+         return _loc3_;
       }
       
       public static function PageAscensionData() : void
@@ -95,6 +120,7 @@ package
          var loader:URLLoaderApi = null;
          var onLoad:Function = null;
          var onError:Function = null;
+         var dif:int = 0;
          onLoad = function(param1:Object):void
          {
             PLEASEWAIT.Hide();
@@ -107,16 +133,53 @@ package
          };
          PLEASEWAIT.Show(KEYS.Get("msg_loading"));
          result = {};
-         for(s in _ascensionData)
+         if(MapRoomManager.instance.isInMapRoom3)
          {
-            if(s.substr(0,2) == "IC" && _ascensionData[s].Get() > 0)
+            dif = 0;
+            for(s in _ascensionData)
             {
-               result[s] = int(_ascensionData[s].Get());
+               dif = 0;
+               if(s.substr(0,2) == "IC")
+               {
+                  destroyCreep(s,_ogAscensionData[s] - _ascensionData[s].Get());
+               }
+            }
+            result = _ogInfernoData;
+         }
+         else
+         {
+            for(s in _ascensionData)
+            {
+               if(s.substr(0,2) == "IC" && _ascensionData[s].Get() > 0)
+               {
+                  result[s] = int(_ascensionData[s].Get());
+               }
             }
          }
          _ascensionData = null;
          loader = new URLLoaderApi();
          loader.load(GLOBAL._infBaseURL + "infernomonsters",[["type","set"],["imonsters",JSON.encode(result)]],onLoad,onError);
+      }
+      
+      private static function destroyCreep(param1:String, param2:int) : void
+      {
+         var _loc5_:int = 0;
+         var _loc3_:int = CREATURES.GetProperty(param1,"health");
+         var _loc4_:int = 0;
+         while(_loc4_ < param2)
+         {
+            _loc5_ = _ogInfernoData[param1].length - 1;
+            while(_loc5_ >= 0)
+            {
+               if(_ogInfernoData[param1][_loc5_].health == _loc3_)
+               {
+                  _ogInfernoData[param1].splice(_loc5_,1);
+                  break;
+               }
+               _loc5_--;
+            }
+            _loc4_++;
+         }
       }
       
       public static function ShowAscendMonstersDialog() : void
@@ -145,19 +208,21 @@ package
       
       public static function ToggleYard() : void
       {
+         var _loc1_:int = 0;
          if(BASE._saving || BASE._loading || BASE._saveCounterA != BASE._saveCounterB)
          {
             GLOBAL._toggleYardWaiting = 1;
             return;
          }
-         GLOBAL._advancedMap = 0;
-         if(BASE.isInferno())
+         MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
+         if(BASE.isInfernoMainYardOrOutpost)
          {
-            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+            _loc1_ = MapRoomManager.instance.isInMapRoom3 ? int(EnumYardType.PLAYER) : int(EnumYardType.MAIN_YARD);
+            BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,_loc1_);
          }
          else
          {
-            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,EnumYardType.INFERNO_YARD);
          }
       }
       
@@ -186,11 +251,11 @@ package
       
       override public function Click(param1:MouseEvent = null) : void
       {
-         if(isAboveMaxLevel() && (BASE.isInferno() || GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT))
+         if(isAboveMaxLevel() && (BASE.isInfernoMainYardOrOutpost || GLOBAL.townHall && GLOBAL.townHall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT))
          {
             super.Click(param1);
          }
-         else if(GLOBAL._mode == "build" && !INFERNO_EMERGENCE_EVENT.isAttackActive)
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !INFERNO_EMERGENCE_EVENT.isAttackActive)
          {
             INFERNO_EMERGENCE_POPUPS.ShowRSVP(building._lvl.Get());
          }
@@ -220,7 +285,7 @@ package
       
       private function checkBuildingUnlocks() : void
       {
-         if(isAboveMaxLevel() && BASE._yardType == BASE.MAIN_YARD)
+         if(isAboveMaxLevel() && BASE.isMainYard)
          {
             GLOBAL._buildingProps[INFERNO_MAGMA_TOWER.ID - 1].block = false;
             GLOBAL._buildingProps[INFERNOQUAKETOWER.TYPE - 1].block = false;

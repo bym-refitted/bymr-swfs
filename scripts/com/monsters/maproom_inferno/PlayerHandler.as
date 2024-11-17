@@ -1,9 +1,11 @@
 package com.monsters.maproom_inferno
 {
    import com.monsters.ai.WMBASE;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.mailbox.Message;
    import com.monsters.mailbox.model.Contact;
    import com.monsters.maproom_inferno.model.BaseObject;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Sprite;
    import flash.events.MouseEvent;
    
@@ -222,7 +224,7 @@ package com.monsters.maproom_inferno
          {
             this._BRIDGE.setVisitingFriend(false);
          }
-         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),"ihelp",false,BASE.INFERNO_YARD);
+         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),"ihelp",false,EnumYardType.INFERNO_YARD);
          this._BRIDGE.MAPROOM._mc.Hide();
       }
       
@@ -240,7 +242,7 @@ package com.monsters.maproom_inferno
             this._BRIDGE.setVisitingFriend(false);
          }
          _loc3_ = _loc2_.wm.Get() == 1 ? "iwmview" : "iview";
-         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.INFERNO_YARD);
+         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,EnumYardType.INFERNO_YARD);
          if(this._BRIDGE && this._BRIDGE.MAPROOM && Boolean(this._BRIDGE.MAPROOM._mc))
          {
             this._BRIDGE.MAPROOM._mc.Hide();
@@ -383,8 +385,8 @@ package com.monsters.maproom_inferno
          {
             this._BRIDGE.setVisitingFriend(false);
          }
-         GLOBAL._advancedMap = 0;
-         BASE.LoadBase(null,0,Number(param1),param2,false,BASE.INFERNO_YARD);
+         MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
+         BASE.LoadBase(null,0,Number(param1),param2,false,EnumYardType.INFERNO_YARD);
          if(!MAPROOM_DESCENT.DescentPassed && param2 == "iwmattack")
          {
             LOGGER.Stat([87,_loc3_.level.Get(),"Attacked"]);

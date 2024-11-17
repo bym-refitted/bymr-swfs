@@ -1,6 +1,8 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -41,11 +43,11 @@ package
          SetProps();
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          super.Fire(param1);
          SOUNDS.Play("laser",!isJard ? 0.8 : 0.4);
-         var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc2_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
@@ -53,8 +55,8 @@ package
          }
          if(isJard)
          {
-            _jarHealth.Add(-int(_damage * 25 * _loc2_ * _loc3_));
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 25 * _loc2_ * _loc3_);
+            _jarHealth.Add(-int(damage * 25 * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,damage * 25 * _loc2_ * _loc3_);
             if(_jarHealth.Get() <= 0)
             {
                KillJar();
@@ -62,13 +64,13 @@ package
          }
          else if(_targetVacuum)
          {
-            EFFECTS.Laser(x,y + 35,GLOBAL._bTownhall.x,GLOBAL._bTownhall.y - GLOBAL._bTownhall._mc.height * 2,60,int(_damage * 25 * _loc2_ * _loc3_),0);
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 25 * _loc2_ * _loc3_);
-            (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 25 * _loc2_ * _loc3_));
+            EFFECTS.Laser(x,y + 35,GLOBAL.townHall.x,GLOBAL.townHall.y - GLOBAL.townHall._mc.height * 2,60,int(damage * 25 * _loc2_ * _loc3_),0);
+            ATTACK.Damage(_mc.x,_mc.y + _top,damage * 25 * _loc2_ * _loc3_);
+            Vacuum.getHose().modifyHealth(-int(damage * 25 * _loc2_ * _loc3_));
          }
          else
          {
-            EFFECTS.Laser(x,y + 35,param1.x,param1.y,60,int(_damage * _loc2_ * _loc3_),_splash,this.Track);
+            EFFECTS.Laser(x,y + 35,param1.x,param1.y,60,int(damage * _loc2_ * _loc3_),_splash,this.Track);
          }
       }
       
@@ -98,7 +100,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {

@@ -5,6 +5,7 @@ package com.monsters.mailbox
    import com.monsters.mailbox.model.Contact;
    import com.monsters.mailbox.model.ThreadData;
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Sprite;
    import flash.display.StageDisplayState;
    import flash.events.Event;
@@ -583,17 +584,25 @@ package com.monsters.mailbox
       private function migrateAccept(param1:MouseEvent) : void
       {
          SOUNDS.Play("click1");
-         MapRoom._inviteBaseID = this.data.baseID;
-         MapRoom._migrateThread = this;
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            GLOBAL.Message(KEYS.Get("msg_invalid_mr2_invitation_in_mr3"));
+            return;
+         }
+         MapRoom.inviteBaseID = this.data.baseID;
+         MapRoom.migrateThread = this;
          MapRoom.PreAcceptInvitation(this.parent);
       }
       
       private function migrateReject(param1:MouseEvent) : void
       {
          SOUNDS.Play("click1");
-         var _loc2_:uint = this.data.userid;
-         MapRoom._inviteBaseID = this.data.baseID;
-         MapRoom._migrateThread = this;
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            return;
+         }
+         MapRoom.inviteBaseID = this.data.baseID;
+         MapRoom.migrateThread = this;
          MapRoom.RejectInvitation(param1);
       }
       
@@ -615,6 +624,11 @@ package com.monsters.mailbox
       
       private function migrateView(param1:MouseEvent) : void
       {
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            GLOBAL.Message(KEYS.Get("msg_invalid_mr2_invitation_in_mr3"));
+            return;
+         }
          if(ALLIANCES._myAlliance)
          {
             GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
@@ -622,8 +636,8 @@ package com.monsters.mailbox
          }
          SOUNDS.Play("click1");
          GLOBAL._currentCell = null;
-         MapRoom.Setup(this.data.coords,this.data.worldID,this.data.baseID,true,this);
-         MapRoom.Show();
+         MapRoom._Setup(this.data.coords,this.data.worldID,this.data.baseID,true,this);
+         MapRoomManager.instance.Show();
       }
       
       private function onMigrateAcceptSuccess(param1:Object) : void

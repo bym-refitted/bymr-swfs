@@ -4,13 +4,13 @@ package com.monsters.maproom_advanced
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
-   public class PopupMonstersB extends PopupMonstersB_CLIP
+   internal class PopupMonstersB extends PopupMonstersB_CLIP
    {
-      public var _cell:MapRoomCell;
+      private var _cell:MapRoomCell;
       
-      public var _transfer:Object;
+      private var _transfer:Object;
       
-      public var _mcMonsters:MovieClip;
+      private var _mcMonsters:MovieClip;
       
       private var _scroller:ScrollSet;
       
@@ -42,7 +42,7 @@ package com.monsters.maproom_advanced
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:String = null;
-         var _loc6_:MapRoomPopupInfoMonster = null;
+         var _loc6_:PopupInfoMonster = null;
          tDesc.htmlText = KEYS.Get("popup_desc_monstertransferb");
          if(this._mcMonsters)
          {
@@ -65,7 +65,7 @@ package com.monsters.maproom_advanced
             {
                if(this._transfer[_loc5_].Get() > 0)
                {
-                  _loc6_ = new MapRoomPopupInfoMonster();
+                  _loc6_ = new PopupInfoMonster();
                   _loc6_.Setup(_loc3_ * 130,_loc4_ * 35,_loc5_,this._transfer[_loc5_].Get());
                   _loc3_ += 1;
                   if(_loc3_ == 3)

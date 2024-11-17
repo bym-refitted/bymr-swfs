@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.missions.*;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Decoy;
@@ -129,7 +130,7 @@ package
             "id":4,
             "name":"q_evil"
          }];
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             setupMainQuests();
          }
@@ -1618,7 +1619,7 @@ package
          var v:int = param2;
          try
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && MapRoomManager.instance.isInMapRoom3 && BASE.isMainYardOrInfernoMainYard || GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !MapRoomManager.instance.isInMapRoom3)
             {
                if(Boolean(n) && _global[n] < v)
                {
@@ -1679,7 +1680,7 @@ package
                         if(!fail)
                         {
                            _completed[q.id] = 1;
-                           if(BASE.isInferno())
+                           if(BASE.isInfernoMainYardOrOutpost)
                            {
                               ACHIEVEMENTS.Check(ACHIEVEMENTS.INFERNO_QUESTS_COMPLETED,amountCompleted);
                            }
@@ -1715,7 +1716,7 @@ package
       
       public static function get _quests() : Array
       {
-         return BASE.isInferno() ? _infernoQuests : _mainQuests;
+         return BASE.isInfernoMainYardOrOutpost ? _infernoQuests : _mainQuests;
       }
       
       public static function QuestPopup(param1:String, param2:String, param3:String, param4:String, param5:String) : void
@@ -1776,7 +1777,7 @@ package
          var h:int = 0;
          var questID:String = param1;
          var popup:Boolean = param2;
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }
@@ -1814,11 +1815,11 @@ package
                {
                   if(HOUSING._housingSpace.Get() < storage)
                   {
-                     GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_questi_housing" : "msg_quest_housing"),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
+                     GLOBAL.Message(KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "msg_questi_housing" : "msg_quest_housing"),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
                      return false;
                   }
                   quantity = HOUSING._housingSpace.Get() / storage;
-                  GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "inf_msg_housinglimited" : "msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
+                  GLOBAL.Message(KEYS.Get(BASE.isInfernoMainYardOrOutpost ? "inf_msg_housinglimited" : "msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectSpecial,[questID]);
                   return false;
                }
             }
@@ -1867,7 +1868,7 @@ package
                   }
                   else
                   {
-                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bTownhall._position);
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL.townHall._position);
                   }
                   value += CREATURES.GetProperty(q.reward_creatureid,"cResource");
                   z++;
@@ -2001,7 +2002,7 @@ package
                   }
                   else
                   {
-                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bTownhall._position);
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL.townHall._position);
                   }
                   value += CREATURES.GetProperty(q.reward_creatureid,"cResource");
                   z++;
@@ -2077,7 +2078,7 @@ package
       
       public static function Show(param1:MouseEvent = null) : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(GLOBAL._newBuilding)
             {

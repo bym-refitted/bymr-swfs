@@ -2,6 +2,7 @@ package com.monsters.maproom_advanced
 {
    import com.cc.utils.SecNum;
    import com.monsters.alliances.*;
+   import com.monsters.maproom_manager.IMapRoomCell;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -10,93 +11,93 @@ package com.monsters.maproom_advanced
    import flash.geom.Point;
    import flash.utils.getTimer;
    
-   public class MapRoomCell extends MapRoomCell_CLIP
+   public class MapRoomCell extends MapRoomCell_CLIP implements IMapRoomCell
    {
-      public var X:int;
+      internal var X:int;
       
-      public var Y:int;
+      internal var Y:int;
       
-      public var _updated:Boolean;
+      internal var _updated:Boolean;
       
-      public var _dataAge:int;
+      internal var _dataAge:int;
       
-      public var _base:int;
+      internal var _base:int;
       
-      public var _baseID:Number;
+      internal var _baseID:Number;
       
-      public var _allianceID:int;
+      internal var _allianceID:int;
       
-      public var _alliance:AllyInfo;
+      internal var _alliance:AllyInfo;
       
-      public var _height:int;
+      internal var _height:int;
       
-      public var _mine:int;
+      internal var _mine:int;
       
-      public var _facebookID:Number;
+      internal var _facebookID:Number;
       
-      public var _pic_square:String;
+      internal var _pic_square:String;
       
-      public var _userID:int;
+      internal var _userID:int;
       
-      public var _online:int;
+      internal var _online:int;
       
-      public var _friend:int;
+      internal var _friend:int;
       
-      public var _truce:int;
+      internal var _truce:int;
       
-      public var _name:String;
+      internal var _name:String;
       
-      public var _protected:int;
+      internal var _protected:int;
       
-      public var _resources:Object;
+      internal var _resources:Object;
       
-      public var _hpResources:Object;
+      internal var _hpResources:Object;
       
-      public var _monsterData:Object;
+      internal var _monsterData:Object;
       
-      public var _flingerRange:SecNum;
+      internal var _flingerRange:SecNum;
       
-      public var _flingerLevel:SecNum;
+      internal var _flingerLevel:SecNum;
       
-      public var _catapult:SecNum;
+      internal var _catapult:SecNum;
       
-      public var _level:int;
+      internal var _level:int;
       
-      public var _destroyed:int;
+      internal var _destroyed:int;
       
-      public var _damaged:int;
+      internal var _damaged:int;
       
-      public var _water:Boolean;
+      internal var _water:Boolean;
       
-      public var _monsters:Object;
+      internal var _monsters:Object;
       
-      public var _ticks:int;
+      internal var _ticks:int;
       
-      public var _processed:Boolean;
+      internal var _processed:Boolean;
       
-      public var _dirty:Boolean = false;
+      internal var _dirty:Boolean = false;
       
-      public var _locked:int;
+      internal var _locked:int;
       
-      public var _hpMonsterData:Object;
+      internal var _hpMonsterData:Object;
       
-      public var _hpMonsters:Object;
+      internal var _hpMonsters:Object;
       
-      public var _invitePendingID:int;
+      internal var _invitePendingID:int;
       
-      public var _damage:int;
+      internal var _damage:int;
       
-      public var _workerBusy:Boolean = false;
+      internal var _workerBusy:Boolean = false;
       
-      public var _inRange:Boolean = false;
+      internal var _inRange:Boolean = false;
       
-      public var _over:Boolean = false;
+      internal var _over:Boolean = false;
       
-      public var _terrain:String;
+      internal var _terrain:String;
       
-      public var _hasWarned:int = 0;
+      internal var _hasWarned:int = 0;
       
-      public var _value:Number = 0;
+      internal var _value:Number = 0;
       
       private var _smokeBMD:BitmapData;
       
@@ -167,6 +168,146 @@ package com.monsters.maproom_advanced
          mc.mcEdges.visible = false;
          mc.mcPrompt.enabled = false;
          mc.mcPrompt.visible = false;
+      }
+      
+      public function set alliance(param1:AllyInfo) : void
+      {
+         this._alliance = param1;
+      }
+      
+      public function get allianceID() : int
+      {
+         return this._allianceID;
+      }
+      
+      public function get monsters() : Object
+      {
+         return this._monsters;
+      }
+      
+      public function get monsterData() : Object
+      {
+         return this._monsterData;
+      }
+      
+      public function get resources() : Object
+      {
+         return this._resources;
+      }
+      
+      public function get hpMonsters() : Object
+      {
+         return this._hpMonsters;
+      }
+      
+      public function get hpMonsterData() : Object
+      {
+         return this._hpMonsterData;
+      }
+      
+      public function get hpResources() : Object
+      {
+         return this._hpResources;
+      }
+      
+      public function get terrain() : String
+      {
+         return this._terrain;
+      }
+      
+      public function get flingerRange() : SecNum
+      {
+         return this._flingerRange;
+      }
+      
+      public function get baseID() : Number
+      {
+         return this._baseID;
+      }
+      
+      public function get baseType() : int
+      {
+         return this._base;
+      }
+      
+      public function set baseType(param1:int) : void
+      {
+         this._base = param1;
+      }
+      
+      public function get cellX() : int
+      {
+         return this.X;
+      }
+      
+      public function set cellX(param1:int) : void
+      {
+         this.X = param1;
+      }
+      
+      public function get cellY() : int
+      {
+         return this.Y;
+      }
+      
+      public function set cellY(param1:int) : void
+      {
+         this.Y = param1;
+      }
+      
+      public function get cellHeight() : int
+      {
+         return this._height;
+      }
+      
+      public function get mine() : int
+      {
+         return this._mine;
+      }
+      
+      public function get online() : int
+      {
+         return this._online;
+      }
+      
+      public function get truce() : int
+      {
+         return this._truce;
+      }
+      
+      public function get isDestroyed() : Boolean
+      {
+         return !!this._destroyed ? true : false;
+      }
+      
+      public function set destroyed(param1:int) : void
+      {
+         this._destroyed = param1;
+      }
+      
+      public function get isLocked() : Boolean
+      {
+         return this._locked != 0 && this._locked != LOGIN._playerID;
+      }
+      
+      public function get isProtected() : int
+      {
+         return this._protected;
+      }
+      
+      public function set isProtected(param1:int) : void
+      {
+         this._protected = param1;
+      }
+      
+      public function get isDirty() : Boolean
+      {
+         return this._dirty;
+      }
+      
+      public function set isDirty(param1:Boolean) : void
+      {
+         this._dirty = param1;
       }
       
       public function Setup(param1:Object) : void
@@ -619,7 +760,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Tick(param1:int = 0) : Boolean
+      internal function Tick(param1:int = 0) : Boolean
       {
          var _loc3_:int = 0;
          var _loc4_:String = null;
@@ -752,12 +893,18 @@ package com.monsters.maproom_advanced
                      {
                         this._monsterData.h[_loc5_][1].Add(-this._monsterData.overdrivepower.Get());
                         this._hpMonsterData.h[_loc5_][1] -= this._hpMonsterData.overdrivepower;
+                        if(this._monsterData.h[_loc5_][1].Get() != this._hpMonsterData.h[_loc5_][1])
+                        {
+                        }
                         _loc2_ = false;
                      }
                      else
                      {
+                        if(this._monsterData.h[_loc5_][1].Get() != this._hpMonsterData.h[_loc5_][1])
+                        {
+                        }
                         this._monsterData.h[_loc5_][1].Add(-1);
-                        this._hpMonsterData.h[_loc5_][1] = this._hpMonsterData.h[_loc5_][1] - 1;
+                        this._hpMonsterData.h[_loc5_][1] = this._monsterData.h[_loc5_][1].Get();
                         _loc2_ = false;
                      }
                   }
@@ -983,6 +1130,9 @@ package com.monsters.maproom_advanced
             {
                this._monsterData.h[_loc2_][0] = this._hpMonsterData.h[_loc2_][0];
                this._monsterData.h[_loc2_][1] = new SecNum(this._hpMonsterData.h[_loc2_][1]);
+               if(this._monsterData.h[_loc2_][1].Get() != this._hpMonsterData.h[_loc2_][1])
+               {
+               }
                if(this._hpMonsterData.h[_loc2_].length > 2)
                {
                   this._monsterData.h[_loc2_][2] = [];
@@ -1062,6 +1212,11 @@ package com.monsters.maproom_advanced
       
       public function Check() : Boolean
       {
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
          if(!this._updated)
          {
             return true;
@@ -1078,7 +1233,85 @@ package com.monsters.maproom_advanced
          {
             return true;
          }
-         return true;
+         var _loc1_:Boolean = true;
+         if(this._monsterData.overdrivepower.Get() != this._hpMonsterData.overdrivepower)
+         {
+            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") overdrive power " + this._monsterData.overdrivepower.Get() + " " + this._hpMonsterData.overdrivepower);
+            _loc1_ = false;
+         }
+         if(this._monsterData.overdrivetime.Get() != this._hpMonsterData.overdrivetime)
+         {
+            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") overdrive time " + this._monsterData.overdrivetime.Get() + " " + this._hpMonsterData.overdrivetime);
+            _loc1_ = false;
+         }
+         for(_loc3_ in this._hpMonsterData.housed)
+         {
+            if(Boolean(this._monsterData.housed[_loc3_]) && this._monsterData.housed[_loc3_].Get() != this._hpMonsterData.housed[_loc3_])
+            {
+               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") housed " + _loc3_ + " " + this._monsterData.housed[_loc3_] + " " + this._hpMonsterData.housed[_loc3_]);
+               _loc1_ = false;
+            }
+         }
+         _loc4_ = 0;
+         while(_loc4_ < this._monsterData.hcount)
+         {
+            if(this._monsterData.h[_loc4_].length != this._hpMonsterData.h[_loc4_].length)
+            {
+               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") hatchery array length mismatch " + this._monsterData.h[_loc4_].length + " " + this._hpMonsterData.h[_loc4_].length);
+               _loc1_ = false;
+            }
+            else if(this._monsterData.h[_loc4_].length >= 2)
+            {
+               if(this._monsterData.h[_loc4_][1].Get() != this._hpMonsterData.h[_loc4_][1])
+               {
+                  LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") num monsters producing (now) " + this._monsterData.h[_loc4_][1].Get() + " " + this._hpMonsterData.h[_loc4_][1]);
+                  _loc1_ = false;
+               }
+               if(this._monsterData.h[_loc4_].length > 2)
+               {
+                  if(this._monsterData.h[_loc4_][2].length != this._hpMonsterData.h[_loc4_][2].length)
+                  {
+                     _loc1_ = false;
+                  }
+                  _loc6_ = int(this._monsterData.h[_loc4_][2].length);
+                  _loc7_ = 0;
+                  while(_loc7_ < _loc6_)
+                  {
+                     if(this._monsterData.h[_loc4_][2][_loc7_][1].Get() != this._hpMonsterData.h[_loc4_][2][_loc7_][1])
+                     {
+                        LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") num monsters producing (now) " + this._monsterData.h[_loc4_][2][_loc7_][1].Get() + " " + this._hpMonsterData.h[_loc4_][2][_loc7_][1]);
+                        _loc1_ = false;
+                     }
+                     _loc7_++;
+                  }
+               }
+            }
+            if(this._monsterData.hstage[_loc4_].Get() != this._hpMonsterData.hstage[_loc4_])
+            {
+               LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") production stage mismatch");
+            }
+            _loc4_++;
+         }
+         var _loc5_:int = int(this._monsterData.hcc.length);
+         if(_loc5_ != this._hpMonsterData.hcc.length)
+         {
+            LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") HCC queue length mismatch " + _loc5_ + " " + this._hpMonsterData.hcc.length);
+            _loc1_ = false;
+         }
+         else
+         {
+            _loc8_ = 0;
+            while(_loc8_ < _loc5_)
+            {
+               if(this._monsterData.hcc[_loc8_][1].Get() != this._hpMonsterData.hcc[_loc8_][1])
+               {
+                  LOGGER.Log("err","MapRoomCell.Check (" + this.X + "," + this.Y + ") HCC queue size " + this._monsterData.hcc[_loc8_][1].Get() + " " + this._hpMonsterData.hcc[_loc8_][1]);
+                  _loc1_ = false;
+               }
+               _loc8_++;
+            }
+         }
+         return _loc1_;
       }
       
       private function Indicate() : void
@@ -1106,7 +1339,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function get isMainBase() : Boolean
+      internal function get isMainBase() : Boolean
       {
          return this._base == 2;
       }

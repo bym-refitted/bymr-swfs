@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.managers.InstanceManager;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -24,6 +25,7 @@ package
          var tmpBuilding:BFOUNDATION = null;
          var tmpCountA:int = 0;
          var tmpCountB:int = 0;
+         var buildingInstances:Vector.<Object> = null;
          var hatCount:int = 0;
          var siloCount:int = 0;
          var quantityIndex:int = 0;
@@ -34,10 +36,11 @@ package
          var tmpr4:Boolean = false;
          var sc:int = 0;
          var tgtb:BFOUNDATION = null;
+         var storageInstances:Vector.<Object> = null;
          var laser:Boolean = false;
-         var tesla:* = undefined;
+         var tesla:Boolean = false;
          var key:String = param1;
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }
@@ -45,7 +48,7 @@ package
          {
             return false;
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             return false;
          }
@@ -54,7 +57,7 @@ package
             switch(key)
             {
                case "upgradeapult":
-                  if(GLOBAL._bCatapult && GLOBAL._bCatapult._lvl.Get() == 1 && GLOBAL._bTownhall._lvl.Get() >= 5 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM2") > 432000)
+                  if(GLOBAL._bCatapult && GLOBAL._bCatapult._lvl.Get() == 1 && GLOBAL.townHall._lvl.Get() >= 5 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM2") > 432000)
                   {
                      GLOBAL.StatSet("CM2",GLOBAL.Timestamp());
                      pTitle = KEYS.Get("mkting_upgradeapult_title");
@@ -81,7 +84,7 @@ package
                      pButton = KEYS.Get("mkting_fillapult_btn");
                      pAction = function fcatapult(param1:MouseEvent):void
                      {
-                        if(!BASE.isInferno())
+                        if(!BASE.isInfernoMainYardOrOutpost)
                         {
                            STORE.ShowB(2,0,["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43"]);
                         }
@@ -99,7 +102,8 @@ package
                case "overdrive":
                   tmpCountA = 0;
                   tmpCountB = 0;
-                  for each(tmpBuilding in BASE._buildingsAll)
+                  buildingInstances = InstanceManager.getInstancesByClass(BFOUNDATION);
+                  for each(tmpBuilding in buildingInstances)
                   {
                      if(tmpBuilding._type == 13)
                      {
@@ -120,7 +124,7 @@ package
                      pButton = KEYS.Get("mkting_overdrive_btn");
                      pAction = function fcatapult(param1:MouseEvent):void
                      {
-                        if(!BASE.isInferno())
+                        if(!BASE.isInfernoMainYardOrOutpost)
                         {
                            STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
                         }
@@ -136,14 +140,7 @@ package
                case "planner":
                   break;
                case "hcc":
-                  hatCount = 0;
-                  for each(tmpBuilding in BASE._buildingsAll)
-                  {
-                     if(tmpBuilding._type == 13)
-                     {
-                        hatCount += 1;
-                     }
-                  }
+                  hatCount = int(InstanceManager.getInstancesByClass(BUILDING13).length);
                   if(!GLOBAL._bHatcheryCC && hatCount == 3 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM8") > 432000)
                   {
                      GLOBAL.StatSet("CM8",GLOBAL.Timestamp());
@@ -165,15 +162,8 @@ package
                   }
                   break;
                case "storagemore":
-                  siloCount = 0;
-                  for each(tmpBuilding in BASE._buildingsMain)
-                  {
-                     if(tmpBuilding._type == 6)
-                     {
-                        siloCount++;
-                     }
-                  }
-                  quantityIndex = GLOBAL._bTownhall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL._bTownhall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
+                  siloCount = int(InstanceManager.getInstancesByClass(BUILDING6).length);
+                  quantityIndex = GLOBAL.townHall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL.townHall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
                   canbuild = siloCount < GLOBAL._buildingProps[5].quantity[quantityIndex];
                   tmpr1 = BASE._resources.r1.Get() >= 0.8 * BASE._resources.r1max;
                   tmpr2 = BASE._resources.r2.Get() >= 0.8 * BASE._resources.r2max;
@@ -183,7 +173,7 @@ package
                   {
                      GLOBAL.StatSet("CM9",GLOBAL.Timestamp());
                      pTitle = KEYS.Get("mkting_silo_title");
-                     pBody = BASE.isInferno() ? KEYS.Get("inf_mkting_silo_body") : KEYS.Get("mkting_silo_body");
+                     pBody = BASE.isInfernoMainYardOrOutpost ? KEYS.Get("inf_mkting_silo_body") : KEYS.Get("mkting_silo_body");
                      pImage = "building-storage.png";
                      pButton = KEYS.Get("mkting_silo_btn");
                      pAction = function fcatapult(param1:MouseEvent):void
@@ -200,19 +190,17 @@ package
                   break;
                case "storageupgrade":
                   sc = 0;
-                  for each(tmpBuilding in BASE._buildingsMain)
+                  storageInstances = InstanceManager.getInstancesByClass(BUILDING6);
+                  for each(tmpBuilding in storageInstances)
                   {
-                     if(tmpBuilding._type == 6)
+                     if(!BASE.CanUpgrade(tmpBuilding).error && !tmpBuilding._repairing && tmpBuilding._countdownUpgrade.Get() == 0)
                      {
-                        if(!BASE.CanUpgrade(tmpBuilding).error && !tmpBuilding._repairing && tmpBuilding._countdownUpgrade.Get() == 0)
-                        {
-                           tgtb = tmpBuilding;
-                           sc++;
-                           break;
-                        }
+                        tgtb = tmpBuilding;
+                        sc++;
+                        break;
                      }
                   }
-                  quantityIndex = GLOBAL._bTownhall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL._bTownhall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
+                  quantityIndex = GLOBAL.townHall._lvl.Get() - 1 < GLOBAL._buildingProps[5].quantity.length ? int(GLOBAL.townHall._lvl.Get() - 1) : int(GLOBAL._buildingProps[5].quantity.length - 1);
                   canbuild = sc < GLOBAL._buildingProps[5].quantity[quantityIndex];
                   tmpr1 = BASE._resources.r1.Get() >= 0.8 * BASE._resources.r1max;
                   tmpr2 = BASE._resources.r2.Get() >= 0.8 * BASE._resources.r2max;
@@ -236,15 +224,8 @@ package
                case "mushroompick":
                   break;
                case "laser":
-                  laser = false;
-                  for each(tmpBuilding in BASE._buildingsTowers)
-                  {
-                     if(tmpBuilding._type == 23)
-                     {
-                        laser = true;
-                     }
-                  }
-                  if(GLOBAL._bTownhall._lvl.Get() >= 4 && !laser && GLOBAL.Timestamp() - GLOBAL.StatGet("CM11") > 432000)
+                  laser = InstanceManager.getInstancesByClass(BUILDING23).length > 0;
+                  if(GLOBAL.townHall._lvl.Get() >= 4 && !laser && GLOBAL.Timestamp() - GLOBAL.StatGet("CM11") > 432000)
                   {
                      GLOBAL.StatSet("CM11",GLOBAL.Timestamp());
                      pTitle = KEYS.Get("mkting_laser_title");
@@ -264,15 +245,8 @@ package
                   }
                   break;
                case "tesla":
-                  tesla = false;
-                  for each(tmpBuilding in BASE._buildingsTowers)
-                  {
-                     if(tmpBuilding._type == 25)
-                     {
-                        tesla = true;
-                     }
-                  }
-                  if(GLOBAL._bTownhall._lvl.Get() >= 4 && !tesla && GLOBAL.Timestamp() - GLOBAL.StatGet("CM12") > 432000)
+                  tesla = InstanceManager.getInstancesByClass(BUILDING25).length > 0;
+                  if(GLOBAL.townHall._lvl.Get() >= 4 && !tesla && GLOBAL.Timestamp() - GLOBAL.StatGet("CM12") > 432000)
                   {
                      GLOBAL.StatSet("CM12",GLOBAL.Timestamp());
                      pTitle = KEYS.Get("mkting_tesla_title");
@@ -311,7 +285,7 @@ package
          var done:Boolean = false;
          try
          {
-            if(GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount > 10 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM") > 86400)
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && TUTORIAL._stage > 200 && GLOBAL._sessionCount > 10 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM") > 86400)
             {
                GLOBAL.StatSet("CM",GLOBAL.Timestamp());
                done = Show("unlock");

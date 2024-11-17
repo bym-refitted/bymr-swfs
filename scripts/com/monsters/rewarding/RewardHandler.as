@@ -6,6 +6,12 @@ package com.monsters.rewarding
    {
       private static var _instance:RewardHandler;
       
+      public static const k_UPDATE_ADD:String = "RA";
+      
+      public static const k_UPDATE_REMOVE:String = "RR";
+      
+      public static const k_UPDATE_VALUE:String = "RV";
+      
       public var rewards:Vector.<Reward> = new Vector.<Reward>();
       
       public function RewardHandler()
@@ -37,9 +43,9 @@ package com.monsters.rewarding
          return true;
       }
       
-      public function addAndApplyReward(param1:Reward) : void
+      public function addAndApplyReward(param1:Reward, param2:Boolean = false) : void
       {
-         if(this.addReward(param1))
+         if(this.addReward(param1) || param2)
          {
             this.applyReward(param1);
          }
@@ -108,12 +114,15 @@ package com.monsters.rewarding
       
       public function initialize(param1:Object = null) : void
       {
-         if(GLOBAL._mode != "build" || BASE.isInferno())
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isInfernoMainYardOrOutpost)
          {
             return;
          }
          UPDATES.addAction(this.processUpdate,this.name);
-         RewardLibrary.initialize();
+         if(!RewardLibrary.rewardTypes)
+         {
+            RewardLibrary.initialize();
+         }
          if(param1)
          {
             this.importData(param1);
@@ -124,7 +133,7 @@ package com.monsters.rewarding
       public function exportData() : Object
       {
          var _loc3_:Reward = null;
-         if(GLOBAL._mode != "build" || BASE.isInferno())
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isInfernoMainYardOrOutpost)
          {
             return null;
          }
@@ -175,22 +184,28 @@ package com.monsters.rewarding
       public function processUpdate(param1:Object) : Boolean
       {
          var _loc2_:Reward = null;
-         if(param1.method == "add")
+         switch(param1.data[1])
          {
-            _loc2_ = this.getRewardByID(param1.id);
-            if(!_loc2_)
-            {
-               _loc2_ = RewardLibrary.getRewardByID(param1.id);
-            }
-            if(_loc2_)
-            {
-               _loc2_.value = param1.value;
-               this.addReward(_loc2_);
-               return true;
-            }
-            return false;
+            case k_UPDATE_ADD:
+               _loc2_ = RewardLibrary.getRewardByID(param1.data[2]);
+               if(_loc2_)
+               {
+                  RewardHandler.instance.addAndApplyReward(_loc2_);
+               }
+               break;
+            case k_UPDATE_REMOVE:
+               RewardHandler.instance.removeRewardByID(param1.data[2]);
+               break;
+            case k_UPDATE_VALUE:
+               _loc2_ = RewardHandler.instance.getRewardByID(param1.data[2]);
+               if(_loc2_)
+               {
+                  _loc2_.value = param1.data[3];
+                  RewardHandler.instance.addAndApplyReward(_loc2_,true);
+               }
+               BASE.Save(0,false,true);
          }
-         return false;
+         return true;
       }
    }
 }

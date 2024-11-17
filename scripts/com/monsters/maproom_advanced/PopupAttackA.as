@@ -5,6 +5,8 @@ package com.monsters.maproom_advanced
    import com.monsters.display.ImageCache;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
@@ -17,19 +19,17 @@ package com.monsters.maproom_advanced
    import flash.events.MouseEvent;
    import flash.net.URLRequest;
    
-   public class PopupAttackA extends PopupAttackA_CLIP
+   internal class PopupAttackA extends PopupAttackA_CLIP
    {
       private var _cell:MapRoomCell;
       
       private var _mcResources:MovieClip;
       
-      private var _attackMonsters:Object = {};
-      
       private var _attackResources:Object = {};
       
       private var _monstersInRange:Boolean = false;
       
-      public var _cellsInRange:Vector.<CellData> = new Vector.<CellData>(0,true);
+      private var _cellsInRange:Vector.<CellData> = new Vector.<CellData>(0,true);
       
       private var _enabled:Boolean = false;
       
@@ -130,20 +130,19 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("newmap_attack"),KEYS.Get("confirm_btn"),this.DoAttack);
                return;
             }
-            GLOBAL._attackerMapCreatures = this._attackMonsters;
             GLOBAL._attackerMapResources = this._attackResources;
             GLOBAL._attackerCellsInRange = this._cellsInRange;
-            MapRoom.Hide();
+            MapRoomManager.instance.Hide();
             MapRoom.ClearCells();
             GLOBAL._currentCell = this._cell;
             if(this._cell._base == 1)
             {
-               BASE.LoadBase(null,0,this._cell._baseID,"wmattack",false,BASE.MAIN_YARD);
+               BASE.LoadBase(null,0,this._cell._baseID,"wmattack",false,EnumYardType.MAIN_YARD);
             }
             else
             {
-               _loc2_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-               BASE.LoadBase(null,0,this._cell._baseID,"attack",false,_loc2_);
+               _loc2_ = this._cell._base == 3 ? int(EnumYardType.OUTPOST) : int(EnumYardType.MAIN_YARD);
+               BASE.LoadBase(null,0,this._cell._baseID,GLOBAL.e_BASE_MODE.ATTACK,false,_loc2_);
             }
          }
          else if(this._cell._protected)
@@ -204,10 +203,14 @@ package com.monsters.maproom_advanced
          var _loc16_:int = 0;
          var _loc17_:int = 0;
          var _loc18_:Object = null;
-         var _loc19_:int = 0;
-         var _loc20_:String = null;
-         var _loc21_:MapRoomPopupInfoMonster = null;
-         var _loc22_:MapRoomPopupInfoMonster = null;
+         var _loc19_:Boolean = false;
+         var _loc20_:int = 0;
+         var _loc21_:PopupInfoMonster = null;
+         var _loc22_:PopupInfoMonster = null;
+         var _loc23_:String = null;
+         var _loc24_:int = 0;
+         var _loc25_:int = 0;
+         var _loc26_:int = 0;
          var _loc1_:Number = 0;
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
@@ -218,7 +221,7 @@ package com.monsters.maproom_advanced
             this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,10 + _loc1_);
             for each(_loc2_ in this._cellsInRange)
             {
-               _loc3_ = _loc2_.cell;
+               _loc3_ = _loc2_.cell as MapRoomCell;
                if(Boolean(_loc3_) && !_loc3_._processed)
                {
                   return false;
@@ -234,7 +237,6 @@ package com.monsters.maproom_advanced
             this._monstersInRange = false;
             this._protectedInRange = false;
             MapRoom._flingerInRange = false;
-            this._attackMonsters = {};
             this._attackResources = {
                "r1":GLOBAL._resources.r1.Get(),
                "r2":GLOBAL._resources.r2.Get(),
@@ -242,39 +244,51 @@ package com.monsters.maproom_advanced
                "catapult":new SecNum(0),
                "flinger":new SecNum(0)
             };
-            for each(_loc2_ in this._cellsInRange)
+            if(!MapRoomManager.instance.isInMapRoom3)
             {
-               _loc3_ = _loc2_["cell"];
-               _loc11_ = int(_loc2_["range"]);
-               if(Boolean(_loc3_) && Boolean(_loc3_._mine))
+               ATTACK._curCreaturesAvailable = new Array();
+               for each(_loc2_ in this._cellsInRange)
                {
-                  _loc12_ = 0;
-                  if(_loc3_._flingerRange.Get() + _loc1_ >= _loc11_)
+                  _loc3_ = _loc2_["cell"];
+                  _loc11_ = int(_loc2_["range"]);
+                  if(Boolean(_loc3_) && Boolean(_loc3_._mine))
                   {
-                     for(_loc13_ in _loc3_._monsters)
+                     _loc12_ = 0;
+                     if(_loc3_._flingerRange.Get() + _loc1_ >= _loc11_)
                      {
-                        _loc14_ = int(_loc3_._monsters[_loc13_].Get());
-                        this._monstersInRange = true;
-                        _loc12_++;
-                        if(_loc14_ > 0 && Boolean(_loc3_._protected))
+                        for(_loc13_ in _loc3_._monsters)
                         {
-                           this._protectedInRange = true;
+                           _loc14_ = int(_loc3_._monsters[_loc13_].Get());
+                           this._monstersInRange = true;
+                           _loc12_++;
+                           if(_loc14_ > 0 && Boolean(_loc3_._protected))
+                           {
+                              this._protectedInRange = true;
+                           }
+                           if(ATTACK._curCreaturesAvailable[_loc13_])
+                           {
+                              ATTACK._curCreaturesAvailable[_loc13_] += _loc14_;
+                           }
+                           else
+                           {
+                              ATTACK._curCreaturesAvailable[_loc13_] = _loc14_;
+                           }
                         }
-                        if(this._attackMonsters[_loc13_])
-                        {
-                           this._attackMonsters[_loc13_].Add(_loc14_);
-                        }
-                        else
-                        {
-                           this._attackMonsters[_loc13_] = new SecNum(_loc14_);
-                        }
+                        MapRoom._flingerInRange = true;
                      }
-                     MapRoom._flingerInRange = true;
+                     if(_loc3_._flingerRange.Get() >= this._attackResources.flinger.Get())
+                     {
+                        this._attackResources.flinger.Set(_loc3_._flingerLevel.Get());
+                     }
                   }
-                  if(_loc3_._flingerRange.Get() >= this._attackResources.flinger.Get())
-                  {
-                     this._attackResources.flinger.Set(_loc3_._flingerLevel.Get());
-                  }
+               }
+            }
+            else
+            {
+               this._monstersInRange = true;
+               if(_loc3_._flingerRange.Get() >= this._attackResources.flinger.Get())
+               {
+                  this._attackResources.flinger.Set(_loc3_._flingerLevel.Get());
                }
             }
             if(MapRoom._flingerInRange)
@@ -289,7 +303,6 @@ package com.monsters.maproom_advanced
                   if(GLOBAL._playerGuardianData[_loc15_] && GLOBAL._playerGuardianData[_loc15_].hp.Get() > 0 && GLOBAL._playerGuardianData[_loc15_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
                   {
                      this._monstersInRange = true;
-                     break;
                   }
                   _loc15_++;
                }
@@ -302,15 +315,20 @@ package com.monsters.maproom_advanced
             {
                _loc16_ = 0;
                _loc17_ = 0;
-               _loc19_ = 0;
-               while(_loc19_ < GLOBAL._playerGuardianData.length)
+               _loc19_ = false;
+               _loc20_ = 0;
+               while(_loc20_ < GLOBAL._playerGuardianData.length)
                {
-                  _loc18_ = GLOBAL._playerGuardianData[_loc19_];
-                  if((_loc18_) && _loc18_.hp.Get() > 0 && _loc18_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
+                  _loc18_ = GLOBAL._playerGuardianData[_loc20_];
+                  if((_loc18_) && _loc18_.hp.Get() > 0 && _loc18_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL && (!_loc19_ || _loc18_.t == 5))
                   {
-                     _loc21_ = new MapRoomPopupInfoMonster();
-                     _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,"G" + GLOBAL._playerGuardianData[_loc19_].t + "_L" + GLOBAL._playerGuardianData[_loc19_].l.Get(),1);
-                     mMonsters.addChild(_loc21_);
+                     if(_loc18_.t != 5)
+                     {
+                        _loc19_ = true;
+                     }
+                     _loc22_ = new PopupInfoMonster();
+                     _loc22_.Setup(_loc16_ * 125,_loc17_ * 30,"G" + GLOBAL._playerGuardianData[_loc20_].t + "_L" + GLOBAL._playerGuardianData[_loc20_].l.Get(),1);
+                     mMonsters.addChild(_loc22_);
                      _loc16_ += 1;
                      if(_loc16_ == 3)
                      {
@@ -318,18 +336,48 @@ package com.monsters.maproom_advanced
                         _loc17_ += 1;
                      }
                   }
-                  _loc19_++;
-               }
-               for(_loc20_ in this._attackMonsters)
-               {
-                  _loc22_ = new MapRoomPopupInfoMonster();
-                  _loc22_.Setup(_loc16_ * 125,_loc17_ * 30,_loc20_,this._attackMonsters[_loc20_].Get());
-                  _loc16_ += 1;
-                  mMonsters.addChild(_loc22_);
-                  if(_loc16_ == 3)
+                  else if(_loc18_ && _loc18_.hp.Get() > 0 && _loc18_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL && _loc19_ && _loc18_.t != 5)
                   {
-                     _loc16_ = 0;
-                     _loc17_ += 1;
+                     LOGGER.Log("log","User has capacity to initialize combat with more than one normal champ.");
+                  }
+                  _loc20_++;
+               }
+               if(!MapRoomManager.instance.isInMapRoom3)
+               {
+                  for(_loc23_ in ATTACK._curCreaturesAvailable)
+                  {
+                     _loc21_ = new PopupInfoMonster();
+                     _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,_loc23_,ATTACK._curCreaturesAvailable[_loc23_]);
+                     _loc16_ += 1;
+                     mMonsters.addChild(_loc21_);
+                     if(_loc16_ == 3)
+                     {
+                        _loc16_ = 0;
+                        _loc17_ += 1;
+                     }
+                  }
+               }
+               else
+               {
+                  _loc24_ = int(GLOBAL.attackingPlayer.monsterList.length);
+                  _loc25_ = 0;
+                  _loc26_ = 0;
+                  while(_loc26_ < _loc24_)
+                  {
+                     _loc25_ = GLOBAL.attackingPlayer.monsterList[_loc26_].numHealthyHousedCreeps;
+                     if(_loc25_)
+                     {
+                        _loc21_ = new PopupInfoMonster();
+                        _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,GLOBAL.attackingPlayer.monsterList[_loc26_].m_creatureID,_loc25_);
+                        _loc16_ += 1;
+                        mMonsters.addChild(_loc21_);
+                        if(_loc16_ == 3)
+                        {
+                           _loc16_ = 0;
+                           _loc17_ += 1;
+                        }
+                     }
+                     _loc26_++;
                   }
                }
                this.addChild(mMonsters);
@@ -546,7 +594,7 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
+      private function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : void
       {
          var k:int = 0;
          var allyinfo:AllyInfo = null;

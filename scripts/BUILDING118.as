@@ -1,7 +1,9 @@
 package
 {
+   import com.monsters.interfaces.IAttackable;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.display.Shape;
@@ -39,6 +41,7 @@ package
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
          SetProps();
          this.Props();
+         attackFlags = Targeting.getOldStyleTargets(-1);
       }
       
       override public function TickAttack() : void
@@ -132,7 +135,7 @@ package
          }
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          var _loc4_:Point = null;
          var _loc5_:Number = NaN;
@@ -146,7 +149,7 @@ package
          var _loc13_:* = undefined;
          super.Fire(param1);
          SOUNDS.Play("railgun1",!isJard ? 0.8 : 0.4);
-         var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc2_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
@@ -154,8 +157,8 @@ package
          }
          if(isJard)
          {
-            _jarHealth.Add(-int(_damage * 3 * _loc2_ * _loc3_));
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * _loc2_ * _loc3_);
+            _jarHealth.Add(-int(damage * 3 * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,damage * 3 * _loc2_ * _loc3_);
             if(_jarHealth.Get() <= 0)
             {
                KillJar();
@@ -167,14 +170,14 @@ package
             this._spot = new Point(_loc4_.x,_loc4_.y);
             if(_targetVacuum)
             {
-               _loc6_ = GLOBAL._bTownhall._mc.x - _loc4_.x;
-               _loc5_ = GLOBAL._bTownhall._mc.y - GLOBAL._bTownhall._mc.height - _loc4_.y;
-               (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-int(_damage * 3 * _loc2_ * _loc3_));
+               _loc6_ = GLOBAL.townHall._mc.x - _loc4_.x;
+               _loc5_ = GLOBAL.townHall._mc.y - GLOBAL.townHall._mc.height - _loc4_.y;
+               Vacuum.getHose().modifyHealth(-int(damage * 3 * _loc2_ * _loc3_));
             }
             else
             {
-               _loc5_ = param1._tmpPoint.y - _loc4_.y;
-               _loc6_ = param1._tmpPoint.x - _loc4_.x;
+               _loc5_ = param1.y - _loc4_.y;
+               _loc6_ = param1.x - _loc4_.x;
             }
             this._segment = new Point(Math.cos(Math.atan2(_loc5_,_loc6_)) * 32,Math.sin(Math.atan2(_loc5_,_loc6_)) * 32);
             while(this._gunballs.length > 0)
@@ -211,7 +214,7 @@ package
             }
             if(!_targetVacuum)
             {
-               _loc8_ = MAP.CreepCellFind(_loc4_,1600,-1);
+               _loc8_ = Targeting.getCreepsInRange(1600,_loc4_,attackFlags);
                _loc9_ = int(_loc8_.length);
                _loc10_ = 0;
                _loc11_ = _loc4_.add(new Point(this._segment.x * 50,this._segment.y * 50));
@@ -221,8 +224,8 @@ package
                   _loc13_ = _loc8_[_loc12_].creep;
                   if(this.lineIntersectCircle(_loc4_,_loc11_,_loc13_._tmpPoint))
                   {
-                     _loc10_ += _damage * _loc3_ * _loc2_ * _loc13_._damageMult;
-                     _loc13_._health.Add(-(_damage * _loc3_ * _loc2_ * _loc13_._damageMult));
+                     _loc10_ += damage * _loc3_ * _loc2_ * _loc13_._damageMult;
+                     _loc13_.modifyHealth(-(damage * _loc3_ * _loc2_ * _loc13_._damageMult));
                   }
                   _loc12_++;
                }
@@ -289,7 +292,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {

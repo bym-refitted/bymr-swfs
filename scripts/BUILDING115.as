@@ -1,6 +1,9 @@
 package
 {
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
+   import com.monsters.siege.weapons.Vacuum;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
@@ -32,13 +35,14 @@ package
          this._fireStage = 1;
          SetProps();
          this.Props();
+         attackFlags = Targeting.getOldStyleTargets(2);
       }
       
       override public function TickAttack() : void
       {
          var _loc2_:Boolean = false;
          var _loc3_:int = 0;
-         var _loc4_:* = undefined;
+         var _loc4_:MonsterBase = null;
          var _loc5_:Point = null;
          var _loc6_:Point = null;
          var _loc7_:int = 0;
@@ -46,7 +50,7 @@ package
          var _loc9_:int = 0;
          var _loc1_:int = int(this._targetArray[_lvl.Get() - 1]);
          ++_frameNumber;
-         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
+         if(health > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
             if(this._fireStage == 1)
             {
@@ -60,7 +64,7 @@ package
             }
             if(this._fireStage == 2)
             {
-               if(BASE._yardType == BASE.MAIN_YARD && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range && (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Get() > 0)
+               if(canShootVacuumHose())
                {
                   _targetVacuum = true;
                   _fireTick = 30;
@@ -87,10 +91,10 @@ package
                      }
                      if(_targetVacuum)
                      {
-                        this.Fire((GLOBAL._bTownhall as BUILDING14)._vacuum);
+                        this.Fire(Vacuum.getHose());
                         ++this._shotsFired;
                      }
-                     else if(_targetCreeps[_loc3_].creep._health.Get() > 0)
+                     else if(_targetCreeps[_loc3_].creep.health > 0)
                      {
                         this.Fire(_targetCreeps[_loc3_].creep);
                         ++this._shotsFired;
@@ -135,11 +139,11 @@ package
          }
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          super.Fire(param1);
          SOUNDS.Play("snipe1",!isJard ? 0.8 : 0.4);
-         var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc2_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
@@ -147,20 +151,16 @@ package
          }
          if(isJard)
          {
-            _jarHealth.Add(-int(_damage * _loc2_ * _loc3_));
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * _loc2_ * _loc3_);
+            _jarHealth.Add(-int(damage * _loc2_ * _loc3_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,damage * _loc2_ * _loc3_);
             if(_jarHealth.Get() <= 0)
             {
                KillJar();
             }
          }
-         else if(_targetVacuum)
-         {
-            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),GLOBAL._bTownhall._position.add(new Point(0,-GLOBAL._bTownhall._mc.height)),null,_speed,int(_damage * _loc3_ * _loc2_),false,0);
-         }
          else
          {
-            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(_damage * _loc2_ * _loc3_),false,_splash,2);
+            PROJECTILES.Spawn(new Point(_mc.x,_mc.y + _top),null,param1,_speed,int(damage * _loc2_ * _loc3_),false,_splash,attackFlags);
          }
       }
       
@@ -178,7 +178,7 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpost)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
@@ -222,7 +222,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function():void
             {

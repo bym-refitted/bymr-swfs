@@ -3,7 +3,6 @@ package
    import com.monsters.configs.BYMConfig;
    import com.monsters.input.KeyboardInputHandler;
    import com.monsters.monsters.MonsterBase;
-   import com.monsters.pathing.PATHING;
    import com.monsters.rendering.RasterData;
    import com.monsters.rendering.Renderer;
    import flash.display.Bitmap;
@@ -14,7 +13,6 @@ package
    import flash.display.Stage;
    import flash.events.*;
    import flash.geom.*;
-   import flash.utils.getQualifiedClassName;
    import gs.*;
    import gs.easing.*;
    
@@ -86,6 +84,8 @@ package
       
       protected static var _bmdTile:BitmapData;
       
+      protected static var s_texture:String;
+      
       private static var _instance:MAP;
       
       private static var _canvas:BitmapData;
@@ -97,8 +97,6 @@ package
       public static var _inited:Boolean = false;
       
       public static const stage:Stage = GLOBAL._ROOT.stage;
-      
-      public static var _creepCells:Object = {};
       
       public static var _sortTo:int = 0;
       
@@ -180,7 +178,8 @@ package
                efxbmp.x = -_EFFECTSBMP.width * 0.5;
                efxbmp.y = -_EFFECTSBMP.height * 0.5;
             }
-            swapBG(texture);
+            s_texture = texture;
+            swapBG(s_texture);
             _EFFECTS = _GROUND.addChild(new MovieClip()) as MovieClip;
             _EFFECTS.mouseEnabled = false;
             _EFFECTS.mouseChildren = false;
@@ -222,7 +221,6 @@ package
             _EFFECTSTOP.mouseChildren = false;
             _EFFECTSTOP.tabChildren = false;
             _dragged = false;
-            _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
             _GROUND.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyboardInputHandler.instance.OnKeyDown);
@@ -246,12 +244,18 @@ package
             this._renderer = new Renderer(_canvas,_viewRect);
             GLOBAL._ROOT.addEventListener(Event.RENDER,this.render);
          }
+         Targeting.init();
          _inited = true;
       }
       
       public static function get effectsBMD() : BitmapData
       {
          return _EFFECTSBMP;
+      }
+      
+      public static function get texture() : String
+      {
+         return s_texture;
       }
       
       public static function get instance() : MAP
@@ -264,6 +268,7 @@ package
          var _loc3_:DisplayObject = null;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
+         s_texture = param1;
          if(!BYMConfig.instance.RENDERER_ON)
          {
             while(_BGTILES.numChildren)
@@ -271,7 +276,7 @@ package
                _BGTILES.removeChildAt(0);
             }
          }
-         _bmdTile = MAPBG.MakeTile(param1);
+         _bmdTile = MAPBG.MakeTile(s_texture);
          var _loc6_:Point = new Point();
          if(BYMConfig.instance.RENDERER_ON)
          {
@@ -368,6 +373,7 @@ package
          _EFFECTS = null;
          _EFFECTSTOP = null;
          _GROUND = null;
+         s_texture = null;
          if(_effectsRasterData)
          {
             _effectsRasterData.clear();
@@ -394,6 +400,10 @@ package
       public static function Edge() : void
       {
          var iso:Point = null;
+         if(GLOBAL.mode !== GLOBAL.e_BASE_MODE.BUILD && GLOBAL.mode !== GLOBAL.e_BASE_MODE.IBUILD)
+         {
+            return;
+         }
          try
          {
             if(Boolean(_EDGE) && _EDGE.parent == _UNDERLAY)
@@ -441,10 +451,6 @@ package
          {
             _loc3_ = _BUILDINGTOPS.getChildAt(_loc5_);
             _loc6_ = _loc3_.height * 0.5;
-            if(_loc3_ is MovieClip)
-            {
-               _loc6_ = int((_loc3_ as MovieClip)._middle);
-            }
             _loc4_.push({
                "depth":(_loc3_.y + _loc6_) * 1000 + _loc3_.x,
                "mc":_loc3_
@@ -524,6 +530,10 @@ package
          {
             FocusToDone = function():void
             {
+               if(!_GROUND)
+               {
+                  return;
+               }
                tx = _GROUND.x;
                ty = _GROUND.y;
                _autoScroll = false;
@@ -531,6 +541,8 @@ package
                {
                   callback();
                }
+               _instance.resizeViewRect();
+               BFOUNDATION.updateAllRasterData();
             };
             if(pause > 0)
             {
@@ -549,6 +561,7 @@ package
                   "y":ty,
                   "ease":Cubic.easeInOut,
                   "delay":delay,
+                  "onUpdate":BFOUNDATION.updateAllRasterData,
                   "onComplete":FocusToDone,
                   "overwrite":false
                });
@@ -560,6 +573,7 @@ package
                   "y":ty,
                   "ease":Linear.easeNone,
                   "delay":delay,
+                  "onUpdate":BFOUNDATION.updateAllRasterData,
                   "onComplete":FocusToDone,
                   "overwrite":false
                });
@@ -634,8 +648,8 @@ package
             if(_dragDistance > 100)
             {
                _dragged = true;
+               BFOUNDATION.updateAllRasterData();
             }
-            BFOUNDATION.updateAllRasterData();
          }
          var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
          var _loc3_:int = GLOBAL._ROOT.stage.stageHeight;
@@ -712,201 +726,6 @@ package
          _instance.resizeViewRect();
       }
       
-      public static function CreepCellAdd(param1:Point, param2:String, param3:MovieClip) : String
-      {
-         param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc4_:String = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
-         if(!_creepCells[_loc4_])
-         {
-            _creepCells[_loc4_] = new Object();
-         }
-         _creepCells[_loc4_]["creep" + param2] = param3;
-         return _loc4_;
-      }
-      
-      public static function CreepCellMove(param1:Point, param2:String, param3:MovieClip, param4:String) : String
-      {
-         param1 = GRID.FromISO(param1.x,param1.y);
-         var _loc5_:String = "node" + int(param1.x / 100) + "|" + int(param1.y / 100);
-         if(_loc5_ != param4)
-         {
-            CreepCellDelete(param2,param4);
-            return CreepCellAdd(GRID.ToISO(param1.x,param1.y,0),param2,param3);
-         }
-         return "";
-      }
-      
-      public static function CreepCellDelete(param1:String, param2:String) : void
-      {
-         if(_creepCells[param2])
-         {
-            delete _creepCells[param2]["creep" + param1];
-         }
-      }
-      
-      public static function getAttackingCreepsInRange(param1:Number, param2:Point, param3:int = 2147483647) : Array
-      {
-         var _loc6_:* = undefined;
-         var _loc7_:Number = NaN;
-         var _loc4_:Array = [];
-         var _loc5_:Object = CREEPS._creeps;
-         if(CREEPS._guardian)
-         {
-            if(CREEPS._guardian != CREATURES._guardian)
-            {
-               if(GLOBAL.QuickDistance(new Point(CREEPS._guardian._mc.x,CREEPS._guardian._mc.y),param2) <= param1)
-               {
-                  _loc4_.push(CREEPS._guardian);
-               }
-            }
-         }
-         for each(_loc6_ in _loc5_)
-         {
-            _loc7_ = GLOBAL.QuickDistance(new Point(_loc6_._mc.x,_loc6_._mc.y),param2);
-            if(_loc7_ <= param1 && _loc6_._movement != "flying")
-            {
-               _loc4_.push(_loc6_);
-               if(_loc4_.length >= param3)
-               {
-                  return _loc4_;
-               }
-            }
-         }
-         return _loc4_;
-      }
-      
-      public static function getDefendingCreepsInRange(param1:Number, param2:Point, param3:int = 2147483647) : Array
-      {
-         var _loc6_:* = undefined;
-         var _loc7_:Number = NaN;
-         var _loc4_:Array = [];
-         var _loc5_:Object = CREATURES._creatures;
-         if(CREATURES._guardian)
-         {
-            if(CREATURES._guardian != CREEPS._guardian)
-            {
-               if(GLOBAL.QuickDistance(new Point(CREATURES._guardian._mc.x,CREATURES._guardian._mc.y),param2) <= param1)
-               {
-                  _loc4_.push(CREATURES._guardian);
-               }
-            }
-         }
-         for each(_loc6_ in _loc5_)
-         {
-            _loc7_ = GLOBAL.QuickDistance(new Point(_loc6_._mc.x,_loc6_._mc.y),param2);
-            if(_loc7_ <= param1 && _loc6_._movement != "flying")
-            {
-               _loc4_.push(_loc6_);
-               if(_loc4_.length >= param3)
-               {
-                  return _loc4_;
-               }
-            }
-         }
-         return _loc4_;
-      }
-      
-      public static function DealLinearAEDamage(param1:Point, param2:Number, param3:Number, param4:Array, param5:Number = 0) : void
-      {
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:int = 0;
-         var _loc10_:* = undefined;
-         if(param5 > param2)
-         {
-            param5 = param2 - 1;
-         }
-         for each(_loc10_ in param4)
-         {
-            if(getQualifiedClassName(_loc10_) == "Object")
-            {
-               _loc10_ = _loc10_.creep;
-            }
-            _loc6_ = GLOBAL.QuickDistance(param1,new Point(_loc10_.x,_loc10_.y));
-            if(param2 >= _loc6_)
-            {
-               if(_loc6_ < param5)
-               {
-                  _loc7_ = param3;
-               }
-               else
-               {
-                  _loc7_ = param3 / param2 * (param2 - _loc6_);
-               }
-               if(_loc7_ < param3 / 5)
-               {
-                  _loc7_ = param3 / 5;
-               }
-               if(_loc10_ is BFOUNDATION)
-               {
-                  _loc10_.Damage(_loc7_,0,0);
-               }
-               else
-               {
-                  _loc7_ *= _loc10_._damageMult;
-                  if(_loc7_ > _loc10_._health.Get())
-                  {
-                     _loc7_ = int(_loc10_._health.Get());
-                  }
-                  _loc10_._health.Add(-_loc7_);
-               }
-               _loc8_ += _loc7_;
-            }
-         }
-         ATTACK.Damage(param1.x,param1.y,_loc8_);
-      }
-      
-      public static function CreepCellFind(param1:Point, param2:Number, param3:int = 0, param4:* = null) : Array
-      {
-         var _loc11_:int = 0;
-         var _loc12_:String = null;
-         var _loc13_:String = null;
-         var _loc14_:MonsterBase = null;
-         var _loc15_:Number = NaN;
-         var _loc16_:Point = null;
-         var _loc17_:int = 0;
-         param1 = PATHING.FromISO(param1);
-         var _loc5_:int = int(param1.x / 100);
-         var _loc6_:int = int(param1.y / 100);
-         var _loc7_:int = int(param2 / 100) + 1;
-         var _loc8_:Array = [];
-         var _loc9_:Number = param2 * param2;
-         var _loc10_:int = _loc5_ - _loc7_;
-         while(_loc10_ <= _loc5_ + _loc7_)
-         {
-            _loc11_ = _loc6_ - _loc7_;
-            while(_loc11_ <= _loc6_ + _loc7_)
-            {
-               _loc12_ = "node" + _loc10_ + "|" + _loc11_;
-               for(_loc13_ in _creepCells[_loc12_])
-               {
-                  _loc14_ = _creepCells[_loc12_][_loc13_];
-                  if(_loc14_._health.Get() > 0 && _loc14_._visible && _loc14_._blinkState == 0 && _loc14_ != param4)
-                  {
-                     if((param3 < 0 || _loc14_._invisibleTime == 0) && (_loc14_._movement != "fly" && param3 < 2 || _loc14_._movement == "fly" && param3 > 0))
-                     {
-                        _loc15_ = _loc14_._health.Get();
-                        _loc16_ = PATHING.FromISO(_loc14_._tmpPoint);
-                        _loc17_ = int(GLOBAL.QuickDistanceSquared(param1,_loc16_));
-                        if(_loc17_ < _loc9_)
-                        {
-                           _loc8_.push({
-                              "creep":_loc14_,
-                              "dist":Math.sqrt(_loc17_),
-                              "pos":_loc16_,
-                              "hp":_loc15_
-                           });
-                        }
-                     }
-                  }
-               }
-               _loc11_++;
-            }
-            _loc10_++;
-         }
-         return _loc8_;
-      }
-      
       public function get canvas() : BitmapData
       {
          return _canvas;
@@ -944,10 +763,10 @@ package
       public function resizeViewRect() : void
       {
          var _loc1_:Rectangle = GLOBAL._SCREEN;
-         _viewRect.width = _loc1_.width * (1 / _GROUND.scaleX);
-         _viewRect.height = _loc1_.height * (1 / _GROUND.scaleY);
-         _viewRect.x = -(_GROUND.x * (1 / _GROUND.scaleX)) + (MAP_WIDTH >> 1) + _loc1_.x;
-         _viewRect.y = -(_GROUND.y * (1 / _GROUND.scaleY)) + (MAP_HEIGHT >> 1) + _loc1_.y;
+         _viewRect.width = _loc1_.width * (1 / _GROUND.scaleX) + 32;
+         _viewRect.height = _loc1_.height * (1 / _GROUND.scaleY) + 32;
+         _viewRect.x = -(_GROUND.x * (1 / _GROUND.scaleX)) - (1 / _GROUND.scaleX - 1) * 50 + (MAP_WIDTH >>> 1) + _loc1_.x - 32;
+         _viewRect.y = -(_GROUND.y * (1 / _GROUND.scaleY)) - (1 / _GROUND.scaleY - 1) * 50 + (MAP_HEIGHT >>> 1) + _loc1_.y - 32;
       }
       
       private function render(param1:Event) : void

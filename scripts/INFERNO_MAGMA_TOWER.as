@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.interfaces.IAttackable;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.components.statusEffects.FlameEffect;
    import flash.display.BitmapData;
@@ -55,7 +56,7 @@ package
          super.AnimFrame(false);
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
          super.Fire(param1);
          if(Math.random() * 2 <= 1)
@@ -66,24 +67,24 @@ package
          {
             SOUNDS.Play("magma2");
          }
-         var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
+         var _loc2_:Number = 0.5 + 0.5 / maxHealth * health;
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc3_ = 1.25;
          }
-         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),new Point(param1.x,param1.y),param1,_speed,int(_damage * _loc2_ * _loc3_),_splash,this._projectileType,1);
+         this._projectile = FIREBALLS.Spawn2(new Point(_mc.x,_mc.y + _top),new Point(param1.x,param1.y),param1,_speed,int(damage * _loc2_ * _loc3_),_splash,this._projectileType,1,this);
       }
       
       protected function onProjectileCollision(param1:Event) : void
       {
          var _loc2_:FIREBALL = param1.target as FIREBALL;
          _loc2_.removeEventListener(FIREBALL.COLLIDED,this.onProjectileCollision);
-         var _loc3_:Array = MAP.CreepCellFind(new Point(_loc2_._targetCreep.x,_loc2_._targetCreep.y),_splash);
+         var _loc3_:Array = Targeting.getCreepsInRange(_splash,new Point(_loc2_._targetCreep.x,_loc2_._targetCreep.y),Targeting.getOldStyleTargets(0));
          var _loc4_:int = 0;
          while(_loc4_ < _loc3_.length)
          {
-            MonsterBase(_loc3_[_loc4_].creep).addStatusEffect(new FlameEffect(MonsterBase(_loc3_[_loc4_].creep),_damage * 0.5));
+            MonsterBase(_loc3_[_loc4_].creep).addStatusEffect(new FlameEffect(MonsterBase(_loc3_[_loc4_].creep),damage * 0.5));
             _loc4_++;
          }
       }
@@ -102,7 +103,7 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpost)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);

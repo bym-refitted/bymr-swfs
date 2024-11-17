@@ -1,6 +1,7 @@
 package com.monsters.subscriptions.rewards
 {
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.rewarding.Reward;
    
    public class DAVEStatueReward extends Reward
@@ -30,12 +31,13 @@ package com.monsters.subscriptions.rewards
       
       public static function findStatueRewardInWorld() : BFOUNDATION
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].cls);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._type == DAVE_STATUE_TYPE_ID)
+            if(_loc2_._type == DAVE_STATUE_TYPE_ID)
             {
-               return _loc1_;
+               return _loc2_;
             }
          }
          return null;
@@ -60,14 +62,15 @@ package com.monsters.subscriptions.rewards
       
       override public function removed() : void
       {
-         var _loc1_:BFOUNDATION = null;
+         var _loc2_:BFOUNDATION = null;
          GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].block = false;
          GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].locked = true;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(GLOBAL._buildingProps[DAVE_STATUE_BUILDING_PROPS_INDEX].cls);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._type == DAVE_STATUE_TYPE_ID)
+            if(_loc2_._type == DAVE_STATUE_TYPE_ID)
             {
-               _loc1_.RecycleC();
+               _loc2_.RecycleC();
             }
          }
          InventoryManager.buildingStorageRemove(DAVE_STATUE_TYPE_ID);

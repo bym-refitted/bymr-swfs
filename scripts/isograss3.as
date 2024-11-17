@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/2103_isograss3_isograss3.png")]
+   [Embed(source="/_assets/2171_isograss3_isograss3.png")]
    public dynamic class isograss3 extends BitmapData
    {
       public function isograss3(param1:int = 200, param2:int = 100)

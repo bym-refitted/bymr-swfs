@@ -39,9 +39,9 @@ package
             _loc7_ = 0;
             if(param4)
             {
-               if(GLOBAL._bTownhall)
+               if(GLOBAL.townHall)
                {
-                  _loc5_ = GLOBAL._bTownhall;
+                  _loc5_ = GLOBAL.townHall;
                   if(_loc6_ == _loc5_)
                   {
                      _loc7_ = 50;
@@ -57,11 +57,11 @@ package
             else
             {
                _loc5_ = param2;
-               if(!GLOBAL._bTownhall)
+               if(!GLOBAL.townHall)
                {
                   return;
                }
-               _loc6_ = GLOBAL._bTownhall;
+               _loc6_ = GLOBAL.townHall;
             }
             _loc12_ = 1;
             if(param1 == 4 && param4)
@@ -173,13 +173,6 @@ package
             MAP._RESOURCES.removeChild(_packages["p" + param1]);
             delete _packages["p" + param1];
          }
-      }
-      
-      public static function Distance(param1:Number, param2:Number, param3:Number, param4:Number) : Number
-      {
-         var _loc5_:Number = param1 - param3;
-         var _loc6_:Number = param2 - param4;
-         return Math.sqrt(_loc5_ * _loc5_ + _loc6_ * _loc6_);
       }
    }
 }

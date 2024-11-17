@@ -26,6 +26,10 @@ package
       
       public static var _timer:Timer;
       
+      public static const k_TOP_LEFT:int = 1;
+      
+      public static const k_CENTER:int = 2;
+      
       private static var _lastGroup:String = "alerts";
       
       public static var _open:Boolean = false;
@@ -382,6 +386,7 @@ package
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
+            print("game timed out, kicking the client out of fullscreen");
             GLOBAL._ROOT.stage.displayState = StageDisplayState.NORMAL;
          }
          _mcBG = GLOBAL._layerTop.addChild(new popup_bg2()) as popup_bg2;
@@ -587,13 +592,18 @@ package
       
       public static function DisplayGetShiny(param1:MouseEvent = null) : void
       {
-         var _loc2_:MovieClip = new popup_noshiny();
-         _loc2_.tA.htmlText = "<b>" + KEYS.Get("pop_noshiny_title") + "</b>";
-         _loc2_.tB.htmlText = KEYS.Get("pop_noshiny_body");
-         _loc2_.bGet.SetupKey("str_getmore_btn");
-         _loc2_.bGet.addEventListener(MouseEvent.CLICK,BUY.Show);
-         _loc2_.bGet.Highlight = true;
-         POPUPS.Push(_loc2_,null,null,"error1","aintgotnoshiny.png");
+         POPUPS.Push(GetShinyPopup(),null,null,"error1","aintgotnoshiny.png");
+      }
+      
+      public static function GetShinyPopup() : MovieClip
+      {
+         var _loc1_:MovieClip = new popup_noshiny();
+         _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_noshiny_title") + "</b>";
+         _loc1_.tB.htmlText = KEYS.Get("pop_noshiny_body");
+         _loc1_.bGet.SetupKey("str_getmore_btn");
+         _loc1_.bGet.addEventListener(MouseEvent.CLICK,BUY.Show);
+         _loc1_.bGet.Highlight = true;
+         return _loc1_;
       }
       
       public static function DisplayWorker(param1:int, param2:*) : void
@@ -659,9 +669,9 @@ package
             }
             POPUPS.Next();
          };
-         var workerImage:String = BASE.isInferno() ? "BYM_WorkerGuy2.png" : "helpinghand.png";
+         var workerImage:String = BASE.isInfernoMainYardOrOutpost ? "BYM_WorkerGuy2.png" : "helpinghand.png";
          var mc:MovieClip = new popup_noworker();
-         if(BASE._yardType != BASE.MAIN_YARD)
+         if(!BASE.isMainYard)
          {
             mc.tA.htmlText = KEYS.Get("worker_busy");
             mc.tB.htmlText = KEYS.Get("worker_speedupoutpost",{"v1":QUEUE.GetFinishCost()});
@@ -746,7 +756,8 @@ package
          var action:Function = param6;
          imageCompleteDialogue = function(param1:String, param2:BitmapData):void
          {
-            var _loc3_:Bitmap = new Bitmap(param2);
+            var _loc3_:Bitmap = null;
+            _loc3_ = new Bitmap(param2);
             _loc3_.x = imageOffset.x;
             _loc3_.y = -_loc3_.height + imageOffset.y;
             dialogueMC.mcImage.addChild(_loc3_);

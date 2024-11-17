@@ -211,12 +211,12 @@ package com.monsters.siege
             tNotice.htmlText = KEYS.Get("msg_sfactory_upgrading");
             tNotice.visible = true;
          }
-         else if(this._tab == "lab" && (GLOBAL._bSiegeLab && GLOBAL._bSiegeLab._hp.Get() < GLOBAL._bSiegeLab._hpMax.Get() * 0.5))
+         else if(this._tab == "lab" && (GLOBAL._bSiegeLab && GLOBAL._bSiegeLab.health < GLOBAL._bSiegeLab.maxHealth * 0.5))
          {
             tNotice.htmlText = KEYS.Get("msg_sworks_damaged",{"v1":GLOBAL._bSiegeLab.name});
             tNotice.visible = true;
          }
-         else if(this._tab == "factory" && (GLOBAL._bSiegeFactory && GLOBAL._bSiegeFactory._hp.Get() < GLOBAL._bSiegeFactory._hpMax.Get() * 0.5))
+         else if(this._tab == "factory" && (GLOBAL._bSiegeFactory && GLOBAL._bSiegeFactory.health < GLOBAL._bSiegeFactory.maxHealth * 0.5))
          {
             tNotice.htmlText = KEYS.Get("msg_sfactory_damaged",{"v1":GLOBAL._bSiegeFactory.name});
             tNotice.visible = true;

@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -39,7 +40,7 @@ package
          this.bQuests = new StoneButton();
          this.bStore = new StoneButton();
          this.bMap = new StoneButton();
-         if(BASE._yardType == BASE.OUTPOST)
+         if(BASE.isOutpostMapRoom2Only)
          {
             this.bKits = new StoneButton();
          }
@@ -57,13 +58,17 @@ package
                wood.scale9Grid = new Rectangle(15,15,10,10);
                addChild(wood);
                addChild(bBuild);
-               if(GLOBAL._loadmode == GLOBAL._mode)
+               if(MapRoomManager.instance.isInMapRoom3 && !BASE.isMainYardOrInfernoMainYard)
+               {
+                  bBuild.Enabled = false;
+               }
+               if(GLOBAL._loadmode == GLOBAL.mode)
                {
                   addChild(bQuests);
                }
                addChild(bStore);
                addChild(bMap);
-               if(BASE._yardType == BASE.OUTPOST)
+               if(BASE.isOutpostMapRoom2Only)
                {
                   addChild(bKits);
                }
@@ -73,13 +78,13 @@ package
                UI_BOTTOM.Update();
             };
             bBuild.SetupKey("ui_topbuildings",12);
-            if(GLOBAL._loadmode == GLOBAL._mode)
+            if(GLOBAL._loadmode == GLOBAL.mode)
             {
                bQuests.SetupKey("ui_topquests",12);
             }
             bStore.SetupKey("ui_topstore",12);
             bMap.SetupKey("ui_topmap",12);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpostMapRoom2Only)
             {
                bKits.SetupKey("btn_kits",12);
             }
@@ -108,11 +113,11 @@ package
          var _loc2_:StoneButton = null;
          var _loc3_:StoneButton = null;
          var _loc4_:Number = NaN;
-         if(BASE._yardType == BASE.OUTPOST)
+         if(BASE.isOutpostMapRoom2Only)
          {
             _loc1_ = [this.bKits,this.bBuild,this.bQuests,this.bStore,this.bMap];
          }
-         else if(GLOBAL._mode != GLOBAL._loadmode)
+         else if(GLOBAL.mode != GLOBAL._loadmode)
          {
             _loc1_ = [this.bBuild,this.bStore,this.bMap];
          }

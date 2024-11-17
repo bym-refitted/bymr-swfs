@@ -42,7 +42,7 @@ package com.monsters.effects.particles
          else
          {
             _loc4_ = this.getLootColor(param2);
-            _loc5_ = GLOBAL._mode;
+            _loc5_ = GLOBAL.mode;
             _loc6_ = "";
             _loc6_ = _loc5_ == "attack" || _loc5_ == "wmattack" ? "+" : "-";
             _loc3_ = "<b>" + _loc6_ + param1 + "</b>";
@@ -78,11 +78,11 @@ package com.monsters.effects.particles
       
       public function Move(param1:Point) : void
       {
-         this._mc.x = param1.x - 5 + Math.random() * 10;
-         this._mc.y = param1.y - 5 + Math.random() * 10;
+         this._mc.x = param1.x;
+         this._mc.y = param1.y;
          this._mc.cacheAsBitmap = true;
-         TweenLite.to(this._mc,1,{
-            "y":param1.y - (17 + Math.random() * 6),
+         TweenLite.to(this._mc,0.5,{
+            "y":param1.y - 25,
             "ease":Cubic.easeInOut,
             "onComplete":this.Remove
          });

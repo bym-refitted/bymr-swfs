@@ -1,5 +1,9 @@
 package com.monsters.effects
 {
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.components.abilities.Enrage;
+   import com.monsters.monsters.components.abilities.TemporaryComponent;
    import com.monsters.pathing.PATHING;
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
@@ -7,6 +11,8 @@ package com.monsters.effects
    
    public class ResourceBomb
    {
+      private static const k_PUTTY_BOMB_ENRAGE:String = "PuttyBombEnrage";
+      
       private var position:Point;
       
       private var positionFromISO:Point;
@@ -51,20 +57,21 @@ package com.monsters.effects
       {
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:BFOUNDATION = null;
-         var _loc8_:Point = null;
-         var _loc9_:Number = NaN;
+         var _loc7_:Vector.<Object> = null;
+         var _loc8_:BFOUNDATION = null;
+         var _loc9_:Point = null;
          var _loc10_:Number = NaN;
          var _loc11_:Number = NaN;
          var _loc12_:Number = NaN;
          var _loc13_:Number = NaN;
          var _loc14_:Number = NaN;
-         var _loc15_:Object = null;
+         var _loc15_:Number = NaN;
          var _loc16_:Object = null;
          var _loc17_:Object = null;
-         var _loc18_:Number = NaN;
+         var _loc18_:Object = null;
          var _loc19_:Number = NaN;
          var _loc20_:Number = NaN;
+         var _loc21_:Number = NaN;
          this.particles = {};
          this.targets = [];
          super();
@@ -77,46 +84,47 @@ package com.monsters.effects
          this.positionFromISO = PATHING.FromISO(this.position);
          if(this.resourceid != ResourceBombParticle.k_TYPE_PUTTY)
          {
-            for each(_loc7_ in BASE._buildingsAll)
+            _loc7_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(_loc8_ in _loc7_)
             {
-               _loc8_ = new Point(_loc7_._mc.x,_loc7_._mc.y + _loc7_._middle);
-               if(!(_loc7_._class == "trap" || _loc7_._hp.Get() <= 0 || _loc7_._class == "decoration" || _loc7_._class == "enemy" || _loc7_._class == "immovable"))
+               _loc9_ = new Point(_loc8_._mc.x,_loc8_._mc.y + _loc8_._middle);
+               if(!(_loc8_._class == "trap" || _loc8_.health <= 0 || _loc8_._class == "decoration" || _loc8_._class == "enemy" || _loc8_._class == "immovable"))
                {
-                  _loc9_ = Math.atan2(this.position.y - _loc8_.y,this.position.x - _loc8_.x);
-                  _loc10_ = BASE.EllipseEdgeDistanceSqrd(_loc9_,this.size,this.size * BASE._angle);
-                  _loc9_ = Math.atan2(_loc8_.y - this.position.y,_loc8_.x - this.position.x);
-                  _loc11_ = BASE.EllipseEdgeDistanceSqrd(_loc9_,_loc7_._size * 0.5,_loc7_._size * 0.5 * BASE._angle);
-                  _loc12_ = this.position.x - _loc8_.x;
-                  _loc13_ = this.position.y - _loc8_.y;
-                  _loc14_ = _loc12_ * _loc12_ + _loc13_ * _loc13_;
-                  if(_loc14_ * _loc14_ < (_loc10_ + _loc11_) * (_loc10_ + _loc11_))
+                  _loc10_ = Math.atan2(this.position.y - _loc9_.y,this.position.x - _loc9_.x);
+                  _loc11_ = BASE.EllipseEdgeDistanceSqrd(_loc10_,this.size,this.size * BASE._angle);
+                  _loc10_ = Math.atan2(_loc9_.y - this.position.y,_loc9_.x - this.position.x);
+                  _loc12_ = BASE.EllipseEdgeDistanceSqrd(_loc10_,_loc8_._size * 0.5,_loc8_._size * 0.5 * BASE._angle);
+                  _loc13_ = this.position.x - _loc9_.x;
+                  _loc14_ = this.position.y - _loc9_.y;
+                  _loc15_ = _loc13_ * _loc13_ + _loc14_ * _loc14_;
+                  if(_loc15_ * _loc15_ < (_loc11_ + _loc12_) * (_loc11_ + _loc12_))
                   {
-                     this.targets.push([_loc7_,1 - 1 / (this.size * 0.5) * this.dist,this.tempPoint,_loc7_._footprint[0].width * 0.5]);
+                     this.targets.push([_loc8_,1 - 1 / (this.size * 0.5) * this.dist,this.tempPoint,_loc8_._footprint[0].width * 0.5]);
                   }
                }
             }
          }
          else
          {
-            _loc17_ = CREEPS._creeps;
-            for each(_loc15_ in _loc17_)
+            _loc18_ = CREEPS._creeps;
+            for each(_loc16_ in _loc18_)
             {
-               this.tempPoint = PATHING.FromISO(new Point(_loc15_.x,_loc15_.y));
-               if(_loc15_._creatureID.substr(0,1) == "G")
+               this.tempPoint = PATHING.FromISO(new Point(_loc16_.x,_loc16_.y));
+               if(_loc16_._creatureID.substr(0,1) == "G")
                {
-                  _loc16_ = SPRITES._sprites[_loc15_._spriteID];
+                  _loc17_ = SPRITES._sprites[_loc16_._spriteID];
                }
                else
                {
-                  _loc16_ = SPRITES._sprites[_loc15_._creatureID];
+                  _loc17_ = SPRITES._sprites[_loc16_._creatureID];
                }
-               this.tempPoint.add(_loc16_.middle);
-               _loc18_ = this.positionFromISO.x - this.tempPoint.x;
-               _loc19_ = this.positionFromISO.y - this.tempPoint.y;
-               _loc20_ = this.size * 0.5;
-               if(_loc18_ * _loc18_ + _loc19_ * _loc19_ < _loc20_ * _loc20_)
+               this.tempPoint.add(_loc17_.middle);
+               _loc19_ = this.positionFromISO.x - this.tempPoint.x;
+               _loc20_ = this.positionFromISO.y - this.tempPoint.y;
+               _loc21_ = this.size * 0.5;
+               if(_loc19_ * _loc19_ + _loc20_ * _loc20_ < _loc21_ * _loc21_)
                {
-                  this.targets.push([_loc15_]);
+                  this.targets.push([_loc16_]);
                }
             }
          }
@@ -125,9 +133,9 @@ package com.monsters.effects
          _loc6_ = int(this.bomb.particles);
          while(_loc5_ < _loc6_)
          {
-            _loc9_ = Math.random() * 360 * 0.0174532925;
+            _loc10_ = Math.random() * 360 * 0.0174532925;
             this.distance = Math.random() * this.size / 2;
-            this.particles[_loc5_] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(_loc9_) * this.distance,this.position.y + Math.cos(_loc9_) * this.distance * 0.5),this,_loc5_.toString(),param4,this.resourceid);
+            this.particles[_loc5_] = new ResourceBombParticle(MovieClip(this.mctop),MovieClip(this.mcbottom),new Point(this.position.x + Math.sin(_loc10_) * this.distance,this.position.y + Math.cos(_loc10_) * this.distance * 0.5),this,_loc5_.toString(),param4,this.resourceid);
             ++this.particleCount;
             _loc5_++;
          }
@@ -148,6 +156,7 @@ package com.monsters.effects
          var _loc5_:Array = null;
          var _loc6_:BFOUNDATION = null;
          var _loc7_:Number = NaN;
+         var _loc8_:MonsterBase = null;
          var _loc3_:int = int(this.targets.length);
          param1 = PATHING.FromISO(param1);
          if(this.resourceid !== ResourceBombParticle.k_TYPE_PUTTY)
@@ -177,7 +186,8 @@ package com.monsters.effects
                {
                   _loc4_ = 0;
                }
-               _loc6_.Damage(_loc4_,this.position.x,this.position.y,1,false,null,false);
+               this.totalDamage += _loc4_;
+               _loc6_.modifyHealth(_loc4_);
             }
          }
          else
@@ -185,9 +195,16 @@ package com.monsters.effects
             _loc2_ = 0;
             while(_loc2_ < _loc3_)
             {
-               if(this.targets[_loc2_][0]._visible)
+               if(Boolean(this.targets[_loc2_][0]._visible) && !this.targets[_loc2_][0].dead)
                {
-                  this.targets[_loc2_][0].ModeEnrage(GLOBAL.Timestamp() + this.bomb.speedlength,this.bomb.speed,this.bomb.damageMult);
+                  if(this.targets[_loc2_][0] is MonsterBase)
+                  {
+                     _loc8_ = this.targets[_loc2_][0] as MonsterBase;
+                     if(!_loc8_.getComponentByName(k_PUTTY_BOMB_ENRAGE))
+                     {
+                        _loc8_.addComponent(new TemporaryComponent(new Enrage(this.bomb.speed,this.bomb.damageMult),this.bomb.speedlength),k_PUTTY_BOMB_ENRAGE);
+                     }
+                  }
                }
                _loc2_++;
             }

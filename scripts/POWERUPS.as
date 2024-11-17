@@ -2,6 +2,11 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.baseBuffs.BaseBuffHandler;
+   import com.monsters.baseBuffs.buffs.AllianceArmamentBuff;
+   import com.monsters.baseBuffs.buffs.AllianceConquestBuff;
+   import com.monsters.baseBuffs.buffs.AllianceDeclareWarBuff;
+   import com.monsters.debug.Console;
    
    public class POWERUPS
    {
@@ -139,6 +144,18 @@ package
                }
                _loc4_++;
             }
+         }
+         if(CheckPowers(ALLIANCE_ARMAMENT) && DEFENSE && !BaseBuffHandler.instance.getBuffByID(AllianceArmamentBuff.ID))
+         {
+            BaseBuffHandler.instance.addBuffByID(AllianceArmamentBuff.ID);
+         }
+         if(Boolean(CheckPowers(ALLIANCE_CONQUEST)) && !BaseBuffHandler.instance.getBuffByID(AllianceConquestBuff.ID))
+         {
+            BaseBuffHandler.instance.addBuffByID(AllianceConquestBuff.ID);
+         }
+         if(Boolean(CheckPowers(ALLIANCE_DECLAREWAR)) && !BaseBuffHandler.instance.getBuffByID(AllianceDeclareWarBuff.ID))
+         {
+            BaseBuffHandler.instance.addBuffByID(AllianceDeclareWarBuff.ID);
          }
       }
       
@@ -340,13 +357,13 @@ package
       
       public static function GetMode() : void
       {
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
          {
             OFFENSE = true;
             DEFENSE = false;
             NORMAL = false;
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             OFFENSE = false;
             DEFENSE = true;
@@ -396,32 +413,8 @@ package
       
       private static function PowArmament(... rest) : Number
       {
-         var _loc2_:Number = Number(rest[0]);
-         if(rest[0])
-         {
-            if(DEFENSE)
-            {
-               _loc2_ = rest[0] * 0.75;
-            }
-            if(OFFENSE)
-            {
-               _loc2_ = Number(rest[0]);
-            }
-            return _loc2_;
-         }
-         if(rest[1])
-         {
-            if(DEFENSE)
-            {
-               _loc2_ = rest[1] * 1.5;
-            }
-            if(OFFENSE)
-            {
-               _loc2_ = Number(rest[0]);
-            }
-            return _loc2_;
-         }
-         return _loc2_;
+         Console.warning("Alliance Armament shouldnt be called this way, it should be a base buff");
+         return 0;
       }
       
       private static function PowConquest(... rest) : Number

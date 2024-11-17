@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.MouseEvent;
    
    public class BUILDINGS
@@ -35,8 +36,12 @@ package
       
       public static function Show(param1:MouseEvent = null) : void
       {
+         if(MapRoomManager.instance.isInMapRoom3 && !BASE.isMainYardOrInfernoMainYard)
+         {
+            return;
+         }
          GLOBAL.BlockerAdd();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(GLOBAL._newBuilding)
             {

@@ -17,6 +17,16 @@ package com.monsters.utils
       {
          return GLOBAL.QuickDistance(param1,param2);
       }
+      
+      public static function getAngleBetweenTwoPointsInRadians(param1:Point, param2:Point) : Number
+      {
+         return Math.atan2(param2.y - param1.y,param2.x - param1.x);
+      }
+      
+      public static function getAngleBetweenTwoPointsInDegrees(param1:Point, param2:Point) : Number
+      {
+         return getAngleBetweenTwoPointsInRadians(param1,param2) * RADIANS_TO_DEGREES;
+      }
    }
 }
 

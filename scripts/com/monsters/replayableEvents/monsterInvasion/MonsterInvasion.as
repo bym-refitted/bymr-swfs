@@ -1,5 +1,6 @@
 package com.monsters.replayableEvents.monsterInvasion
 {
+   import com.monsters.managers.InstanceManager;
    import com.monsters.replayableEvents.ReplayableEvent;
    import com.monsters.replayableEvents.attackDefend.AttackDefend;
    import flash.events.Event;
@@ -54,20 +55,18 @@ package com.monsters.replayableEvents.monsterInvasion
       protected function endWave() : void
       {
          var _loc3_:int = 0;
-         var _loc4_:Object = null;
          var _loc5_:BFOUNDATION = null;
-         WMATTACK.setEnd(WMATTACK.CleanUp);
          var _loc1_:int = 0;
          var _loc2_:int = 0;
-         for(_loc4_ in BASE._buildingsAll)
+         var _loc4_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc5_ in _loc4_)
          {
-            _loc5_ = BASE._buildingsAll[_loc4_];
             if(!(_loc5_._class == "trap" && _loc5_._fired || _loc5_._type == 53 && _loc5_._expireTime < GLOBAL.Timestamp()))
             {
                if(_loc5_._class != "wall")
                {
-                  _loc1_ += _loc5_._hp.Get();
-                  _loc2_ += _loc5_._hpMax.Get();
+                  _loc1_ += _loc5_.health;
+                  _loc2_ += _loc5_.maxHealth;
                }
             }
          }
@@ -177,7 +176,7 @@ package com.monsters.replayableEvents.monsterInvasion
       
       private function postSend() : void
       {
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicipanic");
          }
@@ -204,20 +203,20 @@ package com.monsters.replayableEvents.monsterInvasion
          this._curSend = [];
          this._internalWaveIndex = 0;
          this._currentAttackers = [];
+         WMATTACK.setEnd();
       }
       
       public function Surrender(param1:Event) : void
       {
          var _loc2_:Array = null;
          var _loc3_:Number = 0;
-         WMATTACK.setEnd(WMATTACK.CleanUp);
          this._retreatAllMonsters = true;
          for each(_loc2_ in this._currentAttackers)
          {
             _loc3_ = 0;
             while(_loc3_ < _loc2_.length)
             {
-               _loc2_[_loc3_].ModeRetreat();
+               _loc2_[_loc3_].changeModeRetreat();
                _loc3_++;
             }
          }
@@ -233,12 +232,13 @@ package com.monsters.replayableEvents.monsterInvasion
       
       protected function StartRepairs() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._hp.Get() < _loc1_._hpMax.Get() && _loc1_._repairing == 0)
+            if(_loc2_.health < _loc2_.maxHealth && _loc2_._repairing == 0)
             {
-               _loc1_.Repair();
+               _loc2_.Repair();
             }
          }
       }
@@ -252,7 +252,7 @@ package com.monsters.replayableEvents.monsterInvasion
          }
          WMATTACK.enabled = false;
          this._isActive = false;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             _buttonCopy = KEYS.Get("btn_next");
          }

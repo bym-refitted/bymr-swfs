@@ -84,21 +84,18 @@ package
          return _loc3_;
       }
       
-      public function Setup() : void
+      public function Setup(param1:Boolean) : void
       {
-         _bOpen.addEventListener(MouseEvent.MOUSE_DOWN,this.Target);
-         _image.addEventListener(MouseEvent.MOUSE_DOWN,this.Target);
-         _bOpen.addEventListener(MouseEvent.MOUSE_OVER,this.ToolTipShow);
-         _image.addEventListener(MouseEvent.MOUSE_OVER,this.ToolTipShow);
-         _bOpen.addEventListener(MouseEvent.MOUSE_OUT,this.ToolTipHide);
-         _image.addEventListener(MouseEvent.MOUSE_OUT,this.ToolTipHide);
-         _image.buttonMode = true;
+         _iconbg.mouseChildren = false;
+         _image.mouseEnabled = false;
          _image.mouseChildren = false;
          this._items = [];
          _bar.alpha = 0;
          _bar.timebar.visible = false;
          _bar._tB.visible = false;
          _bar._tB.htmlText = "";
+         timeLeftMC.mouseEnabled = false;
+         timeLeftMC.mouseChildren = false;
          timeLeftMC.alpha = 0;
          this._currentSiegeWeapon = SiegeWeapons.availableWeapon;
          if(this._currentSiegeWeapon == null)
@@ -106,10 +103,19 @@ package
             UI2._top.ClearSiegeWeapon();
             return;
          }
-         this._t = new Timer(100);
+         if(param1)
+         {
+            ImageCache.GetImageWithCallBack(SiegeWeapons.availableWeapon.image,this.onImageLoaded);
+            return;
+         }
+         _iconbg.buttonMode = true;
+         _iconbg.addEventListener(MouseEvent.MOUSE_DOWN,this.Target);
+         _iconbg.addEventListener(MouseEvent.MOUSE_OVER,this.ToolTipShow);
+         _iconbg.addEventListener(MouseEvent.MOUSE_OUT,this.ToolTipHide);
+         this._t = new Timer(100,int.MAX_VALUE);
          this._t.addEventListener(TimerEvent.TIMER,this.UpdateTimer);
+         this._t.start();
          this.Update();
-         this.Hide();
       }
       
       public function Cancel() : void
@@ -117,9 +123,7 @@ package
          if(this._currentSiegeWeapon.quantity > 0 && this._state == 1)
          {
             this._state = 0;
-            _bOpen.Enabled = true;
-            _bOpen.Highlight = true;
-            _bOpen.label_txt.htmlText = "<b>" + KEYS.Get("siege_firebtn") + "</b>";
+            txtName.htmlText = "<b>\n" + KEYS.Get("siege_firebtn") + "</b>";
             TweenLite.to(_bar,0.3,{
                "autoAlpha":0,
                "y":23
@@ -148,26 +152,30 @@ package
          }
          if(this._state == 0)
          {
-            _bOpen.label_txt.htmlText = "<b>" + KEYS.Get("siege_firebtn") + "</b>";
-            if(this._currentSiegeWeapon.quantity <= 0)
+            txtName.htmlText = "<b>" + KEYS.Get("siege_firebtn") + "</b>";
+            if(this._currentSiegeWeapon.canFire())
             {
-               _image.alpha = 0.5;
-               _bOpen.Highlight = false;
+               if(this._currentSiegeWeapon.quantity <= 0)
+               {
+                  _image.alpha = 0.5;
+               }
+               else
+               {
+                  _image.alpha = 1;
+               }
+               TweenLite.to(_bar,0.3,{
+                  "autoAlpha":0,
+                  "y":23
+               });
             }
-            else
-            {
-               _image.alpha = 1;
-               _bOpen.Highlight = true;
-            }
-            TweenLite.to(_bar,0.3,{
-               "autoAlpha":0,
-               "y":23
-            });
          }
          else if(this._state == 1)
          {
-            _bOpen.Highlight = false;
-            _bOpen.label_txt.htmlText = "<b>" + KEYS.Get("siege_cancelbtn") + "</b>";
+            txtName.htmlText = "<b><font color=\"#FF0000\">\n" + KEYS.Get("siege_cancelbtn") + "</font></b>";
+            if(_bar.parent)
+            {
+               _bar.parent.setChildIndex(_bar,_bar.parent.numChildren - 1);
+            }
             TweenLite.to(_bar,0.3,{
                "autoAlpha":1,
                "y":65,
@@ -209,6 +217,7 @@ package
                {
                   this.SiegeWeaponFinished();
                }
+               txtName.visible = false;
             }
             else
             {
@@ -254,11 +263,8 @@ package
                "y":23,
                "ease":Circ.easeOut
             });
-            _bOpen.Highlight = false;
-            _bOpen.Enabled = false;
-            _bOpen.visible = false;
          }
-         var _loc1_:Boolean = BASE._yardType == BASE.OUTPOST && !this._currentSiegeWeapon.canUseInOutposts;
+         var _loc1_:* = !this._currentSiegeWeapon.canFire();
          if(_loc1_)
          {
             TweenLite.to(_bar,0.3,{
@@ -266,10 +272,6 @@ package
                "y":23,
                "ease":Circ.easeOut
             });
-            _bOpen.Highlight = false;
-            _bOpen.Enabled = false;
-            _bOpen.visible = false;
-            _bOpen.removeEventListener(MouseEvent.MOUSE_DOWN,this.Target);
             _image.removeEventListener(MouseEvent.MOUSE_DOWN,this.Target);
             TweenLite.to(_image,0.6,{"autoAlpha":0.5});
          }
@@ -389,37 +391,37 @@ package
          else if(this._state == 0)
          {
             this.ZeroOutAttacks();
-            this._state = 1;
             if(this._currentSiegeWeapon.range > 0)
             {
                ATTACK.DropZone(this._currentSiegeWeapon.range,this._currentSiegeWeapon.dropTarget);
+               _loc2_ = true;
+               this._state = 1;
             }
             else
             {
                _loc2_ = SiegeWeapons.activateWeapon(this._currentSiegeWeapon.weaponID);
-               if(!_loc2_)
+               if(_loc2_)
                {
-                  _bOpen.enabled = false;
-                  _bOpen.mouseEnabled = false;
-                  return;
+                  this.HasFired();
                }
-               this.HasFired();
+            }
+            if(_loc2_)
+            {
+               this._t.start();
             }
          }
-         this._t.start();
       }
       
       public function ToolTipShow(param1:MouseEvent = null) : void
       {
          var _loc6_:SiegeWeaponProperty = null;
          this._tooltip = new bubblepopupUpSiegeWeapon_CLIP();
-         this._tooltip.x = -10;
+         this._tooltip.x = -40;
          this._tooltip.y = 70;
-         this._tooltip.mcArrow.x = this._tooltip.width / 2 - 100;
          var _loc2_:* = "<b>" + this._currentSiegeWeapon.name + "</b>" + "<br>" + "<b>" + KEYS.Get("siege_tooltip_level",{"v1":this._currentSiegeWeapon.level}) + "</b>";
          var _loc3_:Vector.<SiegeWeaponProperty> = this._currentSiegeWeapon.getProperties();
          var _loc4_:* = "";
-         if(BASE._yardType == BASE.OUTPOST && !this._currentSiegeWeapon.canUseInOutposts)
+         if(BASE.isOutpost && !this._currentSiegeWeapon.canUseInOutposts)
          {
             _loc4_ += "<b>" + KEYS.Get("vacuum_nooutposts",{"v1":this._currentSiegeWeapon.name}) + "</b><br>";
          }
@@ -452,10 +454,15 @@ package
       
       public function Fire(param1:int, param2:int) : void
       {
+         var _loc3_:Boolean = false;
          if(this._state == 1)
          {
+            _loc3_ = SiegeWeapons.activateWeapon(this._currentSiegeWeapon.weaponID,param1,param2);
+            if(!_loc3_)
+            {
+               return;
+            }
             ATTACK.RemoveDropZone();
-            SiegeWeapons.activateWeapon(this._currentSiegeWeapon.weaponID,param1,param2);
             this.HasFired();
          }
       }
@@ -467,7 +474,6 @@ package
          {
             this._state = 2;
             _image.mouseEnabled = false;
-            _bOpen.mouseEnabled = false;
             if(!this.DOES_USE_NEW_DISPLAY)
             {
                TweenLite.to(_image,0.6,{"autoAlpha":0.5});
@@ -497,14 +503,7 @@ package
          {
             if(ATTACK._flingerBucket[_loc1_].Get() > 0)
             {
-               if(GLOBAL._advancedMap)
-               {
-                  GLOBAL._attackerMapCreatures[_loc1_].Add(ATTACK._flingerBucket[_loc1_].Get());
-               }
-               else
-               {
-                  GLOBAL._attackerCreatures[_loc1_].Add(ATTACK._flingerBucket[_loc1_].Get());
-               }
+               ATTACK._curCreaturesAvailable[_loc1_].Add(ATTACK._flingerBucket[_loc1_].Get());
                ATTACK._flingerBucket[_loc1_].Set(0);
             }
          }
@@ -518,11 +517,8 @@ package
       
       public function Hide() : void
       {
-         if(_mc.parent)
-         {
-            _mc.parent.removeChild(_mc);
-         }
          this._t.stop();
+         this._t.removeEventListener(TimerEvent.TIMER,this.UpdateTimer);
          this._open = false;
          this.Update();
       }
@@ -533,7 +529,7 @@ package
          switch(this._currentSiegeWeapon.weaponID)
          {
             case Vacuum.ID:
-               _loc1_ = Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._destroyed === false;
+               _loc1_ = Boolean(GLOBAL.townHall) && GLOBAL.townHall._destroyed === false;
                enabled = _loc1_;
          }
          return _loc1_;

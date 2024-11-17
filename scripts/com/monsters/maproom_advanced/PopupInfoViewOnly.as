@@ -1,6 +1,7 @@
 package com.monsters.maproom_advanced
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.enums.EnumYardType;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.Loader;
@@ -9,7 +10,7 @@ package com.monsters.maproom_advanced
    import flash.events.MouseEvent;
    import flash.net.URLRequest;
    
-   public class PopupInfoViewOnly extends PopupInfoViewOnly_CLIP
+   internal class PopupInfoViewOnly extends PopupInfoViewOnly_CLIP
    {
       private var _cell:MapRoomCell;
       
@@ -222,11 +223,11 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE.LoadBase(null,0,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,this._cell._baseID,"wmview",false,EnumYardType.MAIN_YARD);
          }
          else
          {
-            _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+            _loc1_ = this._cell._base == 3 ? int(EnumYardType.OUTPOST) : int(EnumYardType.MAIN_YARD);
             BASE.LoadBase(null,0,this._cell._baseID,"view",false,_loc1_);
          }
       }

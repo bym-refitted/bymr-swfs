@@ -63,6 +63,11 @@ package com.monsters.siege.weapons
          this.quantity = 0;
       }
       
+      public function canFire() : Boolean
+      {
+         return GLOBAL.isInAttackMode;
+      }
+      
       public function get buildCosts() : Object
       {
          return this.getProperty(SiegeWeapon.BUILD_COSTS).getValueForLevel(this.level);
@@ -192,9 +197,10 @@ package com.monsters.siege.weapons
          return this._properties[param1];
       }
       
-      public function activate(param1:Number, param2:Number) : void
+      public function activate(param1:Number, param2:Number) : Boolean
       {
          this.onActivation(param1,param2);
+         return true;
       }
       
       public function deactivate() : void

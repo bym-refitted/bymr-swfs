@@ -47,7 +47,7 @@ package
             {
                GLOBAL.CallJS("reloadPage");
             };
-            print(" *** ERRORMESSAGE SHOWING OOPS" + _message);
+            print(" *** ERRORMESSAGE SHOWING OOPS " + _message);
             GLOBAL.RefreshScreen();
             try
             {

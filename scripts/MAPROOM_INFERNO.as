@@ -40,7 +40,7 @@ package
          _mc = null;
          loadState = 0;
          _open = false;
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _visitingFriend = false;
             bridge_obj = {

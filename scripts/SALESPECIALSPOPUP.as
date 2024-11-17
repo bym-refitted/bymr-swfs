@@ -280,7 +280,7 @@ package
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         if(GLOBAL._mode == "build" && !GLOBAL._monetized && !SALESPECIALSPOPUP._open && BASE.BaseLevel().level >= 26 && !_alreadyDone)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !GLOBAL._monetized && !SALESPECIALSPOPUP._open && BASE.BaseLevel().level >= 26 && !_alreadyDone)
          {
             _loc1_ = 0;
             _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
@@ -427,7 +427,7 @@ package
          if(_page == "giftconfirm")
          {
             POPUPS.Next();
-            if(!BASE.isInferno())
+            if(!BASE.isInfernoMainYardOrOutpost)
             {
                STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
             }
@@ -447,7 +447,7 @@ package
                else
                {
                   POPUPS.Next();
-                  if(!BASE.isInferno())
+                  if(!BASE.isInfernoMainYardOrOutpost)
                   {
                      STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
                   }

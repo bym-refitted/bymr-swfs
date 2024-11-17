@@ -1,7 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
-   import com.monsters.maproom_advanced.MapRoomPopupInfoMonster;
+   import com.monsters.maproom_advanced.PopupInfoMonster;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
    import flash.display.Bitmap;
@@ -18,7 +18,7 @@ package
       
       public var _infoMC:QUESTINFO;
       
-      public var _monsterRewardMC:MapRoomPopupInfoMonster;
+      public var _monsterRewardMC:PopupInfoMonster;
       
       public var _specialReward:SpecialRewardInfo;
       
@@ -300,7 +300,7 @@ package
                   qq = 0;
                   while(qq < 5)
                   {
-                     if(GLOBAL._mode == GLOBAL._loadmode)
+                     if(GLOBAL.mode == GLOBAL._loadmode)
                      {
                         this._infoMC["R" + (qq + 1)].gotoAndStop(qq + 1);
                      }
@@ -311,7 +311,7 @@ package
                      this._infoMC["R" + (qq + 1)].visible = false;
                      qq++;
                   }
-                  this._monsterRewardMC = new MapRoomPopupInfoMonster();
+                  this._monsterRewardMC = new PopupInfoMonster();
                   this._monsterRewardMC.Setup(this._infoMC.R1.x,this._infoMC.R1.y,q.reward_creatureid,q.monster_reward);
                   this._infoMC.addChild(this._monsterRewardMC);
                }
@@ -335,7 +335,7 @@ package
                   c = 0;
                   while(c < 5)
                   {
-                     if(GLOBAL._mode == GLOBAL._loadmode)
+                     if(GLOBAL.mode == GLOBAL._loadmode)
                      {
                         this._infoMC["R" + (c + 1)].gotoAndStop(c + 1);
                      }

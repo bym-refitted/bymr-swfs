@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1195")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol525")]
    public dynamic class QUESTSPOPUP_CLIP extends MovieClip
    {
       public var title_txt:TextField;

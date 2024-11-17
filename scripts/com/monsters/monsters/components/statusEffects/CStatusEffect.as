@@ -1,8 +1,11 @@
 package com.monsters.monsters.components.statusEffects
 {
+   import com.monsters.configs.BYMConfig;
    import com.monsters.display.SpriteSheetAnimation;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.monsters.components.Component;
+   import com.monsters.rendering.RasterData;
+   import flash.geom.Point;
    
    public class CStatusEffect extends Component
    {
@@ -11,6 +14,10 @@ package com.monsters.monsters.components.statusEffects
       protected static const _MAX_TICKS:int = 40;
       
       protected var _icon:SpriteSheetAnimation;
+      
+      protected var _rasterData:RasterData;
+      
+      protected var _rasterPt:Point;
       
       protected var _priority:int = 0;
       
@@ -36,6 +43,11 @@ package com.monsters.monsters.components.statusEffects
       override protected function onRegister() : void
       {
          this._target.addChild(this._icon);
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            this._rasterPt = new Point();
+            this._rasterData = new RasterData(this._icon.bitmapData,this._rasterPt,int.MAX_VALUE);
+         }
          this._priority = -1;
          var _loc1_:int = 0;
          while(_loc1_ < this._target._components.length)
@@ -51,14 +63,15 @@ package com.monsters.monsters.components.statusEffects
       override protected function onUnregister() : void
       {
          this._target.removeChild(this._icon);
-         destoy();
+         this.destoy();
       }
       
-      override public function tick(param1:int = 1) : Boolean
+      override public function tick(param1:int = 1) : void
       {
-         if(this._target._health.Get() <= 0)
+         if(this._target.health <= 0)
          {
             owner.removeComponent(this);
+            return;
          }
          this._curTick += param1;
          if(this._curTick >= _MAX_TICKS)
@@ -71,7 +84,6 @@ package com.monsters.monsters.components.statusEffects
          {
             this._icon.update();
          }
-         return true;
       }
       
       protected function updatePosition() : void
@@ -86,6 +98,11 @@ package com.monsters.monsters.components.statusEffects
             this._icon.x -= this._priority / 2 * (this._icon.width + _MAGIC_PADDING);
          }
          this._icon.y = this._target._graphicMC.y - this._icon.height;
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            this._rasterPt.x = this._target.rasterPt.x + (this._target._graphicMC.width >> 1) + this._icon.x;
+            this._rasterPt.y = this._target.rasterPt.y - this._icon.height;
+         }
       }
       
       public function renew() : void
@@ -95,12 +112,24 @@ package com.monsters.monsters.components.statusEffects
       
       protected function updateDPS(param1:int) : void
       {
-         this._target._health.Add(-this._dps);
+         this._target.modifyHealth(-this._dps);
       }
       
       public function setDPS(param1:Number) : void
       {
          this._dps = param1;
+      }
+      
+      override public function destoy() : void
+      {
+         this._icon = null;
+         if(this._rasterData)
+         {
+            this._rasterData.clear();
+         }
+         this._rasterData = null;
+         this._rasterPt = null;
+         this._target = null;
       }
    }
 }

@@ -14,7 +14,7 @@ package com.monsters.rewarding.rewards
       
       override public function canBeApplied() : Boolean
       {
-         return GLOBAL._mode == "build" && !BASE.isInferno();
+         return GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !BASE.isInfernoMainYardOrOutpost;
       }
       
       override protected function onApplication() : void

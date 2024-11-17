@@ -21,14 +21,14 @@ package
       {
          super();
          _type = 26;
-         _footprint = BASE.isInferno() ? [new Rectangle(0,0,80,80)] : [new Rectangle(0,0,100,100)];
+         _footprint = BASE.isInfernoMainYardOrOutpost ? [new Rectangle(0,0,80,80)] : [new Rectangle(0,0,100,100)];
          _gridCost = [[new Rectangle(0,0,100,100),10],[new Rectangle(10,10,80,80),200]];
          SetProps();
       }
       
       override public function Click(param1:MouseEvent = null) : void
       {
-         if(_upgrading && ACADEMY._upgrades[_upgrading] && ACADEMY._upgrades[_upgrading].time == null)
+         if(_upgrading && GLOBAL.player.m_upgrades[_upgrading] && GLOBAL.player.m_upgrades[_upgrading].time == null)
          {
             _upgrading = null;
          }
@@ -43,7 +43,7 @@ package
          {
             if(GLOBAL._render && _animLoaded && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
             {
-               if(GLOBAL._mode == "build" && (this._frameNumber % 3 == 0 || GLOBAL._lockerOverdrive > 0) && CREEPS._creepCount == 0)
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && (this._frameNumber % 3 == 0 || GLOBAL._lockerOverdrive > 0) && CREEPS._creepCount == 0)
                {
                   AnimFrame();
                }
@@ -62,11 +62,11 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bAcademy = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function():void
             {
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   GLOBAL.CallJS("sendFeed",["iacademy-construct",KEYS.Get("q_build_infernalacademy_streamtitle"),KEYS.Get("q_build_infernalacademy_streambody"),"build-iacademy.png"]);
                }
@@ -89,11 +89,11 @@ package
       override public function Description() : void
       {
          super.Description();
-         if(_upgrading != null && Boolean(ACADEMY._upgrades[_upgrading].time))
+         if(_upgrading != null && Boolean(GLOBAL.player.m_upgrades[_upgrading].time))
          {
             _specialDescription = KEYS.Get("building_academy_training",{
                "v1":CREATURELOCKER._creatures[_upgrading].name,
-               "v2":GLOBAL.ToTime(ACADEMY._upgrades[_upgrading].time.Get() - GLOBAL.Timestamp())
+               "v2":GLOBAL.ToTime(GLOBAL.player.m_upgrades[_upgrading].time.Get() - GLOBAL.Timestamp())
             });
          }
       }

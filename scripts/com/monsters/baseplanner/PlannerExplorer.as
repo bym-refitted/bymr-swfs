@@ -226,6 +226,7 @@ package com.monsters.baseplanner
       public function reposition(param1:Boolean = true) : void
       {
          var _loc2_:int = 0;
+         _loc2_ = 0;
          var _loc3_:int = int(this._headers.length);
          var _loc4_:int = 0;
          while(_loc4_ < _loc3_)

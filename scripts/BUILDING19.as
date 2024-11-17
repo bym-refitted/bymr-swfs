@@ -45,7 +45,7 @@ package
       {
          if(!GLOBAL._catchup)
          {
-            if(_animTick == 0 && MONSTERBAITER._attacking == 1 && _hp.Get() > 0)
+            if(_animTick == 0 && MONSTERBAITER._attacking == 1 && health > 0)
             {
                SOUNDS.Play("wmbstart");
                _animTick = 1;
@@ -54,7 +54,7 @@ package
             {
                if(_animTick > 40)
                {
-                  if(MONSTERBAITER._attacking == 1 && _hp.Get() > 0)
+                  if(MONSTERBAITER._attacking == 1 && health > 0)
                   {
                      _animTick = 1;
                   }
@@ -94,7 +94,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bBaiter = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -119,7 +119,7 @@ package
          var percent:int = 0;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Brag = function(param1:MouseEvent):void
             {

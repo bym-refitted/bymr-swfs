@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1563")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1608")]
    public dynamic class InfernoTransferMonster_CLIP extends MovieClip
    {
       public var bRemove:Button_CLIP;

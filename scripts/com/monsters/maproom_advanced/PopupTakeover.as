@@ -2,23 +2,24 @@ package com.monsters.maproom_advanced
 {
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
-   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.*;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
-   public class PopupTakeover extends MapRoomPopup_takeover_CLIP
+   internal class PopupTakeover extends MapRoomPopup_takeover_CLIP
    {
-      public static const TAKEOVER_CAP:int = 65000000;
+      private static const TAKEOVER_CAP:int = 65000000;
       
       private var _resourceCost:SecNum;
       
       private var _shinyCost:SecNum;
       
-      public var _costGap:int;
+      private var _costGap:int;
       
-      public var _cell:MapRoomCell;
+      private var _cell:MapRoomCell;
       
       public function PopupTakeover(param1:MapRoomCell)
       {
@@ -160,9 +161,6 @@ package com.monsters.maproom_advanced
          var useShiny:Boolean = param1;
          takeoverSuccessful = function(param1:Object):void
          {
-            var _loc2_:int = 0;
-            var _loc3_:int = 0;
-            var _loc4_:int = 0;
             PLEASEWAIT.Hide();
             if(param1.error == 0)
             {
@@ -175,21 +173,13 @@ package com.monsters.maproom_advanced
                GLOBAL._resources.r3max += GLOBAL._outpostCapacity.Get();
                GLOBAL._resources.r4max += GLOBAL._outpostCapacity.Get();
                MapRoom.ClearCells();
-               MapRoom.Hide();
+               MapRoomManager.instance.Hide();
                GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
                GLOBAL._currentCell = _cell;
-               GLOBAL._currentCell._base = 3;
-               BASE._yardType = BASE.OUTPOST;
-               BASE.LoadBase(null,0,_cell._baseID,"build",false,BASE.OUTPOST);
+               (GLOBAL._currentCell as MapRoomCell).baseType = 3;
+               BASE.yardType = EnumYardType.OUTPOST;
+               BASE.LoadBase(null,0,_cell._baseID,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
-               if(param1.event_score)
-               {
-                  _loc2_ = int(MonsterMadness.points);
-                  _loc3_ = int(param1.event_score);
-                  _loc4_ = _loc3_ - _loc2_;
-                  LOGGER.Stat([97,_loc3_]);
-                  LOGGER.Stat([98,_loc4_]);
-               }
             }
             else
             {
@@ -234,7 +224,7 @@ package com.monsters.maproom_advanced
          new URLLoaderApi().load(GLOBAL._mapURL + "takeovercell",takeoverVars,takeoverSuccessful,takeoverError);
       }
       
-      public function Center() : void
+      private function Center() : void
       {
          POPUPSETTINGS.AlignToCenter(this);
       }

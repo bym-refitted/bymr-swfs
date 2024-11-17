@@ -1,12 +1,18 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.configs.BYMConfig;
    import com.monsters.display.SpriteData;
    import com.monsters.display.SpriteSheetAnimation;
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.maproom_manager.IMapRoomCell;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.MonsterBase;
    import com.monsters.pathing.PATHING;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Jars;
+   import com.monsters.siege.weapons.Vacuum;
+   import com.monsters.siege.weapons.VacuumHose;
    import flash.display.MovieClip;
    import flash.display.Shape;
    import flash.display.Sprite;
@@ -49,7 +55,7 @@ package
       
       public var _fireTick:int = 0;
       
-      public var _target:*;
+      public var _target:IAttackable;
       
       private var pointA:Point;
       
@@ -70,13 +76,14 @@ package
          super();
          this._priority = 1;
          this._retarget = 0;
+         attackFlags = Targeting.getOldStyleTargets(0);
       }
       
-      public static function AdjustTowerRange(param1:*, param2:int) : int
+      public static function AdjustTowerRange(param1:IMapRoomCell, param2:int) : int
       {
-         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST && param1 && Boolean(param1._height) && param1._height >= 100)
+         if(MapRoomManager.instance.isInMapRoom2 && BASE.isOutpostMapRoom2Only && param1 && param1.cellHeight && param1.cellHeight >= 100)
          {
-            return int(param1._height * param2 / GLOBAL._averageAltitude.Get());
+            return int(param1.cellHeight * param2 / GLOBAL._averageAltitude.Get());
          }
          return param2;
       }
@@ -91,7 +98,7 @@ package
          var _loc1_:int = 0;
          if(_lvl.Get() > 0)
          {
-            if(Boolean(GLOBAL._advancedMap) && (BASE._yardType == BASE.OUTPOST || GLOBAL._mode == "wmattack"))
+            if(MapRoomManager.instance.isInMapRoom2 && (BASE.isOutpostMapRoom2Only || GLOBAL.mode == "wmattack"))
             {
                _loc1_ = int(GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].range);
                super._range = _loc1_;
@@ -104,7 +111,7 @@ package
             {
                super._range = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].range;
             }
-            super._damage = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].damage;
+            damageProperty.value = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].damage;
             super._rate = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].rate;
             super._splash = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].splash;
             super._speed = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].speed;
@@ -138,7 +145,7 @@ package
             _loc2_ = _buildingProps.stats[_lvl.Get()];
             _loc3_ = int(_loc1_.range);
             _loc4_ = int(_loc2_.range);
-            if(BASE._yardType == BASE.OUTPOST)
+            if(BASE.isOutpost)
             {
                _loc3_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc3_);
                _loc4_ = BTOWER.AdjustTowerRange(GLOBAL._currentCell,_loc4_);
@@ -167,20 +174,37 @@ package
          }
       }
       
+      public function get canAttack() : Boolean
+      {
+         return health > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0;
+      }
+      
+      protected function canShootVacuumHose() : Boolean
+      {
+         var _loc1_:VacuumHose = Vacuum.getHose();
+         if(_loc1_ && GLOBAL.QuickDistance(new Point(_loc1_.x,_loc1_.y),_position) <= _range && Boolean(_targetFlyerMode[_type]))
+         {
+            return true;
+         }
+         return false;
+      }
+      
       override public function TickAttack() : void
       {
-         var _loc1_:Boolean = false;
-         var _loc2_:MovieClip = null;
+         var _loc1_:VacuumHose = null;
+         var _loc2_:Boolean = false;
          var _loc3_:int = 0;
-         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
+         var _loc4_:MonsterBase = null;
+         if(this.canAttack)
          {
             --this._fireTick;
             if(this._fireTick <= 0)
             {
                this._fireTick += _rate * 2;
+               _loc1_ = Vacuum.getHose();
                if(!this._targetVacuum && (!this._hasTargets || !this.targetInRange()))
                {
-                  if(BASE._yardType == BASE.MAIN_YARD && (GLOBAL._bTownhall as BUILDING14)._vacuum && GLOBAL.QuickDistance(GLOBAL._bTownhall._position,_position) <= _range && (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Get() > 0 && _targetFlyerMode[_type] > 0)
+                  if(this.canShootVacuumHose())
                   {
                      this._targetVacuum = true;
                      this._fireTick = 30;
@@ -198,13 +222,12 @@ package
                }
                else
                {
-                  _loc1_ = false;
+                  _loc2_ = false;
                   if(this._targetVacuum)
                   {
-                     _loc2_ = (GLOBAL._bTownhall as BUILDING14)._vacuum;
-                     if(_loc2_)
+                     if(_loc1_)
                      {
-                        this.Fire(_loc2_);
+                        this.Fire(_loc1_);
                      }
                      else
                      {
@@ -216,19 +239,20 @@ package
                      _loc3_ = 0;
                      while(_loc3_ < this._targetCreeps.length)
                      {
-                        if(this._targetCreeps[_loc3_].creep._health.Get() > 0)
+                        _loc4_ = this._targetCreeps[_loc3_].creep;
+                        if(_loc4_.health > 0 && _loc4_.isTargetable && !_loc4_.invisible)
                         {
                            this.Fire(this._targetCreeps[_loc3_].creep);
                         }
                         else
                         {
-                           _loc1_ = true;
+                           _loc2_ = true;
                            this._targetCreeps = [];
                         }
                         _loc3_++;
                      }
                   }
-                  if(Boolean(this._retarget) || _loc1_)
+                  if(Boolean(this._retarget) || _loc2_)
                   {
                      this.FindTargets(this._maxTargets,this._priority);
                      this._fireTick = 30;
@@ -236,9 +260,14 @@ package
                      {
                         this._fireTick += CREEPS._creepCount / 15;
                      }
+                     this._retarget = 0;
                   }
                }
             }
+         }
+         if(this._jarAnimation)
+         {
+            this.TickJar();
          }
       }
       
@@ -269,28 +298,35 @@ package
       
       public function ApplyJar(param1:int) : void
       {
+         ++targetableStatus;
          this._jarAnimation = new SpriteSheetAnimation(SPRITES.GetSpriteDescriptor(Jars.JAR_GRAPHIC) as SpriteData,Jars.JAR_GRAPHIC_FRAMES);
          this._jarAnimation.render();
-         this._jarAnimation.x = -(this._jarAnimation.width * 0.5) + _middle * 0.5;
-         this._jarAnimation.y = -(this._jarAnimation.height * 0.5);
-         _mc.addChild(this._jarAnimation);
-         TweenLite.from(this._jarAnimation,0.6,{
-            "y":this._jarAnimation.y - 300,
-            "ease":Expo.easeIn,
-            "onComplete":this.JarLanded
-         });
+         this._jarAnimation.x += -(this._jarAnimation.width * 0.5) + _middle * 0.5;
+         this._jarAnimation.y += -(this._jarAnimation.height * 0.5);
+         addChild(this._jarAnimation);
+         if(BYMConfig.instance.RENDERER_ON)
+         {
+            TweenLite.from(this._jarAnimation,1,{
+               "y":this._jarAnimation.y - 300,
+               "ease":Expo.easeIn,
+               "onUpdate":updateRasterData,
+               "onComplete":this.JarLanded
+            });
+         }
+         else
+         {
+            TweenLite.from(this._jarAnimation,0.6,{
+               "y":this._jarAnimation.y - 300,
+               "ease":Expo.easeIn,
+               "onComplete":this.JarLanded
+            });
+         }
          SOUNDS.Play(GetRandomString(Jars.LAND_SOUNDS));
       }
       
       private function JarLanded() : void
       {
          this._jarHealth = new SecNum(Jars(SiegeWeapons.getWeapon(Jars.ID)).durability);
-         this._jarAnimation.addEventListener(Event.ENTER_FRAME,this.onEnterFrame);
-      }
-      
-      protected function onEnterFrame(param1:Event) : void
-      {
-         this.TickJar();
       }
       
       private function UpdateJar() : void
@@ -328,9 +364,9 @@ package
       
       private function RemoveJar() : void
       {
-         _mc.removeChild(this._jarAnimation);
-         this._jarAnimation.removeEventListener(Event.ENTER_FRAME,this.onEnterFrame);
+         removeChild(this._jarAnimation);
          this._jarAnimation = null;
+         --targetableStatus;
       }
       
       public function KillJar() : void
@@ -343,7 +379,7 @@ package
          }
       }
       
-      public function Fire(param1:*) : void
+      public function Fire(param1:IAttackable) : void
       {
          if(this._jarHealth)
          {
@@ -357,50 +393,13 @@ package
          super.Update(param1);
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
-      {
-         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
-         {
-            param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
-         }
-         var _loc8_:int = param1;
-         if(_fortification.Get() > 0)
-         {
-            _loc8_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc8_ = _loc8_ / 100;
-         }
-         _hp.Add(-_loc8_);
-         if(_hp.Get() <= 0)
-         {
-            _hp.Set(0);
-            if(!_destroyed)
-            {
-               Destroyed(param5);
-            }
-         }
-         else if(_class != "wall")
-         {
-            ATTACK.Log("b" + _id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
-               "v1":_lvl.Get(),
-               "v2":KEYS.Get(_buildingProps.name),
-               "v3":100 - int(100 / _hpMax.Get() * _hp.Get())
-            }) + "</font>");
-         }
-         this.Update();
-         if(param7)
-         {
-            BASE.Save();
-         }
-         return _loc8_;
-      }
-      
       override public function Upgraded() : void
       {
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
          this.Props();
-         if(GLOBAL._mode == "build" && !(BASE.isInfernoBuilding(_type) || BASE.isInferno()))
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !(BASE.isInfernoBuilding(_type) || BASE.isInfernoMainYardOrOutpost))
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -463,7 +462,8 @@ package
          {
             _loc9_ = int(_targetFlyerMode[_type]);
          }
-         this.creeps = MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),_range,_loc9_);
+         var _loc10_:int = Targeting.getOldStyleTargets(_loc9_);
+         this.creeps = Targeting.getCreepsInRange(_range,_position.add(new Point(0,_footprint[0].height / 2)),_loc10_);
          this._hasTargets = false;
          if(this.creeps.length > 0)
          {
@@ -534,7 +534,7 @@ package
          var _loc11_:int = 0;
          if(this._targetVacuum)
          {
-            _loc1_ = GLOBAL._bTownhall._position;
+            _loc1_ = GLOBAL.townHall._position;
             _loc2_ = PATHING.FromISO(new Point(_mc.x,_mc.y));
             _loc2_ = _loc2_.add(new Point(35,35));
             _loc3_ = _loc1_.x - _loc2_.x;
@@ -579,7 +579,7 @@ package
       
       override public function Over(param1:MouseEvent) : void
       {
-         if(GLOBAL._mode == "build" && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && _hp.Get() > 0)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && _lvl.Get() > 0 && _countdownBuild.Get() == 0 && _countdownFortify.Get() == 0 && _countdownUpgrade.Get() == 0 && health > 0)
          {
             TweenLite.delayedCall(0.25,this.RangeIndicator);
          }
@@ -612,7 +612,7 @@ package
       
       override public function Out(param1:MouseEvent) : void
       {
-         if(GLOBAL._mode == "build" && Boolean(this._radiusGraphic))
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && Boolean(this._radiusGraphic))
          {
             if(this._radiusGraphic.parent)
             {
@@ -621,6 +621,11 @@ package
             this._radiusGraphic = null;
          }
          TweenLite.killDelayedCallsTo(this.RangeIndicator);
+      }
+      
+      public function setTarget(param1:MonsterBase) : void
+      {
+         this._target = param1;
       }
    }
 }

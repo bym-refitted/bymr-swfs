@@ -376,7 +376,7 @@ package com.monsters.baseplanner.popups
                this.toolMenu.mcExpand.mouseEnabled = false;
                this.toolMenu.mcExpand.gotoAndStop("off");
             }
-            else if(BASE._yardType % 2 == BASE.MAIN_YARD)
+            else if(BASE.isMainYardOrInfernoMainYard)
             {
                this.toolMenu.mcExpand.gotoAndStop(1);
                this.toolMenu.mcExpand.buttonMode = true;
@@ -433,7 +433,10 @@ package com.monsters.baseplanner.popups
       
       public function onToolTipNodeHint(param1:BasePlannerNodeEvent) : void
       {
-         this.onToolTipHint(null,param1.node.displayNameFull);
+         if(!this.toolTipMenu.hitTestPoint(stage.mouseX,mouseY))
+         {
+            this.onToolTipHint(null,param1.node.displayNameFull);
+         }
       }
       
       public function onToolTipMouseHint(param1:Function, param2:Array) : Function
@@ -487,7 +490,7 @@ package com.monsters.baseplanner.popups
             this.toolMenu.mcExpand.mouseEnabled = false;
             this.toolMenu.mcExpand.gotoAndStop("off");
          }
-         else if(BASE._yardType % 2 == BASE.MAIN_YARD)
+         else if(BASE.isMainYardOrInfernoMainYard)
          {
             this.toolMenu.mcExpand.visible = true;
          }
@@ -542,7 +545,7 @@ package com.monsters.baseplanner.popups
       
       public function onStoreOpen(param1:MouseEvent = null) : void
       {
-         if(BASE._yardType % 2 == BASE.MAIN_YARD)
+         if(BASE.isMainYardOrInfernoMainYard)
          {
             STORE.ShowB(1,1,["ENL"]);
             if(STORE._mc)

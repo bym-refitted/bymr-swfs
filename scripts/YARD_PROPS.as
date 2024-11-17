@@ -20,6 +20,7 @@ package
          "tutstage":0,
          "sale":0,
          "description":"twigsnapper_desc",
+         "cls":BUILDING1,
          "costs":[{
             "r1":0,
             "r2":750,
@@ -166,6 +167,7 @@ package
          "tutstage":0,
          "sale":0,
          "description":"pebbleshiner_desc",
+         "cls":BUILDING2,
          "costs":[{
             "r1":750,
             "r2":0,
@@ -312,6 +314,7 @@ package
          "tutstage":80,
          "sale":0,
          "description":"puttysquisher_desc",
+         "cls":BUILDING3,
          "costs":[{
             "r1":525,
             "r2":224,
@@ -458,6 +461,7 @@ package
          "tutstage":80,
          "sale":0,
          "description":"goofactory_desc",
+         "cls":BUILDING4,
          "costs":[{
             "r1":247,
             "r2":577,
@@ -603,6 +607,7 @@ package
          "tutstage":60,
          "sale":0,
          "description":"flinger_desc",
+         "cls":BUILDING5,
          "costs":[{
             "r1":1000,
             "r2":1000,
@@ -611,6 +616,13 @@ package
             "time":15 * 60,
             "re":[[14,1,1]]
          },{
+            "r1":20000,
+            "r2":20000,
+            "r3":10000,
+            "r4":0,
+            "time":2 * 60 * 60,
+            "re":[[14,1,2],[11,1,1]]
+         },{
             "r1":64300,
             "r2":64300,
             "r3":32150,
@@ -618,19 +630,19 @@ package
             "time":3 * 60 * 60,
             "re":[[14,1,3],[11,1,1]]
          },{
-            "r1":283600,
-            "r2":283600,
-            "r3":141800,
-            "r4":0,
-            "time":9 * 60 * 60,
-            "re":[[14,1,4],[11,1,1]]
-         },{
             "r1":1247840,
             "r2":1247840,
             "r3":623920,
             "r4":0,
             "time":27 * 60 * 60,
             "re":[[14,1,4],[11,1,1]]
+         },{
+            "r1":5500000,
+            "r2":5500000,
+            "r3":2750000,
+            "r4":0,
+            "time":84 * 60 * 60,
+            "re":[[14,1,5],[11,1,1]]
          }],
          "imageData":{
             "baseurl":"buildings/flinger/",
@@ -665,6 +677,14 @@ package
                "shadowdamaged":["shadow.4.damaged.jpg",new Point(-76,23)],
                "topdestroyed":["top.2.destroyed.png",new Point(-75,-3)],
                "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-70,24)]
+            },
+            "5":{
+               "top":["top.4.png",new Point(-45,-66)],
+               "shadow":["shadow.4.jpg",new Point(-47,22)],
+               "topdamaged":["top.4.damaged.png",new Point(-76,-53)],
+               "shadowdamaged":["shadow.4.damaged.jpg",new Point(-76,23)],
+               "topdestroyed":["top.2.destroyed.png",new Point(-75,-3)],
+               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-70,24)]
             }
          },
          "upgradeImgData":{
@@ -675,19 +695,21 @@ package
             },
             "2":{"img":"5.2.jpg"},
             "3":{"img":"5.3.jpg"},
-            "4":{"img":"5.4.jpg"}
+            "4":{"img":"5.4.jpg"},
+            "5":{"img":"5.4.jpg"}
          },
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
             "1":{"img":"5.1.png"},
             "2":{"img":"5.2.png"},
             "3":{"img":"5.3.png"},
-            "4":{"img":"5.4.png"}
+            "4":{"img":"5.4.png"},
+            "5":{"img":"5.4.png"}
          },
          "quantity":[0,1,1,1,1,1,1,1,1,1,1],
-         "capacity":[500,1000,1750,2250,50 * 60,0xfa0],
-         "hp":[0xfa0,0x1f40,16000,28000],
-         "repairTime":[100,5 * 60,10 * 60,15 * 60]
+         "capacity":[250,850,25 * 60,2500,3500,3500,3500],
+         "hp":[0xfa0,0x1f40,16000,28000,56000],
+         "repairTime":[100,5 * 60,10 * 60,15 * 60,15 * 60]
       },{
          "id":6,
          "group":1,
@@ -700,6 +722,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"storagesilo_desc",
+         "cls":BUILDING6,
          "costs":[{
             "r1":3010,
             "r2":1855,
@@ -859,6 +882,15 @@ package
          "tutstage":0,
          "sale":0,
          "description":"flag_desc",
+         "cls":BUILDING7,
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "time":0,
+            "re":[[0,0,0]]
+         }],
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
             "1":{"img":"7.png"}
@@ -878,6 +910,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsterlocker_desc",
+         "cls":BUILDING8,
          "costs":[{
             "r1":30 * 60,
             "r2":2300,
@@ -978,26 +1011,27 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsterjuicer_desc",
+         "cls":BUILDING9,
          "costs":[{
-            "r1":1000000,
-            "r2":1000000,
-            "r3":1000000,
+            "r1":1000,
+            "r2":1000,
+            "r3":1000,
             "r4":0,
-            "time":12 * 60 * 60,
-            "re":[[14,1,3],[15,1,1]]
+            "time":5 * 60,
+            "re":[[14,1,1],[15,1,1]]
          },{
-            "r1":250000,
-            "r2":250000,
-            "r3":0,
+            "r1":10000,
+            "r2":10000,
+            "r3":10000,
+            "r4":0,
+            "time":2 * 60 * 60,
+            "re":[[14,1,2],[15,1,1]]
+         },{
+            "r1":100000,
+            "r2":100000,
+            "r3":100000,
             "r4":0,
             "time":6 * 60 * 60,
-            "re":[[14,1,3],[15,1,1]]
-         },{
-            "r1":500000,
-            "r2":500000,
-            "r3":0,
-            "r4":0,
-            "time":12 * 60 * 60,
             "re":[[14,1,3],[15,1,1]]
          }],
          "imageData":{
@@ -1023,7 +1057,7 @@ package
             "baseurl":"buildingthumbs/",
             "1":{"img":"9.png"}
          },
-         "quantity":[0,0,0,1,1,1,1,1,1,1,1],
+         "quantity":[0,1,1,1,1,1,1,1,1,1,1],
          "hp":[16000,32000,64000],
          "repairTime":[8 * 60,32 * 60,128 * 60]
       },{
@@ -1038,6 +1072,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"yardplanner_desc",
+         "cls":BUILDING10,
          "costs":[{
             "r1":250000,
             "r2":250000,
@@ -1084,6 +1119,7 @@ package
          "tutstage":80,
          "sale":0,
          "description":"maproom_desc",
+         "cls":BUILDING11,
          "costs":[{
             "r1":2000,
             "r2":2000,
@@ -1144,6 +1180,7 @@ package
             "time":10,
             "re":[[14,1,1]]
          }],
+         "cls":BUILDING12,
          "imageData":{
             "baseurl":"buildings/generalstore/",
             "1":{
@@ -1181,6 +1218,7 @@ package
          "tutstage":140,
          "sale":0,
          "description":"hatchery_desc",
+         "cls":BUILDING13,
          "costs":[{
             "r1":2000,
             "r2":2000,
@@ -1264,6 +1302,7 @@ package
          "sale":0,
          "description":"townhall_desc",
          "block":true,
+         "cls":BUILDING14,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -1516,6 +1555,7 @@ package
          "tutstage":50,
          "sale":0,
          "description":"housing_desc",
+         "cls":BUILDING15,
          "costs":[{
             "r1":36 * 60,
             "r2":36 * 60,
@@ -1558,6 +1598,34 @@ package
             "r4":0,
             "time":40 * 60 * 60,
             "re":[[14,1,6],[8,1,1]]
+         },{
+            "r1":4000000,
+            "r2":4000000,
+            "r3":0,
+            "r4":0,
+            "time":60 * 60 * 60,
+            "re":[[14,1,7],[8,1,1]]
+         },{
+            "r1":8000000,
+            "r2":8000000,
+            "r3":0,
+            "r4":0,
+            "time":60 * 60 * 60,
+            "re":[[14,1,8],[8,1,1]]
+         },{
+            "r1":16000000,
+            "r2":16000000,
+            "r3":0,
+            "r4":0,
+            "time":60 * 60 * 60,
+            "re":[[14,1,9],[8,1,1]]
+         },{
+            "r1":32000000,
+            "r2":32000000,
+            "r3":0,
+            "r4":0,
+            "time":60 * 60 * 60,
+            "re":[[14,1,10],[8,1,1]]
          }],
          "imageData":{
             "baseurl":"buildings/monsterhousing/",
@@ -1582,9 +1650,9 @@ package
             "1":{"img":"15.png"}
          },
          "quantity":[0,1,1,2,2,3,3,3,4,4,4],
-         "capacity":[200,260,320,380,450,9 * 60],
-         "hp":[0xfa0,14000,25000,43000,75000,130000],
-         "repairTime":[100,200,5 * 60,400,500,10 * 60]
+         "capacity":[250,425,520,670,740,870,1090,1225,24 * 60,28 * 60],
+         "hp":[0xfa0,14000,25000,43000,75000,130000,145000,160000,175000,190000],
+         "repairTime":[100,200,5 * 60,400,500,10 * 60,700,800,15 * 60,1000]
       },{
          "id":16,
          "group":2,
@@ -1598,6 +1666,7 @@ package
          "sale":0,
          "description":"hcc_desc",
          "recycleconfirmationoverride":"hcc_msg_recycle",
+         "cls":BUILDING16,
          "costs":[{
             "r1":4000000,
             "r2":4000000,
@@ -1643,6 +1712,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"woodenblock_desc",
+         "cls":BUILDING17,
          "costs":[{
             "r1":1000,
             "r2":0,
@@ -1764,6 +1834,7 @@ package
          "sale":0,
          "description":"stoneblock_desc",
          "block":true,
+         "cls":BUILDING18,
          "costs":[{
             "r1":0,
             "r2":2000,
@@ -1806,6 +1877,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"wildmonsterbaiter_desc",
+         "cls":BUILDING19,
          "costs":[{
             "r1":25000,
             "r2":25000,
@@ -1897,6 +1969,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"cannontower_desc",
+         "cls":BUILDING20,
          "stats":[{
             "range":160,
             "damage":20,
@@ -2117,6 +2190,7 @@ package
          "tutstage":28,
          "sale":0,
          "description":"snipertower_desc",
+         "cls":BUILDING21,
          "stats":[{
             "range":5 * 60,
             "damage":100,
@@ -2339,6 +2413,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsterbunker_desc",
+         "cls":BUILDING22,
          "stats":[{"range":5 * 60},{"range":350},{"range":400},{"range":450},{"range":500}],
          "costs":[{
             "r1":250000,
@@ -2399,7 +2474,7 @@ package
             "1":{"img":"22.png"}
          },
          "quantity":[0,0,0,1,1,2,2,3,4,4,4],
-         "capacity":[380,450,9 * 60,11 * 60,800],
+         "capacity":[190,225,270,330,400],
          "hp":[10000,24500,52000,75000,105000],
          "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60,32 * 60]
       },{
@@ -2413,6 +2488,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"lasertower_desc",
+         "cls":BUILDING23,
          "stats":[{
             "range":160,
             "damage":2 * 60,
@@ -2609,6 +2685,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"boobytrap_desc",
+         "cls":BUILDING24,
          "costs":[{
             "r1":1000,
             "r2":1000,
@@ -2652,6 +2729,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"teslatower_desc",
+         "cls":BUILDING25,
          "stats":[{
             "range":250,
             "damage":100,
@@ -2845,6 +2923,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsteracademy_desc",
+         "cls":BUILDING26,
          "costs":[{
             "r1":100000,
             "r2":100000,
@@ -2952,6 +3031,9 @@ package
          "tutstage":200,
          "sale":0,
          "description":"trojanhorse_desc",
+         "cls":BUILDING27,
+         "isImmobile":true,
+         "isUntargetable":true,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -2985,6 +3067,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3018,6 +3101,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3051,6 +3135,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3084,6 +3169,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3117,6 +3203,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3151,6 +3238,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3184,6 +3272,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3217,6 +3306,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3250,6 +3340,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3283,6 +3374,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3316,6 +3408,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3349,6 +3442,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3382,6 +3476,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3415,6 +3510,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3448,6 +3544,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3481,6 +3578,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3514,6 +3612,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3547,6 +3646,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3580,6 +3680,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3613,6 +3714,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3646,6 +3748,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3679,6 +3782,7 @@ package
          "tutstage":200,
          "sale":1,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3713,6 +3817,7 @@ package
          "tutstage":200,
          "sale":1,
          "description":"flag_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3747,6 +3852,7 @@ package
          "sale":0,
          "description":"catapult_desc",
          "block":false,
+         "cls":BUILDING51,
          "costs":[{
             "r1":75000,
             "r2":75000,
@@ -3774,7 +3880,7 @@ package
             "r3":514400,
             "r4":0,
             "time":12 * 60 * 60,
-            "re":[[14,1,6],[5,1,1],[11,1,2]]
+            "re":[[14,1,6],[5,1,1]]
          }],
          "imageData":{
             "baseurl":"buildings/catapult/",
@@ -3836,6 +3942,7 @@ package
          "sale":0,
          "description":"Leave a little note for a friend.",
          "block":true,
+         "cls":BUILDING52,
          "costs":[{
             "r1":100000,
             "r2":100000,
@@ -3869,6 +3976,7 @@ package
          "sale":0,
          "description":"Temporary pumpkin for picking",
          "block":true,
+         "cls":BDECORATION,
          "quantity":[0],
          "hp":[10],
          "repairTime":[10],
@@ -3892,6 +4000,7 @@ package
          "sale":0,
          "description":"Massive Pumpkin for the \"Event\"",
          "block":true,
+         "cls":BDECORATION,
          "quantity":[0],
          "hp":[10],
          "repairTime":[10],
@@ -3916,6 +4025,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_acorn_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3948,6 +4058,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_beehive_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -3980,6 +4091,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_birdhous_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4013,6 +4125,7 @@ package
          "sale":0,
          "description":"bdg_tent_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4046,6 +4159,7 @@ package
          "sale":0,
          "description":"bdg_jax_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4078,6 +4192,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_gnome_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4110,6 +4225,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_gnome_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4142,6 +4258,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_gnome_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4174,6 +4291,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_hammock_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4206,6 +4324,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_lawnchair_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4238,6 +4357,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_outhouse_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4270,6 +4390,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_pinecone_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4303,6 +4424,7 @@ package
          "sale":0,
          "description":"bdg_rock_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4335,6 +4457,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_scaleelectric_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4368,6 +4491,7 @@ package
          "sale":0,
          "description":"flag_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4401,6 +4525,7 @@ package
          "sale":0,
          "description":"bdg_sundial_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4433,6 +4558,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_tikitorch_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4466,6 +4592,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_walnut_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4498,6 +4625,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_tombstone_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4530,6 +4658,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_pokeyhead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4562,6 +4691,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_octohead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4594,6 +4724,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_bolthead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4626,6 +4757,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_banditohead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4658,6 +4790,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_brainhead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4690,6 +4823,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_crabhead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4722,6 +4856,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_davehead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4754,6 +4889,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_eyerahead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4786,6 +4922,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_fanghead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4818,6 +4955,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_finkhead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4850,6 +4988,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_ichihead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4882,6 +5021,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_projectxhead_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4914,6 +5054,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_blackberrybush_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4943,6 +5084,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_bonsaitree_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -4975,6 +5117,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_cactus_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5007,6 +5150,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_flytrap_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5039,6 +5183,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_thorns_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5071,6 +5216,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_pinkflowers_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5103,6 +5249,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_purpleflowers_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5135,6 +5282,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_redflowers_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5167,6 +5315,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_whiteflowers_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5199,6 +5348,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_yellowflowers_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5231,6 +5381,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_baseballstatue_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5268,6 +5419,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_footballstatue_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5305,6 +5457,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_soccerstatue_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5342,6 +5495,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_libertystatue_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5379,6 +5533,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_eiffelstatue_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5416,6 +5571,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_bigben_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5453,6 +5609,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_pool_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5485,6 +5642,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_pond_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5514,6 +5672,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_zengarden_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5546,6 +5705,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_fountain_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5578,6 +5738,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_teargarden_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5610,6 +5771,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_monsterskull_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5642,6 +5804,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_rubikunsolved_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5674,6 +5837,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_rubiksolved_desc",
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5707,6 +5871,7 @@ package
          "sale":0,
          "description":"bdg_halloween_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5772,6 +5937,7 @@ package
          "sale":0,
          "description":"outpost_desc",
          "block":true,
+         "cls":BUILDING112,
          "quantity":[0]
       },{
          "id":113,
@@ -5787,6 +5953,7 @@ package
          "description":"radio_build_desc",
          "isNew":true,
          "block":false,
+         "cls":BUILDING113,
          "costs":[{
             "r1":2000,
             "r2":2000,
@@ -5828,6 +5995,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monstercage_desc",
+         "cls":CHAMPIONCAGE,
          "costs":[{
             "r1":500000,
             "r2":500000,
@@ -5867,6 +6035,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"flaktower_desc",
+         "cls":BUILDING115,
          "stats":[{
             "range":5 * 60,
             "damage":200,
@@ -6057,6 +6226,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsterlab_desc",
+         "cls":MONSTERLAB,
          "costs":[{
             "r1":100000,
             "r2":100000,
@@ -6115,6 +6285,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"heavytrap_desc",
+         "cls":BUILDING117,
          "costs":[{
             "r1":50000,
             "r2":50000,
@@ -6156,6 +6327,7 @@ package
          "tutstage":28,
          "sale":0,
          "description":"railguntower_desc",
+         "cls":BUILDING118,
          "stats":[{
             "range":5 * 60,
             "damage":400,
@@ -6351,6 +6523,7 @@ package
          "tutstage":28,
          "sale":0,
          "description":"championchamber_desc",
+         "cls":CHAMPIONCHAMBER,
          "costs":[{
             "r1":500000,
             "r2":500000,
@@ -6394,6 +6567,7 @@ package
          "sale":0,
          "description":"bdg_biggulp_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6427,6 +6601,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem1_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6460,6 +6635,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem2_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6493,6 +6669,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem3_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6526,6 +6703,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem4_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6559,6 +6737,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem5_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6593,6 +6772,7 @@ package
          "sale":0,
          "description":"bdg_wmitotem6_desc",
          "block":true,
+         "cls":BDECORATION,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6624,6 +6804,9 @@ package
          "tutstage":200,
          "sale":0,
          "description":"trojanhorse_desc",
+         "cls":INFERNOPORTAL,
+         "isImmobile":true,
+         "isUntargetable":true,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6700,6 +6883,7 @@ package
          "sale":0,
          "description":"housing_desc",
          "block":true,
+         "cls":HOUSINGBUNKER,
          "quantity":[0]
       },{
          "id":129,
@@ -6715,6 +6899,7 @@ package
          "sale":0,
          "description":"bi_quaketower_desc",
          "block":true,
+         "cls":INFERNOQUAKETOWER,
          "stats":[{
             "range":160,
             "damage":1100,
@@ -6871,6 +7056,7 @@ package
          "sale":0,
          "description":"icannontower_desc",
          "block":true,
+         "cls":INFERNO_CANNON_TOWER,
          "quantity":[0]
       },{
          "id":131,
@@ -6886,6 +7072,7 @@ package
          "sale":0,
          "description":"bdg_wmi2totem_desc",
          "block":true,
+         "cls":BTOTEM,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -6982,6 +7169,7 @@ package
          "sale":0,
          "description":"bi_magmatower_desc",
          "block":true,
+         "cls":INFERNO_MAGMA_TOWER,
          "rewarded":false,
          "stats":[{
             "range":3 * 60,
@@ -7599,6 +7787,188 @@ package
          "quantity":[0,2],
          "hp":[275 * 60,24200,550 * 60,880 * 60,66000],
          "repairTime":[2110,4220,8450,10190,220 * 60]
+      },{
+         "id":138,
+         "group":3,
+         "order":3,
+         "buildStatus":0,
+         "type":"tower",
+         "name":"#b_stronghold#",
+         "attackType":3,
+         "tutstage":200,
+         "sale":0,
+         "description":"b_stronghold_desc",
+         "block":true,
+         "cls":GuardTower,
+         "hitCls":guardTowerHit,
+         "isImmobile":true,
+         "isUntargetable":false,
+         "isNoMoreInfoButton":true,
+         "stats":[{
+            "range":6 * 60,
+            "damage":15 * 60,
+            "rate":1
+         },{
+            "range":380,
+            "damage":1000,
+            "rate":1
+         },{
+            "range":400,
+            "damage":1100,
+            "rate":1
+         }],
+         "costs":[{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         }],
+         "imageData":{
+            "baseurl":"buildings/guardtower/",
+            "1":{
+               "top":["top.v2.1.png",new Point(-98,-75)],
+               "shadow":["shadow.v2.1.png",new Point(-78,9)],
+               "anim":["anim.v2.1.png",new Rectangle(-47,-231,95,212),32],
+               "anim2":["anim.v2.2.png",new Rectangle(-79,-75,168,102),32],
+               "anim2damaged":["anim.v2.2.damaged.png",new Rectangle(-88,-72,163,103),32],
+               "topdamaged":["top.v2.1.damaged.png",new Point(-98,-95)],
+               "shadowdamaged":["shadow.v2.1.damaged.png",new Point(-81,5)],
+               "topdestroyed":["top.v2.1.destroyed.png",new Point(-102,-65)],
+               "shadowdestroyed":["shadow.v2.1.destroyed.png",new Point(-98,4)]
+            }
+         },
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{"img":"guard_tower.jpg"}
+         },
+         "quantity":[0,1,1,1],
+         "hp":[400000,500000,10 * 60 * 1000],
+         "repairTime":[24 * 60 * 60,2 * 24 * 60 * 60,4 * 24 * 60 * 60]
+      },{
+         "id":139,
+         "group":3,
+         "order":3,
+         "buildStatus":0,
+         "type":"cage",
+         "name":"#b_resourceop#",
+         "attackType":3,
+         "tutstage":200,
+         "sale":0,
+         "description":"b_resourceop_desc",
+         "block":true,
+         "cls":ResourceOutpost,
+         "hitCls":resourceOutpostHit,
+         "isImmobile":true,
+         "isUntargetable":true,
+         "isNoMoreInfoButton":true,
+         "costs":[{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         }],
+         "rps":[1,2,5,11,23],
+         "imageData":{
+            "baseurl":"buildings/resourceoutpost/",
+            "1":{
+               "top":["top.v2.1.png",new Point(-86,-64)],
+               "shadow":["shadow.v2.1.png",new Point(-86,25)],
+               "anim":["anim.v2.1.png",new Rectangle(-20,-25,51,39),30]
+            }
+         },
+         "quantity":[0,1],
+         "hp":[1],
+         "repairTime":[1]
+      },{
+         "id":140,
+         "group":3,
+         "order":3,
+         "buildStatus":0,
+         "type":"special",
+         "name":"#b_opdefender#",
+         "attackType":3,
+         "tutstage":200,
+         "sale":0,
+         "description":"b_opdefender_desc",
+         "block":true,
+         "cls":OutpostDefender,
+         "hitCls":outpostDefenderHit,
+         "isImmobile":true,
+         "isUntargetable":false,
+         "isNoMoreInfoButton":true,
+         "costs":[{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         },{
+            "r1":5,
+            "r2":5,
+            "r3":5,
+            "r4":5,
+            "time":1,
+            "re":[]
+         }],
+         "imageData":{
+            "baseurl":"buildings/outpostdefender/",
+            "1":{
+               "top":["top.1.png",new Point(-59,-19)],
+               "shadow":["shadow.1.png",new Point(-59,39)],
+               "anim":["anim.1.png",new Rectangle(-91,-101,178,156),32],
+               "topdamaged":["top.1.damaged.png",new Point(-59,-55)],
+               "shadowdamaged":["shadow.1.png",new Point(-59,39)],
+               "topdestroyed":["top.1.destroyed.png",new Point(-74,-4)],
+               "shadowdestroyed":["shadow.1.destroyed.png",new Point(-70,41)]
+            }
+         },
+         "upgradeImgData":{
+            "baseurl":"buildingbuttons/",
+            "1":{"img":"guard_tower.jpg"}
+         },
+         "quantity":[0,1,1,1,1,1],
+         "hp":[8800,700 * 60,200000,400000,10 * 60 * 1000],
+         "repairTime":[32 * 60,128 * 60,512 * 60,24 * 60 * 60,4 * 24 * 60 * 60]
       }];
       
       public function YARD_PROPS()

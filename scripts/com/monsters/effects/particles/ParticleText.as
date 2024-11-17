@@ -21,7 +21,7 @@ package com.monsters.effects.particles
          super();
       }
       
-      public static function Create(param1:Point, param2:int, param3:uint) : void
+      public static function Create(param1:Point, param2:int, param3:uint) : ParticleDamageItem
       {
          var _loc4_:ParticleDamageItem = null;
          if(!GLOBAL._catchup && _currentCount < _currentMax)
@@ -32,6 +32,7 @@ package com.monsters.effects.particles
                _loc4_.Init(param1,param2,param3);
             }
          }
+         return _loc4_;
       }
       
       private static function PoolGet(param1:uint) : ParticleDamageItem

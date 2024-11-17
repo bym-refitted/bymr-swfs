@@ -19,7 +19,7 @@ package com.monsters.siege
       
       public static function Show() : void
       {
-         if(GLOBAL._bSiegeFactory._hp.Get() >= GLOBAL._bSiegeFactory._hpMax.Get() * 0.5)
+         if(GLOBAL._bSiegeFactory.health >= GLOBAL._bSiegeFactory.maxHealth * 0.5)
          {
             SiegeBuilding.Show("factory");
          }

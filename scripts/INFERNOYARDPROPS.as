@@ -817,28 +817,28 @@ package
          "tutstage":200,
          "sale":0,
          "description":"monsterjuicer_desc",
-         "block":true,
+         "cls":BUILDING9,
          "costs":[{
             "r1":1000000,
             "r2":1000000,
             "r3":1000000,
             "r4":0,
             "time":12 * 60 * 60,
-            "re":[[14,1,3],[15,1,1]]
+            "re":[[14,1,1],[128,1,1]]
          },{
             "r1":250000,
             "r2":250000,
             "r3":0,
             "r4":0,
             "time":6 * 60 * 60,
-            "re":[[14,1,3],[15,1,1]]
+            "re":[[14,1,1],[128,1,1]]
          },{
             "r1":500000,
             "r2":500000,
             "r3":0,
             "r4":0,
             "time":12 * 60 * 60,
-            "re":[[14,1,3],[15,1,1]]
+            "re":[[14,1,1],[128,1,1]]
          }],
          "imageData":{
             "baseurl":"buildings/monsterjuiceloosener/",
@@ -2393,6 +2393,8 @@ package
          "sale":0,
          "description":"trojanhorse_desc",
          "block":true,
+         "isImmobile":true,
+         "isUntargetable":true,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5911,6 +5913,8 @@ package
          "tutstage":200,
          "sale":0,
          "description":"trojanhorse_desc",
+         "isImmobile":true,
+         "isUntargetable":true,
          "costs":[{
             "r1":0,
             "r2":0,

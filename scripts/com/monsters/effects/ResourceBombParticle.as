@@ -106,7 +106,7 @@ package com.monsters.effects
                _loc8_.y = -26;
          }
          this.mc.x = param3.x + 100 + _loc8_.x;
-         this.mc.y = param3.y - 400 + _loc8_.y;
+         this.mc.y = param3.y - GLOBAL.StageHeight + _loc8_.y;
          if(!BYMConfig.instance.RENDERER_ON)
          {
             this.mc.cacheAsBitmap = true;

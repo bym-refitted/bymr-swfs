@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.debug.Console;
    import flash.events.*;
    import flash.text.TextFieldAutoSize;
    import gs.*;
@@ -22,7 +23,7 @@ package
          super();
       }
       
-      public function Show(param1:String = null, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : void
+      public function Show(param1:String = null, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1, param9:Boolean = true) : MESSAGE
       {
          this._action = param3;
          this._action2 = param6;
@@ -52,7 +53,7 @@ package
             bAction2.visible = false;
          }
          mcBG.y = 0 - int(mcBG.height * 0.5);
-         mcBG.Setup();
+         mcBG.Setup(param9);
          tMessage.y = mcBG.y + 20;
          bAction.y = mcBG.y + mcBG.height - 45;
          bAction2.y = mcBG.y + mcBG.height - 45;
@@ -60,28 +61,45 @@ package
          this._mc = GLOBAL._layerTop.addChild(this) as MESSAGE_CLIP;
          this._mc.Center();
          this._mc.ScaleUp();
+         return this;
       }
       
       public function Action(param1:MouseEvent) : void
       {
+         var e:MouseEvent = param1;
          this.Hide();
          if(Boolean(this._action))
          {
-            if(!this._args)
+            try
             {
-               this._action();
+               if(!this._args)
+               {
+                  this._action();
+               }
+               else if(this._args.length == 1)
+               {
+                  this._action(this._args[0]);
+               }
+               else if(this._args.length == 2)
+               {
+                  this._action(this._args[0],this._args[1]);
+               }
+               else if(this._args.length == 3)
+               {
+                  this._action(this._args[0],this._args[1],this._args[2]);
+               }
+               else if(this._args.length == 4)
+               {
+                  this._action(this._args[0],this._args[1],this._args[2],this._args[3]);
+               }
+               else
+               {
+                  print("ERROR: MESSAGE.Action only handles up to 4 parameters! (cause its programmed funky)");
+               }
             }
-            else if(this._args.length == 1)
+            catch(error:Error)
             {
-               this._action(this._args[0]);
-            }
-            else if(this._args.length == 2)
-            {
-               this._action(this._args[0],this._args[1]);
-            }
-            else if(this._args.length == 3)
-            {
-               this._action(this._args[0],this._args[1],this._args[2]);
+               Console.warning(error + "MESSAGE.Action (invalid action and/or arguments)",true);
             }
          }
       }

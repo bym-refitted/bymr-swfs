@@ -1,14 +1,16 @@
 package com.monsters.maproom_advanced
 {
    import com.monsters.display.ScrollSet;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.mailbox.Message;
    import com.monsters.mailbox.model.Contact;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import gs.TweenLite;
    import gs.easing.Elastic;
    
-   public class PopupInfoMine extends PopupInfoMine_CLIP
+   internal class PopupInfoMine extends PopupInfoMine_CLIP
    {
       private var _cell:MapRoomCell;
       
@@ -19,8 +21,6 @@ package com.monsters.maproom_advanced
       private var _hasMonsters:Boolean = false;
       
       private var _bookmarked:Boolean = false;
-      
-      private var _popupMoveYard:PopupMoveYard;
       
       private var _scroller:ScrollSet;
       
@@ -87,7 +87,6 @@ package com.monsters.maproom_advanced
                GLOBAL.Message(KEYS.Get("newmap_bm_done"));
             }
          });
-         this._popupMoveYard = new PopupMoveYard();
          (mcFrame as frame).Setup();
       }
       
@@ -270,18 +269,18 @@ package com.monsters.maproom_advanced
          }
       }
       
-      public function Open() : void
+      private function Open() : void
       {
          var _loc1_:int = 0;
          if(!this._cell._locked || this._cell._locked == LOGIN._playerID)
          {
             GLOBAL._currentCell = this._cell;
             MapRoom._mc.HideInfoMine();
-            MapRoom.Hide();
+            MapRoomManager.instance.Hide();
             MapRoom.ClearCells();
             GLOBAL._attackerCellsInRange = new Vector.<CellData>(0,true);
-            _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-            BASE.LoadBase(null,0,this._cell._baseID,"build",false,_loc1_);
+            _loc1_ = this._cell._base == 3 ? int(EnumYardType.OUTPOST) : int(EnumYardType.MAIN_YARD);
+            BASE.LoadBase(null,0,this._cell._baseID,GLOBAL.e_BASE_MODE.BUILD,false,_loc1_);
          }
          else
          {
@@ -297,7 +296,7 @@ package com.monsters.maproom_advanced
          MapRoom.GetCell(this._cell.X,this._cell.Y,true);
       }
       
-      public function RevokeInvitation() : void
+      private function RevokeInvitation() : void
       {
          var body:String;
          var subject:String;
@@ -340,7 +339,7 @@ package com.monsters.maproom_advanced
          r.load(GLOBAL._apiURL + "player/sendmessage",vars,onMigrateRevokeSuccess,onFail);
       }
       
-      public function ButtonInfo(param1:String) : void
+      private function ButtonInfo(param1:String) : void
       {
          if(param1 == "open")
          {
@@ -380,11 +379,7 @@ package com.monsters.maproom_advanced
          });
       }
       
-      public function PreInvite() : void
-      {
-      }
-      
-      public function ShowInviteMigrate() : void
+      private function ShowInviteMigrate() : void
       {
          if(this._cell._base < 2)
          {
@@ -427,7 +422,7 @@ package com.monsters.maproom_advanced
          var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:String = null;
-         var _loc4_:MapRoomPopupInfoMonster = null;
+         var _loc4_:PopupInfoMonster = null;
          if(this._cell._updated)
          {
             this.bInviteMigrate.Enabled = true;
@@ -453,7 +448,7 @@ package com.monsters.maproom_advanced
             {
                if(this._cell._monsters[_loc3_].Get() > 0)
                {
-                  _loc4_ = new MapRoomPopupInfoMonster();
+                  _loc4_ = new PopupInfoMonster();
                   _loc4_.Setup(_loc1_ * 130,_loc2_ * 35,_loc3_,this._cell._monsters[_loc3_].Get());
                   _loc1_ += 1;
                   this._mcMonsters.addChild(_loc4_);

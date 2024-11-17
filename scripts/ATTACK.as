@@ -3,11 +3,23 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.ai.*;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.configs.BYMConfig;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
+   import com.monsters.effects.particles.ParticleDamageItem;
    import com.monsters.effects.particles.ParticleText;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.events.AttackEvent;
-   import com.monsters.monsters.champions.KOTHChampion;
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom3.popups.MapRoom3AttackFinishedPopup;
+   import com.monsters.maproom_advanced.popup_attackend;
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.champions.ChampionBase;
+   import com.monsters.monsters.champions.Krallen;
+   import com.monsters.player.MonsterData;
+   import com.monsters.player.Player;
    import com.monsters.siege.SiegeWeapons;
    import flash.display.*;
    import flash.events.*;
@@ -15,7 +27,6 @@ package
    import flash.net.*;
    import flash.text.TextFieldAutoSize;
    import flash.utils.*;
-   import gs.TweenLite;
    
    public class ATTACK
    {
@@ -49,6 +60,8 @@ package
       
       public static var _sentOver:Boolean;
       
+      private static var m_waitingForSaveToComplete:Boolean;
+      
       public static var _flingValue:int;
       
       public static var _flingCount:int;
@@ -67,13 +80,21 @@ package
       
       public static var _shownAIPopup:Boolean;
       
-      private static var _flungSpace:SecNum;
+      public static var _flungSpace:SecNum;
       
       public static var _deltaLoot:Object;
       
       public static var _hpDeltaLoot:Object;
       
       public static var _savedDeltaLoot:Object;
+      
+      private static var m_recentlyAttacked:Dictionary;
+      
+      private static var m_lastAttackTime:int;
+      
+      public static var _curCreaturesAvailable:Array;
+      
+      public static const USE_CUMULATIVE_FLINGER_CAPACITY:Boolean = true;
       
       public static var _taunted:Boolean = false;
       
@@ -90,9 +111,46 @@ package
          super();
       }
       
+      public static function get waitingForSaveToComplete() : Boolean
+      {
+         return m_waitingForSaveToComplete;
+      }
+      
+      public static function get hasCreaturesToAttackWith() : Boolean
+      {
+         var _loc5_:Object = null;
+         var _loc6_:String = null;
+         var _loc1_:Object = CREATURELOCKER._creatures;
+         var _loc2_:Object = ATTACK._curCreaturesAvailable;
+         var _loc3_:int = int(GLOBAL._playerGuardianData.length);
+         var _loc4_:Vector.<Object> = GLOBAL._playerGuardianData;
+         if(GLOBAL._loadmode == GLOBAL.mode || GLOBAL._loadmode != GLOBAL.mode && !MAPROOM_DESCENT.DescentPassed)
+         {
+            for each(_loc5_ in _loc4_)
+            {
+               if(_loc5_ && _loc5_.hp.Get() > 0 && _loc5_.status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
+               {
+                  return true;
+               }
+            }
+         }
+         for(_loc6_ in _loc2_)
+         {
+            if(_loc2_[_loc6_] && _loc2_[_loc6_] > 0 && Boolean(_loc1_[_loc6_]))
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
       public static function Setup() : void
       {
-         var _loc3_:BFOUNDATION = null;
+         var _loc1_:Player = null;
+         var _loc2_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:String = null;
+         m_recentlyAttacked = new Dictionary();
          _flingerCooldown = 5;
          _flingerCooling = 0;
          _creaturesFlung.Set(0);
@@ -122,36 +180,49 @@ package
          _hpLoot4 = 0;
          _dropZone = null;
          _sentOver = false;
+         m_waitingForSaveToComplete = false;
          _logOpen = false;
          _shownLog = false;
          _shownAIPopup = false;
          _acted = false;
          _flingValue = 0;
-         if(Boolean(GLOBAL._attackersCatapult) && (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack"))
+         if(Boolean(GLOBAL._attackersCatapult) && (GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.VIEW || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMVIEW))
          {
             ResourceBombs.Setup();
          }
-         var _loc1_:Number = 0;
-         var _loc2_:Number = 0;
-         for each(_loc3_ in BASE._buildingsMain)
+         if(!MapRoomManager.instance.isInMapRoom2)
          {
-            _loc1_ += _loc3_._hp;
-            _loc2_ += _loc3_._hpMax;
+            _curCreaturesAvailable = new Array();
+            _loc1_ = !!GLOBAL.attackingPlayer ? GLOBAL.attackingPlayer : GLOBAL.player;
+            _loc2_ = int(_loc1_.monsterList.length);
+            _loc3_ = 0;
+            while(_loc3_ < _loc2_)
+            {
+               _curCreaturesAvailable[_loc1_.monsterList[_loc3_].m_creatureID] = _loc1_.monsterList[_loc3_].numHealthyHousedCreeps;
+               _loc3_++;
+            }
          }
-         _healthOnStart = _loc1_ / _loc2_;
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
+         {
+            GLOBAL._attackerMapCreaturesStart = {};
+            for(_loc4_ in ATTACK._curCreaturesAvailable)
+            {
+               GLOBAL._attackerMapCreaturesStart[_loc4_] = new SecNum(ATTACK._curCreaturesAvailable[_loc4_]);
+            }
+         }
       }
       
       public static function Tick() : void
       {
-         var _loc4_:Boolean = false;
-         var _loc5_:Object = null;
-         var _loc6_:int = 0;
-         var _loc7_:String = null;
-         var _loc8_:SecNum = null;
-         var _loc9_:Boolean = false;
-         var _loc10_:BFOUNDATION = null;
-         var _loc11_:SecNum = null;
-         var _loc12_:SecNum = null;
+         var _loc4_:String = null;
+         var _loc5_:Boolean = false;
+         var _loc6_:Object = null;
+         var _loc7_:int = 0;
+         var _loc8_:String = null;
+         var _loc9_:SecNum = null;
+         var _loc10_:Boolean = false;
+         var _loc11_:Vector.<Object> = null;
+         var _loc12_:BFOUNDATION = null;
          if(_flingerCooling > 0)
          {
             --_flingerCooling;
@@ -166,77 +237,65 @@ package
          var _loc3_:int = 0;
          while(_loc3_ < GLOBAL._playerGuardianData.length)
          {
-            if(Boolean(GLOBAL._playerGuardianData[_loc3_]) && GLOBAL._playerGuardianData[_loc3_].hp.Get() > 0)
+            if(GLOBAL._playerGuardianData[_loc3_] && GLOBAL._playerGuardianData[_loc3_].hp.Get() > 0 && GLOBAL._playerGuardianData[_loc3_].status == ChampionBase.k_CHAMPION_STATUS_NORMAL)
             {
                _loc2_++;
             }
             _loc3_++;
          }
-         if(GLOBAL._advancedMap)
+         for(_loc4_ in _curCreaturesAvailable)
          {
-            for each(_loc11_ in GLOBAL._attackerMapCreatures)
-            {
-               _loc2_ += _loc11_.Get();
-            }
+            _loc2_ += _curCreaturesAvailable[_loc4_];
          }
-         else
+         _loc5_ = false;
+         for each(_loc6_ in ResourceBombs._bombs)
          {
-            for each(_loc12_ in GLOBAL._attackerCreatures)
+            if(_loc6_.catapultLevel <= GLOBAL._attackersCatapult)
             {
-               _loc2_ += _loc12_.Get();
-            }
-         }
-         _loc4_ = false;
-         for each(_loc5_ in ResourceBombs._bombs)
-         {
-            if(_loc5_.catapultLevel <= GLOBAL._attackersCatapult)
-            {
-               if(_loc5_.resource == 3)
+               if(_loc6_.resource == 3)
                {
-                  if(!_loc5_.used && _loc2_ > 0)
+                  if(!_loc6_.used && _loc2_ > 0)
                   {
-                     _loc4_ = true;
+                     _loc5_ = true;
                   }
                }
-               else if(!_loc5_.used)
+               else if(!_loc6_.used)
                {
-                  _loc4_ = true;
+                  _loc5_ = true;
                }
             }
          }
-         _loc6_ = 0;
-         for(_loc7_ in ResourceBombs._activeBombs)
+         _loc7_ = 0;
+         for(_loc8_ in ResourceBombs._activeBombs)
          {
-            _loc6_++;
+            _loc7_++;
          }
-         _loc4_ ||= _loc6_ > 0;
-         for each(_loc8_ in _flingerBucket)
+         _loc5_ ||= _loc7_ > 0;
+         for each(_loc9_ in _flingerBucket)
          {
-            _loc2_ += _loc8_.Get();
+            _loc2_ += _loc9_.Get();
          }
          _loc1_ = _loc2_ > 0;
-         _loc9_ = false;
-         for each(_loc10_ in BASE._buildingsAll)
+         _loc10_ = false;
+         _loc11_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc12_ in _loc11_)
          {
-            if(_loc10_._class != "wall" && _loc10_._class != "trap" && _loc10_._class != "enemy" && _loc10_._class != "decoration" && _loc10_._class != "cage" && _loc10_._hp.Get() > 0)
+            if(_loc12_ is BMUSHROOM === false && _loc12_._class != "wall" && _loc12_._class != "trap" && _loc12_._class != "enemy" && _loc12_._class != "decoration" && _loc12_._class != "cage" && _loc12_.health > 0)
             {
-               _loc9_ = true;
+               _loc10_ = true;
                break;
             }
          }
-         if(!_sentOver && (!_loc9_ || !CREEPS._creepCount))
+         if(!_sentOver && (!_loc10_ || !CREEPS._creepCount))
          {
-            if(_countdown < 0 || !_loc9_ || !_loc1_ && !_loc4_)
+            if(_countdown < 0 || !_loc10_ || !_loc1_ && !_loc5_)
             {
                _sentOver = true;
                if(BASE._saveOver != 1)
                {
                   BASE.Save(1,false,true);
                }
-               TweenLite.to(new Sprite(),2,{
-                  "x":1,
-                  "onComplete":End
-               });
+               m_waitingForSaveToComplete = true;
             }
          }
       }
@@ -244,22 +303,23 @@ package
       public static function ShowLog(param1:int = 0) : void
       {
          var onActionDown:Function;
-         var b:BFOUNDATION = null;
+         var b:BUILDING14 = null;
          var logLength:int = 0;
          var i:String = null;
          var str:String = null;
          var ss:ScrollSet = null;
          var delay:int = param1;
          var shouldShowTaunt:Boolean = BASE._isProtected > 0;
-         for each(b in BASE._buildingsMain)
+         var townHallInstances:Vector.<Object> = InstanceManager.getInstancesByClass(BUILDING14);
+         for each(b in townHallInstances)
          {
-            if(b._type == 14 && b._hp.Get() == 0)
+            if(b.health == 0)
             {
                shouldShowTaunt = true;
             }
          }
          _shownLog = false;
-         if(!_logOpen && GLOBAL._mode == "attack")
+         if(!_logOpen && GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK)
          {
             _logOpen = true;
             _shownLog = true;
@@ -297,7 +357,7 @@ package
                   _attackLog.bAction.SetupKey("btn_talktrash");
                   _attackLog.bAction.addEventListener(MouseEvent.CLICK,onActionDown);
                   _attackLog.bAction.Highlight = true;
-                  if(GLOBAL._advancedMap)
+                  if(MapRoomManager.instance.isInMapRoom2)
                   {
                      _attackLog.b2.Setup(KEYS.Get("btn_next"));
                   }
@@ -311,7 +371,7 @@ package
                {
                   _attackLog.removeChild(_attackLog.b2);
                   _attackLog.bAction.Highlight = false;
-                  if(GLOBAL._advancedMap)
+                  if(MapRoomManager.instance.isInMapRoom2)
                   {
                      _attackLog.bAction.Setup(KEYS.Get("btn_next"));
                   }
@@ -511,7 +571,7 @@ package
          var _loc11_:int = 0;
          var _loc12_:String = null;
          var _loc13_:int = 0;
-         var _loc14_:* = undefined;
+         var _loc14_:MonsterBase = null;
          var _loc6_:Array = [];
          for(_loc8_ in _flingerBucket)
          {
@@ -526,24 +586,17 @@ package
                   _loc4_ = Math.random() * param2 / 2;
                   _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
                   CREEPS.SpawnGuardian(GLOBAL._playerGuardianData[_loc10_].t,MAP._BUILDINGTOPS,"bounce",_loc11_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData[_loc10_].hp.Get(),GLOBAL._playerGuardianData[_loc10_].fb.Get(),GLOBAL._playerGuardianData[_loc10_].pl.Get());
-                  _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc11_,"bucket"));
+                  if(!MapRoomManager.instance.isInMapRoom3)
+                  {
+                     _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc11_,"bucket"));
+                  }
                   _loc12_ = "Level " + GLOBAL._playerGuardianData[_loc10_].l.Get() + " " + CHAMPIONCAGE._guardians["G" + GLOBAL._playerGuardianData[_loc10_].t].name;
                   _loc6_.push([1,_loc12_]);
-                  if(CREEPS._flungGuardian)
-                  {
-                     if(CREEPS._flungGuardian.length != GLOBAL._playerGuardianData.length)
-                     {
-                        CREEPS._flungGuardian = new Vector.<Boolean>(GLOBAL._playerGuardianData.length);
-                     }
-                     if(_loc10_ < CREEPS._flungGuardian.length)
-                     {
-                        CREEPS._flungGuardian[_loc10_] = true;
-                     }
-                  }
+                  CREEPS._flungGuardian[_loc10_] = true;
                }
                else
                {
-                  _flungSpace.Add(CREATURES.GetProperty(_loc8_,"cStorage") * _flingerBucket[_loc8_].Get());
+                  _flungSpace.Add(CREATURES.GetProperty(_loc8_,"bucket") * _flingerBucket[_loc8_].Get());
                   _loc7_ = KEYS.Get(CREATURELOCKER._creatures[_loc8_].name);
                   _loc6_.push([_flingerBucket[_loc8_].Get(),_loc7_]);
                   _loc13_ = 0;
@@ -554,6 +607,14 @@ package
                      _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
                      _loc14_ = CREEPS.Spawn(_loc8_,MAP._BUILDINGTOPS,"bounce",_loc5_,Math.random() * 360);
                      _loc14_._hitLimit = int.MAX_VALUE;
+                     if(!MapRoomManager.instance.isInMapRoom2or3)
+                     {
+                        GLOBAL.attackingPlayer.monsterListByID(_loc8_).add(-1);
+                     }
+                     else if(MapRoomManager.instance.isInMapRoom3)
+                     {
+                        GLOBAL.attackingPlayer.monsterListByID(_loc8_).linkCreepToData(_loc14_);
+                     }
                      _loc13_++;
                   }
                   if(ALLIANCES._myAlliance)
@@ -584,7 +645,7 @@ package
          UI2.Update();
          if(BASE._saveOver != 1)
          {
-            BASE.Save(0,false,true);
+            BASE.Save();
          }
          RemoveDropZone();
       }
@@ -602,36 +663,22 @@ package
          {
             _loc2_ += Math.floor(_loc2_ * 0.25);
          }
+         if(MapRoomManager.instance.isInMapRoom3 && USE_CUMULATIVE_FLINGER_CAPACITY)
+         {
+            _loc2_ -= _flungSpace.Get();
+         }
          if(param1.substr(0,1) == "G")
          {
             _loc4_ = GLOBAL.getPlayerGuardianIndex(int(param1.substr(1)));
-            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData[_loc4_].l.Get(),"bucket");
+            if(!MapRoomManager.instance.isInMapRoom3)
+            {
+               _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData[_loc4_].l.Get(),"bucket");
+            }
             ATTACK._flingerBucket[param1] = new SecNum(1);
             _creaturesLoaded.Add(1);
             SOUNDS.Play("click1");
          }
-         else if(GLOBAL._advancedMap)
-         {
-            if(GLOBAL._attackerMapCreatures[param1].Get() > 0)
-            {
-               for(_loc3_ in _flingerBucket)
-               {
-                  _loc2_ -= CREATURES.GetProperty(_loc3_,"bucket") * ATTACK._flingerBucket[_loc3_].Get();
-               }
-               if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
-               {
-                  GLOBAL._attackerMapCreatures[param1].Add(-1);
-                  _creaturesLoaded.Add(1);
-                  if(!ATTACK._flingerBucket[param1])
-                  {
-                     ATTACK._flingerBucket[param1] = new SecNum(0);
-                  }
-                  ATTACK._flingerBucket[param1].Add(1);
-                  SOUNDS.Play("click1");
-               }
-            }
-         }
-         else if(GLOBAL._attackerCreatures[param1].Get() > 0)
+         else if(_curCreaturesAvailable[param1] > 0)
          {
             for(_loc3_ in _flingerBucket)
             {
@@ -639,7 +686,7 @@ package
             }
             if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
             {
-               GLOBAL._attackerCreatures[param1].Add(-1);
+               _curCreaturesAvailable[param1] = _curCreaturesAvailable[param1] - 1;
                _creaturesLoaded.Add(1);
                if(!ATTACK._flingerBucket[param1])
                {
@@ -661,14 +708,9 @@ package
             {
                delete ATTACK._flingerBucket[param1];
             }
-            else if(GLOBAL._advancedMap)
-            {
-               GLOBAL._attackerMapCreatures[param1].Add(1);
-               _creaturesLoaded.Add(-1);
-            }
             else
             {
-               GLOBAL._attackerCreatures[param1].Add(1);
+               _curCreaturesAvailable[param1] += 1;
                _creaturesLoaded.Add(-1);
             }
             SOUNDS.Play("click1");
@@ -747,14 +789,14 @@ package
          var _loc8_:Number = param2;
          var _loc9_:Number = Number(GLOBAL._resources["r" + param1 + "max"]);
          var _loc10_:Number = Number(GLOBAL._resources["r" + param1].Get());
-         var _loc11_:KOTHChampion = CREEPS.krallen;
+         var _loc11_:Krallen = CREEPS.krallen;
          if(_loc11_)
          {
             _loc9_ += _loc9_ * _loc11_._buff;
          }
          if(_loc10_ + param2 > _loc9_)
          {
-            if(BASE.isInferno() && MAPROOM_DESCENT.DescentPassed || GLOBAL._mode == GLOBAL._loadmode)
+            if(BASE.isInfernoMainYardOrOutpost && MAPROOM_DESCENT.DescentPassed || GLOBAL.mode == GLOBAL._loadmode)
             {
                _loc8_ = _loc9_ - _loc10_;
                if(_loc8_ < 0)
@@ -779,7 +821,7 @@ package
          _hpDeltaLoot.dirty = true;
          if(GLOBAL._render && Boolean(param6))
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                param1 += 4;
             }
@@ -791,7 +833,7 @@ package
             {
                new ParticleLoot(param6,param2,param1);
             }
-            ParticleText.Create(new Point(param3,param4),param2,param1);
+            ParticleText.Create(new Point(param3,param4 - 35),param2,param1);
          }
          return param2;
       }
@@ -841,25 +883,49 @@ package
       {
       }
       
+      public static function damage(param1:Number, param2:IAttackable = null, param3:Number = 0) : void
+      {
+         var _loc8_:String = null;
+         if(getTimer() - m_lastAttackTime > 400)
+         {
+            m_recentlyAttacked = new Dictionary();
+            m_lastAttackTime = getTimer();
+         }
+         var _loc4_:uint = ParticleText.TYPE_DAMAGE;
+         if(param1 < 0)
+         {
+            _loc4_ = ParticleText.TYPE_HEAL;
+         }
+         var _loc5_:Point = new Point(param2.x,param2.y);
+         if(param2 is MonsterBase)
+         {
+            _loc5_.y -= MonsterBase(param2)._altitude;
+         }
+         var _loc6_:int = int(m_recentlyAttacked[param2]);
+         m_recentlyAttacked[param2] = _loc6_ + 1;
+         if(_loc6_ > 2)
+         {
+            return;
+         }
+         if(_loc6_ == 1)
+         {
+            _loc5_.x += 10 * param1.toString().length;
+         }
+         else if(_loc6_ == 2)
+         {
+            _loc5_.x -= 10 * param1.toString().length;
+         }
+         var _loc7_:ParticleDamageItem = ParticleText.Create(_loc5_,param1,_loc4_);
+         if(param3 != 0 && Boolean(_loc7_))
+         {
+            _loc8_ = param3 < 0 ? "-" : "+";
+            _loc7_._mc.tLootA.htmlText += "(" + _loc8_ + Math.abs(Math.round(param3)) + ")";
+            _loc7_._mc.tLootB.htmlText += "(" + _loc8_ + Math.abs(Math.round(param3)) + ")";
+         }
+      }
+      
       public static function Damage(param1:Number, param2:Number, param3:int, param4:Boolean = true, param5:Boolean = false) : void
       {
-         if(param3 == 0)
-         {
-            param4 = false;
-         }
-         var _loc6_:uint = ParticleText.TYPE_DAMAGE;
-         if(param5)
-         {
-            _loc6_ = ParticleText.TYPE_THORN;
-         }
-         else if(param3 < 0)
-         {
-            _loc6_ = ParticleText.TYPE_HEAL;
-         }
-         if(param4)
-         {
-            ParticleText.Create(new Point(param1,param2),param3,_loc6_);
-         }
       }
       
       public static function ProcessDamageGrid() : void
@@ -871,7 +937,7 @@ package
          var _loc1_:* = undefined;
          for each(_loc1_ in CREEPS._creeps)
          {
-            _loc1_.ModeRetreat();
+            _loc1_.changeModeRetreat();
          }
          if(BASE._saveOver != 1)
          {
@@ -898,9 +964,45 @@ package
          BucketUpdate();
       }
       
+      private static function updateCreepAttackToPlayerSavingFunction() : void
+      {
+         var _loc1_:MonsterData = null;
+         var _loc2_:int = 0;
+         var _loc3_:int = int(CREEPS.m_attackingCreeps.length);
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         while(_loc5_ < _loc3_)
+         {
+            if(!CREEPS.m_attackingCreeps[_loc5_].isDisposable)
+            {
+               _loc1_ = GLOBAL.attackingPlayer.monsterListByID(CREEPS.m_attackingCreeps[_loc5_]._creatureID);
+               if(_loc1_)
+               {
+                  _loc2_ = 0;
+                  while(_loc2_ < _loc1_.m_creeps.length && _loc1_.m_creeps[_loc2_].health < (CREEPS.m_attackingCreeps[_loc5_] as MonsterBase).maxHealth)
+                  {
+                     _loc2_++;
+                  }
+                  _loc4_ = (CREEPS.m_attackingCreeps[_loc5_] as MonsterBase).health;
+                  if(_loc4_ > 0)
+                  {
+                     _loc1_.m_creeps[_loc2_].health = _loc4_;
+                  }
+                  else
+                  {
+                     _loc1_.m_creeps[_loc2_].health = 1;
+                  }
+               }
+            }
+            _loc5_++;
+         }
+         BASE.SaveB();
+      }
+      
       public static function End() : void
       {
-         var _loc1_:* = undefined;
+         var _loc1_:MonsterBase = null;
+         m_waitingForSaveToComplete = false;
          BucketClear();
          if(!_sentOver)
          {
@@ -910,23 +1012,23 @@ package
             }
             _sentOver = true;
          }
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "iattack")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.IATTACK)
          {
-            if(Boolean(CREEPS._guardian) && CREEPS._guardian._health.Get() > 0)
+            if(Boolean(CREEPS._guardian) && CREEPS._guardian.health > 0)
             {
                LOGGER.Stat([53,CREEPS._guardian._creatureID,1]);
             }
-            if(Boolean(CREATURES._guardian) && CREATURES._guardian._health.Get() > 0)
+            if(Boolean(CREATURES._guardian) && CREATURES._guardian.health > 0)
             {
                LOGGER.Stat([55,CREATURES._guardian._creatureID,1]);
             }
          }
          for each(_loc1_ in CREEPS._creeps)
          {
-            _loc1_.ModeRetreat();
+            _loc1_.changeModeRetreat();
          }
          SiegeWeapons.deactivateWeapon();
-         if(GLOBAL._mode == "attack" || GLOBAL._mode == "iattack")
+         if(MapRoomManager.instance.isInMapRoom3 && BASE.isMainYardOrInfernoMainYard && (GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK))
          {
             _logOpen = false;
             ShowLog();
@@ -949,62 +1051,96 @@ package
          EndB();
       }
       
+      private static function EndBForMapRoom3() : void
+      {
+         var _loc1_:int = 0;
+         _loc1_ = CalculateBaseDamagePercent();
+         var _loc2_:* = _loc1_ >= BYMConfig.k_sVICTORY_THRESHOLD;
+         if(BASE.isMainYard)
+         {
+            GLOBAL.ShowMap();
+         }
+         else if(BASE.isOutpost)
+         {
+            if(!_loc2_)
+            {
+               MapRoom3AttackFinishedPopup.instance.Show(_loc2_);
+            }
+         }
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
+         {
+            WMBASE._destroyed = _loc2_;
+            MapRoom3AttackFinishedPopup.instance.Show(_loc2_);
+         }
+      }
+      
       public static function EndB() : void
       {
-         var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:String = null;
-         var _loc6_:BFOUNDATION = null;
+         var _loc5_:int = 0;
          var _loc7_:BFOUNDATION = null;
-         var _loc8_:popup_attackend = null;
+         var _loc8_:Vector.<Object> = null;
+         var _loc9_:BUILDING14 = null;
+         var _loc10_:popup_attackend = null;
          var _loc1_:Boolean = false;
          var _loc2_:int = 0;
          _shownFinal = true;
-         if(GLOBAL._advancedMap)
+         var _loc3_:Boolean = INFERNO_DESCENT_POPUPS.isInDescent();
+         var _loc6_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc7_ in _loc6_)
          {
-            for(_loc5_ in BASE._buildingsAll)
+            if(_loc7_._class != "wall" && (_loc7_._class == "trap" && _loc7_._class == "enemy" && _loc7_._fired) === false && (_loc7_._type == 53 && _loc7_._expireTime < GLOBAL.Timestamp()) === false)
             {
-               _loc6_ = BASE._buildingsAll[_loc5_];
-               if(!(_loc6_._class == "trap" && _loc6_._class == "enemy" && _loc6_._fired || _loc6_._type == 53 && _loc6_._expireTime < GLOBAL.Timestamp()))
-               {
-                  if(_loc6_._class != "wall")
-                  {
-                     _loc3_ += _loc6_._hp.Get();
-                     _loc4_ += _loc6_._hpMax.Get();
-                  }
-               }
+               _loc4_ += _loc7_.health;
+               _loc5_ += _loc7_.maxHealth;
             }
-            _loc2_ = 100 - 100 / _loc4_ * _loc3_;
-            if((BASE._yardType == BASE.OUTPOST || GLOBAL._loadmode == "wmattack") && _loc2_ >= 90)
+         }
+         _loc2_ = 100 - 100 / _loc5_ * _loc4_;
+         if(MapRoomManager.instance.isInMapRoom3 && !_loc3_ && !BASE.isInfernoMainYardOrOutpost)
+         {
+            EndBForMapRoom3();
+            return;
+         }
+         if(MapRoomManager.instance.isInMapRoom2 && !_loc3_)
+         {
+            if((BASE.isOutpostMapRoom2Only || GLOBAL._loadmode == GLOBAL.e_BASE_MODE.WMATTACK) && _loc2_ >= BYMConfig.k_sVICTORY_THRESHOLD)
             {
                _loc1_ = true;
-               if(GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   WMBASE._destroyed = true;
                }
             }
-            else if((BASE._yardType == BASE.INFERNO_YARD || GLOBAL._loadmode == "iwmattack") && _loc2_ >= 90)
+            else if((BASE.isMainYardInfernoOnly || GLOBAL._loadmode == GLOBAL.e_BASE_MODE.IWMATTACK) && _loc2_ >= BYMConfig.k_sVICTORY_THRESHOLD)
             {
                _loc1_ = true;
-               if(GLOBAL._loadmode == "iwmattack")
+               if(GLOBAL._loadmode == GLOBAL.e_BASE_MODE.IWMATTACK)
                {
                   WMBASE._destroyed = true;
                }
             }
          }
-         else if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.IWMATTACK)
          {
-            for each(_loc7_ in BASE._buildingsMain)
+            _loc8_ = InstanceManager.getInstancesByClass(BUILDING14);
+            for each(_loc9_ in _loc8_)
             {
-               if(_loc7_._hp.Get() == 0 && _loc7_._repairing == 0 && _loc7_._type == 14 && (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
+               if(_loc9_.health == 0 && _loc9_._repairing == 0 && (GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.IWMATTACK))
                {
                   if(TRIBES.TribeForBaseID(BASE._wmID).id == 2)
                   {
                      ACHIEVEMENTS.Check("wm2hall",1);
                   }
-                  _loc1_ = true;
+                  if(!MAPROOM_DESCENT.InDescent)
+                  {
+                     _loc1_ = true;
+                  }
                   break;
                }
+            }
+            if(_loc2_ >= BYMConfig.k_sVICTORY_THRESHOLD && MAPROOM_DESCENT.InDescent)
+            {
+               _loc1_ = true;
             }
             if(INFERNO_DESCENT_POPUPS.isInDescent())
             {
@@ -1012,7 +1148,7 @@ package
                ACHIEVEMENTS.Check(ACHIEVEMENTS.DESCENT_LEVEL,MAPROOM_DESCENT.DescentLevel);
             }
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicibuild");
          }
@@ -1021,31 +1157,31 @@ package
             SOUNDS.PlayMusic("musicbuild");
          }
          GLOBAL.eventDispatcher.dispatchEvent(new AttackEvent(AttackEvent.ATTACK_OVER,_loc1_,BASE._wmID,_loot));
-         if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST || (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
+         if(MapRoomManager.instance.isInMapRoom2 && BASE.isOutpostMapRoom2Only || (GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.IWMATTACK))
          {
-            _loc8_ = new popup_attackend(_loc1_);
-            _loc8_.mcFrame.Setup(false);
-            POPUPS.Push(_loc8_);
-            if(Boolean(GLOBAL._advancedMap) && !GLOBAL.m_mapRoomFunctional)
+            _loc10_ = new popup_attackend(_loc1_);
+            _loc10_.mcFrame.Setup(false);
+            POPUPS.Push(_loc10_);
+            if(MapRoomManager.instance.isInMapRoom2 && !GLOBAL.m_mapRoomFunctional)
             {
                GLOBAL.Message(KEYS.Get("map_msg_damaged"));
             }
          }
-         else if(GLOBAL._advancedMap)
+         else if(MapRoomManager.instance.isInMapRoom2)
          {
             GLOBAL.ShowMap();
          }
-         else if(GLOBAL._loadmode == GLOBAL._mode)
+         else if(GLOBAL._loadmode == GLOBAL.mode)
          {
-            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.MAIN_YARD);
          }
          else if(MAPROOM_DESCENT.InDescent)
          {
-            BASE.LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
+            BASE.LoadBase(null,0,0,GLOBAL.e_BASE_MODE.BUILD,false,EnumYardType.MAIN_YARD);
          }
          else
          {
-            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,EnumYardType.INFERNO_YARD);
          }
       }
       
@@ -1110,14 +1246,15 @@ package
          {
             RepairAll = function(param1:MouseEvent = null):void
             {
-               var _loc2_:BFOUNDATION = null;
+               var _loc3_:BFOUNDATION = null;
                mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
                mc.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
-               for each(_loc2_ in BASE._buildingsAll)
+               var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+               for each(_loc3_ in _loc2_)
                {
-                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                  if(_loc3_.health < _loc3_.maxHealth && _loc3_._repairing == 0)
                   {
-                     _loc2_.Repair();
+                     _loc3_.Repair();
                   }
                }
                SOUNDS.Play("repair1",0.25);
@@ -1125,14 +1262,15 @@ package
             };
             RepairNow = function(param1:MouseEvent = null):void
             {
-               var _loc2_:BFOUNDATION = null;
+               var _loc3_:BFOUNDATION = null;
                mc.bAction.removeEventListener(MouseEvent.CLICK,RepairAll);
                mc.bAction2.removeEventListener(MouseEvent.CLICK,RepairNow);
-               for each(_loc2_ in BASE._buildingsAll)
+               var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+               for each(_loc3_ in _loc2_)
                {
-                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get() && _loc2_._repairing == 0)
+                  if(_loc3_.health < _loc3_.maxHealth && _loc3_._repairing == 0)
                   {
-                     _loc2_.Repair();
+                     _loc3_.Repair();
                   }
                }
                STORE.ShowB(3,1,["FIX"],true);
@@ -1144,12 +1282,29 @@ package
             mc.tB.htmlText = "<b>" + KEYS.Get("ai_poordefense_tb") + "</b>";
             mc.tC.htmlText = KEYS.Get("ai_poordefense_tc");
             mc.bAction.SetupKey("ai_repairdamage_btn");
-            mc.bAction.addEventListener(MouseEvent.CLICK,RepairAll);
+            mc.bAction.addEventListener(MouseEvent.CLICK,RepairAll,false,0,true);
             mc.bAction2.SetupKey("pop_damaged_repairnow_btn");
-            mc.bAction2.addEventListener(MouseEvent.CLICK,RepairNow);
+            mc.bAction2.addEventListener(MouseEvent.CLICK,RepairNow,false,0,true);
             mc.bAction2.Highlight = true;
             POPUPS.Push(mc,null,null,"shotgun","military.png");
          }
+      }
+      
+      protected static function CalculateBaseDamagePercent(param1:uint = 100) : Number
+      {
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:BFOUNDATION = null;
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc5_ in _loc2_)
+         {
+            if(_loc5_._class != "wall" && (_loc5_._class == "trap" && _loc5_._class == "enemy" && _loc5_._fired) === false && (_loc5_._type == 53 && _loc5_._expireTime < GLOBAL.Timestamp()) === false)
+            {
+               _loc4_ += _loc5_.health;
+               _loc3_ += _loc5_.maxHealth;
+            }
+         }
+         return param1 - _loc4_ / _loc3_ * param1;
       }
    }
 }

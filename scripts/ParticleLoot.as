@@ -35,8 +35,8 @@ package
          var _loc1_:Number = NaN;
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
-         _loc1_ = this._building._mc.width * 0.35;
-         _loc2_ = this._building._mc.height * 0.35;
+         _loc1_ = this._building._mcFootprint.width * 0.35;
+         _loc2_ = this._building._mcFootprint.height * 0.35;
          _loc3_ = Math.random() * 2 - 1;
          this._resourcePackage.x += _loc3_ * _loc1_;
          var _loc4_:Number = this._resourcePackage.x + _loc3_ * _loc1_;

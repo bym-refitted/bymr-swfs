@@ -1,6 +1,7 @@
 package com.monsters.frontPage.messages.underusedFeatures
 {
    import com.monsters.frontPage.messages.KeywordMessage;
+   import com.monsters.managers.InstanceManager;
    
    public class Underused02Academy extends KeywordMessage
    {
@@ -12,7 +13,7 @@ package com.monsters.frontPage.messages.underusedFeatures
       
       override public function get areRequirementsMet() : Boolean
       {
-         return GLOBAL._bAcademy && this.hasIdleAcademy() && GLOBAL._bTownhall._lvl.Get() >= 3 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM5") > 432000 && Boolean(this.hasUpgradableMonster());
+         return GLOBAL._bAcademy && this.hasIdleAcademy() && GLOBAL.townHall._lvl.Get() >= 3 && GLOBAL.Timestamp() - GLOBAL.StatGet("CM5") > 432000 && Boolean(this.hasUpgradableMonster());
       }
       
       override protected function onView() : void
@@ -36,13 +37,13 @@ package com.monsters.frontPage.messages.underusedFeatures
          var _loc3_:* = _loc2_ >= GLOBAL._buildingProps[ACADEMY.ID - 1].costs.length;
          for(_loc4_ in _loc1_)
          {
-            _loc5_ = ACADEMY._upgrades[_loc4_];
+            _loc5_ = GLOBAL.player.m_upgrades[_loc4_];
             if(!_loc5_)
             {
                return null;
             }
             _loc6_ = int(_loc5_.level);
-            if(_loc6_ < _loc2_ || _loc6_ == _loc2_ && !_loc3_ && _loc2_ >= _loc1_[_loc4_].page && !ACADEMY._upgrades[_loc4_].time)
+            if(_loc6_ < _loc2_ || _loc6_ == _loc2_ && !_loc3_ && _loc2_ >= _loc1_[_loc4_].page && !GLOBAL.player.m_upgrades[_loc4_].time)
             {
                return KEYS.Get(_loc1_[_loc4_].name);
             }
@@ -52,10 +53,11 @@ package com.monsters.frontPage.messages.underusedFeatures
       
       private function hasIdleAcademy() : Boolean
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BUILDING26 = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BUILDING26);
+         for each(_loc2_ in _loc1_)
          {
-            if(_loc1_._type == ACADEMY.ID && !BUILDING26(_loc1_)._upgrading)
+            if(!_loc2_._upgrading)
             {
                return true;
             }

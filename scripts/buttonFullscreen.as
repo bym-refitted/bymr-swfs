@@ -33,7 +33,7 @@ package
          this._bubble.mcText.autoSize = TextFieldAutoSize.LEFT;
          this._bubble.mouseEnabled = false;
          this._bubble.mouseChildren = false;
-         if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+         if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN || GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
          {
             this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_fullscreenexit") + "</b>";
          }

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1392")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1453")]
    public dynamic class meterBar_rounded_red_CLIP extends MovieClip
    {
       public var mcFill:MovieClip;

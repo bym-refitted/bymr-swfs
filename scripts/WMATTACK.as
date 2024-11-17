@@ -3,11 +3,14 @@ package
    import com.gskinner.utils.Rndm;
    import com.monsters.ai.*;
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.components.abilities.Enrage;
+   import com.monsters.monsters.components.abilities.TemporaryComponent;
    import com.monsters.pathing.PATHING;
    import com.monsters.replayableEvents.monsterInvasion.WaveObj;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
-   import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.utils.getTimer;
@@ -125,7 +128,7 @@ package
       
       public static function Setup(param1:Object) : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _enabled = true;
             if(param1 == null)
@@ -213,7 +216,7 @@ package
                _attackPreference = _history.attackPreference;
             }
          }
-         else if(GLOBAL._mode == "attack" || GLOBAL._mode == "view" || GLOBAL._mode == "help")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.VIEW || GLOBAL.mode == GLOBAL.e_BASE_MODE.HELP)
          {
             _history = param1;
          }
@@ -280,24 +283,29 @@ package
       public static function Tick() : void
       {
          var _loc1_:int = 0;
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:int = 0;
-         var _loc4_:Object = null;
-         if(GLOBAL._mode == "build")
+         var _loc2_:Vector.<Object> = null;
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:int = 0;
+         var _loc5_:Object = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(t % 10 == 0)
             {
                _loc1_ = 0;
                baseIsRepairing = false;
-               for each(_loc2_ in BASE._buildingsMain)
+               _loc2_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+               for each(_loc3_ in _loc2_)
                {
-                  _loc1_++;
-                  if(_loc2_._hp.Get() < _loc2_._hpMax.Get())
+                  if(!(_loc3_ is BTRAP === false || _loc3_ is BTOWER === false))
                   {
-                     baseIsRepairing = true;
+                     _loc1_++;
+                     if(_loc3_.health < _loc3_.maxHealth)
+                     {
+                        baseIsRepairing = true;
+                     }
                   }
                }
-               if(Boolean(BASE._yardType) && _loc1_ < 10)
+               if(!BASE.isMainYard && _loc1_ < 10)
                {
                   baseIsRepairing = true;
                }
@@ -350,15 +358,15 @@ package
                }
                else if(GLOBAL.Timestamp() % 10 == 0)
                {
-                  _loc3_ = 0;
-                  for each(_loc4_ in CREEPS._creeps)
+                  _loc4_ = 0;
+                  for each(_loc5_ in CREEPS._creeps)
                   {
-                     if(_loc4_._behaviour == "attack" || _loc4_._behaviour == "bounce" || _loc4_._behaviour == "loot" || _loc4_._behaviour == "heal" || _loc4_._behaviour == "buff" || _loc4_._behaviour == "hunt")
+                     if(_loc5_._behaviour == GLOBAL.e_BASE_MODE.ATTACK || _loc5_._behaviour == "bounce" || _loc5_._behaviour == "loot" || _loc5_._behaviour == "heal" || _loc5_._behaviour == "buff" || _loc5_._behaviour == "hunt")
                      {
-                        _loc3_++;
+                        _loc4_++;
                      }
                   }
-                  if(_loc3_ == 0)
+                  if(_loc4_ == 0)
                   {
                      _cleanUpFunc();
                   }
@@ -496,7 +504,7 @@ package
          var _loc3_:Class = null;
          var _loc4_:Object = null;
          var _loc5_:int = 0;
-         if(GLOBAL._mode == "build" && GLOBAL._render && POPUPS.Done())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && GLOBAL._render && POPUPS.Done())
          {
             intelligence = param2;
             quickly = param1;
@@ -507,7 +515,7 @@ package
                   if(_loc4_.destroyed == 0 && _loc4_.level >= BASE._baseLevel - 10)
                   {
                      _attackersBaseID = _loc4_.baseid;
-                     if(BASE.isInferno())
+                     if(BASE.isInfernoMainYardOrOutpost)
                      {
                         _type = WMATTACK.TYPE_SWARM;
                         _loc3_ = PROCESS_INFERNO1;
@@ -574,7 +582,7 @@ package
             "warned":0,
             "t":_attackersBaseID
          };
-         if(_loc3_ > _trojanThreshold && !_history["s1"] && !BASE._yardType)
+         if(_loc3_ > _trojanThreshold && !_history["s1"] && !BASE.isMainYard)
          {
             _trojan = true;
             _history["s1"] = [1,GLOBAL.Timestamp(),0];
@@ -610,7 +618,7 @@ package
          var _loc16_:* = undefined;
          if(_history)
          {
-            if(_history["s1"] && _history["s1"][0] == 1 && _history["s1"][2] == 0 && !BASE.isInferno())
+            if(_history["s1"] && _history["s1"][0] == 1 && _history["s1"][2] == 0 && !BASE.isInfernoMainYardOrOutpost)
             {
                _history["s1"][2] = 1;
                _history.lastattack = GLOBAL.Timestamp();
@@ -625,7 +633,7 @@ package
          AttackC();
          WMATTACK._history.lastattack = GLOBAL.Timestamp();
          _isAI = true;
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicipanic");
          }
@@ -687,7 +695,7 @@ package
          var _loc7_:Number = NaN;
          var _loc8_:int = 0;
          var _loc9_:Point = null;
-         var _loc10_:MovieClip = null;
+         var _loc10_:MonsterBase = null;
          var _loc11_:Rndm = new Rndm(int(param1.x + param1.y));
          param1 = GRID.FromISO(param1.x,param1.y);
          var _loc12_:Array = [];
@@ -703,20 +711,12 @@ package
             }
             else
             {
-               if(!GLOBAL._attackerCreatureUpgrades)
-               {
-                  GLOBAL._attackerCreatureUpgrades = GLOBAL._playerCreatureUpgrades;
-               }
-               if(param6)
-               {
-                  GLOBAL._attackerCreatureUpgrades[param3] = {"level":param6};
-               }
                _loc10_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc9_.x,_loc9_.y,0),_loc11_.random() * 360);
             }
             _loc10_._hitLimit = int.MAX_VALUE;
             if(_rage)
             {
-               _loc10_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
+               _loc10_.addComponent(new TemporaryComponent(new Enrage(2,0),_rage));
             }
             _loc12_.push(_loc10_);
             _loc13_++;
@@ -778,7 +778,7 @@ package
          var _loc6_:Number = NaN;
          var _loc7_:int = 0;
          var _loc8_:Point = null;
-         var _loc9_:MovieClip = null;
+         var _loc9_:MonsterBase = null;
          var _loc10_:uint = uint(BASE._basePoints) + uint(BASE._baseValue);
          var _loc11_:Number = 0.4;
          var _loc12_:Rndm = new Rndm(int(param1.x + param1.y));
@@ -813,7 +813,7 @@ package
             _loc9_ = CREEPS.Spawn(param3,MAP._BUILDINGTOPS,"bounce",GRID.ToISO(_loc8_.x,_loc8_.y,0),_loc12_.random() * 360,_loc11_,true);
             if(_rage)
             {
-               _loc9_.ModeEnrage(GLOBAL.Timestamp() + _rage,2,0);
+               _loc9_.addComponent(new TemporaryComponent(new Enrage(2,0),_rage));
             }
             _loc13_.push(_loc9_);
             _loc14_++;
@@ -857,11 +857,9 @@ package
       
       public static function CleanUp() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         var _loc2_:int = 0;
+         var _loc2_:BFOUNDATION = null;
          var _loc3_:int = 0;
-         var _loc4_:String = null;
-         var _loc5_:BFOUNDATION = null;
+         var _loc4_:int = 0;
          _inProgress = false;
          UI2.Show("top");
          UI2.Show("bottom");
@@ -877,7 +875,7 @@ package
          {
             ResetWait();
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicibuild");
          }
@@ -885,41 +883,31 @@ package
          {
             SOUNDS.PlayMusic("musicbuild");
          }
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc2_ in _loc1_)
          {
-            _loc1_.GridCost(true);
-         }
-         for each(_loc1_ in BASE._buildingsMushrooms)
-         {
-            _loc1_.GridCost();
+            _loc2_.GridCost(true);
+            if(_loc2_ is BTRAP && _loc2_ is BWALL && _loc2_._repairing != 1)
+            {
+               _loc3_ += _loc2_.health;
+               _loc4_ += _loc2_.maxHealth;
+            }
+            if(_loc2_.health < _loc2_.maxHealth && _loc2_._repairing == 0)
+            {
+               _loc2_.Repair();
+            }
          }
          BASE._blockSave = false;
          BASE.Save();
-         for(_loc4_ in BASE._buildingsAll)
-         {
-            _loc1_ = BASE._buildingsAll[_loc4_];
-            if(_loc1_._class != "trap" && _loc1_._class != "wall" && _loc1_._repairing != 1)
-            {
-               _loc2_ += _loc1_._hp.Get();
-               _loc3_ += _loc1_._hpMax.Get();
-            }
-         }
-         for each(_loc5_ in BASE._buildingsAll)
-         {
-            if(_loc5_._hp.Get() < _loc5_._hpMax.Get() && _loc5_._repairing == 0)
-            {
-               _loc5_.Repair();
-            }
-         }
-         if(MONSTERBAITER._scaredAway && _loc2_ < _loc3_)
+         if(MONSTERBAITER._scaredAway && _loc3_ < _loc4_)
          {
             ATTACK.PoorDefense();
          }
-         else if(_loc2_ < _loc3_ * 0.9 || TUTORIAL._stage < 200)
+         else if(_loc3_ < _loc4_ * 0.9 || TUTORIAL._stage < 200)
          {
             ATTACK.PoorDefense();
          }
-         else if(_loc2_ >= _loc3_ * 0.9)
+         else if(_loc3_ >= _loc4_ * 0.9)
          {
             if(!MONSTERBAITER._scaredAway)
             {
@@ -938,11 +926,9 @@ package
       
       public static function CleanUpLite() : void
       {
-         var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:String = null;
-         var _loc5_:BFOUNDATION = null;
+         var _loc4_:BFOUNDATION = null;
          _inProgress = false;
          UI2.Show("top");
          UI2.Show("bottom");
@@ -958,7 +944,7 @@ package
          {
             ResetWait();
          }
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicibuild");
          }
@@ -966,32 +952,25 @@ package
          {
             SOUNDS.PlayMusic("musicbuild");
          }
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc1_)
          {
-            _loc1_.GridCost(true);
-         }
-         for each(_loc1_ in BASE._buildingsMushrooms)
-         {
-            _loc1_.GridCost();
+            _loc4_.GridCost(true);
+            if(_loc4_._repairing != 1)
+            {
+               if(_loc4_._class != "trap" && _loc4_._class != "wall")
+               {
+                  _loc2_ += _loc4_.health;
+                  _loc3_ += _loc4_.maxHealth;
+               }
+               if(_loc4_.health < _loc4_.maxHealth)
+               {
+                  _loc4_.Repair();
+               }
+            }
          }
          BASE._blockSave = false;
          BASE.Save();
-         for(_loc4_ in BASE._buildingsAll)
-         {
-            _loc1_ = BASE._buildingsAll[_loc4_];
-            if(_loc1_._class != "trap" && _loc1_._class != "wall" && _loc1_._repairing != 1)
-            {
-               _loc2_ += _loc1_._hp.Get();
-               _loc3_ += _loc1_._hpMax.Get();
-            }
-         }
-         for each(_loc5_ in BASE._buildingsAll)
-         {
-            if(_loc5_._hp.Get() < _loc5_._hpMax.Get() && _loc5_._repairing == 0)
-            {
-               _loc5_.Repair();
-            }
-         }
          MONSTERBAITER._scaredAway = false;
          CUSTOMATTACKS._started = false;
          QUESTS.Check();
@@ -1000,13 +979,11 @@ package
       
       public static function End() : void
       {
-         var _loc1_:BFOUNDATION = null;
          var _loc2_:int = 0;
          var _loc3_:int = 0;
-         var _loc4_:String = null;
-         var _loc5_:BFOUNDATION = null;
+         var _loc4_:BFOUNDATION = null;
          Tick();
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.PlayMusic("musicibuild");
          }
@@ -1018,32 +995,25 @@ package
          UI2.Show("bottom");
          UI2.Hide("warning");
          UI2.Hide("scareAway");
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc1_)
          {
-            _loc1_.GridCost(true);
-         }
-         for each(_loc1_ in BASE._buildingsMushrooms)
-         {
-            _loc1_.GridCost();
+            _loc4_.GridCost(true);
+            if(_loc4_._repairing != 1)
+            {
+               if(_loc4_._class != "trap" && _loc4_._class != "wall")
+               {
+                  _loc2_ += _loc4_.health;
+                  _loc3_ += _loc4_.maxHealth;
+               }
+               if(_loc4_.health < _loc4_.maxHealth)
+               {
+                  _loc4_.Repair();
+               }
+            }
          }
          BASE._blockSave = false;
          BASE.Save();
-         for(_loc4_ in BASE._buildingsAll)
-         {
-            _loc1_ = BASE._buildingsAll[_loc4_];
-            if(_loc1_._class != "trap" && _loc1_._class != "wall")
-            {
-               _loc2_ += _loc1_._hp.Get();
-               _loc3_ += _loc1_._hpMax.Get();
-            }
-         }
-         for each(_loc5_ in BASE._buildingsAll)
-         {
-            if(_loc5_._hp.Get() < _loc5_._hpMax.Get() && _loc5_._repairing == 0)
-            {
-               _loc5_.Repair();
-            }
-         }
          if(MONSTERBAITER._scaredAway && _loc2_ < _loc3_)
          {
             ATTACK.PoorDefense();
@@ -1091,7 +1061,7 @@ package
                _attackVolumeAmplifier = 0.5;
                _hitsPerCreep = 20;
                _history.attackPreference = -1;
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   LOGGER.Stat([89,"slow"]);
                }
@@ -1102,7 +1072,7 @@ package
                _attackVolumeAmplifier = 1;
                _hitsPerCreep = 30;
                _history.attackPreference = 0;
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   LOGGER.Stat([89,"med"]);
                }
@@ -1112,7 +1082,7 @@ package
                _attackVolumeAmplifier = 1.3;
                _hitsPerCreep = 50;
                _history.attackPreference = 1;
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   LOGGER.Stat([89,"fast"]);
                   break;
@@ -1123,13 +1093,14 @@ package
       
       public static function dpsAtPoint(param1:Solution, param2:Point) : Number
       {
-         var _loc3_:* = undefined;
+         var _loc3_:BTOWER = null;
          var _loc4_:Number = NaN;
          var _loc5_:Point = null;
-         var _loc7_:* = undefined;
+         var _loc7_:BTOWER = null;
          var _loc6_:Number = 0;
          param2 = GRID.FromISO(param2.x,param2.y);
-         for each(_loc3_ in BASE._buildingsTowers)
+         var _loc8_:Vector.<Object> = InstanceManager.getInstancesByClass(BTOWER);
+         for each(_loc3_ in _loc8_)
          {
             if(_loc3_._countdownUpgrade.Get() == 0 && _loc3_._countdownBuild.Get() == 0 && Boolean(_loc3_._countdownFortify.Get()))
             {
@@ -1139,7 +1110,7 @@ package
                if(_loc4_ < _loc3_._range)
                {
                   _loc7_ = _loc3_;
-                  _loc6_ += _loc3_._damage / _loc3_._rate;
+                  _loc6_ += _loc3_.damage / _loc3_._rate;
                   param1.towersInPath.push(_loc3_);
                }
             }

@@ -1,21 +1,22 @@
 package
 {
    import flash.display.MovieClip;
+   import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2058")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2123")]
    public dynamic class SIEGEWEAPONPOPUP_view extends MovieClip
    {
       public var _bFire:Button_CLIP;
       
       public var timeLeftMC:MovieClip;
       
-      public var bg:MovieClip;
+      public var txtName:TextField;
       
       public var _bOpen:changeCatapultBtn;
       
       public var _image:MovieClip;
       
-      public var _mc:popup_catapult_mc;
+      public var _iconbg:MovieClip;
       
       public var _bar:MovieClip;
       

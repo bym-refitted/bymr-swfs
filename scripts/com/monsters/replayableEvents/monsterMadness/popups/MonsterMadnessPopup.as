@@ -1,6 +1,7 @@
 package com.monsters.replayableEvents.monsterMadness.popups
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -112,11 +113,11 @@ package com.monsters.replayableEvents.monsterMadness.popups
       
       private function getUserState() : int
       {
-         if(GLOBAL._advancedMap == 1 && MAPROOM_DESCENT.DescentPassed)
+         if(MapRoomManager.instance.isInMapRoom2 && MAPROOM_DESCENT.DescentPassed)
          {
             return MR2_AND_INFERNO;
          }
-         if(GLOBAL._advancedMap == 1)
+         if(MapRoomManager.instance.isInMapRoom2)
          {
             return MR2;
          }
@@ -124,7 +125,7 @@ package com.monsters.replayableEvents.monsterMadness.popups
          {
             return INFERNO;
          }
-         if(Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() >= 5)
+         if(Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= 5)
          {
             return TOWNHALL_GREATER_THAN_5;
          }

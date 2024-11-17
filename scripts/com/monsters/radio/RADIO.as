@@ -187,7 +187,7 @@ package com.monsters.radio
          {
             if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcZoom.gotoAndStop(4);
                }

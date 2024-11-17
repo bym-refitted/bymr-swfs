@@ -1,7 +1,9 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.interfaces.ILootable;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.events.*;
    
    public class BSTORAGE extends BFOUNDATION implements ILootable
@@ -29,32 +31,7 @@ package
          super();
       }
       
-      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
-      {
-         var _loc9_:Number = NaN;
-         var _loc8_:int = param1;
-         if(_fortification.Get() > 0)
-         {
-            _loc8_ *= 100 - (_fortification.Get() * 10 + 10);
-            _loc8_ = _loc8_ / 100;
-         }
-         if(param5)
-         {
-            _loc9_ = !!param6 ? param6.Get() * 0.01 : 1;
-            if(param4 == 3)
-            {
-               this.Loot(_loc8_ * 3 * _loc9_);
-            }
-            else
-            {
-               this.Loot(_loc8_ * 0.5 * _loc9_);
-            }
-         }
-         super.Damage(param1,param2,param3,param4,param5,param6,param7);
-         return _loc8_;
-      }
-      
-      override public function Loot(param1:int) : void
+      override public function Loot(param1:int) : uint
       {
          var _loc4_:Object = null;
          var _loc2_:int = 0;
@@ -112,7 +89,7 @@ package
             }
             BASE._deltaResources.dirty = true;
             BASE._hpDeltaResources.dirty = true;
-            if(GLOBAL._advancedMap && GLOBAL._currentCell && GLOBAL._currentCell._base == 1)
+            if(MapRoomManager.instance.isInMapRoom2 && GLOBAL._currentCell && GLOBAL._currentCell.baseType == EnumYardType.OUTPOST)
             {
                _loc2_ *= 0.5;
             }
@@ -120,7 +97,7 @@ package
             {
                _loc2_ *= 0.9;
             }
-            if(GLOBAL._mode == "wmattack")
+            if(GLOBAL.mode == "wmattack")
             {
                _loc2_ = int(_loc2_ / 5);
             }
@@ -130,7 +107,7 @@ package
          {
             param1 = 0;
          }
-         super.Loot(param1);
+         return super.Loot(_loc2_);
       }
       
       override public function Destroyed(param1:Boolean = true) : void
@@ -156,7 +133,7 @@ package
                if(_type == 6)
                {
                   _loc4_ = Math.min(_loc4_,_LOOT_MAX_SILO);
-                  if(GLOBAL._advancedMap && GLOBAL._currentCell && GLOBAL._currentCell._base == 1)
+                  if(MapRoomManager.instance.isInMapRoom2 && GLOBAL._currentCell && GLOBAL._currentCell.baseType == EnumYardType.OUTPOST)
                   {
                      _loc4_ = Math.min(_loc4_,_LOOT_MAX_WM_SILO);
                   }
@@ -164,7 +141,7 @@ package
                if(_type == 14)
                {
                   _loc4_ = Math.min(_loc4_,_LOOT_MAX_TH);
-                  if(GLOBAL._advancedMap && GLOBAL._currentCell && GLOBAL._currentCell._base == 1)
+                  if(MapRoomManager.instance.isInMapRoom2 && GLOBAL._currentCell && GLOBAL._currentCell.baseType == EnumYardType.OUTPOST)
                   {
                      _loc4_ = Math.min(_loc4_,_LOOT_MAX_WM_TH);
                   }
@@ -173,7 +150,7 @@ package
                {
                   _loc4_ = Math.min(_loc4_,_LOOT_MAX_OUTPOST);
                }
-               if(_loc3_ == 4)
+               if(_loc3_ == 4 && !MapRoomManager.instance.isInMapRoom3)
                {
                   _loc4_ = Math.ceil(_loc4_ * _LOOT_GOO_LIMITER);
                }

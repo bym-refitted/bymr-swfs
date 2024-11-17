@@ -18,12 +18,13 @@ package com.monsters.display
       
       private var _track:DisplayObject;
       
-      public function ScrollSetV(param1:DisplayObject, param2:DisplayObject)
+      public function ScrollSetV(param1:DisplayObject, param2:DisplayObject, param3:Boolean = false)
       {
          super();
          this._content = param1;
          this._mask = param2;
          this._scroller = mcScroller;
+         this._scroller.buttonMode = param3;
          this._defaultScrollHeight = this._scroller.height;
          this._scroller.y = 0;
          this._track = mcBG;
@@ -42,7 +43,7 @@ package com.monsters.display
       
       protected function onContentResize(param1:Event = null) : void
       {
-         visible = this._content.height < this._mask.height ? false : true;
+         visible = this._content.height <= this._mask.height ? false : true;
          this.updateScrollerSize();
       }
       
@@ -70,7 +71,7 @@ package com.monsters.display
       {
          this._scroller.height = this._defaultScrollHeight * (this._mask.height / this._content.height);
          this._track.height = this._mask.height;
-         if(this._content.y < -this._content.height)
+         if(this._content.y < -this._content.height || this._content.height <= this._mask.height)
          {
             this._content.y = 0;
             this._scroller.y = 0;

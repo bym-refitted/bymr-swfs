@@ -169,7 +169,7 @@ package
       {
          var _loc1_:SecNum = null;
          var _loc6_:String = null;
-         var _loc2_:int = 0;
+         var _loc2_:int = 1;
          var _loc3_:Number = INFERNOPORTAL.building.x + 100;
          var _loc4_:Number = INFERNOPORTAL.building.y + 100;
          var _loc5_:Point = new Point();

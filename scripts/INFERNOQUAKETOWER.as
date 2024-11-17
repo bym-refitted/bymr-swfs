@@ -1,6 +1,10 @@
 package
 {
    import com.monsters.display.BuildingOverlay;
+   import com.monsters.interfaces.IAttackable;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.siege.weapons.Vacuum;
+   import com.monsters.siege.weapons.VacuumHose;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -24,6 +28,7 @@ package
          _gridCost = [[new Rectangle(0,0,70,70),10],[new Rectangle(10,10,50,50),200]];
          SetProps();
          Props();
+         attackFlags = Targeting.getOldStyleTargets(-1);
       }
       
       override public function PlaceB() : void
@@ -76,8 +81,8 @@ package
             {
                _loc4_ = 0;
                _loc5_ = _lvl.Get() == 0 ? 0 : int(_lvl.Get() - 1);
-               _loc4_ = Math.ceil(_hpMax.Get() / Math.min(60 * 60,_buildingProps.repairTime[_loc5_]));
-               _repairTime = int(_hpMax.Get() - _hp.Get()) / _loc4_;
+               _loc4_ = Math.ceil(maxHealth / Math.min(60 * 60,_buildingProps.repairTime[_loc5_]));
+               _repairTime = int(maxHealth - health) / _loc4_;
                QUEUE.Update("building" + _id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(_repairTime,true));
             }
             else if(_countdownBuild.Get() > 0)
@@ -96,11 +101,11 @@ package
             {
                BuildingOverlay.Update(this,param1);
             }
-            if(_hp.Get() <= 0)
+            if(health <= 0)
             {
                Render("destroyed");
             }
-            else if(_hp.Get() < _hpMax.Get() * 0.5)
+            else if(health < maxHealth * 0.5)
             {
                Render("damaged");
             }
@@ -113,7 +118,7 @@ package
       
       override public function TickAttack() : void
       {
-         if(_hp.Get() <= 0)
+         if(health <= 0)
          {
             _animTick = 0;
             return;
@@ -145,9 +150,9 @@ package
          }
       }
       
-      override public function Fire(param1:*) : void
+      override public function Fire(param1:IAttackable) : void
       {
-         if(_hp.Get() <= 0)
+         if(health <= 0)
          {
             return;
          }
@@ -166,8 +171,8 @@ package
          }
          if(isJard)
          {
-            _jarHealth.Add(-int(_damage * 3 * 1 * _loc2_));
-            ATTACK.Damage(_mc.x,_mc.y + _top,_damage * 3 * 1 * _loc2_);
+            _jarHealth.Add(-int(damage * 3 * 1 * _loc2_));
+            ATTACK.Damage(_mc.x,_mc.y + _top,damage * 3 * 1 * _loc2_);
             if(_jarHealth.Get() <= 0)
             {
                KillJar();
@@ -175,7 +180,7 @@ package
          }
          else
          {
-            this.Quake(int(_damage * 1 * _loc2_));
+            this.Quake(int(damage * 1 * _loc2_));
             _loc3_ = new QuakeGraphic(20,_range * 2);
             _loc3_.graphic.y += _top;
             _mc.addChild(_loc3_.graphic);
@@ -186,12 +191,13 @@ package
       
       private function Quake(param1:int) : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:* = undefined;
+         var _loc2_:Object = null;
+         var _loc3_:MonsterBase = null;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc7_:int = 0;
          var _loc8_:String = null;
+         var _loc9_:VacuumHose = null;
          var _loc6_:Array = this.GetCreepsInRange();
          for(_loc8_ in _loc6_)
          {
@@ -203,18 +209,18 @@ package
             {
                _loc5_ = param1 / 3;
             }
-            _loc5_ *= _loc3_._damageMult;
-            if(_loc5_ > _loc3_._health.Get())
+            if(_loc5_ > _loc3_.health)
             {
-               _loc5_ = int(_loc3_._health.Get());
+               _loc5_ = _loc3_.health;
             }
             _loc7_ += _loc5_;
-            _loc3_._health.Add(-_loc5_);
+            _loc3_.modifyHealth(-_loc5_);
          }
-         if(Boolean((GLOBAL._bTownhall as BUILDING14)._vacuum) && GLOBAL.QuickDistance(_position,GLOBAL._bTownhall._position) < _range)
+         _loc9_ = Vacuum.getHose();
+         if((Boolean(_loc9_)) && GLOBAL.QuickDistance(_position,new Point(_loc9_.x,_loc9_.y)) < _range)
          {
-            _loc5_ = param1 / _range * (_range - GLOBAL.QuickDistance(_position,GLOBAL._bTownhall._position));
-            (GLOBAL._bTownhall as BUILDING14)._vacuumHealth.Add(-_loc5_);
+            _loc5_ = param1 / _range * (_range - GLOBAL.QuickDistance(_position,GLOBAL.townHall._position));
+            _loc9_.modifyHealth(-_loc5_);
             _loc7_ += _loc5_;
          }
          ATTACK.Damage(_mc.x,_mc.y - _top,_loc7_);
@@ -222,14 +228,14 @@ package
       
       private function GetCreepsInRange() : Array
       {
-         return MAP.CreepCellFind(_position.add(new Point(0,_footprint[0].height / 2)),_range,-1);
+         return Targeting.getCreepsInRange(_range,_position.add(new Point(0,_footprint[0].height / 2)),attackFlags);
       }
       
       override public function Upgraded() : void
       {
          var _loc1_:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !BASE.isInfernoMainYardOrOutpost)
          {
             _loc1_ = new popup_building();
             _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{
@@ -254,7 +260,7 @@ package
       {
          var _loc1_:MovieClip = null;
          super.Constructed();
-         if(GLOBAL._mode == "build" && !BASE.isInferno())
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !BASE.isInfernoMainYardOrOutpost)
          {
             _loc1_ = new popup_building();
             _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_tupgraded_title",{

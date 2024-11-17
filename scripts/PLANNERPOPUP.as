@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.managers.InstanceManager;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -50,18 +51,14 @@ package
       public function Setup() : void
       {
          var _loc1_:plannerBuilding = null;
-         var _loc3_:BFOUNDATION = null;
          var _loc4_:BFOUNDATION = null;
          mcMap.x = this._windowRect.x + this._windowRect.width / 2;
          mcMap.y = this._windowRect.y + this._windowRect.height / 2;
          addEventListener(MouseEvent.MOUSE_DOWN,this.DragStart);
          addEventListener(MouseEvent.MOUSE_UP,this.DragStop);
          mcMap.scaleX = mcMap.scaleY = this._zoom;
-         for each(_loc3_ in BASE._buildingsMushrooms)
-         {
-            _loc1_ = this._buildings.addChild(new plannerBuilding(_loc3_,this._ranges)) as plannerBuilding;
-         }
-         for each(_loc4_ in BASE._buildingsAll)
+         var _loc3_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc3_)
          {
             _loc1_ = this._buildings.addChild(new plannerBuilding(_loc4_,this._ranges)) as plannerBuilding;
          }
@@ -73,7 +70,7 @@ package
          bRanges.SetupKey("planner_showranges_btn");
          bRanges.addEventListener(MouseEvent.CLICK,this.ToggleRanges);
          bExpand.SetupKey("planner_expand_btn");
-         if(BASE._yardType % 2 == BASE.MAIN_YARD)
+         if(BASE.isMainYardOrInfernoMainYard)
          {
             if(Boolean(STORE._storeData.ENL) && STORE._storeData.ENL.q == 6)
             {

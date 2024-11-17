@@ -1,15 +1,21 @@
 package com.monsters.siege.weapons
 {
-   import com.cc.utils.SecNum;
    import com.monsters.siege.SiegeWeaponProperty;
+   import com.monsters.siege.SiegeWeapons;
+   import flash.events.Event;
+   import flash.utils.getQualifiedClassName;
    
    public class Vacuum extends SiegeWeapon implements IDurable
    {
+      public static var target:BFOUNDATION;
+      
+      private static const k_BUILDINGS_THAT_CAN_BE_SUCKED:Vector.<String> = Vector.<String>([getQualifiedClassName(BUILDING14),getQualifiedClassName(ResourceOutpost)]);
+      
       public static const ID:String = "vacuum";
       
       public static const LOOT_BONUS:String = "siegeWeaponLootBonus";
       
-      public var target:BUILDING14;
+      public var hose:VacuumHose;
       
       public function Vacuum()
       {
@@ -142,7 +148,32 @@ package com.monsters.siege.weapons
             "r4":0,
             "time":3 * 24 * 60 * 60
          }]));
-         canUseInOutposts = false;
+         canUseInOutposts = true;
+      }
+      
+      public static function getHose() : VacuumHose
+      {
+         var _loc1_:SiegeWeapon = SiegeWeapons.activeWeapon;
+         if(Boolean(_loc1_) && _loc1_ is Vacuum)
+         {
+            return Vacuum(_loc1_).hose;
+         }
+         return null;
+      }
+      
+      public static function getTarget() : BFOUNDATION
+      {
+         var _loc1_:SiegeWeapon = SiegeWeapons.activeWeapon;
+         if(Boolean(_loc1_) && _loc1_ is Vacuum)
+         {
+            return Vacuum(_loc1_).hose._target;
+         }
+         return null;
+      }
+      
+      override public function canFire() : Boolean
+      {
+         return super.canFire() && this.findTarget() != null;
       }
       
       public function get lootBonus() : int
@@ -157,27 +188,58 @@ package com.monsters.siege.weapons
       
       public function get activeDurability() : Number
       {
-         var _loc1_:SecNum = BUILDING14(GLOBAL._bTownhall)._vacuumHealth;
-         if(_loc1_)
+         if(this.hose)
          {
-            return _loc1_.Get();
+            return this.hose.health;
          }
          return 0;
       }
       
+      override public function activate(param1:Number, param2:Number) : Boolean
+      {
+         var _loc3_:BFOUNDATION = this.findTarget();
+         if(!_loc3_ || Boolean(this.hose))
+         {
+            print("Could not start Vacuum, either no valid target or the weapon is already on");
+            return false;
+         }
+         return super.activate(param1,param2);
+      }
+      
       override public function onActivation(param1:Number, param2:Number) : void
       {
-         this.target = GLOBAL._bTownhall as BUILDING14;
-         if(!this.target)
+         var _loc3_:BFOUNDATION = this.findTarget();
+         if(!_loc3_ || Boolean(this.hose))
          {
+            print("Could not start Vacuum, either no valid target or the weapon is already on");
             return;
          }
-         this.target.ApplyVacuum(this.durability,this.lootBonus);
+         this.hose = new VacuumHose(_loc3_,this.durability,this.lootBonus);
+         this.hose._vacuum.addEventListener(Event.ENTER_FRAME,this.onEnterFrame);
+         Vacuum.target;
+      }
+      
+      protected function onEnterFrame(param1:Event) : void
+      {
+         if(this.hose)
+         {
+            this.hose.tick();
+         }
       }
       
       override public function onDeactivation() : void
       {
-         this.target.RemoveVacuum();
+         if(this.hose)
+         {
+            this.hose._vacuum.removeEventListener(Event.ENTER_FRAME,this.onEnterFrame);
+            this.hose.RemoveVacuum();
+         }
+         this.hose = null;
+      }
+      
+      private function findTarget() : BFOUNDATION
+      {
+         return Boolean(GLOBAL.townHall) && k_BUILDINGS_THAT_CAN_BE_SUCKED.indexOf(getQualifiedClassName(GLOBAL.townHall)) >= 0 ? GLOBAL.townHall : null;
       }
    }
 }

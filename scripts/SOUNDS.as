@@ -234,7 +234,7 @@ package
          {
             if(_muted == 1)
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcSound.gotoAndStop(4);
                }
@@ -243,7 +243,7 @@ package
                   UI2._top.mcSound.gotoAndStop(2);
                }
             }
-            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
             {
                UI2._top.mcSound.gotoAndStop(3);
             }
@@ -253,7 +253,7 @@ package
             }
             if(_musicVolume == 0)
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcMusic.gotoAndStop(4);
                }
@@ -262,7 +262,7 @@ package
                   UI2._top.mcMusic.gotoAndStop(2);
                }
             }
-            else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+            else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
             {
                UI2._top.mcMusic.gotoAndStop(3);
             }
@@ -474,7 +474,7 @@ package
             {
                MuteUnmute(false);
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.StatSet("mute",_muted);
             }
@@ -498,7 +498,7 @@ package
             {
                MuteUnmute(false,"music");
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.StatSet("mutemusic",_mutedMusic);
             }
@@ -516,7 +516,7 @@ package
          {
             if(param1)
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcSound.gotoAndStop(4);
                }
@@ -528,7 +528,7 @@ package
             }
             else
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcSound.gotoAndStop(3);
                }
@@ -544,7 +544,7 @@ package
             _loc3_ = new SoundTransform();
             if(param1)
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcMusic.gotoAndStop(4);
                }
@@ -557,7 +557,7 @@ package
             }
             else
             {
-               if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.ATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK)
                {
                   UI2._top.mcMusic.gotoAndStop(3);
                }
@@ -569,15 +569,15 @@ package
                _mutedMusic = 0;
                if(_currentMusic == null && _queuedMusic == null)
                {
-                  switch(GLOBAL._mode)
+                  switch(GLOBAL.mode)
                   {
-                     case "attack":
-                     case "wmattack":
+                     case GLOBAL.e_BASE_MODE.ATTACK:
+                     case GLOBAL.e_BASE_MODE.WMATTACK:
                         PlayMusic("musicattack");
                         break;
-                     case "build":
-                     case "help":
-                     case "view":
+                     case GLOBAL.e_BASE_MODE.BUILD:
+                     case GLOBAL.e_BASE_MODE.HELP:
+                     case GLOBAL.e_BASE_MODE.VIEW:
                      default:
                         PlayMusic("musicbuild");
                   }

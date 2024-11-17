@@ -36,7 +36,7 @@ package
       
       override public function Tick(param1:int) : void
       {
-         _canFunction = _countdownBuild.Get() <= 0 && _hp.Get() >= _hpMax.Get() * 0.5;
+         _canFunction = _countdownBuild.Get() <= 0 && health >= maxHealth * 0.5;
          super.Tick(param1);
       }
       
@@ -47,18 +47,30 @@ package
       override public function PlaceB() : void
       {
          GLOBAL._bFlinger = this;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerFlingerLevel.Set(_lvl.Get());
+         }
          super.PlaceB();
       }
       
       override public function Cancel() : void
       {
          GLOBAL._bFlinger = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerFlingerLevel.Set(0);
+         }
          super.Cancel();
       }
       
       override public function RecycleC() : void
       {
          GLOBAL._bFlinger = null;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerFlingerLevel.Set(0);
+         }
          super.RecycleC();
       }
       
@@ -77,6 +89,10 @@ package
       {
          super.Constructed();
          GLOBAL._bFlinger = this;
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+         {
+            GLOBAL._playerFlingerLevel.Set(_lvl.Get());
+         }
       }
       
       override public function Upgraded() : void
@@ -84,7 +100,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function(param1:MouseEvent):void
             {
@@ -98,6 +114,7 @@ package
             mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
             mc.bPost.Highlight = true;
             POPUPS.Push(mc,null,null,null,"build.v2.png");
+            GLOBAL._playerFlingerLevel.Set(_lvl.Get());
          }
       }
       
@@ -106,6 +123,10 @@ package
          super.Setup(param1);
          if(_countdownBuild.Get() <= 0)
          {
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
+            {
+               GLOBAL._playerFlingerLevel.Set(_lvl.Get());
+            }
             GLOBAL._bFlinger = this;
          }
       }

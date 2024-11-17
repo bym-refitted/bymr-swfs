@@ -227,7 +227,7 @@ package
          super.TickFast(param1);
          if(_upgrading && GLOBAL._render && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
          {
-            if((GLOBAL._mode == "build" || GLOBAL._mode == "help" || GLOBAL._mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
+            if((GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == "help" || GLOBAL.mode == "view") && this._frameNumber % 3 == 0 && CREEPS._creepCount == 0)
             {
                AnimFrame(true);
             }
@@ -245,7 +245,7 @@ package
          var mc:MovieClip = null;
          super.Constructed();
          GLOBAL._bLab = this;
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
          {
             Brag = function():void
             {
@@ -299,14 +299,14 @@ package
       
       public function CanPowerup(param1:String, param2:int) : Object
       {
-         if(ACADEMY._upgrades[param1] == null)
+         if(GLOBAL.player.m_upgrades[param1] == null)
          {
             return {
                "error":true,
                "errorString":"Not Unlocked"
             };
          }
-         if(Boolean(ACADEMY._upgrades[param1]) && ACADEMY._upgrades[param1].powerup == 3)
+         if(Boolean(GLOBAL.player.m_upgrades[param1]) && GLOBAL.player.m_upgrades[param1].powerup == 3)
          {
             return {
                "error":true,
@@ -334,7 +334,7 @@ package
                "errorString":"Not Unlocked"
             };
          }
-         if(ACADEMY._upgrades[param1].level < param2 + 1)
+         if(GLOBAL.player.m_upgrades[param1].level < param2 + 1)
          {
             return {
                "error":true,
@@ -373,13 +373,9 @@ package
          var popupMC:popup_monster = null;
          var wasUpgrading:String = _upgrading;
          this._upgradeFinishTime = new SecNum(0);
-         ACADEMY._upgrades[_upgrading].powerup = this._upgradeLevel;
-         if(GLOBAL._mode == "build")
-         {
-            GLOBAL._playerCreatureUpgrades[_upgrading].powerup = this._upgradeLevel;
-         }
+         GLOBAL.player.m_upgrades[_upgrading].powerup = this._upgradeLevel;
          LOGGER.Stat([50,_upgrading.substr(1),this._upgradeLevel]);
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Post = function():void
             {
@@ -451,14 +447,10 @@ package
             POPUPS.DisplayGetShiny();
             return;
          }
-         ACADEMY._upgrades[id].powerup = level;
-         if(GLOBAL._mode == "build")
-         {
-            GLOBAL._playerCreatureUpgrades[id].powerup = level;
-         }
+         GLOBAL.player.m_upgrades[id].powerup = level;
          this._upgradeLevel = level;
          LOGGER.Stat([48,id.substr(1),level]);
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             Post = function():void
             {

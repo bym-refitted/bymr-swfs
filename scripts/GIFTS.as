@@ -1,6 +1,8 @@
 package
 {
    import com.monsters.configs.BYMDevConfig;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.Loader;
    import flash.display.MovieClip;
    import flash.events.Event;
@@ -148,7 +150,7 @@ package
             }
          }
          img = "resourcetwigs.png";
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             if(resourceID == 2)
             {
@@ -313,7 +315,8 @@ package
          return function(param1:MouseEvent = null):void
          {
             POPUPS.Next();
-            BASE.LoadBase(null,int(giftFromID),0,"help",false,BASE.MAIN_YARD);
+            var _loc2_:* = MapRoomManager.instance.isInMapRoom3 ? EnumYardType.PLAYER : EnumYardType.MAIN_YARD;
+            BASE.LoadBase(null,int(giftFromID),0,"help",false,_loc2_);
          };
       }
       
@@ -324,7 +327,7 @@ package
          var giftValue:int = param3;
          return function(param1:MouseEvent = null):void
          {
-            var _loc2_:* = BASE.isInferno() ? resourceID + 4 : resourceID;
+            var _loc2_:* = BASE.isInfernoMainYardOrOutpost ? resourceID + 4 : resourceID;
             var _loc3_:* = "gift" + _loc2_ + ".png";
             GLOBAL.CallJS("sendFeed",["thanks",KEYS.Get("pop_givethanks_streamtitle"),KEYS.Get("pop_givethanks_streambody",{
                "v1":GLOBAL.FormatNumber(giftValue),

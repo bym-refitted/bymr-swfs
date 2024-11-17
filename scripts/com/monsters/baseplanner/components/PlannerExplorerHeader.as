@@ -138,7 +138,6 @@ package com.monsters.baseplanner.components
       public function removeNode(param1:PlannerNode) : void
       {
          var _loc2_:int = 0;
-         _loc2_ = 0;
          while(_loc2_ < this._elementList.length)
          {
             if(this._elementList[_loc2_].displayName == param1.displayName)

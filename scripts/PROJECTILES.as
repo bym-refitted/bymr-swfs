@@ -1,6 +1,6 @@
 package
 {
-   import flash.display.MovieClip;
+   import com.monsters.interfaces.IAttackable;
    import flash.geom.Point;
    
    public class PROJECTILES
@@ -19,38 +19,33 @@ package
          Clear();
       }
       
-      public static function Spawn(param1:Point, param2:Point, param3:MovieClip, param4:Number, param5:int, param6:Boolean = false, param7:int = 0, param8:int = 0) : void
+      public static function Spawn(param1:Point, param2:Point, param3:IAttackable, param4:Number, param5:int, param6:Boolean = false, param7:int = 0, param8:int = 0) : void
       {
-         var _loc9_:PROJECTILE = null;
-         _loc9_ = PoolGet();
+         var _loc9_:PROJECTILE = PoolGet();
          if(!GLOBAL._catchup)
          {
-            MAP._PROJECTILES.addChild(_loc9_);
+            _loc9_._graphic = new PROJECTILE_CLIP();
+            MAP._PROJECTILES.addChild(_loc9_._graphic);
          }
          _loc9_._id = _id;
          _loc9_._startPoint = param1;
-         if(param2)
+         if(param3)
          {
-            _loc9_._targetPoint = param2;
-            _loc9_._targetType = 0;
          }
-         else
-         {
-            _loc9_._targetType = 1;
-            _loc9_._targetMC = param3;
-         }
+         _loc9_._targetPoint = param2;
+         _loc9_._target = param3;
          _loc9_._maxSpeed = param4;
          _loc9_._damage = param5;
          _loc9_._rocket = param6;
          _loc9_._splash = param7;
-         _loc9_._splashtype = param8;
+         _loc9_._splashTargetFlags = param8;
          _loc9_._tmpX = param1.x;
          _loc9_._tmpY = param1.y;
          if(param6)
          {
             _loc9_._speed = param4 / 2;
             _loc9_._rotationEasing = 25;
-            _loc9_.mcProjectile.rotation = Math.random() * 360;
+            _loc9_._graphic.rotation = Math.random() * 360;
          }
          else
          {
@@ -71,7 +66,7 @@ package
          var _loc2_:PROJECTILE = _projectiles[param1];
          try
          {
-            MAP._PROJECTILES.removeChild(_loc2_);
+            MAP._PROJECTILES.removeChild(_loc2_._graphic);
          }
          catch(e:Error)
          {
@@ -99,7 +94,7 @@ package
             _loc2_ = _projectiles[_loc1_];
             try
             {
-               MAP._PROJECTILES.removeChild(_loc2_);
+               MAP._PROJECTILES.removeChild(_loc2_._graphic);
             }
             catch(e:Error)
             {

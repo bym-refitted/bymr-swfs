@@ -1,0 +1,388 @@
+package
+{
+   import com.monsters.interfaces.ITargetable;
+   import com.monsters.monsters.DummyTarget;
+   import com.monsters.monsters.MonsterBase;
+   import com.monsters.pathing.PATHING;
+   import flash.geom.Point;
+   import flash.utils.getQualifiedClassName;
+   
+   public class Targeting
+   {
+      public static var _deadCreepCells:Object;
+      
+      public static const k_TARGETS_DEFENDERS:int = 1;
+      
+      public static const k_TARGETS_ATTACKERS:int = 2;
+      
+      public static const k_TARGETS_GROUND:int = 4;
+      
+      public static const k_TARGETS_FLYING:int = 8;
+      
+      public static const k_TARGETS_INVISIBLE:int = 16;
+      
+      public static const k_TARGETS_BUILDINGS:int = 32;
+      
+      public static const k_TARGETS_ALL:int = int.MAX_VALUE;
+      
+      public static var _creepCells:Object = {};
+      
+      public static const _CELLSIZE:int = 100;
+      
+      public function Targeting()
+      {
+         super();
+         init();
+      }
+      
+      public static function init() : void
+      {
+         _creepCells = {};
+         _deadCreepCells = {};
+      }
+      
+      public static function CreepCellAdd(param1:Point, param2:String, param3:MonsterBase) : String
+      {
+         param1 = GRID.FromISO(param1.x,param1.y);
+         var _loc4_:String = "node" + int(param1.x / _CELLSIZE) + "|" + int(param1.y / _CELLSIZE);
+         var _loc5_:Object = param3.dead ? _deadCreepCells : _creepCells;
+         if(!_loc5_[_loc4_])
+         {
+            _loc5_[_loc4_] = new Array();
+         }
+         _loc5_[_loc4_]["creep" + param2] = param3;
+         return _loc4_;
+      }
+      
+      public static function CreepCellMove(param1:Point, param2:String, param3:MonsterBase, param4:String) : String
+      {
+         param1 = GRID.FromISO(param1.x,param1.y);
+         var _loc5_:String = "node" + int(param1.x / _CELLSIZE) + "|" + int(param1.y / _CELLSIZE);
+         if(_loc5_ != param4)
+         {
+            CreepCellDelete(param2,param4,param3.dead);
+            return CreepCellAdd(GRID.ToISO(param1.x,param1.y,0),param2,param3);
+         }
+         return "";
+      }
+      
+      public static function CreepCellDelete(param1:String, param2:String, param3:Boolean = false) : void
+      {
+         var _loc4_:Object = param3 ? _deadCreepCells : _creepCells;
+         if(_loc4_[param2])
+         {
+            delete _loc4_[param2]["creep" + param1];
+         }
+      }
+      
+      public static function getTargetsInRange(param1:Number, param2:Point, param3:int) : Array
+      {
+         var _loc4_:Array = [];
+         if(Boolean(param3 & k_TARGETS_ATTACKERS) || Boolean(param3 & k_TARGETS_DEFENDERS))
+         {
+            _loc4_ = _loc4_.concat(getCreepsInRange(param1,param2,param3));
+         }
+         if(param3 & k_TARGETS_BUILDINGS)
+         {
+            _loc4_ = _loc4_.concat(getBuildingsInRange(param1,param2));
+         }
+         return _loc4_;
+      }
+      
+      public static function getAllBUTTargetsInRange(param1:Number, param2:Point, param3:int = 0) : Array
+      {
+         var _loc4_:Array = [];
+         _loc4_ = getCreepsInRange(param1,param2,~param3);
+         if(!(param3 & k_TARGETS_BUILDINGS))
+         {
+            _loc4_ = _loc4_.concat(getBuildingsInRange(param1,param2));
+         }
+         return _loc4_;
+      }
+      
+      public static function getTargetThatHasAllFlagsInRange(param1:Number, param2:Point, param3:int = 0, param4:MonsterBase = null) : Array
+      {
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:String = null;
+         var _loc14_:MonsterBase = null;
+         var _loc15_:Number = NaN;
+         var _loc16_:Point = null;
+         var _loc17_:int = 0;
+         var _loc5_:int = int(param2.x / _CELLSIZE);
+         var _loc6_:int = int(param2.y / _CELLSIZE);
+         var _loc7_:int = int(param1 / _CELLSIZE) + 1;
+         var _loc8_:Array = [];
+         var _loc9_:Number = param1 * param1;
+         var _loc10_:int = _loc5_ - _loc7_;
+         while(_loc10_ <= _loc5_ + _loc7_)
+         {
+            _loc11_ = _loc6_ - _loc7_;
+            while(_loc11_ <= _loc6_ + _loc7_)
+            {
+               _loc12_ = "node" + _loc10_ + "|" + _loc11_;
+               for(_loc13_ in _creepCells[_loc12_])
+               {
+                  _loc14_ = _creepCells[_loc12_][_loc13_];
+                  if(_loc14_ != param4 && canHitCreep(_loc14_.defenseFlags,param3))
+                  {
+                     _loc15_ = _loc14_.health;
+                     _loc16_ = PATHING.FromISO(_loc14_._tmpPoint);
+                     _loc17_ = int(GLOBAL.QuickDistanceSquared(param2,_loc16_));
+                     if(_loc17_ < _loc9_)
+                     {
+                        _loc8_.push({
+                           "creep":_loc14_,
+                           "dist":Math.sqrt(_loc17_),
+                           "pos":_loc16_,
+                           "hp":_loc15_
+                        });
+                     }
+                  }
+               }
+               _loc11_++;
+            }
+            _loc10_++;
+         }
+         return _loc8_;
+      }
+      
+      public static function getBuildingsInRange(param1:Number, param2:Point) : Array
+      {
+         var _loc4_:BFOUNDATION = null;
+         var _loc5_:int = 0;
+         var _loc3_:Array = [];
+         for each(_loc4_ in BASE._buildingsAll)
+         {
+            if(_loc4_.isTargetable)
+            {
+               _loc5_ = int(GLOBAL.QuickDistanceSquared(param2,new Point(_loc4_.x,_loc4_.y)));
+               if(_loc5_ < param1 * param1)
+               {
+                  _loc3_.push({
+                     "creep":_loc4_,
+                     "dist":Math.sqrt(_loc5_)
+                  });
+               }
+            }
+         }
+         return _loc3_;
+      }
+      
+      public static function getOldStyleTargets(param1:int) : int
+      {
+         var _loc2_:* = 0;
+         if(param1 == -1)
+         {
+            _loc2_ |= k_TARGETS_GROUND | k_TARGETS_INVISIBLE;
+         }
+         else if(param1 == 0)
+         {
+            _loc2_ |= k_TARGETS_GROUND;
+         }
+         else if(param1 == 1)
+         {
+            _loc2_ |= k_TARGETS_GROUND | k_TARGETS_FLYING;
+         }
+         else if(param1 == 2)
+         {
+            _loc2_ |= k_TARGETS_FLYING;
+         }
+         return _loc2_ | k_TARGETS_ATTACKERS;
+      }
+      
+      public static function getCreepsInRange(param1:Number, param2:Point, param3:int = 0, param4:MonsterBase = null) : Array
+      {
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:String = null;
+         var _loc14_:MonsterBase = null;
+         var _loc15_:Number = NaN;
+         var _loc16_:Point = null;
+         var _loc17_:int = 0;
+         if(!(param3 & k_TARGETS_DEFENDERS || param3 & k_TARGETS_ATTACKERS))
+         {
+            print("haha, you are a fool! Attempting to get creeps in range, but targeting attacking or defending creeps not defined");
+            return null;
+         }
+         param2 = PATHING.FromISO(param2);
+         var _loc5_:int = int(param2.x / _CELLSIZE);
+         var _loc6_:int = int(param2.y / _CELLSIZE);
+         var _loc7_:int = int(param1 / _CELLSIZE) + 1;
+         var _loc8_:Array = [];
+         var _loc9_:Number = param1 * param1;
+         var _loc10_:int = _loc5_ - _loc7_;
+         while(_loc10_ <= _loc5_ + _loc7_)
+         {
+            _loc11_ = _loc6_ - _loc7_;
+            while(_loc11_ <= _loc6_ + _loc7_)
+            {
+               _loc12_ = "node" + _loc10_ + "|" + _loc11_;
+               for(_loc13_ in _creepCells[_loc12_])
+               {
+                  _loc14_ = _creepCells[_loc12_][_loc13_];
+                  if(_loc14_.health > 0 && _loc14_.isTargetable && _loc14_ != param4 && canHitCreep(param3,_loc14_.defenseFlags))
+                  {
+                     _loc15_ = _loc14_.health;
+                     _loc16_ = PATHING.FromISO(_loc14_._tmpPoint);
+                     _loc17_ = int(GLOBAL.QuickDistanceSquared(param2,_loc16_));
+                     if(_loc17_ < _loc9_)
+                     {
+                        _loc8_.push({
+                           "creep":_loc14_,
+                           "dist":Math.sqrt(_loc17_),
+                           "pos":_loc16_,
+                           "hp":_loc15_
+                        });
+                     }
+                  }
+               }
+               _loc11_++;
+            }
+            _loc10_++;
+         }
+         return _loc8_;
+      }
+      
+      public static function getDeadCreeps(param1:Point, param2:Number, param3:int = 0, param4:MonsterBase = null) : Array
+      {
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:String = null;
+         var _loc14_:MonsterBase = null;
+         var _loc15_:Number = NaN;
+         var _loc16_:Point = null;
+         var _loc17_:int = 0;
+         param1 = PATHING.FromISO(param1);
+         var _loc5_:int = int(param1.x / _CELLSIZE);
+         var _loc6_:int = int(param1.y / _CELLSIZE);
+         var _loc7_:int = int(param2 / _CELLSIZE) + 1;
+         var _loc8_:Array = [];
+         var _loc9_:Number = param2 * param2;
+         var _loc10_:int = _loc5_ - _loc7_;
+         while(_loc10_ <= _loc5_ + _loc7_)
+         {
+            _loc11_ = _loc6_ - _loc7_;
+            while(_loc11_ <= _loc6_ + _loc7_)
+            {
+               _loc12_ = "node" + _loc10_ + "|" + _loc11_;
+               for(_loc13_ in _deadCreepCells[_loc12_])
+               {
+                  _loc14_ = _deadCreepCells[_loc12_][_loc13_];
+                  if(_loc14_.health <= 0 && _loc14_._visible && _loc14_.isTargetable && _loc14_ != param4)
+                  {
+                     if(canHitCreep(param3,_loc14_.defenseFlags))
+                     {
+                        _loc15_ = _loc14_.health;
+                        _loc16_ = PATHING.FromISO(_loc14_._tmpPoint);
+                        _loc17_ = int(GLOBAL.QuickDistanceSquared(param1,_loc16_));
+                        if(_loc17_ < _loc9_)
+                        {
+                           _loc8_.push({
+                              "creep":_loc14_,
+                              "dist":Math.sqrt(_loc17_),
+                              "pos":_loc16_,
+                              "hp":_loc15_
+                           });
+                        }
+                     }
+                  }
+               }
+               _loc11_++;
+            }
+            _loc10_++;
+         }
+         return _loc8_;
+      }
+      
+      private static function canHitCreep(param1:int, param2:int) : Boolean
+      {
+         param1 = ~param1;
+         return !(param1 & param2);
+      }
+      
+      public static function getClosestCreep(param1:Number, param2:Point, param3:int = 0, param4:MonsterBase = null) : MonsterBase
+      {
+         var _loc5_:Array = getCreepsInRange(param1,param2,param3,param4);
+         if(_loc5_.length <= 0)
+         {
+            return null;
+         }
+         _loc5_.sortOn(["dist"],Array.NUMERIC);
+         return _loc5_[0].creep;
+      }
+      
+      public static function DealLinearAEDamage(param1:Point, param2:Number, param3:Number, param4:Array, param5:Number = 0) : int
+      {
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc10_:* = undefined;
+         if(param5 > param2)
+         {
+            param5 = param2 - 1;
+         }
+         for each(_loc10_ in param4)
+         {
+            if(getQualifiedClassName(_loc10_) == "Object")
+            {
+               _loc6_ = int(_loc10_.dist);
+               _loc10_ = _loc10_.creep;
+            }
+            else
+            {
+               _loc6_ = GLOBAL.QuickDistance(param1,new Point(_loc10_.x,_loc10_.y));
+            }
+            if(param2 >= _loc6_)
+            {
+               if(_loc6_ < param5)
+               {
+                  _loc7_ = param3;
+               }
+               else
+               {
+                  _loc7_ = param3 / param2 * (param2 - _loc6_);
+               }
+               if(_loc7_ < param3 / 5)
+               {
+                  _loc7_ = param3 / 5;
+               }
+               if(_loc10_ is BFOUNDATION)
+               {
+                  BFOUNDATION(_loc10_).modifyHealth(_loc7_,new DummyTarget(param1.x,param1.y));
+               }
+               else
+               {
+                  _loc7_ *= _loc10_._damageMult;
+                  _loc10_.modifyHealth(-_loc7_);
+               }
+               _loc8_ += _loc7_;
+            }
+         }
+         ATTACK.Damage(param1.x,param1.y,_loc8_);
+         return _loc8_;
+      }
+      
+      public static function getFriendlyFlag(param1:MonsterBase) : int
+      {
+         return param1._friendly ? k_TARGETS_DEFENDERS : k_TARGETS_ATTACKERS;
+      }
+      
+      public static function getEnemyFlag(param1:MonsterBase) : int
+      {
+         return param1._friendly ? k_TARGETS_ATTACKERS : k_TARGETS_DEFENDERS;
+      }
+      
+      public static function getClosestEnemy(param1:uint, param2:Point, param3:int) : ITargetable
+      {
+         var _loc4_:Array = getTargetsInRange(param1,param2,param3);
+         if(_loc4_.length <= 0)
+         {
+            return null;
+         }
+         _loc4_.sortOn(["dist"],Array.NUMERIC);
+         return _loc4_[0].creep;
+      }
+   }
+}
+

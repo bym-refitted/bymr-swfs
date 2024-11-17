@@ -12,13 +12,13 @@ package com.monsters.frontPage.messages.buildtree
       
       override public function get areRequirementsMet() : Boolean
       {
-         return GLOBAL._bTownhall._lvl.Get() >= 4 && BASE.hasNumBuildings(17,1) >= 1 && BASE.hasNumBuildings(17,3) <= 0;
+         return GLOBAL.townHall._lvl.Get() >= 4 && BASE.hasNumBuildings(17,1) >= 1 && BASE.hasNumBuildings(17,3) <= 0;
       }
       
       override protected function onButtonClick() : void
       {
          FrontPageHandler.closeAll();
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             STORE.ShowB(1,0,["BLK2I","BLK3I"]);
          }

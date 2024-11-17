@@ -95,7 +95,7 @@ package
       public static function CheckRetroactiveAchievments() : void
       {
          ACHIEVEMENTS.Check(ACHIEVEMENTS.DESCENT_LEVEL,MAPROOM_DESCENT.DescentLevel);
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             ACHIEVEMENTS.Check(ACHIEVEMENTS.INFERNO_QUESTS_COMPLETED,QUESTS.amountCompleted);
          }
@@ -113,7 +113,7 @@ package
          var checkall:Boolean = param3;
          try
          {
-            if(GLOBAL._loadmode == "build" || s == "hugerage" || checkall)
+            if(GLOBAL._loadmode == GLOBAL.e_BASE_MODE.BUILD || s == "hugerage" || checkall)
             {
                if(s && _stats[s] != undefined && _stats[s] < v)
                {

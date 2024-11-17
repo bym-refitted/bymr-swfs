@@ -1,7 +1,7 @@
 package com.monsters.missions
 {
    import com.monsters.display.ScrollSet;
-   import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.MovieClip;
    import flash.display.Shape;
@@ -217,7 +217,7 @@ package com.monsters.missions
       public function Update() : void
       {
          this.Skin();
-         if(!this.frame.mcToggle.visible && GLOBAL._mode == "build")
+         if(!this.frame.mcToggle.visible && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             this.frame.mcToggle.visible = TUTORIAL.hasFinished;
          }
@@ -273,15 +273,11 @@ package com.monsters.missions
       {
          var _loc1_:String = null;
          var _loc3_:String = null;
-         if(!this._open)
-         {
-            return;
-         }
-         if(GLOBAL._mode != "build")
+         if(!GLOBAL.isAtHome())
          {
             this._disableMissions = true;
          }
-         else if(Boolean(GLOBAL._advancedMap) && MapRoom._open)
+         else if(MapRoomManager.instance.isInMapRoom2or3 && MapRoomManager.instance.isOpen)
          {
             this._disableMissions = true;
          }
@@ -294,6 +290,10 @@ package com.monsters.missions
             this.RefreshMissions(this._disableMissions);
             return;
          }
+         if(!this._open)
+         {
+            return;
+         }
          var _loc2_:Boolean = false;
          if(QUESTS._completed)
          {
@@ -304,7 +304,7 @@ package com.monsters.missions
                {
                   if(QUESTS._completed[_loc3_] == 1)
                   {
-                     if(_loc1_ in this._CompletedMissions == false)
+                     if(_loc1_ in this._CompletedMissions == false && !this._CompletedMissions[_loc3_])
                      {
                         this._CompletedMissions[_loc3_] = true;
                         _loc2_ = true;
@@ -312,7 +312,7 @@ package com.monsters.missions
                   }
                   else if(QUESTS._completed[_loc3_] == 2)
                   {
-                     if(_loc1_ in this._CollectedMissions == false)
+                     if(_loc1_ in this._CollectedMissions == false && !this._CollectedMissions[_loc3_])
                      {
                         this._CollectedMissions[_loc3_] = true;
                         _loc2_ = true;
@@ -394,7 +394,7 @@ package com.monsters.missions
                _loc4_.sortOn("order",Array.NUMERIC);
             }
          }
-         if(_loc4_.length < 1 && GLOBAL._mode == GLOBAL._loadmode)
+         if(_loc4_.length < 1 && GLOBAL.mode == GLOBAL._loadmode)
          {
             this.frame.mcMask.height = (this._numDisplaySlots + 1) * (32 + this._ItemPaddingY);
          }
@@ -467,6 +467,7 @@ package com.monsters.missions
       private function toggleHide(param1:MouseEvent = null) : void
       {
          var _loc4_:Object = null;
+         this.CheckMissionsStatus();
          var _loc2_:Boolean = false;
          if(param1 != null)
          {
@@ -501,7 +502,7 @@ package com.monsters.missions
          }
          if(!this._open)
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                SOUNDS.Play("iquestshow");
             }
@@ -510,7 +511,7 @@ package com.monsters.missions
                SOUNDS.Play("click1");
             }
          }
-         else if(BASE.isInferno())
+         else if(BASE.isInfernoMainYardOrOutpost)
          {
             SOUNDS.Play("iquesthide");
          }
@@ -603,6 +604,12 @@ package com.monsters.missions
          var _loc6_:int = this._open ? 1 : 0;
          if(this._open)
          {
+            if(!this._counter)
+            {
+               this.RebuildContainer();
+               this.CheckMissionsStatus();
+            }
+            this.RefreshMissions(this._disableMissions);
             TweenLite.to(this.footer,0.5,{
                "y":_loc4_.footerY,
                "autoAlpha":1,
@@ -657,6 +664,7 @@ package com.monsters.missions
          else
          {
             this._ScrollBar.visible = true;
+            this._ScrollBar.ScrollTo(0,true);
          }
          UI_BOTTOM.Resize();
       }
@@ -686,6 +694,11 @@ package com.monsters.missions
       {
          x = GLOBAL._SCREEN.x + GLOBAL._SCREEN.width - this._Width;
          y = GLOBAL._SCREEN.y + GLOBAL._SCREEN.height - 30;
+         if(this._open)
+         {
+            this.CheckMissionsStatus();
+            this.RefreshMissions(this._disableMissions);
+         }
       }
    }
 }

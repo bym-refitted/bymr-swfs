@@ -2,6 +2,7 @@ package com.monsters.replayableEvents.attackDefend
 {
    import com.monsters.ai.TRIBES;
    import com.monsters.events.AttackEvent;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    import com.monsters.replayableEvents.ReplayableEventQuota;
    import com.monsters.replayableEvents.monsterInvasion.MonsterInvasion;
@@ -94,9 +95,9 @@ package com.monsters.replayableEvents.attackDefend
                GLOBAL.Message("You need a working Maproom, Flinger, Housing and some monsters to participate in this next phase.");
                return;
             }
-            if(GLOBAL._advancedMap)
+            if(MapRoomManager.instance.isInMapRoom2or3)
             {
-               GLOBAL._advancedMap = 0;
+               MapRoomManager.instance.mapRoomVersion = MapRoomManager.MAP_ROOM_VERSION_1;
                _loc2_ = GLOBAL._infBaseURL;
             }
             _loc3_ = uint(this._intactBaseList[this._yardsDestroyed].id);

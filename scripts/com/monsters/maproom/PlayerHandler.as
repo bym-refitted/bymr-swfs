@@ -1,6 +1,7 @@
 package com.monsters.maproom
 {
    import com.monsters.ai.*;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.mailbox.model.Contact;
    import com.monsters.maproom.model.BaseObject;
    import flash.display.Sprite;
@@ -229,7 +230,7 @@ package com.monsters.maproom
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
          var _loc3_:String = _loc2_.wm.Get() == 1 ? "wmview" : "view";
-         MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.MAIN_YARD);
+         MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,EnumYardType.MAIN_YARD);
          if(Boolean(MAPROOM) && Boolean(MAPROOM._mc))
          {
             MAPROOM._mc.Hide();
@@ -352,7 +353,7 @@ package com.monsters.maproom
                }
                else
                {
-                  _loc6_ = _loc2_.wm.Get() == 1 ? "wmattack" : "attack";
+                  _loc6_ = _loc2_.wm.Get() == 1 ? "wmattack" : GLOBAL.e_BASE_MODE.ATTACK;
                   if(_loc7_)
                   {
                      this.onAttackB(_loc2_.baseid.Get(),_loc6_);
@@ -380,7 +381,7 @@ package com.monsters.maproom
          if(_loc3_)
          {
             MapRoom.BRIDGE.HOUSING.HousingSpace();
-            _loc6_ = _loc2_.wm.Get() == 1 ? "wmattack" : "attack";
+            _loc6_ = _loc2_.wm.Get() == 1 ? "wmattack" : GLOBAL.e_BASE_MODE.ATTACK;
             if(_loc7_)
             {
                MapRoom.BRIDGE.GLOBAL.Message(_loc4_,_loc5_,this.onAttackB,[_loc2_.baseid.Get(),_loc6_]);
@@ -412,7 +413,7 @@ package com.monsters.maproom
          {
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
-         MapRoom.BRIDGE.BASE.LoadBase(null,null,param1,param2,false,BASE.MAIN_YARD);
+         MapRoom.BRIDGE.BASE.LoadBase(null,null,param1,param2,false,EnumYardType.MAIN_YARD);
          if(MapRoom.BRIDGE && MapRoom.BRIDGE.MAPROOM && Boolean(MapRoom.BRIDGE.MAPROOM._mc))
          {
             MapRoom.BRIDGE.MAPROOM._mc.Hide();

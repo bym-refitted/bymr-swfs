@@ -1,5 +1,6 @@
 package com.monsters.monsters.components
 {
+   import com.monsters.interfaces.ITickable;
    import com.monsters.monsters.MonsterBase;
    
    public class Component implements ITickable
@@ -20,9 +21,9 @@ package com.monsters.monsters.components
          if(!this.owner)
          {
          }
-         if(!param2)
+         if(!param2 || param2 == "")
          {
-            param2 = this.toString();
+            param2 = String(this);
          }
          this.name = param2;
          this.owner = param1;
@@ -31,12 +32,13 @@ package com.monsters.monsters.components
       
       public function unregister() : void
       {
-         if(this.owner)
+         if(!this.owner)
          {
+            return;
          }
+         this.onUnregister();
          this.owner = null;
          this.name = null;
-         this.onUnregister();
       }
       
       protected function onUnregister() : void
@@ -47,18 +49,21 @@ package com.monsters.monsters.components
       {
       }
       
-      public function tick(param1:int = 1) : Boolean
+      public function tick(param1:int = 1) : void
       {
-         return true;
       }
       
       public function destoy() : void
       {
       }
       
-      public function toString() : String
+      public function clone() : Component
       {
-         return this.name + ", " + this;
+         var _loc1_:Component = new Component();
+         _loc1_.name = this.name;
+         _loc1_.priority = this.priority;
+         _loc1_.owner = this.owner;
+         return _loc1_;
       }
    }
 }

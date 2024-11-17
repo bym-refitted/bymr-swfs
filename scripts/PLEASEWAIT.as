@@ -80,7 +80,7 @@ package
       {
          if(GLOBAL._giveTips && KEYS._setup && HasTips())
          {
-            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD && GLOBAL._whatsnewid == GLOBAL._lastWhatsNew)
+            if(BASE._catchupTime && BASE._catchupTime >= processThreshold && lastTipTime == 0 && GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard && GLOBAL._whatsnewid == GLOBAL._lastWhatsNew)
             {
                if(GLOBAL.StatGet("tipno"))
                {

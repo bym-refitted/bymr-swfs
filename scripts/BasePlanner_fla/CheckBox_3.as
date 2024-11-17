@@ -2,7 +2,7 @@ package BasePlanner_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2750")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol3032")]
    public dynamic class CheckBox_3 extends MovieClip
    {
       public function CheckBox_3()

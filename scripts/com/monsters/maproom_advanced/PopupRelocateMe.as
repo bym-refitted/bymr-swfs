@@ -1,13 +1,14 @@
 package com.monsters.maproom_advanced
 {
    import com.cc.utils.SecNum;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.*;
    import flash.events.Event;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
-   public class PopupRelocateMe extends PopupRelocateMe_CLIP
+   internal class PopupRelocateMe extends PopupRelocateMe_CLIP
    {
       private var _cell:MapRoomCell;
       
@@ -167,12 +168,12 @@ package com.monsters.maproom_advanced
                   LOGGER.Stat([45,useShiny ? SHINYCOST.Get() : 0]);
                   Hide();
                   MapRoom._mc._popupInfoMine.Hide();
-                  MapRoom.BookmarksClear();
+                  MapRoomManager.instance.BookmarksClear();
                   GLOBAL._mapOutpost.shift();
                   if(param1.coords && param1.coords.length == 2 && param1.coords[0] > -1 && param1.coords[1] > -1)
                   {
                      GLOBAL._mapHome = new Point(param1.coords[0],param1.coords[1]);
-                     MapRoom.Setup(GLOBAL._mapHome);
+                     MapRoom._Setup(GLOBAL._mapHome);
                   }
                   if(useShiny)
                   {
@@ -200,7 +201,7 @@ package com.monsters.maproom_advanced
                   MapRoom.ClearCells();
                   PLEASEWAIT.Show(KEYS.Get("wait_packingyard"));
                   addEventListener(Event.ENTER_FRAME,RelocateComplete);
-                  MapRoom.Tick();
+                  MapRoomManager.instance.Tick();
                }
             }
             else
@@ -250,6 +251,7 @@ package com.monsters.maproom_advanced
             removeEventListener(Event.ENTER_FRAME,this.RelocateComplete);
             PLEASEWAIT.Hide();
          }
+         this._oldCell._updated = true;
       }
    }
 }

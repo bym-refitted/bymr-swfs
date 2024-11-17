@@ -2,7 +2,6 @@ package com.monsters.mailbox
 {
    import com.monsters.display.ScrollSet;
    import com.monsters.mailbox.model.Contact;
-   import com.monsters.maproom_advanced.MapRoom;
    import flash.display.Loader;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -14,6 +13,8 @@ package com.monsters.mailbox
    
    public class FriendPicker extends FriendPicker_CLIP
    {
+      private static var _contacts:Array = [];
+      
       public var pool:Array;
       
       private var currentPage:uint = 0;
@@ -53,6 +54,11 @@ package com.monsters.mailbox
          photoRing.visible = false;
          arrowBtn.gotoAndStop(2);
          placeholder.visible = false;
+      }
+      
+      public static function ClearContacts() : void
+      {
+         _contacts = [];
       }
       
       private function open(... rest) : void
@@ -113,45 +119,88 @@ package com.monsters.mailbox
       
       private function openMap2Friends(... rest) : void
       {
-         var _loc2_:Array = null;
-         var _loc3_:int = 0;
-         var _loc4_:Number = 0;
-         var _loc5_:FriendPickerItem = null;
+         var _loc2_:Contact = null;
+         var _loc3_:Contact = null;
+         var _loc4_:URLLoaderApi = null;
          if(this.isOpen)
          {
             this.close();
             return;
          }
+         if(_contacts.length == 0)
+         {
+            _contacts = [];
+            _loc2_ = new Contact(String(LOGIN._playerID),{
+               "first_name":"Me",
+               "last_name":"",
+               "pic_square":LOGIN._playerPic
+            },true);
+            _loc3_ = new Contact("0",{
+               "first_name":"D.A.V.E.",
+               "last_name":"",
+               "pic_square":""
+            },true);
+            _loc3_.picClass = system_message;
+            _loc4_ = new URLLoaderApi();
+            _loc4_.load(GLOBAL._apiURL + "player/getmessagetargets",null,this.onTargetsSuccess);
+         }
+         else
+         {
+            this._openMap2Friends();
+         }
+      }
+      
+      private function onTargetsSuccess(param1:Object) : void
+      {
+         var _loc3_:String = null;
+         var _loc4_:Contact = null;
+         for(_loc3_ in param1.targets)
+         {
+            _loc4_ = new Contact(_loc3_,param1.targets[_loc3_]);
+            if(Boolean(param1.targets[_loc3_].friend) && param1.targets[_loc3_].mapver == 2)
+            {
+               _contacts.push(_loc4_);
+            }
+         }
+         this._openMap2Friends();
+      }
+      
+      private function _openMap2Friends() : void
+      {
+         var _loc1_:Array = null;
+         var _loc2_:int = 0;
+         var _loc3_:Number = 0;
+         var _loc4_:FriendPickerItem = null;
          this.scroller.visible = true;
          arrowBtn.gotoAndStop(1);
          if(!this.pool)
          {
-            _loc2_ = MapRoom._contacts;
-            _loc3_ = int(_loc2_.length);
+            _loc1_ = _contacts;
+            _loc2_ = int(_loc1_.length);
             this.pool = [];
-            _loc4_ = 0;
-            while(_loc4_ < _loc3_)
+            _loc3_ = 0;
+            while(_loc3_ < _loc2_)
             {
-               _loc5_ = new FriendPickerItem(_loc2_[_loc4_]);
-               _loc5_.addEventListener(MouseEvent.MOUSE_OVER,this.onItemOver);
-               _loc5_.addEventListener(MouseEvent.MOUSE_OUT,this.onItemOut);
-               _loc5_.addEventListener(MouseEvent.MOUSE_DOWN,this.onItemDown);
-               _loc5_.shouldLoadImage();
-               _loc5_.mouseChildren = false;
-               _loc5_.useHandCursor = true;
-               _loc5_.buttonMode = true;
-               this.pool.push(_loc5_);
-               _loc4_++;
+               _loc4_ = new FriendPickerItem(_loc1_[_loc3_]);
+               _loc4_.addEventListener(MouseEvent.MOUSE_OVER,this.onItemOver);
+               _loc4_.addEventListener(MouseEvent.MOUSE_OUT,this.onItemOut);
+               _loc4_.addEventListener(MouseEvent.MOUSE_DOWN,this.onItemDown);
+               _loc4_.shouldLoadImage();
+               _loc4_.mouseChildren = false;
+               _loc4_.useHandCursor = true;
+               _loc4_.buttonMode = true;
+               this.pool.push(_loc4_);
+               _loc3_++;
             }
             this.pool = this.pool.sortOn("name_str",Array.CASEINSENSITIVE);
-            _loc4_ = 0;
-            while(_loc4_ < this.pool.length)
+            _loc3_ = 0;
+            while(_loc3_ < this.pool.length)
             {
-               _loc5_ = this.pool[_loc4_];
-               this.shell.addChild(_loc5_);
-               _loc5_.x = 0;
-               _loc5_.y = _loc4_ * 60;
-               _loc4_++;
+               _loc4_ = this.pool[_loc3_];
+               this.shell.addChild(_loc4_);
+               _loc4_.x = 0;
+               _loc4_.y = _loc3_ * 60;
+               _loc3_++;
             }
             this.scroller.Init(this.shell,mask_mc,0,mask_mc.y,mask_mc.height - 4,60);
          }

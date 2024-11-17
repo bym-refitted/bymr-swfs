@@ -44,7 +44,7 @@ package com.monsters.replayableEvents
       {
          var _loc2_:ReplayableEvent = null;
          var _loc3_:Number = NaN;
-         if(GLOBAL._mode != "build" || BASE.isInferno() || !TUTORIAL.hasFinished)
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isInfernoMainYardOrOutpost || !TUTORIAL.hasFinished)
          {
             return;
          }
@@ -76,7 +76,7 @@ package com.monsters.replayableEvents
       private static function checkIfActiveEventIsFinished() : void
       {
          var _loc1_:Message = null;
-         if(activeEvent.hasEventEnded || activeEvent.hasCompletedEvent)
+         if(Boolean(activeEvent) && (activeEvent.hasEventEnded || activeEvent.hasCompletedEvent))
          {
             LOGGER.StatB({
                "st1":"ERS",
@@ -298,7 +298,7 @@ package com.monsters.replayableEvents
             doesDebugClear = false;
             return {};
          }
-         if(GLOBAL._mode != "build" || BASE.isInferno())
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isInfernoMainYardOrOutpost)
          {
             return null;
          }

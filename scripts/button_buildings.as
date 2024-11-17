@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2094")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2066")]
    public dynamic class button_buildings extends MovieClip
    {
       public var mcTick:MovieClip;

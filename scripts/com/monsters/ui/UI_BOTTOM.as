@@ -1,6 +1,8 @@
 package com.monsters.ui
 {
    import com.monsters.chat.Chat;
+   import com.monsters.maproom3.MapRoom3;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.missions.UI_MISSIONMENU;
    import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
    import com.monsters.replayableEvents.monsterMadness.MonsterMadnessInfoBar;
@@ -35,7 +37,7 @@ package com.monsters.ui
          _mc.Setup();
          _mc.bBuild.addEventListener(MouseEvent.CLICK,BUILDINGS.Show);
          _mc.bQuests.addEventListener(MouseEvent.CLICK,QUESTS.Show);
-         _mc.bStore.addEventListener(MouseEvent.CLICK,STORE.Show(1,1));
+         _mc.bStore.addEventListener(MouseEvent.CLICK,clickedStore);
          _mc.bMap.addEventListener(MouseEvent.CLICK,GLOBAL.ShowMap);
          if(_missions)
          {
@@ -45,7 +47,7 @@ package com.monsters.ui
          {
             GLOBAL._layerUI.addChild(_mc);
          }
-         if(BASE._yardType == BASE.OUTPOST)
+         if(BASE.isOutpostMapRoom2Only)
          {
             _mc.bKits.addEventListener(MouseEvent.CLICK,ShowStarterKits);
          }
@@ -60,6 +62,15 @@ package com.monsters.ui
             GLOBAL._layerUI.addChild(_nextwave);
          }
          _nextwave.visible = false;
+      }
+      
+      public static function clickedStore(param1:MouseEvent) : void
+      {
+         if(MapRoomManager.instance.isInMapRoom3 && !BASE.isMainYardOrInfernoMainYard)
+         {
+            return;
+         }
+         STORE.Show(1,1)(param1);
       }
       
       public static function ShowStarterKits(param1:MouseEvent = null) : void
@@ -85,16 +96,20 @@ package com.monsters.ui
          }
          if(_mc.bStore)
          {
-            if(Boolean(GLOBAL._bStore) || Boolean(BASE._yardType))
+            if(MapRoomManager.instance.isInMapRoom3 && BASE.isMainYardOrInfernoMainYard && Boolean(GLOBAL._bStore))
+            {
+               _mc.bStore.Enabled = true;
+            }
+            else if(!MapRoomManager.instance.isInMapRoom3 && (GLOBAL._bStore || !BASE.isMainYard))
             {
                _mc.bStore.Enabled = true;
             }
             else
             {
-               _mc.bStore.Enabled = false;
+               _mc.bStore.Enabled = BASE.isMainYardInfernoOnly;
             }
          }
-         if(Boolean(GLOBAL._bMap) || Boolean(BASE._yardType))
+         if(Boolean(GLOBAL._bMap) || !BASE.isMainYard)
          {
             _mc.bMap.Enabled = true;
          }
@@ -102,6 +117,9 @@ package com.monsters.ui
          {
             _mc.bMap.Enabled = false;
          }
+         var _loc3_:Boolean = !BASE.isMainYardOrInfernoMainYard && MapRoomManager.instance.isInMapRoom3;
+         _mc.bQuests.Enabled = !_loc3_;
+         _mc.bQuests.mouseEnabled = !_loc3_;
          if(!_mc._sorted)
          {
             _mc.sortAll();
@@ -121,6 +139,10 @@ package com.monsters.ui
          if(TUTORIAL._stage < TUTORIAL._endstage)
          {
             TUTORIAL.Resize();
+         }
+         if(MapRoom3.mapRoom3Window)
+         {
+            MapRoom3.mapRoom3WindowHUD.PositionRightMenuButtonsBar();
          }
       }
       

@@ -2,6 +2,7 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
    
    public class BTOTEM extends BDECORATION
    {
@@ -33,12 +34,13 @@ package
       
       public static function UpgradeTotem() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BDECORATION);
+         for each(_loc2_ in _loc1_)
          {
-            if(IsTotem2(_loc1_._type))
+            if(_loc2_._type === BTOTEM_BUILDING_TYPE)
             {
-               _loc1_.Upgraded();
+               _loc2_.Upgraded();
             }
          }
          if(BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE])
@@ -49,12 +51,13 @@ package
       
       public static function DowngradeTotem() : void
       {
-         var _loc1_:BFOUNDATION = null;
-         for each(_loc1_ in BASE._buildingsAll)
+         var _loc2_:BFOUNDATION = null;
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BDECORATION);
+         for each(_loc2_ in _loc1_)
          {
-            if(IsTotem2(_loc1_._type))
+            if(_loc2_._type === BTOTEM_BUILDING_TYPE)
             {
-               _loc1_.Downgrade_TOTEM_DEBUG();
+               _loc2_.Downgrade_TOTEM_DEBUG();
             }
          }
          if(BASE._buildingsStored["bl" + BTOTEM_BUILDING_TYPE])
@@ -97,23 +100,24 @@ package
       
       private static function RemoveAllFromYard(param1:Boolean = false, param2:Boolean = false) : void
       {
-         var _loc3_:BFOUNDATION = null;
-         for each(_loc3_ in BASE._buildingsAll)
+         var _loc4_:BFOUNDATION = null;
+         var _loc3_:Vector.<Object> = InstanceManager.getInstancesByClass(BDECORATION);
+         for each(_loc4_ in _loc3_)
          {
             if(param1)
             {
-               if(_loc3_._type >= 121 && _loc3_._type <= 126)
+               if(_loc4_._type >= 121 && _loc4_._type <= 126)
                {
-                  _loc3_.GridCost(false);
-                  _loc3_.Clean();
+                  _loc4_.GridCost(false);
+                  _loc4_.clear();
                }
             }
             if(param2)
             {
-               if(IsTotem2(_loc3_._type))
+               if(_loc4_._type === BTOTEM_BUILDING_TYPE)
                {
-                  _loc3_.GridCost(false);
-                  _loc3_.Clean();
+                  _loc4_.GridCost(false);
+                  _loc4_.clear();
                }
             }
          }
@@ -121,17 +125,19 @@ package
       
       public static function FindMissingTotem() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         if(GLOBAL._mode != "build")
+         var _loc2_:Vector.<Object> = null;
+         var _loc3_:BFOUNDATION = null;
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return;
          }
          var _loc1_:int = EarnedTotemLevel();
-         if(_loc1_ > 0 && BASE._yardType == BASE.MAIN_YARD)
+         if(_loc1_ > 0 && BASE.isMainYard)
          {
-            for each(_loc2_ in BASE._buildingsAll)
+            _loc2_ = InstanceManager.getInstancesByClass(BDECORATION);
+            for each(_loc3_ in _loc2_)
             {
-               if(IsTotem2(_loc2_._type))
+               if(_loc3_._type === BTOTEM_BUILDING_TYPE)
                {
                   return;
                }

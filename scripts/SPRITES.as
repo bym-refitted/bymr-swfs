@@ -2,6 +2,7 @@ package
 {
    import com.monsters.display.ImageCache;
    import com.monsters.display.SpriteData;
+   import com.monsters.projectiles.ResurrectProjectile;
    import com.monsters.siege.weapons.Decoy;
    import com.monsters.siege.weapons.Jars;
    import flash.display.BitmapData;
@@ -18,7 +19,7 @@ package
       public static function Setup() : void
       {
          _sprites = {};
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             _sprites.worker = new SpriteData("monsters/worker.png",27,27,9,19);
          }
@@ -45,6 +46,7 @@ package
          _sprites.C16 = new SpriteData("monsters/vorg_anim.png",40,40,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.C17 = new SpriteData("monsters/slimeattikus_anim.png",48,31,SpriteData.FUBAR_X,SpriteData.FUBAR_Y - 21);
          _sprites.C18 = new SpriteData("monsters/slimeattikusmini_anim.png",30,20,SpriteData.FUBAR_X - 11,SpriteData.FUBAR_Y - 25);
+         _sprites.C19 = new SpriteData("monsters/sprite.12.gold.png",53,46,21,27);
          _sprites.IC1 = new SpriteData("monsters/spurtz.png",24,28,12,14);
          _sprites.IC2 = new SpriteData("monsters/zagnoid.png",64.4,46,26,28);
          _sprites.IC3 = new SpriteData("monsters/malphus.png",51,35,25,17);
@@ -89,11 +91,13 @@ package
          _sprites.heart = new SpriteData("effects/heart_icon.v2.png",12,12,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.flame = new SpriteData("effects/flame_icon.png",16,25,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.venom = new SpriteData("effects/venom_icon.v2.png",16,26,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.venomBal = new SpriteData("effects/venomBal_icon.png",7 * 60,332,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[SpurtzCannon.SPURTZ_PROJECTILE] = new SpriteData("buildings/ispurtz_cannon/spurtz_projectile.png",34,27,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Jars.JAR_GRAPHIC] = new SpriteData(Jars.JAR_GRAPHIC_URL,Jars.JAR_GRAPHIC_WIDTH,Jars.JAR_GRAPHIC_HEIGHT,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Decoy.DECOY_WAVE] = new SpriteData("siegeimages/decoy_wave_anim.png",61,70,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Decoy.DECOY_FUSE] = new SpriteData("siegeimages/decoy_fuse_anim.png",44,49,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites[Decoy.DECOY_EXPLOSION] = new SpriteData("siegeimages/decoy_explosion_anim.png",184,195,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites[ResurrectProjectile.k_resurecctProjectile] = new SpriteData(ResurrectProjectile.k_projectileImageURL,20,20,0,0);
       }
       
       public static function Clear() : void
@@ -264,7 +268,7 @@ package
                {
                   GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % 7 + 1);
                }
-               else if(param3 == "attack")
+               else if(param3 == GLOBAL.e_BASE_MODE.ATTACK)
                {
                   _loc7_ = param2.substr(3,1);
                   if(_loc7_ == "4" || _loc7_ == "5" || _loc7_ == "6")
@@ -326,7 +330,7 @@ package
                }
                GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + 0);
             }
-            else if(param3 == "attack")
+            else if(param3 == GLOBAL.e_BASE_MODE.ATTACK)
             {
                _loc8_ = int(param2.substr(3,1));
                switch(_loc8_)
@@ -370,7 +374,7 @@ package
                _loc9_ = 10;
                GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + 0);
             }
-            else if(param3 == "attack")
+            else if(param3 == GLOBAL.e_BASE_MODE.ATTACK)
             {
                _loc8_ = int(param2.substr(3,1));
                switch(_loc8_)

@@ -1,14 +1,11 @@
 package
 {
    import flash.display.MovieClip;
-   import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2045")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2159")]
    public dynamic class flingerLevel extends MovieClip
    {
-      public var tA:TextField;
-      
-      public var mcBar:MovieClip;
+      public var _mc:MovieClip;
       
       public function flingerLevel()
       {

@@ -18,12 +18,13 @@ package com.monsters.display
       
       private var _track:DisplayObject;
       
-      public function ScrollSetH(param1:DisplayObject, param2:DisplayObject)
+      public function ScrollSetH(param1:DisplayObject, param2:DisplayObject, param3:Boolean = false)
       {
          super();
          this._content = param1;
          this._mask = param2;
          this._scroller = mcScroller;
+         this._scroller.buttonMode = param3;
          this._defaultScrollWidth = this._scroller.width;
          this._track = mcBG;
          this._track.width = param2.width;
@@ -34,7 +35,7 @@ package com.monsters.display
       
       protected function onContentResize(param1:Event = null) : void
       {
-         visible = this._content.width < this._mask.width ? false : true;
+         visible = this._content.width <= this._mask.width ? false : true;
          this.updateScrollerSize();
       }
       

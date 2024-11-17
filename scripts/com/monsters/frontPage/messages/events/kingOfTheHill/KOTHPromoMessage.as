@@ -2,6 +2,7 @@ package com.monsters.frontPage.messages.events.kingOfTheHill
 {
    import com.monsters.frontPage.messages.KeywordMessage;
    import com.monsters.frontPage.messages.Message;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.net.URLRequest;
    import flash.net.navigateToURL;
    
@@ -13,7 +14,7 @@ package com.monsters.frontPage.messages.events.kingOfTheHill
       
       public function KOTHPromoMessage(param1:String)
       {
-         if(GLOBAL._advancedMap)
+         if(MapRoomManager.instance.isInMapRoom2or3)
          {
             this._action = this.rsvp;
             _buttonCopy = "btn_rsvp";
@@ -22,7 +23,7 @@ package com.monsters.frontPage.messages.events.kingOfTheHill
          else
          {
             body = param1 + "mr1";
-            if(Boolean(GLOBAL._bMap) && GLOBAL._bTownhall._lvl.Get() >= 6)
+            if(Boolean(GLOBAL._bMap) && GLOBAL.townHall._lvl.Get() >= 6)
             {
                this._action = this.upgradeMapRoom;
                _buttonCopy = "btn_upgradenow";

@@ -4,7 +4,7 @@ package
    import flash.display.SimpleButton;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2815")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2726")]
    public dynamic class ForeignBaseInferno_CLIP extends MovieClip
    {
       public var mediumhit:SimpleButton;

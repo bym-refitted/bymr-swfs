@@ -1,5 +1,26 @@
 package
 {
+   import com.monsters.creep_types.CreepTypeManager;
+   import com.monsters.maproom_manager.MapRoomManager;
+   import com.monsters.monsters.creeps.Bandito;
+   import com.monsters.monsters.creeps.Bolt;
+   import com.monsters.monsters.creeps.Brain;
+   import com.monsters.monsters.creeps.DAVE;
+   import com.monsters.monsters.creeps.Eyera;
+   import com.monsters.monsters.creeps.Fang;
+   import com.monsters.monsters.creeps.Fink;
+   import com.monsters.monsters.creeps.ProjectX;
+   import com.monsters.monsters.creeps.Rezghul;
+   import com.monsters.monsters.creeps.Slimeattikus;
+   import com.monsters.monsters.creeps.Teratorn;
+   import com.monsters.monsters.creeps.Vorg;
+   import com.monsters.monsters.creeps.Wormzer;
+   import com.monsters.monsters.creeps.Zafreeti;
+   import com.monsters.monsters.creeps.inferno.Balthazar;
+   import com.monsters.monsters.creeps.inferno.KingWormzer;
+   import com.monsters.monsters.creeps.inferno.Sabnox;
+   import com.monsters.monsters.creeps.inferno.Spurtz;
+   import com.monsters.monsters.creeps.rebalance.RebalancedCreatures;
    import com.monsters.subscriptions.SubscriptionHandler;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
@@ -20,6 +41,8 @@ package
       
       public static var _popupCreatureID:String;
       
+      public static const k_USE_REBALANCED_MONSTERS:Boolean = false;
+      
       public static const NUM_CREEP_TYPE:int = 18;
       
       public static const NUM_ICREEP_TYPE:int = 8;
@@ -36,7 +59,7 @@ package
       
       public static function getFirstCreatureID() : String
       {
-         return BASE.isInferno() ? "IC1" : "C1";
+         return BASE.isInfernoMainYardOrOutpost ? "IC1" : "C1";
       }
       
       public static function Data(param1:Object) : void
@@ -49,9 +72,9 @@ package
             _lockerData.C12 = _lockerData.C100;
             delete _lockerData.C100;
          }
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                _loc2_ = 2;
                while(true)
@@ -85,6 +108,7 @@ package
       
       public static function Setup() : void
       {
+         var _loc1_:String = null;
          _page = 1;
          _popupCreatureID = getFirstCreatureID();
          _lockerData = {};
@@ -109,8 +133,10 @@ package
                   "cTime":[15,10,8,7,6,5],
                   "cResource":[250,450,675,800,1000,1250],
                   "cStorage":[10,10,10,9,8,7],
-                  "bucket":[20],
-                  "targetGroup":[1]
+                  "bucket":[7],
+                  "targetGroup":[1],
+                  "hTime":[5,3,2,2,2,2],
+                  "hResource":[75,135,203,4 * 60,5 * 60,375]
                }
             },
             "C2":{
@@ -131,8 +157,10 @@ package
                   "cTime":[15,16],
                   "cResource":[500,15 * 60,1350,30 * 60,35 * 60,2500],
                   "cStorage":[10],
-                  "bucket":[20],
-                  "targetGroup":[4]
+                  "bucket":[10],
+                  "targetGroup":[4],
+                  "hTime":[5],
+                  "hResource":[150,270,405,9 * 60,630,750]
                }
             },
             "C3":{
@@ -143,6 +171,7 @@ package
                "time":7200,
                "level":1,
                "name":"#m_bolt#",
+               "classType":Bolt,
                "description":"mon_boltdesc",
                "stream":["mon_boltstream","mon_boltstreambody","quests/monster3.v2.png"],
                "trainingCosts":[[16000,14400],[32000,21600],[800 * 60,28800],[96000,43200],[40 * 60 * 60,57600]],
@@ -153,8 +182,10 @@ package
                   "cTime":[23],
                   "cResource":[350,675,1015,1400,30 * 60,40 * 60],
                   "cStorage":[15],
-                  "bucket":[30],
-                  "targetGroup":[3]
+                  "bucket":[15],
+                  "targetGroup":[3],
+                  "hTime":[7],
+                  "hResource":[105,203,305,7 * 60,9 * 60,12 * 60]
                }
             },
             "C4":{
@@ -165,6 +196,7 @@ package
                "time":14400,
                "level":1,
                "name":"#m_fink#",
+               "classType":Fink,
                "description":"mon_finkdesc",
                "stream":["mon_finkstream","mon_finkstreambody","quests/monster4.v2.png"],
                "trainingCosts":[[32000,28800],[64000,43200],[96000,64800],[128000,86400],[160000,108000]],
@@ -175,8 +207,10 @@ package
                   "cTime":[100,100,100,100,90,90],
                   "cResource":[25 * 60,2250,3375,80 * 60,2 * 60 * 60,10000],
                   "cStorage":[20],
-                  "bucket":[30],
-                  "targetGroup":[1]
+                  "bucket":[20],
+                  "targetGroup":[1],
+                  "hTime":[30,30,30,30,27,27],
+                  "hResource":[450,675,1013,24 * 60,36 * 60,50 * 60]
                }
             },
             "C5":{
@@ -187,6 +221,7 @@ package
                "time":28800,
                "level":2,
                "name":"#m_eyera#",
+               "classType":Eyera,
                "description":"mon_eyeradesc",
                "stream":["mon_eyerastream","mon_eyerastreambody","quests/monster5.v2.png"],
                "trainingCosts":[[64000,18000],[128000,25200],[192000,43200],[384000,86400],[512000,129600]],
@@ -197,9 +232,11 @@ package
                   "cTime":[25 * 60],
                   "cResource":[5000,250 * 60,500 * 60,750 * 60,60 * 1000,80000],
                   "cStorage":[60],
-                  "bucket":[100],
+                  "bucket":[60],
                   "targetGroup":[2],
-                  "explode":[1]
+                  "explode":[1],
+                  "hTime":[450,450,450,450,450,450],
+                  "hResource":[25 * 60,75 * 60,150 * 60,225 * 60,5 * 60 * 60,400 * 60]
                }
             },
             "C6":{
@@ -221,7 +258,9 @@ package
                   "cResource":[5000,5625,8440,11200,16000,400 * 60],
                   "cStorage":[20],
                   "bucket":[20],
-                  "targetGroup":[4]
+                  "targetGroup":[4],
+                  "hTime":[30,30,27],
+                  "hResource":[25 * 60,1688,2532,56 * 60,80 * 60,2 * 60 * 60]
                }
             },
             "C7":{
@@ -232,6 +271,7 @@ package
                "time":100800,
                "level":2,
                "name":"#m_bandito#",
+               "classType":Bandito,
                "description":"mon_banditodesc",
                "stream":["mon_banditostream","mon_banditostreambody","quests/monster7.v2.png"],
                "trainingCosts":[[256000,43200],[512000,57600],[210 * 60 * 60,86400],[0xfa000,129600],[400 * 60 * 60,172800]],
@@ -243,7 +283,9 @@ package
                   "cResource":[2500,75 * 60,6750,8750,11200,4 * 60 * 60],
                   "cStorage":[20],
                   "bucket":[20],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[68,68,68,68,54,54],
+                  "hResource":[750,1350,2025,2625,56 * 60,0x10e0]
                }
             },
             "C8":{
@@ -254,6 +296,7 @@ package
                "time":144000,
                "level":2,
                "name":"#m_fang#",
+               "classType":Fang,
                "description":"mon_fangdesc",
                "stream":["mon_fangstream","mon_fangstreambody","quests/monster8.v2.png"],
                "trainingCosts":[[512000,43200],[512000,57600],[210 * 60 * 60,86400],[0xfa000,129600],[400 * 60 * 60,172800]],
@@ -265,7 +308,9 @@ package
                   "cResource":[5 * 60 * 60,450 * 60,675 * 60,60500,80000,100000],
                   "cStorage":[30],
                   "bucket":[30],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[135,105,75,68,59,59],
+                  "hResource":[90 * 60,135 * 60,12150,18150,400 * 60,500 * 60]
                }
             },
             "C9":{
@@ -276,6 +321,7 @@ package
                "time":187200,
                "level":3,
                "name":"#m_brain#",
+               "classType":Brain,
                "description":"mon_braindesc",
                "stream":["mon_brainstream","mon_brainstreambody","quests/monster9.v2.png"],
                "trainingCosts":[[0xfa000,43200],[0x1f5f40,57600],[2870000,72000],[4500000,144000],[100 * 60 * 1000,216000]],
@@ -287,7 +333,9 @@ package
                   "cResource":[200 * 60,20250,30375,35000,50000,75000],
                   "cStorage":[30],
                   "bucket":[30],
-                  "targetGroup":[3]
+                  "targetGroup":[3],
+                  "hTime":[103],
+                  "hResource":[60 * 60,6075,9113,175 * 60,25 * 60,375 * 60]
                }
             },
             "C10":{
@@ -309,7 +357,9 @@ package
                   "cResource":[500 * 60,750 * 60,67500,75000,25 * 60 * 60,2 * 60 * 1000],
                   "cStorage":[40],
                   "bucket":[40],
-                  "targetGroup":[4]
+                  "targetGroup":[4],
+                  "hTime":[225],
+                  "hResource":[150 * 60,225 * 60,20250,375 * 60,450 * 60,10 * 60 * 60]
                }
             },
             "C11":{
@@ -320,6 +370,7 @@ package
                "time":223200,
                "level":3,
                "name":"#m_projectx#",
+               "classType":ProjectX,
                "description":"mon_projectxdesc",
                "stream":["mon_projectxstream","mon_projectxstreambody","quests/monster11.v2.png"],
                "trainingCosts":[[4096000,86400],[7000000,129600],[200 * 60 * 1000,172800],[5 * 60 * 60 * 1000,345600],[400 * 60 * 1000,460800]],
@@ -331,7 +382,9 @@ package
                   "cResource":[60 * 1000,25 * 60 * 60,135000,50 * 60 * 60,65 * 60 * 60,280000],
                   "cStorage":[70],
                   "bucket":[70],
-                  "targetGroup":[4]
+                  "targetGroup":[4],
+                  "hTime":[415],
+                  "hResource":[5 * 60 * 60,450 * 60,675 * 60,15 * 60 * 60,70200,84000]
                }
             },
             "C12":{
@@ -342,6 +395,7 @@ package
                "time":259200,
                "level":4,
                "name":"#m_dave#",
+               "classType":DAVE,
                "description":"mon_davedesc",
                "stream":["mon_davestream","mon_davestreambody","quests/monster12.v2.png"],
                "trainingCosts":[[8192000,172800],[10000000,259200],[12200000,345600],[320 * 60 * 1000,518400],[28000000,691200]],
@@ -353,7 +407,9 @@ package
                   "cResource":[150000,225000,337500,440000,10 * 60 * 1000,800000],
                   "cStorage":[160],
                   "bucket":[160],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[18 * 60],
+                  "hResource":[750 * 60,67500,101250,132000,50 * 60 * 60,4 * 60 * 1000]
                }
             },
             "C13":{
@@ -364,6 +420,7 @@ package
                "time":223200,
                "level":4,
                "name":"#m_wormzer#",
+               "classType":Wormzer,
                "description":"mon_wormzerdesc",
                "stream":["mon_wormzerstream","mon_wormzerstreambody","quests/monster13.v2.png"],
                "trainingCosts":[[4096000,86400],[8192000,172800],[8192000,259200],[8192000,345600],[12800000,460800]],
@@ -377,7 +434,9 @@ package
                   "cResource":[20000,25000,500 * 60,35000,40000,47500],
                   "cStorage":[70],
                   "bucket":[70],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[415],
+                  "hResource":[100 * 60,125 * 60,150 * 60,175 * 60,200 * 60,14250]
                }
             },
             "C14":{
@@ -388,12 +447,15 @@ package
                "time":216000,
                "level":4,
                "name":"#m_teratorn#",
+               "classType":Teratorn,
                "description":"mon_teratorndesc",
                "stream":["mon_teratornstream","mon_teratornstreambody","quests/monster14.v3.png"],
                "trainingCosts":[[4096000,129600],[7000000,194400],[10000000,288000],[16000000,489600],[400 * 60 * 1000,648000]],
                "movement":"fly",
                "pathing":"direct",
                "props":{
+                  "range":[150],
+                  "attackDelay":[90],
                   "speed":[2.5,2.75,3,3.25,3.5],
                   "health":[1600,1900,40 * 60,50 * 60,60 * 60,70 * 60],
                   "damage":[5 * 60,350,400,500,10 * 60,700],
@@ -401,7 +463,9 @@ package
                   "cResource":[70000,95000,145000,200000,5 * 60 * 1000,400000],
                   "cStorage":[70],
                   "bucket":[70],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[9 * 60,576,612,648,684,12 * 60],
+                  "hResource":[350 * 60,475 * 60,725 * 60,60 * 1000,25 * 60 * 60,2 * 60 * 1000]
                }
             },
             "C15":{
@@ -412,6 +476,7 @@ package
                "time":216000,
                "level":3,
                "name":"#m_zafreeti#",
+               "classType":Zafreeti,
                "description":"mon_zafreetidesc",
                "stream":["mon_zafreetistream","mon_zafreetistreambody","quests/monster15.v2.png"],
                "trainingCosts":[[6192000,129600],[130 * 60 * 1000,194400],[200 * 60 * 1000,288000],[5 * 60 * 60 * 1000,489600]],
@@ -419,6 +484,8 @@ package
                "pathing":"direct",
                "antiHeal":true,
                "props":{
+                  "range":[150],
+                  "attackDelay":[20],
                   "speed":[0.75,0.8,0.85,0.9,0.95],
                   "health":[0x1f40],
                   "damage":[-400,-550,-700,-850,-1000],
@@ -426,7 +493,9 @@ package
                   "cResource":[2 * 60 * 1000,50 * 60 * 60,256000,90 * 60 * 60,130 * 60 * 60],
                   "cStorage":[200],
                   "bucket":[200],
-                  "targetGroup":[5]
+                  "targetGroup":[5],
+                  "hTime":[12 * 60],
+                  "hResource":[10 * 60 * 60,15 * 60 * 60,76800,27 * 60 * 60,39 * 60 * 60]
                }
             },
             "C16":{
@@ -438,6 +507,7 @@ package
                "level":2,
                "name":"#m_vorg#",
                "blocked":true,
+               "classType":Vorg,
                "description":"mon_vorgdesc",
                "trainingCosts":[[384000,86400],[384000,129600],[512000,172800],[768000,216000],[0xfa000,259200]],
                "movement":"fly",
@@ -446,14 +516,18 @@ package
                "antiHeal":true,
                "blocked":true,
                "props":{
-                  "speed":[0.75],
+                  "range":[150],
+                  "attackDelay":[20],
+                  "speed":[1.5,1.75,2,2.25,2.5],
                   "health":[750],
                   "damage":[-60,-70,-80,-90,-100,-110],
                   "cTime":[20 * 60],
                   "cResource":[16000,25000,38500,62500,75000,25 * 60 * 60],
                   "cStorage":[60],
                   "bucket":[60],
-                  "targetGroup":[5]
+                  "targetGroup":[5],
+                  "hTime":[6 * 60],
+                  "hResource":[80 * 60,125 * 60,11550,18750,375 * 60,450 * 60]
                }
             },
             "C17":{
@@ -464,6 +538,7 @@ package
                "time":129600,
                "level":3,
                "name":"#m_slimeattikus#",
+               "classType":Slimeattikus,
                "description":"mon_slimeattikusdesc",
                "trainingCosts":[[2560000,86400],[64 * 60 * 1000,129600],[4096000,172800],[6250000,216000],[8500000,288000]],
                "stream":["","","quests/monster17.png"],
@@ -477,7 +552,9 @@ package
                   "cStorage":[40],
                   "bucket":[40],
                   "targetGroup":[1],
-                  "splits":[2,2,3,3,4,5]
+                  "splits":[2,2,3,3,4,5],
+                  "hTime":[150,135,2 * 60,105,90,75],
+                  "hResource":[135 * 60,12150,18225,450 * 60,625 * 60,750 * 60]
                }
             },
             "C18":{
@@ -506,6 +583,33 @@ package
                   "targetGroup":[1]
                }
             },
+            "C19":{
+               "index":19,
+               "page":4,
+               "order":4,
+               "resource":0x1f4000,
+               "time":129600,
+               "level":3,
+               "name":"#m_rezghul#",
+               "classType":Rezghul,
+               "description":"mon_rezghuldesc",
+               "trainingCosts":[[2560000,86400],[64 * 60 * 1000,129600],[4096000,172800],[6250000,216000],[8500000,288000]],
+               "stream":["","","quests/monster19.png"],
+               "blocked":true,
+               "props":{
+                  "range":[5 * 60],
+                  "speed":[1,1.1,1.2,1.3,1.4,1.5],
+                  "health":[1000],
+                  "damage":[500],
+                  "cTime":[30],
+                  "cResource":[1000000],
+                  "cStorage":[200],
+                  "bucket":[200],
+                  "targetGroup":[1],
+                  "hTime":[150,135,2 * 60,105,90,75],
+                  "hResource":[135 * 60,12150,18225,450 * 60,625 * 60,750 * 60]
+               }
+            },
             "IC1":{
                "index":1,
                "page":1,
@@ -514,6 +618,7 @@ package
                "time":60 * 60,
                "level":1,
                "name":"#m_spurtz#",
+               "classType":Spurtz,
                "description":"mi_Spurtz_desc",
                "stream":["mi_Spurtz_stream","mi_Spurtz_streambody","quests/inferno_monster1.png"],
                "trainingCosts":[[40 * 60,60 * 60],[80 * 60,2 * 60 * 60],[2 * 60 * 60,3 * 60 * 60],[160 * 60,4 * 60 * 60],[4 * 60 * 60,6 * 60 * 60]],
@@ -524,8 +629,10 @@ package
                   "cTime":[15,10,8,7,6,5],
                   "cResource":[500,1000,2000,0xfa0,100 * 60,10000],
                   "cStorage":[15],
-                  "bucket":[20],
-                  "targetGroup":[1]
+                  "bucket":[15],
+                  "targetGroup":[1],
+                  "hTime":[5,3,2],
+                  "hResource":[150,5 * 60,10 * 60,20 * 60,30 * 60,50 * 60]
                }
             },
             "IC2":{
@@ -546,8 +653,10 @@ package
                   "cTime":[15,16,16,16,16,16],
                   "cResource":[2500,0xfa0,0x1f40,200 * 60,16000,20000],
                   "cStorage":[15],
-                  "bucket":[20],
-                  "targetGroup":[4]
+                  "bucket":[15],
+                  "targetGroup":[4],
+                  "hTime":[5],
+                  "hResource":[750,20 * 60,40 * 60,60 * 60,80 * 60,100 * 60]
                }
             },
             "IC4":{
@@ -570,8 +679,10 @@ package
                   "cTime":[450,350,250,225,195,195],
                   "cResource":[31000,35000,650 * 60,44000,50000,55000],
                   "cStorage":[30],
-                  "bucket":[20],
-                  "targetGroup":[2]
+                  "bucket":[30],
+                  "targetGroup":[2],
+                  "hTime":[135,105,75,68,59,59],
+                  "hResource":[155 * 60,175 * 60,195 * 60,220 * 60,250 * 60,275 * 60]
                }
             },
             "IC3":{
@@ -593,8 +704,10 @@ package
                   "cTime":[100,100,90,90,90,90],
                   "cResource":[50 * 60,3500,4100,80 * 60,5500,7000],
                   "cStorage":[15],
-                  "bucket":[20],
-                  "targetGroup":[3]
+                  "bucket":[15],
+                  "targetGroup":[3],
+                  "hTime":[30,30,27],
+                  "hResource":[15 * 60,1050,1230,24 * 60,1650,35 * 60]
                }
             },
             "IC5":{
@@ -605,6 +718,7 @@ package
                "time":24 * 60 * 60,
                "level":3,
                "name":"#m_balthazar#",
+               "classType":Balthazar,
                "description":"mi_Balthazar_desc",
                "stream":["mi_Balthazar_stream","mi_Balthazar_streambody","quests/balthazar.png"],
                "trainingCosts":[[614400,24 * 60 * 60],[1228800,2 * 24 * 60 * 60],[512 * 60 * 60,3 * 24 * 60 * 60],[2457600,4 * 24 * 60 * 60],[3686400,6 * 24 * 60 * 60]],
@@ -617,8 +731,10 @@ package
                   "cTime":[30 * 60,32 * 60,34 * 60,36 * 60,38 * 60,40 * 60],
                   "cResource":[88000,104000,161000,249000,327000,487000],
                   "cStorage":[40],
-                  "bucket":[60],
-                  "targetGroup":[6]
+                  "bucket":[40],
+                  "targetGroup":[6],
+                  "hTime":[9 * 60,576,612,648,684,12 * 60],
+                  "hResource":[440 * 60,520 * 60,805 * 60,74700,98100,146100]
                }
             },
             "IC6":{
@@ -639,8 +755,10 @@ package
                   "cTime":[30 * 60,30 * 60,30 * 60,30 * 60,30 * 60,30 * 60],
                   "cResource":[80000,105000,135000,175000,210000,325000],
                   "cStorage":[50],
-                  "bucket":[60],
-                  "targetGroup":[3]
+                  "bucket":[50],
+                  "targetGroup":[3],
+                  "hTime":[9 * 60],
+                  "hResource":[400 * 60,525 * 60,675 * 60,875 * 60,63000,97500]
                }
             },
             "IC7":{
@@ -651,18 +769,22 @@ package
                "time":2 * 24 * 60 * 60,
                "level":3,
                "name":"#m_sabnox#",
+               "classType":Sabnox,
                "description":"mi_Sabnox_desc",
                "stream":["mi_Sabnox_stream","mi_Sabnox_streambody","quests/sabnox.png"],
                "trainingCosts":[[2457600,2 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60],[9830400,8 * 24 * 60 * 60],[14745600,12 * 24 * 60 * 60]],
                "props":{
+                  "range":[4 * 60],
                   "speed":[1.7,1.8,1.9,2,2.1,2.2],
                   "health":[1120,21 * 60,1400,1650,1900,2200],
                   "damage":[700,825,950,1075,20 * 60,1350],
                   "cTime":[1384,1384,1384,1384,1384,1384],
                   "cResource":[60 * 1000,25 * 60 * 60,145000,200000,330000,125 * 60 * 60],
                   "cStorage":[80],
-                  "bucket":[90],
-                  "targetGroup":[4]
+                  "bucket":[80],
+                  "targetGroup":[4],
+                  "hTime":[415],
+                  "hResource":[5 * 60 * 60,450 * 60,725 * 60,60 * 1000,99000,135000]
                }
             },
             "IC8":{
@@ -674,6 +796,7 @@ package
                "level":4,
                "name":"#m_king_wormzer#",
                "shortName":"#m_k_wormzer#",
+               "classType":KingWormzer,
                "description":"mi_King_Wormzer_desc",
                "stream":["mi_King_Wormzer_stream","mi_King_Wormzer_streambody","quests/king_wormzer.png"],
                "trainingCosts":[[4915200,3 * 24 * 60 * 60],[7268000,6 * 24 * 60 * 60],[9296000,9 * 24 * 60 * 60],[13624000,12 * 24 * 60 * 60],[19248000,18 * 24 * 60 * 60]],
@@ -687,7 +810,9 @@ package
                   "cResource":[425000,476000,580000,700000,910000,1204000],
                   "cStorage":[100],
                   "bucket":[100],
-                  "targetGroup":[1]
+                  "targetGroup":[1],
+                  "hTime":[810],
+                  "hResource":[127500,142800,174000,210000,273000,361200]
                }
             },
             "C200":{
@@ -706,6 +831,76 @@ package
                }
             }
          };
+         if(k_USE_REBALANCED_MONSTERS)
+         {
+            _mainCreatures = RebalancedCreatures.REBALANCED_CREATURES;
+            for(_loc1_ in _mainCreatures)
+            {
+               _mainCreatures[_loc1_].props.hResource = [10];
+               _mainCreatures[_loc1_].props.hTime = [2];
+            }
+         }
+         modifyCreepData();
+         CreepTypeManager.instance.AddExposedCreepTypes(_mainCreatures);
+      }
+      
+      private static function modifyCreepData() : void
+      {
+         var _loc1_:int = 0;
+         var _loc2_:String = null;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            _loc1_ = 0;
+            for(_loc2_ in _mainCreatures)
+            {
+               _loc1_ = int(_mainCreatures[_loc2_].props.cResource.length);
+               _loc3_ = 0;
+               while(_loc3_ < _loc1_)
+               {
+                  _mainCreatures[_loc2_].props.cResource[_loc3_] *= 3;
+                  _loc3_++;
+               }
+               _loc1_ = int(_mainCreatures[_loc2_].props.cTime.length);
+               _loc3_ = 0;
+               while(_loc3_ < _loc1_)
+               {
+                  _mainCreatures[_loc2_].props.cTime[_loc3_] *= 3;
+                  _loc3_++;
+               }
+            }
+         }
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            _loc4_ = 15;
+            _loc5_ = 35;
+            _loc6_ = 0;
+            for(_loc2_ in _mainCreatures)
+            {
+               if(_mainCreatures[_loc2_].props.hResource)
+               {
+                  _loc1_ = int(_mainCreatures[_loc2_].props.hResource.length);
+                  _loc6_ = _mainCreatures[_loc2_].props.cResource.length - 1;
+                  _loc3_ = 0;
+                  while(_loc3_ < _loc1_)
+                  {
+                     _mainCreatures[_loc2_].props.hResource[_loc3_] = 0.25 * _mainCreatures[_loc2_].props.cResource[_loc3_ < _loc6_ ? _loc3_ : _loc6_];
+                     _loc3_++;
+                  }
+                  _loc1_ = int(_mainCreatures[_loc2_].props.hTime.length);
+                  _loc6_ = _mainCreatures[_loc2_].props.cTime.length - 1;
+                  _loc3_ = 0;
+                  while(_loc3_ < _loc1_)
+                  {
+                     _mainCreatures[_loc2_].props.hTime[_loc3_] = 0.25 * _mainCreatures[_loc2_].props.cTime[_loc3_ < _loc6_ ? _loc3_ : _loc6_];
+                     _loc3_++;
+                  }
+               }
+            }
+         }
       }
       
       public static function Tick() : void
@@ -723,7 +918,7 @@ package
             if(_lockerData[i].t == 1)
             {
                isInfernoType = i.substring(0,2) == "IC";
-               if(BASE.isInferno() && isInfernoType || !BASE.isInferno() && !isInfernoType)
+               if(BASE.isInfernoMainYardOrOutpost && isInfernoType || !BASE.isInfernoMainYardOrOutpost && !isInfernoType)
                {
                   _unlocking = i;
                   break;
@@ -739,8 +934,7 @@ package
             if(_lockerData[_unlocking].e - GLOBAL.Timestamp() <= 0)
             {
                _lockerData[_unlocking].t = 2;
-               ACADEMY._upgrades[_unlocking] = {"level":1};
-               GLOBAL._playerCreatureUpgrades[_unlocking] = {"level":1};
+               GLOBAL.player.m_upgrades[_unlocking] = {"level":1};
                ACHIEVEMENTS.Check("unlock_monster",1);
                delete _lockerData[_unlocking].s;
                delete _lockerData[_unlocking].e;
@@ -751,7 +945,7 @@ package
                   img = creature.stream[2];
                }
                LOGGER.Stat([10,int(_unlocking.substr(1))]);
-               if(GLOBAL._mode == "build")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
                   StreamPost = function(param1:String, param2:String, param3:String):Function
                   {
@@ -863,7 +1057,7 @@ package
             POPUPS.Push(popupMC,null,null,null,creatureID + "-150.png");
             return true;
          }
-         if(!BASE.isInferno())
+         if(!BASE.isInfernoMainYardOrOutpost)
          {
             GLOBAL.Message(KEYS.Get("mon_needputty"),KEYS.Get("btn_openstore"),STORE.ShowB,[2,0.8,["BR31","BR32","BR33"]]);
          }
@@ -958,7 +1152,7 @@ package
          var _loc2_:Object = {};
          for(_loc3_ in _loc1_)
          {
-            if(!(_loc3_.substr(0,1) == "C" && BASE.isInferno() || _loc3_.substr(0,1) == "I" && !BASE.isInferno() || _loc3_ == "C200"))
+            if(!(_loc3_.substr(0,1) == "C" && BASE.isInfernoMainYardOrOutpost || _loc3_.substr(0,1) == "I" && !BASE.isInfernoMainYardOrOutpost || _loc3_ == "C200"))
             {
                _loc2_[_loc3_] = _loc1_[_loc3_];
             }
@@ -983,7 +1177,7 @@ package
             default:
                for(_loc4_ in _loc2_)
                {
-                  if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+                  if(!(_loc4_.substr(0,1) == "C" && BASE.isInfernoMainYardOrOutpost || _loc4_.substr(0,1) == "I" && !BASE.isInfernoMainYardOrOutpost || _loc4_ == "C200"))
                   {
                      _loc3_[_loc4_] = _loc2_[_loc4_];
                   }
@@ -1087,7 +1281,7 @@ package
          var _loc4_:String = null;
          var _loc1_:Object = CREATURELOCKER._creatures;
          var _loc2_:Object = {};
-         var _loc3_:Boolean = MAPROOM_DESCENT.DescentPassed && !BASE.isInferno();
+         var _loc3_:Boolean = MAPROOM_DESCENT.DescentPassed && !BASE.isInfernoMainYardOrOutpost;
          for(_loc4_ in _loc1_)
          {
             if(_loc3_)
@@ -1097,7 +1291,7 @@ package
                   _loc2_[_loc4_] = _loc1_[_loc4_];
                }
             }
-            else if(!(_loc4_.substr(0,1) == "C" && BASE.isInferno() || _loc4_.substr(0,1) == "I" && !BASE.isInferno() || _loc4_ == "C200"))
+            else if(!(_loc4_.substr(0,1) == "C" && BASE.isInfernoMainYardOrOutpost || _loc4_.substr(0,1) == "I" && !BASE.isInfernoMainYardOrOutpost || _loc4_ == "C200"))
             {
                _loc2_[_loc4_] = _loc1_[_loc4_];
             }
@@ -1118,7 +1312,7 @@ package
          var _loc3_:Array = [];
          var _loc4_:Array = [];
          var _loc5_:Array = [];
-         var _loc6_:* = !BASE.isInferno();
+         var _loc6_:* = !BASE.isInfernoMainYardOrOutpost;
          if(_loc6_)
          {
             _loc8_ = CREATURELOCKER.GetCreatures("above");
@@ -1135,7 +1329,7 @@ package
             }
             _loc3_.sortOn(["index"],Array.NUMERIC);
          }
-         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && (BASE.isInferno() || SubscriptionHandler.isEnabledForAll || HATCHERYCC.doesShowInfernoCreeps);
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && (BASE.isInfernoMainYardOrOutpost || SubscriptionHandler.isEnabledForAll || HATCHERYCC.doesShowInfernoCreeps);
          if(_loc7_)
          {
             _loc12_ = CREATURELOCKER.GetCreatures("inferno");

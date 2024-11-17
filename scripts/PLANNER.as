@@ -36,15 +36,18 @@ package
          }
          BASE.BuildingDeselect();
          _selected = false;
-         if(GLOBAL._flags.yp_version)
+         if(GLOBAL._flags.yp_version != null)
          {
-            if(GLOBAL._flags.yp_version == 1)
+            switch(GLOBAL._flags.yp_version)
             {
-               _useOldPlanner = true;
-            }
-            else if(GLOBAL._flags.yp_version == 2)
-            {
-               _useOldPlanner = false;
+               case 0:
+                  GLOBAL.Message(">Yard PLANNER has been disabled for this ENVIRONMENT");
+                  return;
+               case 1:
+                  _useOldPlanner = true;
+                  break;
+               case 2:
+                  _useOldPlanner = false;
             }
          }
          if(!_open)

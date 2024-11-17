@@ -48,7 +48,6 @@ package com.monsters.replayableEvents.monsterMadness
          _points = new SecNum(param1);
          stage = getStage();
          GLOBAL.StatSet(LAST_SCORE,param1);
-         print("old monster madness score is " + param1);
       }
       
       public static function updateKorathStats() : void
@@ -173,7 +172,7 @@ package com.monsters.replayableEvents.monsterMadness
       public static function showPopup(param1:Boolean = false) : Boolean
       {
          var _loc2_:MonsterMadnessPopup = null;
-         if(GLOBAL._mode != "build")
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }
@@ -198,7 +197,7 @@ package com.monsters.replayableEvents.monsterMadness
          {
             points = _loc1_;
          }
-         if(hasEventEnded || GLOBAL._mode != "build" || TUTORIAL._stage < 200 || GLOBAL._sessionCount < 5)
+         if(hasEventEnded || GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || TUTORIAL._stage < 200 || GLOBAL._sessionCount < 5)
          {
             return;
          }

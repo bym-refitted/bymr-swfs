@@ -1,16 +1,24 @@
 package
 {
    import com.cc.utils.SecNum;
+   import com.monsters.GameObject;
    import com.monsters.configs.BYMConfig;
    import com.monsters.configs.BYMDevConfig;
+   import com.monsters.debug.Console;
    import com.monsters.display.BuildingAssetContainer;
    import com.monsters.display.BuildingOverlay;
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
+   import com.monsters.enums.EnumYardType;
    import com.monsters.events.BuildingEvent;
+   import com.monsters.interfaces.ICoreBuilding;
+   import com.monsters.interfaces.ITargetable;
    import com.monsters.inventory.InventoryManager;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.MonsterBase;
+   import com.monsters.monsters.components.CModifiableProperty;
    import com.monsters.pathing.PATHING;
    import com.monsters.rendering.RasterData;
    import com.monsters.utils.MovieClipUtils;
@@ -27,29 +35,33 @@ package
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   public class BFOUNDATION
+   public class BFOUNDATION extends GameObject
    {
+      private static var s_totalBuildingHP:Number;
+      
+      private static var s_totalBuildingMaxHP:Number;
+      
       public static const TICK_LIMIT:int = 2 * 24 * 60 * 60;
       
-      protected static const _IMAGE_NAMES:Array = ["shadow","","top","anim","anim2","anim3"];
+      public static const _IMAGE_NAMES:Array = ["shadow","","top","anim","anim2","anim3"];
       
-      protected static const _RASTERDATA_SHADOW:uint = 0;
+      public static const _RASTERDATA_SHADOW:uint = 0;
       
-      protected static const _RASTERDATA_FOOTPRINT:uint = 1;
+      public static const _RASTERDATA_FOOTPRINT:uint = 1;
       
-      protected static const _RASTERDATA_TOP:uint = 2;
+      public static const _RASTERDATA_TOP:uint = 2;
       
-      protected static const _RASTERDATA_ANIM:uint = 3;
+      public static const _RASTERDATA_ANIM:uint = 3;
       
-      protected static const _RASTERDATA_ANIM2:uint = 4;
+      public static const _RASTERDATA_ANIM2:uint = 4;
       
-      protected static const _RASTERDATA_ANIM3:uint = 5;
+      public static const _RASTERDATA_ANIM3:uint = 5;
       
-      protected static const _RASTERDATA_FORTFRONT:uint = 6;
+      public static const _RASTERDATA_FORTFRONT:uint = 6;
       
-      protected static const _RASTERDATA_FORTBACK:uint = 7;
+      public static const _RASTERDATA_FORTBACK:uint = 7;
       
-      protected static const _RASTERDATA_AMOUNT:uint = 8;
+      public static const _RASTERDATA_AMOUNT:uint = 8;
       
       public static const k_STATE_DESTROYED:String = "destroyed";
       
@@ -63,10 +75,6 @@ package
       
       public var _mcHit:MovieClip;
       
-      public var _mc:MovieClip;
-      
-      public var _mouseClicked:Boolean = false;
-      
       public var topContainer:BuildingAssetContainer;
       
       public var animContainer:BuildingAssetContainer;
@@ -78,8 +86,6 @@ package
       public var _spriteAlert:Sprite;
       
       public var _mcAlert:DisplayObject;
-      
-      public var _middle:int;
       
       public var _position:Point;
       
@@ -205,12 +211,6 @@ package
       
       public var _id:int;
       
-      public var _size:int;
-      
-      public var _hp:SecNum;
-      
-      public var _hpMax:SecNum;
-      
       public var _energy:int;
       
       public var _fired:Boolean;
@@ -244,8 +244,6 @@ package
       public var _resource:Number;
       
       public var _range:int;
-      
-      public var _damage:int;
       
       public var _rate:int;
       
@@ -311,6 +309,8 @@ package
       
       protected var _offsets:Vector.<Point>;
       
+      protected var _sources:Vector.<DisplayObject>;
+      
       protected var _debugRasterData:RasterData;
       
       protected var m_bmd:BitmapData;
@@ -325,18 +325,20 @@ package
       
       protected var m_hitOffsetIndex:uint;
       
-      protected var m_isCleared:Boolean;
-      
       protected var _imageCallbackHelpers:Vector.<ImageCallbackHelper>;
       
       public var _recycled:Boolean = false;
       
+      public var damageProperty:CModifiableProperty;
+      
+      private var _mouseClicked:Boolean;
+      
       public function BFOUNDATION()
       {
          super();
-         this.m_isCleared = false;
-         this._hp = new SecNum(0);
-         this._hpMax = new SecNum(0);
+         this._spoutPoint = new Point(1,-67);
+         this._spoutHeight = 135;
+         setHealth(1);
          this._energy = 0;
          this._buildingTitle = "";
          this._buildingDescription = "";
@@ -348,6 +350,7 @@ package
          this._rasterData = new Vector.<RasterData>(_RASTERDATA_AMOUNT,true);
          this._rasterPt = new Vector.<Point>(this._rasterData.length,true);
          this._offsets = new Vector.<Point>(this._rasterData.length,true);
+         this._sources = new Vector.<DisplayObject>(this._rasterData.length,true);
          var _loc1_:int = int(this._rasterPt.length - 1);
          while(_loc1_ >= 0)
          {
@@ -375,29 +378,198 @@ package
          this._repairing = 0;
          this._mouseOffset = new Point(0,0);
          this._oldY = 0;
-         if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
+         if(BASE.isOutpostOrInfernoOutpost)
          {
             this._blockRecycle = true;
          }
+         InstanceManager.addInstance(this);
+         this.damageProperty = new CModifiableProperty();
+         graphic.addEventListener(Event.REMOVED_FROM_STAGE,this.removedFromStage);
+      }
+      
+      public static function get totalBuildingHP() : Number
+      {
+         return s_totalBuildingHP;
+      }
+      
+      public static function get totalBuildingMaxHP() : Number
+      {
+         return s_totalBuildingMaxHP;
       }
       
       public static function updateAllRasterData() : void
       {
-         var _loc3_:BFOUNDATION = null;
+         var _loc2_:BFOUNDATION = null;
          if(!BYMConfig.instance.RENDERER_ON)
          {
             return;
          }
-         var _loc1_:Object = BASE._buildingsMushrooms;
-         var _loc2_:Object = BASE._buildingsAll;
-         for each(_loc3_ in _loc1_)
+         var _loc1_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc2_ in _loc1_)
          {
-            _loc3_.updateRasterData();
+            _loc2_.updateRasterData();
          }
-         for each(_loc3_ in _loc2_)
+      }
+      
+      public static function redrawAllShadowData() : void
+      {
+      }
+      
+      private static function sortByDepth(param1:Object, param2:Object) : Number
+      {
+         if(!(param1 as BFOUNDATION).rasterPt[BFOUNDATION._RASTERDATA_SHADOW])
          {
-            _loc3_.updateRasterData();
+            return 1;
          }
+         if(!(param2 as BFOUNDATION).rasterPt[BFOUNDATION._RASTERDATA_SHADOW])
+         {
+            return -1;
+         }
+         return (param1 as BFOUNDATION).rasterPt[BFOUNDATION._RASTERDATA_SHADOW].y - (param2 as BFOUNDATION).rasterPt[BFOUNDATION._RASTERDATA_SHADOW].y;
+      }
+      
+      public static function getBuildingSaveData() : Vector.<Object>
+      {
+         var _loc6_:Object = null;
+         var _loc7_:BFOUNDATION = null;
+         var _loc8_:Boolean = false;
+         var _loc1_:Vector.<Object> = new Vector.<Object>();
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         var _loc3_:Object = {};
+         var _loc4_:Object = {};
+         var _loc5_:String = "";
+         _loc1_[0] = _loc4_;
+         _loc1_[1] = _loc3_;
+         s_totalBuildingHP = s_totalBuildingMaxHP = 0;
+         for each(_loc7_ in _loc2_)
+         {
+            if(!(_loc7_ is BMUSHROOM))
+            {
+               if(_loc7_ is ICoreBuilding)
+               {
+                  _loc8_ = true;
+               }
+               if(_loc7_ is BTRAP && _loc7_._fired || _loc7_._type == 53 && _loc7_._expireTime < GLOBAL.Timestamp())
+               {
+                  Console.warning("Ignored Building" + _loc7_ + _loc7_._type + _loc7_._expireTime + " setting buildinghealthdata to 0");
+                  _loc3_[_loc7_._id] = 0;
+               }
+               else
+               {
+                  if(_loc7_ is BWALL === false)
+                  {
+                     if(BASE.isMainYardOrInfernoMainYard && (GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD || GLOBAL.mode == GLOBAL.e_BASE_MODE.IBUILD))
+                     {
+                        s_totalBuildingHP += _loc7_.maxHealth;
+                     }
+                     else
+                     {
+                        s_totalBuildingHP += _loc7_.health;
+                     }
+                     s_totalBuildingMaxHP += _loc7_.maxHealth;
+                  }
+                  if(_loc7_.health < _loc7_.maxHealth)
+                  {
+                     _loc3_[_loc7_._id] = int(_loc7_.health);
+                  }
+                  _loc6_ = _loc7_.Export();
+                  if(_loc6_)
+                  {
+                     _loc4_[_loc7_._id] = _loc6_;
+                     _loc5_ += (_loc6_.X + _loc6_.Y).toString();
+                  }
+               }
+            }
+         }
+         if(!_loc8_)
+         {
+            LOGGER.Log("err","User missing TownHall upon save");
+            Console.warning("BFOUNDATION::getBuildingSaveData(TownHall missing upon save)");
+         }
+         BASE._percentDamaged = 100 - 100 / s_totalBuildingMaxHP * s_totalBuildingHP;
+         _loc1_[2] = md5(_loc5_);
+         return _loc1_;
+      }
+      
+      override public function get width() : Number
+      {
+         return this._mcHit.width;
+      }
+      
+      override public function get height() : Number
+      {
+         return this._mcHit.height;
+      }
+      
+      public function get rasterPt() : Vector.<Point>
+      {
+         return this._rasterPt;
+      }
+      
+      public function get damage() : int
+      {
+         return this.damageProperty.value;
+      }
+      
+      public function get isDamaged() : Boolean
+      {
+         return health < maxHealth;
+      }
+      
+      public function get isCriticallyDamaged() : Boolean
+      {
+         return health < maxHealth * 0.5;
+      }
+      
+      override public function modifyHealth(param1:Number, param2:ITargetable = null) : Number
+      {
+         var _loc4_:Number = NaN;
+         var _loc5_:* = 0;
+         if(!isTargetable)
+         {
+            Console.warning("you are trying to deal damage to a building that isn\'t targetable.... why you doin that bro?");
+            return 0;
+         }
+         var _loc3_:Number = param1;
+         param1 = Math.abs(param1);
+         if(this._fortification.Get() > 0)
+         {
+            param1 *= 100 - (this._fortification.Get() * 10 + 10);
+            param1 /= 100;
+         }
+         param1 *= !!armor ? 1 - armor : 1;
+         setHealth(health - param1);
+         if(health <= 0)
+         {
+            setHealth(0);
+            this.Destroyed(param2 != null);
+         }
+         else if(this._class != "wall")
+         {
+            ATTACK.Log("b" + this._id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
+               "v1":this._lvl.Get(),
+               "v2":KEYS.Get(this._buildingProps.name),
+               "v3":100 - int(100 / maxHealth * health)
+            }) + "</font>");
+         }
+         if(Boolean(param2) && !this._destroyed)
+         {
+            _loc4_ = 1;
+            if(param2 is MonsterBase)
+            {
+               _loc4_ = MonsterBase(param2).lootingMultiplier;
+            }
+            _loc5_ = this.Loot(param1 * _loc4_);
+            ATTACK.damage(param1,this,param1 - _loc3_);
+         }
+         if(k_DOES_PRINT_DETAILED_LOGGING)
+         {
+            param1 = Math.round(param1);
+            _loc3_ = Math.round(_loc3_);
+            print(this.name + " was hit for " + param1 + (!!(_loc3_ - param1) ? "(" + _loc3_ + " - " + (_loc3_ - param1) + ")" : "") + " damage(looted " + _loc5_ + "), left with " + health + " out of " + maxHealth + "hp");
+         }
+         this.Update();
+         return param1;
       }
       
       public function SetProps() : void
@@ -426,11 +598,11 @@ package
          {
             if(!BYMConfig.instance.RENDERER_ON)
             {
-               this._mc = MAP._BUILDINGTOPS.addChild(new MovieClip()) as MovieClip;
+               _mc = MAP._BUILDINGTOPS.addChild(new MovieClip()) as MovieClip;
             }
             else
             {
-               this._mc = new MovieClip();
+               _mc = new MovieClip();
             }
          }
          catch(e:Error)
@@ -491,10 +663,10 @@ package
          {
             if(!BYMConfig.instance.RENDERER_ON)
             {
-               this._mc.addChild(this._fortBackContainer);
-               this._mc.addChild(this.topContainer);
-               this._mc.addChild(this.animContainer);
-               this._mc.addChild(this._fortFrontContainer);
+               _mc.addChild(this._fortBackContainer);
+               _mc.addChild(this.topContainer);
+               _mc.addChild(this.animContainer);
+               _mc.addChild(this._fortFrontContainer);
             }
          }
          catch(e:Error)
@@ -530,7 +702,7 @@ package
             }
             else
             {
-               this._mc.addChild(this._mcHit);
+               _mc.addChild(this._mcHit);
             }
             this._mcHit.cacheAsBitmap = true;
             this._mcHit.alpha = 0;
@@ -543,7 +715,7 @@ package
          }
          try
          {
-            this._size = this._buildingProps.size;
+            _size = this._buildingProps.size;
             this._class = this._buildingProps.type;
          }
          catch(e:Error)
@@ -566,8 +738,7 @@ package
          {
             this._attackgroup = this._buildingProps.attackgroup;
             this._mouseOffset = new Point(0,int(this._mcFootprint.height / 20) * 10);
-            this._middle = this._footprint[0].height * 0.5;
-            this._mc._middle = this._middle;
+            _middle = this._footprint[0].height * 0.5;
          }
          catch(e:Error)
          {
@@ -583,8 +754,16 @@ package
          this.anim3Container.mouseEnabled = false;
          if(!BYMConfig.instance.RENDERER_ON)
          {
-            this._mc.addChild(this.anim2Container);
-            this._mc.addChild(this.anim3Container);
+            _mc.addChild(this.anim2Container);
+            _mc.addChild(this.anim3Container);
+         }
+         if(this._buildingProps.isUntargetable)
+         {
+            targetableStatus = 1;
+         }
+         if(this._buildingProps.isImmobile)
+         {
+            moveSpeedProperty.value = 0;
          }
       }
       
@@ -595,8 +774,7 @@ package
       public function Description() : void
       {
          var _loc1_:Number = NaN;
-         var _loc2_:int = 0;
-         var _loc3_:Object = null;
+         var _loc2_:Object = null;
          if(this._buildingProps.names != null && this._buildingProps.names.length >= this._lvl.Get())
          {
             this._buildingTitle = "<b>" + this._buildingProps.names[this._lvl.Get() - 1] + "</b>";
@@ -609,7 +787,7 @@ package
                this._buildingTitle += " " + KEYS.Get("bdg_level",{"v1":this._lvl.Get()});
             }
          }
-         if(this._hp.Get() < this._hpMax.Get())
+         if(health < maxHealth)
          {
             if(this._countdownUpgrade.Get() > 0)
             {
@@ -621,7 +799,7 @@ package
             }
             else
             {
-               _loc1_ = 100 - Math.ceil(100 / this._hpMax.Get() * this._hp.Get());
+               _loc1_ = 100 - Math.ceil(100 / maxHealth * health);
                this._specialDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_percentdamaged",{"v1":_loc1_}) + "</b></font>";
             }
          }
@@ -641,8 +819,8 @@ package
                {
                   this._buildingStats = KEYS.Get("building_stats_dps",{
                      "v1":this._range,
-                     "v2":this._damage,
-                     "v3":int(this._damage * (40 / this._rate)),
+                     "v2":this.damage,
+                     "v3":int(this.damage * (40 / this._rate)),
                      "v4":this._splash,
                      "v5":int(40 / this._rate * 10) / 10
                   });
@@ -669,20 +847,9 @@ package
          this._recycleDescription = "";
          if(this._repairing == 1)
          {
-            _loc2_ = 0;
-            if(this._lvl.Get() == 0)
-            {
-               _loc2_ = int(this._buildingProps.repairTime[0]);
-            }
-            else
-            {
-               _loc2_ = int(this._buildingProps.repairTime[this._lvl.Get() - 1]);
-            }
-            _loc2_ = Math.min(60 * 60,_loc2_);
-            _loc2_ = Math.ceil(this._hpMax.Get() / _loc2_);
             this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_damagedinattack") + "</b></font><br>" + KEYS.Get("building_repairinprogress",{
-               "v1":Math.floor(100 / this._hpMax.Get() * this._hp.Get()),
-               "v2":GLOBAL.ToTime(int((this._hpMax.Get() - this._hp.Get()) / _loc2_))
+               "v1":Math.floor(100 / maxHealth * health),
+               "v2":GLOBAL.ToTime(this.getEstimatedRepairTimeRemaining())
             });
          }
          else
@@ -705,47 +872,63 @@ package
          else
          {
             this._upgradeCosts = "";
-            _loc3_ = this._buildingProps.costs[this._lvl.Get()];
-            if(_loc3_.r1 > 0)
+            _loc2_ = this._buildingProps.costs[this._lvl.Get()];
+            if(_loc2_.r1 > 0)
             {
-               if(_loc3_.r1 > BASE._resources.r1.Get())
+               if(_loc2_.r1 > BASE._resources.r1.Get())
                {
                   this._upgradeCosts += "<font color=\"#FF0000\">";
                }
-               this._upgradeCosts += GLOBAL.FormatNumber(_loc3_.r1) + " " + GLOBAL._resourceNames[0] + "</font> - ";
+               this._upgradeCosts += GLOBAL.FormatNumber(_loc2_.r1) + " " + GLOBAL._resourceNames[0] + "</font> - ";
             }
-            if(_loc3_.r2 > 0)
+            if(_loc2_.r2 > 0)
             {
-               if(_loc3_.r2 > BASE._resources.r2.Get())
+               if(_loc2_.r2 > BASE._resources.r2.Get())
                {
                   this._upgradeCosts += "<font color=\"#FF0000\">";
                }
-               this._upgradeCosts += GLOBAL.FormatNumber(_loc3_.r2) + " " + GLOBAL._resourceNames[1] + "</font> - ";
+               this._upgradeCosts += GLOBAL.FormatNumber(_loc2_.r2) + " " + GLOBAL._resourceNames[1] + "</font> - ";
             }
-            if(_loc3_.r3 > 0)
+            if(_loc2_.r3 > 0)
             {
-               if(_loc3_.r3 > BASE._resources.r3.Get())
+               if(_loc2_.r3 > BASE._resources.r3.Get())
                {
                   this._upgradeCosts += "<font color=\"#FF0000\">";
                }
-               this._upgradeCosts += GLOBAL.FormatNumber(_loc3_.r3) + " " + GLOBAL._resourceNames[2] + "</font> - ";
+               this._upgradeCosts += GLOBAL.FormatNumber(_loc2_.r3) + " " + GLOBAL._resourceNames[2] + "</font> - ";
             }
-            if(_loc3_.r4 > 0)
+            if(_loc2_.r4 > 0)
             {
-               if(_loc3_.r4 > BASE._resources.r4.Get())
+               if(_loc2_.r4 > BASE._resources.r4.Get())
                {
                   this._upgradeCosts += "<font color=\"#FF0000\">";
                }
-               this._upgradeCosts += GLOBAL.FormatNumber(_loc3_.r4) + " " + GLOBAL._resourceNames[3] + "</font> - ";
+               this._upgradeCosts += GLOBAL.FormatNumber(_loc2_.r4) + " " + GLOBAL._resourceNames[3] + "</font> - ";
             }
-            this._upgradeCosts += GLOBAL.ToTime(_loc3_.time);
+            this._upgradeCosts += GLOBAL.ToTime(_loc2_.time);
             this._upgradeDescription = "";
          }
       }
       
+      public function getEstimatedRepairTimeRemaining() : Number
+      {
+         var _loc1_:int = 0;
+         if(this._lvl.Get() == 0)
+         {
+            _loc1_ = int(this._buildingProps.repairTime[0]);
+         }
+         else
+         {
+            _loc1_ = int(this._buildingProps.repairTime[this._lvl.Get() - 1]);
+         }
+         _loc1_ = Math.min(60 * 60,_loc1_);
+         _loc1_ = Math.ceil(maxHealth / _loc1_);
+         return int((maxHealth - health) / _loc1_);
+      }
+      
       public function RenderClear(param1:Boolean = true) : void
       {
-         if(this.m_isCleared)
+         if(m_isCleared)
          {
             return;
          }
@@ -772,6 +955,7 @@ package
          var i:int = 0;
          var loadImages:Array = null;
          var length:uint = 0;
+         var imageGroupYardType:int = 0;
          var j:int = 0;
          var loadFortImages:Array = null;
          var state:String = param1;
@@ -829,7 +1013,7 @@ package
                this._animLoaded = false;
                if(state === k_STATE_DAMAGED || state === k_STATE_DESTROYED)
                {
-                  this._anim2Loaded = true;
+                  this._anim2Loaded = false;
                   this._anim3Loaded = true;
                }
                else
@@ -838,7 +1022,18 @@ package
                   this._anim3Loaded = false;
                }
                this._imageCallbackHelpers.push(new ImageCallbackHelper(this.ImageCallback,state,imageLevel,imageDataA,imageDataB));
-               ImageCache.GetImageGroupWithCallBack(BASE._yardType + "b" + this._type + "-" + imageLevel + state,loadImages,this.ImageCallback,true,2,state);
+               imageGroupYardType = BASE.yardType;
+               switch(imageGroupYardType)
+               {
+                  case EnumYardType.PLAYER:
+                     imageGroupYardType = int(EnumYardType.MAIN_YARD);
+                     break;
+                  case EnumYardType.RESOURCE:
+                  case EnumYardType.STRONGHOLD:
+                  case EnumYardType.FORTIFICATION:
+                     imageGroupYardType = int(EnumYardType.OUTPOST);
+               }
+               ImageCache.GetImageGroupWithCallBack(imageGroupYardType + "b" + this._type + "-" + imageLevel + state,loadImages,this.ImageCallback,true,2,state);
             }
          }
          if(this._fortification.Get() != this._renderFortLevel)
@@ -924,6 +1119,7 @@ package
                            }
                         }
                      }
+                     updateRasterData();
                   }
                };
                loadFortImages = [];
@@ -938,7 +1134,10 @@ package
                ImageCache.GetImageGroupWithCallBack("fort" + this._type + "-" + fortImageLevel,loadFortImages,FortImageCallback,true,2,"fort" + this._renderFortLevel);
             }
          }
-         this.updateRasterData();
+         if(this._renderState == null || state !== this._renderState || this._lvl.Get() != this._renderLevel)
+         {
+            this.updateRasterData();
+         }
       }
       
       protected function ImageCallback(param1:Array, param2:String) : void
@@ -946,13 +1145,14 @@ package
          var _loc4_:ImageCallbackHelper = null;
          var _loc5_:Boolean = false;
          var _loc6_:int = 0;
-         var _loc11_:Array = null;
-         var _loc12_:String = null;
-         var _loc13_:BitmapData = null;
-         var _loc14_:BuildingAssetContainer = null;
-         var _loc15_:Rectangle = null;
-         var _loc16_:DisplayObject = null;
-         if(this.m_isCleared)
+         var _loc7_:* = false;
+         var _loc12_:Array = null;
+         var _loc13_:String = null;
+         var _loc14_:BitmapData = null;
+         var _loc15_:BuildingAssetContainer = null;
+         var _loc16_:Rectangle = null;
+         var _loc17_:DisplayObject = null;
+         if(m_isCleared)
          {
             return;
          }
@@ -971,24 +1171,24 @@ package
          {
             return;
          }
-         var _loc7_:String = _loc4_.state;
-         var _loc8_:int = _loc4_.level;
-         var _loc9_:Object = _loc4_.imageDataA;
-         var _loc10_:Object = _loc4_.imageDataB;
+         var _loc8_:String = _loc4_.state;
+         var _loc9_:int = _loc4_.level;
+         var _loc10_:Object = _loc4_.imageDataA;
+         var _loc11_:Object = _loc4_.imageDataB;
          _loc4_.clear();
          if(param2 == this._renderState)
          {
             this.RenderClear(false);
             if(this._lastLoadedState != null)
             {
-               if(_loc7_ === k_STATE_DESTROYED && this._lastLoadedState === k_STATE_DAMAGED)
+               if(_loc8_ === k_STATE_DESTROYED && this._lastLoadedState === k_STATE_DAMAGED)
                {
                   if(this._type == 14)
                   {
                      SOUNDS.Play("destroytownhall");
                      if(this._type != 17 && this._type != 18)
                      {
-                        Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,1);
+                        Smoke.CreatePoof(new Point(x,y + _middle),_middle,1);
                      }
                   }
                   else
@@ -996,62 +1196,74 @@ package
                      SOUNDS.Play(SOUNDS.DestroySoundIDForLevel(this._lvl.Get()));
                      if(this._type != 17 && this._type != 18)
                      {
-                        Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,1);
+                        Smoke.CreatePoof(new Point(x,y + _middle),_middle,1);
                      }
                   }
                   if(this._class != "wall" && this._class != "trap" && this._type != 15)
                   {
-                     Smoke.CreateStream(new Point(this.x,this.y + this._middle));
+                     Smoke.CreateStream(new Point(x,y + _middle));
                   }
                }
-               if(_loc7_ == "damaged" && this._lastLoadedState == "")
+               if(_loc8_ == "damaged" && this._lastLoadedState == "")
                {
                   SOUNDS.Play(SOUNDS.DamageSoundIDForLevel(this._lvl.Get()));
                   if(this._type != 17 && this._type != 18)
                   {
-                     Smoke.CreatePoof(new Point(this.x,this.y + this._middle),this._middle,0.5);
+                     Smoke.CreatePoof(new Point(x,y + _middle),_middle,0.5);
                   }
                }
             }
-            this._lastLoadedState = _loc7_;
-            this._mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
-            for each(_loc11_ in param1)
+            this._lastLoadedState = _loc8_;
+            if(Boolean(_mc) && _mc.hasEventListener(Event.ENTER_FRAME))
             {
-               _loc12_ = _loc11_[0];
-               _loc13_ = _loc11_[1];
-               if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][0] == _loc12_)
+               _mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
+            }
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               _loc7_ = this._rasterData[_RASTERDATA_TOP] === null;
+            }
+            for each(_loc12_ in param1)
+            {
+               _loc13_ = _loc12_[0];
+               _loc14_ = _loc12_[1];
+               if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_][0] == _loc13_)
                {
-                  this.m_shadowBMD = _loc13_;
+                  this.m_shadowBMD = _loc14_;
                   if(!BYMConfig.instance.RENDERER_ON)
                   {
-                     _loc14_ = BuildingAssetContainer(this._mcBase);
-                     _loc14_.Clear();
-                     _loc16_ = _loc14_.addChild(new Bitmap(_loc13_));
-                     _loc16_.blendMode = BlendMode.MULTIPLY;
-                     _loc16_.x = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].x;
-                     _loc16_.y = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].y;
+                     _loc15_ = BuildingAssetContainer(this._mcBase);
+                     _loc15_.Clear();
+                     _loc17_ = _loc15_.addChild(new Bitmap(_loc14_));
+                     _loc17_.blendMode = BlendMode.MULTIPLY;
+                     _loc17_.x = _loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_][1].x;
+                     _loc17_.y = _loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_][1].y;
                   }
                   else
                   {
-                     this._offsets[_RASTERDATA_SHADOW].x = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].x;
-                     this._offsets[_RASTERDATA_SHADOW].y = _loc10_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc7_][1].y;
-                     this._rasterPt[_RASTERDATA_SHADOW].x = this._mc.x + this._offsets[_RASTERDATA_SHADOW].x - MAP.instance.offset.x;
-                     this._rasterPt[_RASTERDATA_SHADOW].y = this._mc.y + this._offsets[_RASTERDATA_SHADOW].y - MAP.instance.offset.y;
-                     this._rasterData[_RASTERDATA_SHADOW] = this._rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc13_,this._rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,BlendMode.MULTIPLY,true);
+                     this._offsets[_RASTERDATA_SHADOW].x = _loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_][1].x;
+                     this._offsets[_RASTERDATA_SHADOW].y = _loc11_[_IMAGE_NAMES[_RASTERDATA_SHADOW] + _loc8_][1].y;
+                     this._rasterPt[_RASTERDATA_SHADOW].x = _mc.x + this._offsets[_RASTERDATA_SHADOW].x - MAP.instance.offset.x;
+                     this._rasterPt[_RASTERDATA_SHADOW].y = _mc.y + this._offsets[_RASTERDATA_SHADOW].y - MAP.instance.offset.y;
+                     this.redrawShadowData();
+                     this._rasterData[_RASTERDATA_SHADOW] = this._rasterData[_RASTERDATA_SHADOW] || new RasterData(_loc14_,this._rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,BlendMode.MULTIPLY,true);
                   }
                }
-               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_][0] == _loc12_)
+               else if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_][0] == _loc13_)
                {
-                  this.setupImage(_RASTERDATA_TOP,_loc7_,this.topContainer,_loc10_,_loc13_,int.MAX_VALUE);
-                  this.setupHit(_RASTERDATA_TOP,_loc8_,_loc7_);
+                  this.setupImage(_RASTERDATA_TOP,_loc8_,this.topContainer,_loc11_,_loc14_,int.MAX_VALUE);
+                  this.setupHit(_RASTERDATA_TOP,_loc9_,_loc8_);
+                  if(_loc7_)
+                  {
+                     this.updateRasterData();
+                  }
                }
-               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][0] == _loc12_)
+               else if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][0] == _loc13_)
                {
-                  this._animBMD = _loc13_;
+                  this._animBMD = _loc14_;
                   this._animLoaded = true;
-                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][1];
-                  this._animRect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
-                  this._animFrames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][2];
+                  _loc16_ = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][1];
+                  this._animRect = new Rectangle(0,0,_loc16_.width,_loc16_.height);
+                  this._animFrames = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][2];
                   if(this._animRandomStart)
                   {
                      this._animTick = int(Math.random() * (this._animFrames - 2));
@@ -1064,25 +1276,25 @@ package
                   {
                      this._animTick = 0;
                   }
-                  this._animContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
-                  this.setupImage(_RASTERDATA_ANIM,_loc7_,this.animContainer,_loc10_,this._animContainerBMD,int.MAX_VALUE);
+                  this._animContainerBMD = new BitmapData(_loc16_.width,_loc16_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM,_loc8_,this.animContainer,_loc11_,this._animContainerBMD,int.MAX_VALUE);
                   this.AnimFrame(false);
-                  if(!this._mc.hasEventListener(Event.ENTER_FRAME))
+                  if(!_mc.hasEventListener(Event.ENTER_FRAME))
                   {
-                     this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                     _mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
                   }
-                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  if(!_loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_])
                   {
-                     this.setupHit(_RASTERDATA_ANIM,_loc8_,_loc7_);
+                     this.setupHit(_RASTERDATA_ANIM,_loc9_,_loc8_);
                   }
                }
-               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][0] == _loc12_)
+               else if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc8_][0] == _loc13_)
                {
-                  this._anim2BMD = _loc13_;
+                  this._anim2BMD = _loc14_;
                   this._anim2Loaded = true;
-                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][1];
-                  this._anim2Rect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
-                  this._anim2Frames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc7_][2];
+                  _loc16_ = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc8_][1];
+                  this._anim2Rect = new Rectangle(0,0,_loc16_.width,_loc16_.height);
+                  this._anim2Frames = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM2] + _loc8_][2];
                   if(this._animRandomStart)
                   {
                      this._anim2Tick = int(Math.random() * (this._anim2Frames - 2));
@@ -1091,28 +1303,28 @@ package
                   {
                      this._anim2Tick = 0;
                   }
-                  this._anim2ContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
-                  this.setupImage(_RASTERDATA_ANIM2,_loc7_,this.anim2Container,_loc10_,this._anim2ContainerBMD,int.MAX_VALUE);
+                  this._anim2ContainerBMD = new BitmapData(_loc16_.width,_loc16_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM2,_loc8_,this.anim2Container,_loc11_,this._anim2ContainerBMD,int.MAX_VALUE);
                   if(this._animLoaded && this._anim2Loaded && this._anim3Loaded)
                   {
                      this.AnimFrame(false);
-                     if(!this._mc.hasEventListener(Event.ENTER_FRAME))
+                     if(!_mc.hasEventListener(Event.ENTER_FRAME))
                      {
-                        this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                        _mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
                      }
                   }
-                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  if(!_loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_])
                   {
-                     this.setupHit(_RASTERDATA_ANIM2,_loc8_,_loc7_);
+                     this.setupHit(_RASTERDATA_ANIM2,_loc9_,_loc8_);
                   }
                }
-               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][0] == _loc12_)
+               else if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc8_][0] == _loc13_)
                {
-                  this._anim3BMD = _loc13_;
+                  this._anim3BMD = _loc14_;
                   this._anim3Loaded = true;
-                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][1];
-                  this._anim3Rect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
-                  this._anim3Frames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc7_][2];
+                  _loc16_ = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc8_][1];
+                  this._anim3Rect = new Rectangle(0,0,_loc16_.width,_loc16_.height);
+                  this._anim3Frames = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM3] + _loc8_][2];
                   if(this._animRandomStart)
                   {
                      this._anim3Tick = int(Math.random() * (this._anim3Frames - 2));
@@ -1121,28 +1333,28 @@ package
                   {
                      this._anim3Tick = 0;
                   }
-                  this._anim3ContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
-                  this.setupImage(_RASTERDATA_ANIM3,_loc7_,this.anim3Container,_loc10_,this._anim3ContainerBMD,int.MAX_VALUE);
+                  this._anim3ContainerBMD = new BitmapData(_loc16_.width,_loc16_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM3,_loc8_,this.anim3Container,_loc11_,this._anim3ContainerBMD,int.MAX_VALUE);
                   if(this._animLoaded && this._anim2Loaded && this._anim3Loaded)
                   {
                      this.AnimFrame(false);
-                     if(!this._mc.hasEventListener(Event.ENTER_FRAME))
+                     if(!_mc.hasEventListener(Event.ENTER_FRAME))
                      {
-                        this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                        _mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
                      }
                   }
-                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  if(!_loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_])
                   {
-                     this.setupHit(_RASTERDATA_ANIM3,_loc8_,_loc7_);
+                     this.setupHit(_RASTERDATA_ANIM3,_loc9_,_loc8_);
                   }
                }
-               else if(Boolean(_loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_]) && _loc9_.baseurl + _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][0] == _loc12_)
+               else if(Boolean(_loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_]) && _loc10_.baseurl + _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][0] == _loc13_)
                {
-                  this._animBMD = _loc13_;
+                  this._animBMD = _loc14_;
                   this._animLoaded = true;
-                  _loc15_ = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][1];
-                  this._animRect = new Rectangle(0,0,_loc15_.width,_loc15_.height);
-                  this._animFrames = _loc10_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc7_][2];
+                  _loc16_ = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][1];
+                  this._animRect = new Rectangle(0,0,_loc16_.width,_loc16_.height);
+                  this._animFrames = _loc11_[_IMAGE_NAMES[_RASTERDATA_ANIM] + _loc8_][2];
                   if(this._animRandomStart)
                   {
                      this._animTick = int(Math.random() * (this._animFrames - 2));
@@ -1155,21 +1367,21 @@ package
                   {
                      this._animTick = 0;
                   }
-                  this._animContainerBMD = new BitmapData(_loc15_.width,_loc15_.height,true,0xffffff);
-                  this.setupImage(_RASTERDATA_ANIM,_loc7_,this.animContainer,_loc10_,this._animContainerBMD,int.MAX_VALUE);
+                  this._animContainerBMD = new BitmapData(_loc16_.width,_loc16_.height,true,0xffffff);
+                  this.setupImage(_RASTERDATA_ANIM,_loc8_,this.animContainer,_loc11_,this._animContainerBMD,int.MAX_VALUE);
                   this.AnimFrame(false);
-                  if(!this._mc.hasEventListener(Event.ENTER_FRAME))
+                  if(!_mc.hasEventListener(Event.ENTER_FRAME))
                   {
-                     this._mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
+                     _mc.addEventListener(Event.ENTER_FRAME,this.TickFast);
                   }
-                  if(!_loc10_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc7_])
+                  if(!_loc11_[_IMAGE_NAMES[_RASTERDATA_TOP] + _loc8_])
                   {
-                     this.setupHit(_RASTERDATA_ANIM,_loc8_,_loc7_);
+                     this.setupHit(_RASTERDATA_ANIM,_loc9_,_loc8_);
                   }
                }
-               else if(_loc10_.topdestroyedfire && this._oldRenderState == k_STATE_DAMAGED && !GLOBAL._catchup && _loc9_.baseurl + _loc10_.topdestroyedfire[0] == _loc12_)
+               else if(_loc11_.topdestroyedfire && this._oldRenderState == k_STATE_DAMAGED && !GLOBAL._catchup && _loc10_.baseurl + _loc11_.topdestroyedfire[0] == _loc13_)
                {
-                  Fire.Add(this._mc,new Bitmap(_loc13_),new Point(_loc10_.topdestroyedfire[1].x,_loc10_.topdestroyedfire[1].y));
+                  Fire.Add(_mc,new Bitmap(_loc14_),new Point(_loc11_.topdestroyedfire[1].x,_loc11_.topdestroyedfire[1].y));
                }
             }
          }
@@ -1207,11 +1419,12 @@ package
          }
          else
          {
-            this._rasterPt[param1].x = this._mc.x + this._offsets[param1].x - MAP.instance.offset.x;
-            this._rasterPt[param1].y = this._mc.y + this._offsets[param1].y - MAP.instance.offset.y;
+            this._rasterPt[param1].x = _mc.x + this._offsets[param1].x - MAP.instance.offset.x;
+            this._rasterPt[param1].y = _mc.y + this._offsets[param1].y - MAP.instance.offset.y;
             this._rasterData[param1] = this._rasterData[param1] || new RasterData(param5,this._rasterPt[param1],int.MAX_VALUE);
             this._rasterData[param1].data = param5;
-            this._rasterData[param1].visible = this._mc.visible;
+            this._rasterData[param1].visible = _mc.visible;
+            this._sources[param1] = param3;
          }
       }
       
@@ -1235,8 +1448,8 @@ package
          this.m_hitOffsetIndex = param1;
          if(BYMConfig.instance.RENDERER_ON)
          {
-            this._mcHit.x = this._mc.x + this._offsets[param1].x;
-            this._mcHit.y = this._mc.y + this._offsets[param1].y;
+            this._mcHit.x = _mc.x + this._offsets[param1].x;
+            this._mcHit.y = _mc.y + this._offsets[param1].y;
          }
          else
          {
@@ -1270,7 +1483,7 @@ package
                {
                   this._rasterData[_RASTERDATA_FOOTPRINT].data = this.m_footprintBMD;
                }
-               if(GLOBAL._selectedBuilding == this && this._rasterData[_RASTERDATA_SHADOW] is RasterData)
+               if((GLOBAL._selectedBuilding === this || GLOBAL._newBuilding === this) && this._rasterData[_RASTERDATA_SHADOW] is RasterData)
                {
                   this._rasterData[_RASTERDATA_SHADOW].visible = false;
                }
@@ -1295,19 +1508,25 @@ package
                this._rasterData[_RASTERDATA_FOOTPRINT].clear();
                this._rasterData[_RASTERDATA_FOOTPRINT] = null;
             }
-            this._mcFootprint.visible = false;
+            if(this._mcFootprint)
+            {
+               this._mcFootprint.visible = false;
+            }
+         }
+         if(this._mcFootprint)
+         {
+            this._mcFootprint.gotoAndStop(1);
          }
          if(param1)
          {
             this.UnblockClicks();
          }
-         this.updateShadowData();
          this.updateRasterData();
       }
       
       public function get tickLimit() : int
       {
-         if(this._hp.Get() == 0 && !this._repairing)
+         if(health == 0 && !this._repairing)
          {
             return TICK_LIMIT;
          }
@@ -1340,14 +1559,14 @@ package
             if(this._repairing == 1)
             {
                _loc5_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
-               _loc4_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
-               this._hp.Add(_loc4_ * param1);
-               if(this._hp.Get() >= this._hpMax.Get())
+               _loc4_ = Math.ceil(maxHealth / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
+               setHealth(health + _loc4_ * param1);
+               if(health >= maxHealth)
                {
                   this.Repaired();
                }
             }
-            else if(this._hp.Get() == this._hpMax.Get())
+            else if(health == maxHealth)
             {
                if(this._countdownUpgrade.Get() > 0 && this._hasWorker && this._hasResources)
                {
@@ -1378,48 +1597,55 @@ package
          this.Update();
       }
       
-      public function updateRasterData() : void
+      override protected function updateRasterData() : void
       {
          var _loc4_:RasterData = null;
          var _loc5_:Point = null;
          var _loc6_:Number = NaN;
          var _loc7_:Number = NaN;
-         var _loc9_:int = 0;
-         if(!BYMConfig.instance.RENDERER_ON || this.m_isCleared)
+         var _loc9_:DisplayObject = null;
+         var _loc10_:int = 0;
+         if(!BYMConfig.instance.RENDERER_ON || m_isCleared)
          {
             return;
          }
          var _loc1_:Point = MAP.instance.offset;
          var _loc2_:Function = MAP.instance.viewRect.intersects;
          var _loc3_:Rectangle = new Rectangle();
-         this._mcHit.x = this._mc.x + this._offsets[this.m_hitOffsetIndex].x;
-         this._mcHit.y = this._mc.y + this._offsets[this.m_hitOffsetIndex].y;
-         if(this._mc)
+         if(this._mcHit)
          {
-            _loc6_ = this._mc.height * 0.5;
-            if(this._mc.middle)
+            this._mcHit.x = _mc.x + this._offsets[this.m_hitOffsetIndex].x;
+            this._mcHit.y = _mc.y + this._offsets[this.m_hitOffsetIndex].y;
+         }
+         if(_mc)
+         {
+            _loc6_ = _mc.height * 0.5;
+            if(_middle)
             {
-               _loc6_ = Number(this._mc._middle);
+               _loc6_ = _middle;
             }
-            _loc7_ = Math.max(MAP.DEPTH_SHADOW + 1,(this._mc.y - _loc1_.y + _loc6_) * 1000 + (this._mc.x - _loc1_.x));
-            _loc9_ = _RASTERDATA_SHADOW + 1;
-            while(_loc9_ < _RASTERDATA_AMOUNT)
+            m_baseDepth = 0;
+            _loc7_ = Math.max(MAP.DEPTH_SHADOW + 1,(_mc.y - _loc1_.y + _loc6_) * 1000 + (_mc.x - _loc1_.x));
+            _loc10_ = _RASTERDATA_SHADOW + 1;
+            while(_loc10_ < _RASTERDATA_AMOUNT)
             {
-               _loc4_ = this._rasterData[_loc9_];
-               _loc5_ = this._rasterPt[_loc9_];
+               _loc4_ = this._rasterData[_loc10_];
+               _loc5_ = this._rasterPt[_loc10_];
                if(Boolean(_loc4_) && Boolean(_loc5_))
                {
-                  _loc4_.depth = _loc9_ === _RASTERDATA_FORTBACK ? _loc7_ - 1 : _loc7_ + _loc9_ - 1;
-                  _loc5_.x = this._mc.x + this._offsets[_loc9_].x - _loc1_.x;
-                  _loc5_.y = this._mc.y + this._offsets[_loc9_].y - _loc1_.y;
+                  m_baseDepth = _loc10_ - 1;
+                  _loc4_.depth = _loc10_ === _RASTERDATA_FORTBACK ? _loc7_ - 1 : _loc7_ + _loc10_ - 1;
+                  _loc5_.x = _mc.x + this._offsets[_loc10_].x - _loc1_.x;
+                  _loc5_.y = _mc.y + this._offsets[_loc10_].y - _loc1_.y;
+                  _loc9_ = this._sources[_loc10_];
                   _loc3_.x = _loc5_.x;
                   _loc3_.y = _loc5_.y;
                   _loc3_.width = _loc4_.rect.width;
                   _loc3_.height = _loc4_.rect.height;
-                  _loc4_.visible = _loc2_(_loc3_) && this._mc.visible;
-                  _loc4_.alpha = this._mc.alpha;
+                  _loc4_.visible = _loc2_(_loc3_) && (Boolean(_loc9_) && !_loc9_.visible ? false : _mc.visible);
+                  _loc4_.alpha = _mc.alpha;
                }
-               _loc9_++;
+               _loc10_++;
             }
             _loc4_ = this._rasterData[_RASTERDATA_SHADOW];
             _loc5_ = this._rasterPt[_RASTERDATA_SHADOW];
@@ -1427,7 +1653,7 @@ package
             {
                _loc5_.x = this._mcBase.x + this._offsets[_RASTERDATA_SHADOW].x - _loc1_.x;
                _loc5_.y = this._mcBase.y + this._offsets[_RASTERDATA_SHADOW].y - _loc1_.y;
-               if(!this._moving)
+               if(!this._moving && GLOBAL._newBuilding !== this)
                {
                   _loc3_.x = _loc5_.x;
                   _loc3_.y = _loc5_.y;
@@ -1437,10 +1663,39 @@ package
                }
             }
          }
+         super.updateRasterData();
       }
       
-      protected function updateShadowData() : void
+      protected function redrawShadowData() : void
       {
+         var _loc3_:BitmapData = null;
+         if(!BYMConfig.instance.RENDERER_ON || !BYMConfig.instance.OPTIMIZED_SHADOWS || !this.m_shadowBMD)
+         {
+            return;
+         }
+         var _loc1_:Point = MAP.instance.offset;
+         var _loc2_:Point = this._rasterPt[_RASTERDATA_SHADOW];
+         if(Boolean(this._mcBase) && Boolean(_loc2_))
+         {
+            _loc2_.x = this._mcBase.x + this._offsets[_RASTERDATA_SHADOW].x - _loc1_.x;
+            _loc2_.y = this._mcBase.y + this._offsets[_RASTERDATA_SHADOW].y - _loc1_.y;
+         }
+         _loc3_ = new BitmapData(this.m_shadowBMD.width,this.m_shadowBMD.height,true);
+         var _loc4_:Rectangle = new Rectangle(this._rasterPt[_RASTERDATA_SHADOW].x,this._rasterPt[_RASTERDATA_SHADOW].y,_loc3_.width,_loc3_.height);
+         _loc3_.copyPixels(MAP.effectsBMD,_loc4_,new Point());
+         _loc3_.draw(this.m_shadowBMD,null,null,BlendMode.MULTIPLY);
+         if(this._rasterData[_RASTERDATA_SHADOW] is RasterData === false)
+         {
+            this._rasterData[_RASTERDATA_SHADOW] = new RasterData(_loc3_,this._rasterPt[_RASTERDATA_SHADOW],MAP.DEPTH_SHADOW,null,true);
+         }
+         else
+         {
+            this._rasterData[_RASTERDATA_SHADOW].data = _loc3_;
+         }
+         if(!this._moving)
+         {
+            this._rasterData[_RASTERDATA_SHADOW].visible = this._mcBase.visible;
+         }
       }
       
       public function TickFast(param1:Event = null) : void
@@ -1454,7 +1709,7 @@ package
       public function AnimFrame(param1:Boolean = true) : void
       {
          var _loc2_:Boolean = false;
-         if(!GLOBAL._catchup && Boolean(this._animBMD))
+         if(!GLOBAL._catchup && this._animBMD && Boolean(this._animContainerBMD))
          {
             this._animRect.x = this._animRect.width * this._animTick;
             this._animContainerBMD.copyPixels(this._animBMD,this._animRect,this._nullPoint);
@@ -1528,9 +1783,9 @@ package
             this.showFootprint(true);
          }
          this.updateRasterData();
-         this._mc.addEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+         _mc.addEventListener(Event.ENTER_FRAME,this.FollowMouseB);
          MAP._GROUND.addEventListener(MouseEvent.MOUSE_UP,this.Place);
-         this._mc.addEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+         _mc.addEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
          this.Render(k_STATE_DEFAULT);
       }
       
@@ -1538,15 +1793,15 @@ package
       {
          var _loc2_:String = BASE.BuildBlockers(this,this._class == "decoration");
          var _loc3_:int = this._mcFootprint.currentFrame;
-         this._mc.x = int((MAP._GROUND.mouseX - this._mouseOffset.x) / 10) * 10;
-         this._mc.y = int((MAP._GROUND.mouseY - this._mouseOffset.y) / 5) * 5;
-         this._mcBase.x = this._mc.x;
-         this._mcBase.y = this._mc.y;
+         _mc.x = int((MAP._GROUND.mouseX - this._mouseOffset.x) / 10) * 10;
+         _mc.y = int((MAP._GROUND.mouseY - this._mouseOffset.y) / 5) * 5;
+         this._mcBase.x = _mc.x;
+         this._mcBase.y = _mc.y;
          this.updateRasterData();
          if(this._mcFootprint)
          {
-            this._mcFootprint.x = this._mc.x;
-            this._mcFootprint.y = this._mc.y;
+            this._mcFootprint.x = _mc.x;
+            this._mcFootprint.y = _mc.y;
             if(_loc2_ != "")
             {
                this._mcFootprint.gotoAndStop(2);
@@ -1565,21 +1820,32 @@ package
       
       public function Cancel() : void
       {
+         if(GLOBAL._newBuilding === this)
+         {
+            this.clear();
+         }
          GLOBAL._newBuilding = null;
-         this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+         if(_mc)
+         {
+            _mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+            _mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+         }
          MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
-         this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
          if(this._mcBase.parent)
          {
-            MAP._BUILDINGBASES.removeChild(this._mcBase);
+            this._mcBase.parent.removeChild(this._mcBase);
          }
-         if(this._mc.parent)
+         if(_mc.parent)
          {
-            MAP._BUILDINGTOPS.removeChild(this._mc);
+            _mc.parent.removeChild(_mc);
+         }
+         if(this._mcHit.parent)
+         {
+            this._mcHit.parent.removeChild(this._mcHit);
          }
          if(this._mcFootprint.parent)
          {
-            MAP._BUILDINGFOOTPRINTS.removeChild(this._mcFootprint);
+            this._mcFootprint.parent.removeChild(this._mcFootprint);
          }
          BASE.BuildingDeselect();
          this.clearRasterData();
@@ -1616,263 +1882,258 @@ package
          var mc:MovieClip = null;
          var totemImgUrl:String = null;
          var e:MouseEvent = param1;
-         try
+         this.Description();
+         if(!MAP._dragged)
          {
-            this.Description();
-            if(!MAP._dragged)
+            if(BASE.BuildBlockers(this,this._class == "decoration") != "")
             {
-               if(BASE.BuildBlockers(this,this._class == "decoration") != "")
-               {
-                  this.Cancel();
-                  return;
-               }
-               if(BASE.isInferno())
-               {
-                  SOUNDS.Play("inf_buildingplace");
-               }
-               else
-               {
-                  SOUNDS.Play("buildingplace");
-               }
+               this.Cancel();
+               return;
+            }
+            if(BASE.isInfernoMainYardOrOutpost)
+            {
+               SOUNDS.Play("inf_buildingplace");
+            }
+            else
+            {
+               SOUNDS.Play("buildingplace");
+            }
+            _mc.alpha = 1;
+            _mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+            MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
+            _mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+            if(BASE.CanBuild(this._type,this._buildInstant).error)
+            {
+               this.Cancel();
                GLOBAL._newBuilding = null;
-               this._mc.alpha = 1;
-               this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
-               MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
-               this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
-               if(BASE.CanBuild(this._type,this._buildInstant).error)
+               return;
+            }
+            GLOBAL._newBuilding = null;
+            if(this._buildInstant)
+            {
+               if(!this._buildInstantCost)
                {
                   this.Cancel();
                   return;
                }
-               if(this._buildInstant)
+               if(BASE._credits.Get() < this._buildInstantCost.Get())
                {
-                  if(!this._buildInstantCost)
+                  this.Cancel();
+                  POPUPS.DisplayGetShiny();
+                  return;
+               }
+            }
+            this._hasResources = false;
+            this._hasWorker = false;
+            ++BASE._buildingCount;
+            this._id = BASE._buildingCount;
+            tmpBuildTime = int(this._buildingProps.costs[0].time);
+            if(STORE._storeData.BST)
+            {
+               tmpBuildTime -= tmpBuildTime * 0.2;
+            }
+            this._countdownBuild.Set(tmpBuildTime);
+            setHealth(this._buildingProps.hp[0]);
+            maxHealthProperty.value = health;
+            this.PlaceB();
+            if(_mc.contains(this._mcHit))
+            {
+               _mc.removeChild(this._mcHit);
+            }
+            if(BYMConfig.instance.RENDERER_ON)
+            {
+               MAP._BUILDINGTOPS.addChild(this._mcHit);
+            }
+            else
+            {
+               _mc.addChild(this._mcHit);
+            }
+            this.Tick(1);
+            this.Update();
+            this.Description();
+            fromStorage = InventoryManager.buildingStorageRemove(this._type);
+            if(!fromStorage)
+            {
+               if(!this._buildInstant)
+               {
+                  isInfernoBuilding = BASE.isInfernoBuilding(this._type);
+                  BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
+                  BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
+                  BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
+                  BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
+                  if(STORE._storeItems["BUILDING" + this._type])
                   {
-                     this.Cancel();
-                     return;
+                     BASE.Purchase("BUILDING" + this._type,1,"building");
                   }
-                  if(BASE._credits.Get() < this._buildInstantCost.Get())
+                  if(this._buildingProps.costs[0].time != 0 && InventoryManager.buildingStorageCount(this._type) == 0)
                   {
-                     this.Cancel();
-                     POPUPS.DisplayGetShiny();
-                     return;
-                  }
-               }
-               this._hasResources = false;
-               this._hasWorker = false;
-               ++BASE._buildingCount;
-               this._id = BASE._buildingCount;
-               tmpBuildTime = int(this._buildingProps.costs[0].time);
-               if(STORE._storeData.BST)
-               {
-                  tmpBuildTime -= tmpBuildTime * 0.2;
-               }
-               this._countdownBuild.Set(tmpBuildTime);
-               this._hp.Set(this._buildingProps.hp[0]);
-               this._hpMax.Set(this._hp.Get());
-               this.PlaceB();
-               if(this._mc.contains(this._mcHit))
-               {
-                  this._mc.removeChild(this._mcHit);
-               }
-               if(BYMConfig.instance.RENDERER_ON)
-               {
-                  MAP._BUILDINGTOPS.addChild(this._mcHit);
-               }
-               else
-               {
-                  this._mc.addChild(this._mcHit);
-               }
-               this.Tick(1);
-               this.Update();
-               this.Description();
-               fromStorage = InventoryManager.buildingStorageRemove(this._type);
-               if(!fromStorage)
-               {
-                  if(!this._buildInstant)
-                  {
-                     isInfernoBuilding = BASE.isInfernoBuilding(this._type);
-                     BASE.Charge(1,this._buildingProps.costs[0].r1,false,isInfernoBuilding);
-                     BASE.Charge(2,this._buildingProps.costs[0].r2,false,isInfernoBuilding);
-                     BASE.Charge(3,this._buildingProps.costs[0].r3,false,isInfernoBuilding);
-                     BASE.Charge(4,this._buildingProps.costs[0].r4,false,isInfernoBuilding);
-                     if(STORE._storeItems["BUILDING" + this._type])
-                     {
-                        BASE.Purchase("BUILDING" + this._type,1,"building");
-                     }
-                     if(this._buildingProps.costs[0].time != 0 && InventoryManager.buildingStorageCount(this._type) == 0)
-                     {
-                        QUEUE.Add("building" + this._id,this);
-                     }
-                  }
-                  else
-                  {
-                     if(this._buildInstantCost.Get() > 0)
-                     {
-                        BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
-                     }
-                     LOGGER.Stat([71,this._buildInstantCost.Get(),this._type]);
-                     this.Constructed();
+                     QUEUE.Add("building" + this._id,this);
                   }
                }
                else
                {
+                  if(this._buildInstantCost.Get() > 0)
+                  {
+                     BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
+                  }
+                  LOGGER.Stat([71,this._buildInstantCost.Get(),this._type]);
                   this.Constructed();
-                  if(this._type == 2 * 60)
+               }
+            }
+            else
+            {
+               this.Constructed();
+               if(this._type == 2 * 60)
+               {
+                  LOGGER.Stat([75,"placedgoldenbiggulp"]);
+               }
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && BASE.isMainYard)
+               {
+                  BragBiggulp = function():void
                   {
-                     LOGGER.Stat([75,"placedgoldenbiggulp"]);
-                  }
-                  if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
+                     GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
+                     POPUPS.Next();
+                  };
+                  BragTotem = function(param1:int):Function
                   {
-                     BragBiggulp = function():void
+                     var totemType:int = param1;
+                     return function(param1:MouseEvent = null):void
                      {
-                        GLOBAL.CallJS("sendFeed",["biggulp-construct",KEYS.Get("pop_biggulpbuilt_streamtitle"),KEYS.Get("pop_biggulpbuilt_streambody"),"dave_711promo.png"]);
-                        POPUPS.Next();
-                     };
-                     BragTotem = function(param1:int):Function
-                     {
-                        var totemType:int = param1;
-                        return function(param1:MouseEvent = null):void
-                        {
-                           loop0:
-                           switch(totemType)
-                           {
-                              case 121:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.1.png"]);
-                                 break;
-                              case 122:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
-                                 break;
-                              case 123:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
-                                 break;
-                              case 124:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
-                                 break;
-                              case 125:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
-                                 break;
-                              case 126:
-                                 GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
-                                 break;
-                              case 131:
-                                 switch(_lvl.Get())
-                                 {
-                                    case 1:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
-                                       break loop0;
-                                    case 2:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
-                                       break loop0;
-                                    case 3:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
-                                       break loop0;
-                                    case 4:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
-                                       break loop0;
-                                    case 5:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
-                                       break loop0;
-                                    case 6:
-                                       GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
-                                 }
-                           }
-                           POPUPS.Next();
-                        };
-                     };
-                     mc = new popup_biggulp();
-                     if(BASE.is711Valid())
-                     {
-                        if(this._type == 2 * 60)
-                        {
-                           mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
-                           mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
-                           mc.bPost.SetupKey("btn_brag");
-                           mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
-                           mc.bPost.Highlight = true;
-                           POPUPS.Push(mc,null,null,null,"building-biggulp.png");
-                        }
-                     }
-                     totemImgUrl = "";
-                     if(BTOTEM.IsTotem(this._type))
-                     {
-                        mc.tA.htmlText = "<b>" + KEYS.Get("wmi_totemwon") + "</b>";
-                        mc.tB.htmlText = "";
-                        mc.bPost.SetupKey("btn_brag");
-                        mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
-                        mc.bPost.Highlight = true;
-                        switch(this._type)
+                        loop0:
+                        switch(totemType)
                         {
                            case 121:
-                              totemImgUrl = "building-wmitotem1.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave1streamtitle"),KEYS.Get("wmi_wave1streamdesc"),"wmitotemfeed1.1.png"]);
                               break;
                            case 122:
-                              totemImgUrl = "building-wmitotem2.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave10streamtitle"),KEYS.Get("wmi_wave10streamdesc"),"wmitotemfeed2.png"]);
                               break;
                            case 123:
-                              totemImgUrl = "building-wmitotem3.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave20streamtitle"),KEYS.Get("wmi_wave20streamdesc"),"wmitotemfeed3.png"]);
                               break;
                            case 124:
-                              totemImgUrl = "building-wmitotem4.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave30streamtitle"),KEYS.Get("wmi_wave30streamdesc"),"wmitotemfeed4.png"]);
                               break;
                            case 125:
-                              totemImgUrl = "building-wmitotem5.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave31streamtitle"),KEYS.Get("wmi_wave31streamdesc"),"wmitotemfeed5.png"]);
                               break;
                            case 126:
-                              totemImgUrl = "building-wmitotem6.png";
+                              GLOBAL.CallJS("sendFeed",["wmitotem-construct",KEYS.Get("wmi_wave32streamtitle"),KEYS.Get("wmi_wave32streamdesc"),"wmitotemfeed6.png"]);
                               break;
-                           default:
-                              totemImgUrl = "building-wmitotem6.png";
+                           case 131:
+                              switch(_lvl.Get())
+                              {
+                                 case 1:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave1streamtitle"),KEYS.Get("wmi2_wave1streamdesc"),"wmitotemfeed2_1.png"]);
+                                    break loop0;
+                                 case 2:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave10streamtitle"),KEYS.Get("wmi2_wave10streamdesc"),"wmitotemfeed2_2.png"]);
+                                    break loop0;
+                                 case 3:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave20streamtitle"),KEYS.Get("wmi2_wave20streamdesc"),"wmitotemfeed2_3.png"]);
+                                    break loop0;
+                                 case 4:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave30streamtitle"),KEYS.Get("wmi2_wave30streamdesc"),"wmitotemfeed2_4.png"]);
+                                    break loop0;
+                                 case 5:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave31streamtitle"),KEYS.Get("wmi2_wave31streamdesc"),"wmitotemfeed2_5.png"]);
+                                    break loop0;
+                                 case 6:
+                                    GLOBAL.CallJS("sendFeed",["wmi2totem-construct",KEYS.Get("wmi2_wave32streamtitle"),KEYS.Get("wmi2_wave32streamdesc"),"wmitotemfeed2_6.png"]);
+                              }
                         }
-                        POPUPS.Push(mc,null,null,null,totemImgUrl);
-                     }
-                     else if(BTOTEM.IsTotem2(this._type))
+                        POPUPS.Next();
+                     };
+                  };
+                  mc = new popup_biggulp();
+                  if(BASE.is711Valid())
+                  {
+                     if(this._type == 2 * 60)
                      {
-                        mc.tA.htmlText = "<b>" + KEYS.Get("wmi2_totemwon") + "</b>";
-                        mc.tB.htmlText = "";
+                        mc.tA.htmlText = "<b>" + KEYS.Get("pop_biggulpbuilt_title") + "</b>";
+                        mc.tB.htmlText = KEYS.Get("pop_biggulpbuilt_body");
                         mc.bPost.SetupKey("btn_brag");
-                        mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                        mc.bPost.addEventListener(MouseEvent.CLICK,BragBiggulp);
                         mc.bPost.Highlight = true;
-                        switch(this._lvl.Get())
-                        {
-                           case 1:
-                              totemImgUrl = "building-wmi2totem1.png";
-                              break;
-                           case 2:
-                              totemImgUrl = "building-wmi2totem2.png";
-                              break;
-                           case 3:
-                              totemImgUrl = "building-wmi2totem3.png";
-                              break;
-                           case 4:
-                              totemImgUrl = "building-wmi2totem4.png";
-                              break;
-                           case 5:
-                              totemImgUrl = "building-wmi2totem5.png";
-                              break;
-                           case 6:
-                              totemImgUrl = "building-wmi2totem6.png";
-                              break;
-                           default:
-                              totemImgUrl = "building-wmi2totem6.png";
-                        }
-                        POPUPS.Push(mc,null,null,null,totemImgUrl);
+                        POPUPS.Push(mc,null,null,null,"building-biggulp.png");
                      }
                   }
+                  totemImgUrl = "";
+                  if(BTOTEM.IsTotem(this._type))
+                  {
+                     mc.tA.htmlText = "<b>" + KEYS.Get("wmi_totemwon") + "</b>";
+                     mc.tB.htmlText = "";
+                     mc.bPost.SetupKey("btn_brag");
+                     mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                     mc.bPost.Highlight = true;
+                     switch(this._type)
+                     {
+                        case 121:
+                           totemImgUrl = "building-wmitotem1.png";
+                           break;
+                        case 122:
+                           totemImgUrl = "building-wmitotem2.png";
+                           break;
+                        case 123:
+                           totemImgUrl = "building-wmitotem3.png";
+                           break;
+                        case 124:
+                           totemImgUrl = "building-wmitotem4.png";
+                           break;
+                        case 125:
+                           totemImgUrl = "building-wmitotem5.png";
+                           break;
+                        case 126:
+                           totemImgUrl = "building-wmitotem6.png";
+                           break;
+                        default:
+                           totemImgUrl = "building-wmitotem6.png";
+                     }
+                     POPUPS.Push(mc,null,null,null,totemImgUrl);
+                  }
+                  else if(BTOTEM.IsTotem2(this._type))
+                  {
+                     mc.tA.htmlText = "<b>" + KEYS.Get("wmi2_totemwon") + "</b>";
+                     mc.tB.htmlText = "";
+                     mc.bPost.SetupKey("btn_brag");
+                     mc.bPost.addEventListener(MouseEvent.CLICK,BragTotem(this._type));
+                     mc.bPost.Highlight = true;
+                     switch(this._lvl.Get())
+                     {
+                        case 1:
+                           totemImgUrl = "building-wmi2totem1.png";
+                           break;
+                        case 2:
+                           totemImgUrl = "building-wmi2totem2.png";
+                           break;
+                        case 3:
+                           totemImgUrl = "building-wmi2totem3.png";
+                           break;
+                        case 4:
+                           totemImgUrl = "building-wmi2totem4.png";
+                           break;
+                        case 5:
+                           totemImgUrl = "building-wmi2totem5.png";
+                           break;
+                        case 6:
+                           totemImgUrl = "building-wmi2totem6.png";
+                           break;
+                        default:
+                           totemImgUrl = "building-wmi2totem6.png";
+                     }
+                     POPUPS.Push(mc,null,null,null,totemImgUrl);
+                  }
                }
-               if(BASE._pendingPurchase.length == 0)
-               {
-                  BASE.Save();
-               }
-               UPDATES.Create(["BP",this._type,this.Export()]);
-               LOGGER.Stat([5,this._type]);
             }
-         }
-         catch(e:Error)
-         {
-            LOGGER.Log("err","Foundation.Place: ");
+            if(BASE._pendingPurchase.length == 0)
+            {
+               BASE.Save();
+            }
+            UPDATES.Create(["BP",this._type,this.Export()]);
+            LOGGER.Stat([5,this._type]);
          }
          this.updateRasterData();
+         this.onMove();
       }
       
       public function SetGiftingProps(param1:int, param2:String, param3:int, param4:String, param5:String) : void
@@ -1935,15 +2196,15 @@ package
       
       public function PlaceB() : void
       {
-         this._position = new Point(this._mc.x,this._mc.y);
-         this._mc.mouseEnabled = false;
+         this._position = new Point(_mc.x,_mc.y);
+         _mc.mouseEnabled = false;
          this._mcBase.mouseEnabled = false;
-         this._mcBase.x = this._mc.x;
-         this._mcBase.y = this._mc.y;
-         this._mc.alpha = 1;
-         this._mcFootprint.x = this._mc.x;
-         this._mcFootprint.y = this._mc.y;
-         if(GLOBAL._mode != "attack" && GLOBAL._mode != "wmattack" || this._senderid == LOGIN._playerID)
+         this._mcBase.x = _mc.x;
+         this._mcBase.y = _mc.y;
+         _mc.alpha = 1;
+         this._mcFootprint.x = _mc.x;
+         this._mcFootprint.y = _mc.y;
+         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.ATTACK && GLOBAL.mode != GLOBAL.e_BASE_MODE.WMATTACK || this._senderid == LOGIN._playerID)
          {
             this._mcHit.mouseEnabled = true;
             this._mcHit.buttonMode = true;
@@ -1951,13 +2212,13 @@ package
          }
          else
          {
-            this._mc.mouseEnabled = false;
-            this._mc.mouseChildren = false;
+            _mc.mouseEnabled = false;
+            _mc.mouseChildren = false;
             this._mcHit.mouseEnabled = false;
             this._mcHit.mouseChildren = false;
             this._mcHit.buttonMode = false;
          }
-         if(!(this._destroyed && GLOBAL._mode != "build"))
+         if(!(this._destroyed && GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD))
          {
             this.GridCost(true);
          }
@@ -1967,6 +2228,7 @@ package
          }
          else
          {
+            BASE.buildings.push(this);
             BASE._buildingsAll["b" + this._id] = this;
             if(this._class == "wall")
             {
@@ -2021,7 +2283,7 @@ package
          if(!this._destroyed)
          {
             this._destroyed = true;
-            ATTACK.Damage(this._mc.x,this._mc.y,this._buildingProps.hp[this._lvl.Get() - 1]);
+            ATTACK.Damage(_mc.x,_mc.y,this._buildingProps.hp[this._lvl.Get() - 1]);
             if(this._repairing == 1)
             {
                this._repairing = 0;
@@ -2033,7 +2295,7 @@ package
             }
             else if(this._countdownBuild.Get() > 0)
             {
-               ATTACK.Damage(this._mc.x,this._mc.y,this._buildingProps.hp[this._lvl.Get()]);
+               ATTACK.Damage(_mc.x,_mc.y,this._buildingProps.hp[this._lvl.Get()]);
                ATTACK.Log("b" + this._id,"<font color=\"#FF0000\">" + KEYS.Get("attack_log_downed_buildcancel",{
                   "v1":this._lvl.Get(),
                   "v2":KEYS.Get(this._buildingProps.name)
@@ -2041,7 +2303,7 @@ package
             }
             else if(this._countdownUpgrade.Get())
             {
-               ATTACK.Damage(this._mc.x,this._mc.y,this._buildingProps.hp[this._lvl.Get()]);
+               ATTACK.Damage(_mc.x,_mc.y,this._buildingProps.hp[this._lvl.Get()]);
                _loc2_ = int(this._buildingProps.costs[this._lvl.Get()].time * GLOBAL._buildTime);
                _loc3_ = (_loc2_ - this._countdownUpgrade.Get()) * 0.5;
                if(_loc3_ > 28800)
@@ -2072,6 +2334,7 @@ package
             PATHING.ResetCosts();
             BASE.Save();
          }
+         this._repairing = 0;
       }
       
       public function Repair() : void
@@ -2084,20 +2347,10 @@ package
       
       public function Repaired() : void
       {
-         if(!GLOBAL._catchup && this._hp.Get() < this._hpMax.Get())
-         {
-            LOGGER.Log("log","Building repair hack");
-            GLOBAL.ErrorMessage("Building repair hack");
-            return;
-         }
          this._repairing = 0;
-         this._hp.Set(this._hpMax.Get());
+         setHealth(maxHealth);
          if(this._type == 15 || this._type == 128)
          {
-            if(BASE._buildingsHousing.indexOf(this) < 0)
-            {
-               HOUSING.AddHouse(this);
-            }
             HOUSING.HousingSpace();
          }
          this.Description();
@@ -2112,7 +2365,7 @@ package
          this._hasWorker = true;
          if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
-            _loc1_ = BASE.isInfernoBuilding(this._type) || BASE.isInferno() ? 5 : 1;
+            _loc1_ = BASE.isInfernoBuilding(this._type) || BASE.isInfernoMainYardOrOutpost ? 5 : 1;
             _loc2_ = 1;
             while(_loc2_ < 5)
             {
@@ -2129,6 +2382,7 @@ package
       
       public function Over(param1:MouseEvent) : void
       {
+         GLOBAL._buildingMousedOver = this;
       }
       
       public function Out(param1:MouseEvent) : void
@@ -2257,12 +2511,12 @@ package
                BASE.Save();
                return true;
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(_loc1_.errorMessage);
             }
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             POPUPS.DisplayWorker(3,this);
          }
@@ -2309,13 +2563,13 @@ package
                LOGGER.Stat([64,this._type,this._fortification.Get() + 1]);
                this._helpList = [];
                this.Update();
-               if(GLOBAL._mode == "build" && this._class == "tower")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && this._class == "tower")
                {
                   GLOBAL._selectedBuilding = this;
                   GLOBAL.Message(KEYS.Get("msg_inactivefortify"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
                }
             }
-            else if(GLOBAL._mode == "build")
+            else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(_loc1_.errorMessage);
             }
@@ -2377,12 +2631,12 @@ package
                BASE.Save();
                return true;
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(_loc1_.errorMessage);
             }
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             POPUPS.DisplayWorker(1,this);
          }
@@ -2456,14 +2710,14 @@ package
                LOGGER.Stat([7,this._type,this._lvl.Get() + 1]);
                this._helpList = [];
                this.Update();
-               if(GLOBAL._mode == "build" && this._class == "tower")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && this._class == "tower")
                {
                   GLOBAL._selectedBuilding = this;
                   GLOBAL.Message(KEYS.Get("msg_inactiveupgrade"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
                }
                GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.UPGRADED,this));
             }
-            else if(GLOBAL._mode == "build")
+            else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(canUpgrade.errorMessage);
             }
@@ -2602,8 +2856,8 @@ package
             this._countdownUpgrade.Set(0);
             this._lvl.Add(1);
             ++this._hpLvl;
-            this._hpMax.Set(this._buildingProps.hp[this._lvl.Get() - 1]);
-            this._hp.Set(this._hpMax.Get());
+            maxHealthProperty.value = this._buildingProps.hp[this._lvl.Get() - 1];
+            setHealth(maxHealth);
          }
          catch(e:Error)
          {
@@ -2624,6 +2878,10 @@ package
          LOGGER.Stat([8,this._type,this._lvl.Get()]);
       }
       
+      public function downgraded() : void
+      {
+      }
+      
       public function Downgrade_TOTEM_DEBUG() : void
       {
          if(this._type != BTOTEM.BTOTEM_BUILDING_TYPE)
@@ -2639,8 +2897,8 @@ package
             this._countdownUpgrade.Set(0);
             this._lvl.Add(-1);
             --this._hpLvl;
-            this._hpMax.Set(this._buildingProps.hp[this._lvl.Get() - 1]);
-            this._hp.Set(this._hpMax.Get());
+            maxHealthProperty.value = this._buildingProps.hp[this._lvl.Get() - 1];
+            setHealth(maxHealth);
          }
          catch(e:Error)
          {
@@ -2681,9 +2939,9 @@ package
          var _loc1_:String = null;
          if(this._countdownBuild.Get() > 0)
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
-               if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
+               if(BASE.isOutpostOrInfernoOutpost)
                {
                   GLOBAL.Message(KEYS.Get("msg_stopconstructionoutpostbuilding"));
                }
@@ -2695,29 +2953,29 @@ package
          }
          else if(this._class == "taunt" || this._class == "gift")
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(KEYS.Get("msg_recycleconfirm"),KEYS.Get("msg_recyclebuilding_btn"),this.RecycleC);
             }
          }
          else if(this._class == "decoration")
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                GLOBAL.Message(KEYS.Get("ui_placeinstorage"),KEYS.Get("btn_addstorage"),this.RecycleB);
             }
          }
          else if(!this._blockRecycle)
          {
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
                _loc1_ = !!GLOBAL._buildingProps[this._type - 1]["recycleconfirmationoverride"] ? GLOBAL._buildingProps[this._type - 1]["recycleconfirmationoverride"] : "msg_recycleconfirm";
                GLOBAL.Message(KEYS.Get(_loc1_),KEYS.Get("msg_recyclebuilding_btn"),this.RecycleB);
             }
          }
-         else if(GLOBAL._mode == "build")
+         else if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
-            if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
+            if(BASE.isOutpostOrInfernoOutpost)
             {
                GLOBAL.Message(KEYS.Get("msg_recycleoutpostbuilding"));
             }
@@ -2792,9 +3050,9 @@ package
          }
          try
          {
-            if(MAP._BUILDINGTOPS.contains(this._mc))
+            if(MAP._BUILDINGTOPS.contains(_mc))
             {
-               MAP._BUILDINGTOPS.removeChild(this._mc);
+               MAP._BUILDINGTOPS.removeChild(_mc);
             }
          }
          catch(e:Error)
@@ -2811,7 +3069,7 @@ package
          {
             InventoryManager.buildingStorageAdd(this._type,this._lvl.Get());
          }
-         this.Clean();
+         this.clear();
          BASE.Save();
       }
       
@@ -2822,7 +3080,7 @@ package
          {
             for each(_loc2_ in this._footprint)
             {
-               GRID.Block(new Rectangle(_loc2_.x + this._mc.x,_loc2_.y + this._mc.y,_loc2_.width,_loc2_.height),param1);
+               GRID.Block(new Rectangle(_loc2_.x + _mc.x,_loc2_.y + _mc.y,_loc2_.width,_loc2_.height),param1);
             }
          }
       }
@@ -2965,7 +3223,7 @@ package
          {
             MAP.Click();
             this._mouseClicked = true;
-            if(GLOBAL._mode == "build" && UI2._showBottom)
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && UI2._showBottom)
             {
                this._clickTimer = 0;
             }
@@ -2996,16 +3254,16 @@ package
             this.GridCost(false);
             this._moving = true;
             this._stopMoveCount = 0;
-            this._mc.mouseEnabled = false;
+            _mc.mouseEnabled = false;
             if(!PLANNER._open)
             {
-               this._mc.addEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+               _mc.addEventListener(Event.ENTER_FRAME,this.FollowMouseB);
                MAP._GROUND.addEventListener(MouseEvent.MOUSE_UP,this.StopMove);
                this._mcHit.mouseEnabled = false;
                BASE.ShowFootprints();
             }
-            this._oldPosition = new Point(this._mc.x,this._mc.y);
-            this._mouseOffset = new Point(MAP._GROUND.mouseX - this._mc.x,MAP._GROUND.mouseY - this._mc.y);
+            this._oldPosition = new Point(_mc.x,_mc.y);
+            this._mouseOffset = new Point(MAP._GROUND.mouseX - _mc.x,MAP._GROUND.mouseY - _mc.y);
          }
          catch(e:Error)
          {
@@ -3022,7 +3280,7 @@ package
             if(!MAP._dragged)
             {
                MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.StopMove);
-               this._mc.mouseEnabled = true;
+               _mc.mouseEnabled = true;
                this.StopMoveB();
             }
          }
@@ -3038,25 +3296,24 @@ package
                this._moving = false;
                if(BASE.BuildBlockers(this,this._class == "decoration") != "")
                {
-                  this._mc.x = this._oldPosition.x;
-                  this._mc.y = this._oldPosition.y;
-                  this._mcBase.x = this._mc.x;
-                  this._mcBase.y = this._mc.y;
-                  this._mcFootprint.x = this._mc.x;
-                  this._mcFootprint.y = this._mc.y;
+                  _mc.x = this._oldPosition.x;
+                  _mc.y = this._oldPosition.y;
+                  this._mcBase.x = _mc.x;
+                  this._mcBase.y = _mc.y;
+                  this._mcFootprint.x = _mc.x;
+                  this._mcFootprint.y = _mc.y;
                   SOUNDS.Play("error1");
                }
                else
                {
                   SOUNDS.Play("buildingplace");
                }
-               this._position = new Point(this._mc.x,this._mc.y);
-               this._mc.mouseEnabled = false;
+               this._position = new Point(_mc.x,_mc.y);
+               _mc.mouseEnabled = false;
                this._mcHit.mouseEnabled = true;
-               this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+               _mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
                this.GridCost(true);
                PATHING.ResetCosts();
-               this._mcFootprint.gotoAndStop(1);
                if(!BYMConfig.instance.RENDERER_ON)
                {
                   MAP.SortDepth();
@@ -3072,6 +3329,7 @@ package
             LOGGER.Log("err","BFOUNDATION.StartMove: " + e.getStackTrace());
             GLOBAL.ErrorMessage("BFOUNDATION.StartMove 2");
          }
+         this.onMove();
       }
       
       public function Click(param1:MouseEvent = null) : void
@@ -3081,11 +3339,11 @@ package
             this.Description();
             if(!MAP._dragged)
             {
-               if(GLOBAL._mode == "build")
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
                {
                   BASE.BuildingSelect(this);
                }
-               if(GLOBAL._mode == "help" && this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
+               if(GLOBAL.mode == GLOBAL.e_BASE_MODE.HELP && this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
                {
                   BASE.BuildingSelect(this);
                }
@@ -3109,8 +3367,8 @@ package
             {
                _loc4_ = 0;
                _loc5_ = this._lvl.Get() == 0 ? 0 : int(this._lvl.Get() - 1);
-               _loc4_ = Math.ceil(this._hpMax.Get() / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
-               this._repairTime = int(this._hpMax.Get() - this._hp.Get()) / _loc4_;
+               _loc4_ = Math.ceil(maxHealth / Math.min(60 * 60,this._buildingProps.repairTime[_loc5_]));
+               this._repairTime = int(maxHealth - health) / _loc4_;
                QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_repairing"),GLOBAL.ToTime(this._repairTime,true));
             }
             else if(this._countdownBuild.Get() > 0)
@@ -3125,15 +3383,15 @@ package
             {
                QUEUE.Update("building" + this._id,KEYS.Get("ui_worker_stacktitle_fortifying"),GLOBAL.ToTime(this._countdownFortify.Get(),true));
             }
-            if(this._class != "mushroom")
+            if(Boolean(this._class) && this._class != "mushroom")
             {
                BuildingOverlay.Update(this,param1);
             }
-            if(this._hp.Get() <= 0)
+            if(health <= 0)
             {
                this.Render(k_STATE_DESTROYED);
             }
-            else if(this._hp.Get() < this._hpMax.Get() * 0.5)
+            else if(this.isCriticallyDamaged)
             {
                this.Render(k_STATE_DAMAGED);
             }
@@ -3144,46 +3402,14 @@ package
          }
       }
       
-      public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true, param6:SecNum = null, param7:Boolean = true) : int
+      public function Loot(param1:int) : uint
       {
-         var _loc8_:int = param1;
-         if(this._fortification.Get() > 0)
-         {
-            _loc8_ *= 100 - (this._fortification.Get() * 10 + 10);
-            _loc8_ = _loc8_ / 100;
-         }
-         this._hp.Add(-_loc8_);
-         if(this._hp.Get() <= 0)
-         {
-            this._hp.Set(0);
-            if(!this._destroyed)
-            {
-               this.Destroyed(param5);
-            }
-         }
-         else if(this._class != "wall")
-         {
-            ATTACK.Log("b" + this._id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
-               "v1":this._lvl.Get(),
-               "v2":KEYS.Get(this._buildingProps.name),
-               "v3":100 - int(100 / this._hpMax.Get() * this._hp.Get())
-            }) + "</font>");
-         }
-         this.Update();
-         if(param7)
-         {
-            BASE.Save();
-         }
-         return _loc8_;
-      }
-      
-      public function Loot(param1:int) : void
-      {
+         return param1;
       }
       
       public function Constructed() : void
       {
-         if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
+         if(BASE.isOutpostOrInfernoOutpost)
          {
             this._blockRecycle = true;
          }
@@ -3220,22 +3446,65 @@ package
       
       public function BlockClicks() : void
       {
-         this._mcHit.mouseEnabled = false;
-         this._mcHit.buttonMode = false;
-         this._mc.alpha = 0.5;
+         if(this._mcHit)
+         {
+            this._mcHit.mouseEnabled = false;
+            this._mcHit.buttonMode = false;
+         }
+         if(_mc)
+         {
+            _mc.alpha = 0.5;
+         }
       }
       
       public function UnblockClicks() : void
       {
-         this._mcHit.mouseEnabled = true;
-         this._mcHit.buttonMode = true;
-         this._mc.alpha = 1;
+         if(this._mcHit)
+         {
+            this._mcHit.mouseEnabled = true;
+            this._mcHit.buttonMode = true;
+         }
+         if(_mc)
+         {
+            _mc.alpha = 1;
+         }
+      }
+      
+      public function exportLite() : Object
+      {
+         var _loc1_:Object = new Object();
+         var _loc2_:Point = GRID.FromISO(_mc.x,_mc.y);
+         _loc1_.X = _loc2_.x;
+         _loc1_.Y = _loc2_.y;
+         _loc1_.id = this._id;
+         _loc1_.t = this._type;
+         if(this._lvl.Get() != 1)
+         {
+            _loc1_.l = this._lvl.Get();
+         }
+         if(this._countdownRebuild.Get() > 0)
+         {
+            _loc1_.cR = this._countdownRebuild.Get();
+         }
+         if(this._repairing > 0)
+         {
+            _loc1_.rE = this._repairing;
+         }
+         if(health < maxHealth)
+         {
+            _loc1_.hp = int(health);
+         }
+         if(this._fortification.Get() > 0)
+         {
+            _loc1_.fort = this._fortification.Get();
+         }
+         return _loc1_;
       }
       
       public function Export() : Object
       {
          var _loc1_:Object = new Object();
-         var _loc2_:Point = GRID.FromISO(this._mc.x,this._mc.y);
+         var _loc2_:Point = GRID.FromISO(_mc.x,_mc.y);
          _loc1_.X = _loc2_.x;
          _loc1_.Y = _loc2_.y;
          _loc1_.id = this._id;
@@ -3304,9 +3573,9 @@ package
          {
             _loc1_.rIP = this._inProduction;
          }
-         if(this._hp.Get() < this._hpMax.Get())
+         if(health < maxHealth && (!MapRoomManager.instance.isInMapRoom3 || BASE.isInfernoMainYardOrOutpost))
          {
-            _loc1_.hp = int(this._hp.Get());
+            _loc1_.hp = int(health);
          }
          if(this._helpList.length > 0 && this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
@@ -3337,8 +3606,8 @@ package
          {
             this._lvl.Set(1);
          }
-         this._mc.x = _loc2_.x;
-         this._mc.y = _loc2_.y;
+         _mc.x = _loc2_.x;
+         _mc.y = _loc2_.y;
          ++BASE._buildingCount;
          this._countdownBuild.Set(int(param1.cB));
          if(param1.prefab)
@@ -3423,29 +3692,30 @@ package
          this._hpLvl = this._lvl.Get();
          if(this._lvl.Get() == 0)
          {
-            this._hpMax.Set(this._buildingProps.hp[0]);
+            maxHealthProperty.value = this._buildingProps.hp[0];
          }
          else
          {
             _loc5_ = this._lvl.Get();
             _loc6_ = int(this._buildingProps.hp[_loc5_ - 1]);
-            this._hpMax.Set(_loc6_);
+            maxHealthProperty.value = _loc6_;
          }
          if(param1.hp == null)
          {
-            this._hp.Set(this._hpMax.Get());
+            setHealth(maxHealth);
          }
          else
          {
-            this._hp.Set(int(param1.hp));
-            if(this._hp.Get() > this._hpMax.Get())
+            setHealth(int(param1.hp));
+            if(health > maxHealth)
             {
-               this._hp.Set(this._hpMax.Get());
+               setHealth(maxHealth);
             }
          }
-         if(this._hp.Get() == 0)
+         if(health == 0)
          {
             this._destroyed = true;
+            this._fired = true;
          }
          this.Description();
          this._constructed = this._countdownBuild.Get() == 0;
@@ -3507,7 +3777,7 @@ package
          }
       }
       
-      public function Clean() : void
+      override public function clear() : void
       {
          if(this._type == 7)
          {
@@ -3521,21 +3791,21 @@ package
             delete BASE._buildingsMain["b" + this._id];
             delete BASE._buildingsGifts["b" + this._id];
          }
-         if(this._mc.hasEventListener(Event.ENTER_FRAME))
+         if(_mc.hasEventListener(Event.ENTER_FRAME))
          {
-            this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
+            _mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
          }
          if(MAP._GROUND.hasEventListener(MouseEvent.MOUSE_UP))
          {
             MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
          }
-         if(this._mc.hasEventListener(MouseEvent.MOUSE_DOWN))
+         if(_mc.hasEventListener(MouseEvent.MOUSE_DOWN))
          {
-            this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
+            _mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
          }
-         if(this._mc.hasEventListener(Event.ENTER_FRAME))
+         if(_mc.hasEventListener(Event.ENTER_FRAME))
          {
-            this._mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
+            _mc.removeEventListener(Event.ENTER_FRAME,this.TickFast);
          }
          this.removeListeners();
          if(this._mcHit)
@@ -3549,20 +3819,21 @@ package
          {
             if(this._mcFootprint.parent)
             {
-               MAP._BUILDINGFOOTPRINTS.removeChild(this._mcFootprint);
+               this._mcFootprint.parent.removeChild(this._mcFootprint);
             }
          }
+         BuildingOverlay.clearBuilding(this);
          if(GLOBAL._selectedBuilding === this)
          {
             GLOBAL._selectedBuilding = null;
          }
          if(this._mcBase.parent)
          {
-            MAP._BUILDINGBASES.removeChild(this._mcBase);
+            this._mcBase.parent.removeChild(this._mcBase);
          }
-         if(this._mc.parent)
+         if(_mc.parent)
          {
-            MAP._BUILDINGTOPS.removeChild(this._mc);
+            _mc.parent.removeChild(_mc);
          }
          this.topContainer.Clear();
          this.animContainer.Clear();
@@ -3585,14 +3856,19 @@ package
          this.clearRasterData();
          this._rasterData = null;
          this._rasterPt = null;
+         InstanceManager.removeInstance(this);
          this.m_shadowBMD = null;
-         this.m_isCleared = true;
+         super.clear();
       }
       
       private function GetHitMC() : MovieClip
       {
-         var _loc1_:Object = GLOBAL._buildingProps[this._type - 1] || {};
-         var _loc2_:Boolean = BASE.isInferno();
+         var _loc1_:Object = !!GLOBAL._buildingProps[this._type - 1] ? GLOBAL._buildingProps[this._type - 1] : {};
+         if(_loc1_.hitCls)
+         {
+            return new _loc1_.hitCls();
+         }
+         var _loc2_:Boolean = BASE.isInfernoMainYardOrOutpost;
          if(this._type == 1)
          {
             return _loc2_ ? new boneCrusherHit() : new building1hit();
@@ -3992,26 +4268,26 @@ package
       public function highlight(param1:uint) : void
       {
          var _loc2_:Array = null;
-         if(this._mc)
+         if(_mc)
          {
             _loc2_ = new Array();
             _loc2_ = _loc2_.concat([2,0,0,0,0]);
             _loc2_ = _loc2_.concat([0,2,0,0,0]);
             _loc2_ = _loc2_.concat([0,0,3,0,0]);
             _loc2_ = _loc2_.concat([0,0,0,1,0]);
-            this._mc.filters = [new ColorMatrixFilter(_loc2_)];
+            _mc.filters = [new ColorMatrixFilter(_loc2_)];
             if(BYMConfig.instance.RENDERER_ON && Boolean(this._rasterData[_RASTERDATA_TOP]))
             {
-               this._rasterData[_RASTERDATA_TOP].filter = this._mc.filters[0];
+               this._rasterData[_RASTERDATA_TOP].filter = _mc.filters[0];
             }
          }
       }
       
       public function disableHighlight() : void
       {
-         if(this._mc)
+         if(_mc)
          {
-            this._mc.filters = [];
+            _mc.filters = [];
             if(BYMConfig.instance.RENDERER_ON && Boolean(this._rasterData[_RASTERDATA_TOP]))
             {
                this._rasterData[_RASTERDATA_TOP].filter = null;
@@ -4019,25 +4295,17 @@ package
          }
       }
       
-      public function get x() : int
+      public function set x(param1:Number) : void
       {
-         return this._mc.x;
-      }
-      
-      public function get y() : int
-      {
-         return this._mc.y;
-      }
-      
-      public function set x(param1:int) : void
-      {
-         this._mc.x = param1;
+         _mc.x = param1;
+         this.onMove();
          this.updateRasterData();
       }
       
-      public function set y(param1:int) : void
+      public function set y(param1:Number) : void
       {
-         this._mc.y = param1;
+         _mc.y = param1;
+         this.onMove();
          this.updateRasterData();
       }
       
@@ -4052,7 +4320,12 @@ package
          this._mcFootprint.y = param2;
          this.StartMove();
          this.StopMove(null);
-         BASE.Save();
+         this.updateRasterData();
+         redrawAllShadowData();
+      }
+      
+      protected function onMove() : void
+      {
       }
       
       public function get name() : String
@@ -4072,7 +4345,7 @@ package
       
       protected function RelocateHousedCreatures() : void
       {
-         var _loc4_:* = undefined;
+         var _loc4_:MonsterBase = null;
          var _loc1_:BFOUNDATION = BASE.FindClosestHousingToPoint(this.x,this.y,this);
          if(_loc1_ == null)
          {
@@ -4088,7 +4361,7 @@ package
                _loc1_._creatures.push(_loc4_);
                _loc4_._house = _loc1_;
                _loc4_._targetCenter = GRID.FromISO(_loc1_.x,_loc1_.y);
-               _loc4_.ModeHousing();
+               _loc4_.changeModeHousing();
             }
             _loc3_++;
          }
@@ -4097,7 +4370,7 @@ package
       
       protected function UpdateHousedCreatureTargets() : void
       {
-         var _loc3_:* = undefined;
+         var _loc3_:MonsterBase = null;
          var _loc1_:uint = this._creatures.length;
          var _loc2_:Number = 0;
          while(_loc2_ < _loc1_)
@@ -4105,8 +4378,8 @@ package
             _loc3_ = this._creatures[_loc2_];
             if(!(_loc3_._behaviour == MonsterBase.k_sBHVR_JUICE || _loc3_._behaviour == MonsterBase.k_sBHVR_BUNKER && GLOBAL.InfernoMode() === false))
             {
-               _loc3_._targetCenter = GRID.FromISO(this.x,this.y);
-               _loc3_.ModeHousing();
+               _loc3_._targetCenter = GRID.FromISO(x,y);
+               _loc3_.changeModeHousing();
             }
             _loc2_++;
          }
@@ -4114,6 +4387,16 @@ package
       
       public function StartProduction() : void
       {
+      }
+      
+      protected function onEnterFrame(param1:Event) : void
+      {
+      }
+      
+      protected function removedFromStage(param1:Event) : void
+      {
+         graphic.removeEventListener(Event.ENTER_FRAME,this.onEnterFrame);
+         graphic.removeEventListener(Event.REMOVED_FROM_STAGE,this.removedFromStage);
       }
    }
 }

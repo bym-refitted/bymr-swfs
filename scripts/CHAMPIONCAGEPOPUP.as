@@ -181,7 +181,7 @@ package
       
       public function Setup(param1:int = 0) : void
       {
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             if(GLOBAL._bCage)
             {
@@ -485,7 +485,7 @@ package
                this.UpdatePortrait();
                this.UpdateStats();
                bHeal.SetupKey("btn_healchampion",false,0,0);
-               if(CREATURES._guardian._health.Get() >= CREATURES._guardian._maxHealth)
+               if(CREATURES._guardian.health >= CREATURES._guardian.maxHealth)
                {
                   bHeal.Enabled = false;
                   bHeal.removeEventListener(MouseEvent.CLICK,this.HealClick);
@@ -903,7 +903,7 @@ package
                _loc9_ = int(_loc6_[_loc8_]);
                _loc10_ = KEYS.Get(CREATURELOCKER.getShortCreatureName(_loc8_));
                _loc11_ = "monsters/" + _loc8_ + "-small.png";
-               if(HOUSING._creatures[_loc8_] == null || HOUSING._creatures[_loc8_] && HOUSING._creatures[_loc8_].Get() < _loc9_)
+               if(GLOBAL.player.monsterListByID(_loc8_) == null || GLOBAL.player.monsterListByID(_loc8_) && GLOBAL.player.monsterListByID(_loc8_).numHealthyHousedCreeps < _loc9_)
                {
                   feedIcons[_loc7_ - 1].tName.htmlText = "<font color=\"#ff0000\"><b>" + _loc9_ + " " + _loc10_ + "</b></font>";
                }
@@ -998,7 +998,7 @@ package
             tHealth.htmlText = "" + _loc2_;
             tSpeed.htmlText = "" + _loc9_;
             tBuff.htmlText = "" + int(_loc4_) + "%";
-            tHP.htmlText = Math.floor(this.guard._health.Get()) + " / " + Math.floor(this.guard._maxHealth);
+            tHP.htmlText = Math.floor(this.guard.health) + " / " + Math.floor(this.guard.maxHealth);
             TweenLite.to(bDamage.mcBar,0.4,{
                "width":100 / _maxDamage * _loc1_,
                "ease":Circ.easeInOut,
@@ -1165,7 +1165,7 @@ package
                   "delay":0.15
                });
             }
-            barHP.mcBar.width = 100 / this.guard._maxHealth * Math.max(1,this.guard._health.Get());
+            barHP.mcBar.width = 100 / this.guard.maxHealth * Math.max(1,this.guard.health);
             bFeedTimer.mcBar.width = 100 / CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedTime") * (CREATURES._guardian._feedTime.Get() - GLOBAL.Timestamp());
          }
          if(_page == 2 && _kothEnabled)
@@ -1219,7 +1219,7 @@ package
                p3_tHealth.htmlText = "" + _loc20_;
                p3_tSpeed.htmlText = "" + _loc23_;
                p3_tBuff.htmlText = "" + int(_loc22_) + "%";
-               p3_tHP.htmlText = Math.floor(this.koth._health.Get()) + " / " + Math.floor(this.koth._maxHealth);
+               p3_tHP.htmlText = Math.floor(this.koth.health) + " / " + Math.floor(this.koth.maxHealth);
                _loc24_ = 5;
                _loc25_ = true;
                TweenLite.to(p3_bDamage.mcBar,0.4,{
@@ -1314,7 +1314,7 @@ package
                      _loc26_++;
                   }
                }
-               p3_bHP.mcBar.width = 100 / this.koth._maxHealth * Math.max(1,this.koth._health.Get());
+               p3_bHP.mcBar.width = 100 / this.koth.maxHealth * Math.max(1,this.koth.health);
             }
          }
       }
@@ -1343,7 +1343,7 @@ package
             bFeedTimer.mcBar.width = Math.max(100,100 / CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedTime") * (CREATURES._guardian._feedTime.Get() - GLOBAL.Timestamp()));
          }
          this.UpdateStats();
-         if(CREATURES._guardian._health.Get() >= CREATURES._guardian._maxHealth)
+         if(CREATURES._guardian.health >= CREATURES._guardian.maxHealth)
          {
             bHeal.removeEventListener(MouseEvent.CLICK,this.HealClick);
             bHeal.Enabled = false;
@@ -1361,7 +1361,7 @@ package
       
       public function HealClick(param1:MouseEvent) : void
       {
-         if(CREATURES._guardian._health.Get() < CREATURES._guardian._maxHealth)
+         if(CREATURES._guardian.health < CREATURES._guardian.maxHealth)
          {
             CHAMPIONCAGE.HealGuardian();
             this.Switch(0);
@@ -1374,7 +1374,7 @@ package
       
       public function kothHealClick(param1:MouseEvent = null) : void
       {
-         if(Boolean(CREATURES._krallen) && CREATURES._krallen._health.Get() < CREATURES._krallen._maxHealth)
+         if(Boolean(CREATURES._krallen) && CREATURES._krallen.health < CREATURES._krallen.maxHealth)
          {
             CHAMPIONCAGE.HealGuardian(5);
             this.Switch(2);
@@ -1416,7 +1416,7 @@ package
                POPUPS.DisplayGetShiny();
                return;
             }
-            CREATURES._guardian.LevelSet(CREATURES._guardian._level.Get() + 1,_loc1_);
+            CREATURES._guardian.levelSet(CREATURES._guardian._level.Get() + 1,_loc1_);
             BASE.Purchase("IEV",_loc1_,"cage");
             CHAMPIONCAGE.Hide();
             BASE.Save(0,false,true);

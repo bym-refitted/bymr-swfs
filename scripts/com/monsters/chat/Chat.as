@@ -1,7 +1,7 @@
 package com.monsters.chat
 {
    import com.monsters.chat.ui.ChatBox;
-   import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.maproom_manager.MapRoomManager;
    import flash.display.DisplayObjectContainer;
    import flash.display.StageDisplayState;
    
@@ -65,7 +65,14 @@ package com.monsters.chat
          _chatroomNumber = 0;
          if(!GLOBAL._local)
          {
-            _chatroomNumber = LOGIN._playerID % (GLOBAL._flags != null && Boolean(GLOBAL._flags.numchatrooms) ? GLOBAL._flags.numchatrooms : NUM_CHAT_ROOMS);
+            if(MapRoomManager.instance.isInMapRoom3)
+            {
+               _chatroomNumber = MapRoomManager.instance.worldID;
+            }
+            else
+            {
+               _chatroomNumber = LOGIN._playerID % (GLOBAL._flags != null && Boolean(GLOBAL._flags.numchatrooms) ? GLOBAL._flags.numchatrooms : NUM_CHAT_ROOMS);
+            }
          }
          if(!_chatEnabled || _chatServers.length == 0)
          {
@@ -137,7 +144,14 @@ package com.monsters.chat
             _bymChat.initServer();
             _bymChat.login(_loc1_,LOGIN._playerID.toString(),BASE.BaseLevel().level);
             _bymChat.show();
-            _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
+            if(MapRoomManager.instance.isInMapRoom3)
+            {
+               _bymChat.enter_sector("Sector-" + _chatroomNumber.toString());
+            }
+            else
+            {
+               _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
+            }
          }
       }
       
@@ -240,7 +254,7 @@ package com.monsters.chat
          {
             return false;
          }
-         if(MapRoom._open && GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+         if(MapRoomManager.instance.isInMapRoom2 && MapRoomManager.instance.isOpen && GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
             return false;
          }

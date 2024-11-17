@@ -16,7 +16,7 @@ package
       
       override public function Tick(param1:int) : void
       {
-         if(_countdownBuild.Get() > 0 || _hp.Get() < _hpMax.Get() * 0.5)
+         if(_countdownBuild.Get() > 0 || health < maxHealth * 0.5)
          {
             _canFunction = false;
          }

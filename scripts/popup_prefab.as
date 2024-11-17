@@ -2,6 +2,7 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.display.ImageCache;
+   import com.monsters.managers.InstanceManager;
    import com.monsters.pathing.PATHING;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -50,31 +51,6 @@ package
       public static function getShinyWorthFromResources(param1:Number) : uint
       {
          return Math.sqrt(param1 / 2) * 0.75;
-      }
-      
-      public static function getResourceCostFromBase() : Number
-      {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:* = 0;
-         var _loc4_:* = 0;
-         var _loc5_:* = undefined;
-         var _loc6_:Object = null;
-         var _loc1_:* = 0;
-         for each(_loc2_ in BASE._buildingsAll)
-         {
-            _loc3_ = uint(_loc2_._type);
-            if(isBuildingOfValidType(_loc3_))
-            {
-               _loc4_ = _loc2_._lvl.Get();
-               _loc5_ = _loc2_._buildingProps;
-               _loc6_ = _loc5_.costs[_loc4_];
-               _loc1_ += _loc6_.r1;
-               _loc1_ += _loc6_.r2;
-               _loc1_ += _loc6_.r3;
-               _loc1_ += _loc6_.r4;
-            }
-         }
-         return _loc1_;
       }
       
       public static function getResourceCostFromBuild(param1:Object) : Number
@@ -142,17 +118,8 @@ package
          var shinyCost:int = param2;
          return function(param1:MouseEvent = null):void
          {
-            var _loc3_:* = undefined;
-            var _loc2_:* = 0;
-            for each(_loc3_ in BASE._buildingsAll)
-            {
-               _loc2_++;
-               if(_loc2_ > 1)
-               {
-                  break;
-               }
-            }
-            if(_loc2_ > 1)
+            var _loc3_:* = InstanceManager.getInstancesByClass(BFOUNDATION);
+            if(_loc3_.length > 1)
             {
                GLOBAL.Message(KEYS.Get("kit_warning"),KEYS.Get("btn_build"),BuyOutright,[kitID,shinyCost]);
             }
@@ -191,17 +158,8 @@ package
          var kitID:int = param1;
          return function(param1:MouseEvent = null):void
          {
-            var _loc3_:* = undefined;
-            var _loc2_:* = 0;
-            for each(_loc3_ in BASE._buildingsAll)
-            {
-               _loc2_++;
-               if(_loc2_ > 1)
-               {
-                  break;
-               }
-            }
-            if(_loc2_ > 1)
+            var _loc3_:* = InstanceManager.getInstancesByClass(BFOUNDATION);
+            if(_loc3_.length > 1)
             {
                GLOBAL.Message(KEYS.Get("kit_warning"),KEYS.Get("btn_build"),Select,[kitID]);
             }
@@ -306,7 +264,7 @@ package
       private function BuildKit(param1:int, param2:Boolean = false) : void
       {
          var _loc4_:BFOUNDATION = null;
-         var _loc5_:Object = null;
+         var _loc6_:Object = null;
          this._triggered = true;
          b1.Enabled = false;
          b2.Enabled = false;
@@ -314,11 +272,12 @@ package
          var _loc3_:Object = this.GetBuildings(param1).buildings;
          CREATURES.Clear();
          CREEPS.Clear();
-         for each(_loc4_ in BASE._buildingsAll)
+         var _loc5_:Vector.<Object> = InstanceManager.getInstancesByClass(BFOUNDATION);
+         for each(_loc4_ in _loc5_)
          {
-            if(_loc4_._type != 112)
+            if(_loc4_._type !== 112)
             {
-               _loc4_.Clean();
+               _loc4_.clear();
                _loc4_._mc.visible = false;
                _loc4_._mc.removeEventListener(Event.ENTER_FRAME,_loc4_.TickFast);
                _loc4_._mcBase.Clear();
@@ -328,30 +287,30 @@ package
                _loc4_._animContainerBMD = null;
             }
          }
-         for each(_loc5_ in _loc3_)
+         for each(_loc6_ in _loc3_)
          {
-            if(_loc5_.t == 112)
+            if(_loc6_.t == 112)
             {
-               GLOBAL._bTownhall.Setup(_loc5_);
-               if(GLOBAL._bTownhall._hp.Get() < GLOBAL._bTownhall._hpMax.Get())
+               GLOBAL.townHall.Setup(_loc6_);
+               if(GLOBAL.townHall.health < GLOBAL.townHall.maxHealth)
                {
-                  GLOBAL._bTownhall._hp.Set(GLOBAL._bTownhall._hpMax.Get());
-                  GLOBAL._bTownhall.Repaired();
+                  GLOBAL.townHall.setHealth(GLOBAL.townHall.maxHealth);
+                  GLOBAL.townHall.Repaired();
                }
             }
             else
             {
-               if(!_loc5_.prefab)
+               if(!_loc6_.prefab)
                {
-                  _loc5_.prefab = 1;
+                  _loc6_.prefab = 1;
                }
                if(param2)
                {
-                  _loc5_.l = _loc5_.prefab;
-                  delete _loc5_.prefab;
+                  _loc6_.l = _loc6_.prefab;
+                  delete _loc6_.prefab;
                }
-               _loc4_ = BASE.addBuildingC(_loc5_.t);
-               _loc4_.Setup(_loc5_);
+               _loc4_ = BASE.addBuildingC(_loc6_.t);
+               _loc4_.Setup(_loc6_);
                if(_loc4_._class == "resource")
                {
                   _loc4_._stored = new SecNum(0);

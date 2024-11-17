@@ -2,14 +2,18 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.ai.TRIBES;
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.MonsterBase;
+   import com.monsters.player.MonsterData;
+   import flash.display.MovieClip;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    public class HOUSING
    {
-      public static var _mc:HOUSINGPOPUP;
+      public static var _housingPopup:MovieClip;
       
       public static var _open:Boolean;
       
@@ -21,38 +25,26 @@ package
       
       public static var _housingBuildingUpgrading:Boolean;
       
-      public static var _creatures:Object;
-      
       public function HOUSING()
       {
          super();
-      }
-      
-      public static function Data(param1:Object) : void
-      {
-         var _loc2_:String = null;
-         _creatures = {};
-         for(_loc2_ in param1)
-         {
-            if(_loc2_.substr(0,1) == "C" || _loc2_.substr(0,2) == "IC")
-            {
-               _creatures[_loc2_] = new SecNum(int(param1[_loc2_]));
-            }
-         }
-         if(_creatures.C100)
-         {
-            _creatures.C12 = _creatures.C100;
-            delete _creatures.C100;
-         }
       }
       
       public static function Show(param1:MouseEvent = null) : void
       {
          _open = true;
          GLOBAL.BlockerAdd();
-         _mc = GLOBAL._layerWindows.addChild(new HOUSINGPOPUP()) as HOUSINGPOPUP;
-         _mc.Center();
-         _mc.ScaleUp();
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            _housingPopup = new HousingPersistentPopup();
+         }
+         else
+         {
+            _housingPopup = new HOUSINGPOPUP();
+         }
+         GLOBAL._layerWindows.addChild(_housingPopup);
+         _housingPopup.Center();
+         _housingPopup.ScaleUp();
       }
       
       public static function Hide(param1:MouseEvent = null) : void
@@ -61,54 +53,60 @@ package
          {
             GLOBAL.BlockerRemove();
             SOUNDS.Play("close");
-            GLOBAL._layerWindows.removeChild(_mc);
+            GLOBAL._layerWindows.removeChild(_housingPopup);
             _open = false;
-            _mc = null;
+            _housingPopup = null;
          }
       }
       
       public static function HousingSpace() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:String = null;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          _housingCapacity = new SecNum(0);
          _housingUsed = new SecNum(0);
          _housingSpace = new SecNum(0);
          _housingBuildingUpgrading = false;
          var _loc1_:int = 0;
-         for each(_loc2_ in BASE._buildingsHousing)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._countdownBuild.Get() <= 0 && _loc2_._hp.Get() > 10)
+            if(_loc3_._countdownBuild.Get() <= 0 && (_loc3_.health > 10 || MapRoomManager.instance.isInMapRoom3))
             {
-               _loc4_ = int(_loc2_._buildingProps.capacity[_loc2_._lvl.Get() - 1]);
+               _loc6_ = int(_loc3_._buildingProps.capacity[_loc3_._lvl.Get() - 1]);
                if(GLOBAL._extraHousing >= GLOBAL.Timestamp() && GLOBAL._extraHousingPower.Get() > 0)
                {
-                  _loc4_ *= 1 + GLOBAL._extraHousingPower.Get() * 0.25;
+                  _loc6_ = addHousingCapacityMultiplier(_loc6_);
                }
-               _housingCapacity.Add(_loc4_);
+               _housingCapacity.Add(_loc6_);
                _loc1_++;
             }
-            if(_loc2_._countdownBuild.Get() + _loc2_._countdownUpgrade.Get() > 0)
+            if(_loc3_._countdownBuild.Get() + _loc3_._countdownUpgrade.Get() > 0)
             {
                _housingBuildingUpgrading = true;
             }
          }
-         for(_loc3_ in _creatures)
+         _loc4_ = int(GLOBAL.player.monsterList.length);
+         _loc5_ = 0;
+         while(_loc5_ < _loc4_)
          {
-            _housingUsed.Add(CREATURES.GetProperty(_loc3_,"cStorage",0,true) * _creatures[_loc3_].Get());
+            _housingUsed.Add(CREATURES.GetProperty(GLOBAL.player.monsterList[_loc5_].m_creatureID,"cStorage",0,true) * GLOBAL.player.monsterList[_loc5_].numCreeps);
+            _loc5_++;
          }
          _housingSpace.Set(_housingCapacity.Get() - _housingUsed.Get());
       }
       
+      private static function addHousingCapacityMultiplier(param1:int) : int
+      {
+         return param1 * GLOBAL._extraHousingPower.Get();
+      }
+      
       public static function HousingStore(param1:String, param2:Point, param3:Boolean = false, param4:int = 0) : Boolean
       {
-         var _loc7_:* = undefined;
-         var _loc8_:Array = null;
-         var _loc9_:BFOUNDATION = null;
-         var _loc10_:Number = NaN;
-         var _loc11_:Number = NaN;
-         var _loc12_:int = 0;
+         var _loc7_:MonsterBase = null;
+         var _loc8_:MonsterBase = null;
          if(param4 > 0)
          {
             LOGGER.Log("hak","Instant monster hack");
@@ -120,106 +118,119 @@ package
             param1 = "C12";
          }
          var _loc5_:int = CREATURES.GetProperty(param1,"cStorage",0,true);
-         var _loc6_:Boolean = (GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview") && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice";
+         var _loc6_:Boolean = (GLOBAL.mode == GLOBAL.e_BASE_MODE.WMATTACK || GLOBAL.mode == GLOBAL.e_BASE_MODE.WMVIEW) && TRIBES.TribeForBaseID(BASE._wmID).behaviour == "juice";
+         HousingSpace();
          if(_housingSpace.Get() < _loc5_ && !_loc6_)
          {
             return false;
          }
          if(!param3)
          {
-            if(_creatures[param1])
+            if(_loc6_)
             {
-               _creatures[param1].Add(1);
+               _loc7_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"juice",param2,0);
+               if(_loc7_)
+               {
+                  _loc7_.changeModeJuice();
+               }
             }
             else
             {
-               _creatures[param1] = new SecNum(1);
-            }
-            HousingSpace();
-            if(GLOBAL._render)
-            {
-               if(_loc6_)
+               _loc8_ = createAndHouseCreep(param1,param2);
+               if(!_loc8_)
                {
-                  _loc7_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"juice",param2,0);
-                  if(_loc7_)
-                  {
-                     _loc7_.ModeJuice();
-                  }
+                  return false;
                }
-               else
-               {
-                  _loc8_ = [];
-                  for each(_loc9_ in BASE._buildingsHousing)
-                  {
-                     if(_loc9_._countdownBuild.Get() <= 0 && _loc9_._hp.Get() > 0)
-                     {
-                        _loc10_ = _loc9_._mc.x - param2.x;
-                        _loc11_ = _loc9_._mc.y - param2.y;
-                        _loc12_ = int(_loc9_._creatures.length);
-                        _loc8_.push({
-                           "mc":_loc9_,
-                           "dist":_loc12_
-                        });
-                     }
-                  }
-                  if(_loc8_.length == 0)
-                  {
-                     return false;
-                  }
-                  _loc8_.sortOn(["dist"],Array.NUMERIC);
-                  _loc9_ = _loc8_[0].mc;
-                  CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"housing",param2,0,GRID.FromISO(_loc9_._mc.x,_loc9_._mc.y),_loc9_);
-               }
+               GLOBAL.player.addMonster(param1,_loc8_);
             }
          }
          return true;
       }
       
+      public static function createAndHouseCreep(param1:String, param2:Point) : MonsterBase
+      {
+         var _loc3_:BFOUNDATION = getClosestHouseToPoint(param2);
+         var _loc4_:MonsterBase = null;
+         if(_loc3_)
+         {
+            _loc4_ = CREATURES.Spawn(param1,MAP._BUILDINGTOPS,"housing",param2,0,GRID.FromISO(_loc3_._mc.x,_loc3_._mc.y),_loc3_);
+         }
+         return _loc4_;
+      }
+      
+      public static function getClosestHouseToPoint(param1:Point) : BFOUNDATION
+      {
+         var _loc4_:BFOUNDATION = null;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
+         var _loc7_:int = 0;
+         var _loc2_:Array = [];
+         var _loc3_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+         for each(_loc4_ in _loc3_)
+         {
+            if(_loc4_._countdownBuild.Get() <= 0 && (_loc4_.health > 0 || MapRoomManager.instance.isInMapRoom3))
+            {
+               _loc5_ = _loc4_._mc.x - param1.x;
+               _loc6_ = _loc4_._mc.y - param1.y;
+               _loc7_ = int(_loc4_._creatures.length);
+               _loc2_.push({
+                  "mc":_loc4_,
+                  "dist":_loc7_
+               });
+            }
+         }
+         if(_loc2_.length == 0)
+         {
+            return null;
+         }
+         _loc2_.sortOn(["dist"],Array.NUMERIC);
+         return _loc2_[0].mc;
+      }
+      
       public static function Cull(param1:Boolean = false) : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:String = null;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:int = 0;
          _housingCapacity = new SecNum(0);
          _housingUsed = new SecNum(0);
          _housingSpace = new SecNum(0);
-         for each(_loc2_ in BASE._buildingsHousing)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._countdownBuild.Get() <= 0 && _loc2_._hp.Get() > 0)
+            if(_loc3_._countdownBuild.Get() <= 0 && (_loc3_.health > 0 || MapRoomManager.instance.isInMapRoom3))
             {
-               _loc4_ = int(_loc2_._buildingProps.capacity[_loc2_._lvl.Get() - 1]);
+               _loc6_ = int(_loc3_._buildingProps.capacity[_loc3_._lvl.Get() - 1]);
                if(GLOBAL._extraHousing >= GLOBAL.Timestamp() && GLOBAL._extraHousingPower.Get() > 0)
                {
-                  _loc4_ *= 1 + GLOBAL._extraHousingPower.Get() * 0.25;
+                  _loc6_ = addHousingCapacityMultiplier(_loc6_);
                }
-               _housingCapacity.Add(_loc4_);
+               _housingCapacity.Add(_loc6_);
             }
          }
-         for(_loc3_ in _creatures)
+         _loc4_ = int(GLOBAL.player.monsterList.length);
+         _loc5_ = 0;
+         while(_loc5_ < _loc4_)
          {
-            if(_creatures[_loc3_].Get() <= 0)
+            if(GLOBAL.player.monsterList[_loc5_].numCreeps)
             {
-               delete _creatures[_loc3_];
+               _housingUsed.Add(CREATURES.GetProperty(GLOBAL.player.monsterList[_loc5_].m_creatureID,"cStorage",0,true) * GLOBAL.player.monsterList[_loc5_].numCreeps);
             }
-            else
-            {
-               _housingUsed.Add(CREATURES.GetProperty(_loc3_,"cStorage",0,true) * _creatures[_loc3_].Get());
-            }
+            _loc5_++;
          }
          while(_housingUsed.Get() > _housingCapacity.Get())
          {
             _housingUsed.Set(0);
-            for(_loc3_ in _creatures)
+            _loc5_ = 0;
+            while(_loc5_ < _loc4_)
             {
-               if(_creatures[_loc3_].Get() > 0)
+               if(GLOBAL.player.monsterList[_loc5_].numCreeps > 0)
                {
-                  _creatures[_loc3_].Add(-1);
-                  _housingUsed.Add(CREATURES.GetProperty(_loc3_,"cStorage",0,true) * _creatures[_loc3_].Get());
+                  GLOBAL.player.monsterList[_loc5_].add(-1,null,true);
+                  _housingUsed.Add(CREATURES.GetProperty(GLOBAL.player.monsterList[_loc5_].m_creatureID,"cStorage",0,true) * GLOBAL.player.monsterList[_loc5_].numCreeps);
                }
-               else
-               {
-                  _creatures[_loc3_].Set(0);
-               }
+               _loc5_++;
             }
          }
          HousingSpace();
@@ -227,39 +238,43 @@ package
       
       public static function Populate() : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:String = null;
+         var _loc3_:BFOUNDATION = null;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:BFOUNDATION = null;
-         var _loc8_:Point = null;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:BFOUNDATION = null;
+         var _loc10_:Point = null;
          var _loc1_:Array = [];
-         for each(_loc2_ in BASE._buildingsHousing)
+         var _loc2_:Vector.<Object> = InstanceManager.getInstancesByClass(BASE.isInfernoMainYardOrOutpost ? HOUSINGBUNKER : BUILDING15);
+         for each(_loc3_ in _loc2_)
          {
-            if(_loc2_._hp.Get() > 0)
+            if(_loc3_.health > 0 || MapRoomManager.instance.isInMapRoom3)
             {
-               _loc1_.push(_loc2_);
+               _loc1_.push(_loc3_);
             }
          }
          if(_loc1_.length > 0)
          {
-            for(_loc3_ in _creatures)
+            _loc4_ = int(GLOBAL.player.monsterList.length);
+            _loc5_ = 0;
+            while(_loc5_ < _loc4_)
             {
-               _loc4_ = int(_creatures[_loc3_].Get());
-               if(!BASE.isInferno() && _loc4_ > 50)
+               _loc6_ = GLOBAL.player.monsterList[_loc5_].numCreeps;
+               _loc7_ = 0;
+               while(_loc7_ < _loc6_)
                {
-                  _loc4_ = 50;
+                  if(!GLOBAL.player.monsterList[_loc5_].m_creeps[_loc7_].ownerID)
+                  {
+                     _loc8_ = Math.random() * _loc1_.length;
+                     _loc9_ = _loc1_[_loc8_];
+                     _loc10_ = GRID.FromISO(_loc9_.x,_loc9_.y);
+                     GLOBAL.player.monsterList[_loc5_].m_creeps[_loc7_].self = CREATURES.Spawn(GLOBAL.player.monsterList[_loc5_].m_creatureID,MAP._BUILDINGTOPS,MonsterBase.k_sBHVR_PEN,PointInHouse(_loc10_),Math.random() * 360,_loc10_,_loc9_,GLOBAL.player.monsterList[_loc5_].level,GLOBAL.player.monsterList[_loc5_].m_creeps[_loc7_].health);
+                  }
+                  _loc7_++;
                }
-               _loc5_ = 0;
-               while(_loc5_ < _loc4_)
-               {
-                  _loc6_ = Math.random() * _loc1_.length;
-                  _loc7_ = _loc1_[_loc6_];
-                  _loc8_ = GRID.FromISO(_loc7_.x,_loc7_.y);
-                  CREATURES.Spawn(_loc3_,MAP._BUILDINGTOPS,MonsterBase.k_sBHVR_PEN,PointInHouse(_loc8_),Math.random() * 360,_loc8_,_loc7_);
-                  _loc5_++;
-               }
+               _loc5_++;
             }
          }
       }
@@ -274,19 +289,13 @@ package
       {
          if(_open)
          {
-            _mc.Update();
+            _housingPopup.Update();
          }
       }
       
-      public static function Export() : Object
+      public static function catchupTick(param1:int) : void
       {
-         var _loc2_:String = null;
-         var _loc1_:Object = {};
-         for(_loc2_ in _creatures)
-         {
-            _loc1_[_loc2_] = _creatures[_loc2_].Get();
-         }
-         return _loc1_;
+         GLOBAL.player.tickHeal(param1);
       }
       
       public static function isHousingBuilding(param1:int) : Boolean
@@ -296,22 +305,12 @@ package
       
       public static function AddHouse(param1:BFOUNDATION) : void
       {
-         if(BASE._buildingsHousing.indexOf(param1) >= 0)
-         {
-            return;
-         }
-         BASE._buildingsHousing.push(param1);
          HousingSpace();
          GLOBAL._bHousing = param1;
       }
       
       public static function RemoveHouse(param1:BFOUNDATION) : void
       {
-         var _loc2_:int = int(BASE._buildingsHousing.indexOf(param1));
-         if(_loc2_ >= 0)
-         {
-            BASE._buildingsHousing.splice(_loc2_,1);
-         }
          GLOBAL._bHousing = null;
          HousingSpace();
       }
@@ -322,13 +321,15 @@ package
          var _loc11_:Object = null;
          var _loc12_:String = null;
          var _loc13_:Object = null;
-         var _loc14_:String = null;
-         var _loc15_:Object = null;
+         var _loc14_:int = 0;
+         var _loc15_:int = 0;
+         var _loc16_:MonsterData = null;
+         var _loc17_:Object = null;
          var _loc1_:Array = [];
          var _loc2_:Array = [];
          var _loc3_:Array = [];
          var _loc4_:Object = CREATURELOCKER.GetCreatures("above");
-         var _loc5_:* = !BASE.isInferno();
+         var _loc5_:* = !BASE.isInfernoMainYardOrOutpost;
          if(_loc5_)
          {
             for(_loc10_ in _loc4_)
@@ -369,17 +370,21 @@ package
          var _loc9_:int = 0;
          while(_loc9_ < _loc3_.length)
          {
-            for(_loc14_ in _creatures)
+            _loc14_ = int(GLOBAL.player.monsterList.length);
+            _loc15_ = 0;
+            while(_loc15_ < _loc14_)
             {
-               if(_loc14_ == _loc3_[_loc9_].id)
+               _loc16_ = GLOBAL.player.monsterList[_loc15_];
+               if(_loc16_.m_creatureID == _loc3_[_loc9_].id)
                {
-                  if(_creatures[_loc14_].Get() > 0)
+                  if(_loc16_.numCreeps > 0)
                   {
-                     _loc15_ = _loc3_[_loc9_];
-                     _loc15_.quantity = _creatures[_loc14_];
-                     _loc8_.push(_loc15_);
+                     _loc17_ = _loc3_[_loc9_];
+                     _loc17_.quantity = _loc16_.numHousedCreeps;
+                     _loc8_.push(_loc17_);
                   }
                }
+               _loc15_++;
             }
             _loc9_++;
          }

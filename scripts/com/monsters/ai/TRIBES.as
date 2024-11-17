@@ -1,12 +1,14 @@
 package com.monsters.ai
 {
+   import com.monsters.maproom_manager.MapRoomManager;
+   
    public class TRIBES
    {
-      public static var _tribes:Object;
+      private static var _tribes:Object;
       
-      public static var _infernotribes:Object;
+      private static var _infernotribes:Object;
       
-      public static var _eventtribes:Object;
+      private static var _eventtribes:Object;
       
       private static var _assoc:Object;
       
@@ -17,6 +19,12 @@ package com.monsters.ai
       public static const A_IDS:Array = [21,22,23,24,25,26,27,28,29,30,45,46];
       
       public static const D_IDS:Array = [31,32,33,34,35,36,37,38,39,40,47,48,101,102,103,104,105,106,107,108,109,110];
+      
+      public static const k_DIGIT_LEVEL:uint = 0;
+      
+      public static const k_DIGIT_TRIBE:uint = 1;
+      
+      public static const k_DIGIT_CELLTYPE:uint = 2;
       
       public static var B_IDS:Array = [];
       
@@ -124,10 +132,12 @@ package com.monsters.ai
          };
       }
       
-      public static function TribeForName(param1:int, param2:int = 0) : Object
+      public static function TribeForID(param1:int, param2:int = 0) : Object
       {
          var _loc4_:Object = null;
-         if(GLOBAL._loadmode != GLOBAL._mode)
+         var _loc5_:Vector.<int> = null;
+         var _loc6_:int = 0;
+         if(GLOBAL._loadmode !== GLOBAL.mode)
          {
             return _infernotribes.d;
          }
@@ -139,22 +149,16 @@ package com.monsters.ai
                return _loc4_;
             }
          }
-         return null;
-      }
-      
-      public static function TribeForID(param1:int, param2:int = 0) : Object
-      {
-         var _loc4_:Object = null;
-         if(GLOBAL._loadmode != GLOBAL._mode)
+         if(MapRoomManager.instance.isInMapRoom3)
          {
-            return _infernotribes.d;
-         }
-         var _loc3_:Object = ChooseTribesTable(param2);
-         for each(_loc4_ in _loc3_)
-         {
-            if(_loc4_.nid == param1)
+            _loc5_ = separateDigitsFromInt(param1);
+            _loc6_ = _loc5_[k_DIGIT_TRIBE];
+            for each(_loc4_ in _tribes)
             {
-               return _loc4_;
+               if(_loc4_.id === _loc6_)
+               {
+                  return _loc4_;
+               }
             }
          }
          return null;
@@ -164,11 +168,14 @@ package com.monsters.ai
       {
          var _loc3_:String = null;
          var _loc4_:int = 0;
-         if(GLOBAL._loadmode != GLOBAL._mode)
+         var _loc5_:Vector.<int> = null;
+         var _loc6_:int = 0;
+         var _loc7_:Object = null;
+         if(GLOBAL._loadmode != GLOBAL.mode)
          {
             return _infernotribes.d;
          }
-         if(param1 >= B_IDS[0] || param1 === 0)
+         if(B_IDS.length && param1 >= B_IDS[0] || param1 === 0)
          {
             return _eventtribes.b;
          }
@@ -184,7 +191,31 @@ package com.monsters.ai
                _loc4_++;
             }
          }
+         if(MapRoomManager.instance.isInMapRoom3)
+         {
+            _loc5_ = separateDigitsFromInt(param1);
+            _loc6_ = _loc5_[k_DIGIT_TRIBE];
+            for each(_loc7_ in _tribes)
+            {
+               if(_loc7_.id === _loc6_)
+               {
+                  return _loc7_;
+               }
+            }
+            return _loc7_;
+         }
          return null;
+      }
+      
+      private static function separateDigitsFromInt(param1:int) : Vector.<int>
+      {
+         var _loc2_:Vector.<int> = new Vector.<int>();
+         while(param1)
+         {
+            _loc2_[_loc2_.length] = param1 % 10;
+            param1 = Math.floor(param1 * 0.1);
+         }
+         return _loc2_;
       }
       
       public static function ChooseTribesTable(param1:int = 0) : Object
@@ -192,7 +223,7 @@ package com.monsters.ai
          var _loc2_:int = param1;
          if(_loc2_ <= 0)
          {
-            _loc2_ = BASE.isInferno() ? 2 : 1;
+            _loc2_ = BASE.isInfernoMainYardOrOutpost ? 2 : 1;
          }
          switch(_loc2_)
          {

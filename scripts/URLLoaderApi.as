@@ -12,6 +12,8 @@ package
    {
       public static var _data:String = "";
       
+      private static var _c:int = 0;
+      
       public var _URL:String;
       
       private var _status:int;
@@ -105,7 +107,7 @@ package
       
       private function getSalt() : String
       {
-         return this.decodeSalt("WWV20U6V73U94167ZV451447ZY3VY693");
+         return this.decodeSalt("84V37530976X4W7175W9Z02U3483Y6VW");
       }
       
       private function decodeSalt(param1:String) : String

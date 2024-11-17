@@ -1,5 +1,9 @@
 package
 {
+   import com.monsters.managers.InstanceManager;
+   import com.monsters.maproom3.popups.MapRoom3ConfirmMigrationPopup;
+   import com.monsters.maproom3.popups.MapRoom3RelocatePopup;
+   import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.radio.RADIO;
    import com.monsters.siege.SiegeFactory;
    import com.monsters.siege.SiegeLab;
@@ -75,35 +79,39 @@ package
       
       public static function Update() : void
       {
-         var _loc3_:int = 0;
-         var _loc4_:BFOUNDATION = null;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:String = null;
+         var _loc4_:int = 0;
+         var _loc5_:Vector.<Object> = null;
+         var _loc6_:BFOUNDATION = null;
+         var _loc7_:int = 0;
          var _loc8_:int = 0;
-         var _loc9_:int = 0;
-         var _loc10_:Boolean = false;
-         var _loc11_:Button_CLIP = null;
-         var _loc12_:int = 0;
-         var _loc13_:int = 0;
-         var _loc14_:int = 0;
+         var _loc9_:String = null;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc12_:Boolean = false;
+         var _loc13_:Boolean = false;
+         var _loc14_:Button_CLIP = null;
          var _loc15_:int = 0;
          var _loc16_:int = 0;
-         var _loc17_:TextField = null;
+         var _loc17_:int = 0;
+         var _loc18_:int = 0;
+         var _loc19_:int = 0;
+         var _loc20_:TextField = null;
          var _loc1_:Array = [];
          var _loc2_:Boolean = true;
+         var _loc3_:Boolean = MapRoomManager.instance.isInMapRoom3 && BASE.isOutpost;
          if(_mc)
          {
-            for each(_loc4_ in BASE._buildingsAll)
+            _loc5_ = InstanceManager.getInstancesByClass(BFOUNDATION);
+            for each(_loc6_ in _loc5_)
             {
-               if(_loc4_._hp.Get() < _loc4_._hpMax.Get())
+               if(_loc6_.health < _loc6_.maxHealth)
                {
-                  _loc3_ += 1;
+                  _loc4_ += 1;
                }
             }
-            if(GLOBAL._mode == "build")
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
             {
-               if(_building._hp.Get() < _building._hpMax.Get())
+               if(_building.health < _building.maxHealth)
                {
                   _loc2_ = false;
                   if(_building._repairing == 0)
@@ -112,8 +120,8 @@ package
                   }
                   else
                   {
-                     _loc1_.push(["btn_speedup",30,_loc3_ >= 2 ? false : true]);
-                     if(_loc3_ >= 2)
+                     _loc1_.push(["btn_speedup",30,_loc4_ >= 2 ? false : true]);
+                     if(_loc4_ >= 2)
                      {
                         _loc1_.push(["btn_repairall",30,true]);
                      }
@@ -165,15 +173,16 @@ package
                {
                   if(_loc2_)
                   {
-                     _loc10_ = false;
+                     _loc12_ = true;
+                     _loc13_ = false;
                      if(_building._countdownBuild.Get() + _building._countdownUpgrade.Get() + _building._countdownFortify.Get() > 0 || _building._repairing > 0)
                      {
                         _loc1_.push(["btn_speedup",30,true]);
-                        _loc10_ = true;
+                        _loc13_ = true;
                      }
                      if(_props.id == 8)
                      {
-                        if(BASE.isInferno())
+                        if(BASE.isInfernoMainYardOrOutpost)
                         {
                            _loc1_.push(["btn_openstrongbox",30,true]);
                         }
@@ -181,7 +190,7 @@ package
                         {
                            _loc1_.push(["btn_openlocker",30,true]);
                         }
-                        if(CREATURELOCKER._unlocking != null && !_loc10_)
+                        if(CREATURELOCKER._unlocking != null && !_loc13_)
                         {
                            _loc1_.push(["btn_speedup",30,true]);
                         }
@@ -200,7 +209,12 @@ package
                      }
                      else if(_props.id == 11 || _props.id == 5 || _props.id == 51)
                      {
-                        _loc1_.push(["btn_viewmap",30,true]);
+                        if(MapRoomManager.instance.isInMapRoom3 === false)
+                        {
+                           _loc1_.push(["btn_joinnwm",30,_loc12_]);
+                           _loc12_ = false;
+                        }
+                        _loc1_.push(["btn_viewmap",30,_loc12_]);
                      }
                      else if(_props.id == 12)
                      {
@@ -214,16 +228,16 @@ package
                         }
                         else
                         {
-                           _loc1_.push([BASE.isInferno() ? "btn_viewincubator" : "btn_viewhatchery",30,true]);
+                           _loc1_.push([BASE.isInfernoMainYardOrOutpost ? "btn_viewincubator" : "btn_viewhatchery",30,true]);
                         }
-                        if(!GLOBAL._hatcheryOverdrive && !_loc10_ && TUTORIAL._stage > 200)
+                        if(!GLOBAL._hatcheryOverdrive && !_loc13_ && TUTORIAL._stage > 200)
                         {
                            _loc1_.push(["btn_speedup",30,true]);
                         }
                      }
                      else if(HOUSING.isHousingBuilding(_props.id))
                      {
-                        if(BASE.isInferno())
+                        if(BASE.isInfernoMainYardOrOutpost)
                         {
                            _loc1_.push(["btn_viewcompound",30,true]);
                         }
@@ -243,7 +257,7 @@ package
                      else if(_props.id == 16)
                      {
                         _loc1_.push(["btn_openhcc",30,true]);
-                        if(!GLOBAL._hatcheryOverdrive && !_loc10_)
+                        if(!GLOBAL._hatcheryOverdrive && !_loc13_)
                         {
                            _loc1_.push(["btn_speedup",30,true]);
                         }
@@ -251,7 +265,7 @@ package
                      else if(_props.id == 26)
                      {
                         _loc1_.push(["btn_openacademy",30,true]);
-                        if(Boolean(_building._upgrading) && !_loc10_)
+                        if(Boolean(_building._upgrading) && !_loc13_)
                         {
                            _loc1_.push(["btn_speedup",30,true]);
                         }
@@ -280,18 +294,22 @@ package
                      {
                         _loc1_.push([SiegeLab.SIEGE_BUTTON,30,true]);
                      }
+                     else if(_props.id == BUILDING14.k_TYPE && MapRoomManager.instance.isInMapRoom3 && !BASE.isInfernoMainYardOrOutpost)
+                     {
+                        _loc1_.push([MapRoom3RelocatePopup.k_RELOCATE_BUTTONINFO,30,true]);
+                     }
                   }
                   if(_loc2_ && _props.type != "mushroom")
                   {
-                     if(_props.type != "decoration")
+                     if(_props.type != "decoration" && _props.id != MAPROOM.TYPE && !_loc3_)
                      {
                         _loc1_.push(["btn_upgrade",30]);
                      }
-                     if(_props.type == "wall")
+                     if(_props.type == "wall" && !_loc3_)
                      {
                         _loc1_.push(["btn_upgradeall",30,1]);
                      }
-                     if(_props.type == "resource")
+                     if(_props.type == "resource" && !_loc3_)
                      {
                         if(!GLOBAL._harvesterOverdrive || GLOBAL._harvesterOverdrive < GLOBAL.Timestamp())
                         {
@@ -300,12 +318,18 @@ package
                      }
                      if(TUTORIAL._stage >= 200)
                      {
-                        if(_props.can_fortify)
+                        if(Boolean(_props.can_fortify) && !_loc3_)
                         {
                            _loc1_.push(["btn_fortify",30]);
                         }
-                        _loc1_.push(["btn_move",30]);
-                        _loc1_.push(["btn_more",30]);
+                        if(!_props.isNoMoreInfoButton)
+                        {
+                           _loc1_.push(["btn_more",30]);
+                        }
+                        if(!_building.isImmobile || GLOBAL._aiDesignMode)
+                        {
+                           _loc1_.push(["btn_move",30]);
+                        }
                      }
                   }
                   if(_loc2_ && _props.type == "taunt")
@@ -330,17 +354,17 @@ package
             {
                _loc1_.push(["btn_pick",30,true]);
             }
-            _loc5_ = _mc.tName.y + _mc.tName.height + 5;
+            _loc7_ = _mc.tName.y + _mc.tName.height + 5;
             if(!_positionSet)
             {
                _positionSet = true;
                _clickPoint = new Point(MAP._GROUND.mouseX,MAP._GROUND.mouseY);
                _mc.x = int(_clickPoint.x) - 60;
-               _mc.y = int(_clickPoint.y) - _loc5_ - 15;
+               _mc.y = int(_clickPoint.y) - _loc7_ - 15;
             }
             if(_building == INFERNOPORTAL.building && INFERNOPORTAL.isAboveMaxLevel())
             {
-               if(BASE.isInferno())
+               if(BASE.isInfernoMainYardOrOutpost)
                {
                   _loc1_ = [[INFERNOPORTAL.EXIT_BUTTON,30,true]];
                }
@@ -358,147 +382,147 @@ package
                _mc.removeChild(_buttonsMC);
             }
             _buttonsMC = _mc.addChild(new MovieClip()) as MovieClip;
-            _loc6_ = 0;
-            while(_loc6_ < _loc1_.length)
+            _loc8_ = 0;
+            while(_loc8_ < _loc1_.length)
             {
-               _loc11_ = new Button_CLIP();
-               _buttonsMC.addChild(_loc11_);
-               if(_loc1_[_loc6_][0] == "btn_move")
+               _loc14_ = new Button_CLIP();
+               _buttonsMC.addChild(_loc14_);
+               if(_loc1_[_loc8_][0] == "btn_move")
                {
-                  _loc11_.SetupKey(_loc1_[_loc6_][0],false,52,_loc1_[_loc6_][1]);
-                  _loc11_.x = 6;
-                  _loc11_.y = _loc5_;
+                  _loc14_.SetupKey(_loc1_[_loc8_][0],false,52,_loc1_[_loc8_][1]);
+                  _loc14_.x = 6;
+                  _loc14_.y = _loc7_;
+                  _loc7_ += _loc14_.height + 2;
                }
-               else if(_loc1_[_loc6_][0] == "btn_more")
+               else if(_loc1_[_loc8_][0] == "btn_more")
                {
-                  _loc11_.SetupKey(_loc1_[_loc6_][0],false,55,_loc1_[_loc6_][1]);
-                  _loc11_.x = 60;
-                  _loc11_.y = _loc5_;
-                  _loc5_ += _loc11_.height + 2;
+                  _loc14_.SetupKey(_loc1_[_loc8_][0],false,55,_loc1_[_loc8_][1]);
+                  _loc14_.x = 60;
+                  _loc14_.y = _loc7_;
                }
-               else if(_loc1_[_loc6_][0] == "btn_bank")
+               else if(_loc1_[_loc8_][0] == "btn_bank")
                {
-                  _loc11_.labelKey = "btn_bank";
-                  _loc11_.Setup(KEYS.Get("btn_bank",{"v1":_loc1_[_loc6_][3]}),false,110,_loc1_[_loc6_][1]);
-                  _loc11_.x = 6;
-                  _loc11_.y = _loc5_;
-                  _loc5_ += _loc11_.height + 2;
+                  _loc14_.labelKey = "btn_bank";
+                  _loc14_.Setup(KEYS.Get("btn_bank",{"v1":_loc1_[_loc8_][3]}),false,110,_loc1_[_loc8_][1]);
+                  _loc14_.x = 6;
+                  _loc14_.y = _loc7_;
+                  _loc7_ += _loc14_.height + 2;
                }
-               else if(_loc1_[_loc6_][0] == "btn_bankall")
+               else if(_loc1_[_loc8_][0] == "btn_bankall")
                {
-                  _loc11_.labelKey = "btn_bankall";
-                  _loc11_.SetupKey(_loc1_[_loc6_][0],false,110,_loc1_[_loc6_][1]);
-                  _loc11_.x = 6;
-                  _loc11_.y = _loc5_;
-                  _loc5_ += _loc11_.height + 2;
+                  _loc14_.labelKey = "btn_bankall";
+                  _loc14_.SetupKey(_loc1_[_loc8_][0],false,110,_loc1_[_loc8_][1]);
+                  _loc14_.x = 6;
+                  _loc14_.y = _loc7_;
+                  _loc7_ += _loc14_.height + 2;
                }
                else
                {
-                  _loc11_.SetupKey(_loc1_[_loc6_][0],false,110,_loc1_[_loc6_][1]);
-                  _loc11_.x = 6;
-                  _loc11_.y = _loc5_;
-                  _loc5_ += _loc11_.height + 2;
+                  _loc14_.SetupKey(_loc1_[_loc8_][0],false,110,_loc1_[_loc8_][1]);
+                  _loc14_.x = 6;
+                  _loc14_.y = _loc7_;
+                  _loc7_ += _loc14_.height + 2;
                }
-               _loc12_ = _loc1_[_loc6_][0] == "btn_bank" ? 4 : 3;
-               if(_loc1_[_loc6_][2])
+               _loc15_ = _loc1_[_loc8_][0] == "btn_bank" ? 4 : 3;
+               if(_loc1_[_loc8_][2])
                {
-                  _loc11_.Highlight = true;
+                  _loc14_.Highlight = true;
                }
-               if(_loc1_[_loc6_][_loc12_])
+               if(_loc1_[_loc8_][_loc15_])
                {
-                  _loc11_.Enabled = false;
+                  _loc14_.Enabled = false;
                }
-               _loc11_.addEventListener(MouseEvent.MOUSE_DOWN,Special);
-               _loc6_++;
+               _loc14_.addEventListener(MouseEvent.MOUSE_DOWN,Special);
+               _loc8_++;
             }
-            _loc5_ += 5;
-            _loc7_ = "";
-            if(_building._hp.Get() < _building._hpMax.Get())
+            _loc7_ += 5;
+            _loc9_ = "";
+            if(_building.health < _building.maxHealth)
             {
-               _loc8_ = 0;
+               _loc10_ = 0;
                if(_building._lvl.Get() == 0)
                {
-                  _loc8_ = int(_building._buildingProps.repairTime[0]);
+                  _loc10_ = int(_building._buildingProps.repairTime[0]);
                }
                else
                {
-                  _loc8_ = int(_building._buildingProps.repairTime[_building._lvl.Get() - 1]);
+                  _loc10_ = int(_building._buildingProps.repairTime[_building._lvl.Get() - 1]);
                }
-               _loc8_ = Math.min(60 * 60,_loc8_);
-               _loc8_ = Math.ceil(_building._hpMax.Get() / _loc8_);
+               _loc10_ = Math.min(60 * 60,_loc10_);
+               _loc10_ = Math.ceil(_building.maxHealth / _loc10_);
                if(_building._repairing)
                {
-                  _loc7_ = KEYS.Get("ui_repairing",{"v1":GLOBAL.ToTime(int((_building._hpMax.Get() - _building._hp.Get()) / _loc8_),true,true)});
+                  _loc9_ = KEYS.Get("ui_repairing",{"v1":GLOBAL.ToTime(int((_building.maxHealth - _building.health) / _loc10_),true,true)});
                }
             }
             else if(_building._countdownBuild.Get() > 0)
             {
-               _loc7_ = KEYS.Get("ui_building",{"v1":GLOBAL.ToTime(_building._countdownBuild.Get(),true,true)});
+               _loc9_ = KEYS.Get("ui_building",{"v1":GLOBAL.ToTime(_building._countdownBuild.Get(),true,true)});
             }
             else if(_building._countdownUpgrade.Get() > 0)
             {
-               _loc7_ = KEYS.Get("ui_upgrading",{"v1":GLOBAL.ToTime(_building._countdownUpgrade.Get(),true,true)});
+               _loc9_ = KEYS.Get("ui_upgrading",{"v1":GLOBAL.ToTime(_building._countdownUpgrade.Get(),true,true)});
             }
             else if(_building._countdownFortify.Get() > 0)
             {
-               _loc7_ = KEYS.Get("ui_fortifying",{"v1":GLOBAL.ToTime(_building._countdownFortify.Get(),true,true)});
+               _loc9_ = KEYS.Get("ui_fortifying",{"v1":GLOBAL.ToTime(_building._countdownFortify.Get(),true,true)});
             }
             else if(_building._class == "resource")
             {
                if(BASE.isOutpost)
                {
-                  _loc7_ = KEYS.Get("harvester_autobank_msg");
+                  _loc9_ = KEYS.Get("harvester_autobank_msg");
                }
                else if(_building._producing)
                {
-                  _loc13_ = _building._buildingProps.capacity[_building._lvl.Get() - 1] - _building._stored.Get();
-                  _loc14_ = 60 / _building._buildingProps.cycleTime[_building._lvl.Get() - 1] * _building._buildingProps.produce[_building._lvl.Get() - 1];
-                  if(BASE._yardType == BASE.OUTPOST)
+                  _loc16_ = _building._buildingProps.capacity[_building._lvl.Get() - 1] - _building._stored.Get();
+                  _loc17_ = 60 / _building._buildingProps.cycleTime[_building._lvl.Get() - 1] * _building._buildingProps.produce[_building._lvl.Get() - 1];
+                  if(BASE.isOutpost)
                   {
-                     _loc14_ = BRESOURCE.AdjustProduction(GLOBAL._currentCell,_loc14_);
+                     _loc17_ = BRESOURCE.AdjustProduction(GLOBAL._currentCell,_loc17_);
                   }
                   if(GLOBAL._harvesterOverdrive >= GLOBAL.Timestamp() && GLOBAL._harvesterOverdrivePower.Get() > 0)
                   {
-                     _loc14_ *= GLOBAL._harvesterOverdrivePower.Get();
+                     _loc17_ *= GLOBAL._harvesterOverdrivePower.Get();
                   }
-                  _loc15_ = _loc13_ / _loc14_ * 60;
-                  _loc16_ = 100 / _building._buildingProps.capacity[_building._lvl.Get() - 1] * _building._stored.Get();
-                  _loc7_ = KEYS.Get("ui_producing",{
+                  _loc18_ = _loc16_ / _loc17_ * 60;
+                  _loc19_ = 100 / _building._buildingProps.capacity[_building._lvl.Get() - 1] * _building._stored.Get();
+                  _loc9_ = KEYS.Get("ui_producing",{
                      "v1":KEYS.Get(GLOBAL._resourceNames[_building._type - 1]),
-                     "v2":GLOBAL.ToTime(_loc15_,true,true),
-                     "v3":_loc16_
+                     "v2":GLOBAL.ToTime(_loc18_,true,true),
+                     "v3":_loc19_
                   });
                }
                else
                {
-                  _loc7_ = KEYS.Get("ui_buildingfull");
+                  _loc9_ = KEYS.Get("ui_buildingfull");
                }
             }
-            if(_loc7_ != "")
+            if(_loc9_ != "")
             {
-               _loc9_ = MAP._GROUND.x + _mc.x;
-               if(_loc9_ < 500)
+               _loc11_ = MAP._GROUND.x + _mc.x;
+               if(_loc11_ < 500)
                {
                   _mc.gotoAndStop(2);
-                  _loc17_ = _mc.tInfoRight;
+                  _loc20_ = _mc.tInfoRight;
                }
                else
                {
                   _mc.gotoAndStop(3);
-                  _loc17_ = _mc.tInfoLeft;
+                  _loc20_ = _mc.tInfoLeft;
                }
-               _loc17_.autoSize = TextFieldAutoSize.CENTER;
-               _loc17_.htmlText = _loc7_;
-               if(_loc17_.height + 10 > _loc5_)
+               _loc20_.autoSize = TextFieldAutoSize.CENTER;
+               _loc20_.htmlText = _loc9_;
+               if(_loc20_.height + 10 > _loc7_)
                {
-                  _loc5_ = _loc17_.height + 10;
+                  _loc7_ = _loc20_.height + 10;
                }
-               if(_loc17_.height < _loc5_)
+               if(_loc20_.height < _loc7_)
                {
-                  _loc17_.y = (_loc5_ - _loc17_.height) * 0.5;
+                  _loc20_.y = (_loc7_ - _loc20_.height) * 0.5;
                }
             }
-            _mc.mcBG.height = _loc5_;
+            _mc.mcBG.height = _loc7_;
          }
       }
       
@@ -530,9 +554,10 @@ package
       
       public static function Special(param1:MouseEvent) : void
       {
-         var _loc2_:BFOUNDATION = null;
-         var _loc3_:MONSTERLAB = null;
-         var _loc4_:Boolean = false;
+         var _loc2_:Vector.<Object> = null;
+         var _loc3_:BFOUNDATION = null;
+         var _loc4_:MONSTERLAB = null;
+         var _loc5_:Boolean = false;
          if(param1.target.labelKey == "btn_bank")
          {
             _building.Bank();
@@ -540,11 +565,12 @@ package
          }
          if(param1.target.labelKey == "btn_bankall")
          {
-            for each(_loc2_ in BASE._buildingsAll)
+            _loc2_ = InstanceManager.getInstancesByClass(BRESOURCE);
+            for each(_loc3_ in _loc2_)
             {
-               if(_loc2_._class == "resource" && _loc2_._countdownUpgrade.Get() == 0 && _loc2_._countdownBuild.Get() == 0 && _loc2_._countdownFortify.Get() == 0 && _loc2_._hp.Get() == _loc2_._hpMax.Get())
+               if(_loc3_._class === "resource" && _loc3_._countdownUpgrade.Get() === 0 && _loc3_._countdownBuild.Get() === 0 && _loc3_._countdownFortify.Get() === 0 && _loc3_.health === _loc3_.maxHealth)
                {
-                  _loc2_.Bank();
+                  _loc3_.Bank();
                }
             }
             SALESPECIALSPOPUP.Check();
@@ -559,8 +585,12 @@ package
          }
          if(param1.target.labelKey == "btn_openlab")
          {
-            _loc3_ = GLOBAL._bLab as MONSTERLAB;
-            _loc3_.Show();
+            _loc4_ = GLOBAL._bLab as MONSTERLAB;
+            _loc4_.Show();
+         }
+         if(param1.target.labelKey == "btn_joinnwm")
+         {
+            MapRoom3ConfirmMigrationPopup.instance.Show();
          }
          if(param1.target.labelKey == "btn_viewhatchery" || param1.target.labelKey == "btn_viewincubator")
          {
@@ -650,6 +680,10 @@ package
          {
             SiegeLab.Show();
          }
+         if(param1.target.labelKey == MapRoom3RelocatePopup.k_RELOCATE_BUTTONINFO)
+         {
+            MapRoom3RelocatePopup.instance.Show();
+         }
          if(param1.target.labelKey == "btn_move")
          {
             _building.StartMove();
@@ -658,8 +692,8 @@ package
          {
             if(_building._type == 14 && _building._lvl.Get() && _building._lvl.Get() < _building._buildingProps.costs.length)
             {
-               _loc4_ = BUY.FBCNcpCheckEligibility();
-               if(!_loc4_)
+               _loc5_ = BUY.FBCNcpCheckEligibility();
+               if(!_loc5_)
                {
                   BUILDINGOPTIONS.Show(_building,"upgrade");
                }
@@ -675,7 +709,7 @@ package
          }
          if(param1.target.labelKey == "btn_upgradeall")
          {
-            if(BASE.isInferno())
+            if(BASE.isInfernoMainYardOrOutpost)
             {
                STORE.ShowB(1,0,["BLK2I","BLK3I"]);
             }
@@ -705,7 +739,7 @@ package
             }
             else if(_props.id == 13 || _props.id == 16)
             {
-               if(!BASE.isInferno())
+               if(!BASE.isInfernoMainYardOrOutpost)
                {
                   STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
                }

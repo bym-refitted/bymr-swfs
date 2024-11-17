@@ -43,10 +43,10 @@ package
          }
          _mc = new MovieClip();
          _workers = [];
-         if(GLOBAL._mode == "build")
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD)
          {
             _maxWorkers = 5;
-            if(BASE._yardType)
+            if(!BASE.isMainYard)
             {
                _maxWorkers = 1;
             }

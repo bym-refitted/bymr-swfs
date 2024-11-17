@@ -78,12 +78,15 @@ package com.monsters.missions
       public function Init(param1:Boolean = false) : void
       {
          this._isDisable = param1;
-         if(GLOBAL._mode == "build" && !param1)
+         if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !param1)
          {
             this.buttonMode = true;
             this.useHandCursor = true;
-            addEventListener(MouseEvent.CLICK,this.ShowMission(this._missionID));
-            addEventListener(MouseEvent.ROLL_OVER,this.MissionRollOver(this._missionID));
+            if(!hasEventListener(MouseEvent.CLICK))
+            {
+               addEventListener(MouseEvent.CLICK,this.ShowMission(this._missionID));
+               addEventListener(MouseEvent.ROLL_OVER,this.MissionRollOver(this._missionID));
+            }
             if(this._isComplete)
             {
                gotoAndStop(2);
@@ -117,7 +120,7 @@ package com.monsters.missions
          {
             var _loc2_:* = undefined;
             var _loc3_:* = undefined;
-            if(GLOBAL._mode == "build" && !_isDisable)
+            if(GLOBAL.mode == GLOBAL.e_BASE_MODE.BUILD && !_isDisable)
             {
                _loc2_ = _missionObject.id;
                if(TUTORIAL.hasFinished || QUESTS._completed && QUESTS._completed[_loc2_] == 1 && TUTORIAL._stage >= 26)

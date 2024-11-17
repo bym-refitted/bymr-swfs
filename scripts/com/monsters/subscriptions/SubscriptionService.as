@@ -13,20 +13,20 @@ package com.monsters.subscriptions
          super();
       }
       
-      private function callJS(param1:String, param2:Function = null, param3:Number = 2) : void
+      private function callJS(param1:String, param2:Function = null, param3:Number = 2, param4:Boolean = true) : void
       {
-         var _loc4_:String = param1.replace("cc.","");
-         if(param2 && ExternalInterface.available && this._callbacks.indexOf(_loc4_) < 0)
+         var _loc5_:String = param1.replace("cc.","");
+         if(param2 && ExternalInterface.available && this._callbacks.indexOf(_loc5_) < 0)
          {
-            ExternalInterface.addCallback(_loc4_,param2);
-            this._callbacks[_loc4_] = _loc4_;
+            ExternalInterface.addCallback(_loc5_,param2);
+            this._callbacks[_loc5_] = _loc5_;
          }
-         GLOBAL.CallJS(param1,[param3]);
+         GLOBAL.CallJS(param1,[param3],param4);
       }
       
       public function getSubscriptionData() : void
       {
-         this.callJS("cc.getUserSubscriptions",this.getUserSubscriptions);
+         this.callJS("cc.getUserSubscriptions",this.getUserSubscriptions,2,false);
       }
       
       public function getUserSubscriptions(param1:String) : void

@@ -12,12 +12,12 @@ package com.monsters.frontPage.messages.news
       override protected function onButtonClick() : void
       {
          POPUPS.Next();
-         BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+         BUILDINGOPTIONS.Show(GLOBAL.townHall,"upgrade");
       }
       
       override public function get areRequirementsMet() : Boolean
       {
-         return GLOBAL._bTownhall._lvl.Get() == 9;
+         return GLOBAL.townHall._lvl.Get() == 9;
       }
    }
 }

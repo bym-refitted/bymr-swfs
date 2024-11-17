@@ -1,6 +1,8 @@
 package
 {
-   import com.monsters.maproom_advanced.MapRoomPopup_Migrate;
+   import com.monsters.enums.EnumYardType;
+   import com.monsters.maproom_advanced.PopupMigrate;
+   import com.monsters.maproom_manager.MapRoomManager;
    
    public class NewPopupSystem
    {
@@ -35,13 +37,13 @@ package
             "displayFn":function(param1:String):void
             {
                var id:String = param1;
-               MapRoomPopup_Migrate.Show(function():void
+               PopupMigrate.Show(function():void
                {
                   NewPopupSystem.instance.ConfirmDialog(id);
                });
             },
             "requirements":[{
-               "yardType":BASE.MAIN_YARD,
+               "yardType":EnumYardType.MAIN_YARD,
                "minTownHallLevel":6,
                "maxMapRoomLevel":1,
                "minTimeBetweenDisplays":432000,
@@ -132,18 +134,18 @@ package
             case "yardType":
                return function(param1:String):Boolean
                {
-                  return BASE._yardType == value && Boolean(nextFn(param1));
+                  return BASE.yardType == value && Boolean(nextFn(param1));
                };
             case "maxMapRoomLevel":
                return function(param1:String):Boolean
                {
-                  value as Number < 2 ? !GLOBAL._advancedMap : true;
+                  value as Number < 2 ? !MapRoomManager.instance.isInMapRoom2 : true;
                   return Boolean(nextFn(param1));
                };
             case "minTownHallLevel":
                return function(param1:String):Boolean
                {
-                  return Boolean(GLOBAL._bTownhall) && GLOBAL._bTownhall._lvl.Get() >= (value as Number) && Boolean(nextFn(param1));
+                  return Boolean(GLOBAL.townHall) && GLOBAL.townHall._lvl.Get() >= (value as Number) && Boolean(nextFn(param1));
                };
             case "minTimeBetweenDisplays":
                return function(param1:String):Boolean
@@ -167,7 +169,7 @@ package
       
       private function coreRequirements(param1:String) : Boolean
       {
-         if(POPUPS._open || GLOBAL._mode != "build")
+         if(POPUPS._open || GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD)
          {
             return false;
          }

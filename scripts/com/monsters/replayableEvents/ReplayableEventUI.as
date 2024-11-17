@@ -53,7 +53,7 @@ package com.monsters.replayableEvents
          bHelp.addEventListener(MouseEvent.CLICK,this.ShowInfoPopup);
          bHelp.buttonMode = true;
          var _loc2_:int = 1;
-         if(BASE.isInferno())
+         if(BASE.isInfernoMainYardOrOutpost)
          {
             _loc2_ = 2;
          }
@@ -81,8 +81,8 @@ package com.monsters.replayableEvents
             bActionTxt.visible = false;
             bAction.visible = false;
             bAction.enabled = false;
-            mcBG.width = 214;
-            bHelp.x = 200;
+            mcBG.width = 290;
+            bHelp.x = 272;
          }
          this.updateImage();
       }

@@ -2,8 +2,8 @@ package com.monsters.replayableEvents
 {
    import com.monsters.replayableEvents.attackDefend.brukkargWar.BrukkargWarEvent;
    import com.monsters.replayableEvents.looting.wotc.WrathOfTheChampion;
-   import com.monsters.replayableEvents.monsterInvasion.hellRaisers.HellRaisers;
    import com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg.MonsterBlitzkrieg;
+   import com.monsters.replayableEvents.monsterInvasion.notHellRaisers.NotHellRaisers;
    import com.monsters.replayableEvents.yardCrawl.battletoads.Battletoads;
    
    public class ReplayableEventLibrary
@@ -12,7 +12,7 @@ package com.monsters.replayableEvents
       
       public static const MONSTER_BLITZKRIEG:MonsterBlitzkrieg = new MonsterBlitzkrieg();
       
-      public static const HELL_RAISERS:HellRaisers = new HellRaisers();
+      public static const HELL_RAISERS:NotHellRaisers = new NotHellRaisers();
       
       public static const BRUKKARG_EVENT:BrukkargWarEvent = new BrukkargWarEvent();
       
