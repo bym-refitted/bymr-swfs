@@ -138,9 +138,6 @@ package
             "pu":KEYS.Get("bomb_pu_name")
          };
          var _loc2_:Object = ResourceBombs._bombs[ResourceBombs._bombid];
-         _mc.tTitleTwig.htmlText = KEYS.Get("bomb_tw_name_pl");
-         _mc.tTitlePebble.htmlText = KEYS.Get("bomb_pb_name_pl");
-         _mc.tTitlePutty.htmlText = KEYS.Get("bomb_pu_name");
          var _loc3_:String = _loc1_[ResourceBombs._bombid.substr(0,2)];
          _tType.htmlText = "<b>" + _loc2_.name + " " + _loc3_ + "</b>";
          if(!_loc2_.used)

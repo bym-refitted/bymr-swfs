@@ -1560,11 +1560,11 @@ package
                {
                   if(HOUSING._housingSpace.Get() < storage)
                   {
-                     GLOBAL.Message(KEYS.Get("msg_quest_housing"),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                     GLOBAL.Message("You do not have enough space in Housing for any of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
                      return false;
                   }
                   quantity = HOUSING._housingSpace.Get() / storage;
-                  GLOBAL.Message(KEYS.Get("msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                  GLOBAL.Message("You only have enough space in Housing for " + quantity + " of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
                   return false;
                }
             }

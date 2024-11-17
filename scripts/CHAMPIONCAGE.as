@@ -170,7 +170,7 @@ package
       
       public static function ShowJuice() : *
       {
-         GLOBAL.Message(KEYS.Get("msg_juicechampion_confirm"),KEYS.Get("msg_juicechampion_yes"),JuiceChampion);
+         GLOBAL.Message("Do you really want to juice your Champion? <b>This cannot be undone.</b>","Yes, juice my Champion.",JuiceChampion);
       }
       
       public static function JuiceChampion() : *
@@ -416,7 +416,7 @@ package
                   _loc6_ = _loc7_;
                }
                CREATURES._guardian._health.Set(_loc6_);
-               GLOBAL.Message(KEYS.Get("msg_champion_fed",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
+               GLOBAL.Message("Your Champion is now fed.  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
                CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
                CREATURES._guardian.Export();
                LOGGER.Log("fed","Buff Fed shiny " + CREATURES._guardian._foodBonus.Get());
@@ -488,7 +488,7 @@ package
                      _loc6_ = _loc7_;
                   }
                   CREATURES._guardian._health.Set(_loc6_);
-                  GLOBAL.Message(KEYS.Get("msg_champion_feeding",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
+                  GLOBAL.Message("Your Champion is now being fed.  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
                   CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
                   CREATURES._guardian.Export();
                   LOGGER.Log("fed","Buff Fed creeps " + CREATURES._guardian._foodBonus.Get());
@@ -497,7 +497,7 @@ package
                }
                else
                {
-                  GLOBAL.Message(KEYS.Get("msg_champion_morecreatures"));
+                  GLOBAL.Message("Not enough creatures.  The Champion will still be hungry!");
                }
             }
          }
@@ -514,14 +514,11 @@ package
             {
                if(param2 < 5)
                {
-                  GLOBAL.Message(KEYS.Get("msg_champion_evolved",{
-                     "v1":param2 + 1,
-                     "v2":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))
-                  }));
+                  GLOBAL.Message("Congratulations!  Your Champion has just evolved to Stage " + (param2 + 1) + "!  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
                }
                else
                {
-                  GLOBAL.Message(KEYS.Get("msg_champion_fullyevolved",{"v1":param2 + 1}));
+                  GLOBAL.Message("Congratulations!  Your Champion has just evolved to Stage " + (param2 + 1) + "!");
                }
                CREATURES._guardian.LevelSet(param2 + 1);
                if(CREATURES._guardian._level.Get() == 6)
@@ -531,7 +528,7 @@ package
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("msg_champion_fed",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
+               GLOBAL.Message("Your Champion is now fed.  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
             }
             CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
             CREATURES._guardian.Export();
@@ -598,19 +595,16 @@ package
                   }
                   if(param2 < 5)
                   {
-                     GLOBAL.Message(KEYS.Get("msg_champion_evolved",{
-                        "v1":param2 + 1,
-                        "v2":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))
-                     }));
+                     GLOBAL.Message("Congratulations!  Your Champion has just evolved to Stage " + (param2 + 1) + "!  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
                   }
                   else
                   {
-                     GLOBAL.Message(KEYS.Get("msg_champion_fullyevolved",{"v1":param2 + 1}));
+                     GLOBAL.Message("Congratulations!  Your Champion has just evolved to Stage " + (param2 + 1) + "!");
                   }
                }
                else
                {
-                  GLOBAL.Message(KEYS.Get("msg_champion_feeding",{"v1":GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"))}));
+                  GLOBAL.Message("Your Champion is now being fed.  Its next feeding time is in " + GLOBAL.ToTime(GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime")));
                }
                CREATURES._guardian._feedTime = new SecNum(GLOBAL.Timestamp() + GetGuardianProperty(param1,CREATURES._guardian._level.Get(),"feedTime"));
                CREATURES._guardian.Export();
@@ -620,7 +614,7 @@ package
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("msg_champion_morecreatures"));
+               GLOBAL.Message("Not enough creatures.  The Champion will still be hungry!");
             }
          }
       }
@@ -634,7 +628,7 @@ package
       override public function Description() : *
       {
          super.Description();
-         _upgradeDescription = KEYS.Get("building_monstercage_upgrade");
+         _upgradeDescription = "Upgrade the Monster Cage to gain access to a more powerful Champion Monster.";
       }
       
       override public function Constructed() : *
@@ -652,7 +646,7 @@ package
       {
          if(CREATURES._guardian)
          {
-            GLOBAL.Message(KEYS.Get("msg_cage_recycle"));
+            GLOBAL.Message("You cannot recycle your Champion Cage, you will leave your Champion without a home!");
          }
          else
          {

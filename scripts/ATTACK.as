@@ -292,7 +292,7 @@ package
                   _attackLog.bAction.Highlight = true;
                   if(GLOBAL._advancedMap)
                   {
-                     _attackLog.b2.Setup(KEYS.Get("btn_next"));
+                     _attackLog.b2.Setup("Next");
                   }
                   else
                   {
@@ -306,7 +306,7 @@ package
                   _attackLog.bAction.Highlight = false;
                   if(GLOBAL._advancedMap)
                   {
-                     _attackLog.bAction.Setup(KEYS.Get("btn_next"));
+                     _attackLog.bAction.Setup("Next");
                   }
                   else
                   {

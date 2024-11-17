@@ -61,15 +61,15 @@ package com.monsters.maproom_advanced
          {
             if(this._cell._baseID == MapRoom._inviteBaseID)
             {
-               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + " (" + KEYS.Get("map_target") + ")</b>";
+               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + " (Target)</b>";
             }
             else if(!this._cell._destroyed)
             {
-               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + "</b>";
+               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + "</b>";
             }
             else
             {
-               tName.htmlText = "<b>" + KEYS.Get("map_outpostowner",{"v1":this._cell._name}) + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               tName.htmlText = "<b>" + this._cell._name + "\'s " + KEYS.Get("b_outpost") + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
          }
@@ -82,11 +82,11 @@ package com.monsters.maproom_advanced
          {
             if(!this._cell._destroyed)
             {
-               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + "</b>";
+               tName.htmlText = "<b>" + this._cell._name + " Tribe</b>";
             }
             else
             {
-               tName.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":this._cell._name}) + " (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
+               tName.htmlText = "<b>" + this._cell._name + " Tribe (" + KEYS.Get("newmap_inf_destroyed") + ")</b>";
             }
             this.ProfilePic();
          }

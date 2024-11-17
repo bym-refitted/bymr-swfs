@@ -29,11 +29,11 @@ package
          this._bubble.mouseChildren = false;
          if(currentFrame == 2)
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_saving") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Saving</b>";
          }
          else
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_saved") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Saved</b>";
          }
          this._bubble.mcText.x = 10 - this._bubble.mcText.width;
          this._bubble.mcBG.x = this._bubble.mcText.x - 5;
@@ -47,11 +47,11 @@ package
          {
             if(currentFrame == 2)
             {
-               this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_saving") + "</b>";
+               this._bubble.mcText.htmlText = "<b>Saving</b>";
             }
             else
             {
-               this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_saved") + "</b>";
+               this._bubble.mcText.htmlText = "<b>Saved</b>";
             }
          }
       }

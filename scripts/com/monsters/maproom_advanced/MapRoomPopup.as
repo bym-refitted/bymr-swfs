@@ -70,9 +70,9 @@ package com.monsters.maproom_advanced
       public function MapRoomPopup()
       {
          var h:*;
-         var r:Rectangle;
          var i:int;
          var w:* = undefined;
+         var r:Rectangle = null;
          this._sortArray = [];
          super();
          w = GLOBAL._ROOT.stage.stageWidth;
@@ -143,7 +143,7 @@ package com.monsters.maproom_advanced
          this._popupInfoViewOnly = new PopupInfoViewOnly();
          if(!MapRoom._viewOnly)
          {
-            this.bHome.SetupKey("btn_home");
+            this.bHome.Setup("Home");
             this.bHome.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
             {
                HideBookmarkMenu();
@@ -152,12 +152,12 @@ package com.monsters.maproom_advanced
             this.bHome.buttonMode = true;
             this.bHome.x = mcFrame2.x + 20;
             this.bHome.y = mcFrame2.y + 200;
-            this.bJump.SetupKey("btn_jump");
+            this.bJump.Setup("Jump");
             this.bJump.addEventListener(MouseEvent.CLICK,this.JumpPopupShow);
             this.bJump.buttonMode = true;
             this.bJump.x = mcFrame2.x + 80;
             this.bJump.y = mcFrame2.y + 200;
-            this.bBookmarks.SetupKey("btn_bookmarks");
+            this.bBookmarks.Setup("Bookmarks");
             this.bBookmarks.addEventListener(MouseEvent.CLICK,this.ShowBookmarkMenu);
             this.bBookmarks.buttonMode = true;
             this.bBookmarks.x = mcFrame2.x + 20;
@@ -166,7 +166,7 @@ package com.monsters.maproom_advanced
          }
          else
          {
-            this.bBookmarks.SetupKey("btn_home");
+            this.bBookmarks.Setup("Home");
             this.bBookmarks.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
             {
                MapRoom.JumpTo(MapRoom._inviteLocation);
@@ -179,17 +179,17 @@ package com.monsters.maproom_advanced
             this.bJump.visible = false;
             this.HideResourceDisplay();
          }
-         mcInfo.labelOwner.htmlText = "<b>" + KEYS.Get("label_owner") + "</b>";
+         mcInfo.labelOwner.htmlText = "<b>Owner:</b>";
          if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
          {
-            mcInfo.labelAlliance.htmlText = "<b>" + KEYS.Get("label_type") + "</b>";
+            mcInfo.labelAlliance.htmlText = "<b>Type:</b>";
          }
          else
          {
-            mcInfo.labelAlliance.htmlText = "<b>" + KEYS.Get("label_alliance") + "</b>";
+            mcInfo.labelAlliance.htmlText = "<b>Alliance:</b>";
          }
-         mcInfo.labelStatus.htmlText = "<b>" + KEYS.Get("label_status") + "</b>";
-         mcInfo.labelLocation.htmlText = "<b>" + KEYS.Get("label_location") + "</b>";
+         mcInfo.labelStatus.htmlText = "<b>Status:</b>";
+         mcInfo.labelLocation.htmlText = "<b>Location:</b>";
          this.GenerateCells(MapRoom._homePoint);
          this._sortArray.sortOn("depth",Array.NUMERIC);
          i = 0;
@@ -234,10 +234,10 @@ package com.monsters.maproom_advanced
          };
          this.HideBookmarkMenu();
          popupMC = new MapRoomPopupJump();
-         popupMC.tMessage.htmlText = KEYS.Get("label_jumptolocation");
+         popupMC.tMessage.htmlText = "Jump to location:";
          popupMC.tX.htmlText = "";
          popupMC.tY.htmlText = "";
-         popupMC.bJump.SetupKey("btn_jump");
+         popupMC.bJump.Setup("Jump");
          popupMC.bJump.addEventListener(MouseEvent.CLICK,Jump);
          popupMC.x = 450;
          popupMC.y = 250;
@@ -324,7 +324,7 @@ package com.monsters.maproom_advanced
          if(param1._water)
          {
             mcInfo.tAlliance.htmlText = "";
-            mcInfo.tStatus.htmlText = KEYS.Get("status_water");
+            mcInfo.tStatus.htmlText = "Water";
             mcInfo.tOwner.htmlText = "";
          }
          else
@@ -2390,9 +2390,9 @@ package com.monsters.maproom_advanced
                MapRoom.JumpTo(MapRoom._homePoint);
                return "";
             }
-            return KEYS.Get("map_coordinateoffmap");
+            return "This coordinate is not on the map.";
          }
-         return KEYS.Get("map_notanumber");
+         return "That is not a number!";
       }
       
       public function BookmarkSelect(param1:int) : *
@@ -2439,9 +2439,9 @@ package com.monsters.maproom_advanced
       {
          SOUNDS.Play("click1");
          MapRoom._currentPosition = new Point(param1.X,param1.Y);
-         this._popupBookmarkAdd.tName.htmlText = KEYS.Get("map_yardowner",{"v1":param1._name});
+         this._popupBookmarkAdd.tName.htmlText = param1._name + "\'s Yard";
          this._popupBookmarkAdd.tMessage.htmlText = KEYS.Get("newmap_bm_add");
-         this._popupBookmarkAdd.bSave.SetupKey("btn_save");
+         this._popupBookmarkAdd.bSave.Setup("Save");
          this._popupBookmarkAdd.bSave.addEventListener(MouseEvent.CLICK,this.HideBookmarkAddPopupWithAdd);
          GLOBAL.BlockerAdd(this);
          this.addChild(this._popupBookmarkAdd);

@@ -1,6 +1,7 @@
 package
 {
    import com.cc.screenshot.screenshot;
+   import com.monsters.effects.ResourceBombs;
    import com.monsters.pathing.PATHING;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
@@ -182,7 +183,18 @@ package
             _creepCells = {};
             _GROUND.addEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.addEventListener(Event.ENTER_FRAME,Scroll);
-            GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
+            if(GLOBAL._local)
+            {
+               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownLocal);
+            }
+            else if(GLOBAL._aiDesignMode)
+            {
+               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownLocal);
+            }
+            else
+            {
+               GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_DOWN,KeyDownPublic);
+            }
             GLOBAL._ROOT.stage.addEventListener(KeyboardEvent.KEY_UP,KeyUp);
             _EDGE = null;
          }
@@ -309,21 +321,35 @@ package
       
       public static function KeyDownLocal(param1:KeyboardEvent) : *
       {
-         if(param1.shiftKey)
+         var xdif:int = 0;
+         var ydif:int = 0;
+         var building:BFOUNDATION = null;
+         var tempPowerup:Array = null;
+         var testarr:Array = null;
+         var bombidx:int = 0;
+         var bombid:String = null;
+         var creepid:* = undefined;
+         var goEasy:Boolean = false;
+         var i:int = 0;
+         var brain:CREEP = null;
+         var creep:CREEP = null;
+         var lasttdpopup:int = 0;
+         var e:KeyboardEvent = param1;
+         if(e.shiftKey)
          {
-            if(keyunlock == 0 && param1.keyCode == 38)
+            if(keyunlock == 0 && e.keyCode == 38)
             {
                keyunlock = 1;
             }
-            else if(keyunlock == 1 && param1.keyCode == 40)
+            else if(keyunlock == 1 && e.keyCode == 40)
             {
                keyunlock = 2;
             }
-            else if(keyunlock == 2 && param1.keyCode == 37)
+            else if(keyunlock == 2 && e.keyCode == 37)
             {
                keyunlock = 3;
             }
-            else if(keyunlock == 3 && param1.keyCode == 39)
+            else if(keyunlock == 3 && e.keyCode == 39)
             {
                screenshot.Show();
             }
@@ -335,6 +361,379 @@ package
          if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._bymChat && GLOBAL._bymChat.chatInputHasFocus() && !GLOBAL._aiDesignMode)
          {
             return;
+         }
+         if(!GLOBAL._local)
+         {
+            return;
+         }
+         if(GLOBAL._local)
+         {
+            xdif = 0;
+            ydif = 0;
+            switch(e.keyCode)
+            {
+               case 65:
+                  if(e.shiftKey)
+                  {
+                     CUSTOMATTACKS.TrojanHorse();
+                     break;
+                  }
+                  if(WMATTACK._history)
+                  {
+                     WMATTACK._history.lastattack = 0;
+                  }
+                  if(AIATTACK._history)
+                  {
+                     AIATTACK._history.lastattack = 0;
+                  }
+                  WMATTACK.Trigger();
+                  break;
+               case 80:
+               case 81:
+               case 87:
+                  break;
+               case 69:
+                  for each(building in BASE._buildingsAll)
+                  {
+                     building.Damage(building._hp.Get() * 2 + 1,building._mc.x,building._mc.y);
+                  }
+                  break;
+               case 82:
+                  ResourceBombs.Setup();
+                  _catapultsSetup = true;
+                  break;
+               case 84:
+                  BASE.RebuildTH();
+                  break;
+               case 66:
+                  BUILDINGS.Show();
+                  break;
+               case 188:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 10
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 15
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 20
+                     }];
+                     POWERUPS.Setup(tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_declarewar",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
+               case 190:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_conquest",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
+               case 191:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(tempPowerup,tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_armament",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
+            }
+            if(e.keyCode >= 48 && e.keyCode <= 57)
+            {
+               if(e.shiftKey && e.ctrlKey)
+               {
+                  if(e.keyCode == 49)
+                  {
+                     UI2.DebugWarningEdit("WMI-LVL1");
+                     SPECIALEVENT.DebugSetRound(1);
+                  }
+                  if(e.keyCode == 50)
+                  {
+                     UI2.DebugWarningEdit("WMI-LVL2");
+                     SPECIALEVENT.DebugSetRound(2);
+                  }
+                  if(e.keyCode == 51)
+                  {
+                     UI2.DebugWarningEdit("WMI-LVL3");
+                     SPECIALEVENT.DebugSetRound(3);
+                  }
+                  if(e.keyCode == 52)
+                  {
+                     UI2.DebugWarningEdit("WMI-LVL0");
+                     SPECIALEVENT.DebugSetRound(0);
+                  }
+               }
+               else if(e.shiftKey)
+               {
+                  if(e.keyCode == 49)
+                  {
+                     WMATTACK.TriggerType(1);
+                  }
+                  if(e.keyCode == 50)
+                  {
+                     WMATTACK.TriggerType(2);
+                  }
+                  if(e.keyCode == 51)
+                  {
+                     WMATTACK.TriggerType(3);
+                  }
+                  if(e.keyCode == 52)
+                  {
+                     WMATTACK.TriggerType(4);
+                  }
+               }
+               else if(e.ctrlKey)
+               {
+                  if(e.keyCode == 49)
+                  {
+                     BASE.addBuildingB(17);
+                  }
+                  if(e.keyCode == 50)
+                  {
+                     BASE.addBuildingB(24);
+                  }
+                  if(e.keyCode == 51)
+                  {
+                     try
+                     {
+                        if(Boolean(GLOBAL._selectedBuilding._countdownBuild) && GLOBAL._selectedBuilding._countdownBuild.Get() > 0)
+                        {
+                           GLOBAL._selectedBuilding.Constructed();
+                        }
+                        else
+                        {
+                           GLOBAL._selectedBuilding.Upgraded();
+                        }
+                     }
+                     catch(e:Error)
+                     {
+                     }
+                  }
+                  if(e.keyCode == 52)
+                  {
+                     try
+                     {
+                        GLOBAL._selectedBuilding.RecycleC();
+                     }
+                     catch(e:Error)
+                     {
+                     }
+                  }
+                  if(e.keyCode == 53)
+                  {
+                     try
+                     {
+                        testarr = [["HOD2",5]];
+                        BUY.purchaseProcess(testarr);
+                     }
+                     catch(e:Error)
+                     {
+                     }
+                  }
+               }
+               else if(_catapultsSetup)
+               {
+                  bombidx = e.keyCode - 47;
+                  switch(bombidx)
+                  {
+                     case 1:
+                        ResourceBombs._bombid = "tw0";
+                        break;
+                     case 2:
+                        ResourceBombs._bombid = "tw1";
+                        break;
+                     case 3:
+                        ResourceBombs._bombid = "tw2";
+                        break;
+                     case 4:
+                        ResourceBombs._bombid = "pb0";
+                        break;
+                     case 5:
+                        ResourceBombs._bombid = "pb1";
+                        break;
+                     case 6:
+                        ResourceBombs._bombid = "pb2";
+                        break;
+                     case 7:
+                        ResourceBombs._bombid = "pb3";
+                        break;
+                     case 8:
+                        ResourceBombs._bombid = "pu0";
+                        break;
+                     case 9:
+                        ResourceBombs._bombid = "pu1";
+                        break;
+                     case 10:
+                        ResourceBombs._bombid = "pu3";
+                        break;
+                     case 0:
+                        ResourceBombs._bombid = "pu2";
+                  }
+                  if(bombidx >= 0 && bombidx <= 10)
+                  {
+                     ResourceBombs.BombDrop();
+                  }
+               }
+               else
+               {
+                  creepid = e.keyCode - 48;
+                  goEasy = false;
+                  if(creepid == 0)
+                  {
+                     creepid = 10;
+                  }
+                  i = 0;
+                  while(i < 1)
+                  {
+                     if(creepid == 9)
+                     {
+                        brain = CREEPS.Spawn("C" + creepid,_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1,goEasy);
+                     }
+                     else
+                     {
+                        CREEPS.Spawn("C" + creepid,_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1,goEasy);
+                     }
+                     i++;
+                  }
+               }
+            }
+            if(e.keyCode == 71)
+            {
+               if(e.shiftKey)
+               {
+                  CREEPS.SpawnGuardian(3,_BUILDINGTOPS,"bounce",6,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,40000,0,true);
+               }
+               else if(e.ctrlKey)
+               {
+                  CREEPS.SpawnGuardian(2,_BUILDINGTOPS,"bounce",6,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,60 * 1000,0,true);
+               }
+               else
+               {
+                  CREEPS.SpawnGuardian(1,_BUILDINGTOPS,"bounce",6,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,200000,0,true);
+               }
+            }
+            if(e.keyCode == 189)
+            {
+               CREEPS.Spawn("C12",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
+            }
+            if(e.keyCode == 187)
+            {
+               CREEPS.Spawn("C13",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
+            }
+            if(e.keyCode == 88)
+            {
+               creep = CREEPS.Spawn("C11",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360);
+            }
+            if(e.keyCode == 72)
+            {
+               CREEPS.Spawn("C15",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1);
+            }
+            if(e.keyCode == 70)
+            {
+               CREEPS.Spawn("C14",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1);
+            }
+            if(e.keyCode == 8)
+            {
+               CREEPS.Spawn("IC1",_BUILDINGTOPS,"bounce",new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,1);
+            }
+            if(e.keyCode == 33)
+            {
+               GLOBAL.StatSet("wmi_wave",SPECIALEVENT.wave);
+               SPECIALEVENT.DEBUGOVERRIDEROUND(SPECIALEVENT.wave);
+            }
+            if(e.keyCode == 34)
+            {
+               GLOBAL.StatSet("wmi_wave",SPECIALEVENT.wave - 2);
+               SPECIALEVENT.DEBUGOVERRIDEROUND(SPECIALEVENT.wave - 2);
+            }
+            if(e.keyCode == 35)
+            {
+               GLOBAL.StatSet("wmi_wave",29);
+               SPECIALEVENT.DEBUGOVERRIDEROUND(29);
+            }
+            if(e.keyCode == 36)
+            {
+               GLOBAL.StatSet("wmi_wave",0);
+               SPECIALEVENT.DEBUGOVERRIDEROUND(0);
+            }
+            if(e.keyCode == 38)
+            {
+               lasttdpopup = GLOBAL.StatGet("lasttdpopup");
+               GLOBAL.StatSet("lasttdpopup",++lasttdpopup);
+            }
+            if(e.keyCode == 40)
+            {
+               lasttdpopup = GLOBAL.StatGet("lasttdpopup");
+               GLOBAL.StatSet("lasttdpopup",--lasttdpopup);
+            }
+            if(e.keyCode == 96)
+            {
+               GLOBAL.StatSet("wmi_end",0);
+            }
          }
       }
       

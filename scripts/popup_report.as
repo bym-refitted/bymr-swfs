@@ -1,16 +1,11 @@
 package
 {
    import flash.display.MovieClip;
-   import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1974")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1970")]
    public dynamic class popup_report extends MovieClip
    {
       public var sendBtn:Button_CLIP;
-      
-      public var tDesc:TextField;
-      
-      public var tTitle:TextField;
       
       public var mcFrame:frame2_CLIP;
       

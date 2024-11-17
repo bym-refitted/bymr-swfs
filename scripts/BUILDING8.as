@@ -50,7 +50,7 @@ package
          super.Description();
          if(GLOBAL._lockerOverdrive > 0)
          {
-            _buildingTitle += " <font color=\"#CC0000\">" + KEYS.Get("cloc_overdrive",{"v1":GLOBAL.ToTime(GLOBAL._lockerOverdrive)}) + "</font>";
+            _buildingTitle += " <font color=\"#CC0000\">[OVERDRIVE " + GLOBAL.ToTime(GLOBAL._lockerOverdrive) + "]</font>";
          }
          if(CREATURELOCKER._unlocking != null && Boolean(CREATURELOCKER._lockerData[CREATURELOCKER._unlocking]))
          {

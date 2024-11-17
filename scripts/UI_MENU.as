@@ -73,7 +73,7 @@ package
             bMap.SetupKey("ui_topmap",12);
             if(BASE._isOutpost)
             {
-               bKits.SetupKey("btn_kits",12);
+               bKits.Setup("Kits",12);
             }
             ImageCache.GetImageWithCallBack("ui/wood1.png",cbf2);
          };

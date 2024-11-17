@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol194")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol190")]
    public dynamic class MapRoomCellNameBar_barBG_309 extends MovieClip
    {
       public function MapRoomCellNameBar_barBG_309()

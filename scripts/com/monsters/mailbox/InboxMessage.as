@@ -81,17 +81,17 @@ package com.monsters.mailbox
          {
             if(this.data.trucestate == "requested")
             {
-               subjectType_txt.htmlText = "<b>" + KEYS.Get("inbox_trucerequested");
+               subjectType_txt.htmlText = "<b>Truce Requested";
                bg_mc.gotoAndStop("blue");
             }
             else if(this.data.trucestate == "rejected")
             {
-               subjectType_txt.htmlText = "<b>" + KEYS.Get("inbox_trucerejected");
+               subjectType_txt.htmlText = "<b>Truce Rejected";
                bg_mc.gotoAndStop("red");
             }
             else if(this.data.trucestate == "accepted")
             {
-               subjectType_txt.htmlText = "<b>" + KEYS.Get("inbox_truceaccepted");
+               subjectType_txt.htmlText = "<b>Truce Accepted";
                bg_mc.gotoAndStop("green");
             }
          }

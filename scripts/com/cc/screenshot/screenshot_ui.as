@@ -52,11 +52,11 @@ package com.cc.screenshot
          bGrainDown.addEventListener(MouseEvent.CLICK,this.GrainDown);
          bGrainUp.Setup("+");
          bGrainUp.addEventListener(MouseEvent.CLICK,this.GrainUp);
-         bSave1.SetupKey("btn_savetoalbum");
+         bSave1.Setup("Save To Album");
          bSave1.Enabled = false;
-         bSave2.SetupKey("btn_posttowall");
+         bSave2.Setup("Post To Wall");
          bSave2.Enabled = false;
-         bSave3.SetupKey("btn_downloadimage");
+         bSave3.Setup("Download Image");
          bSave3.addEventListener(MouseEvent.CLICK,this.Save);
          var _loc1_:int = 0;
          while(_loc1_ < this.presets.length)

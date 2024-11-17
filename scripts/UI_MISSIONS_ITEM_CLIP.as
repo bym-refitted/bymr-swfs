@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2039")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2035")]
    public dynamic class UI_MISSIONS_ITEM_CLIP extends MovieClip
    {
       public var tName:TextField;

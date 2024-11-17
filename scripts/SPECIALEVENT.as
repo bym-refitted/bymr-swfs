@@ -1037,6 +1037,55 @@ package
       
       public static function Tick() : void
       {
+         var _loc1_:int = 0;
+         var _loc2_:Array = null;
+         var _loc3_:Number = 0;
+         if(Boolean(GLOBAL._flags.viximo) || Boolean(GLOBAL._flags.kongregate))
+         {
+            return;
+         }
+         if(GLOBAL.Timestamp() == _lastTimestamp)
+         {
+            return;
+         }
+         _lastTimestamp = GLOBAL.Timestamp();
+         if(_knownFlag != invasionpop)
+         {
+            FlagChanged();
+         }
+         if(_retreatAllMonsters)
+         {
+            _loc1_ = 0;
+            for each(_loc2_ in _currentAttackers)
+            {
+               _loc3_ = 0;
+               while(_loc3_ < _loc2_.length)
+               {
+                  if(_loc2_[_loc3_]._behaviour != "retreat")
+                  {
+                     _loc1_++;
+                     _loc2_[_loc3_].ModeRetreat();
+                  }
+                  _loc3_++;
+               }
+            }
+            if(_loc1_ == 0)
+            {
+               _retreatAllMonsters = false;
+            }
+         }
+         if(_timeOfNextWave == -1)
+         {
+            return;
+         }
+         if(_active)
+         {
+            GLOBAL.UpdateAFKTimer();
+         }
+         if(GLOBAL.Timestamp() >= _timeOfNextWave || CREEPS._creepCount == 0)
+         {
+            SendWave();
+         }
       }
       
       public static function GetTimeUntilStart() : Number
@@ -1115,7 +1164,11 @@ package
       
       public static function EventActive() : Boolean
       {
-         return false;
+         if(BASE._isOutpost)
+         {
+            return false;
+         }
+         return SPECIALEVENT.invasionpop == 4 || SPECIALEVENT.invasionpop == 5;
       }
       
       public static function get invasionpop() : Number
@@ -1201,10 +1254,8 @@ package
          switch(_knownFlag)
          {
             case -1:
-               if(GLOBAL.StatGet("lasttdpopup") != 0)
-               {
-                  GLOBAL.StatSet("lasttdpopup",0);
-               }
+            case 0:
+               GLOBAL.StatSet("lasttdpopup",0);
                break;
             case 1:
             case 2:

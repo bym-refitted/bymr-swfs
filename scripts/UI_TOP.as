@@ -239,16 +239,16 @@ package
             {
                if(BASE._ownerName.toLowerCase().charAt(BASE._ownerName.length - 1) == "s")
                {
-                  mc.mcPoints.tName.htmlText = KEYS.Get("uitop_yardownershort",{"v1":BASE._ownerName.toUpperCase()});
+                  mc.mcPoints.tName.htmlText = BASE._ownerName.toUpperCase() + "\' YARD";
                }
                else
                {
-                  mc.mcPoints.tName.htmlText = KEYS.Get("uitop_yardownerlong",{"v1":BASE._ownerName.toUpperCase()});
+                  mc.mcPoints.tName.htmlText = BASE._ownerName.toUpperCase() + "\'S YARD";
                }
             }
             else
             {
-               mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonsters");
+               mc.mcPoints.tName.htmlText = "BACKYARD MONSTERS";
             }
             try
             {

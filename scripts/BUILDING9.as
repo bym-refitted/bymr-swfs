@@ -160,20 +160,14 @@ package
          {
             if(_upgradeCosts != "")
             {
-               _upgradeDescription = KEYS.Get("building_juicer_conversion",{
-                  "v1":60,
-                  "v2":80
-               });
+               _upgradeDescription = "Increases the conversion back into Goo from 60 to 80% ";
             }
          }
          else if(_lvl.Get() == 2)
          {
             if(_upgradeCosts != "")
             {
-               _upgradeDescription = KEYS.Get("building_juicer_conversion",{
-                  "v1":80,
-                  "v2":100
-               });
+               _upgradeDescription = "Increases the conversion back into Goo from 80 to 100% ";
             }
          }
       }

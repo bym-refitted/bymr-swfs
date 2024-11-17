@@ -88,27 +88,21 @@ package
          super.Description();
          if(GLOBAL._hatcheryOverdrive > 0)
          {
-            _buildingTitle += " <font color=\"#CC0000\">" + KEYS.Get("building_hatcheryoverdrive_title",{
-               "v1":GLOBAL._hatcheryOverdrivePower.Get(),
-               "v2":GLOBAL.ToTime(GLOBAL._hatcheryOverdrive)
-            }) + "</font>";
+            _buildingTitle += " <font color=\"#CC0000\">[" + GLOBAL._hatcheryOverdrivePower.Get() + "x OVERDRIVE " + GLOBAL.ToTime(GLOBAL._hatcheryOverdrive) + "]</font>";
          }
          if(_inProduction == "")
          {
-            _specialDescription = "<font color=\"#CC0000\">" + KEYS.Get("building_hatchery_noprod",{"v1":GLOBAL._buildingProps[12].name}) + "</font>";
+            _specialDescription = "<font color=\"#CC0000\">Nothing in production, open the " + GLOBAL._buildingProps[12].name + " and select a monster to produce</font>";
          }
          else if(_canFunction)
          {
             if(CREATURES.GetProperty(_inProduction,"cResource") < BASE._resources.r3.Get() && _productionStage.Get() == 3)
             {
-               _specialDescription = "<font color=\"#CC0000\">" + KEYS.Get("building_hatchery_res",{"v1":GLOBAL._resourceNames[3]}) + "</font>";
+               _specialDescription = "<font color=\"#CC0000\">Not enough " + GLOBAL._resourceNames[3] + " to start production</font>";
             }
             else if(_productionStage.Get() == 2 && !HOUSING.HousingStore(_inProduction,new Point(_mc.x,_mc.y),true))
             {
-               _specialDescription = "<font color=\"#CC0000\">" + KEYS.Get("building_hatchery_housing",{
-                  "v1":GLOBAL._buildingProps[14].name,
-                  "v2":CREATURELOCKER._creatures[_inProduction].name
-               }) + "</font>";
+               _specialDescription = "<font color=\"#CC0000\">Not enough room in " + GLOBAL._buildingProps[14].name + " to house the " + CREATURELOCKER._creatures[_inProduction].name + ". Upgrade, build more housing or \'dispose\' of some in battle.</font>";
             }
             else if(_productionStage.Get() == 1)
             {
@@ -128,38 +122,38 @@ package
                   _specialDescription += 100 - _loc2_ + "% ";
                   if(_loc2_ < 10)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage7");
+                     _specialDescription += "Stage 7/7: Polishing";
                   }
                   else if(_loc2_ < 20)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage6");
+                     _specialDescription += "Stage 6/7: Drying";
                   }
                   else if(_loc2_ < 30)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage5");
+                     _specialDescription += "Stage 5/7: Painting";
                   }
                   else if(_loc2_ < 60)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage4");
+                     _specialDescription += "Stage 4/7: Baking";
                   }
                   else if(_loc2_ < 70)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage3",{"v1":GLOBAL._resourceNames[3]});
+                     _specialDescription += "Stage 3/7: Pouring " + GLOBAL._resourceNames[3];
                   }
                   else if(_loc2_ < 80)
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage2");
+                     _specialDescription += "Stage 2/7: Discombobulating";
                   }
                   else
                   {
-                     _specialDescription += KEYS.Get("building_hatchery_stage1",{"v1":GLOBAL._resourceNames[3]});
+                     _specialDescription += "Stage 1/7: Mixing up " + GLOBAL._resourceNames[3];
                   }
                }
             }
          }
          else
          {
-            _specialDescription = "<font color=\"#CC0000\">" + KEYS.Get("building_hatchery_damaged") + "</font>";
+            _specialDescription = "<font color=\"#CC0000\">Hatchery is more than 50% damaged and is not producing, repair to continue production.</font>";
          }
       }
       
@@ -359,7 +353,7 @@ package
          var _loc7_:int = 0;
          if(!_canFunction)
          {
-            GLOBAL.Message(KEYS.Get("building_hcc_cantfunction"));
+            GLOBAL.Message("Your Hatchery Control Center is currently unable to function.");
             return;
          }
          if(BASE._credits.Get() >= this._finishCost.Get())

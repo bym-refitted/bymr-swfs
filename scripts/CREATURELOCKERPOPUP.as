@@ -355,7 +355,7 @@ package
             timeCost = STORE.GetTimeCost(time);
             resourcesCost = Math.ceil(Math.pow(Math.sqrt(putty / 2),0.75));
             this._instantUnlockCost = timeCost + resourcesCost;
-            bInstant.Setup(KEYS.Get("btn_unlockinstantly",{"v1":this._instantUnlockCost}));
+            bInstant.Setup("Unlock Instantly for " + this._instantUnlockCost + " Shiny");
             bInstant.visible = true;
             bInstant.Enabled = true;
             bInstant.Highlight = true;

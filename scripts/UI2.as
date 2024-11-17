@@ -432,6 +432,10 @@ package
       {
          var _loc1_:Number = NaN;
          var _loc2_:MovieClip = null;
+         var _loc3_:Number = NaN;
+         var _loc4_:Number = NaN;
+         var _loc5_:Number = NaN;
+         var _loc6_:Number = NaN;
          if(!GLOBAL._catchup)
          {
             if(_top)
@@ -508,13 +512,98 @@ package
                   {
                      _top.mcReinforcements.visible = false;
                   }
-                  if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                  if(SPECIALEVENT.GetTimeUntilEnd() < 0 || SPECIALEVENT.wave > SPECIALEVENT.numWaves || SPECIALEVENT.invasionpop == 4 && SPECIALEVENT.wave > SPECIALEVENT.BONUSWAVE)
                   {
-                     _top.mcSpecialEvent.visible = false;
+                     if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = false;
+                     }
+                     if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
+                     {
+                        UI_BOTTOM._nextwave.visible = false;
+                     }
+                     if(SPECIALEVENT.GetTimeUntilEnd() < 0 && SPECIALEVENT.GetTimeUntilEnd() > -86400 && GLOBAL.StatGet("wmi_end") == 0)
+                     {
+                        SPECIALEVENT.ShowEventEndPopup();
+                     }
                   }
-                  if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
+                  else if(SPECIALEVENT.EventActive() && GLOBAL._mode == "build" && (!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate))
                   {
-                     UI_BOTTOM._nextwave.visible = false;
+                     if(!_top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = true;
+                     }
+                     if(UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible && UI_NEXTWAVE.ShouldDisplay())
+                     {
+                        UI_BOTTOM._nextwave.visible = true;
+                     }
+                     _loc3_ = SPECIALEVENT.GetTimeUntilExtension();
+                     if(_loc3_ < 0 || SPECIALEVENT.invasionpop == 5)
+                     {
+                        _loc3_ = SPECIALEVENT.GetTimeUntilEnd();
+                        if(_loc3_ > 0)
+                        {
+                           if(SPECIALEVENT.invasionpop == 4)
+                           {
+                              if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                              {
+                                 _top.mcSpecialEvent.visible = false;
+                              }
+                              if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
+                              {
+                                 UI_BOTTOM._nextwave.visible = false;
+                              }
+                           }
+                        }
+                     }
+                     if(_loc3_ > 24 * 60 * 60)
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc3_,true,false);
+                     }
+                     else
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = GLOBAL.ToTime(_loc3_,true);
+                     }
+                  }
+                  else if(GLOBAL._mode == "build" && !BASE._isOutpost && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
+                  {
+                     if(!_top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = true;
+                     }
+                     if(UI_BOTTOM._nextwave && !UI_BOTTOM._nextwave.visible && UI_NEXTWAVE.ShouldDisplay())
+                     {
+                        UI_BOTTOM._nextwave.visible = true;
+                     }
+                     _loc4_ = SPECIALEVENT.GetTimeUntilStart();
+                     _loc5_ = Math.ceil(_loc4_ / 86400);
+                     if(_loc5_ > 1)
+                     {
+                        _top.mcSpecialEvent.tCountdown.htmlText = _loc5_ + " " + KEYS.Get("global_days");
+                     }
+                     else
+                     {
+                        _loc6_ = Math.ceil(_loc4_ / 3600);
+                        if(_loc6_ > 1)
+                        {
+                           _top.mcSpecialEvent.tCountdown.htmlText = _loc6_ + " " + KEYS.Get("global_hours");
+                        }
+                        else
+                        {
+                           _top.mcSpecialEvent.tCountdown.htmlText = "&lt; 1 " + KEYS.Get("global_hour");
+                        }
+                     }
+                  }
+                  else
+                  {
+                     if(Boolean(_top.mcSpecialEvent) && _top.mcSpecialEvent.visible)
+                     {
+                        _top.mcSpecialEvent.visible = false;
+                     }
+                     if(Boolean(UI_BOTTOM._nextwave) && UI_BOTTOM._nextwave.visible)
+                     {
+                        UI_BOTTOM._nextwave.visible = false;
+                     }
                   }
                   if(!_top.mcSave.visible)
                   {

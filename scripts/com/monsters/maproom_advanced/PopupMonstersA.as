@@ -31,9 +31,9 @@ package com.monsters.maproom_advanced
          x = 455;
          y = 250;
          this._mc = this;
-         this.bCancel.SetupKey("btn_cancel");
+         this.bCancel.Setup("Cancel");
          this.bCancel.addEventListener(MouseEvent.CLICK,this.Hide);
-         this.bTransfer.SetupKey("btn_transfer");
+         this.bTransfer.Setup("Transfer");
          this.bTransfer.addEventListener(MouseEvent.CLICK,this.Transfer);
       }
       

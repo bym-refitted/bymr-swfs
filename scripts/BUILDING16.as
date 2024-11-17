@@ -176,7 +176,7 @@ package
          var _loc8_:int = 0;
          if(!_canFunction)
          {
-            GLOBAL.Message(KEYS.Get("building_hcc_cantfunction"));
+            GLOBAL.Message("Your Hatchery Control Center is currently unable to function.");
             return;
          }
          if(BASE._credits.Get() >= this._finishCost.Get())

@@ -55,9 +55,9 @@ package
       override public function Description() : *
       {
          super.Description();
-         _buildingTitle = KEYS.Get("#b_generalstore#");
-         _buildingDescription = KEYS.Get("building_generalstore_desc1");
-         _specialDescription = KEYS.Get("building_generalstore_desc2",{"v1":GLOBAL._resourceNames[4]});
+         _buildingTitle = "General Store";
+         _buildingDescription = "Used to purchase upgrades for your yard. Click on the \'Store\' button at the bottom of the screen.";
+         _specialDescription = "Open the store to view all the lovely things you can buy using your " + GLOBAL._resourceNames[4];
       }
       
       override public function Update(param1:Boolean = false) : *

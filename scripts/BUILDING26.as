@@ -96,10 +96,7 @@ package
             super.Description();
             if(_upgrading != null)
             {
-               _specialDescription = KEYS.Get("building_academy_training",{
-                  "v1":CREATURELOCKER._creatures[_upgrading].name,
-                  "v2":GLOBAL.ToTime(ACADEMY._upgrades[_upgrading].time.Get() - GLOBAL.Timestamp())
-               });
+               _specialDescription = "Training " + CREATURELOCKER._creatures[_upgrading].name + " - " + GLOBAL.ToTime(ACADEMY._upgrades[_upgrading].time.Get() - GLOBAL.Timestamp()) + " remaining.";
             }
          }
          catch(e:Error)

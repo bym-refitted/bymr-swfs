@@ -329,7 +329,7 @@ package com.monsters.maproom_advanced
       {
          if(ALLIANCES._myAlliance)
          {
-            GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
+            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
             return;
          }
          _popupRelocateMe = new PopupRelocateMe();
@@ -349,7 +349,7 @@ package com.monsters.maproom_advanced
          var useShiny:Boolean = param1;
          if(ALLIANCES._myAlliance)
          {
-            GLOBAL.Message(KEYS.Get("msg_mustleavealliance"));
+            GLOBAL.Message("You must first leave your Alliance to accept this invitation.");
             return;
          }
          if(Boolean(_migrateThread) && _inviteBaseID != 0)
@@ -425,7 +425,7 @@ package com.monsters.maproom_advanced
             {
                if(GLOBAL._resources.r1.Get() < RESOURCECOST.Get() || GLOBAL._resources.r2.Get() < RESOURCECOST.Get() || GLOBAL._resources.r3.Get() < RESOURCECOST.Get() || GLOBAL._resources.r4.Get() < RESOURCECOST.Get())
                {
-                  GLOBAL.Message(KEYS.Get("map_rel_res"));
+                  GLOBAL.Message("You don’t have enough resources to relocate.");
                   return;
                }
                loadvars.push(["resources",com.adobe.serialization.json.JSON.encode({
@@ -920,6 +920,7 @@ package com.monsters.maproom_advanced
                {
                   transferSuccessful = function(param1:Object):void
                   {
+                     var _loc2_:int = 0;
                      PLEASEWAIT.Hide();
                      if(param1.error == 0)
                      {
@@ -931,46 +932,51 @@ package com.monsters.maproom_advanced
                         {
                            GLOBAL.Message(KEYS.Get("newmap_tr_space",{"v1":_monstersTransferred}));
                         }
-                        for(dst in finalMonsters)
+                        _loc2_ = 1;
+                        while(_loc2_ < 5)
                         {
-                           if(targetCell._monsters[dst])
+                           for(dst in finalMonsters)
                            {
-                              targetCell._monsters[dst].Set(finalMonsters[dst]);
-                              targetCell._hpMonsters[dst] = finalMonsters[dst];
-                           }
-                           else
-                           {
-                              targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
-                              targetCell._hpMonsters[dst] = finalMonsters[dst];
-                           }
-                        }
-                        if(_monsterSource)
-                        {
-                           for(src in finalSrcMonsters)
-                           {
-                              if(finalSrcMonsters[src] > 0)
+                              if(targetCell._monsters[dst])
                               {
-                                 _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
-                                 _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
+                                 targetCell._monsters[dst].Set(finalMonsters[dst]);
+                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
                               }
                               else
                               {
-                                 delete _monsterSource._monsters[src];
-                                 delete _monsterSource._hpMonsters[src];
+                                 targetCell._monsters[dst] = new SecNum(finalMonsters[dst]);
+                                 targetCell._hpMonsters[dst] = finalMonsters[dst];
                               }
                            }
+                           if(_monsterSource)
+                           {
+                              for(src in finalSrcMonsters)
+                              {
+                                 if(finalSrcMonsters[src] > 0)
+                                 {
+                                    _monsterSource._monsters[src].Set(finalSrcMonsters[src]);
+                                    _monsterSource._hpMonsters[src] = finalSrcMonsters[src];
+                                 }
+                                 else
+                                 {
+                                    delete _monsterSource._monsters[src];
+                                    delete _monsterSource._hpMonsters[src];
+                                 }
+                              }
+                           }
+                           _loc2_++;
                         }
                      }
                      else
                      {
-                        GLOBAL.Message(KEYS.Get("msg_err_transfer") + param1.error);
+                        GLOBAL.Message("There was a problem with the transfer: " + param1.error);
                      }
                      _monsterTransfer = {};
                   };
                   transferError = function(param1:IOErrorEvent):void
                   {
                      PLEASEWAIT.Hide();
-                     GLOBAL.Message(KEYS.Get("msg_err_transfer") + param1.text);
+                     GLOBAL.Message("There was a problem with the transfer:" + param1.text);
                      _monsterTransfer = {};
                   };
                   actualTransfer = {};

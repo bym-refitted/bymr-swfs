@@ -34,11 +34,11 @@ package
          this._bubble.mouseChildren = false;
          if(GLOBAL._zoomed)
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_zoomin") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Zoom In</b>";
          }
          else
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_zoomout") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Zoom Out</b>";
          }
          this._bubble.mcText.x = 10 - this._bubble.mcText.width;
          this._bubble.mcBG.x = this._bubble.mcText.x - 5;

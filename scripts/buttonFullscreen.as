@@ -35,11 +35,11 @@ package
          this._bubble.mouseChildren = false;
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_fullscreenexit") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Exit Full Screen</b>";
          }
          else
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_fullscreenenter") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Go Full Screen</b>";
          }
          this._bubble.mcText.x = 10 - this._bubble.mcText.width;
          this._bubble.mcBG.x = this._bubble.mcText.x - 5;

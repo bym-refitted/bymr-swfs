@@ -1,6 +1,7 @@
 package
 {
    import flash.display.MovieClip;
+   import flash.display.SimpleButton;
    import flash.text.TextField;
    
    [Embed(source="/_assets/assets.swf", symbol="symbol1539")]
@@ -24,7 +25,7 @@ package
       
       public var largeOutline_mc:MovieClip;
       
-      public var reportBtn:MovieClip;
+      public var reportBtn:SimpleButton;
       
       public var viewBtn:Button_CLIP;
       

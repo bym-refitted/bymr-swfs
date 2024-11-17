@@ -10,10 +10,10 @@ package com.monsters.maproom_advanced
       public function PopupMoveYard()
       {
          super();
-         this.bMoveRes.SetupKey("btn_movewithresources");
+         this.bMoveRes.Setup("Move With Resources");
          this.bMoveRes.addEventListener(MouseEvent.CLICK,this.MoveYardResources);
          this.bMoveRes.buttonMode = true;
-         this.bMoveShiny.SetupKey("btn_movewithshiny");
+         this.bMoveShiny.Setup("Move With 800 Shiny");
          this.bMoveShiny.addEventListener(MouseEvent.CLICK,this.MoveYardShiny);
          this.bMoveRes.buttonMode = true;
       }

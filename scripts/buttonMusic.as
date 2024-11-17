@@ -35,11 +35,11 @@ package
          this._bubble.mouseChildren = false;
          if(SOUNDS._mutedMusic)
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_musicoff") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Music OFF</b>";
          }
          else
          {
-            this._bubble.mcText.htmlText = "<b>" + KEYS.Get("settings_musicon") + "</b>";
+            this._bubble.mcText.htmlText = "<b>Music ON</b>";
          }
          this._bubble.mcText.x = 10 - this._bubble.mcText.width;
          this._bubble.mcBG.x = this._bubble.mcText.x - 5;

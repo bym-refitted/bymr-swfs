@@ -11,7 +11,7 @@ package com.monsters.radio
       
       private var _notifyAttack:Boolean = false;
       
-      private var _emailAddress:String = KEYS.Get("radio_insertemail");
+      private var _emailAddress:String = "insert e-mail address";
       
       private var _emailSettings:Object;
       

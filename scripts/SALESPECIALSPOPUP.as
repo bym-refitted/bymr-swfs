@@ -64,11 +64,11 @@ package
          "mcFrameY":-130,
          "mcFrameW":340,
          "mcFrameH":220,
-         "tTitleText":KEYS.Get("special_textprops_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br>",
-         "tDescText3":KEYS.Get("special_textprops_desc3"),
-         "bActionText":KEYS.Get("special_buyshiny")
+         "tTitleText":"War Chest Feeling Light?<br>Fill it up with Shiny!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"Upgrade buildings, purchase protection or unlock new monsters. Use Shiny to get bigger, better, and stronger!",
+         "bActionText":"Buy Shiny"
       };
       
       private var _giftProps:Object = {
@@ -96,11 +96,11 @@ package
          "mcFrameY":-130,
          "mcFrameW":7 * 60,
          "mcFrameH":290,
-         "tTitleText":KEYS.Get("special_giftprops_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br><br><br><br><br><br><br>",
-         "tDescText3":KEYS.Get("special_giftprops_desc3"),
-         "bActionText":KEYS.Get("special_buyshiny")
+         "tTitleText":"Buy Some, Get Some!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br><br><br><br><br><br><br>",
+         "tDescText3":"For a limited time, get five (5) Hatchery Speed-Ups for <b>FREE</b> when you purchasde any amount of Shiny!",
+         "bActionText":"Buy Shiny"
       };
       
       private var _giftConfirmProps:Object = {
@@ -128,11 +128,11 @@ package
          "mcFrameY":-130,
          "mcFrameW":7 * 60,
          "mcFrameH":290,
-         "tTitleText":KEYS.Get("special_giftconfirmprops_title"),
+         "tTitleText":"Reap the Rewards",
          "tDescText1":"",
          "tDescText2":"<br><br><br><br><br><br>",
-         "tDescText3":KEYS.Get("special_giftconfirmprops_desc3"),
-         "bActionText":KEYS.Get("special_gotostore")
+         "tDescText3":"Your five Level 2 Hatchery Overdrives can be found in the Store.  Activate one and crank out a huge monster army!",
+         "bActionText":"Go to Store"
       };
       
       private var _shinyDiscountProps:Object = {
@@ -160,11 +160,11 @@ package
          "mcFrameY":-130,
          "mcFrameW":340,
          "mcFrameH":200,
-         "tTitleText":KEYS.Get("special_shinydiscount_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br>",
-         "tDescText3":KEYS.Get("special_shinydiscount_desc3"),
-         "bActionText":KEYS.Get("special_buyshiny")
+         "tTitleText":"Shiny on the Cheap!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"Shiny on the cheap! For a limited time, get a <b>10% discount on Shiny</b> and beef up your yard with a well-timed purchase.",
+         "bActionText":"Buy Shiny"
       };
       
       private var _shinyBonusProps:Object = {
@@ -192,11 +192,11 @@ package
          "mcFrameY":-130,
          "mcFrameW":340,
          "mcFrameH":200,
-         "tTitleText":KEYS.Get("special_shinybonus_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br>",
-         "tDescText3":KEYS.Get("special_shinybonus"),
-         "bActionText":KEYS.Get("special_buyshiny")
+         "tTitleText":"Get it While it\'s Hot!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
+         "bActionText":"Buy Shiny"
       };
       
       private var _sevenElevenBigGulpProps:Object = {
@@ -224,12 +224,12 @@ package
          "mcFrameY":-175,
          "mcFrameW":6 * 60,
          "mcFrameH":350,
-         "tTitleText":KEYS.Get("special_gbg_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br>",
-         "tDescText3":KEYS.Get("special_shinybonus"),
-         "bActionText":KEYS.Get("special_goldenbiggulp"),
-         "bActionText2":KEYS.Get("special_hatcheryod")
+         "tTitleText":"Here\'s a Golden Big Gulp!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
+         "bActionText":"Golden Big Gulp",
+         "bActionText2":"Hatchery Overdrives"
       };
       
       private var _sevenElevenBigGulpTutorialProps:Object = {
@@ -257,12 +257,12 @@ package
          "mcFrameY":-175,
          "mcFrameW":6 * 60,
          "mcFrameH":350,
-         "tTitleText":KEYS.Get("special_gbg_title"),
-         "tDescText1":KEYS.Get("special_limitedtime"),
-         "tDescText2":KEYS.Get("special_remaining") + "<br><br>",
-         "tDescText3":KEYS.Get("special_shinybonus"),
-         "bActionText":KEYS.Get("special_goldenbiggulp"),
-         "bActionText2":KEYS.Get("special_hatcheryod")
+         "tTitleText":"Here\'s a Golden Big Gulp!",
+         "tDescText1":"Limited time offer ! - ",
+         "tDescText2":" remaining<br><br>",
+         "tDescText3":"For a limited time, grab an extra <b>10% Shiny bonus</b> with each purchase and beef up your yard!",
+         "bActionText":"Golden Big Gulp",
+         "bActionText2":"Hatchery Overdrives"
       };
       
       public function SALESPECIALSPOPUP(param1:String = "text")
@@ -553,7 +553,7 @@ package
                if(this.bAction3)
                {
                   this.bAction3.visible = true;
-                  this.bAction3.txt.htmlText = KEYS.Get("tut_continue");
+                  this.bAction3.txt.htmlText = "Continue<br>Tutorial";
                }
                if(this.bAction4)
                {

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol28")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol24")]
    public dynamic class popup_timeout extends MovieClip
    {
       public var bGift:Button_CLIP;

@@ -451,16 +451,16 @@ package
          {
             if(this._countdownUpgrade.Get() > 0)
             {
-               this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("repaironhold_upgrade") + "</b></font>";
+               this._repairDescription = "<font color=\"#FF0000\"><b>Upgrade on hold until building is repaired.</b></font>";
             }
             else if(this._countdownFortify.Get() > 0)
             {
-               this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("repaironhold_fortify") + "</b></font>";
+               this._repairDescription = "<font color=\"#FF0000\"><b>Fortify on hold until building is repaired.</b></font>";
             }
             else
             {
                _loc1_ = 100 - Math.ceil(100 / this._hpMax.Get() * this._hp.Get());
-               this._specialDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_percentdamaged",{"v1":_loc1_}) + "</b></font>";
+               this._specialDescription = "<font color=\"#FF0000\"><b>Building " + _loc1_ + "% damaged!</b></font>";
             }
          }
          else
@@ -470,29 +470,18 @@ package
             {
                if(this._type == 20 || this._type == 21)
                {
-                  this._buildingStats = KEYS.Get("building_stats_dps",{
-                     "v1":this._range,
-                     "v2":this._damage,
-                     "v3":int(this._damage * (40 / this._rate)),
-                     "v4":this._splash,
-                     "v5":int(40 / this._rate * 10) / 10
-                  });
+                  this._buildingStats = "Range: " + this._range + "<br>Damage: " + this._damage + " (" + int(this._damage * (40 / this._rate)) + " DPS)<br>Splash: " + this._splash + "<br>Rate of Fire: " + int(40 / this._rate * 10) / 10;
                   if(this._type == 20)
                   {
-                     this._buildingDescription = KEYS.Get("building_cannon_desc");
+                     this._buildingDescription = "Short range and slow firing but great at taking out groups of monsters with its explosive shells";
                   }
                   if(this._type == 21)
                   {
-                     this._buildingDescription = KEYS.Get("building_sniper_desc");
+                     this._buildingDescription = "Long range and quick firing, great for picking off monsters from a great distance.";
                   }
                   if(this._lvl.Get() < this._buildingProps.costs.length)
                   {
-                     this._upgradeDescription = KEYS.Get("building_stats",{
-                        "v1":this._buildingProps.stats[this._lvl.Get()].range,
-                        "v2":this._buildingProps.stats[this._lvl.Get()].damage,
-                        "v3":this._buildingProps.stats[this._lvl.Get()].splash,
-                        "v4":int(40 / this._buildingProps.stats[this._lvl.Get()].rate * 10) / 10
-                     });
+                     this._upgradeDescription = "Range: " + this._buildingProps.stats[this._lvl.Get()].range + " Damage: " + this._buildingProps.stats[this._lvl.Get()].damage + " Splash: " + this._buildingProps.stats[this._lvl.Get()].splash + " Rate of fire: " + int(40 / this._buildingProps.stats[this._lvl.Get()].rate * 10) / 10;
                   }
                }
             }
@@ -511,26 +500,23 @@ package
             }
             _loc2_ = Math.min(60 * 60,_loc2_);
             _loc2_ = Math.ceil(this._hpMax.Get() / _loc2_);
-            this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_damagedinattack") + "</b></font><br>" + KEYS.Get("building_repairinprogress",{
-               "v1":Math.floor(100 / this._hpMax.Get() * this._hp.Get()),
-               "v2":GLOBAL.ToTime(int((this._hpMax.Get() - this._hp.Get()) / _loc2_))
-            });
+            this._repairDescription = "<font color=\"#FF0000\"><b>Building Damaged in an attack</b></font><br>Repair in progress, " + Math.floor(100 / this._hpMax.Get() * this._hp.Get()) + "% complete<br>" + GLOBAL.ToTime(int((this._hpMax.Get() - this._hp.Get()) / _loc2_)) + " remaining.";
          }
          else
          {
-            this._repairDescription = "<font color=\"#FF0000\"><b>" + KEYS.Get("building_damagedinattack") + "</b></font><br>" + KEYS.Get("building_repairfree");
+            this._repairDescription = "<font color=\"#FF0000\"><b>Building Damaged in an attack</b></font><br>Repair this building, it does not cost resources.";
             if(this._countdownBuild.Get() > 0)
             {
-               this._repairDescription += "<br>" + KEYS.Get("building_attackdestroy");
+               this._repairDescription += "<br>Another attack could destroy it completely!";
             }
             if(this._countdownUpgrade.Get() > 0)
             {
-               this._repairDescription += "<br>" + KEYS.Get("building_attacksetback");
+               this._repairDescription += "<br>Another attack could set back the upgrade!";
             }
          }
          if(this._lvl.Get() >= this._buildingProps.costs.length)
          {
-            this._upgradeDescription = KEYS.Get("bdg_fullyupgraded");
+            this._upgradeDescription = "Fully Upgraded";
             this._upgradeCosts = "";
          }
          else
@@ -807,11 +793,6 @@ package
          }
          if(this._fortification.Get() != this._renderFortLevel)
          {
-            if(this._fortification.Get() > 4)
-            {
-               LOGGER.Log("err","Illegal fortification level " + this._fortification.Get());
-               throw new Error("ILLEGAL FORTIFICATION LEVEL " + this._fortification.Get());
-            }
             this._renderFortLevel = this._fortification.Get();
             fortImageDataA = GLOBAL._buildingProps[this._type - 1].fortImgData;
             if(fortImageDataA[this._fortification.Get()])
@@ -991,7 +972,7 @@ package
       
       public function Instructions() : *
       {
-         this._buildingInstructions += KEYS.Get("building_instructions");
+         this._buildingInstructions += "<b>Place the building on the map by clicking</b>, you can drag around the map with the building selected, <b>press ESC to cancel building</b>.";
       }
       
       public function FollowMouse() : *
@@ -1613,7 +1594,7 @@ package
                if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25) || this._type == 115)
                {
                   GLOBAL._selectedBuilding = this;
-                  GLOBAL.Message(KEYS.Get("msg_inactivefortify"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
+                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during fortification.<br><br>Move other buildings nearby to help protect them or simply speed up the fortification.","Speed Up",STORE.SpeedUp,["SP4"]);
                }
             }
             else if(GLOBAL._mode == "build")
@@ -1751,7 +1732,7 @@ package
                if(GLOBAL._mode == "build" && (this._type == 20 || this._type == 21 || this._type == 22 || this._type == 23 || this._type == 25 || this._type == 115))
                {
                   GLOBAL._selectedBuilding = this;
-                  GLOBAL.Message(KEYS.Get("msg_inactiveupgrade"),KEYS.Get("btn_speedup"),STORE.SpeedUp,["SP4"]);
+                  GLOBAL.Message("<b>Caution:</b> Defensive buildings are inactive during upgrades.<br><br>Move other buildings nearby to help protect them or simply speed up the upgrade.","Speed Up",STORE.SpeedUp,["SP4"]);
                }
             }
             else if(GLOBAL._mode == "build")
@@ -1974,11 +1955,11 @@ package
          {
             if(BASE._isOutpost)
             {
-               GLOBAL.Message(KEYS.Get("msg_recycleoutpostbuilding"));
+               GLOBAL.Message("You cannot Recycle buildings in Outposts.");
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("msg_recycleunavailable"));
+               GLOBAL.Message("You cannot Recycle this building at this time.");
             }
          }
       }

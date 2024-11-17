@@ -43,7 +43,7 @@ package com.monsters.maproom_advanced
             y = 260;
          }
          this._mode = mode;
-         this.tTitle.htmlText = "<b>" + KEYS.Get("map_relocate") + "</b>";
+         this.tTitle.htmlText = "<b>Relocate your main yard to this location.</b>";
          if(mode == "invite")
          {
             this.mcInstant.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
@@ -56,7 +56,7 @@ package com.monsters.maproom_advanced
             });
             this.RESOURCECOST = new SecNum(10000000);
             this.SHINYCOST = new SecNum(20 * 60);
-            this.tDescription.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("msg_moveyard_warn") + "</font>";
+            this.tDescription.htmlText = "<font color=\"#CC0000\"><b>WARNING:</b> By relocating to this location you will lose all your outposts in your old empire and start fresh with just your new main yard.</font>";
          }
          else
          {
@@ -66,10 +66,10 @@ package com.monsters.maproom_advanced
             });
             this.RESOURCECOST = new SecNum(500 * 60 * 1000);
             this.SHINYCOST = new SecNum(25 * 60);
-            this.tDescription.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("msg_movetooutpost_warn") + "</font>";
+            this.tDescription.htmlText = "<font color=\"#CC0000\"><b>WARNING:</b> Relocating your yard to this outpost will destroy the outpost and all buildings on it. Wild Monsters will claim your old main yard location.</font>";
          }
-         this.mcInstant.tDescription.htmlText = "<b>" + KEYS.Get("map_relocateinstant") + "</b>";
-         this.mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":GLOBAL.FormatNumber(this.SHINYCOST.Get())}));
+         this.mcInstant.tDescription.htmlText = "<b>Keep your resources and relocate instantly!</b>";
+         this.mcInstant.bAction.Setup("Use " + GLOBAL.FormatNumber(this.SHINYCOST.Get()) + " Shiny");
          i = 1;
          while(i < 5)
          {
@@ -80,7 +80,7 @@ package com.monsters.maproom_advanced
             i++;
          }
          this.mcResources.mcTime.visible = false;
-         this.mcResources.bAction.SetupKey("btn_useresources");
+         this.mcResources.bAction.Setup("Use Resources");
          if(mode == "invite")
          {
             this.mcResources.bAction.addEventListener(MouseEvent.CLICK,function(param1:MouseEvent):*
@@ -206,13 +206,13 @@ package com.monsters.maproom_advanced
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("msg_err_relocate") + param1.error);
+               GLOBAL.Message("There was a problem relocating your yard: " + param1.error);
             }
          };
          RelocateFail = function(param1:IOErrorEvent):*
          {
             Hide();
-            GLOBAL.Message(KEYS.Get("msg_err_relocate") + param1.text);
+            GLOBAL.Message("There was a problem relocating your yard: " + param1.text);
          };
          var relocateVars:Array = [["type","outpost"],["baseid",this._cell._baseID]];
          if(useShiny)
@@ -230,7 +230,7 @@ package com.monsters.maproom_advanced
             if(GLOBAL._resources.r1.Get() < this.RESOURCECOST.Get() || GLOBAL._resources.r2.Get() < this.RESOURCECOST.Get() || GLOBAL._resources.r3.Get() < this.RESOURCECOST.Get() || GLOBAL._resources.r4.Get() < this.RESOURCECOST.Get())
             {
                this.Hide();
-               GLOBAL.Message(KEYS.Get("map_relocate_notenoughresources"));
+               GLOBAL.Message("You don’t have enough resources to relocate.");
                return;
             }
             relocateVars.push(["resources",com.adobe.serialization.json.JSON.encode({

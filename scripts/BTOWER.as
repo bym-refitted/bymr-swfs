@@ -48,7 +48,7 @@ package
       public function Props() : *
       {
          var _loc1_:int = 0;
-         if(_lvl.Get() > 0 && _lvl.Get() <= GLOBAL._buildingProps[_type - 1].stats.length)
+         if(_lvl.Get() > 0)
          {
             if(Boolean(GLOBAL._advancedMap) && (BASE._isOutpost || GLOBAL._mode == "wmattack"))
             {
@@ -67,10 +67,6 @@ package
             super._rate = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].rate;
             super._splash = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].splash;
             super._speed = GLOBAL._buildingProps[_type - 1].stats[_lvl.Get() - 1].speed;
-         }
-         else if(_lvl.Get() > GLOBAL._buildingProps[_type - 1].stats.length)
-         {
-            throw new Error("ILLEGAL TOWER LEVEL Type: " + _type + " Level: " + _lvl.Get());
          }
          this._fireTick = super._rate;
       }

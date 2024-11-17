@@ -121,11 +121,11 @@ package
       override public function Description() : *
       {
          super.Description();
-         _specialDescription = KEYS.Get("building_silo_upgrade_desc1",{"v1":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1])});
-         _buildingDescription = _specialDescription;
+         _specialDescription = "Increases bank capacity by " + GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1]) + " units.";
+         _buildingDescription = "Increases bank capacity by " + GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1]) + " units.";
          if(_upgradeCosts != "")
          {
-            _upgradeDescription = KEYS.Get("building_silo_upgrade_desc2",{"v1":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get()] - _buildingProps.capacity[_lvl.Get() - 1])});
+            _upgradeDescription = "Increases your Banks capacity for all resources by another " + GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get()] - _buildingProps.capacity[_lvl.Get() - 1]) + " units.";
          }
       }
    }

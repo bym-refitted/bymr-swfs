@@ -59,24 +59,15 @@ package
             }
             if(_loc1_.range < _loc2_.range)
             {
-               _upgradeDescription += KEYS.Get("building_rangeincrease",{
-                  "v1":_loc3_,
-                  "v2":_loc4_
-               }) + "<br>";
+               _upgradeDescription += "<b>Range:</b> Increases from " + _loc3_ + " to " + _loc4_ + "<br>";
             }
             if(_loc1_.damage < _loc2_.damage)
             {
-               _upgradeDescription += KEYS.Get("building_dpsincrease",{
-                  "v1":_loc1_.damage,
-                  "v2":_loc2_.damage
-               }) + "<br>";
+               _upgradeDescription += "<b>Damage per shot:</b> Increases from " + _loc1_.damage + " to " + _loc2_.damage + "<br>";
             }
             if(_loc1_.rate < _loc2_.rate)
             {
-               _upgradeDescription += KEYS.Get("building_sfpcincrease",{
-                  "v1":_loc1_.rate,
-                  "v2":_loc2_.rate
-               }) + "<br>";
+               _upgradeDescription += "<b>Shots fired per charge:</b> Increases from " + _loc1_.rate + " to " + _loc2_.rate + "<br>";
             }
          }
       }

@@ -14,21 +14,21 @@ package
          if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
          {
             mc.mcBG.width = 100;
-            mc.bReturn.SetupKey("btn_endattack");
+            mc.bReturn.Setup("End Attack");
             mc.bAttack.visible = false;
          }
          else if(GLOBAL._advancedMap)
          {
-            mc.bReturn.SetupKey("btn_openmap");
+            mc.bReturn.Setup("Open Map");
             if(GLOBAL._mode != "help" && !MapRoom._viewOnly && GLOBAL._currentCell && MapRoom._flingerInRange)
             {
                if(GLOBAL._currentCell._destroyed)
                {
-                  mc.bAttack.SetupKey("newmap_take_btn");
+                  mc.bAttack.Setup("Take Over");
                }
                else
                {
-                  mc.bAttack.SetupKey("map_attack_btn");
+                  mc.bAttack.Setup("Attack");
                }
                mc.bAttack.addEventListener(MouseEvent.CLICK,this.Attack);
                mc.bAttack.visible = true;
@@ -114,11 +114,11 @@ package
          {
             if(GLOBAL._currentCell._online)
             {
-               GLOBAL.Message(KEYS.Get("msg_cantattackoccupied"));
+               GLOBAL.Message("You cannot attack this yard right now as the owner is working on it. Wait for them to leave.");
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("msg_cantattackbeingattacked"));
+               GLOBAL.Message("You cannot attack this yard right now as it is under attack! Wait for the attack to end.");
             }
          }
          else if(GLOBAL._currentCell)

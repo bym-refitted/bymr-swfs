@@ -45,7 +45,7 @@ package com.monsters.maproom_advanced
             ButtonInfo("monsters");
          });
          this.bMonsters.addEventListener(MouseEvent.CLICK,this.StartTransferM);
-         this.bRelocate.SetupKey("btn_movemainyardhere");
+         this.bRelocate.Setup("Move Main Yard Here");
          this.bRelocate.addEventListener(MouseEvent.MOUSE_OVER,function(param1:MouseEvent):*
          {
             ButtonInfo("relocateme");
@@ -113,11 +113,11 @@ package com.monsters.maproom_advanced
          GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc3_);
          if(this._cell._base == 3)
          {
-            tName.htmlText = KEYS.Get("map_outpostowner",{"v1":this._cell._name});
+            tName.htmlText = this._cell._name + "\'s Outpost";
          }
          else
          {
-            tName.htmlText = KEYS.Get("map_yardowner",{"v1":this._cell._name});
+            tName.htmlText = this._cell._name + "\'s Yard";
          }
          tLocation.htmlText = param1.X + "x" + param1.Y;
          tHeight.htmlText = this._cell._height - 100 + "m";
@@ -139,19 +139,19 @@ package com.monsters.maproom_advanced
          }
          if(_loc4_ >= 0)
          {
-            _loc6_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h1",{"v1":_loc4_}) + "</font>";
+            _loc6_ = "<font color=\"#003300\">+" + _loc4_ + "% Tower Range</font>";
          }
          else
          {
-            _loc6_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h1",{"v1":Math.abs(_loc4_)}) + "</font>";
+            _loc6_ = "<font color=\"#330000\">- " + Math.abs(_loc4_) + "% Tower Range</font>";
          }
          if(_loc5_ >= 0)
          {
-            _loc7_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h2",{"v1":_loc5_}) + "</font>";
+            _loc7_ = "<font color=\"#003300\">+" + _loc5_ + "% Resource Production</font>";
          }
          else
          {
-            _loc7_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h2",{"v1":Math.abs(_loc5_)}) + "</font>";
+            _loc7_ = "<font color=\"#330000\">- " + Math.abs(_loc5_) + "% Resource Production</font>";
          }
          tBonus.htmlText = _loc6_ + "<br>" + _loc7_;
          if(GLOBAL._mapOutpost.length > 0)
@@ -197,11 +197,11 @@ package com.monsters.maproom_advanced
          }
          if(this._cell._invitePendingID == 0)
          {
-            this.bInviteMigrate.SetupKey("btn_invitetomove");
+            this.bInviteMigrate.Setup("Invite Friends to Move");
          }
          else
          {
-            this.bInviteMigrate.SetupKey("btn_revokeinvitation");
+            this.bInviteMigrate.Setup("Revoke Invitation");
          }
          this.Update();
       }
@@ -294,7 +294,7 @@ package com.monsters.maproom_advanced
             Hide();
             if(param1.error != 0)
             {
-               GLOBAL.Message(KEYS.Get("msg_err_revoke") + param1.error);
+               GLOBAL.Message("There was a problem revoking the invitation: " + param1.error);
                return;
             }
             _cell._invitePendingID = 0;
@@ -304,12 +304,12 @@ package com.monsters.maproom_advanced
             {
                MapRoom.GetCell(_cell.X,_cell.Y,true);
             }
-            GLOBAL.Message(KEYS.Get("msg_revoke_success"));
+            GLOBAL.Message("The invitation has been successfully revoked.");
          };
          onFail = function(param1:Error):*
          {
             Hide();
-            GLOBAL.Message(KEYS.Get("msg_err_revoke") + param1.message);
+            GLOBAL.Message("There was a problem revoking the invitation: " + param1.message);
             LOGGER.Log("err","PopupInfoMine.RevokeInvitation HTTP ",param1.message);
          };
          if(!this._cell._updated)
@@ -338,23 +338,23 @@ package com.monsters.maproom_advanced
          }
          else if(param1 == "bookmark")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_bookmark");
+            txtButtonInfo.htmlText = "Bookmark this yard.";
             mcArrow.x = bBookmark.x + bBookmark.width / 2 - 5;
          }
          else if(param1 == "relocateme")
          {
-            txtButtonInfo.htmlText = KEYS.Get("newmap_relocate_exp");
+            txtButtonInfo.htmlText = "Relocate your main yard to this location. This will replace the outpost, including all of it’s buildings, with your main yard. Wild Monsters will claim your old main yard location.";
             mcArrow.x = bRelocate.x + bRelocate.width / 2 - 5;
          }
          else if(param1 == "invitemigrate")
          {
             if(this._cell._invitePendingID)
             {
-               txtButtonInfo.htmlText = KEYS.Get("newmap_revokepending");
+               txtButtonInfo.htmlText = "Revoke the pending invitation to your friend to relocate to this location.";
             }
             else
             {
-               txtButtonInfo.htmlText = KEYS.Get("newmap_invite_exp");
+               txtButtonInfo.htmlText = "Invite your friends to relocate their main yard to this location. This will replace the outpost, including all of it’s buildings, with their main yard. Wild Monsters will claim their old main yard location.";
             }
             mcArrow.x = bInviteMigrate.x + bInviteMigrate.width / 2 - 5;
          }

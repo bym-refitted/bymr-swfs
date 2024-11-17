@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1169")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1168")]
    public dynamic class guardianBar_Fill_234 extends MovieClip
    {
       public function guardianBar_Fill_234()

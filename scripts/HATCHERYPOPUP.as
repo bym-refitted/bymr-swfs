@@ -19,7 +19,6 @@ package
       {
          var _loc2_:MovieClip = null;
          super();
-         title_txt.htmlText = KEYS.Get("hat_title");
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
          bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
@@ -80,7 +79,7 @@ package
          var _loc2_:String = "C" + param1;
          var _loc3_:* = CREATURELOCKER._creatures[_loc2_];
          ImageCache.GetImageWithCallBack("monsters/C" + param1 + "-portrait.jpg",this.IconLoaded,true,1,"",[this.portrait1]);
-         var _loc4_:Number = 0;
+         var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
          var _loc7_:int = 0;
@@ -162,7 +161,7 @@ package
          {
             _loc12_ = int(ACADEMY._upgrades[_loc2_].level);
          }
-         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("hatcherypopup_level",{"v1":_loc12_}) + " " + KEYS.Get(_loc3_.name) + "</b><br>" + KEYS.Get(_loc3_.description);
+         mcMonsterInfo.tDescription.htmlText = "<b>" + KEYS.Get("acad_status_level",{"v1":_loc12_}) + " " + KEYS.Get(_loc3_.name) + "</b><br>" + KEYS.Get(_loc3_.description);
          if(Boolean(CREATURELOCKER._lockerData[_loc2_]) && CREATURELOCKER._lockerData[_loc2_].t == 2)
          {
             mcMonsterInfo.mcLocked.visible = false;
@@ -536,17 +535,11 @@ package
                GLOBAL.Array2String(_loc2_);
                if(this._hatchery._finishAll)
                {
-                  GLOBAL.Message(KEYS.Get("msg_finishqueue",{
-                     "v1":GLOBAL.Array2String(_loc2_),
-                     "v2":this._hatchery._finishCost.Get()
-                  }),KEYS.Get("str_finishnow"),this.DoFinish);
+                  GLOBAL.Message("Do you want to finish your queue of " + GLOBAL.Array2String(_loc2_) + " now for " + this._hatchery._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
                }
                else
                {
-                  GLOBAL.Message(KEYS.Get("msg_fillhousing",{
-                     "v1":GLOBAL.Array2String(_loc2_),
-                     "v2":this._hatchery._finishCost.Get()
-                  }),KEYS.Get("str_finishnow"),this.DoFinish);
+                  GLOBAL.Message("You have room in your Housing for " + GLOBAL.Array2String(_loc2_) + ", do you want to finish them now for " + this._hatchery._finishCost.Get() + " Shiny?","Finish Now",this.DoFinish);
                }
             }
             else
@@ -556,7 +549,7 @@ package
          }
          else if(this._hatchery._finishCost.Get() <= 0)
          {
-            GLOBAL.Message(KEYS.Get("msg_housingfull"));
+            GLOBAL.Message("There is no room in Housing for any of the monsters currently in production.");
          }
       }
       

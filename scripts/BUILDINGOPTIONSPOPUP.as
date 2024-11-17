@@ -43,8 +43,8 @@ package
             addChild(this.streampost_cb);
             this.streampost_cb.addEventListener(MouseEvent.ROLL_OVER,this.onPostRollOver);
             this.streampost_cb.addEventListener(MouseEvent.ROLL_OUT,this.onPostRollOut);
-            mcInfoCB.mcText.htmlText = KEYS.Get("buildoptions_CBInfo",{"v1":param1});
-            mcCBBG.tCheckbox.htmlText = KEYS.Get("buildoptions_help");
+            mcInfoCB.mcText.htmlText = "Ask friends to help speed-up this " + param1 + ".";
+            mcCBBG.tCheckbox.htmlText = "<b>Get Help</b>";
             mcCBBG.y = mcResources.y + (mcResources.height + 2);
             this.streampost_cb.x = 220;
             this.streampost_cb.y = mcResources.y + (mcResources.height + 2);
@@ -62,8 +62,8 @@ package
             if(!STORE._storeItems["BUILDING" + this._building._type])
             {
                mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantBuild);
-               mcInstant.bAction.Setup(KEYS.Get("buildoptions_shiny",{"v1":this._building.InstantBuildCost()}));
-               mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_buildinstant");
+               mcInstant.bAction.Setup("Use " + this._building.InstantBuildCost() + " Shiny");
+               mcInstant.tDescription.htmlText = "Keep your resources and build instantly!";
                mcInstant.gCoin.mouseEnabled = false;
             }
          }
@@ -71,16 +71,16 @@ package
          {
             this._building = BUILDINGOPTIONS._building;
             mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantFortify);
-            mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._building.InstantFortifyCost()}));
-            mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_fortifyinstant");
+            mcInstant.bAction.Setup("Use " + this._building.InstantFortifyCost() + " Shiny");
+            mcInstant.tDescription.htmlText = "Keep your resources and fortify instantly!";
             mcInstant.gCoin.mouseEnabled = false;
          }
          else
          {
             this._building = BUILDINGOPTIONS._building;
             mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantUpgrade);
-            mcInstant.bAction.Setup(KEYS.Get("btn_useshiny",{"v1":this._building.InstantUpgradeCost()}));
-            mcInstant.tDescription.htmlText = KEYS.Get("buildoptions_upgradeinstant");
+            mcInstant.bAction.Setup("Use " + this._building.InstantUpgradeCost() + " Shiny");
+            mcInstant.tDescription.htmlText = "Keep your resources and upgrade instantly!";
             mcInstant.gCoin.mouseEnabled = false;
          }
          this.toggleCheckbox(false);
@@ -174,7 +174,7 @@ package
          else if(param1 == "upgrade")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceUpgrade);
-            mcResources.bAction.Setup(KEYS.Get("buildoptions_resources"));
+            mcResources.bAction.Setup("Use Resources");
             if(this._building._lvl.Get() < this._building._buildingProps.costs.length)
             {
                if(this._building._type != 14)
@@ -246,7 +246,7 @@ package
          else if(param1 == "fortify")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionResourceFortify);
-            mcResources.bAction.Setup(KEYS.Get("buildoptions_resources"));
+            mcResources.bAction.Setup("Use Resources");
             if(Boolean(this._building._buildingProps.can_fortify) && this._building._fortification.Get() < this._building._buildingProps.fortify_costs.length)
             {
                for each(_loc6_ in this._building._buildingProps.fortify_costs[this._building._fortification.Get()].re)
@@ -312,7 +312,7 @@ package
          else if(param1 == "more")
          {
             mcResources.bAction.addEventListener(MouseEvent.CLICK,this.ActionRecycle);
-            mcResources.bAction.SetupKey("btn_recycle");
+            mcResources.bAction.Setup("Recycle");
             if(this._building._buildingProps.costs.length == 1)
             {
                _loc2_ = KEYS.Get("bdg_morenolevel",{
@@ -509,14 +509,11 @@ package
                _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
                if(_loc2_)
                {
-                  GLOBAL.Message(KEYS.Get("buildoptions_err_moresilos"));
+                  GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to build this.</b>");
                }
                else
                {
-                  GLOBAL.Message(KEYS.Get("buildoptions_err_moreresources",{
-                     "v1":GLOBAL.FormatNumber(_loc3_),
-                     "v2":GLOBAL.FormatNumber(_loc4_)
-                  }),KEYS.Get("btn_getresources"),this.TopoffBuild);
+                  GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to build.</b><br><br>Get the resources and start building for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources",this.TopoffBuild);
                }
             }
             else if(BASE.addBuildingB(this._building._type))
@@ -562,14 +559,11 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message(KEYS.Get("buildoptions_err_moresilosupgrade"));
+               GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to upgrade this.</b>");
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("buildoptions_err_moreresourcesupgrade",{
-                  "v1":GLOBAL.FormatNumber(_loc3_),
-                  "v2":GLOBAL.FormatNumber(_loc4_)
-               }),KEYS.Get("btn_getresources"),this.TopoffUpgrade);
+               GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to upgrade.</b><br><br>Get the resources and start upgrading for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources And Start",this.TopoffUpgrade);
             }
          }
          else
@@ -628,14 +622,11 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message(KEYS.Get("buildoptions_err_moresilosfortify"));
+               GLOBAL.Message("<b>You need to build more or upgrade your Storage Silos to hold enough resources to fortify this.</b>");
             }
             else
             {
-               GLOBAL.Message(KEYS.Get("buildoptions_err_moreresourcesfortify",{
-                  "v1":GLOBAL.FormatNumber(_loc3_),
-                  "v2":GLOBAL.FormatNumber(_loc4_)
-               }),KEYS.Get("btn_getresources"),this.TopoffFortify);
+               GLOBAL.Message("<b>You need " + GLOBAL.FormatNumber(_loc3_) + " more resources to fortify.</b><br><br>Get the resources and start fortifying for " + GLOBAL.FormatNumber(_loc4_) + " Shiny?","Get Resources And Start",this.TopoffFortify);
             }
          }
          else if(this._building.Fortify())

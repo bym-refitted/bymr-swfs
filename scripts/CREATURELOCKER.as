@@ -706,7 +706,7 @@ package
          }
          else
          {
-            GLOBAL.Message(KEYS.Get("msg_nomonsterlocker"));
+            GLOBAL.Message("You don\'t have a Monster Locker or it is not yet finished building.");
          }
       }
       
