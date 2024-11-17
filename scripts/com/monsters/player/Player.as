@@ -885,7 +885,7 @@ package com.monsters.player
          {
             _loc3_ = this.handlers[_loc2_];
             _loc3_.initialize(param1[_loc3_.name]);
-            if(_loc2_ == 0 && GLOBAL.isAtHome())
+            if(_loc2_ == 0)
             {
                ReplayableEventHandler.initialize(param1["events"]);
             }

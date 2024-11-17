@@ -5,9 +5,13 @@ package com.monsters.monsters.components.abilities
    import com.monsters.monsters.MonsterBase;
    import com.monsters.projectiles.Projectilev2;
    import flash.geom.Point;
+   import gs.TweenLite;
+   import gs.easing.Sine;
    
    public class RezghulResurrectAttack extends RangedAttack
    {
+      private static const k_UNRESURRECTABLE_CREATURES:Vector.<String> = Vector.<String>(["C16","C15","C19","C18"]);
+      
       private var m_zombiefy:Zombiefy;
       
       private var m_resurrectRange:uint;
@@ -22,6 +26,7 @@ package com.monsters.monsters.components.abilities
       override protected function getValidTargetsInRange(param1:uint, param2:Point, param3:int) : Vector.<ITargetable>
       {
          var _loc4_:Vector.<ITargetable> = null;
+         var _loc7_:ITargetable = null;
          var _loc5_:Array = Targeting.getDeadCreeps(param2,param1,param3);
          var _loc6_:int = 0;
          while(_loc6_ < _loc5_.length)
@@ -30,7 +35,11 @@ package com.monsters.monsters.components.abilities
             {
                _loc4_ = new Vector.<ITargetable>();
             }
-            _loc4_.push(_loc5_[_loc6_].creep);
+            _loc7_ = _loc5_[_loc6_].creep;
+            if(_loc7_ is MonsterBase && k_UNRESURRECTABLE_CREATURES.indexOf(MonsterBase(_loc7_)._creatureID) == -1)
+            {
+               _loc4_.push(_loc7_);
+            }
             _loc6_++;
          }
          return _loc4_;
@@ -61,7 +70,7 @@ package com.monsters.monsters.components.abilities
             while(_loc3_ < _loc2_.length)
             {
                _loc4_ = _loc2_[_loc3_];
-               if(_loc4_ is MonsterBase)
+               if(_loc4_ is MonsterBase && k_UNRESURRECTABLE_CREATURES.indexOf(MonsterBase(_loc4_)._creatureID) == -1)
                {
                   this.resurrect(_loc4_ as MonsterBase);
                }
@@ -81,8 +90,14 @@ package com.monsters.monsters.components.abilities
          {
             _loc2_ = CREEPS.Spawn(param1._creatureID,MAP._BUILDINGTOPS,param1._behaviour,new Point(param1.x,param1.y),param1._targetRotation,1,false,true);
          }
-         GIBLETS.Create(new Point(param1.x,param1.y),1,75,20);
-         _loc2_.findTarget(_loc2_._targetGroup);
+         EFFECTS.Dig(int(_loc2_.x),int(_loc2_.y + 20));
+         TweenLite.from(_loc2_._graphicMC,0.8,{
+            "y":_loc2_._graphicMC.y + 20,
+            "ease":Sine.easeOut,
+            "overwrite":false,
+            "onComplete":_loc2_.findTarget
+         });
+         GIBLETS.Create(new Point(_loc2_.x,_loc2_.y + 20),1,50,20,10);
          _loc2_.addComponent(this.m_zombiefy.clone());
          param1.corpseDeath();
       }

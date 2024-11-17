@@ -24,6 +24,7 @@ package
       public function HOUSINGPOPUP()
       {
          var _loc1_:int = 0;
+         var _loc2_:int = 0;
          var _loc13_:int = 0;
          var _loc14_:String = null;
          var _loc15_:HousingPopupMonster_CLIP = null;
@@ -61,7 +62,7 @@ package
             bAscend.visible = false;
             bAscend.Enabled = false;
          }
-         var _loc2_:int = 3;
+         _loc2_ = 3;
          var _loc5_:int = 0;
          var _loc12_:Array = [];
          _loc12_ = this.GetHousableCreatures();

@@ -4,8 +4,8 @@ package com.monsters.ui
    import com.monsters.maproom3.MapRoom3;
    import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.missions.UI_MISSIONMENU;
-   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
-   import com.monsters.replayableEvents.monsterMadness.MonsterMadnessInfoBar;
+   import com.monsters.replayableEvents.attacking.monsterMadness.MonsterMadness;
+   import com.monsters.replayableEvents.attacking.monsterMadness.MonsterMadnessInfoBar;
    import flash.display.DisplayObject;
    import flash.events.MouseEvent;
    

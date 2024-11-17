@@ -75,12 +75,13 @@ package com.monsters.maproom3.bookmarks
       
       private function CreateBookmarkDisplays() : void
       {
+         var _loc1_:int = 0;
          var _loc2_:Sprite = null;
          if(this.m_BookmarksToDisplay == null)
          {
             return;
          }
-         var _loc1_:int = 0;
+         _loc1_ = 0;
          var _loc3_:uint = this.m_BookmarksToDisplay.length;
          this.m_BookmarkDisplays = new Vector.<Sprite>(_loc3_);
          var _loc4_:Number = 0;

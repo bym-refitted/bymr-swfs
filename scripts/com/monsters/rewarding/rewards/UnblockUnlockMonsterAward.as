@@ -10,11 +10,13 @@ package com.monsters.rewarding.rewards
       override protected function onApplication() : void
       {
          CREATURELOCKER._lockerData[_monsterID] = {"t":2};
+         super.onApplication();
       }
       
       override public function reset() : void
       {
          delete CREATURELOCKER._lockerData[_monsterID];
+         super.reset();
       }
    }
 }

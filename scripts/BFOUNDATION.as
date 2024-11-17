@@ -542,7 +542,10 @@ package
          if(health <= 0)
          {
             setHealth(0);
-            this.Destroyed(param2 != null);
+            if(!this._destroyed)
+            {
+               this.Destroyed(param2 != null);
+            }
          }
          else if(this._class != "wall")
          {

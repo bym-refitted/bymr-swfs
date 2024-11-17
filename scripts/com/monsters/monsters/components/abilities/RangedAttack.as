@@ -50,7 +50,7 @@ package com.monsters.monsters.components.abilities
          if(GLOBAL.Timestamp() >= this.m_timeRechargeIsComplete)
          {
             _loc2_ = this.getValidTargetsInRange(this.m_range,new Point(owner.x,owner.y),this.m_targetFlags);
-            if(_loc2_)
+            if(Boolean(_loc2_) && _loc2_.length > 0)
             {
                this.fireAt(_loc2_[0]);
                this.m_timeRechargeIsComplete = GLOBAL.Timestamp() + this.m_rechargeDuration;

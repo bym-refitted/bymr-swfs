@@ -27,7 +27,7 @@ package
       
       private static var _monsterString:String = "C";
       
-      private static var _maxMonsters:int = 16;
+      private static var _maxMonsters:int = 19;
       
       private static var lastAction:int = 0;
       
@@ -516,12 +516,17 @@ package
       
       public function Previous(param1:MouseEvent = null) : void
       {
-         --_page;
          lastAction = -1;
-         if(_page == 0)
+         do
          {
-            _page = _maxMonsters - 1;
+            --_page;
+            if(_page == 0)
+            {
+               _page = _maxMonsters;
+            }
          }
+         while(this.CheckMonsterLock(_monsterString + _page) == true);
+         
          if(this.CheckMonsterLock(_monsterString + _page))
          {
             if(lastAction > 0)
@@ -541,12 +546,17 @@ package
       
       public function Next(param1:MouseEvent = null) : void
       {
-         ++_page;
          lastAction = 1;
-         if(_page == _maxMonsters)
+         do
          {
-            _page = 1;
+            ++_page;
+            if(_page > _maxMonsters)
+            {
+               _page = 1;
+            }
          }
+         while(this.CheckMonsterLock(_monsterString + _page) == true);
+         
          if(this.CheckMonsterLock(_monsterString + _page))
          {
             if(lastAction > 0)

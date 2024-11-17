@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2543")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2544")]
    public dynamic class HousingPersistentMonsterBar_CLIP extends MovieClip
    {
       public var tName:TextField;

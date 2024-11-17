@@ -289,6 +289,16 @@ package com.monsters.monsters
          }
       }
       
+      override public function get width() : Number
+      {
+         return this._graphicMC.width;
+      }
+      
+      override public function get height() : Number
+      {
+         return this._graphicMC.height;
+      }
+      
       public function get damage() : Number
       {
          return this.damageProperty.value;
@@ -951,6 +961,10 @@ package com.monsters.monsters
       
       public function poweredUp() : Boolean
       {
+         if(this.isDisposable)
+         {
+            return false;
+         }
          if(!this._friendly)
          {
             if(GLOBAL._wmCreaturePowerups[this._creatureID])

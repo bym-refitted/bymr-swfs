@@ -120,37 +120,37 @@ package
          MAP.effectsBMD.copyPixels(_burns,new Rectangle(_loc3_,0,80,40),new Point(param1 + MAP.effectsBMD.width * 0.5 - 40,param2 + MAP.effectsBMD.height * 0.5 - 20),null,null,true);
       }
       
-      public static function Lightning(param1:int, param2:int, param3:int, param4:int, param5:DisplayObjectContainer = null) : void
+      public static function Lightning(param1:int, param2:int, param3:int, param4:int, param5:DisplayObjectContainer = null, param6:uint = 3197178) : void
       {
-         var _loc8_:int = 0;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
+         var _loc12_:int = 0;
          if(!param5)
          {
             param5 = MAP._PROJECTILES;
          }
-         var _loc6_:int = Point.distance(new Point(param1,param2),new Point(param3,param4));
-         var _loc7_:Shape = param5.addChild(new Shape()) as Shape;
-         _loc7_.graphics.lineStyle(1,3197178,1);
-         _loc7_.graphics.moveTo(param1,param2);
-         var _loc12_:int = 0;
-         while(_loc12_ < int(_loc6_ / 30))
+         var _loc7_:int = Point.distance(new Point(param1,param2),new Point(param3,param4));
+         var _loc8_:Shape = param5.addChild(new Shape()) as Shape;
+         _loc8_.graphics.lineStyle(1,param6,1);
+         _loc8_.graphics.moveTo(param1,param2);
+         var _loc13_:int = 0;
+         while(_loc13_ < int(_loc7_ / 30))
          {
-            _loc8_ = param3 - param1;
-            _loc9_ = param4 - param2;
-            _loc10_ = Math.cos(Math.atan2(_loc9_,_loc8_)) * (_loc6_ / int(_loc6_ / 30) * _loc12_);
-            _loc11_ = Math.sin(Math.atan2(_loc9_,_loc8_)) * (_loc6_ / int(_loc6_ / 30) * _loc12_);
-            _loc7_.graphics.lineTo(_loc10_ + param1 - 7 + Math.random() * 15,_loc11_ + param2 - 7 + Math.random() * 15);
-            _loc7_.filters = [new GlowFilter(3197178,1,4,4,2,2,false,false)];
-            _loc12_++;
+            _loc9_ = param3 - param1;
+            _loc10_ = param4 - param2;
+            _loc11_ = Math.cos(Math.atan2(_loc10_,_loc9_)) * (_loc7_ / int(_loc7_ / 30) * _loc13_);
+            _loc12_ = Math.sin(Math.atan2(_loc10_,_loc9_)) * (_loc7_ / int(_loc7_ / 30) * _loc13_);
+            _loc8_.graphics.lineTo(_loc11_ + param1 - 7 + Math.random() * 15,_loc12_ + param2 - 7 + Math.random() * 15);
+            _loc8_.filters = [new GlowFilter(param6,1,4,4,2,2,false,false)];
+            _loc13_++;
          }
-         _loc7_.graphics.lineTo(param3 - 5 + Math.random() * 10,param4 - Math.random() * 10);
-         _loc7_.blendMode = "add";
+         _loc8_.graphics.lineTo(param3 - 5 + Math.random() * 10,param4 - Math.random() * 10);
+         _loc8_.blendMode = "add";
          _trash["i" + _itemCount] = {
             "counter":0,
             "container":param5,
-            "mc":_loc7_
+            "mc":_loc8_
          };
          ++_itemCount;
       }

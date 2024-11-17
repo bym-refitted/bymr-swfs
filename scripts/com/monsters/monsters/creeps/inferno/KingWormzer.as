@@ -19,10 +19,7 @@ package com.monsters.monsters.creeps.inferno
          {
             _loc13_ |= Targeting.k_TARGETS_DEFENDERS;
          }
-         if(poweredUp())
-         {
-            addComponent(new AOEDamageOnAttackOncePerTarget(100,_loc13_,4));
-         }
+         addComponent(new AOEDamageOnAttackOncePerTarget(100,_loc13_,4));
       }
    }
 }

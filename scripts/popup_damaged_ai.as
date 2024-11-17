@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1634")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1652")]
    public dynamic class popup_damaged_ai extends MovieClip
    {
       public var bAction2:Button_CLIP;

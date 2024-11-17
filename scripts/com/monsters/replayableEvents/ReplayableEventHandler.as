@@ -16,7 +16,11 @@ package com.monsters.replayableEvents
       
       private static var _graphic:IReplayableEventUI;
       
+      public static var eventXP:uint;
+      
       public static var debugDate:Date = new Date();
+      
+      public static const k_DURATION_STORE_IS_OPEN_AFTER_EVENT:Number = 2 * 24 * 60 * 60;
       
       public static const DURATION_UNTIL_EVENT_STARTS:Number = 7 * 24 * 60 * 60;
       
@@ -44,33 +48,53 @@ package com.monsters.replayableEvents
       {
          var _loc2_:ReplayableEvent = null;
          var _loc3_:Number = NaN;
-         if(GLOBAL.mode != GLOBAL.e_BASE_MODE.BUILD || BASE.isInfernoMainYardOrOutpost || !TUTORIAL.hasFinished)
+         if(GLOBAL.isAtHome() && TUTORIAL.hasFinished)
          {
-            return;
-         }
-         if(param1)
-         {
-            importData(param1);
-         }
-         if(activeEvent)
-         {
-            activeEvent.initialize();
-            checkIfActiveEventIsFinished();
-         }
-         else if(canScheduleNewEvent())
-         {
-            _loc2_ = getQualifiedEvent();
-            if(_loc2_)
+            if(param1)
             {
-               _loc3_ = getPotentialStartDateForEvent(_loc2_);
-               if(_loc3_)
+               importData(param1);
+            }
+            if(activeEvent)
+            {
+               activeEvent.initialize();
+               checkIfActiveEventIsFinished();
+            }
+            else if(canScheduleNewEvent())
+            {
+               _loc2_ = getQualifiedEvent();
+               if(_loc2_)
                {
-                  scheduleNewEvent(_loc2_,_loc3_);
-                  activeEvent.initialize();
+                  _loc3_ = getPotentialStartDateForEvent(_loc2_);
+                  if(_loc3_)
+                  {
+                     scheduleNewEvent(_loc2_,_loc3_);
+                     activeEvent.initialize();
+                  }
                }
             }
          }
          addUI();
+      }
+      
+      public static function updateDebugDate(param1:Number = 0) : void
+      {
+         var _loc2_:Message = null;
+         if(param1)
+         {
+            debugDate.setTime(param1);
+         }
+         BASE.Save();
+         UI2.DebugWarningEdit(ReplayableEventHandler.debugDate.toDateString());
+         if(activeEvent)
+         {
+            _loc2_ = activeEvent.getCurrentMessage();
+            if(_loc2_ && !_loc2_.hasBeenSeen && !(_loc2_ is DebugMessage))
+            {
+               POPUPS.Push(new FrontPageGraphic(_loc2_));
+               _loc2_.viewed();
+            }
+            checkIfActiveEventIsFinished();
+         }
       }
       
       private static function checkIfActiveEventIsFinished() : void
@@ -88,11 +112,14 @@ package com.monsters.replayableEvents
                POPUPS.Push(new FrontPageGraphic(_loc1_));
                _loc1_.viewed();
             }
-            if(_graphic)
+            if(activeEvent.endDate - currentTime >= k_DURATION_STORE_IS_OPEN_AFTER_EVENT)
             {
-               removeUI();
+               if(_graphic)
+               {
+                  removeUI();
+               }
+               activeEvent = null;
             }
-            activeEvent = null;
          }
       }
       

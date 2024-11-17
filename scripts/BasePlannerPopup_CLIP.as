@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol3056")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol3055")]
    public dynamic class BasePlannerPopup_CLIP extends MovieClip
    {
       public var guideDisplayView:MovieClip;

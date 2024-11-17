@@ -28,6 +28,8 @@ package com.monsters.replayableEvents
       
       protected var _titleImage:String;
       
+      protected var _eventStoreTitleImage:String;
+      
       protected var _messages:Vector.<Message>;
       
       protected var _rewardMessage:Message;
@@ -58,6 +60,16 @@ package com.monsters.replayableEvents
             FrontPageLibrary.EVENTS.addMessage(this._rewardMessage);
          }
          this._quotas = new Vector.<ReplayableEventQuota>();
+      }
+      
+      public function get preEventHUDImageURL() : String
+      {
+         return "";
+      }
+      
+      public function get eventHUDImageURL() : String
+      {
+         return "";
       }
       
       public function createNewUI() : IReplayableEventUI
@@ -369,14 +381,30 @@ package com.monsters.replayableEvents
       
       public function get timeUntilNextDate() : Number
       {
-         var _loc1_:Number = this.hasEventStarted ? this.endDate : this.startDate;
-         var _loc2_:Number = ReplayableEventHandler.currentTime;
-         return _loc1_ - _loc2_;
+         var _loc1_:Number = NaN;
+         if(this.hasEventEnded)
+         {
+            _loc1_ = this.endDate + ReplayableEventHandler.k_DURATION_STORE_IS_OPEN_AFTER_EVENT;
+         }
+         else if(this.hasEventStarted)
+         {
+            _loc1_ = this.endDate;
+         }
+         else
+         {
+            _loc1_ = this.startDate;
+         }
+         return _loc1_ - ReplayableEventHandler.currentTime;
       }
       
       public function get titleImage() : String
       {
          return this._titleImage;
+      }
+      
+      public function get eventStoreTitleImage() : String
+      {
+         return this._eventStoreTitleImage;
       }
       
       public function get imageURL() : String

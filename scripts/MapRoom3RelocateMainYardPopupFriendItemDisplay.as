@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2714")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2715")]
    public dynamic class MapRoom3RelocateMainYardPopupFriendItemDisplay extends MovieClip
    {
       public var worldText:TextField;

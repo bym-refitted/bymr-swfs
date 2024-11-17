@@ -1103,7 +1103,7 @@ package com.monsters.monsters.champions
       
       protected function aggro() : void
       {
-         if(_targetCreep.canShootCreep() || _targetCreep._creatureID == "G3" || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50)
+         if(Targeting.canHitCreep(_targetCreep.attackFlags,defenseFlags))
          {
             if(!_targetCreep._explode && !_targetCreep._targetCreep && _targetCreep._behaviour != "heal")
             {
@@ -1126,7 +1126,7 @@ package com.monsters.monsters.champions
          var _loc3_:int = 0;
          while(_loc3_ < 5 && _loc3_ < _loc2_)
          {
-            if(Boolean(_loc1_[_loc3_].creep.canShootCreep()) || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50)
+            if(Targeting.canHitCreep(_loc1_[_loc3_].creep.attackFlags,defenseFlags) && (_loc1_[_loc3_].creep.canShootCreep() || GLOBAL.QuickDistance(_targetCreep._tmpPoint,_tmpPoint) < 50))
             {
                if(!_loc1_[_loc3_].creep._explode && _loc1_[_loc3_].creep._behaviour != "heal")
                {

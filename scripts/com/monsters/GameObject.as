@@ -71,8 +71,8 @@ package com.monsters
       {
          var _loc1_:Number = NaN;
          var _loc2_:Number = NaN;
-         _loc1_ = this.width * 0.5;
-         _loc2_ = this.height * 0.5;
+         _loc1_ = this.width * 0.25;
+         _loc2_ = this.height * 0.25;
          var _loc3_:Number = Math.random() * (_loc1_ * 2) - _loc1_;
          var _loc4_:Number = Math.random() * (_loc2_ * 2) - _loc2_;
          return new Point(_loc3_,_loc4_);

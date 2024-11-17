@@ -128,10 +128,6 @@ package com.monsters.chat
          {
             return;
          }
-         if(_bymChat._open)
-         {
-            return;
-         }
          if(_bymChat)
          {
             _loc1_ = getFirstNameLastInitial();
@@ -144,14 +140,7 @@ package com.monsters.chat
             _bymChat.initServer();
             _bymChat.login(_loc1_,LOGIN._playerID.toString(),BASE.BaseLevel().level);
             _bymChat.show();
-            if(MapRoomManager.instance.isInMapRoom3)
-            {
-               _bymChat.enter_sector("Sector-" + _chatroomNumber.toString());
-            }
-            else
-            {
-               _bymChat.enter_sector("BYM-" + KEYS._language + "-" + _chatroomNumber.toString());
-            }
+            _bymChat.enter_sector("Sector-" + _chatroomNumber.toString());
          }
       }
       

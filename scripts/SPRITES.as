@@ -46,7 +46,7 @@ package
          _sprites.C16 = new SpriteData("monsters/vorg_anim.png",40,40,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.C17 = new SpriteData("monsters/slimeattikus_anim.png",48,31,SpriteData.FUBAR_X,SpriteData.FUBAR_Y - 21);
          _sprites.C18 = new SpriteData("monsters/slimeattikusmini_anim.png",30,20,SpriteData.FUBAR_X - 11,SpriteData.FUBAR_Y - 25);
-         _sprites.C19 = new SpriteData("monsters/sprite.12.gold.png",53,46,21,27);
+         _sprites.C19 = new SpriteData("monsters/rezghul.png",48,43,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.IC1 = new SpriteData("monsters/spurtz.png",24,28,12,14);
          _sprites.IC2 = new SpriteData("monsters/zagnoid.png",64.4,46,26,28);
          _sprites.IC3 = new SpriteData("monsters/malphus.png",51,35,25,17);
@@ -223,6 +223,24 @@ package
                GetFrame(param1,_sprites.C16,int(param4 / 11.25),param5 % 9 / 3);
             }
             return param4 / 11.25 + param5 % 9 / 3 * 32;
+         }
+         if(param2 == "C19")
+         {
+            if(param3 == "idle")
+            {
+               if(param6 != param4 / 12)
+               {
+                  GetFrame(param1,_sprites.C19,param4 / 12,1);
+               }
+            }
+            else if(param3 == "moving")
+            {
+               if(param6 != param4 / 12)
+               {
+                  GetFrame(param1,_sprites.C19,param4 / 12,param5 / 8 % 5 + 1);
+               }
+            }
+            return param4 / 12;
          }
          if(param2 == "C15")
          {

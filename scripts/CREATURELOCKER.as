@@ -517,7 +517,7 @@ package
                "blocked":true,
                "props":{
                   "range":[150],
-                  "attackDelay":[20],
+                  "attackDelay":[10],
                   "speed":[1.5,1.75,2,2.25,2.5],
                   "health":[750],
                   "damage":[-60,-70,-80,-90,-100,-110],
@@ -558,9 +558,9 @@ package
                }
             },
             "C18":{
-               "index":18,
-               "page":3,
-               "order":2,
+               "index":0,
+               "page":0,
+               "order":0,
                "resource":0x1f4000,
                "time":129600,
                "level":3,
@@ -584,30 +584,32 @@ package
                }
             },
             "C19":{
-               "index":19,
-               "page":4,
-               "order":4,
+               "index":17,
+               "page":0,
+               "order":0,
                "resource":0x1f4000,
                "time":129600,
                "level":3,
                "name":"#m_rezghul#",
                "classType":Rezghul,
                "description":"mon_rezghuldesc",
-               "trainingCosts":[[2560000,86400],[64 * 60 * 1000,129600],[4096000,172800],[6250000,216000],[8500000,288000]],
+               "trainingCosts":[[16000000,86400],[19000000,129600],[22000000,172800],[25000000,216000],[28000000,259200]],
                "stream":["","","quests/monster19.png"],
                "blocked":true,
                "props":{
-                  "range":[5 * 60],
-                  "speed":[1,1.1,1.2,1.3,1.4,1.5],
-                  "health":[1000],
-                  "damage":[500],
-                  "cTime":[30],
+                  "range":[200],
+                  "speed":[0.8,0.9,1,1.1,1.2,1.3],
+                  "health":[7000,125 * 60,0x1f40,8500,150 * 60,10000],
+                  "damage":[700,800,15 * 60,1000,1100,20 * 60],
+                  "cTime":[75],
                   "cResource":[1000000],
-                  "cStorage":[200],
-                  "bucket":[200],
+                  "cStorage":[250],
+                  "bucket":[250],
                   "targetGroup":[1],
-                  "hTime":[150,135,2 * 60,105,90,75],
-                  "hResource":[135 * 60,12150,18225,450 * 60,625 * 60,750 * 60]
+                  "zombieSpeedMultiplier":[0.75],
+                  "zombieHealthMultiplier":[1,1.1,1.2,1.3,1.4,1.5],
+                  "zombieDamageMultiplier":[1,1.1,1.2,1.3,1.4,1.5],
+                  "resurrectCooldown":[7,7,6,6,5,4]
                }
             },
             "IC1":{

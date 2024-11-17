@@ -38,6 +38,8 @@ package com.monsters.projectiles
       
       protected var m_angleToTargetPoint:Number;
       
+      protected var m_distanceToTarget:Number;
+      
       public function Projectilev2()
       {
          super();
@@ -46,6 +48,10 @@ package com.monsters.projectiles
       public function get rasterData() : RasterData
       {
          return this.m_rasterData;
+      }
+      
+      public function set graphic(param1:IBitmapDrawable) : void
+      {
       }
       
       public function get angleToTargetPoint() : Number
@@ -66,13 +72,13 @@ package com.monsters.projectiles
       public function setup(param1:IBitmapDrawable, param2:Number, param3:Number, param4:ITargetable, param5:Number, param6:Number = 0, param7:IAttackable = null, ... rest) : void
       {
          this.m_rasterData = new RasterData(param1,new Point(param2,param3),int.MAX_VALUE);
-         GLOBAL.addFastTickable(this);
-         this.m_x = param2;
-         this.m_y = param3;
+         this.m_x = param2 - BitmapData(this.m_rasterData.data).width * 0.5;
+         this.m_y = param3 - BitmapData(this.m_rasterData.data).height * 0.5;
          this.m_target = param4;
          this.m_speed = param5;
          this.m_damage = param6;
          this.m_source = param7;
+         GLOBAL.addFastTickable(this);
          if(param4 is GameObject && k_DO_PROJECTILES_HAVE_RANDOM_OFFSET)
          {
             this.targetOffset = GameObject(param4).getRandomPointOnGraphic();
@@ -115,22 +121,15 @@ package com.monsters.projectiles
       
       public function tick(param1:int = 1) : void
       {
-         var _loc2_:Point = null;
          this.validateTarget();
-         _loc2_ = this.targetPoint;
-         var _loc3_:Number = _loc2_.x - this.m_x;
-         var _loc4_:Number = _loc2_.y - this.m_y;
-         this.m_angleToTargetPoint = Math.atan2(_loc4_,_loc3_);
-         this.m_x += Math.cos(this.m_angleToTargetPoint) * this.m_speed;
-         this.m_y += Math.sin(this.m_angleToTargetPoint) * this.m_speed;
-         var _loc5_:int = 0;
-         while(_loc5_ < this.m_components.length)
+         this.move();
+         var _loc2_:int = 0;
+         while(_loc2_ < this.m_components.length)
          {
-            this.m_components[_loc5_].tick(param1);
-            _loc5_++;
+            this.m_components[_loc2_].tick(param1);
+            _loc2_++;
          }
-         var _loc6_:Number = Math.sqrt(_loc3_ * _loc3_ + _loc4_ * _loc4_);
-         if(_loc6_ - this.m_speed <= 0)
+         if(this.m_distanceToTarget - this.m_speed <= 0)
          {
             this.hit();
          }
@@ -142,6 +141,18 @@ package com.monsters.projectiles
          {
             this.destroy();
          }
+      }
+      
+      protected function move() : void
+      {
+         var _loc1_:Point = null;
+         _loc1_ = this.targetPoint;
+         var _loc2_:Number = _loc1_.x - this.m_x;
+         var _loc3_:Number = _loc1_.y - this.m_y;
+         this.m_distanceToTarget = Math.sqrt(_loc2_ * _loc2_ + _loc3_ * _loc3_);
+         this.m_angleToTargetPoint = Math.atan2(_loc3_,_loc2_);
+         this.m_x += Math.cos(this.m_angleToTargetPoint) * this.m_speed;
+         this.m_y += Math.sin(this.m_angleToTargetPoint) * this.m_speed;
       }
       
       private function validateTarget() : void
@@ -167,7 +178,7 @@ package com.monsters.projectiles
          if(this.m_target is IAttackable)
          {
             _loc2_ = IAttackable(this.m_target);
-            _loc2_.modifyHealth(this.m_damage,this.m_source);
+            _loc2_.modifyHealth(this.m_damage,this);
             _loc3_ = 0;
             while(_loc3_ < this.m_components.length)
             {

@@ -494,6 +494,11 @@ package com.monsters.maproom3
             this.m_CoordinatesLabel.text = "";
          }
       }
+      
+      public function get leftMenuButtonsBar() : Sprite
+      {
+         return this.m_LeftMenuButtonsBar;
+      }
    }
 }
 

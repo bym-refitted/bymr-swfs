@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2199")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2200")]
    public dynamic class MapRoom3ResourcesDisplay extends MovieClip
    {
       public var resourceDisplay4:MovieClip;

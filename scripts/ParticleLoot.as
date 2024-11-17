@@ -35,6 +35,7 @@ package
          var _loc1_:Number = NaN;
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
+         var _loc7_:Number = NaN;
          _loc1_ = this._building._mcFootprint.width * 0.35;
          _loc2_ = this._building._mcFootprint.height * 0.35;
          _loc3_ = Math.random() * 2 - 1;
@@ -48,7 +49,7 @@ package
          var _loc5_:Number = Math.random() * 2 - 1;
          this._resourcePackage.y += _loc3_ * _loc2_;
          var _loc6_:Number = _loc3_ * -1 * _loc2_;
-         var _loc7_:Number = _loc6_ + _loc2_ * 1.5;
+         _loc7_ = _loc6_ + _loc2_ * 1.5;
          this._resourcePackage.mcShadow.y = _loc7_;
          TweenLite.to(this._resourcePackage.mcDot,1,{
             "y":_loc7_,

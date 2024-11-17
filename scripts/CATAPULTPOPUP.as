@@ -100,7 +100,6 @@ package
                Hide();
                ResourceBombs._bombid = b._bombid;
                _imageContainer.txtName.htmlText = "<font color=\"#FF0000\">Cancel</font>";
-               m_waitTime = GLOBAL.Timestamp() + 1.5;
                Update();
                Fire(param1);
             }
@@ -235,10 +234,12 @@ package
          this._t.start();
          this._open = true;
          this._canClose = false;
+         param1.stopImmediatePropagation();
       }
       
       public function Fire(param1:MouseEvent = null) : void
       {
+         this.m_waitTime = GLOBAL.Timestamp() + 1;
          if(UI2._top._siegeweapon)
          {
             UI2._top._siegeweapon.Cancel();

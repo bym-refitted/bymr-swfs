@@ -75,18 +75,18 @@ package
          }
       }
       
-      public static function getTargetsInRange(param1:Number, param2:Point, param3:int) : Array
+      public static function getTargetsInRange(param1:Number, param2:Point, param3:int, param4:Vector.<int> = null) : Array
       {
-         var _loc4_:Array = [];
+         var _loc5_:Array = [];
          if(Boolean(param3 & k_TARGETS_ATTACKERS) || Boolean(param3 & k_TARGETS_DEFENDERS))
          {
-            _loc4_ = _loc4_.concat(getCreepsInRange(param1,param2,param3));
+            _loc5_ = _loc5_.concat(getCreepsInRange(param1,param2,param3));
          }
          if(param3 & k_TARGETS_BUILDINGS)
          {
-            _loc4_ = _loc4_.concat(getBuildingsInRange(param1,param2));
+            _loc5_ = _loc5_.concat(getBuildingsInRange(param1,param2,param4));
          }
-         return _loc4_;
+         return _loc5_;
       }
       
       public static function getAllBUTTargetsInRange(param1:Number, param2:Point, param3:int = 0) : Array
@@ -147,26 +147,26 @@ package
          return _loc8_;
       }
       
-      public static function getBuildingsInRange(param1:Number, param2:Point) : Array
+      public static function getBuildingsInRange(param1:Number, param2:Point, param3:Vector.<int> = null) : Array
       {
-         var _loc4_:BFOUNDATION = null;
-         var _loc5_:int = 0;
-         var _loc3_:Array = [];
-         for each(_loc4_ in BASE._buildingsAll)
+         var _loc5_:BFOUNDATION = null;
+         var _loc6_:int = 0;
+         var _loc4_:Array = [];
+         for each(_loc5_ in BASE._buildingsAll)
          {
-            if(_loc4_.isTargetable)
+            if(_loc5_.isTargetable)
             {
-               _loc5_ = int(GLOBAL.QuickDistanceSquared(param2,new Point(_loc4_.x,_loc4_.y)));
-               if(_loc5_ < param1 * param1)
+               _loc6_ = int(GLOBAL.QuickDistanceSquared(param2,new Point(_loc5_.x,_loc5_.y)));
+               if(_loc6_ < param1 * param1)
                {
-                  _loc3_.push({
-                     "creep":_loc4_,
-                     "dist":Math.sqrt(_loc5_)
+                  _loc4_.push({
+                     "creep":_loc5_,
+                     "dist":Math.sqrt(_loc6_)
                   });
                }
             }
          }
-         return _loc3_;
+         return _loc4_;
       }
       
       public static function getOldStyleTargets(param1:int) : int
@@ -295,7 +295,7 @@ package
          return _loc8_;
       }
       
-      private static function canHitCreep(param1:int, param2:int) : Boolean
+      public static function canHitCreep(param1:int, param2:int) : Boolean
       {
          param1 = ~param1;
          return !(param1 & param2);

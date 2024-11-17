@@ -2,7 +2,7 @@ package com.monsters.replayableEvents.monsterMadness.popups
 {
    import com.monsters.display.ImageCache;
    import com.monsters.maproom_manager.MapRoomManager;
-   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.replayableEvents.attacking.monsterMadness.MonsterMadness;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;

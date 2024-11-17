@@ -32,7 +32,6 @@ package
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.maproom_advanced.MapRoomCell;
    import com.monsters.maproom_advanced.PopupLostMainBase;
-   import com.monsters.maproom_manager.IMapRoomCell;
    import com.monsters.maproom_manager.MapRoomManager;
    import com.monsters.monsters.champions.ChampionBase;
    import com.monsters.pathing.PATHING;
@@ -40,7 +39,7 @@ package
    import com.monsters.radio.RADIO;
    import com.monsters.rendering.RasterData;
    import com.monsters.replayableEvents.ReplayableEventHandler;
-   import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.replayableEvents.attacking.monsterMadness.MonsterMadness;
    import com.monsters.rewarding.RewardHandler;
    import com.monsters.siege.*;
    import com.monsters.siege.weapons.*;
@@ -516,10 +515,6 @@ package
          {
             return false;
          }
-         if(MAPROOM_DESCENT._inDescent && (param6 == EnumYardType.MAIN_YARD || param6 == EnumYardType.OUTPOST))
-         {
-            MAPROOM_DESCENT.ExitDescent();
-         }
          if(!_loading)
          {
             GLOBAL._reloadonerror = param5;
@@ -751,7 +746,6 @@ package
          var r:Object = null;
          var bd:Object = null;
          var i:String = null;
-         var mapRoom3Cell:IMapRoomCell = null;
          var ir:Object = null;
          var kx:int = 0;
          var ooo:Object = null;
@@ -952,20 +946,9 @@ package
                   }
                }
             }
-            else if(MapRoomManager.instance.isInMapRoom3)
+            else if(MapRoomManager.instance.isInMapRoom3 && Boolean(obj.homebase))
             {
-               if(obj.homebase != null)
-               {
-                  GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
-               }
-               if(obj.mapcelldata != null)
-               {
-                  mapRoom3Cell = MapRoomManager.instance.FindCell(obj.mapcelldata.x,obj.mapcelldata.y);
-                  if(mapRoom3Cell != null && mapRoom3Cell != GLOBAL._currentCell)
-                  {
-                     GLOBAL._currentCell = mapRoom3Cell;
-                  }
-               }
+               GLOBAL._mapHome = new Point(obj.homebase[0],obj.homebase[1]);
             }
             GLOBAL._unreadMessages = obj.unreadmessages;
             r = obj.resources;

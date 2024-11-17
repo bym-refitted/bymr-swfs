@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2219")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2220")]
    public dynamic class MapRoom3ExpandableFrame extends MovieClip
    {
       public var background:MovieClip;

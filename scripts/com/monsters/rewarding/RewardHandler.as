@@ -204,6 +204,15 @@ package com.monsters.rewarding
                   RewardHandler.instance.addAndApplyReward(_loc2_,true);
                }
                BASE.Save(0,false,true);
+               break;
+            case k_UPDATE_VALUE:
+               _loc2_ = RewardHandler.instance.getRewardByID(param1.data[2]);
+               if(_loc2_)
+               {
+                  _loc2_.value = param1.data[3];
+                  RewardHandler.instance.addAndApplyReward(_loc2_,true);
+               }
+               BASE.Save(0,false,true);
          }
          return true;
       }

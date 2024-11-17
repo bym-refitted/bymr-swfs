@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2111")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2112")]
    public dynamic class KrallenHUD_CLIP extends MovieClip
    {
       public var mcLevel:MovieClip;

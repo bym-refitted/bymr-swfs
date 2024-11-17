@@ -377,7 +377,6 @@ package
                else if(_stored.Get() > this.productionCapacity)
                {
                   LOGGER.Log("hak","Resource gatherer storage capacity exceeded");
-                  GLOBAL.ErrorMessage("BRESOURCE overcapacity hack");
                   _stored.Set(this.productionCapacity);
                }
                else if(_stored.Get() < this.productionCapacity && health > 0)

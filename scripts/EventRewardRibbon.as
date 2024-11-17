@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2835")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2829")]
    public dynamic class EventRewardRibbon extends MovieClip
    {
       public var rewardLayerMask1:RewardLayerMask;

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1581")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1599")]
    public dynamic class SIEGEBUILDINGPOPUP_CLIP extends MovieClip
    {
       public var title_siegelab:TextField;

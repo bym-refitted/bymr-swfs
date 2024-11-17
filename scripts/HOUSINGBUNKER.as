@@ -130,16 +130,17 @@ package
       override public function Destroyed(param1:Boolean = true) : void
       {
          super.Destroyed(param1);
-         var _loc2_:int = 0;
-         while(_loc2_ < _creatures.length)
+         var _loc2_:Boolean = MapRoomManager.instance.isInMapRoom3;
+         var _loc3_:int = 0;
+         while(_loc3_ < _creatures.length)
          {
-            if(_creatures[_loc2_]._behaviour == "pen")
-            {
-               _creatures[_loc2_].setHealth(0);
-            }
-            _loc2_++;
+            _creatures[_loc3_].setHealth(_loc2_ ? _creatures[_loc3_].health * 0.5 : 0);
+            _loc3_++;
          }
-         HOUSING.Cull();
+         if(!_loc2_)
+         {
+            HOUSING.Cull();
+         }
       }
       
       private function Removed() : void
