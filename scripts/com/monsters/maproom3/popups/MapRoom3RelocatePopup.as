@@ -102,7 +102,14 @@ package com.monsters.maproom3.popups
       
       internal function Relocate(param1:int = -1) : void
       {
-         GLOBAL.Message(KEYS.Get("mr3_relocate_confirmation"),KEYS.Get("mr3_relocate_confirmation_yes"),this.ConfirmRelocation,[param1]);
+         if(GLOBAL._flags.nwm_relocate == "0")
+         {
+            GLOBAL.Message(KEYS.Get("mr3_relocate_confirmationOFF"),KEYS.Get("mr3_relocate_confirmation_OK"),this.ConfirmRelocation,[param1]);
+         }
+         else if(GLOBAL._flags.nwm_relocate == "1")
+         {
+            GLOBAL.Message(KEYS.Get("mr3_relocate_confirmation"),KEYS.Get("mr3_relocate_confirmation_yes"),this.ConfirmRelocation,[param1]);
+         }
       }
       
       private function ConfirmRelocation(param1:int = -1) : void

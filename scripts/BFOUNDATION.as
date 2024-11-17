@@ -541,6 +541,7 @@ package
          setHealth(health - param1);
          if(health <= 0)
          {
+            this._repairing = 0;
             setHealth(0);
             if(!this._destroyed)
             {

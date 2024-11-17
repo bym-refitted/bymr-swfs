@@ -285,7 +285,8 @@ package
       
       public static var _currentCellLoc:Point = null;
       
-      private static const s_levels:Array = [0,15 * 60,3500,5000,125 * 60,175 * 60,245 * 60,343 * 60,28812,40337,56472,79060,110684,154958,216941,303717,425204,595286,833401,1166761,1633465,2286851,3201591,4482228,0x5fc02f,8785167,12299234,17218927,24106498,33749097,47248736,66148230,92607522,129650530,181510743,254115040,355761056,498065478,697291669,976208337,1366691671,1913368339,2678715675,3750201945,5250282723,7350395812,10290554137,14406775792,20169486109,28237280553,39532192774,55345069884,77483097838,108476336973,151866871762,212613620467,297659068653];
+      private static const s_levels:Array = [0,15 * 60,3500,5000,125 * 60,175 * 60,245 * 60,343 * 60,28812,40337,56472,79060,110684,154958,216941,303717,425204,595286,833401,1166761,1633465,2286851,3201591,4482228,0x5fc02f,8785167,12299234,17218927,24106498,33749097,47248736,66148230,92607522,129650530,181510743,254115040,355761056,498065478,697291669,976208337,1366691671,1913368339,2678715675,3750201945,5250282723,7350395812,10290554137,14406775792,20169486109,28237280553,39532192774,55345069884,77483097838,108476336973,151866871762,212613620467,297659068653,357190880000,428629050000,514354860000,617225830000,740670990000,888805180000,1066566210000,1279879450000,1535853400000,1843026400000,2211631680000,2653958010000,3184749610000,3821699530000,4586039430000,5503247310000,6603896770000,7924676120000,9509611340000,11411533600000,13693840320000,16432608380000,19719130050000,23662956060000,28395547270000,34074656720000,40889588060000,49067505670000,58881006800000,70657208160000,84788649790000,101746379740000
+      ,122095655680000,146514786810000,175817744170000,210981293000000,253177551600000,303813061920000,364575674300000,437490809160000,524988970990000,629986765180000,755984118210000];
       
       private static var _loadedSomething:Boolean = false;
       
@@ -952,15 +953,29 @@ package
             }
             GLOBAL._unreadMessages = obj.unreadmessages;
             r = obj.resources;
-            _resources = _resources || {};
-            _resources.r1 = new SecNum(Math.floor(r.r1));
-            _resources.r2 = new SecNum(Math.floor(r.r2));
-            _resources.r3 = new SecNum(Math.floor(r.r3));
-            _resources.r4 = new SecNum(Math.floor(r.r4));
-            _resources.r1bonus = r.r1bonus;
-            _resources.r2bonus = r.r2bonus;
-            _resources.r3bonus = r.r3bonus;
-            _resources.r4bonus = r.r4bonus;
+            if(r == null)
+            {
+               _resources.r1 = 1000;
+               _resources.r2 = 1000;
+               _resources.r3 = 1000;
+               _resources.r4 = 1000;
+               _resources.r1max = 10000;
+               _resources.r2max = 10000;
+               _resources.r3max = 10000;
+               _resources.r4max = 10000;
+            }
+            else
+            {
+               _resources = _resources || {};
+               _resources.r1 = new SecNum(Math.floor(r.r1));
+               _resources.r2 = new SecNum(Math.floor(r.r2));
+               _resources.r3 = new SecNum(Math.floor(r.r3));
+               _resources.r4 = new SecNum(Math.floor(r.r4));
+               _resources.r1bonus = r.r1bonus;
+               _resources.r2bonus = r.r2bonus;
+               _resources.r3bonus = r.r3bonus;
+               _resources.r4bonus = r.r4bonus;
+            }
             if(obj.iresources)
             {
                ir = obj.iresources;
@@ -6176,7 +6191,11 @@ package
          {
             _loc1_ = 5;
          }
-         if(QUESTS._global.b6lvl == 10 || QUESTS._global.b15lvl == 5 || QUESTS._global.b23lvl == 3 || QUESTS._global.b25lvl == 3)
+         if((QUESTS._global.b6lvl == 10 || QUESTS._global.b15lvl == 5 || QUESTS._global.b23lvl == 3 || QUESTS._global.b25lvl == 3) && !BASE.isInfernoMainYardOrOutpost)
+         {
+            _loc1_ = 9;
+         }
+         else
          {
             _loc1_ = 6;
          }
