@@ -562,6 +562,12 @@ package
       {
          HATCHERY.Hide(param1);
       }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
+      }
    }
 }
 

@@ -7,9 +7,9 @@ package
    
    public class BUILDINGOPTIONS
    {
-      private static var _do:DisplayObject;
+      public static var _do:DisplayObject;
       
-      private static var _doBG:DisplayObject;
+      public static var _doBG:DisplayObject;
       
       public static var _building:BFOUNDATION;
       

@@ -3,7 +3,6 @@ package
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
-   import flash.geom.Rectangle;
    
    public class UI_WORKERS
    {
@@ -202,33 +201,24 @@ package
       
       public static function Resize() : *
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:Rectangle = null;
          if(!GLOBAL.flagsShouldChatDisplay())
          {
             if(_mc)
             {
-               _loc1_ = GLOBAL._ROOT.stage.stageWidth;
-               _loc2_ = GLOBAL.GetGameHeight();
-               _loc3_ = new Rectangle(0 - (_loc1_ - 760) / 2,0 - (_loc2_ - 520) / 2,_loc1_,_loc2_);
-               _mc.x = int(_loc3_.x);
-               _mc.y = int(522 + (_loc2_ - 520) / 2 - 50);
+               _mc.x = GLOBAL._SCREEN.x;
+               _mc.y = GLOBAL._SCREEN.bottom - 52;
             }
          }
          else if(_mc)
          {
-            _loc1_ = GLOBAL._ROOT.stage.stageWidth;
-            _loc2_ = GLOBAL._ROOT.stage.stageHeight;
-            _loc3_ = new Rectangle(0 - (_loc1_ - 760) / 2,(-520 - _loc2_) / 2,_loc1_,_loc2_);
-            _mc.x = int(_loc3_.x + _loc3_.width) - _workerMCOffset;
+            _mc.x = GLOBAL._SCREEN.right - _workerMCOffset;
             if(BASE._isProtected - GLOBAL.Timestamp() > 0 && GLOBAL._mode == "build")
             {
-               _mc.y = int((520 - _loc2_) / 2 + 70);
+               _mc.y = GLOBAL._SCREEN.top + 70;
             }
             else
             {
-               _mc.y = int((520 - _loc2_) / 2 + 50);
+               _mc.y = GLOBAL._SCREEN.top + 50;
             }
          }
       }

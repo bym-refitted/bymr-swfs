@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol941")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol955")]
    public dynamic class buildingInfo extends MovieClip
    {
       public var tInfoRight:TextField;

@@ -53,6 +53,8 @@ package com.monsters.maproom_advanced
       
       public var _popupInfoViewOnly:PopupInfoViewOnly;
       
+      public var _popupBuff:*;
+      
       private var _popupBookmarkMenu:Array;
       
       private var _menuShown:Boolean = false;
@@ -68,9 +70,9 @@ package com.monsters.maproom_advanced
       public function MapRoomPopup()
       {
          var h:*;
-         var r:Rectangle;
          var i:int;
          var w:* = undefined;
+         var r:Rectangle = null;
          this._sortArray = [];
          super();
          w = GLOBAL._ROOT.stage.stageWidth;
@@ -97,6 +99,8 @@ package com.monsters.maproom_advanced
             mcMask.mcMask.height = h - 40;
             mcFrame2.x = r.x;
             mcFrame2.y = r.y + 20;
+            mcBuffHolder.x = mcMask.width + mcMask.x - 70;
+            mcBuffHolder.y = mcMask.y + 28;
          }
          else
          {
@@ -111,6 +115,8 @@ package com.monsters.maproom_advanced
             mcMask.mcMask.height = mcFrame.height;
             mcFrame2.x = 20;
             mcFrame2.y = 20;
+            mcBuffHolder.x = mcMask.width + mcMask.x - 70;
+            mcBuffHolder.y = mcMask.y + 30;
          }
          mcInfo.x = mcFrame2.x + 20;
          mcInfo.y = mcFrame2.y + 270;
@@ -495,6 +501,15 @@ package com.monsters.maproom_advanced
             this._popupInfoViewOnly.Cleanup();
             this._popupInfoViewOnly = null;
          }
+         if(this._popupBuff)
+         {
+            if(this._popupBuff.parent)
+            {
+               this._popupBuff.parent.removeChild(this._popupBuff);
+            }
+            this._popupBuff.Cleanup();
+            this._popupBuff = null;
+         }
          mcFrame = null;
          mcFrame2 = null;
          if(this._cellContainer)
@@ -790,6 +805,7 @@ package com.monsters.maproom_advanced
          var _loc7_:Object = null;
          var _loc8_:int = 0;
          var _loc9_:MapRoomCell = null;
+         var _loc10_:Number = NaN;
          var _loc2_:int = getTimer();
          if(this._fullScreen && GLOBAL._ROOT.stage.displayState == StageDisplayState.NORMAL)
          {
@@ -903,6 +919,14 @@ package com.monsters.maproom_advanced
          }
          for each(_loc6_ in this._cells)
          {
+            if(!_loc6_._over)
+            {
+               _loc6_.mc.mcGlow.alpha = 0;
+            }
+            else
+            {
+               _loc6_.mc.mcGlow.alpha = 0.5;
+            }
             _loc6_._inRange = false;
          }
          if(!MapRoom._viewOnly)
@@ -911,7 +935,11 @@ package com.monsters.maproom_advanced
             {
                if(_loc9_._mine && _loc9_._flinger.Get() > 0 && _loc9_._base > 0)
                {
-                  this.ShowRange(_loc9_,_loc9_._flinger.Get());
+                  _loc10_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[_loc9_._flinger.Get()]);
+                  if(_loc9_._over)
+                  {
+                  }
+                  this.ShowRange(_loc9_,_loc10_);
                }
             }
          }
@@ -923,6 +951,7 @@ package com.monsters.maproom_advanced
          {
             this.bBookmarks.Enabled = false;
          }
+         this.DisplayBuffs();
       }
       
       public function ShowBubble(param1:MapRoomCell) : *
@@ -955,7 +984,14 @@ package com.monsters.maproom_advanced
                {
                   if(!_loc4_._over)
                   {
-                     _loc4_.mc.mcGlow.alpha = 0.5;
+                     if(_loc3_["range"] <= 4)
+                     {
+                        _loc4_.mc.mcGlow.alpha = 0.5;
+                     }
+                     else
+                     {
+                        _loc4_.mc.mcGlow.alpha = Math.max(_loc4_.mc.mcGlow.alpha,0.35);
+                     }
                   }
                   _loc4_._inRange = true;
                }
@@ -1482,6 +1518,552 @@ package com.monsters.maproom_advanced
                });
             }
          }
+         if(param3 >= 5)
+         {
+            if(param1 % 2 != 0)
+            {
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 - 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 0),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 + 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 + 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 + 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 0),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 - 4),
+                  "range":5
+               });
+            }
+            else
+            {
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 - 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 - 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 0),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 + 5),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 + 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 + 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 0),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 1),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 2),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 - 3),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 - 4),
+                  "range":5
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 - 5),
+                  "range":5
+               });
+            }
+         }
+         if(param3 >= 6)
+         {
+            if(param1 % 2 != 0)
+            {
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 - 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 0),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 + 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 + 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 + 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 0),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 - 5),
+                  "range":6
+               });
+            }
+            else
+            {
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 - 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 - 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 - 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 0),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 6,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 5,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 4,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 3,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 2,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 - 1,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 0,param2 + 6),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 + 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 + 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 + 0),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 1),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 2),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 6,param2 - 3),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 5,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 4,param2 - 4),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 3,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 2,param2 - 5),
+                  "range":6
+               });
+               _loc4_.push({
+                  "cell":this.GetCell(param1 + 1,param2 - 6),
+                  "range":6
+               });
+            }
+         }
          return _loc4_;
       }
       
@@ -1847,6 +2429,135 @@ package com.monsters.maproom_advanced
          SOUNDS.Play("close");
       }
       
+      public function DisplayBuffs() : void
+      {
+         var _loc3_:* = undefined;
+         var _loc4_:* = undefined;
+         var _loc5_:* = undefined;
+         var _loc6_:* = undefined;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:Object = null;
+         var _loc12_:String = null;
+         var _loc13_:MovieClip = null;
+         var _loc1_:Number = POWERUPS.CheckPowers(null,"NORMAL");
+         var _loc2_:int = this.mcBuffHolder.numChildren;
+         while(_loc2_--)
+         {
+            this.mcBuffHolder.getChildAt(_loc2_).removeEventListener(MouseEvent.ROLL_OVER,this.BuffShow);
+            this.mcBuffHolder.getChildAt(_loc2_).removeEventListener(MouseEvent.ROLL_OUT,this.BuffHide);
+            this.mcBuffHolder.removeChildAt(_loc2_);
+         }
+         if(_loc1_ > 0)
+         {
+            _loc3_ = 3;
+            _loc4_ = 2;
+            _loc5_ = -36;
+            _loc6_ = 36;
+            _loc7_ = 0;
+            _loc8_ = 0;
+            _loc9_ = 0;
+            _loc10_ = 0;
+            _loc11_ = POWERUPS.GetPowerups("NORMAL");
+            for(_loc12_ in _loc11_)
+            {
+               if(POWERUPS._expireRealTime)
+               {
+                  if(_loc11_[_loc12_].endtime.Get() < GLOBAL.Timestamp())
+                  {
+                     this.BuffHide(null);
+                     continue;
+                  }
+               }
+               _loc13_ = new ui_buffIcon_CLIP();
+               _loc13_.gotoAndStop(_loc12_);
+               _loc13_.name = _loc12_;
+               _loc13_.x = _loc9_ * _loc5_;
+               _loc13_.y = _loc10_ * _loc6_;
+               _loc9_++;
+               if(_loc9_ >= _loc3_)
+               {
+                  _loc9_ = 0;
+                  _loc10_++;
+               }
+               _loc13_.addEventListener(MouseEvent.ROLL_OVER,this.BuffShow);
+               _loc13_.addEventListener(MouseEvent.ROLL_OUT,this.BuffHide);
+               this.mcBuffHolder.addChild(_loc13_);
+            }
+         }
+         else
+         {
+            this.BuffHide(null);
+         }
+      }
+      
+      public function BuffShow(param1:MouseEvent) : void
+      {
+         var _loc7_:bubblepopupBuff = null;
+         var _loc2_:MovieClip = param1.currentTarget as MovieClip;
+         var _loc3_:String = "";
+         var _loc4_:* = "";
+         var _loc5_:* = _loc2_.name + "_desc";
+         _loc3_ = KEYS.Get(_loc5_);
+         _loc4_ = "<b>" + KEYS.Get("buff_duration") + "</b>";
+         if(POWERUPS._expireRealTime)
+         {
+            if(POWERUPS.Timeleft(_loc2_.name) > 0)
+            {
+               _loc4_ += GLOBAL.ToTime(POWERUPS.Timeleft(_loc2_.name),true);
+            }
+            else
+            {
+               _loc4_ = "";
+            }
+         }
+         else if(POWERUPS.Timeleft(_loc2_.name) > 0)
+         {
+            _loc4_ += GLOBAL.ToTime(POWERUPS.Timeleft(_loc2_.name),true);
+         }
+         else
+         {
+            _loc4_ = "";
+         }
+         if(!this._popupBuff)
+         {
+            _loc7_ = new bubblepopupBuff();
+            this._popupBuff = addChild(_loc7_);
+            _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
+            _loc7_.x = this.mcBuffHolder.x + (_loc2_.x + _loc2_.width / 2);
+            if(_loc7_.x >= this.mcBuffHolder.x)
+            {
+               _loc7_.x = this.mcBuffHolder.x + (_loc2_.x + _loc2_.width / 2) - 60;
+               _loc7_.mcArrow.x = 60;
+            }
+            _loc7_.y = this.mcBuffHolder.y + (_loc2_.y + _loc2_.height + 4);
+         }
+         else
+         {
+            bubblepopupBuff(this._popupBuff).Update(_loc3_,_loc4_);
+         }
+      }
+      
+      public function BuffHide(param1:MouseEvent) : *
+      {
+         if(this._popupBuff)
+         {
+            removeChild(this._popupBuff);
+            bubblepopupBuff(this._popupBuff).Cleanup();
+            this._popupBuff = null;
+         }
+      }
+      
+      public function BuffOff(param1:MouseEvent) : void
+      {
+         POWERUPS._testToggleOffPowers = true;
+         var _loc2_:MovieClip = param1.currentTarget as MovieClip;
+         POWERUPS.Remove(_loc2_.name);
+         this.BuffHide(null);
+      }
+      
       public function FullScreen() : *
       {
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
@@ -1858,6 +2569,26 @@ package com.monsters.maproom_advanced
             this._fullScreen = false;
          }
          MapRoom.ResizeHandler();
+      }
+      
+      public function Resize() : void
+      {
+         var _loc1_:Boolean = false;
+         if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
+         {
+            if(this._fullScreen != true)
+            {
+               _loc1_ = true;
+            }
+         }
+         else if(this._fullScreen != false)
+         {
+            _loc1_ = true;
+         }
+         if(_loc1_)
+         {
+            MapRoom.ResizeHandler();
+         }
       }
       
       public function Help(param1:MouseEvent = null) : *

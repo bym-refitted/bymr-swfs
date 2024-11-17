@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1140")]
-   public dynamic class creatureBarAdv_Fill_514 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1472")]
+   public dynamic class ui_progressbars_descbg_44 extends MovieClip
    {
-      public function creatureBarAdv_Fill_514()
+      public function ui_progressbars_descbg_44()
       {
          super();
          addFrameScript(0,this.frame1);

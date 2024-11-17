@@ -1,13 +1,11 @@
 package com.monsters.chat
 {
-   import com.monsters.chat.ui.ChatBox;
-   import com.smartfoxserver.v2.entities.Room;
-   import com.smartfoxserver.v2.entities.User;
-   import flash.display.MovieClip;
-   import flash.display.Sprite;
-   import flash.events.KeyboardEvent;
-   import flash.events.TimerEvent;
-   import flash.geom.Rectangle;
+   import com.monsters.chat.ui.*;
+   import com.smartfoxserver.v2.entities.*;
+   import com.smartfoxserver.v2.entities.data.*;
+   import flash.display.*;
+   import flash.events.*;
+   import flash.geom.*;
    import flash.ui.Keyboard;
    import flash.utils.Dictionary;
    import flash.utils.Timer;
@@ -25,6 +23,8 @@ package com.monsters.chat
       private static var _displayNameMap:Dictionary = new Dictionary();
       
       public const GLOBAL_CHANNEL:Channel = new Channel("World","system");
+      
+      public const IGNORE_LIST_CHANNEL:Channel = new Channel("IgnoreList","system");
       
       private var _auth:AS_Login = null;
       
@@ -187,7 +187,7 @@ package com.monsters.chat
       private function processInput() : void
       {
          var _loc2_:String = null;
-         var _loc3_:String = null;
+         var _loc3_:* = null;
          var _loc4_:* = null;
          var _loc5_:int = 0;
          var _loc1_:String = this.chatBox.inputText;
@@ -224,29 +224,10 @@ package com.monsters.chat
                   case "/igd":
                      _chat.showIgnore();
                      break;
-                  case "/u":
-                  case "/unignore":
-                     _loc3_ = _loc1_;
-                     if(_loc3_ != null && _loc3_.length > 0)
-                     {
-                        if(this.fetchDisplayName(_loc3_) == null)
-                        {
-                           _loc3_ = this.fetchIDFromDisplayName(_loc3_,true);
-                           if(_loc3_ == null || _loc3_.length == 0)
-                           {
-                              this.system_message("User ID not found.");
-                              break;
-                           }
-                        }
-                        _chat.unignore(_loc3_);
-                        break;
-                     }
-                     this.system_message("- Usage -\n" + _loc2_ + " &lt;userid&gt;\n" + "or " + _loc2_ + " &lt;name&gt;\n" + "Note: for a list of ignored names and userid\'s, type /l");
-                     break;
                   case "/?":
                   case "/h":
                   case "/help":
-                     this.system_message("<b>- Commands -</b>\nTo unignore: /u &lt;userid&gt; or /u &lt;name&gt;\nTo list ignored users: /list");
+                     this.system_message("<b>- Commands -</b>\nTo list ignored users: /list");
                      break;
                   default:
                      this.default_chat(_loc1_);
@@ -298,7 +279,6 @@ package com.monsters.chat
       {
          if(!this._isConnected)
          {
-            LOGGER.Log("err","BYMChat.default_chat(): not connected");
             return;
          }
          switch(this.default_chat_channel)
@@ -498,7 +478,7 @@ package com.monsters.chat
             LOGGER.Log("err","BYMChat.private_chat(): not connected");
             return;
          }
-         if(this._ignore_list != null && this._ignore_list.indexOf(param1) != -1)
+         if(this.userIsIgnored(param1))
          {
             return;
          }
@@ -601,7 +581,7 @@ package com.monsters.chat
             _loc2_ = param1.Get("channel") as Channel;
             _loc3_ = param1.Get("user") as String;
             _loc4_ = param1.Get("message") as String;
-            if(this._ignore_list != null && this._ignore_list.indexOf(_loc3_) != -1)
+            if(this.userIsIgnored(_loc3_))
             {
                return;
             }
@@ -634,15 +614,23 @@ package com.monsters.chat
          var _loc2_:String = null;
          var _loc3_:String = null;
          var _loc4_:String = null;
-         var _loc5_:int = 0;
-         var _loc6_:* = null;
+         var _loc5_:Array = null;
+         var _loc6_:SFSObject = null;
          var _loc7_:String = null;
+         var _loc8_:String = null;
          if(param1.Success)
          {
             _loc2_ = param1.Get("action") as String;
             _loc3_ = param1.Get("target") as String;
-            _loc4_ = this.fetchDisplayName(_loc3_);
-            this._ignore_list = param1.Get("ignore_list") as Array;
+            _loc4_ = param1.Get("displayname") as String;
+            if(_loc2_ != "show")
+            {
+               this._ignore_list = param1.Get("ignore_list") as Array;
+            }
+            if(_loc4_ == null)
+            {
+               _loc4_ = this.fetchDisplayName(_loc3_);
+            }
             if(_loc2_ == "add")
             {
                this.system_message("\'" + _loc4_ + "\' (id: " + _loc3_ + ") is now being ignored.");
@@ -651,31 +639,32 @@ package com.monsters.chat
             {
                this.system_message("\'" + _loc4_ + "\' (id: " + _loc3_ + ") is no longer ignored.");
             }
-            else if(_loc2_ == "showlist")
+            else if(_loc2_ == "show")
             {
-               if(this._ignore_list.length == 0)
+               _loc5_ = param1.Get("ignore_list") as Array;
+               if(_loc5_.length == 0)
                {
                   this.system_message("You are not ignoring any users.");
                }
                else
                {
-                  this.system_message("List of ignored users:");
-                  _loc5_ = 0;
-                  for each(_loc6_ in this._ignore_list)
+                  this.system_message("<b><font color=\"#0000FF\">List of ignored users:</font></b>");
+                  for each(_loc6_ in _loc5_)
                   {
-                     _loc7_ = this.fetchDisplayName(_loc6_);
-                     if(_loc7_ == null || _loc7_.length == 0)
+                     _loc7_ = _loc6_.getUtfString("target");
+                     _loc8_ = _loc6_.getUtfString("displayname");
+                     if(_loc8_ == null || _loc8_.length == 0)
                      {
-                        _loc5_++;
+                        _loc8_ = this.fetchDisplayName(_loc7_);
+                     }
+                     if(_loc8_ != null)
+                     {
+                        this.showIgnoreListMessage(_loc7_,_loc8_);
                      }
                      else
                      {
-                        this.system_message("\'" + this.fetchDisplayName(_loc6_) + "\' (id: " + _loc6_ + ")");
+                        this.showIgnoreListMessage(_loc7_,"");
                      }
-                  }
-                  if(_loc5_ > 0)
-                  {
-                     this.system_message("Note: " + _loc5_ + " offline user(s) are not displayed");
                   }
                }
             }
@@ -762,6 +751,12 @@ package com.monsters.chat
       {
       }
       
+      private function showIgnoreListMessage(param1:String, param2:String) : void
+      {
+         var _loc3_:* = "<i>\'" + param2 + "\' (id: " + param1 + ")</i>";
+         this.chatBox.push(_loc3_,param2,param1,"IgnoreList");
+      }
+      
       private function showChatMessage(param1:Channel, param2:String, param3:String) : void
       {
          var _loc4_:* = null;
@@ -771,6 +766,7 @@ package com.monsters.chat
          {
             return;
          }
+         param3 = ProfanityFilter.filterMessage(param3);
          if(param2 == null)
          {
             _loc4_ = "<i>" + param3 + "</i>";
@@ -823,11 +819,19 @@ package com.monsters.chat
          this.chatBox.push(_loc4_,_loc6_,param2,_loc5_);
       }
       
-      public function ignoreUser(param1:String = null) : void
+      public function ignoreUser(param1:String = null, param2:String = null) : void
       {
          if(param1 != null)
          {
-            GLOBAL.Message(KEYS.Get("chat_ignore") + " \'" + this.fetchDisplayName(param1) + "\' (id: " + param1 + ")<br><br>" + KEYS.Get("chat_ignore_confirm"),KEYS.Get("btn_yes"),_chat.ignore,[param1]);
+            GLOBAL.Message(KEYS.Get("chat_ignore") + " \'" + param2 + "\' (id: " + param1 + ")<br><br>" + KEYS.Get("chat_ignore_confirm"),KEYS.Get("btn_yes"),_chat.ignore,[param1,param2]);
+         }
+      }
+      
+      public function unignoreUser(param1:String) : void
+      {
+         if(param1 != null)
+         {
+            _chat.unignore(param1);
          }
       }
       
@@ -885,13 +889,26 @@ package com.monsters.chat
          {
             for(_loc3_ in _displayNameMap)
             {
-               if(_displayNameMap[_loc3_] != null && _displayNameMap[_loc3_].indexOf(param1) != -1 || _loc3_.indexOf(param1) != -1)
+               if(_displayNameMap[_loc3_] != null && _displayNameMap[_loc3_].indexOf(param1) != -1)
                {
                   return _loc3_;
                }
             }
          }
          return "";
+      }
+      
+      public function userIsIgnored(param1:String) : Boolean
+      {
+         if(this._ignore_list == null)
+         {
+            return false;
+         }
+         if(this._ignore_list.indexOf(param1) == -1)
+         {
+            return false;
+         }
+         return true;
       }
       
       public function get roomNames() : Array
@@ -901,6 +918,11 @@ package com.monsters.chat
             return _chat.roomNames;
          }
          return [];
+      }
+      
+      public function chatInputHasFocus() : Boolean
+      {
+         return stage.focus == this.chatBox.input;
       }
    }
 }

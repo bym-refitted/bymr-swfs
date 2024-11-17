@@ -167,8 +167,8 @@ package
             {
                _select = GLOBAL._layerWindows.addChild(new GUARDIANSELECTPOPUP());
                _select.scaleX = _select.scaleY = 0.8;
-               _select.x = 380;
-               _select.y = 260;
+               _select.x = GLOBAL._SCREENCENTER.x;
+               _select.y = GLOBAL._SCREENCENTER.y;
                TweenLite.to(_select,0.2,{
                   "scaleX":1,
                   "scaleY":1,
@@ -183,8 +183,8 @@ package
                }
                _popup = GLOBAL._layerWindows.addChild(new GUARDIANCAGEPOPUP());
                _popup.scaleX = _popup.scaleY = 0.8;
-               _popup.x = 380;
-               _popup.y = 260;
+               _popup.x = GLOBAL._SCREENCENTER.x;
+               _popup.y = GLOBAL._SCREENCENTER.y;
                TweenLite.to(_popup,0.2,{
                   "scaleX":1,
                   "scaleY":1,
@@ -220,8 +220,8 @@ package
                   _popup = GLOBAL._layerWindows.addChild(new GUARDIANCAGEPOPUP());
                   _popup.scaleY = 0.8;
                   _popup.scaleX = 0.8;
-                  _popup.x = 380;
-                  _popup.y = 260;
+                  _popup.x = GLOBAL._SCREENCENTER.x;
+                  _popup.y = GLOBAL._SCREENCENTER.y;
                   TweenLite.to(_popup,0.2,{
                      "scaleX":1,
                      "scaleY":1,

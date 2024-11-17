@@ -9,6 +9,8 @@ package
    {
       public var _mc:*;
       
+      public var _blocker:*;
+      
       public function ERRORMESSAGE()
       {
          super();
@@ -44,6 +46,7 @@ package
             {
                GLOBAL.CallJS("reloadPage");
             };
+            GLOBAL.RefreshScreen();
             try
             {
                throw new Error(_message);
@@ -59,6 +62,11 @@ package
                this._mc.tA.htmlText = "<b>" + KEYS.Get("pop_oops_title") + "</b>";
                this._mc.tB.htmlText = KEYS.Get("pop_oops_body");
             }
+            this._blocker = this._mc.blocker;
+            this._blocker.x = GLOBAL._SCREENCENTER.x - 1400;
+            this._blocker.y = GLOBAL._SCREENCENTER.y - 1400;
+            this._blocker.width = 2800;
+            this._blocker.height = 2800;
             this._mc.bAction.Setup("Reload");
             this._mc.bAction.addEventListener(MouseEvent.CLICK,Resume);
          }
@@ -67,7 +75,20 @@ package
             "x":this._mc.x + 50,
             "ease":Elastic.easeOut
          });
+         LOGGER.Log("err","OOPS");
          GLOBAL._halt = true;
+      }
+      
+      public function Resize() : void
+      {
+         GLOBAL.RefreshScreen();
+         this.x = GLOBAL._SCREEN.x;
+         this.y = GLOBAL._SCREEN.y;
+         if(this._blocker)
+         {
+            this._blocker.width = GLOBAL._SCREEN.width;
+            this._blocker.height = GLOBAL._SCREEN.height;
+         }
       }
    }
 }

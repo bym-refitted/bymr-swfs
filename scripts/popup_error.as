@@ -3,9 +3,11 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1463")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1571")]
    public dynamic class popup_error extends MovieClip
    {
+      public var blocker:popup_bg;
+      
       public var tA:TextField;
       
       public var tB:TextField;

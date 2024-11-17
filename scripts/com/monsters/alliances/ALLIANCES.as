@@ -28,7 +28,7 @@ package com.monsters.alliances
       
       public static var _dataExpireMarker:Number = 0;
       
-      public static var canFetchAllianceData:Boolean = true;
+      public static var canFetchAllianceData:Boolean = false;
       
       public function ALLIANCES()
       {
@@ -52,6 +52,10 @@ package com.monsters.alliances
             _alliances = null;
          }
          _alliances = new Object();
+         if(_myAlliance)
+         {
+            _myAlliance = null;
+         }
          _allianceID = 0;
       }
       
@@ -170,12 +174,9 @@ package com.monsters.alliances
          var _loc2_:int = 0;
          while(_loc2_ < param1.length)
          {
-            if(param1[_loc2_].alliance_id && _alliances && Boolean(_alliances[param1[_loc2_].alliance_id]))
-            {
-               _loc3_ = param1[_loc2_];
-               _loc4_ = new AllyInfo(_loc3_);
-               _alliances[_loc3_.alliance_id] = _loc4_;
-            }
+            _loc3_ = param1[_loc2_];
+            _loc4_ = new AllyInfo(_loc3_);
+            _alliances[_loc3_.alliance_id] = _loc4_;
             _loc2_++;
          }
       }
@@ -228,8 +229,12 @@ package com.monsters.alliances
          ShowAlliancesDialogue();
       }
       
-      public static function ShowAlliancesDialogue() : void
+      public static function ShowAlliancesDialogue(param1:String = null) : void
       {
+         if(param1 == null)
+         {
+            param1 = "search";
+         }
          if(!ALLIANCES._open)
          {
             ALLIANCES._open = true;
@@ -237,9 +242,9 @@ package com.monsters.alliances
             {
                POPUPS.AddBG();
             }
-            GLOBAL.CallJS("cc.showAllianceDialog",[{
-               "type":"search",
-               "callback":"alliancesShow"
+            GLOBAL.CallJS("alliances.showAlliancesDialog",[{
+               "type":param1,
+               "callback":"alliancesupdate"
             }]);
          }
       }
@@ -266,6 +271,22 @@ package com.monsters.alliances
       
       public static function AlliancesServerUpdate(param1:String) : void
       {
+         if(ALLIANCES._open)
+         {
+            if(!GLOBAL._local)
+            {
+               POPUPS.RemoveBG();
+            }
+            ALLIANCES._open = false;
+         }
+         if(BASE._userID == LOGIN._playerID)
+         {
+            BASE.Page();
+         }
+         else
+         {
+            BASE.Page();
+         }
       }
       
       public static function AlliancesViewLeader(param1:String) : void

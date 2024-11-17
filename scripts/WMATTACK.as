@@ -42,9 +42,9 @@ package
       
       public static var _processing:Boolean = false;
       
-      public static var _monsterKeys:Array = ["C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12"];
+      public static var _monsterKeys:Array = ["C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12","C13","C14","C15"];
       
-      public static var _looters:Array = ["C3","C9"];
+      public static var _looters:Array = ["C3","C9","C14"];
       
       public static var _dps:Array = ["C1","C4","C7","C8","C11","C11"];
       

@@ -97,13 +97,20 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:MapRoomCell) : *
       {
-         var _loc2_:int = 0;
-         var _loc3_:int = 0;
-         var _loc4_:* = null;
-         var _loc5_:* = null;
-         var _loc6_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         var _loc6_:* = null;
+         var _loc7_:* = null;
+         var _loc8_:int = 0;
          this._cell = param1;
-         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
+         var _loc2_:Boolean = false;
+         var _loc3_:Number = 0;
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
+         {
+            _loc2_ = true;
+            _loc3_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
+         }
+         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc3_);
          if(this._cell._base == 3)
          {
             tName.htmlText = this._cell._name + "\'s Outpost";
@@ -116,37 +123,37 @@ package com.monsters.maproom_advanced
          tHeight.htmlText = this._cell._height - 100 + "m";
          if(this._cell._base == 2)
          {
-            _loc2_ = 0;
+            _loc4_ = 0;
          }
          else
          {
-            _loc2_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
+            _loc4_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
          }
          if(this._cell._base == 2)
          {
-            _loc3_ = 0;
+            _loc5_ = 0;
          }
          else
          {
-            _loc3_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
+            _loc5_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
          }
-         if(_loc2_ >= 0)
+         if(_loc4_ >= 0)
          {
-            _loc4_ = "<font color=\"#003300\">+" + _loc2_ + "% Tower Range</font>";
+            _loc6_ = "<font color=\"#003300\">+" + _loc4_ + "% Tower Range</font>";
          }
          else
          {
-            _loc4_ = "<font color=\"#330000\">- " + Math.abs(_loc2_) + "% Tower Range</font>";
+            _loc6_ = "<font color=\"#330000\">- " + Math.abs(_loc4_) + "% Tower Range</font>";
          }
-         if(_loc3_ >= 0)
+         if(_loc5_ >= 0)
          {
-            _loc5_ = "<font color=\"#003300\">+" + _loc3_ + "% Resource Production</font>";
+            _loc7_ = "<font color=\"#003300\">+" + _loc5_ + "% Resource Production</font>";
          }
          else
          {
-            _loc5_ = "<font color=\"#330000\">- " + Math.abs(_loc3_) + "% Resource Production</font>";
+            _loc7_ = "<font color=\"#330000\">- " + Math.abs(_loc5_) + "% Resource Production</font>";
          }
-         tBonus.htmlText = _loc4_ + "<br>" + _loc5_;
+         tBonus.htmlText = _loc6_ + "<br>" + _loc7_;
          if(GLOBAL._mapOutpost.length > 0)
          {
             this.bMonsters.Enabled = true;
@@ -159,15 +166,15 @@ package com.monsters.maproom_advanced
          this.bBookmark.Enabled = true;
          if(MapRoom._bookmarks)
          {
-            _loc6_ = 0;
-            while(_loc6_ < MapRoom._bookmarks.length)
+            _loc8_ = 0;
+            while(_loc8_ < MapRoom._bookmarks.length)
             {
-               if(MapRoom._bookmarks[_loc6_].location.x == this._cell.X && MapRoom._bookmarks[_loc6_].location.y == this._cell.Y)
+               if(MapRoom._bookmarks[_loc8_].location.x == this._cell.X && MapRoom._bookmarks[_loc8_].location.y == this._cell.Y)
                {
                   this._bookmarked = true;
                   break;
                }
-               _loc6_++;
+               _loc8_++;
             }
             if(this._bookmarked)
             {

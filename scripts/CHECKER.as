@@ -21,43 +21,43 @@ package
          var _loc6_:int = 0;
          if(!BASE._isOutpost)
          {
-            if(GLOBAL.Check() != "245ed15eaf925640ad1967fd2d9226d2")
+            if(GLOBAL.Check() != "2b7e7c7bb28c072674f06a03e3fb3ede")
             {
-               LOGGER.Log("err","CHECKER.buildingprops YARD " + GLOBAL.Check());
+               LOGGER.Log("hak","CHECKER.buildingprops YARD " + GLOBAL.Check());
                GLOBAL.ErrorMessage("CHECKER.buildingprops YARD");
             }
          }
-         else if(GLOBAL.Check() != "c9698832f35d6319cefc9cee774f6013")
+         else if(GLOBAL.Check() != "a9c03a2ffc719202bb7c74c8e43b0dcb")
          {
-            LOGGER.Log("err","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
+            LOGGER.Log("hak","CHECKER.buildingprops OUTPOST " + GLOBAL.Check());
             GLOBAL.ErrorMessage("CHECKER.buildingprops OUTPOST");
          }
          if(!GLOBAL._flags.kongregate)
          {
-            if(QUESTS.CheckB() != "229df3c5be8059752f9af3e15090021e")
+            if(QUESTS.CheckB() != "065b9a8dece00efdc321a38c2bc27548")
             {
                LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
                GLOBAL.ErrorMessage("CHECKER.Quests");
             }
          }
-         else if(QUESTS.CheckB() != "064c69e873f38d2a6e068218ae4ceb36")
+         else if(QUESTS.CheckB() != "16b36df879a2b30f96c83ce7bd7ecfcd")
          {
             LOGGER.Log("err","CHECKER.Quests " + QUESTS.CheckB());
             GLOBAL.ErrorMessage("CHECKER.Quests");
          }
          if(GUARDIANCAGE.Check() != "52828a21e22ced0235fd56298c222347")
          {
-            LOGGER.Log("err","CHECKER.Guardian " + GUARDIANCAGE.Check());
+            LOGGER.Log("hak","CHECKER.Guardian " + GUARDIANCAGE.Check());
             GLOBAL.ErrorMessage("CHECKER.GUARDIANCAGE");
          }
          if(CREATURELOCKER.Check() != "4f23177e5caa74b4abd2ef4af7fd4107")
          {
-            LOGGER.Log("err","CHECKER.Creatures " + CREATURELOCKER.Check());
+            LOGGER.Log("hak","CHECKER.Creatures " + CREATURELOCKER.Check());
             GLOBAL.ErrorMessage("CHECKER.CREATURES");
          }
          if(ResourceBombs.Check() != "51473261afdd50efbddbad1e2098e140")
          {
-            LOGGER.Log("err","CHECKER.ResourceBombs " + ResourceBombs.Check());
+            LOGGER.Log("hak","CHECKER.ResourceBombs " + ResourceBombs.Check());
             GLOBAL.ErrorMessage("CHECKER.ResourceBombs");
          }
          if(GLOBAL._mode == "build" && BASE._credits.Get() != BASE._hpCredits)
@@ -186,7 +186,7 @@ package
                _loc3_.Tick();
                if(_loc3_._stored.Get() != 0)
                {
-                  LOGGER.Log("log","CHECKER.building-tick 1");
+                  LOGGER.Log("hak","CHECKER.building-tick 1");
                   GLOBAL.ErrorMessage("CHECKER.building-tick 1");
                }
                _loc6_ = int(_loc3_._buildingProps.produce[_loc3_._lvl.Get() - 1]);
@@ -203,12 +203,12 @@ package
                _loc3_.Tick();
                if(_loc3_._stored.Get() > _loc6_)
                {
-                  LOGGER.Log("log","CHECKER.building-tick 2");
+                  LOGGER.Log("hak","CHECKER.building-tick 2 expected: " + _loc6_ + " actual: " + _loc3_._stored.Get());
                   GLOBAL.ErrorMessage("CHECKER.building-tick 2");
                }
                if(_loc3_._countdownProduce.Get() <= 0)
                {
-                  LOGGER.Log("log","CHECKER.building-tick 3");
+                  LOGGER.Log("hak","CHECKER.building-tick 3");
                   GLOBAL.ErrorMessage("CHECKER.building-tick 3");
                }
                _loc1_ = true;

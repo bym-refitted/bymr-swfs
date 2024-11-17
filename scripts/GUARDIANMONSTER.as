@@ -71,6 +71,8 @@ package
       
       public var _buff:Number = 0;
       
+      public var _venom:SecNum = new SecNum(0);
+      
       public var _targetRotation:Number;
       
       public var _targetPosition:Point;
@@ -205,7 +207,7 @@ package
          }
          else
          {
-            this._feedTime = new SecNum(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,param7,"feedTime"));
+            this._feedTime = new SecNum(int(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,param7,"feedTime")));
          }
          this._lastHeal = GLOBAL.Timestamp();
          this._house = param6;
@@ -233,7 +235,7 @@ package
          {
             this._health = new SecNum(1);
          }
-         this._damage = new SecNum(GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"damage"));
+         this._damage = new SecNum(int(GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"damage")));
          this._range = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"range");
          this._movement = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"movement");
          this._buff = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"buffs");
@@ -458,11 +460,11 @@ package
       
       public function CanShootCreep() : Boolean
       {
-         if(this._creatureID != "G3")
+         if(this._targetCreep == null)
          {
             return false;
          }
-         if(this._targetCreep == null)
+         if(this._creatureID != "G3" && this._targetCreep._movement == "fly")
          {
             return false;
          }
@@ -929,14 +931,14 @@ package
             this._graphicMC.x = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"offset_x");
             this._graphicMC.y = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"offset_y");
             this._feeds = new SecNum(0);
-            this._feedTime = new SecNum(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,param1,"feedTime"));
+            this._feedTime = new SecNum(int(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,param1,"feedTime")));
             LOGGER.Log("fed","level " + this._level.Get());
             this._maxHealth = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"health");
             this._maxSpeed = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"speed") / 2;
             this._maxSpeed *= 1.1;
             this._regen = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"healtime");
             this._health.Set(this._maxHealth);
-            this._damage = new SecNum(GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"damage"));
+            this._damage = new SecNum(int(GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"damage")));
             this._range = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"range");
             this._movement = GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"movement");
             if(param1 >= 6)
@@ -966,7 +968,7 @@ package
             BASE.Save();
             return;
          }
-         var _loc1_:int = this._damage.Get();
+         var _loc1_:Number = 1;
          if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc1_ *= 1.25;
@@ -1027,7 +1029,7 @@ package
                   if(this._targetCreep && this._targetCreep._health.Get() > 0)
                   {
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                     FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,_loc1_);
+                     FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
                      FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
                      this._targetCenter = this._targetCreep._tmpPoint;
                      this._targetPosition = this._targetCreep._tmpPoint;
@@ -1037,7 +1039,7 @@ package
                      this._targetCenter = this._targetBuilding._position;
                      this._targetPosition = this._targetBuilding._position;
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                     FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,_loc1_);
+                     FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
                      FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
                   }
                   else
@@ -1047,14 +1049,14 @@ package
                }
                else
                {
-                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,_loc1_,this._mc.visible);
+                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * _loc1_,this._mc.visible);
                   if(this._targetCreep)
                   {
-                     this._targetCreep._health.Add(-(_loc1_ * this._targetCreep._damageMult));
+                     this._targetCreep._health.Add(-(this._damage.Get() * _loc1_ * this._targetCreep._damageMult));
                   }
                   else if(this._targetBuilding)
                   {
-                     this._targetBuilding.Damage(_loc1_,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup);
+                     this._targetBuilding.Damage(this._damage.Get() * _loc1_,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup);
                   }
                   else
                   {
@@ -1076,11 +1078,11 @@ package
       
       public function TickBDefend() : *
       {
-         var _loc2_:* = undefined;
-         var _loc3_:Array = null;
+         var _loc1_:* = undefined;
+         var _loc2_:Array = null;
+         var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:Point = null;
+         var _loc5_:Point = null;
          if(this._health.Get() <= 0)
          {
             ATTACK.Log(this._creatureID,BASE._ownerName + "\'s Level " + this._level.Get() + " " + GUARDIANCAGE._guardians[this._creatureID].name + " was critically injured and fled the battle.");
@@ -1092,18 +1094,13 @@ package
             BASE.Save();
             return;
          }
-         var _loc1_:int = this._damage.Get();
-         if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
-         {
-            _loc1_ *= 1.25;
-         }
          if(this._creatureID == "G3" && this._frameNumber % 100 == 0)
          {
-            for each(_loc2_ in CREATURES._creatures)
+            for each(_loc1_ in CREATURES._creatures)
             {
-               if(_loc2_._behaviour == "defend" && _loc2_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc2_._tmpPoint,this._tmpPoint) < 250 && _loc2_ != this)
+               if(_loc1_._behaviour == "defend" && _loc1_._damageMult >= 1 - this._buff && GLOBAL.QuickDistance(_loc1_._tmpPoint,this._tmpPoint) < 250 && _loc1_ != this)
                {
-                  _loc2_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
+                  _loc1_.ModeEnrage(GLOBAL.Timestamp() + 5,1 + this._buff * 2,1 - this._buff);
                }
             }
          }
@@ -1146,6 +1143,13 @@ package
                   {
                      this._targetCreep._atTarget = true;
                   }
+                  else
+                  {
+                     this._targetCreep._atTarget = false;
+                     this._targetCreep._waypoints = [this._tmpPoint];
+                  }
+                  this._targetCreep._hasTarget = true;
+                  this._targetCreep._looking = false;
                   this._targetCreep._hasTarget = true;
                }
             }
@@ -1154,8 +1158,8 @@ package
                this.attackCooldown += int(this._attackDelay / this._speedMult);
                if(this._creatureID == "G3")
                {
-                  _loc6_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetCreep._tmpPoint,0.8);
-                  FIREBALLS.Spawn2(_loc6_,this._targetCreep._tmpPoint,this._targetCreep,8,_loc1_,0);
+                  _loc5_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetCreep._tmpPoint,0.8);
+                  FIREBALLS.Spawn2(_loc5_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get(),0);
                   FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
                }
                else
@@ -1168,31 +1172,38 @@ package
                   if(!this._targetCreep._explode && !this._targetCreep._targetCreep && this._targetCreep._behaviour != "heal")
                   {
                      this._targetCreep._targetCreep = this;
-                     if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly" || this._targetCreep._creatureID == "C14")
+                     if(this._targetCreep._creatureID == "C14" || this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
                      {
                         this._targetCreep._atTarget = true;
                      }
+                     else
+                     {
+                        this._targetCreep._atTarget = false;
+                        this._targetCreep._waypoints = [this._tmpPoint];
+                     }
+                     this._targetCreep._hasTarget = true;
+                     this._targetCreep._looking = false;
                      this._targetCreep._hasTarget = true;
                   }
                }
-               _loc3_ = MAP.CreepCellFind(this._tmpPoint,50);
-               _loc4_ = int(_loc3_.length);
-               _loc5_ = 0;
-               while(_loc5_ < 5 && _loc5_ < _loc4_)
+               _loc2_ = MAP.CreepCellFind(this._tmpPoint,50);
+               _loc3_ = int(_loc2_.length);
+               _loc4_ = 0;
+               while(_loc4_ < 5 && _loc4_ < _loc3_)
                {
-                  if(this._movement != "fly" || _loc3_[_loc5_].creep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
+                  if(this._movement != "fly" || _loc2_[_loc4_].creep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
                   {
-                     if(!_loc3_[_loc5_].creep._explode && _loc3_[_loc5_].creep._behaviour != "heal")
+                     if(!_loc2_[_loc4_].creep._explode && _loc2_[_loc4_].creep._behaviour != "heal")
                      {
-                        _loc3_[_loc5_].creep._targetCreep = this;
-                        if(_loc3_[_loc5_].creep.CanShootCreep() || GLOBAL.QuickDistance(_loc3_[_loc5_].creep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly" || _loc3_[_loc5_].creep._creatureID == "C14")
+                        _loc2_[_loc4_].creep._targetCreep = this;
+                        if(_loc2_[_loc4_].creep.CanShootCreep() || GLOBAL.QuickDistance(_loc2_[_loc4_].creep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly" || _loc2_[_loc4_].creep._creatureID == "C14")
                         {
-                           _loc3_[_loc5_].creep._atTarget = true;
+                           _loc2_[_loc4_].creep._atTarget = true;
                         }
-                        _loc3_[_loc5_].creep._hasTarget = true;
+                        _loc2_[_loc4_].creep._hasTarget = true;
                      }
                   }
-                  _loc5_++;
+                  _loc4_++;
                }
             }
             else
@@ -1266,7 +1277,7 @@ package
                this._lastHeal = GLOBAL.Timestamp();
             }
          }
-         if(this._behaviourMode == "defend" && Boolean(this._frameNumber % 200))
+         if(this._behaviourMode == "defend" && this._frameNumber % 200 == 0)
          {
             this.FindDefenseTargets();
          }
@@ -1291,7 +1302,7 @@ package
                   {
                      this._feeds.Set(0);
                   }
-                  this._feedTime = new SecNum(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"feedTime"));
+                  this._feedTime = new SecNum(int(GLOBAL.Timestamp() + GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"feedTime")));
                   this._warnStarve = true;
                   LOGGER.Log("fed","Starved level " + this._level.Get());
                }
@@ -1330,7 +1341,7 @@ package
             }
             this._waypoints[0] = GUARDIANCAGE.PointInCage(this._targetCenter);
          }
-         else if(this._behaviourMode == "defend" && Boolean(this._frameNumber % 200))
+         else if(this._behaviourMode == "defend" && this._frameNumber % 200 == 0)
          {
             this.FindDefenseTargets();
          }
@@ -1341,7 +1352,7 @@ package
          var _loc2_:* = undefined;
          var _loc3_:CREEP = null;
          var _loc4_:Point = null;
-         var _loc1_:int = this._damage.Get();
+         var _loc1_:Number = 1;
          if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc1_ *= 1.25;
@@ -1511,7 +1522,7 @@ package
                {
                   this._attacking = true;
                   _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                  FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,_loc1_);
+                  FIREBALLS.Spawn2(_loc4_,this._targetCreep._tmpPoint,this._targetCreep,8,this._damage.Get() * _loc1_);
                   FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
                   SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   this._targetCenter = this._targetCreep._tmpPoint;
@@ -1529,7 +1540,7 @@ package
                      this._targetCenter = this._targetBuilding._position;
                      this._targetPosition = this._targetBuilding._position;
                      _loc4_ = Point.interpolate(this._tmpPoint.add(new Point(0,-this._altitude)),this._targetPosition,0.8);
-                     FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,_loc1_);
+                     FIREBALLS.Spawn(_loc4_,this._targetPosition,this._targetBuilding,8,this._damage.Get() * _loc1_);
                      FIREBALLS._fireballs[FIREBALLS._id - 1].gotoAndStop(3);
                      SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
                   }
@@ -1667,9 +1678,13 @@ package
       {
          var _loc1_:Number = NaN;
          this._frameNumber += 1;
+         if(this._venom.Get() > 0)
+         {
+            this._health.Add(-(this._venom.Get() * this._damageMult));
+         }
          if(this._health.Get() > this._maxHealth)
          {
-            LOGGER.Log("log","Champion monster health exceeds maximum");
+            LOGGER.Log("hak","Champion monster health exceeds maximum");
             GLOBAL.ErrorMessage("GUARDIANMONSTER hack 1");
             return;
          }
@@ -1677,31 +1692,31 @@ package
          {
             if(this._maxHealth != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"health"))
             {
-               LOGGER.Log("log","Champion monster health max incorrect");
+               LOGGER.Log("hak","Champion monster health max incorrect");
                GLOBAL.ErrorMessage("GUARDIANMONSTER hack 2");
                return;
             }
             if(this._maxSpeed != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"speed") / 2 * 1.1)
             {
-               LOGGER.Log("log","Champion monster speed incorrect");
+               LOGGER.Log("hak","Champion monster speed incorrect");
                GLOBAL.ErrorMessage("GUARDIANMONSTER hack 3");
                return;
             }
             if(this._range != GUARDIANCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"range"))
             {
-               LOGGER.Log("log","Champion monster range incorrect");
+               LOGGER.Log("hak","Champion monster range incorrect");
                GLOBAL.ErrorMessage("GUARDIANMONSTER hack 4");
                return;
             }
             if(this._secureSpeedMult.Get() != int(this._speedMult * 100))
             {
-               LOGGER.Log("log","Champion monster speed buff incorrect");
+               LOGGER.Log("hak","Champion monster speed buff incorrect");
                GLOBAL.ErrorMessage("GUARDIANMONSTER hack 5");
                return;
             }
             if(this._secureDamageMult.Get() != int(this._damageMult * 100))
             {
-               LOGGER.Log("log","Champion monster damage buff incorrect");
+               LOGGER.Log("hak","Champion monster damage buff incorrect");
                GLOBAL.ErrorMessage("GUARDIANMONSTER hack 6");
                return;
             }
@@ -1861,10 +1876,17 @@ package
                         if(this._targetCreep._behaviour != "heal")
                         {
                            this._targetCreep._targetCreep = this;
-                           if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._creatureID == "C14")
+                           if(this._targetCreep._creatureID == "C14" || this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
                            {
                               this._targetCreep._atTarget = true;
                            }
+                           else
+                           {
+                              this._targetCreep._atTarget = false;
+                              this._targetCreep._waypoints = [this._tmpPoint];
+                           }
+                           this._targetCreep._hasTarget = true;
+                           this._targetCreep._looking = false;
                            this._targetCreep._hasTarget = true;
                         }
                         return false;
@@ -1880,10 +1902,17 @@ package
                      if(!this._targetCreep._explode && this._targetCreep._behaviour != "heal")
                      {
                         this._targetCreep._targetCreep = this;
-                        if(this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 || this._targetCreep._creatureID == "C14")
+                        if(this._targetCreep._creatureID == "C14" || this._targetCreep.CanShootCreep() || GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < 50 && this._movement != "fly")
                         {
                            this._targetCreep._atTarget = true;
                         }
+                        else
+                        {
+                           this._targetCreep._atTarget = false;
+                           this._targetCreep._waypoints = [this._tmpPoint];
+                        }
+                        this._targetCreep._hasTarget = true;
+                        this._targetCreep._looking = false;
                         this._targetCreep._hasTarget = true;
                      }
                      return false;

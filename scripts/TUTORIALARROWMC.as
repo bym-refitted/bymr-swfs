@@ -1,7 +1,9 @@
 package
 {
+   import flash.display.DisplayObject;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.geom.Point;
    import gs.*;
    import gs.easing.*;
    
@@ -15,9 +17,21 @@ package
       
       internal var wobbleCountdown:int = 0;
       
-      public function TUTORIALARROWMC()
+      public var posX:Number;
+      
+      public var posY:Number;
+      
+      public var Resize:Function;
+      
+      public var ResizeParams:Array;
+      
+      public function TUTORIALARROWMC(param1:Number = 0, param2:Number = 0)
       {
+         var posx:Number = param1;
+         var posy:Number = param2;
          super();
+         this.posX = posx;
+         this.posY = posy;
          if(GLOBAL._local)
          {
             this.addEventListener(MouseEvent.MOUSE_DOWN,this.DragStart);
@@ -28,9 +42,54 @@ package
             this.mouseEnabled = false;
          }
          this.addEventListener(Event.ENTER_FRAME,this.Wobble);
+         this.ResizeParams = new Array();
+         this.Resize = function():void
+         {
+            var _loc4_:int = 0;
+            var _loc5_:int = 0;
+            var _loc6_:* = undefined;
+            var _loc2_:int = GLOBAL._ROOT.stage.stageWidth;
+            var _loc3_:Point = new Point();
+            if(ResizeParams)
+            {
+               if(ResizeParams[0] == "percent" && ResizeParams[1] && ResizeParams[1] is Point)
+               {
+                  x = GLOBAL._SCREEN.x + posX * (GLOBAL._SCREEN.width / GLOBAL._SCREENINIT.width);
+                  y = GLOBAL._SCREEN.y + posY * (GLOBAL._SCREEN.height / GLOBAL._SCREENINIT.height);
+               }
+               else if(ResizeParams[0] == "mc" && ResizeParams[1] && ResizeParams[1] is DisplayObject)
+               {
+                  _loc4_ = int(ResizeParams[1].x);
+                  _loc5_ = int(ResizeParams[1].y);
+                  _loc6_ = ResizeParams[1].parent;
+                  while(_loc6_.parent)
+                  {
+                     _loc4_ += _loc6_.x;
+                     _loc5_ += _loc6_.y;
+                     if(_loc6_.parent == GLOBAL._ROOT.stage)
+                     {
+                        break;
+                     }
+                     _loc6_ = _loc6_.parent;
+                  }
+                  if(ResizeParams[2])
+                  {
+                     _loc4_ += ResizeParams[2].x;
+                     _loc5_ += ResizeParams[2].y;
+                  }
+                  x = _loc4_;
+                  y = _loc5_;
+               }
+            }
+            else
+            {
+               x = GLOBAL._SCREEN.x + posX * (GLOBAL._SCREEN.width / GLOBAL._SCREENINIT.width);
+               y = GLOBAL._SCREEN.y + posY * (GLOBAL._SCREEN.height / GLOBAL._SCREENINIT.height);
+            }
+         };
       }
       
-      internal function DragStart(param1:MouseEvent) : *
+      public function DragStart(param1:MouseEvent) : *
       {
          this.dragging = true;
          this.offsetX = GLOBAL._ROOT.mouseX - this.x;
@@ -38,7 +97,7 @@ package
          this.addEventListener(Event.ENTER_FRAME,this.Move);
       }
       
-      internal function DragStop(param1:MouseEvent) : *
+      public function DragStop(param1:MouseEvent) : *
       {
          this.removeEventListener(Event.ENTER_FRAME,this.Move);
          if(this.dragging)
@@ -47,22 +106,22 @@ package
          this.dragging = false;
       }
       
-      internal function Move(param1:Event = null) : *
+      public function Move(param1:Event = null) : *
       {
          this.x = GLOBAL._ROOT.mouseX - this.offsetX;
          this.y = GLOBAL._ROOT.mouseY - this.offsetY;
          this.Rotate();
       }
       
-      internal function Rotate() : *
+      public function Rotate() : *
       {
          if(y < GLOBAL._ROOT.stage.stageHeight / 2)
          {
-            mcArrow.rotation = this.x / (0.007894736842105263 * GLOBAL._ROOT.stage.stageWidth) + 130;
+            mcArrow.rotation = this.x / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 130;
          }
          else
          {
-            mcArrow.rotation = (0 - this.x) / (0.007894736842105263 * GLOBAL._ROOT.stage.stageWidth) + 45;
+            mcArrow.rotation = (0 - this.x) / (6 / GLOBAL._SCREENINIT.width * GLOBAL._ROOT.stage.stageWidth) + 45;
          }
          if(x < GLOBAL._ROOT.stage.stageWidth / 2)
          {
@@ -74,7 +133,7 @@ package
          }
       }
       
-      internal function Wobble(param1:Event) : *
+      public function Wobble(param1:Event) : *
       {
          if(this.wobbleCountdown == 0)
          {
@@ -89,12 +148,18 @@ package
          --this.wobbleCountdown;
       }
       
-      internal function WobbleB() : *
+      public function WobbleB() : *
       {
          TweenLite.to(mcArrow.mcArrow,0.6,{
             "y":-60,
             "ease":Bounce.easeOut
          });
+      }
+      
+      public function SetPos(param1:int, param2:int) : void
+      {
+         this.posX = param1;
+         this.posY = param2;
       }
    }
 }

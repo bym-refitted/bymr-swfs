@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol427")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1016")]
    public dynamic class UI_BAITERSCAREAWAY_CLIP extends MovieClip
    {
       public var mcBG:MovieClip;

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1317")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1425")]
    public dynamic class MapRoomPopup_CLIP extends MovieClip
    {
       public var mcR1:MovieClip;
@@ -22,6 +22,8 @@ package
       public var bBookmarks:Button_CLIP;
       
       public var mcInfo:MovieClip;
+      
+      public var mcBuffHolder:MovieClip;
       
       public var mcOutposts:MovieClip;
       

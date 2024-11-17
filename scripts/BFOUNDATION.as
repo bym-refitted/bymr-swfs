@@ -61,6 +61,10 @@ package
       
       public var _prefab:int = 0;
       
+      public var _buildInstant:Boolean = false;
+      
+      public var _buildInstantCost:SecNum;
+      
       public var _animLoaded:Boolean = false;
       
       public var _animBMD:BitmapData;
@@ -882,10 +886,24 @@ package
                   this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
                   MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
                   this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
-                  if(BASE.CanBuild(this._type).error)
+                  if(BASE.CanBuild(this._type,this._buildInstant).error)
                   {
                      this.Cancel();
                      return false;
+                  }
+                  if(this._buildInstant)
+                  {
+                     if(!this._buildInstantCost)
+                     {
+                        this.Cancel();
+                        return false;
+                     }
+                     if(BASE._credits.Get() < this._buildInstantCost.Get())
+                     {
+                        this.Cancel();
+                        POPUPS.DisplayGetShiny();
+                        return false;
+                     }
                   }
                   this._hasResources = false;
                   this._hasWorker = false;
@@ -932,17 +950,25 @@ package
                   fromStorage = BASE.BuildingStorageRemove(this._type);
                   if(!fromStorage)
                   {
-                     BASE.Charge(1,this._buildingProps.costs[0].r1);
-                     BASE.Charge(2,this._buildingProps.costs[0].r2);
-                     BASE.Charge(3,this._buildingProps.costs[0].r3);
-                     BASE.Charge(4,this._buildingProps.costs[0].r4);
-                     if(STORE._storeItems["BUILDING" + this._type])
+                     if(!this._buildInstant)
                      {
-                        BASE.Purchase("BUILDING" + this._type,1,"building");
+                        BASE.Charge(1,this._buildingProps.costs[0].r1);
+                        BASE.Charge(2,this._buildingProps.costs[0].r2);
+                        BASE.Charge(3,this._buildingProps.costs[0].r3);
+                        BASE.Charge(4,this._buildingProps.costs[0].r4);
+                        if(STORE._storeItems["BUILDING" + this._type])
+                        {
+                           BASE.Purchase("BUILDING" + this._type,1,"building");
+                        }
+                        if(this._buildingProps.costs[0].time != 0 && BASE.BuildingStorageCount(this._type) == 0)
+                        {
+                           QUEUE.Add("building" + this._id,this);
+                        }
                      }
-                     if(this._buildingProps.costs[0].time != 0 && BASE.BuildingStorageCount(this._type) == 0)
+                     else
                      {
-                        QUEUE.Add("building" + this._id,this);
+                        BASE.Purchase("IB",this._buildInstantCost.Get(),"building");
+                        this.Constructed();
                      }
                   }
                   else
@@ -1156,6 +1182,12 @@ package
       
       public function Repaired() : *
       {
+         if(!GLOBAL._catchup && this._hp.Get() < this._hpMax.Get())
+         {
+            LOGGER.Log("log","Building repair hack");
+            GLOBAL.ErrorMessage("Building repair hack");
+            return;
+         }
          this._repairing = 0;
          this._hp.Set(this._hpMax.Get());
          this.Description();
@@ -1224,6 +1256,26 @@ package
             }
          }
          return Math.min(_loc3_,_loc4_);
+      }
+      
+      public function InstantBuildCost() : int
+      {
+         var _loc1_:Object = GLOBAL._buildingProps[this._type - 1].costs[0];
+         var _loc2_:int = int(_loc1_.time);
+         if(_loc2_ <= 5 * 60)
+         {
+            _loc2_ = 0;
+         }
+         var _loc3_:int = _loc1_.r1 + _loc1_.r2 + _loc1_.r3;
+         var _loc4_:int = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
+         var _loc5_:int = STORE.GetTimeCost(_loc2_);
+         var _loc6_:int = _loc4_ + _loc5_;
+         _loc6_ = int(_loc6_ * 0.95);
+         if(_loc6_ <= 5)
+         {
+            _loc6_ = 5;
+         }
+         return _loc6_;
       }
       
       public function InstantUpgradeCost() : int

@@ -25,7 +25,7 @@ package com.monsters.chat
    
    public class CS_SmartFoxServer2X extends EventDispatcher implements IChatSystem
    {
-      public static const HOST_LIVE:String = "message4.dc.kixeye.com";
+      public static const HOST_LIVE:String = "message5.dc.kixeye.com";
       
       public static const HOST_TEST:String = "message3.dc.kixeye.com";
       
@@ -207,20 +207,47 @@ package com.monsters.chat
       
       private function ignoreResponse(param1:SFSEvent) : void
       {
+         var _loc9_:int = 0;
+         var _loc10_:SFSObject = null;
+         var _loc11_:String = null;
+         var _loc12_:String = null;
+         var _loc13_:String = null;
          var _loc2_:SFSObject = param1.params.params as SFSObject;
          var _loc3_:String = _loc2_.getUtfString("command");
          var _loc4_:String = _loc2_.getUtfString("action");
          var _loc5_:Boolean = _loc2_.getBool("success");
          var _loc6_:SFSArray = _loc2_.getSFSArray("response") as SFSArray;
-         var _loc7_:Dictionary = new Dictionary();
-         _loc7_["command"] = _loc3_;
-         _loc7_["action"] = _loc4_;
-         _loc7_["ignore_list"] = _loc6_ != null ? _loc6_.toArray() : null;
+         var _loc7_:Array = new Array();
+         var _loc8_:Dictionary = new Dictionary();
+         _loc8_["command"] = _loc3_;
+         _loc8_["action"] = _loc4_;
+         if(_loc4_ == "show")
+         {
+            _loc9_ = 0;
+            while(_loc9_ < _loc6_.size())
+            {
+               _loc10_ = _loc6_.getSFSObject(_loc9_) as SFSObject;
+               _loc11_ = _loc10_.getUtfString("target");
+               _loc12_ = _loc10_.getUtfString("displayname");
+               _loc7_.push(_loc10_);
+               _loc9_++;
+            }
+            _loc8_["ignore_list"] = _loc7_;
+         }
+         else
+         {
+            _loc8_["ignore_list"] = _loc6_ != null ? _loc6_.toArray() : null;
+         }
          if(_loc4_ == "add" || _loc4_ == "remove")
          {
-            _loc7_["target"] = _loc2_.getUtfString("target");
+            _loc8_["target"] = _loc2_.getUtfString("target");
+            _loc13_ = _loc2_.getUtfString("displayname");
+            if(_loc13_ != null)
+            {
+               _loc8_["displayname"] = _loc13_;
+            }
          }
-         dispatchEvent(new ChatEvent(ChatEvent.IGNORE,_loc5_,_loc7_));
+         dispatchEvent(new ChatEvent(ChatEvent.IGNORE,_loc5_,_loc8_));
       }
       
       private function ignoreErrorResponse(param1:SFSEvent) : void
@@ -691,7 +718,7 @@ package com.monsters.chat
       {
          var _loc1_:SFSObject = new SFSObject();
          _loc1_.putUtfString("command","ignore");
-         _loc1_.putUtfString("action","showlist");
+         _loc1_.putUtfString("action","show");
          var _loc2_:ExtensionRequest = new ExtensionRequest(EXT_REQ_STRING,_loc1_);
          this.sfs.send(_loc2_);
       }
@@ -705,14 +732,15 @@ package com.monsters.chat
          this.sfs.send(_loc2_);
       }
       
-      public function ignore(param1:String) : void
+      public function ignore(param1:String, param2:String) : void
       {
-         var _loc2_:SFSObject = new SFSObject();
-         _loc2_.putUtfString("command","ignore");
-         _loc2_.putUtfString("action","add");
-         _loc2_.putUtfString("target",param1);
-         var _loc3_:ExtensionRequest = new ExtensionRequest(EXT_REQ_STRING,_loc2_);
-         this.sfs.send(_loc3_);
+         var _loc3_:SFSObject = new SFSObject();
+         _loc3_.putUtfString("command","ignore");
+         _loc3_.putUtfString("action","add");
+         _loc3_.putUtfString("target",param1);
+         _loc3_.putUtfString("displayname",param2);
+         var _loc4_:ExtensionRequest = new ExtensionRequest(EXT_REQ_STRING,_loc3_);
+         this.sfs.send(_loc4_);
       }
       
       public function unignore(param1:String) : void

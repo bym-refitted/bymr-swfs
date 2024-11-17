@@ -14,7 +14,7 @@ package com.monsters.chat
       
       function members(param1:Channel) : void;
       
-      function ignore(param1:String) : void;
+      function ignore(param1:String, param2:String) : void;
       
       function unignore(param1:String) : void;
       

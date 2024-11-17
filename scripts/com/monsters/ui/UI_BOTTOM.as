@@ -5,7 +5,7 @@ package com.monsters.ui
    
    public class UI_BOTTOM
    {
-      private static var _mc:UI_MENU;
+      public static var _mc:UI_MENU;
       
       public function UI_BOTTOM()
       {

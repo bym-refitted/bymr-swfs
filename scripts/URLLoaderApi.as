@@ -119,7 +119,7 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = com.adobe.serialization.json.JSON.decode("{\"fb_sig_request_method\":\"GET\",\"fb_sig_in_canvas\":\"1\",\"fb_sig_locale\":\"en_US\",\"fb_sig_in_new_facebook\":\"1\",\"fb_sig_time\":\"1312921362.5367\",\"fb_sig_added\":\"1\",\"fb_sig_profile_update_time\":\"1308185854\",\"fb_sig_expires\":\"1312927200\",\"fb_sig_user\":\"1122820153\",\"fb_sig_session_key\":\"2.AQBMqowdVtw4UJIe.3600.1312927200.1-1122820153\",\"fb_sig_ext_perms\":\"email\",\"fb_sig_preload_fql_timestamp\":\"1312921362.5367\",\"fb_sig_country\":\"us\",\"fb_sig_api_key\":\"c11ea2880d6b94be2fd187e9f274acea\",\"fb_sig_app_id\":\"191772264192545\",\"fb_sig\":\"7549af03cd79f8e443ef9a3646e9f240\",\"PHPSESSID\":\"c11ea2880d6b94be2fd187e9f274acea1122820153\",\"app_id\":\"191772264192545\",\"tpid\":\"P_kb65UzVLyvpQONAARv0PtXm9g\"}");
+            _loc1_ = com.adobe.serialization.json.JSON.decode("{\"fb_sig_request_method\":\"GET\",\"fb_sig_in_canvas\":\"1\",\"fb_sig_locale\":\"en_US\",\"fb_sig_in_new_facebook\":\"1\",\"fb_sig_time\":\"1313452949.7504\",\"fb_sig_added\":\"1\",\"fb_sig_profile_update_time\":\"1302821666\",\"fb_sig_expires\":\"1313460000\",\"fb_sig_user\":\"100002269913463\",\"fb_sig_session_key\":\"2.AQCQ2GFpHMG57OFZ.3600.1313460000.1-100002269913463\",\"fb_sig_ext_perms\":\"email\",\"fb_sig_preload_fql_timestamp\":\"1313452949.7504\",\"fb_sig_country\":\"us\",\"fb_sig_api_key\":\"c11ea2880d6b94be2fd187e9f274acea\",\"fb_sig_app_id\":\"191772264192545\",\"fb_sig\":\"c56b771806ab08023aa6927f0d4cdc80\",\"PHPSESSID\":\"c11ea2880d6b94be2fd187e9f274acea100002269913463\",\"app_id\":\"191772264192545\",\"tpid\":\"wV805-dynPPTskA6rS4ChuHkkWE\"}");
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
          }
@@ -148,7 +148,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt(class_1.method_1(448,18));
+         return this.decodeSalt(class_1.method_1(-390,-587));
       }
       
       private function decodeSalt(param1:String) : String

@@ -271,6 +271,11 @@ package
                   }
                };
                _attackLog = new popup_attack_log();
+               _attackLog.Resize = function():void
+               {
+                  _attackLog.x = 0;
+                  _attackLog.y = 0;
+               };
                (_attackLog.mcFrame as frame2).Setup(false);
                _attackLog.title_txt.htmlText = "<b>" + KEYS.Get("attack_log_title") + "</b>";
                GLOBAL._layerMessages.addChild(_attackLog);
@@ -374,6 +379,11 @@ package
          {
          }
          taunt = new popup_taunt_friend();
+         taunt.Resize = function():void
+         {
+            taunt.x = 0;
+            taunt.y = 0;
+         };
          taunt.bShare.SetupKey("btn_talktrash");
          GLOBAL._layerMessages.addChild(taunt);
          taunt.bShare.addEventListener(MouseEvent.CLICK,onShare);
@@ -554,6 +564,10 @@ package
       {
          var _loc3_:String = null;
          var _loc2_:int = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
+         {
+            _loc2_ += Math.floor(_loc2_ * 0.25);
+         }
          if(param1.substr(0,1) == "G")
          {
             _loc2_ -= GUARDIANCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");

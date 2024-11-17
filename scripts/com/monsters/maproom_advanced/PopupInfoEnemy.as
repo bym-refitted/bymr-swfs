@@ -143,22 +143,29 @@ package com.monsters.maproom_advanced
       
       public function Setup(param1:MapRoomCell, param2:Boolean = false) : *
       {
-         var _loc3_:* = undefined;
-         var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:* = null;
-         var _loc7_:* = null;
-         var _loc8_:MapRoomCell = null;
-         var _loc9_:int = 0;
-         var _loc10_:int = 0;
+         var _loc5_:* = undefined;
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:* = null;
+         var _loc9_:* = null;
+         var _loc10_:MapRoomCell = null;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
          this._cell = param1;
-         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
-         MapRoom._flingerInRange = param2;
-         for each(_loc3_ in GLOBAL._attackerCellsInRange)
+         var _loc3_:Boolean = false;
+         var _loc4_:Number = 0;
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
-            _loc8_ = _loc3_["cell"];
-            _loc9_ = int(_loc3_["range"]);
-            if(_loc8_ && _loc8_._mine && _loc8_._flinger.Get() >= _loc9_)
+            _loc3_ = true;
+            _loc4_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
+         }
+         GLOBAL._attackerCellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4 + _loc4_);
+         MapRoom._flingerInRange = param2;
+         for each(_loc5_ in GLOBAL._attackerCellsInRange)
+         {
+            _loc10_ = _loc5_["cell"];
+            _loc11_ = int(_loc5_["range"]);
+            if(_loc10_ && _loc10_._mine && _loc10_._flinger.Get() + _loc4_ >= _loc11_)
             {
                MapRoom._flingerInRange = true;
             }
@@ -308,37 +315,37 @@ package com.monsters.maproom_advanced
          tHeight.htmlText = this._cell._height - 100 + "m";
          if(this._cell._base == 2)
          {
-            _loc4_ = 0;
+            _loc6_ = 0;
          }
          else
          {
-            _loc4_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
+            _loc6_ = this._cell._height * 100 / GLOBAL._averageAltitude.Get() - 100;
          }
          if(this._cell._base == 2)
          {
-            _loc5_ = 0;
+            _loc7_ = 0;
          }
          else
          {
-            _loc5_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
+            _loc7_ = 100 * GLOBAL._averageAltitude.Get() / this._cell._height - 100;
          }
-         if(_loc4_ >= 0)
+         if(_loc6_ >= 0)
          {
-            _loc6_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h1",{"v1":_loc4_}) + "</font>";
+            _loc8_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h1",{"v1":_loc6_}) + "</font>";
          }
          else
          {
-            _loc6_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h1",{"v1":Math.abs(_loc4_)}) + "</font>";
+            _loc8_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h1",{"v1":Math.abs(_loc6_)}) + "</font>";
          }
-         if(_loc5_ >= 0)
+         if(_loc7_ >= 0)
          {
-            _loc7_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h2",{"v1":_loc5_}) + "</font>";
+            _loc9_ = "<font color=\"#003300\">+" + KEYS.Get("newmap_h2",{"v1":_loc7_}) + "</font>";
          }
          else
          {
-            _loc7_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h2",{"v1":Math.abs(_loc5_)}) + "</font>";
+            _loc9_ = "<font color=\"#330000\">- " + KEYS.Get("newmap_h2",{"v1":Math.abs(_loc7_)}) + "</font>";
          }
-         tBonus.htmlText = _loc6_ + "<br>" + _loc7_;
+         tBonus.htmlText = _loc8_ + "<br>" + _loc9_;
          if(this._cell._friend)
          {
             this.bView.SetupKey("btn_help");
@@ -351,15 +358,15 @@ package com.monsters.maproom_advanced
          this.bBookmark.Enabled = true;
          if(MapRoom._bookmarks)
          {
-            _loc10_ = 0;
-            while(_loc10_ < MapRoom._bookmarks.length)
+            _loc12_ = 0;
+            while(_loc12_ < MapRoom._bookmarks.length)
             {
-               if(MapRoom._bookmarks[_loc10_].location.x == this._cell.X && MapRoom._bookmarks[_loc10_].location.y == this._cell.Y)
+               if(MapRoom._bookmarks[_loc12_].location.x == this._cell.X && MapRoom._bookmarks[_loc12_].location.y == this._cell.Y)
                {
                   _bookmarked = true;
                   break;
                }
-               _loc10_++;
+               _loc12_++;
             }
             if(_bookmarked)
             {

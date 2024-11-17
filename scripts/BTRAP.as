@@ -101,6 +101,7 @@ package
          var _loc3_:* = undefined;
          var _loc4_:* = undefined;
          var _loc5_:* = undefined;
+         var _loc10_:Number = NaN;
          var _loc7_:* = MAP.CreepCellFind(new Point(_mc.x,_mc.y),_size,-1);
          var _loc8_:int = 0;
          var _loc9_:int = 0;
@@ -113,7 +114,15 @@ package
                _loc8_++;
                _loc4_ = _loc1_.dist;
                _loc5_ = _loc1_.pos;
-               _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
+               if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
+               {
+                  _loc10_ = POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[null,_buildingProps.damage[0]]);
+                  _loc2_._health.Add(-(_loc2_._damageMult * (_loc10_ / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
+               }
+               else
+               {
+                  _loc2_._health.Add(-(_loc2_._damageMult * (_buildingProps.damage[0] / _buildingProps.size) * (_buildingProps.size - _loc4_ * 0.5)));
+               }
                if(_loc2_._health.Get() <= 0)
                {
                   _loc9_++;

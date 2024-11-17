@@ -403,6 +403,10 @@ package
                   {
                      _top.mcFullscreen.visible = false;
                   }
+                  if(_top.mcBuffHolder.visible)
+                  {
+                     _top.mcBuffHolder.visible = false;
+                  }
                }
                else
                {
@@ -437,6 +441,10 @@ package
                   {
                      _top.mcFullscreen.visible = true;
                   }
+                  if(_top.mcBuffHolder.visible)
+                  {
+                     _top.mcBuffHolder.visible = true;
+                  }
                   if(!GLOBAL._chatInited && GLOBAL.flagsShouldChatExist())
                   {
                      GLOBAL.initChat();
@@ -452,6 +460,7 @@ package
                _top.mcFullscreen.y = 3;
                _top.mcSound.y = 3;
                _top.mcMusic.y = 3;
+               _top.mcBuffHolder.y = 6;
             }
             if(GLOBAL._mode == "build")
             {
@@ -475,7 +484,7 @@ package
          var _loc2_:* = GLOBAL._ROOT.stage.stageWidth;
          var _loc3_:* = GLOBAL.GetGameHeight();
          var _loc5_:int = _wildMonsterBar != null ? 40 : 0;
-         _loc4_ = new Rectangle(0 - (_loc2_ - 760) / 2,0 - (_loc3_ - (520 + _loc5_)) / 2,_loc2_,_loc3_);
+         _loc4_ = new Rectangle(0 - (_loc2_ - GLOBAL._SCREENINIT.width) / 2,0 - (_loc3_ - (GLOBAL._SCREENINIT.height + _loc5_)) / 2,_loc2_,_loc3_);
          if(_wildMonsterBar)
          {
             _wildMonsterBar.back.width = _loc4_.width;
@@ -494,6 +503,7 @@ package
             _top.mcFullscreen.x = _loc4_.width - 100;
             _top.mcSound.x = _loc4_.width - 70;
             _top.mcMusic.x = _loc4_.width - 40;
+            _top.mcBuffHolder.x = _loc4_.width - 200;
          }
          if(_warning)
          {
@@ -506,16 +516,16 @@ package
             {
                if(GLOBAL._bymChat)
                {
-                  _visitor.mc.x = GLOBAL._bymChat.x + GLOBAL._bymChat.width + 10;
+                  _visitor.mc.x = GLOBAL._SCREEN.x + GLOBAL._bymChat.width + 10;
                }
                else
                {
-                  _visitor.mc.x = _loc4_.x + 10;
+                  _visitor.mc.x = GLOBAL._SCREEN.x + 10;
                }
             }
             else
             {
-               _visitor.mc.x = _loc4_.x + 10;
+               _visitor.mc.x = GLOBAL._SCREEN.x + 10;
             }
             _visitor.mc.y = 522 + (_loc3_ - 520) / 2 - 62;
          }

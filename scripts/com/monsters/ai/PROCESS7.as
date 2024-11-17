@@ -163,6 +163,7 @@ package com.monsters.ai
          {
             _loc9_ = 1;
          }
+         var _loc10_:String = WMATTACK._looters[int((WMATTACK._looters.length - 2) * _loc9_) + 1];
          var _loc11_:String = WMATTACK._tanks[int((WMATTACK._tanks.length - 1) * _loc9_)];
          var _loc12_:Number = 0;
          var _loc13_:Object = {};
@@ -184,18 +185,22 @@ package com.monsters.ai
          {
             if(_loc12_ == 0)
             {
-               _loc12_ = _loc14_ / CREATURELOCKER._creatures["C9"].props.speed[0];
+               _loc12_ = _loc14_ / CREATURELOCKER._creatures[_loc10_].props.speed[0];
             }
-            _loc13_["C9"] = _loc12_ * CREATURELOCKER._creatures["C9"].props.speed[0];
+            _loc13_[_loc10_] = _loc12_ * CREATURELOCKER._creatures[_loc10_].props.speed[0];
          }
          if(_loc11_ == "C12")
          {
             _loc8_ = Math.ceil(_loc8_ / 2);
          }
-         _loc2_["C9"] = int(_loc7_);
+         if(_loc10_ == "C14")
+         {
+            _loc7_ = Math.ceil(_loc7_ / 2.5);
+         }
+         _loc2_[_loc10_] = int(_loc7_);
          _loc2_[_loc11_] = int(_loc8_);
          {}[_loc11_] = int(_loc8_);
-         {}["C9"] = int(_loc7_);
+         {}[_loc10_] = int(_loc7_);
          for(_loc5_ in _loc2_)
          {
             if(_loc2_[_loc5_] == 0)

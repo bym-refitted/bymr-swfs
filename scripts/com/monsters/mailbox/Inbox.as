@@ -473,6 +473,12 @@ package com.monsters.mailbox
          this.displayArray(_loc5_);
          this.scrollToPage(0);
       }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
+      }
    }
 }
 

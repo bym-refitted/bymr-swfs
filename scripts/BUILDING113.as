@@ -46,6 +46,7 @@ package
       override public function RecycleC() : *
       {
          super.RecycleC();
+         RADIO.TwitterRemoveName();
          RADIO.RemoveName();
          GLOBAL._bRadio = null;
       }

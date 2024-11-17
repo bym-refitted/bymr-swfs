@@ -23,9 +23,9 @@ package
       
       public static var _storeData:Object;
       
-      public static var _mc:STOREPOPUP_CLIP;
+      public static var _mc:STOREPOPUP;
       
-      public static var _items:*;
+      public static var _items:Object;
       
       public static var _itemsHeight:int;
       
@@ -501,8 +501,8 @@ package
                   {
                      _open = true;
                      _mc = new STOREPOPUP();
-                     _mc.x = 380;
-                     _mc.y = 260;
+                     _mc.x = GLOBAL._SCREENCENTER.x;
+                     _mc.y = GLOBAL._SCREENCENTER.y;
                      _mc.scaleY = 0.9;
                      _mc.scaleX = 0.9;
                      TweenLite.to(_mc,0.2,{
@@ -659,7 +659,7 @@ package
          var _loc11_:int = 0;
          var _loc12_:int = 0;
          _update = [];
-         if(_items && Boolean(_items.parent))
+         if(Boolean(_items) && Boolean(_items.parent))
          {
             _items.parent.removeChild(_items);
             _items = null;
@@ -703,6 +703,7 @@ package
             _loc29_ = false;
             _loc30_ = _loc21_.c;
             _loc31_ = _loc20_;
+            _loc23_.name = _loc31_;
             if(_loc31_.substr(0,2) == "SP")
             {
                _loc31_ = _loc31_.substr(0,3);

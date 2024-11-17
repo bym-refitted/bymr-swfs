@@ -121,7 +121,7 @@ package
                   }
                }
             }
-            if(Boolean(this._monsters["C12"]) && Boolean(ACADEMY._upgrades["C12"].powerup))
+            if(Boolean(this._monsters["C12"]) && Boolean(ACADEMY._upgrades["C12"].powerup) || Boolean(this._monsters["C5"]) && Boolean(ACADEMY._upgrades["C5"].powerup))
             {
                _loc9_ = MAP.CreepCellFind(_position.add(new Point(_footprint[0].width / 2,_footprint[0].height / 2)),GLOBAL._buildingProps[21].stats[_lvl.Get() - 1].range,2);
                if(_loc9_.length > 0)
@@ -269,9 +269,13 @@ package
             _loc4_ = null;
             this._targetCreeps.sortOn(["dist"],Array.NUMERIC);
             this._targetFlyers.sortOn(["dist"],Array.NUMERIC);
-            if(this._targetFlyers.length > 0 && this._monsters["C12"] > 0 && this._monstersDispatched["C12"] < this._monsters["C12"])
+            if(this._targetFlyers.length > 0 && this._monsters["C12"] > 0 && (this._monstersDispatched["C12"] < this._monsters["C12"] && ACADEMY._upgrades["C12"].powerup))
             {
                _loc4_ = "C12";
+            }
+            else if(this._targetFlyers.length > 0 && this._monsters["C5"] > 0 && this._monstersDispatched["C5"] < this._monsters["C5"] && Boolean(ACADEMY._upgrades["C5"].powerup))
+            {
+               _loc4_ = "C5";
             }
             else if(this._targetCreeps.length > 0)
             {
@@ -300,7 +304,7 @@ package
                   this._logged = true;
                   ATTACK.Log("b" + _id,"<font color=\"#FF0000\">A level " + _lvl.Get() + " " + KEYS.Get(_buildingProps.name) + " unleashed " + GLOBAL.Array2String(_loc11_) + "!</font>");
                }
-               if(this._targetFlyers.length > 0 && _loc4_ == "C12")
+               if(this._targetFlyers.length > 0 && (_loc4_ == "C12" || _loc4_ == "C5"))
                {
                   _loc5_ = this._targetFlyers[int(Math.random() * this._targetFlyers.length)].creep;
                }
@@ -383,6 +387,33 @@ package
                }
             }
          }
+      }
+      
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      {
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
+         {
+            param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
+         }
+         _hp.Add(-param1);
+         if(_hp.Get() <= 0)
+         {
+            _hp.Set(0);
+            if(!_destroyed)
+            {
+               this.Destroyed(param5);
+            }
+         }
+         else if(_class != "wall")
+         {
+            ATTACK.Log("b" + _id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
+               "v1":_lvl.Get(),
+               "v2":KEYS.Get(_buildingProps.name),
+               "v3":100 - int(100 / _hpMax.Get() * _hp.Get())
+            }) + "</font>");
+         }
+         this.Update();
+         BASE.Save();
       }
       
       override public function Description() : *

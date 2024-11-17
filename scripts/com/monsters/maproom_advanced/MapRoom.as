@@ -1034,6 +1034,13 @@ package com.monsters.maproom_advanced
          _monsterTransferInProgress = false;
       }
       
+      public static function Resize() : void
+      {
+         _mc.x = 0;
+         _mc.y = 0;
+         ResizeHandler();
+      }
+      
       public static function ResizeHandler() : void
       {
          if(!_viewOnly)

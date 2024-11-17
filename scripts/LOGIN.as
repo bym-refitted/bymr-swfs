@@ -4,6 +4,7 @@ package
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
    import com.monsters.maproom_advanced.MapRoom;
+   import com.monsters.radio.RADIO;
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.net.*;
@@ -22,6 +23,12 @@ package
       public static var _timePlayed:int;
       
       public static var _playerLevel:int;
+      
+      public static var _email:String;
+      
+      public static var _proxymail:String;
+      
+      public static var _settings:Object;
       
       public static var _digits:Array;
       
@@ -55,7 +62,7 @@ package
                GLOBAL.WaitHide();
                GLOBAL.ErrorMessage("LOGIN loadEror");
             };
-            new URLLoaderApi().load(GLOBAL._apiURL + "player/getinfo",[["version",GLOBAL._version]],handleLoadSuccessful);
+            new URLLoaderApi().load(GLOBAL._apiURL + "player/getinfo",[["version",GLOBAL._version.Get()]],handleLoadSuccessful);
          }
          else
          {
@@ -80,13 +87,13 @@ package
                   GLOBAL.ErrorMessage(_loc2_.error,GLOBAL.ERROR_ORANGE_BOX_ONLY);
                }
             });
-            GLOBAL.CallJS("cc.initApplication",[GLOBAL._version,"loginsuccessful"]);
+            GLOBAL.CallJS("cc.initApplication",[GLOBAL._version.Get(),"loginsuccessful"]);
          }
       }
       
       public static function Process(param1:Object) : *
       {
-         if(param1.version != GLOBAL._version)
+         if(param1.version != GLOBAL._version.Get())
          {
             GLOBAL.ErrorMessage(KEYS.Get("We have updated the game. Please reload."),GLOBAL.ERROR_ORANGE_BOX_ONLY);
          }
@@ -97,6 +104,7 @@ package
             _playerLastName = param1.last_name;
             _playerPic = param1.pic_square;
             _timePlayed = param1.timeplayed;
+            _email = param1.email;
             GLOBAL._friendCount = param1.friendcount;
             GLOBAL._sessionCount = param1.sessioncount;
             GLOBAL._addTime = param1.addtime;
@@ -111,6 +119,15 @@ package
             else
             {
                MapRoom._bookmarkData = {};
+            }
+            if(param1.settings)
+            {
+               _settings = param1.settings;
+               RADIO.Setup(_settings);
+            }
+            if(param1.proxy_email)
+            {
+               _proxymail = param1.proxy_email;
             }
             if(!param1.languageversion)
             {
@@ -211,7 +228,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt(class_1.method_1(448,18));
+         return decodeSalt(class_1.method_1(-390,-587));
       }
       
       public static function decodeSalt(param1:String) : String

@@ -19,6 +19,10 @@ package
       public static function Log(param1:String, param2:String, param3:Boolean = false) : void
       {
          var _loc4_:Array = null;
+         if(param2.search("recorddebugdata") != -1)
+         {
+            return;
+         }
          if(param3 || !GLOBAL._flags || GLOBAL._flags && GLOBAL._flags.gamedebug == 1)
          {
             if(!_logged[param1 + param2])
@@ -438,6 +442,13 @@ package
                      st2 = "feed";
                      name = "level" + data[3];
                      st3 = GUARDIANCAGE._guardians[data[1]].name;
+                     val = int(data[2]);
+                  }
+                  else if(data[0] == 59)
+                  {
+                     st1 = "store";
+                     st2 = "purchase";
+                     name = data[1];
                      val = int(data[2]);
                   }
                }

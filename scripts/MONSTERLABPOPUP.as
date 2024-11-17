@@ -1,9 +1,11 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.display.ScrollSet;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
+   import flash.display.Sprite;
    import flash.events.MouseEvent;
    import flash.text.TextField;
    import gs.*;
@@ -77,9 +79,13 @@ package
       
       private var btn_instant:MovieClip;
       
+      private var _scrollbar:ScrollSet;
+      
+      private var _shell:Sprite;
+      
       private var list_mc:MovieClip;
       
-      private var _listContainer:MovieClip;
+      private var _listContainer:Sprite;
       
       public var _abilityUpgradesList:Array;
       
@@ -105,6 +111,7 @@ package
          this.btn_resource = mcResources;
          this.btn_instant = mcInstant;
          this.list_mc = mcList;
+         this._scrollbar = new ScrollSet();
          _bMonsterLab = GLOBAL._bLab as MONSTERLAB;
          var _loc1_:int = 3;
          while(_loc1_ < 5)
@@ -148,6 +155,7 @@ package
       public function Setup(param1:String) : *
       {
          _creatureID = param1;
+         this.List();
          this.Update(_creatureID,true);
       }
       
@@ -213,7 +221,6 @@ package
          _unlockLevel = _loc4_ + 1;
          var _loc5_:Object = _bMonsterLab.CanPowerup(_creatureID,_unlockLevel);
          var _loc6_:Array = MONSTERLAB._powerupProps[_creatureID].costs[_unlockLevel - 1];
-         this.List();
          var _loc7_:Object = CREATURELOCKER._creatures[_creatureID];
          var _loc8_:Object = MONSTERLAB._powerupProps[_creatureID];
          if(_unlockLevel == 1)
@@ -232,11 +239,23 @@ package
          }
          switch(_creatureID)
          {
+            case "C2":
+               _loc9_ = _loc8_.effect[_unlockLevel - 1] + " " + _loc8_.ability;
+               break;
             case "C3":
                _loc9_ = _loc8_.effect[_unlockLevel - 1] + " " + _loc8_.ability;
                break;
+            case "C4":
+               _loc9_ = _loc8_.effect[_unlockLevel - 1] + " " + _loc8_.ability;
+               break;
+            case "C5":
+               _loc9_ = _loc8_.effect[_unlockLevel - 1] * 100 + "% " + _loc8_.ability;
+               break;
             case "C7":
                _loc9_ = _loc8_.effect[_unlockLevel - 1] + "x speed " + _loc8_.ability;
+               break;
+            case "C8":
+               _loc9_ = CREATURELOCKER._creatures[_creatureID].props.damage[_unlockLevel - 1] * _loc8_.effect[_unlockLevel - 1] + " " + _loc8_.ability;
                break;
             case "C9":
                _loc9_ = _loc8_.effect[_unlockLevel - 1] + _loc8_.ability;
@@ -419,6 +438,15 @@ package
             mcPBarStatus.mcBar.width = _loc3_;
             mcPBarStatus.mcBar2.width = _loc3_;
          }
+         if(this._scrollbar)
+         {
+            if(!this._scrollbar.visible)
+            {
+               this._scrollbar.visible = 1;
+               this.list_mc.addChild(this._scrollbar);
+            }
+            this._scrollbar.update();
+         }
       }
       
       public function StartMonsterPowerup(param1:MouseEvent) : *
@@ -467,9 +495,16 @@ package
          {
             this.list_mc.mcContainer.removeChild(this._listContainer);
          }
-         this._listContainer = this.list_mc.mcContainer.addChild(new MovieClip());
+         this._listContainer = this.list_mc.mcContainer.addChild(new Sprite());
          this._listContainer.x = 0;
          this._listContainer.y = 0;
+         this._listContainer.mask = this.list_mc.mcMask;
+         this._scrollbar.x = 190;
+         this._scrollbar.y = 0;
+         this.list_mc.addChild(this._scrollbar);
+         this._scrollbar.initWith(this._listContainer,this.list_mc.mcMask,0,this.list_mc.height,20);
+         this._scrollbar.autoHide = false;
+         this._scrollbar.visible = false;
          offset = 0;
          i = 0;
          while(i < this._abilityUpgradesList.length)
@@ -523,6 +558,11 @@ package
          }
       }
       
+      public function get Scrollbar() : *
+      {
+         return this._scrollbar;
+      }
+      
       public function Show(param1:String) : *
       {
          var creatureID:String = param1;
@@ -573,6 +613,12 @@ package
       public function Hide(param1:MouseEvent = null) : *
       {
          MONSTERLAB.Hide(param1);
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
       }
    }
 }

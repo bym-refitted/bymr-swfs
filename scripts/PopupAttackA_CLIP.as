@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1745")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1851")]
    public dynamic class PopupAttackA_CLIP extends MovieClip
    {
       public var bCancel:Button_CLIP;
@@ -11,6 +11,8 @@ package
       public var bAttack:Button_CLIP;
       
       public var tAttackText:TextField;
+      
+      public var mcAlliancePic:MovieClip;
       
       public var mcProfilePic:MovieClip;
       

@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1038")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1073")]
    public dynamic class popup_aibase_failure extends MovieClip
    {
       public var title_txt:TextField;

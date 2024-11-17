@@ -317,6 +317,7 @@ package
          var xdif:int = 0;
          var ydif:int = 0;
          var building:BFOUNDATION = null;
+         var tempPowerup:Array = null;
          var testarr:Array = null;
          var creepid:* = undefined;
          var goEasy:Boolean = false;
@@ -346,6 +347,10 @@ package
             {
                keyunlock = 0;
             }
+         }
+         if(GLOBAL._bymChat.chatInputHasFocus())
+         {
+            return;
          }
          if(!GLOBAL._local)
          {
@@ -390,6 +395,100 @@ package
                   break;
                case 66:
                   BUILDINGS.Show();
+                  break;
+               case 188:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 10
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 15
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 20
+                     }];
+                     POWERUPS.Setup(tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_declarewar",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
+               case 190:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_conquest",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
+               case 191:
+                  if(e.shiftKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(null,tempPowerup);
+                     break;
+                  }
+                  if(e.ctrlKey)
+                  {
+                     tempPowerup = [{
+                        "id":"ap_declarewar",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_conquest",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     },{
+                        "id":"ap_armament",
+                        "endtime":GLOBAL.Timestamp() + 60
+                     }];
+                     POWERUPS.Setup(tempPowerup,tempPowerup);
+                     break;
+                  }
+                  tempPowerup = [{
+                     "id":"ap_armament",
+                     "endtime":GLOBAL.Timestamp() + 60
+                  }];
+                  POWERUPS.Setup(tempPowerup);
+                  break;
             }
             if(e.keyCode >= 48 && e.keyCode <= 57)
             {
@@ -493,7 +592,7 @@ package
             }
             if(e.keyCode == 71)
             {
-               CREEPS.SpawnGuardian(3,_BUILDINGTOPS,"bounce",1,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,0,true);
+               CREEPS.SpawnGuardian(2,_BUILDINGTOPS,"bounce",6,new Point(_GROUND.mouseX - 50 + Math.random() * 100,_GROUND.mouseY - 50 + Math.random() * 100),Math.random() * 360,60 * 1000,true);
             }
             if(e.keyCode == 189)
             {

@@ -148,7 +148,7 @@ package
       private function onAdd(param1:Event) : void
       {
          removeEventListener(Event.ADDED_TO_STAGE,this.onAdd);
-         this.y -= 0.5 * this.bg_mc.y;
+         this.Resize();
          stage.addEventListener(FullScreenEvent.FULL_SCREEN,this.detectFS);
          this.detectFS();
       }
@@ -193,6 +193,12 @@ package
             this.sendBtn.Enabled = false;
             this.sendBtn.removeEventListener(MouseEvent.CLICK,this.sendDown);
          }
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
       }
    }
 }

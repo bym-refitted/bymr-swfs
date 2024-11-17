@@ -207,6 +207,33 @@ package
          super.Update(param1);
       }
       
+      override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
+      {
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_ARMAMENT,"DEFENSE"))
+         {
+            param1 = int(POWERUPS.Apply(POWERUPS.ALLIANCE_ARMAMENT,[param1]));
+         }
+         _hp.Add(-param1);
+         if(_hp.Get() <= 0)
+         {
+            _hp.Set(0);
+            if(!_destroyed)
+            {
+               Destroyed(param5);
+            }
+         }
+         else if(_class != "wall")
+         {
+            ATTACK.Log("b" + _id,"<font color=\"#990000\">" + KEYS.Get("attack_log_%damaged",{
+               "v1":_lvl.Get(),
+               "v2":KEYS.Get(_buildingProps.name),
+               "v3":100 - int(100 / _hpMax.Get() * _hp.Get())
+            }) + "</font>");
+         }
+         this.Update();
+         BASE.Save();
+      }
+      
       override public function Upgraded() : *
       {
          var Brag:Function;

@@ -27,6 +27,7 @@ package com.monsters.maproom_advanced
          var bonusStr:String = null;
          var numPosts:int = 0;
          var costMC:MovieClip = null;
+         var colorString:String = null;
          var cell:MapRoomCell = param1;
          super();
          ImageLoaded = function(param1:String, param2:BitmapData):*
@@ -34,8 +35,8 @@ package com.monsters.maproom_advanced
             mcImage.addChild(new Bitmap(param2));
          };
          this._cell = cell;
-         x = 455;
-         y = 250;
+         x = GLOBAL._SCREENCENTER.x + 75;
+         y = GLOBAL._SCREENCENTER.y - 10;
          ImageCache.GetImageWithCallBack("popups/outpost-takeover.png",ImageLoaded,true,1);
          this._costGap = 0;
          this._resourceCost = new SecNum(2000000);
@@ -47,6 +48,10 @@ package com.monsters.maproom_advanced
                this._resourceCost.Set(2000000 + 2000000 * (numPosts - 4));
             }
          }
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))
+         {
+            this._resourceCost.Set(POWERUPS.Apply(POWERUPS.ALLIANCE_CONQUEST,[this._resourceCost.Get()]));
+         }
          this._shinyCost = new SecNum(Math.ceil(Math.pow(Math.sqrt(this._resourceCost.Get() / 2),0.75) * 4));
          i = 1;
          while(i < 5)
@@ -54,6 +59,15 @@ package com.monsters.maproom_advanced
             costMC = this.mcResources["mcR" + i];
             costMC.gotoAndStop(i);
             costMC.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[i - 1]) + "</b>";
+            colorString = "000000";
+            if(GLOBAL._resources["r" + i].Get() <= this._resourceCost)
+            {
+               colorString = "FF0000";
+            }
+            else if(GLOBAL._allianceConquestTime.Get() > GLOBAL.Timestamp())
+            {
+               colorString = "0000FF";
+            }
             costMC.tValue.htmlText = "<b><font color=\"#" + (this._resourceCost > GLOBAL._resources["r" + i].Get() ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(this._resourceCost.Get()) + "</font></b>";
             i++;
          }
@@ -97,6 +111,12 @@ package com.monsters.maproom_advanced
       {
          GLOBAL.BlockerRemove();
          this.parent.removeChild(this);
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
       }
       
       public function TakeOverConfirm(param1:Boolean) : *

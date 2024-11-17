@@ -151,6 +151,12 @@ package com.monsters.maproom
             _loc2_ = null;
          }
       }
+      
+      public function Resize() : void
+      {
+         this.x = 0;
+         this.y = 20;
+      }
    }
 }
 

@@ -72,8 +72,8 @@ package
             _building = param1;
             GLOBAL.BlockerAdd();
             _mc = GLOBAL._layerWindows.addChild(new ACADEMYPOPUP());
-            _mc.x = 380;
-            _mc.y = 260;
+            _mc.x = GLOBAL._SCREENCENTER.x;
+            _mc.y = GLOBAL._SCREENCENTER.y;
             _mc.scaleY = 0.9;
             _mc.scaleX = 0.9;
             TweenLite.to(_mc,0.2,{

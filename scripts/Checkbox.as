@@ -1,9 +1,14 @@
 package
 {
+   import flash.display.MovieClip;
    import flash.events.MouseEvent;
    
    public class Checkbox extends CheckBox_CLIP
    {
+      private static const FRAME_SELECT:int = 2;
+      
+      private static const FRAME_DESELECT:int = 1;
+      
       private var checked:Boolean = false;
       
       private var _enabled:Boolean = true;
@@ -22,13 +27,34 @@ package
          stop();
       }
       
-      private function onDown(param1:MouseEvent) : void
+      public static function Replace(param1:MovieClip) : Checkbox
+      {
+         var _loc3_:int = 0;
+         var _loc4_:* = undefined;
+         var _loc2_:Checkbox = new Checkbox();
+         _loc2_.x = param1.x;
+         _loc2_.y = param1.y;
+         _loc2_.scaleX = param1.scaleX;
+         _loc2_.scaleY = param1.scaleY;
+         _loc2_.gotoAndStop(param1.currentFrame);
+         _loc2_.name = param1.name;
+         if(param1.parent)
+         {
+            _loc3_ = param1.parent.getChildIndex(param1);
+            _loc4_ = param1.parent;
+            _loc4_.removeChild(param1);
+            _loc4_.addChildAt(_loc2_,_loc3_ - 1);
+         }
+         return _loc2_;
+      }
+      
+      public function onDown(param1:MouseEvent) : void
       {
          this._down = true;
          this.Update();
       }
       
-      private function onUp(param1:MouseEvent) : void
+      public function onUp(param1:MouseEvent) : void
       {
          this._down = false;
          if(this._enabled)
@@ -38,7 +64,7 @@ package
          this.Update();
       }
       
-      private function onClick(param1:MouseEvent) : void
+      public function onClick(param1:MouseEvent) : void
       {
          if(this._enabled)
          {
@@ -46,13 +72,13 @@ package
          }
       }
       
-      private function onOver(param1:MouseEvent) : void
+      public function onOver(param1:MouseEvent) : void
       {
          this._over = true;
          this.Update();
       }
       
-      private function onOut(param1:MouseEvent) : void
+      public function onOut(param1:MouseEvent) : void
       {
          this._over = false;
          this.Update();
@@ -101,6 +127,58 @@ package
       public function get Enabled() : Boolean
       {
          return this._enabled;
+      }
+      
+      public function select() : void
+      {
+         this.checked = true;
+      }
+      
+      public function deselect() : void
+      {
+         this.checked = false;
+      }
+      
+      public function get selected() : Boolean
+      {
+         return this.checked;
+      }
+      
+      public function toggle() : void
+      {
+         if(this.selected)
+         {
+            this.deselect();
+         }
+         else
+         {
+            this.select();
+         }
+      }
+      
+      public function fromInt(param1:int) : void
+      {
+         if(param1)
+         {
+            this.select();
+         }
+         else
+         {
+            this.deselect();
+         }
+      }
+      
+      public function toInt() : int
+      {
+         return this.selected ? 1 : 0;
+      }
+      
+      public function Remove() : void
+      {
+         this.removeEventListener(MouseEvent.MOUSE_DOWN,this.onDown);
+         this.removeEventListener(MouseEvent.MOUSE_UP,this.onUp);
+         this.removeEventListener(MouseEvent.MOUSE_OVER,this.onOver);
+         this.removeEventListener(MouseEvent.MOUSE_OUT,this.onOut);
       }
    }
 }

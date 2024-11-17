@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.utils.SecNum;
    import com.monsters.display.BuildingAssetContainer;
    import com.monsters.display.ImageCache;
    import flash.display.Bitmap;
@@ -58,6 +59,13 @@ package
          {
             this._building = new BFOUNDATION();
             this._building._type = param2;
+            if(!STORE._storeItems["BUILDING" + this._building._type])
+            {
+               mcInstant.bAction.addEventListener(MouseEvent.CLICK,this.ActionInstantBuild);
+               mcInstant.bAction.Setup("Use " + this._building.InstantBuildCost() + " Shiny");
+               mcInstant.tDescription.htmlText = "Keep your resources and build instantly!";
+               mcInstant.gCoin.mouseEnabled = false;
+            }
          }
          else
          {
@@ -333,7 +341,7 @@ package
                   this.streampost_cb.alpha = 0.25;
                }
             }
-            if(TUTORIAL._stage < 200 || param1 != "upgrade")
+            if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade")
             {
                mcInstant.visible = false;
                _loc5_ = tDescription.height + 53;
@@ -355,7 +363,7 @@ package
          }
          mcBG.height = _loc5_;
          mcBG.Setup();
-         if(TUTORIAL._stage < 200 || param1 != "upgrade")
+         if(TUTORIAL._stage < 200 || STORE._storeItems["BUILDING" + this._building._type] || param1 != "build" && param1 != "upgrade")
          {
             mcResources.y = mcBG.y + _loc5_ - 63;
          }
@@ -521,6 +529,49 @@ package
             if(this._building.Upgrade())
             {
                BUILDINGOPTIONS.Hide();
+            }
+         }
+      }
+      
+      private function ActionInstantBuild(param1:MouseEvent) : *
+      {
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:int = 0;
+         var _loc5_:Object = BASE.CanBuild(this._building._type,true);
+         var _loc6_:Object = GLOBAL._buildingProps[this._building._type - 1].costs[0];
+         if(_loc5_.error)
+         {
+            GLOBAL.Message(_loc5_.errorMessage);
+         }
+         else
+         {
+            _loc7_ = int(_loc6_.time);
+            if(_loc7_ <= 5 * 60)
+            {
+               _loc7_ = 0;
+            }
+            _loc8_ = _loc6_.r1 + _loc6_.r2 + _loc6_.r3;
+            _loc9_ = Math.ceil(Math.pow(Math.sqrt(_loc8_ / 2),0.75));
+            _loc10_ = STORE.GetTimeCost(_loc7_);
+            _loc11_ = _loc9_ + _loc10_;
+            _loc11_ = int(_loc11_ * 0.95);
+            if(_loc11_ <= 5)
+            {
+               _loc11_ = 5;
+            }
+            if(_loc11_ > BASE._credits.Get())
+            {
+               POPUPS.DisplayGetShiny();
+               return;
+            }
+            if(BASE.addBuildingB(this._building._type,true))
+            {
+               BUILDINGS.Hide(param1);
+               GLOBAL._newBuilding._buildInstant = true;
+               GLOBAL._newBuilding._buildInstantCost = new SecNum(_loc11_);
             }
          }
       }
@@ -788,6 +839,12 @@ package
          catch(e:Error)
          {
          }
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
       }
    }
 }

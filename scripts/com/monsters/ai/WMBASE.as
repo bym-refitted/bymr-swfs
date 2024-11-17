@@ -231,6 +231,11 @@ package com.monsters.ai
                GLOBAL.CallJS("sendFeed",["aibaseDestroyed",_loc2_.succ_stream,"",_loc2_.streampostpic]);
             };
             _mc = new popup_aibase_success() as MovieClip;
+            _mc.Resize = function():void
+            {
+               _mc.x = 0;
+               _mc.y = 0;
+            };
             _mc.body_txt.htmlText = BaseForID(BASE._wmID).tribe.succ;
             _mc.b2.SetupKey("btn_brag");
             _mc.b2.Highlight = true;
@@ -303,6 +308,11 @@ package com.monsters.ai
          else
          {
             _mc = new popup_aibase_failure() as MovieClip;
+            _mc.Resize = function():*
+            {
+               _mc.x = 0;
+               _mc.y = 0;
+            };
             _mc.title_txt.text = KEYS.Get("aibase_defeat_title");
             _mc.headline_txt.htmlText = "<b>" + KEYS.Get("aibase_defeat_headline") + "</b>";
             base = BaseForID(BASE._wmID);

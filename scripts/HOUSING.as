@@ -49,8 +49,8 @@ package
          _open = true;
          GLOBAL.BlockerAdd();
          _mc = GLOBAL._layerWindows.addChild(new HOUSINGPOPUP());
-         _mc.x = 380;
-         _mc.y = 260;
+         _mc.x = GLOBAL._SCREENCENTER.x;
+         _mc.y = GLOBAL._SCREENCENTER.y;
          _mc.scaleY = 0.9;
          _mc.scaleX = 0.9;
          TweenLite.to(_mc,0.2,{
@@ -128,7 +128,7 @@ package
          var _loc13_:* = undefined;
          if(param4 > 0)
          {
-            LOGGER.Log("log","Instant monster hack");
+            LOGGER.Log("hak","Instant monster hack");
             GLOBAL.ErrorMessage("HOUSING insta monster hack");
             return;
          }

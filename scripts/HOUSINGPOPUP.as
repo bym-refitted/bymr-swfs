@@ -309,6 +309,12 @@ package
       {
          HOUSING.Hide();
       }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
+      }
    }
 }
 

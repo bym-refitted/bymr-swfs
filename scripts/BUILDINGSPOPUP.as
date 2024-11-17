@@ -45,6 +45,14 @@ package
          {
             this.SwitchB(BUILDINGS._menuA,BUILDINGS._menuB,BUILDINGS._page);
          }
+         if(!BASE._isOutpost)
+         {
+            if(!GLOBAL._flags.radio)
+            {
+               GLOBAL._buildingProps[112].block = true;
+               GLOBAL._buildingProps[11].order = 2;
+            }
+         }
       }
       
       public function Switch(param1:int, param2:int, param3:int) : *
@@ -213,8 +221,8 @@ package
          }
          GLOBAL.BlockerAdd();
          this._buildingInfoMC = GLOBAL._layerWindows.addChild(new BUILDINGOPTIONSPOPUP("build",param1));
-         this._buildingInfoMC.x = 380;
-         this._buildingInfoMC.y = 260;
+         this._buildingInfoMC.x = GLOBAL._SCREENCENTER.x;
+         this._buildingInfoMC.y = GLOBAL._SCREENCENTER.y;
       }
       
       public function HideInfo() : *
@@ -251,6 +259,12 @@ package
             this.SwitchB(BUILDINGS._menuA,BUILDINGS._menuB,BUILDINGS._page);
             SOUNDS.Play("click1");
          }
+      }
+      
+      public function Resize() : void
+      {
+         this.x = 0;
+         this.y = 0;
       }
    }
 }

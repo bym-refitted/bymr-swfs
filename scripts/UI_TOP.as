@@ -16,6 +16,8 @@ package
       
       public var _popupWarning:*;
       
+      public var _popupBuff:*;
+      
       public var _creatureButtons:Array;
       
       public var _creatureButtonsMC:*;
@@ -517,6 +519,7 @@ package
                   {
                      mc.bAlert.visible = false;
                   }
+                  this.DisplayBuffs();
                }
             }
             else if(GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack")
@@ -535,7 +538,12 @@ package
                   this._creatureButtons[_loc1_].Update();
                   _loc1_++;
                }
-               _loc7_ = _loc6_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               _loc6_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
+               {
+                  _loc6_ += _loc6_ * 0.25;
+               }
+               _loc7_ = _loc6_;
                for(_loc8_ in ATTACK._flingerBucket)
                {
                   if(_loc8_.substr(0,1) == "G")
@@ -655,6 +663,129 @@ package
                BUY.Offers("earn");
             }
          };
+      }
+      
+      public function DisplayBuffs() : void
+      {
+         var _loc3_:* = undefined;
+         var _loc4_:* = undefined;
+         var _loc5_:* = undefined;
+         var _loc6_:* = undefined;
+         var _loc7_:int = 0;
+         var _loc8_:int = 0;
+         var _loc9_:int = 0;
+         var _loc10_:int = 0;
+         var _loc11_:Object = null;
+         var _loc12_:String = null;
+         var _loc13_:MovieClip = null;
+         var _loc1_:Number = POWERUPS.CheckPowers(null,"NORMAL");
+         var _loc2_:int = this.mcBuffHolder.numChildren;
+         while(_loc2_--)
+         {
+            this.mcBuffHolder.getChildAt(_loc2_).removeEventListener(MouseEvent.ROLL_OVER,this.BuffShow);
+            this.mcBuffHolder.getChildAt(_loc2_).removeEventListener(MouseEvent.ROLL_OUT,this.BuffHide);
+            this.mcBuffHolder.removeChildAt(_loc2_);
+         }
+         if(_loc1_ > 0)
+         {
+            _loc3_ = 3;
+            _loc4_ = 2;
+            _loc5_ = -36;
+            _loc6_ = 36;
+            _loc7_ = 0;
+            _loc8_ = 0;
+            _loc9_ = 0;
+            _loc10_ = 0;
+            _loc11_ = POWERUPS.GetPowerups();
+            for(_loc12_ in _loc11_)
+            {
+               if(POWERUPS._expireRealTime)
+               {
+                  if(_loc11_[_loc12_].endtime.Get() < GLOBAL.Timestamp())
+                  {
+                     this.BuffHide(null);
+                     continue;
+                  }
+               }
+               _loc13_ = new ui_buffIcon_CLIP();
+               _loc13_.gotoAndStop(_loc12_);
+               _loc13_.name = _loc12_;
+               _loc13_.x = _loc9_ * _loc5_;
+               _loc13_.y = _loc10_ * _loc6_;
+               _loc9_++;
+               if(_loc9_ >= _loc3_)
+               {
+                  _loc9_ = 0;
+                  _loc10_++;
+               }
+               _loc13_.addEventListener(MouseEvent.ROLL_OVER,this.BuffShow);
+               _loc13_.addEventListener(MouseEvent.ROLL_OUT,this.BuffHide);
+               this.mcBuffHolder.addChild(_loc13_);
+            }
+         }
+         else
+         {
+            this.BuffHide(null);
+         }
+      }
+      
+      public function BuffShow(param1:MouseEvent) : void
+      {
+         var _loc7_:bubblepopupBuff = null;
+         var _loc2_:MovieClip = param1.currentTarget as MovieClip;
+         var _loc3_:String = "";
+         var _loc4_:* = "";
+         var _loc5_:* = _loc2_.name + "_desc";
+         _loc3_ = KEYS.Get(_loc5_);
+         _loc4_ = "<b>" + KEYS.Get("buff_duration") + "</b>";
+         if(POWERUPS._expireRealTime)
+         {
+            if(POWERUPS.Timeleft(_loc2_.name) > 0)
+            {
+               _loc4_ += GLOBAL.ToTime(POWERUPS.Timeleft(_loc2_.name),true);
+            }
+            else
+            {
+               _loc4_ = "";
+            }
+         }
+         else if(POWERUPS.Timeleft(_loc2_.name) > 0)
+         {
+            _loc4_ += GLOBAL.ToTime(POWERUPS.Timeleft(_loc2_.name),true);
+         }
+         else
+         {
+            _loc4_ = "";
+         }
+         if(!this._popupBuff)
+         {
+            _loc7_ = new bubblepopupBuff();
+            this._popupBuff = addChild(_loc7_);
+            _loc7_.Setup(_loc2_.x + _loc2_.width / 2,_loc2_.y + _loc2_.height + 4,_loc3_,_loc4_);
+            _loc7_.x = this.mcBuffHolder.x + (_loc2_.x + _loc2_.width / 2);
+            _loc7_.y = this.mcBuffHolder.y + (_loc2_.y + _loc2_.height + 4);
+         }
+         else
+         {
+            bubblepopupBuff(this._popupBuff).Update(_loc3_,_loc4_);
+         }
+      }
+      
+      public function BuffHide(param1:MouseEvent) : *
+      {
+         if(this._popupBuff)
+         {
+            removeChild(this._popupBuff);
+            this._popupBuff = null;
+         }
+      }
+      
+      public function BuffOff(param1:MouseEvent) : void
+      {
+         POWERUPS._testToggleOffPowers = true;
+         var _loc2_:MovieClip = param1.currentTarget as MovieClip;
+         POWERUPS.Remove(_loc2_.name);
+         this.BuffHide(null);
       }
       
       public function ButtonInfoShow(param1:MouseEvent) : *

@@ -2,10 +2,10 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol887")]
-   public dynamic class bubblepopupArrow_5 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol793")]
+   public dynamic class bubblepopupArrow_12 extends MovieClip
    {
-      public function bubblepopupArrow_5()
+      public function bubblepopupArrow_12()
       {
          super();
          addFrameScript(0,this.frame1);

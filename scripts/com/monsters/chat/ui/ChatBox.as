@@ -1,16 +1,9 @@
 package com.monsters.chat.ui
 {
    import com.monsters.display.ScrollSet;
-   import flash.display.DisplayObject;
-   import flash.display.MovieClip;
-   import flash.display.Sprite;
-   import flash.display.StageDisplayState;
-   import flash.events.MouseEvent;
-   import flash.events.TextEvent;
-   import flash.text.TextField;
-   import flash.text.TextFieldAutoSize;
-   import flash.text.TextFieldType;
-   import flash.text.TextFormat;
+   import flash.display.*;
+   import flash.events.*;
+   import flash.text.*;
    import gs.TweenLite;
    import gs.easing.*;
    
@@ -142,7 +135,6 @@ package com.monsters.chat.ui
          this._shell.addChild(this._chatMessages);
          this._chatMessages.x = this.background.mcScreen.x;
          this._chatMessages.y = this.background.mcScreen.y;
-         this._shell.addChild(this._chatMessages);
          this._shell.mask = this.background.mcMask;
          this._scrollbar = new ScrollSet();
          this.background.addChild(this._scrollbar);
@@ -161,7 +153,6 @@ package com.monsters.chat.ui
          this._sendBtn.Enabled = true;
          this._sendBtn.addEventListener(MouseEvent.MOUSE_DOWN,this.handleSendClick);
          this.inputbar.addChild(this._sendBtn);
-         this.background._output.addEventListener(TextEvent.LINK,this.handleLinkClick);
          this.input.addEventListener(MouseEvent.MOUSE_UP,this.onInputFocus);
          this.background.alert.alert_txt.autoSize = TextFieldAutoSize.LEFT;
          this.background.alert.alert_txt.multiline = false;
@@ -174,7 +165,7 @@ package com.monsters.chat.ui
          this._originProps.screenHeight = this.background.mcScreen.height;
       }
       
-      public static function PopupShow(param1:int, param2:int, param3:String, param4:MovieClip) : *
+      public static function PopupShow(param1:int, param2:int, param3:String, param4:MovieClip) : void
       {
          PopupHide();
          _popupignore = new bubblepopupRight();
@@ -183,7 +174,7 @@ package com.monsters.chat.ui
          _popupignoredo = param4.addChild(_popupignore);
       }
       
-      public static function PopupUpdate(param1:String) : *
+      public static function PopupUpdate(param1:String) : void
       {
          if(_popupignore)
          {
@@ -191,7 +182,7 @@ package com.monsters.chat.ui
          }
       }
       
-      public static function PopupHide() : *
+      public static function PopupHide() : void
       {
          if(Boolean(_popupignore) && Boolean(_popupignore.parent))
          {
@@ -204,27 +195,6 @@ package com.monsters.chat.ui
       {
          GLOBAL._bymChat.SendMessage();
          this.forceFocus();
-      }
-      
-      private function handleLinkClick(param1:TextEvent) : void
-      {
-         var points:Array = null;
-         var e:TextEvent = param1;
-         var actions:Array = e.text.split(".");
-         try
-         {
-            if(actions[0] == "location")
-            {
-               if(actions[1] == "moveto")
-               {
-                  points = actions[2].split(",");
-               }
-            }
-         }
-         catch(e:Error)
-         {
-            this.push("<font color=\'#FF0000\'>Action Failed!</font>");
-         }
       }
       
       public function get Scrollbar() : *
@@ -264,8 +234,8 @@ package com.monsters.chat.ui
          this.background.arrowDown.buttonMode = true;
          this.background.arrowDown.useHandCursor = true;
          this.background.arrowDown.gotoAndStop(1);
-         this.input.maxChars = 100;
          this.background.addEventListener(MouseEvent.CLICK,this.toggleHide);
+         this.input.maxChars = 100;
          this._maximized = false;
          this.toggleHide();
       }
@@ -547,41 +517,50 @@ package com.monsters.chat.ui
       
       override public function push(param1:String, param2:String = null, param3:String = null, param4:String = null, param5:Boolean = false) : void
       {
-         var _loc10_:ChatBox_msg_name_CLIP = null;
-         var _loc6_:Object = {
+         var _loc9_:ChatBox_msg_name_CLIP = null;
+         var _loc6_:String = param2;
+         if(_loc6_ != null)
+         {
+            _loc6_ = _loc6_.substr(_loc6_.indexOf("["));
+            if(_loc6_ != null)
+            {
+               _loc6_ = _loc6_.substring(0,_loc6_.indexOf("<") - 1);
+            }
+         }
+         var _loc7_:Object = {
             "msg":param1,
-            "username":param2,
+            "username":_loc6_,
             "userid":param3,
             "msgtype":param4
          };
-         var _loc7_:ChatBox_msg_CLIP = new ChatBox_msg_CLIP();
-         _loc7_.txt.htmlText = param1;
-         _loc7_.txt.autoSize = TextFieldAutoSize.LEFT;
-         _loc7_.bg.height = _loc7_.txt.height;
-         _loc7_.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgMouseOver);
-         _loc7_.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgMouseOut);
-         _loc7_.ignoreBtn.visible = false;
-         _loc7_.ignoreBtn.buttonMode = true;
-         _loc7_.msgData = _loc6_;
-         _loc7_.isOwnMessage = param3 == LOGIN._playerID.toString();
+         var _loc8_:ChatBox_msg_CLIP = new ChatBox_msg_CLIP();
+         _loc8_.txt.htmlText = param1;
+         _loc8_.txt.autoSize = TextFieldAutoSize.LEFT;
+         _loc8_.bg.height = _loc8_.txt.height;
+         _loc8_.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgMouseOver);
+         _loc8_.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgMouseOut);
+         _loc8_.ignoreBtn.visible = false;
+         _loc8_.ignoreBtn.buttonMode = true;
+         _loc8_.msgData = _loc7_;
+         _loc8_.isOwnMessage = param3 == LOGIN._playerID.toString();
          if(param2 != null)
          {
-            _loc7_.ignoreBtn.addEventListener(MouseEvent.MOUSE_DOWN,this.OnMsgIgnoreMouseDown);
-            _loc7_.ignoreBtn.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgIgnoreRollOver);
-            _loc7_.ignoreBtn.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgIgnoreRollOut);
-            _loc10_ = new ChatBox_msg_name_CLIP();
-            _loc10_.label.htmlText = param2;
-            _loc10_.label.autoSize = TextFieldAutoSize.LEFT;
-            _loc10_.bg.width = _loc10_.label.textWidth;
-            _loc10_.label.visible = false;
-            _loc10_.x = 0;
-            _loc10_.y = 0;
-            _loc10_.addEventListener(MouseEvent.MOUSE_DOWN,this.OnMsgNameMouseDown);
-            _loc10_.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgNameRollOver);
-            _loc10_.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgNameRollOut);
-            _loc7_.addChild(_loc10_);
+            _loc8_.ignoreBtn.addEventListener(MouseEvent.MOUSE_DOWN,this.OnMsgIgnoreMouseDown);
+            _loc8_.ignoreBtn.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgIgnoreRollOver);
+            _loc8_.ignoreBtn.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgIgnoreRollOut);
+            _loc9_ = new ChatBox_msg_name_CLIP();
+            _loc9_.label.htmlText = param2;
+            _loc9_.label.autoSize = TextFieldAutoSize.LEFT;
+            _loc9_.bg.width = _loc9_.label.textWidth;
+            _loc9_.label.visible = false;
+            _loc9_.x = 0;
+            _loc9_.y = 0;
+            _loc9_.addEventListener(MouseEvent.MOUSE_DOWN,this.OnMsgNameMouseDown);
+            _loc9_.addEventListener(MouseEvent.ROLL_OVER,this.OnMsgNameRollOver);
+            _loc9_.addEventListener(MouseEvent.ROLL_OUT,this.OnMsgNameRollOut);
+            _loc8_.addChild(_loc9_);
          }
-         this._chatHistory.push(_loc7_);
+         this._chatHistory.push(_loc8_);
          if(!param5)
          {
             while(_chats.length > 40)
@@ -633,7 +612,19 @@ package com.monsters.chat.ui
             if(param1.currentTarget.msgData.userid)
             {
                _loc2_ = param1.currentTarget as ChatBox_msg_CLIP;
-               _loc2_.ignoreBtn.visible = true;
+               if(_loc2_.msgData.msgtype == "IgnoreList")
+               {
+                  if(GLOBAL._bymChat.userIsIgnored(_loc2_.msgData.userid))
+                  {
+                     _loc2_.ignoreBtn.gotoAndStop(2);
+                     _loc2_.ignoreBtn.visible = true;
+                  }
+               }
+               else if(!GLOBAL._bymChat.userIsIgnored(_loc2_.msgData.userid))
+               {
+                  _loc2_.ignoreBtn.gotoAndStop(1);
+                  _loc2_.ignoreBtn.visible = true;
+               }
             }
          }
       }
@@ -648,14 +639,22 @@ package com.monsters.chat.ui
       {
          if(Boolean(param1.currentTarget.parent) && Boolean(param1.currentTarget.parent.msgData))
          {
-            GLOBAL._bymChat.ignoreUser(param1.currentTarget.parent.msgData.userid);
+            if(param1.currentTarget.parent.msgData.msgtype == "IgnoreList")
+            {
+               GLOBAL._bymChat.unignoreUser(param1.currentTarget.parent.msgData.userid);
+            }
+            else
+            {
+               GLOBAL._bymChat.ignoreUser(param1.currentTarget.parent.msgData.userid,param1.currentTarget.parent.msgData.username);
+            }
          }
       }
       
       public function OnMsgIgnoreRollOver(param1:MouseEvent) : void
       {
+         var _loc2_:* = param1.currentTarget.parent.msgData.msgtype == "IgnoreList" ? "Click to unignore user" : "Click to ignore user";
          var _loc3_:* = param1.currentTarget.y + param1.currentTarget.height / 2;
-         PopupShow(param1.currentTarget.x - 10,_loc3_,"Click to ignore user",param1.currentTarget.parent as MovieClip);
+         PopupShow(param1.currentTarget.x - 10,_loc3_,_loc2_,param1.currentTarget.parent as MovieClip);
       }
       
       public function OnMsgIgnoreRollOut(param1:MouseEvent) : void

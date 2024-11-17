@@ -59,6 +59,8 @@ package
       
       public var _goo:int;
       
+      public var _venom:SecNum;
+      
       public var _targetRotation:Number;
       
       public var _targetPosition:Point;
@@ -125,6 +127,8 @@ package
       
       public var _altitude:int = 108;
       
+      private var _defenderRemoved:Boolean = false;
+      
       internal var attackCooldown:int;
       
       internal var frameCount:int;
@@ -172,6 +176,7 @@ package
       public function CREEP(param1:String, param2:String, param3:Point, param4:Number, param5:Point = null, param6:Boolean = false, param7:BFOUNDATION = null, param8:Number = 1, param9:Boolean = false, param10:CREEP = null)
       {
          var _loc12_:Point = null;
+         this._venom = new SecNum(0);
          this._tmpPoint = new Point(0,0);
          super();
          var _loc11_:int = getTimer();
@@ -208,9 +213,9 @@ package
          {
             this._maxSpeed *= 2;
          }
-         this._health = new SecNum(CREATURES.GetProperty(this._creatureID,"health") * param8);
+         this._health = new SecNum(int(CREATURES.GetProperty(this._creatureID,"health") * param8));
          this._maxHealth = this._health.Get();
-         this._damage = new SecNum(CREATURES.GetProperty(this._creatureID,"damage") * param8);
+         this._damage = new SecNum(int(CREATURES.GetProperty(this._creatureID,"damage") * param8));
          this._goo = CREATURES.GetProperty(this._creatureID,"cResource");
          this._targetPosition = param3;
          this._targetCenter = param5;
@@ -597,6 +602,7 @@ package
             }
             this._targetCenter = GRID.FromISO(this._homeBunker._position.x + _loc8_,this._homeBunker._position.y + _loc9_);
             this._targetPosition = new Point(this._homeBunker._mc.x,this._homeBunker._mc.y);
+            this._jumpingUp = false;
             var _loc1_:Point = GRID.ToISO(this._targetCenter.x,this._targetCenter.y,0);
             PATHING.GetPath(this._tmpPoint,new Rectangle(_loc1_.x,_loc1_.y,10,10),this.SetWaypoints,true);
             return;
@@ -743,7 +749,7 @@ package
       public function FindDefenseTargets() : void
       {
          var _loc3_:int = 0;
-         if(this._creatureID == "C12" && this.PoweredUp())
+         if((this._creatureID == "C12" || this._creatureID == "C5") && this.PoweredUp())
          {
             _loc3_ = 1;
          }
@@ -1086,6 +1092,181 @@ package
          return false;
       }
       
+      private function OctoSplit() : void
+      {
+      }
+      
+      private function Airburst() : void
+      {
+         var tmpRange:int = 0;
+         var tmpAttDamage:Number = NaN;
+         var tmpPointA:Point = null;
+         var tmpPointB:Point = null;
+         var tmpPointC:Point = null;
+         var dist:int = 0;
+         var building:BFOUNDATION = null;
+         var creature:* = undefined;
+         var distGuard:int = 0;
+         var guardDamage:Number = NaN;
+         var tmpDefDamage:Number = NaN;
+         var i:int = 0;
+         var creep:* = undefined;
+         var tmpDamage:Number = NaN;
+         if(this._behaviour == "attack")
+         {
+            tmpAttDamage = 1;
+            if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
+            {
+               tmpAttDamage *= 1.25;
+            }
+            tmpRange = int(60 * (1.1 + this.PowerUpLevel() * 0.1));
+            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - (45 + 20 * (this.PowerUpLevel() - 1)),this._damage.Get() * tmpAttDamage,this._mc.visible);
+            try
+            {
+               if(this._targetBuilding)
+               {
+                  this._targetBuilding.Damage(this._damage.Get() * tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
+                  this._targetBuilding.Update(true);
+               }
+               tmpPointA = PATHING.FromISO(this._tmpPoint).add(new Point(-5,-5));
+               tmpPointB = new Point(0,0);
+               tmpPointC = new Point(0,0);
+               for each(building in BASE._buildingsAll)
+               {
+                  if(building._class != "decoration" && building._class != "enemy" && building._class != "trap")
+                  {
+                     tmpPointC.x = building.x;
+                     tmpPointC.y = building.y;
+                     tmpPointB = PATHING.FromISO(tmpPointC);
+                     tmpPointC.x = building._middle;
+                     tmpPointC.y = building._middle;
+                     tmpPointB.add(tmpPointC);
+                     dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
+                     if(dist < tmpRange)
+                     {
+                        if(building != this._targetBuilding)
+                        {
+                           building.Damage(int(this._damage.Get() * tmpAttDamage * ((tmpRange - dist) / 100)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
+                           building.Update(true);
+                        }
+                     }
+                  }
+               }
+               tmpRange = int(90 * (1.1 + this.PowerUpLevel() * 0.1));
+               if(this._targetCreep && GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < tmpRange)
+               {
+                  this._targetCreep._health.Add(-(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult));
+               }
+               for each(creature in CREATURES._creatures)
+               {
+                  if((creature._behaviour == "defend" || creature._behaviour == "bunker") && creature != this._targetCreep)
+                  {
+                     dist = GLOBAL.QuickDistance(creature._tmpPoint,this._tmpPoint);
+                     if(dist < tmpRange)
+                     {
+                        creature._health.Add(-int(this._damage.Get() * tmpAttDamage * creature._damageMult * ((tmpRange - dist) / tmpRange)));
+                     }
+                  }
+               }
+               if(CREATURES._guardian._behaviour == "defend" && CREATURES._guardian != this._targetCreep)
+               {
+                  distGuard = GLOBAL.QuickDistance(CREATURES._guardian._tmpPoint,this._tmpPoint);
+                  if(distGuard < tmpRange)
+                  {
+                     guardDamage = tmpAttDamage;
+                     if(CREATURES._guardian._movement == "fly")
+                     {
+                        guardDamage = 0.1 * (0.1 * tmpAttDamage);
+                     }
+                     CREATURES._guardian._health.Add(-int(this._damage.Get() * guardDamage * CREATURES._guardian._damageMult * ((tmpRange - distGuard) / tmpRange)));
+                  }
+               }
+               ATTACK.Log("creep" + this._id,"<font color=\"#0000FF\">" + KEYS.Get("attack_log_eyera") + "</font>");
+               EFFECTS.Scorch(this._tmpPoint);
+            }
+            catch(e:Error)
+            {
+            }
+         }
+         else
+         {
+            tmpDefDamage = 1;
+            tmpRange = int(90 * (1.1 + this.PowerUpLevel() * 0.1));
+            if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
+            {
+               tmpDefDamage *= 1.25;
+            }
+            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - (45 + 20 * (this.PowerUpLevel() - 1)),this._damage.Get() * tmpDefDamage,this._mc.visible);
+            try
+            {
+               this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,tmpRange,-1);
+               i = 0;
+               while(i < this._targetCreeps.length)
+               {
+                  creep = this._targetCreeps[i].creep;
+                  if(i == 0)
+                  {
+                     tmpDamage = tmpDefDamage;
+                  }
+                  else
+                  {
+                     tmpDamage = tmpDefDamage * ((tmpRange - this._targetCreeps[i].dist) / tmpRange);
+                  }
+                  creep._health.Add(-(this._damage.Get() * tmpDamage * creep._damageMult));
+                  i++;
+               }
+               tmpRange = 90;
+               tmpDefDamage = 0.1 * this.PowerUpLevel() + 0.1;
+               if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  tmpDefDamage *= 1.25;
+               }
+               this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,tmpRange,2);
+               i = 0;
+               while(i < this._targetCreeps.length)
+               {
+                  creep = this._targetCreeps[i].creep;
+                  if(i == 0)
+                  {
+                     tmpDamage = tmpDefDamage;
+                  }
+                  else
+                  {
+                     tmpDamage = tmpDefDamage * ((tmpRange - this._targetCreeps[i].dist) / tmpRange);
+                  }
+                  creep._health.Add(-(this._damage.Get() * tmpDamage * creep._damageMult));
+                  i++;
+               }
+            }
+            catch(e:Error)
+            {
+            }
+            if(this._homeBunker)
+            {
+               if(Boolean(this._homeBunker._monsters) && !this._defenderRemoved)
+               {
+                  --this._homeBunker._monsters[this._creatureID];
+                  if(this._homeBunker._monsters[this._creatureID] < 0)
+                  {
+                     this._homeBunker._monsters[this._creatureID] = 0;
+                  }
+                  --this._homeBunker._monstersDispatched[this._creatureID];
+                  if(this._homeBunker._monstersDispatched[this._creatureID] < 0)
+                  {
+                     this._homeBunker._monstersDispatched[this._creatureID] = 0;
+                  }
+                  --this._homeBunker._monstersDispatchedTotal;
+                  if(this._homeBunker._monstersDispatchedTotal < 0)
+                  {
+                     this._homeBunker._monstersDispatchedTotal = 0;
+                  }
+                  this._defenderRemoved = true;
+               }
+            }
+         }
+         this._health.Set(0);
+      }
+      
       public function CanShootCreep() : Boolean
       {
          if(this._creatureID != "C12")
@@ -1202,8 +1383,9 @@ package
          var tmpPointC:Point = null;
          var dist:int = 0;
          var building:BFOUNDATION = null;
-         var creep:CREEP = null;
-         var tmpDefDamage:int = 0;
+         var creep:* = undefined;
+         var distGuard:int = 0;
+         var tmpDefDamage:Number = NaN;
          var i:int = 0;
          var tmpDamage:int = 0;
          if(!this.PoweredUp())
@@ -1216,12 +1398,12 @@ package
          }
          if(this._behaviour == "attack")
          {
-            tmpAttDamage = this._damage.Get() * this.PowerUpLevel();
+            tmpAttDamage = this.PowerUpLevel();
             if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
             {
                tmpAttDamage *= 1.25;
             }
-            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpAttDamage,this._mc.visible);
+            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage,this._mc.visible);
             try
             {
                tmpPointA = PATHING.FromISO(this._tmpPoint).add(new Point(-5,-5));
@@ -1240,14 +1422,14 @@ package
                      dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                      if(dist < 100)
                      {
-                        building.Damage(int(tmpAttDamage * ((100 - dist) / 100)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
+                        building.Damage(int(this._damage.Get() * tmpAttDamage * ((100 - dist) / 100)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
                         building.Update(true);
                      }
                   }
                }
                if(this._targetCreep && GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < 90)
                {
-                  this._targetCreep._health.Add(-(tmpAttDamage * this._targetCreep._damageMult));
+                  this._targetCreep._health.Add(-(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult));
                }
                for each(creep in CREATURES._creatures)
                {
@@ -1256,8 +1438,16 @@ package
                      dist = GLOBAL.QuickDistance(creep._tmpPoint,this._tmpPoint);
                      if(dist < 60)
                      {
-                        creep._health.Add(-int(tmpAttDamage * this._targetCreep._damageMult * ((60 - dist) / 60)));
+                        creep._health.Add(-int(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult * ((60 - dist) / 60)));
                      }
+                  }
+               }
+               if(CREATURES._guardian._behaviour == "defend" && CREATURES._guardian != this._targetCreep)
+               {
+                  distGuard = GLOBAL.QuickDistance(creep._tmpPoint,this._tmpPoint);
+                  if(distGuard < 60)
+                  {
+                     creep._health.Add(-int(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult * ((60 - distGuard) / 60)));
                   }
                }
                this._targetBuilding.Update(true);
@@ -1268,12 +1458,12 @@ package
          }
          else
          {
-            tmpDefDamage = this._damage.Get() * this.PowerUpLevel();
+            tmpDefDamage = 1;
             if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
             {
                tmpDefDamage *= 1.25;
             }
-            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpDefDamage,this._mc.visible);
+            ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpDefDamage,this._mc.visible);
             try
             {
                this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,60,-1);
@@ -1289,7 +1479,7 @@ package
                   {
                      tmpDamage = int(tmpDefDamage * ((60 - this._targetCreeps[i].dist) / 60));
                   }
-                  creep._health.Add(-(tmpDamage * creep._damageMult));
+                  creep._health.Add(-(this._damage.Get() * tmpDamage * creep._damageMult));
                   i++;
                }
             }
@@ -1303,8 +1493,8 @@ package
       {
          var Distance:int = 0;
          var altdiff:Number = NaN;
-         var tmpHealDamage:int = 0;
-         var tmpAttDamage:int = 0;
+         var tmpHealDamage:Number = NaN;
+         var tmpAttDamage:Number = NaN;
          var tmpPointA:Point = null;
          var tmpPointB:Point = null;
          var tmpPointC:Point = null;
@@ -1315,11 +1505,13 @@ package
          var distG:int = 0;
          var directTargetCreep:Boolean = false;
          var id:String = null;
+         var numTargets:int = 0;
          var distToEnemy:int = 0;
          var enemy:CREEP = null;
-         var tmpDefDamage:int = 0;
+         var tmpDefDamage:Number = NaN;
          var i:int = 0;
          var tmpDamage:int = 0;
+         var numDefTargets:int = 0;
          var aggros:Array = null;
          var l:int = 0;
          this._frameNumber += 1;
@@ -1348,6 +1540,16 @@ package
          else if(this._invisibleTime > 0 && this._invisibleTime < GLOBAL.Timestamp())
          {
             this._invisibleTime = 0;
+         }
+         if((GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && this._damage.Get() > int(CREATURES.GetProperty(this._creatureID,"damage")))
+         {
+            LOGGER.Log("log","Creep damage altered");
+            GLOBAL.ErrorMessage("Creep damage altered");
+            return false;
+         }
+         if(this._venom.Get() > 0)
+         {
+            this._health.Add(-(this._venom.Get() * this._damageMult));
          }
          if(this._behaviour == "retreat" || this._behaviour == "juice" || this._behaviour == "feed")
          {
@@ -1401,7 +1603,7 @@ package
          }
          else if(this._behaviour == "heal")
          {
-            tmpHealDamage = this._damage.Get();
+            tmpHealDamage = 1;
             if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
             {
                tmpHealDamage *= 1.25;
@@ -1480,7 +1682,7 @@ package
                   if(this._targetCreep._health.Get() > 0 && this._targetCreep._health.Get() < this._targetCreep._maxHealth)
                   {
                      this._attacking = true;
-                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetCreep._tmpPoint,this._targetCreep,25,tmpHealDamage,50);
+                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetCreep._tmpPoint,this._targetCreep,25,this._damage.Get() * tmpHealDamage,50);
                      if(int(this._creatureID.substr(1)) < 5)
                      {
                         SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
@@ -1511,7 +1713,7 @@ package
          }
          else if(this._behaviour == "attack" || this._behaviour == "loot")
          {
-            tmpAttDamage = this._damage.Get();
+            tmpAttDamage = 1;
             if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
             {
                tmpAttDamage *= 1.25;
@@ -1550,7 +1752,12 @@ package
                }
                if(Boolean(this._explode) || this._creatureID == "C11" && this.PoweredUp())
                {
-                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpAttDamage,this._mc.visible);
+                  if(Boolean(this._explode) && this._jumpingUp)
+                  {
+                     this.Airburst();
+                     return true;
+                  }
+                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage,this._mc.visible);
                   try
                   {
                      tmpPointA = PATHING.FromISO(this._tmpPoint).add(new Point(-5,-5));
@@ -1569,14 +1776,14 @@ package
                            dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                            if(dist < 60)
                            {
-                              building.Damage(int(tmpAttDamage * ((60 - dist) / 60)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
+                              building.Damage(int(this._damage.Get() * tmpAttDamage * ((60 - dist) / 60)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
                               building.Update(true);
                            }
                         }
                      }
                      if(this._targetCreep && GLOBAL.QuickDistance(this._tmpPoint,this._targetCreep._tmpPoint) < this.DEFENSE_RANGE)
                      {
-                        this._targetCreep._health.Add(-tmpAttDamage * this._targetCreep._damageMult);
+                        this._targetCreep._health.Add(-(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult));
                      }
                      for(creepid in CREATURES._creatures)
                      {
@@ -1586,7 +1793,7 @@ package
                            dist = GLOBAL.QuickDistance(creep._tmpPoint,this._tmpPoint);
                            if(dist < 90)
                            {
-                              creep._health.Add(-int(tmpAttDamage * creep._damageMult * ((90 - dist) / 90)));
+                              creep._health.Add(-int(this._damage.Get() * tmpAttDamage * creep._damageMult * ((90 - dist) / 90)));
                            }
                         }
                      }
@@ -1595,7 +1802,7 @@ package
                         distG = GLOBAL.QuickDistance(CREATURES._guardian._tmpPoint,this._tmpPoint);
                         if(distG < 60)
                         {
-                           CREATURES._guardian._health.Add(-int(tmpAttDamage * ((60 - distG) / 60)));
+                           CREATURES._guardian._health.Add(-int(this._damage.Get() * tmpAttDamage * ((60 - distG) / 60)));
                         }
                      }
                      if(this._explode)
@@ -1667,27 +1874,37 @@ package
                   this.attackCooldown += int(this._attackDelay / this._speedMult);
                   if(this._behaviour == "attack")
                   {
+                     if(Boolean(this._explode) && this._jumpingUp)
+                     {
+                        this.Airburst();
+                        return true;
+                     }
                      if(this._movement != "fly" && !(this._creatureID == "C12" && this.PoweredUp()))
                      {
                         if(this._targetCreep)
                         {
-                           ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpAttDamage * this._targetCreep._damageMult,this._mc.visible);
+                           ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult,this._mc.visible);
                         }
                         else
                         {
-                           ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpAttDamage,this._mc.visible);
+                           ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpAttDamage,this._mc.visible);
                         }
                      }
-                     if(Boolean(this._explode) || this._creatureID == "C7" && this._targetCreep && this.PoweredUp())
+                     if(this._explode || this._creatureID == "C4" && this.PoweredUp() || this._creatureID == "C7" && this._targetCreep && this.PoweredUp())
                      {
                         if(!this._targetCreep)
                         {
-                           this._targetBuilding.Damage(tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
+                           this._targetBuilding.Damage(this._damage.Get() * tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,!this._explode);
                         }
                         try
                         {
-                           if(this._explode)
+                           if(Boolean(this._explode) || this._creatureID == "C4" && this.PoweredUp())
                            {
+                              numTargets = 0;
+                              if(this._creatureID == "C4" && this.PoweredUp())
+                              {
+                                 numTargets = this.PowerUpLevel();
+                              }
                               tmpPointA = PATHING.FromISO(this._tmpPoint).add(new Point(-5,-5));
                               tmpPointB = new Point(0,0);
                               tmpPointC = new Point(0,0);
@@ -1706,8 +1923,21 @@ package
                                        dist = GLOBAL.QuickDistance(tmpPointA,tmpPointB);
                                        if(dist < 60)
                                        {
-                                          building.Damage(int(tmpAttDamage * ((60 - dist) / 60)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,false);
-                                          building.Update(true);
+                                          if(this._explode)
+                                          {
+                                             building.Damage(int(this._damage.Get() * tmpAttDamage * ((60 - dist) / 60)),this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,!this._explode);
+                                             building.Update(true);
+                                          }
+                                          else
+                                          {
+                                             building.Damage(this._damage.Get() * tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup,!this._explode);
+                                             building.Update(true);
+                                             numTargets--;
+                                             if(numTargets <= 0)
+                                             {
+                                                break;
+                                             }
+                                          }
                                        }
                                     }
                                  }
@@ -1716,7 +1946,8 @@ package
                            directTargetCreep = false;
                            if(this._targetCreep)
                            {
-                              this._targetCreep._health.Add(-(tmpAttDamage * this._targetCreep._damageMult));
+                              this._targetCreep._health.Add(-(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult));
+                              numTargets--;
                               directTargetCreep = true;
                            }
                            for(id in CREATURES._creatures)
@@ -1729,12 +1960,20 @@ package
                                  {
                                     if(dist < 90)
                                     {
-                                       creep._health.Add(-int(tmpAttDamage * this._targetCreep._damageMult * ((90 - dist) / 90)));
+                                       creep._health.Add(-int(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult * ((90 - dist) / 90)));
                                     }
                                  }
                                  else if(dist < 50 && creep.alpha == 1 && creep._invisibleTime == 0)
                                  {
-                                    creep._health.Add(-(tmpAttDamage * this._targetCreep._damageMult));
+                                    if(this._creatureID == "C4" && this.PoweredUp())
+                                    {
+                                       numTargets--;
+                                       if(numTargets <= 0)
+                                       {
+                                          break;
+                                       }
+                                       creep._health.Add(-(this._damage.Get() * tmpAttDamage * this._targetCreep._damageMult));
+                                    }
                                  }
                               }
                            }
@@ -1760,31 +1999,35 @@ package
                         {
                            if(this._creatureID == "C12")
                            {
-                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,tmpAttDamage / 2,0);
-                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,tmpAttDamage / 2,0);
+                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0);
+                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpAttDamage / 2,0);
                            }
                            else
                            {
-                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetCreep._tmpPoint,this._targetCreep,6,tmpAttDamage,0);
+                              FIREBALLS.Spawn2(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetCreep._tmpPoint,this._targetCreep,6,this._damage.Get() * tmpAttDamage,0);
                            }
                         }
                         else
                         {
                            this._targetCreep._health.Add(-(this._damage.Get() * this._targetCreep._damageMult));
+                           if(this._creatureID == "C8" && this.PoweredUp())
+                           {
+                              this._targetCreep._venom.Add(this._damage.Get() * this.PowerUpLevel() * 0.1 * 0.025);
+                           }
                         }
                      }
                      else if(this._movement == "fly")
                      {
-                        FIREBALLS.Spawn(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetBuilding._position,this._targetBuilding,6,tmpAttDamage,0,this.PowerUpLevel());
+                        FIREBALLS.Spawn(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetBuilding._position,this._targetBuilding,6,this._damage.Get() * tmpAttDamage,0,this.PowerUpLevel());
                      }
                      else if(this._creatureID == "C12" && this.PoweredUp())
                      {
-                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,tmpAttDamage / 2);
-                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,tmpAttDamage / 2);
+                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2);
+                        FIREBALLS.Spawn(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetBuilding._position,this._targetBuilding,10,this._damage.Get() * tmpAttDamage / 2);
                      }
                      else
                      {
-                        this._targetBuilding.Damage(tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup);
+                        this._targetBuilding.Damage(this._damage.Get() * tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y,this._targetGroup);
                      }
                      if(!this._targetCreep)
                      {
@@ -1814,8 +2057,8 @@ package
                   }
                   else if(this._behaviour == "loot")
                   {
-                     this._targetBuilding.Loot(tmpAttDamage);
-                     this._targetBuilding.Damage(tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y);
+                     this._targetBuilding.Loot(this._damage.Get() * tmpAttDamage);
+                     this._targetBuilding.Damage(this._damage.Get() * tmpAttDamage,this._tmpPoint.x,this._tmpPoint.y);
                      if(this._targetBuilding._stored.Get() < 0)
                      {
                         this._targetBuilding._stored.Set(0);
@@ -1848,6 +2091,19 @@ package
                      }
                   }
                }
+               if(this._creatureID == "C5" && this.PoweredUp() && !this._targetCreep && this._hasTarget && this._targetBuilding && GLOBAL.QuickDistance(this._tmpPoint,this._targetBuilding._position) < 50 && !this._jumpingUp)
+               {
+                  this._jumpingUp = true;
+                  TweenLite.to(this._graphicMC,0.4,{
+                     "y":this._graphicMC.y - (40 + 20 * (this.PowerUpLevel() - 1)),
+                     "ease":Sine.easeOut,
+                     "overwrite":false,
+                     "onComplete":function():*
+                     {
+                        _health.Set(0);
+                     }
+                  });
+               }
             }
          }
          else if(this._behaviour == "wander")
@@ -1859,7 +2115,7 @@ package
          }
          else if(this._behaviour == "defend")
          {
-            tmpDefDamage = this._damage.Get();
+            tmpDefDamage = 1;
             if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
             {
                tmpDefDamage *= 1.25;
@@ -1880,7 +2136,7 @@ package
                }
                if(this._homeBunker)
                {
-                  if(this._homeBunker._monsters)
+                  if(Boolean(this._homeBunker._monsters) && !this._defenderRemoved)
                   {
                      --this._homeBunker._monsters[this._creatureID];
                      if(this._homeBunker._monsters[this._creatureID] < 0)
@@ -1897,11 +2153,17 @@ package
                      {
                         this._homeBunker._monstersDispatchedTotal = 0;
                      }
+                     this._defenderRemoved = true;
                   }
                }
                if(Boolean(this._explode) || this._creatureID == "C11" && this.PoweredUp())
                {
-                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpDefDamage,this._mc.visible);
+                  if(Boolean(this._explode) && this._jumpingUp)
+                  {
+                     this.Airburst();
+                     return true;
+                  }
+                  ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpDefDamage,this._mc.visible);
                   try
                   {
                      this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,90,-1);
@@ -1917,7 +2179,7 @@ package
                         {
                            tmpDamage = int(tmpDefDamage * ((90 - this._targetCreeps[i].dist) / 90));
                         }
-                        creep._health.Add(-(tmpDamage * creep._damageMult));
+                        creep._health.Add(-(this._damage.Get() * tmpDamage * creep._damageMult));
                         i++;
                      }
                      if(this._explode)
@@ -1957,6 +2219,19 @@ package
                   this._hasPath = false;
                   this.FindDefenseTargets();
                }
+               else if(this._creatureID == "C5" && this.PoweredUp() && GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint) < this.DEFENSE_RANGE * 2 && !this._jumpingUp)
+               {
+                  this._jumpingUp = true;
+                  TweenLite.to(this._graphicMC,0.4,{
+                     "y":this._graphicMC.y - (40 + 20 * (this.PowerUpLevel() - 1)),
+                     "ease":Sine.easeOut,
+                     "overwrite":false,
+                     "onComplete":function():*
+                     {
+                        _health.Set(0);
+                     }
+                  });
+               }
             }
             if(this._atTarget)
             {
@@ -1983,9 +2258,14 @@ package
                if(this.attackCooldown <= 0)
                {
                   this.attackCooldown += int(this._attackDelay / this._speedMult);
-                  if(Boolean(this._explode) || this._creatureID == "C7" && this.PoweredUp())
+                  if(Boolean(this._explode) || (this._creatureID == "C4" || this._creatureID == "C7") && this.PoweredUp())
                   {
-                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpDefDamage,this._mc.visible);
+                     if(Boolean(this._explode) && this._jumpingUp)
+                     {
+                        this.Airburst();
+                        return true;
+                     }
+                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpDefDamage,this._mc.visible);
                      try
                      {
                         if(this._explode)
@@ -1996,11 +2276,19 @@ package
                         {
                            this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,50);
                         }
+                        if(this._creatureID == "C4")
+                        {
+                           numDefTargets = this.PowerUpLevel() + 1;
+                        }
+                        else
+                        {
+                           numDefTargets = int(this._targetCreeps.length);
+                        }
                         i = 0;
-                        while(i < this._targetCreeps.length)
+                        while(i < numDefTargets)
                         {
                            creep = this._targetCreeps[i].creep;
-                           if(i == 0 || this._creatureID == "C7")
+                           if(i == 0 || this._creatureID == "C4" || this._creatureID == "C7")
                            {
                               tmpDamage = tmpDefDamage;
                            }
@@ -2008,7 +2296,7 @@ package
                            {
                               tmpDamage = int(tmpDefDamage * ((90 - this._targetCreeps[i].dist) / 90));
                            }
-                           creep._health.Add(-(tmpDamage * creep._damageMult));
+                           creep._health.Add(-(this._damage.Get() * tmpDamage * creep._damageMult));
                            i++;
                         }
                         if(this._explode)
@@ -2024,7 +2312,7 @@ package
                         this._health.Set(0);
                         if(this._homeBunker)
                         {
-                           if(this._homeBunker._monsters)
+                           if(Boolean(this._homeBunker._monsters) && !this._defenderRemoved)
                            {
                               --this._homeBunker._monsters[this._creatureID];
                               if(this._homeBunker._monsters[this._creatureID] < 0)
@@ -2041,6 +2329,7 @@ package
                               {
                                  this._homeBunker._monstersDispatchedTotal = 0;
                               }
+                              this._defenderRemoved = true;
                            }
                         }
                         return true;
@@ -2048,13 +2337,17 @@ package
                   }
                   else if(this.CanShootCreep())
                   {
-                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,tmpDefDamage / 2,0);
-                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,tmpDefDamage / 2,0);
+                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0);
+                     FIREBALLS.Spawn2(new Point(this._tmpPoint.x + Math.random() * 20 - 10,this._tmpPoint.y + Math.random() * 20 - 10),this._targetCreep._tmpPoint,this._targetCreep,10,this._damage.Get() * tmpDefDamage / 2,0);
                   }
                   else
                   {
-                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,tmpDefDamage * this._targetCreep._damageMult,this._mc.visible);
-                     this._targetCreep._health.Add(-(tmpDefDamage * this._targetCreep._damageMult));
+                     ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * tmpDefDamage * this._targetCreep._damageMult,this._mc.visible);
+                     this._targetCreep._health.Add(-(this._damage.Get() * tmpDefDamage * this._targetCreep._damageMult));
+                     if(this._creatureID == "C8" && this.PoweredUp())
+                     {
+                        this._targetCreep._venom.Add(this._damage.Get() * this.PowerUpLevel() * 0.1 * 0.025);
+                     }
                   }
                   if(!this._explode)
                   {
@@ -2130,7 +2423,7 @@ package
             {
                if(this._homeBunker)
                {
-                  if(this._homeBunker._monsters)
+                  if(Boolean(this._homeBunker._monsters) && !this._defenderRemoved)
                   {
                      --this._homeBunker._monsters[this._creatureID];
                      --this._homeBunker._monsters[this._creatureID];
@@ -2148,6 +2441,7 @@ package
                      {
                         this._homeBunker._monstersDispatchedTotal = 0;
                      }
+                     this._defenderRemoved = true;
                   }
                }
                return true;
@@ -2186,7 +2480,7 @@ package
                this._hasPath = true;
             }
          }
-         if((this._behaviour == "attack" || this._behaviour == "retreat") && this._frameNumber % 5 == 0)
+         if((this._behaviour == "attack" || this._behaviour == "retreat" || this._behaviour == "heal") && this._frameNumber % 5 == 0)
          {
             this.newNode = MAP.CreepCellMove(this._tmpPoint,this._id,this,this.node);
             if(this.newNode)

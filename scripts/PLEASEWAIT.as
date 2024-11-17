@@ -47,11 +47,35 @@ package
       
       public static function Show(param1:String = "Processing...") : *
       {
+         var str:String = param1;
          if(!_mc)
          {
             _mc = GLOBAL._layerTop.addChild(new PLEASEWAITMC());
-            _mc.tMessage.htmlText = "<b>" + param1 + "</b>";
+            _mc.tMessage.htmlText = "<b>" + str + "</b>";
             _mc.mcFrame.Setup(false);
+            if(GLOBAL._SCREENCENTER)
+            {
+               _mc.x = GLOBAL._SCREENCENTER.x;
+               _mc.y = GLOBAL._SCREENCENTER.y;
+            }
+            else
+            {
+               _mc.x = GLOBAL._SCREENINIT.width / 2;
+               _mc.y = GLOBAL._SCREENINIT.height / 2;
+            }
+            _mc.Resize = function():void
+            {
+               if(GLOBAL._SCREENCENTER)
+               {
+                  _mc.x = GLOBAL._SCREENCENTER.x;
+                  _mc.y = GLOBAL._SCREENCENTER.y;
+               }
+               else
+               {
+                  _mc.x = GLOBAL._SCREENINIT.width / 2;
+                  _mc.y = GLOBAL._SCREENINIT.height / 2;
+               }
+            };
          }
       }
       

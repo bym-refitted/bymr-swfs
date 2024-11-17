@@ -16,17 +16,18 @@ package com.monsters.ai
       
       private var d3:bubblepopup3;
       
+      private var bm:Bitmap;
+      
       public function AIATTACKPOPUP(param1:int = 3)
       {
          var imageComplete:Function = null;
          var attackerType:int = param1;
          imageComplete = function(param1:String, param2:BitmapData):void
          {
-            var _loc3_:Bitmap = null;
-            _loc3_ = new Bitmap(param2);
-            addChild(_loc3_);
-            _loc3_.x = 253 - _loc3_.width * 0.5;
-            _loc3_.y = 255 - _loc3_.height * 0.5;
+            bm = new Bitmap(param2);
+            addChild(bm);
+            bm.x = GLOBAL._SCREENCENTER.x - 520 - bm.width * 0.5;
+            bm.y = GLOBAL._SCREENCENTER.y - 250 - bm.height * 0.5;
          };
          super();
          addEventListener(Event.ADDED_TO_STAGE,this.onAdd);
@@ -50,6 +51,8 @@ package com.monsters.ai
          addChild(this.d3);
          this._type = attackerType;
          title_txt.text = KEYS.Get("ai_popupwarning_title");
+         x = GLOBAL._SCREENCENTER.x;
+         y = GLOBAL._SCREENCENTER.y;
       }
       
       private function onWaitDown(param1:MouseEvent) : void
@@ -160,6 +163,14 @@ package com.monsters.ai
       {
          SOUNDS.Play("close");
          WMATTACK.HideWarning();
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
+         this.bm.x = GLOBAL._SCREENCENTER.x - 520 - this.bm.width * 0.5;
+         this.bm.y = GLOBAL._SCREENCENTER.y - 250 - this.bm.height * 0.5;
       }
    }
 }

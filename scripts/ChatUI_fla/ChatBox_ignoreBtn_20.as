@@ -1,11 +1,11 @@
-package all_fla
+package ChatUI_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol996")]
-   public dynamic class creatureBarBar_89 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1624")]
+   public dynamic class ChatBox_ignoreBtn_20 extends MovieClip
    {
-      public function creatureBarBar_89()
+      public function ChatBox_ignoreBtn_20()
       {
          super();
          addFrameScript(0,this.frame1);

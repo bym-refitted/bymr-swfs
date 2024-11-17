@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol600")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol501")]
    public dynamic class building7hit extends MovieClip
    {
       public function building7hit()

@@ -31,6 +31,7 @@ package
       public static function Setup() : *
       {
          var _loc2_:Object = null;
+         var _loc3_:Array = null;
          _displayedInstructions = false;
          _global = {
             "blvl":0,
@@ -62,6 +63,7 @@ package
             "b25lvl":0,
             "b26lvl":0,
             "b51lvl":0,
+            "b113lvl":0,
             "kills":0,
             "bonus_bookmark":0,
             "bonus_fan":0,
@@ -84,7 +86,10 @@ package
             "upgrade_champ1":0,
             "upgrade_champ2":0,
             "upgrade_champ3":0,
-            "gift_accept":0
+            "gift_accept":0,
+            "email_build":0,
+            "email_att":0,
+            "email_news":0
          };
          _questGroups = [{
             "id":0,
@@ -525,7 +530,7 @@ package
             "rules":{"b6lvl":3}
          },{
             "list":true,
-            "reward":[10000,10000,5000,5000,0],
+            "reward":[0,0,0,0,0],
             "id":"C15",
             "group":0,
             "name":"q_c15_name",
@@ -535,6 +540,8 @@ package
             "streamTitle":"q_c15_streamtitle",
             "streamDescription":"q_c15_streamdescription",
             "streamImage":"quests/generic.png",
+            "reward_creatureid":"C9",
+            "monster_reward":20,
             "rules":{"b14lvl":4}
          },{
             "list":true,
@@ -551,7 +558,7 @@ package
             "rules":{"b6lvl":4}
          },{
             "list":true,
-            "reward":[20000,20000,10000,10000,0],
+            "reward":[0,0,0,0,0],
             "id":"C16",
             "group":0,
             "name":"q_c16_name",
@@ -561,6 +568,8 @@ package
             "streamTitle":"q_c16_streamtitle",
             "streamDescription":"q_c16_streamdescription",
             "streamImage":"quests/generic.png",
+            "reward_creatureid":"C14",
+            "monster_reward":5,
             "rules":{"b14lvl":5}
          },{
             "list":true,
@@ -887,6 +896,19 @@ package
             "streamDescription":"q_ga3_streamdescription",
             "streamImage":"quests/goldcoin.png",
             "rules":{"gift_accept":50}
+         },{
+            "list":true,
+            "reward":[20000,20000,20000,20000,0],
+            "id":"EM1",
+            "group":0,
+            "name":"q_em1_name",
+            "description":"q_em1_description",
+            "hint":"q_em1_hint",
+            "questimage":"radiotower.png",
+            "streamTitle":"q_em1_streamtitle",
+            "streamDescription":"q_em1_streamdescription",
+            "streamImage":"quests/build-radio.png",
+            "rules":{"b113lvl":1}
          }];
          if(!GLOBAL._flags.kongregate)
          {
@@ -937,9 +959,10 @@ package
          while(_loc1_ <= 13)
          {
             _loc2_ = CREATURELOCKER._creatures["C" + _loc1_];
+            _loc3_ = [0,0,10,10,10,2,15,15,15,20,20,5,2,5,5,1];
             _quests.push({
                "list":true,
-               "reward":[0,0,0,int(_loc2_.resource / 100) * 10,0],
+               "reward":[0,0,0,0,0],
                "id":"UC" + _loc1_,
                "group":1,
                "name":"q_unlock_name",
@@ -948,6 +971,8 @@ package
                "hint":"q_unlock_hint",
                "creatureid":"C" + _loc1_,
                "questimage":"monster" + _loc1_ + ".v2.png",
+               "reward_creatureid":"C" + _loc1_,
+               "monster_reward":_loc3_[_loc1_],
                "rules":{"UNLOCK":"C" + _loc1_}
             });
             _loc1_++;
@@ -1116,6 +1141,9 @@ package
          var collectedArr:Array = null;
          var saveOK:Boolean = false;
          var r:int = 0;
+         var storage:int = 0;
+         var quantity:int = 0;
+         var z:int = 0;
          var popupMC:* = undefined;
          var h:int = 0;
          var questID:String = param1;
@@ -1146,6 +1174,22 @@ package
                Hide();
                return false;
             }
+            if(q.monster_reward != undefined)
+            {
+               HOUSING.HousingSpace();
+               storage = int(CREATURES.GetProperty(q.reward_creatureid,"cStorage"));
+               if(HOUSING._housingSpace.Get() < storage * q.monster_reward)
+               {
+                  if(HOUSING._housingSpace.Get() < storage)
+                  {
+                     GLOBAL.Message("You do not have enough space in Housing for any of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
+                     return false;
+                  }
+                  quantity = HOUSING._housingSpace.Get() / storage;
+                  GLOBAL.Message("You only have enough space in Housing for " + quantity + " of the monsters in this Quest reward.  Do you wish to continue?","Collect",CollectMonsters,[questID]);
+                  return false;
+               }
+            }
             value = 0;
             collectedArr = [];
             saveOK = true;
@@ -1170,6 +1214,23 @@ package
                   value += reward[r];
                }
                r++;
+            }
+            if(q.monster_reward != undefined)
+            {
+               z = 0;
+               while(z < q.monster_reward)
+               {
+                  if(q.id.substr(0,2) == "UC" && Boolean(GLOBAL._bLocker))
+                  {
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bLocker._position);
+                  }
+                  else
+                  {
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bTownhall._position);
+                  }
+                  value += CREATURES.GetProperty(q.reward_creatureid,"cResource");
+                  z++;
+               }
             }
             _completed[questID] = 2;
             BASE.PointsAdd(Math.ceil(value / 50));
@@ -1207,6 +1268,10 @@ package
                   {
                      _loc1_.push([q.reward[4],KEYS.Get(GLOBAL._resourceNames[4])]);
                   }
+                  if(q.monster_reward != undefined)
+                  {
+                     _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
+                  }
                   var _loc2_:String = GLOBAL.Array2String(_loc1_);
                   var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
                   var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
@@ -1234,7 +1299,126 @@ package
          return true;
       }
       
-      public static function Show(param1:MouseEvent = null) : *
+      public static function CollectMonsters(param1:String) : void
+      {
+         var Brag:Function;
+         var questGroup:int = 0;
+         var reward:Array = null;
+         var title:String = null;
+         var streamTitle:String = null;
+         var streamDescription:String = null;
+         var found:Boolean = false;
+         var q:Object = null;
+         var value:int = 0;
+         var z:int = 0;
+         var popupMC:* = undefined;
+         var h:int = 0;
+         var questID:String = param1;
+         if(BASE._pendingPurchase.length == 0)
+         {
+            found = false;
+            for each(q in QUESTS._quests)
+            {
+               if(q.id == questID)
+               {
+                  if(_completed[questID] != 1)
+                  {
+                     return;
+                  }
+                  questGroup = int(q.group);
+                  reward = q.reward;
+                  title = q.name;
+                  streamTitle = q.streamTitle;
+                  streamDescription = q.streamDescription;
+                  found = true;
+                  break;
+               }
+            }
+            if(!found)
+            {
+               GLOBAL.Message(KEYS.Get("q_errorcollecting"));
+               Hide();
+               return;
+            }
+            value = 0;
+            if(q.monster_reward != undefined)
+            {
+               z = 0;
+               while(z < q.monster_reward)
+               {
+                  if(q.id.substr(0,2) == "UC" && Boolean(GLOBAL._bLocker))
+                  {
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bLocker._position);
+                  }
+                  else
+                  {
+                     HOUSING.HousingStore(q.reward_creatureid,GLOBAL._bTownhall._position);
+                  }
+                  value += CREATURES.GetProperty(q.reward_creatureid,"cResource");
+                  z++;
+               }
+            }
+            _completed[questID] = 2;
+            BASE.PointsAdd(Math.ceil(value / 50));
+            BASE.Save();
+            Check();
+            if(TUTORIAL._stage >= 200 && Boolean(q.streamTitle))
+            {
+               Brag = function():*
+               {
+                  var _loc1_:Array = [];
+                  if(q.reward[0] > 0)
+                  {
+                     _loc1_.push([q.reward[0],KEYS.Get(GLOBAL._resourceNames[0])]);
+                  }
+                  if(q.reward[1] > 0)
+                  {
+                     _loc1_.push([q.reward[1],KEYS.Get(GLOBAL._resourceNames[1])]);
+                  }
+                  if(q.reward[2] > 0)
+                  {
+                     _loc1_.push([q.reward[2],KEYS.Get(GLOBAL._resourceNames[2])]);
+                  }
+                  if(q.reward[3] > 0)
+                  {
+                     _loc1_.push([q.reward[3],KEYS.Get(GLOBAL._resourceNames[3])]);
+                  }
+                  if(q.reward[4] > 0)
+                  {
+                     _loc1_.push([q.reward[4],KEYS.Get(GLOBAL._resourceNames[4])]);
+                  }
+                  if(q.monster_reward != undefined)
+                  {
+                     _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
+                  }
+                  var _loc2_:String = GLOBAL.Array2String(_loc1_);
+                  var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
+                  var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
+                  var _loc5_:String = q.streamImage;
+                  GLOBAL.CallJS("sendFeed",["quest-collected",_loc3_,_loc4_,_loc5_,0]);
+                  POPUPS.Next();
+               };
+               popupMC = new popup_quest();
+               popupMC.tA.htmlText = "<b>" + KEYS.Get("pop_questcollected_body",{"v1":KEYS.Get(q.name)}) + "</b>";
+               popupMC.bAction.SetupKey("btn_brag");
+               popupMC.bAction.addEventListener(MouseEvent.CLICK,Brag);
+               popupMC.bAction.Highlight = true;
+               h = popupMC.tA.height + 80;
+               if(q.questimage != "")
+               {
+                  h += 190;
+                  popupMC.mcImage.y = popupMC.tA.y + popupMC.tA.height + 20;
+               }
+               popupMC.mcBG.height = h;
+               (popupMC.mcBG as frame2).Setup();
+               popupMC.bAction.y = popupMC.mcBG.y + h - 45;
+               POPUPS.Push(popupMC,null,null,null,q.questimage);
+            }
+            QUESTS.Hide();
+         }
+      }
+      
+      public static function Show(param1:MouseEvent = null) : void
       {
          if(GLOBAL._mode == "build")
          {
@@ -1249,8 +1433,8 @@ package
                BASE.BuildingDeselect();
                GLOBAL.BlockerAdd();
                _mc = GLOBAL._layerWindows.addChild(new QUESTSPOPUP());
-               _mc.x = 380;
-               _mc.y = 260;
+               _mc.x = GLOBAL._SCREENCENTER.x;
+               _mc.y = GLOBAL._SCREENCENTER.y;
                _mc.scaleY = 0.9;
                _mc.scaleX = 0.9;
                TweenLite.to(_mc,0.2,{

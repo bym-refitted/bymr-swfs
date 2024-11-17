@@ -1,11 +1,11 @@
-package all_fla
+package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1500")]
-   public dynamic class bubblepopupBG_4 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol1679")]
+   public dynamic class ui_buffIcon_CLIP extends MovieClip
    {
-      public function bubblepopupBG_4()
+      public function ui_buffIcon_CLIP()
       {
          super();
          addFrameScript(0,this.frame1);
@@ -14,7 +14,6 @@ package all_fla
       internal function frame1() : *
       {
          stop();
-         z;
       }
    }
 }

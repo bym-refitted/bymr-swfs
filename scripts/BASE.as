@@ -202,6 +202,8 @@ package
       
       public static var _mcAllianceArrow:TUTORIALARROWMC;
       
+      public static var _allianceArmamentTime:SecNum = new SecNum(0);
+      
       public static var _loadedOutpost:int = 0;
       
       public static var _isOutpost:int = 0;
@@ -526,16 +528,29 @@ package
                   _userDigits.push(int(idstr.charAt(ix)));
                   ix++;
                }
-               if(obj.allianceid)
+               if(GLOBAL._mode == "build" && !_isOutpost)
                {
-                  _allianceID = int(obj.allianceid);
-                  ALLIANCES._allianceID = int(obj.allianceid);
+                  if(obj.alliancedata)
+                  {
+                     _allianceID = int(obj.alliancedata.alliance_id);
+                     if(_userID == LOGIN._playerID)
+                     {
+                        ALLIANCES._allianceID = int(obj.alliancedata.alliance_id);
+                        ALLIANCES._myAlliance = ALLIANCES.SetAlliance(obj.alliancedata);
+                     }
+                  }
+                  else if(_userID == LOGIN._playerID && (ALLIANCES._allianceID || ALLIANCES._myAlliance))
+                  {
+                     ALLIANCES.Clear();
+                  }
                }
-               if(obj.alliancedata)
+               if(obj.powerups)
                {
-                  _allianceID = int(obj.alliancedata.alliance_id);
-                  ALLIANCES._allianceID = int(obj.alliancedata.alliance_id);
-                  ALLIANCES._myAlliance = ALLIANCES.SetAlliance(obj.alliancedata);
+                  POWERUPS.Setup(obj.powerups,null,true);
+               }
+               if(obj.attpowerups)
+               {
+                  POWERUPS.Setup(null,obj.attpowerups,true);
                }
                _attackID = int(obj.attackid);
                if(obj.worldsize)
@@ -1033,13 +1048,13 @@ package
             }
             else if(GLOBAL._local && obj.error == "Incorrect map version")
             {
-               if(GLOBAL._baseURL == "http://bmdev.fb.casualcollective.com/base/")
+               if(GLOBAL._baseURL == "http://bym-fb-trunk.dev.kixeye.com/base/")
                {
-                  GLOBAL._baseURL = "http://bmdev.fb.casualcollective.com/api/bm/base/";
+                  GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/api/bm/base/";
                }
                else
                {
-                  GLOBAL._baseURL = "http://bmdev.fb.casualcollective.com/base/";
+                  GLOBAL._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
                }
                BASE.Load();
             }
@@ -1062,7 +1077,6 @@ package
                GLOBAL.ErrorMessage("BASE.Load HTTP");
             }
          };
-         GLOBAL.Message("Load userid:" + userid + " baseid:" + baseid + " force URL:" + url);
          GLOBAL._baseLoads += 1;
          t = getTimer();
          _loading = true;
@@ -1217,7 +1231,7 @@ package
          }
          try
          {
-            UI2.ResizeHandler();
+            GLOBAL.ResizeGame(null);
          }
          catch(e:Error)
          {
@@ -1795,6 +1809,12 @@ package
          var WhatsNewAction32:Function;
          var WhatsNewAction34:Function;
          var WhatsNewAction35_1:Function;
+         var WhatsNewAction36:Function;
+         var WhatsNewAction37:Function;
+         var WhatsNewAction38:Function;
+         var WhatsNewAction38B:Function;
+         var WhatsNewAction39:Function;
+         var WhatsNewAction40:Function;
          var popupWhatsNewDisplayed:Function;
          var RepairAll:Function;
          var Action:Function;
@@ -1950,6 +1970,103 @@ package
                      newWhatsnewid = 1035;
                      display = true;
                   }
+                  else if(GLOBAL._whatsnewid < 1036)
+                  {
+                     WhatsNewAction36 = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS._buildingID = 113;
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.SwitchB(2,2,0);
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew36();
+                     newWhatsnewid = 1036;
+                     display = true;
+                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction36);
+                  }
+                  else if(GLOBAL._whatsnewid < 1037)
+                  {
+                     WhatsNewAction37 = function(param1:MouseEvent):void
+                     {
+                        GLOBAL._selectedBuilding = GLOBAL._bBaiter;
+                        BUILDINGOPTIONS.Show(GLOBAL._bBaiter,"upgrade");
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew37();
+                     newWhatsnewid = 1037;
+                     display = true;
+                     if(GLOBAL._bBaiter)
+                     {
+                        popupWhatsNew.bAction.Setup("Upgrade Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction37);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.visible = false;
+                     }
+                  }
+                  else if(GLOBAL._whatsnewid < 1038)
+                  {
+                     WhatsNewAction38 = function(param1:MouseEvent):void
+                     {
+                        ALLIANCES.ShowAlliancesDialogue("hq");
+                        POPUPS.Next();
+                     };
+                     WhatsNewAction38B = function(param1:MouseEvent):void
+                     {
+                        ALLIANCES.ShowAlliancesDialogue("search");
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew38();
+                     newWhatsnewid = 1038;
+                     display = true;
+                     if(GLOBAL._advancedMap)
+                     {
+                        popupWhatsNew.bAction.Setup("Report Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction38);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.Setup("Join an Alliance");
+                        popupWhatsNew.bAction.Enabled = true;
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction38B);
+                     }
+                  }
+                  else if(GLOBAL._whatsnewid < 1039)
+                  {
+                     WhatsNewAction39 = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.SwitchB(3,1,0);
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew39();
+                     newWhatsnewid = 1039;
+                     popupWhatsNew.bAction.Setup("Build Now");
+                     popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction39);
+                     display = true;
+                  }
+                  else if(GLOBAL._whatsnewid < 1040)
+                  {
+                     WhatsNewAction40 = function(param1:MouseEvent):void
+                     {
+                        (GLOBAL._bLab as MONSTERLAB).Show();
+                        POPUPS.Next();
+                     };
+                     popupWhatsNew = new popup_whatsnew40();
+                     newWhatsnewid = 1040;
+                     if(GLOBAL._bLab)
+                     {
+                        popupWhatsNew.bAction.Setup("Research Now");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction40);
+                     }
+                     else
+                     {
+                        popupWhatsNew.bAction.visible = false;
+                     }
+                     display = true;
+                  }
                   if(display)
                   {
                      popupWhatsNewDisplayed = function():*
@@ -1962,7 +2079,7 @@ package
                      if(newWhatsnewid == 1035)
                      {
                         _mcAllianceArrow = GLOBAL._layerTop.addChild(new TUTORIALARROWMC());
-                        _mcAllianceArrow.x = 650;
+                        _mcAllianceArrow.x = GLOBAL._SCREEN.x + 700;
                         _mcAllianceArrow.y = 5;
                         _mcAllianceArrow.rotation = 310;
                         _mcAllianceArrow.Rotate();
@@ -2233,6 +2350,13 @@ package
                LOGGER.Log("err","PROCESS BASES " + e.getStackTrace);
             }
          }
+         try
+         {
+            GLOBAL.CallJS("cc.injectFriendsSwf");
+         }
+         catch(e:Error)
+         {
+         }
       }
       
       public static function Tick() : *
@@ -2321,6 +2445,7 @@ package
             return false;
          }
          _pendingPurchase = [param1,param2,_saveCounterA + 1,param3,param4];
+         LOGGER.Stat([59,param1,param2]);
          BASE.Save();
       }
       
@@ -2696,7 +2821,7 @@ package
                "monsters":com.adobe.serialization.json.JSON.encode(mm),
                "attacks":attackString,
                "monsterbaiter":com.adobe.serialization.json.JSON.encode(MONSTERBAITER.Export()),
-               "version":GLOBAL._version,
+               "version":GLOBAL._version.Get(),
                "aiattacks":com.adobe.serialization.json.JSON.encode(WMATTACK.Export()),
                "effects":EFFECTS._effectsJSON,
                "catapult":catapult,
@@ -3081,6 +3206,31 @@ package
                {
                   UPDATES.Process(param1.updates);
                }
+               if(GLOBAL._mode == "build" && !_isOutpost)
+               {
+                  if(param1.alliancedata)
+                  {
+                     _allianceID = int(param1.alliancedata.alliance_id);
+                     if(_userID == LOGIN._playerID)
+                     {
+                        ALLIANCES._allianceID = int(param1.alliancedata.alliance_id);
+                        ALLIANCES._myAlliance = ALLIANCES.SetAlliance(param1.alliancedata);
+                     }
+                  }
+                  else if(_userID == LOGIN._playerID && (ALLIANCES._allianceID || ALLIANCES._myAlliance))
+                  {
+                     ALLIANCES.Clear();
+                     POWERUPS.Validate();
+                  }
+               }
+               if(param1.powerups)
+               {
+                  POWERUPS.Setup(param1.powerups,null,false);
+               }
+               if(param1.attpowerups)
+               {
+                  POWERUPS.Setup(null,param1.attpowerups,false);
+               }
                QUESTS.Check();
             }
             else
@@ -3111,7 +3261,7 @@ package
             tmpMode = "view";
          }
          _paging = true;
-         new URLLoaderApi().load(GLOBAL._baseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
+         new URLLoaderApi().load(GLOBAL._baseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
       }
       
       public static function BuildingStorageAdd(param1:int) : *
@@ -3145,182 +3295,182 @@ package
          return 0;
       }
       
-      public static function CanBuild(param1:int) : Object
+      public static function CanBuild(param1:int, param2:Boolean = false) : Object
       {
-         var _loc6_:String = null;
-         var _loc7_:* = undefined;
-         var _loc8_:int = 0;
+         var _loc7_:String = null;
+         var _loc8_:* = undefined;
          var _loc9_:int = 0;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
-         var _loc12_:BFOUNDATION = null;
-         var _loc13_:Array = null;
-         var _loc14_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:BFOUNDATION = null;
+         var _loc14_:Array = null;
          var _loc15_:int = 0;
          var _loc16_:int = 0;
          var _loc17_:int = 0;
          var _loc18_:int = 0;
          var _loc19_:int = 0;
-         var _loc20_:* = undefined;
-         var _loc21_:int = 0;
-         var _loc2_:Object = {};
-         var _loc3_:Boolean = false;
-         var _loc4_:String = "";
-         var _loc5_:int = 0;
+         var _loc20_:int = 0;
+         var _loc21_:* = undefined;
+         var _loc22_:int = 0;
+         var _loc3_:Object = {};
+         var _loc4_:Boolean = false;
+         var _loc5_:String = "";
+         var _loc6_:int = 0;
          if(GLOBAL._aiDesignMode)
          {
             return {"error":false};
          }
-         for(_loc6_ in GLOBAL._buildingProps)
+         for(_loc7_ in GLOBAL._buildingProps)
          {
-            if(GLOBAL._buildingProps[_loc6_].id == param1)
+            if(GLOBAL._buildingProps[_loc7_].id == param1)
             {
-               _loc2_ = GLOBAL._buildingProps[_loc6_];
+               _loc3_ = GLOBAL._buildingProps[_loc7_];
                break;
             }
          }
-         if(TUTORIAL._stage < 200 && _loc2_.tutstage > TUTORIAL._stage)
+         if(TUTORIAL._stage < 200 && _loc3_.tutstage > TUTORIAL._stage)
          {
-            _loc3_ = true;
-            _loc4_ = KEYS.Get("base_builderr_locked");
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_builderr_locked");
          }
-         else if(GLOBAL._mode == "build" && (_loc2_.type == "taunt" || _loc2_.type == "gift"))
+         else if(GLOBAL._mode == "build" && (_loc3_.type == "taunt" || _loc3_.type == "gift"))
          {
-            _loc3_ = true;
-            _loc4_ = KEYS.Get("base_builderr_ownyard1");
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_builderr_ownyard1");
          }
-         else if(GLOBAL._mode != "build" && _loc2_.type != "taunt" && _loc2_.type != "gift")
+         else if(GLOBAL._mode != "build" && _loc3_.type != "taunt" && _loc3_.type != "gift")
          {
-            _loc3_ = true;
-            _loc4_ = KEYS.Get("base_builderr_ownyard2");
+            _loc4_ = true;
+            _loc5_ = KEYS.Get("base_builderr_ownyard2");
          }
          else
          {
-            _loc7_ = _loc2_.quantity;
-            _loc8_ = 0;
+            _loc8_ = _loc3_.quantity;
+            _loc9_ = 0;
             if(GLOBAL._bTownhall)
             {
-               _loc8_ = GLOBAL._bTownhall._lvl.Get();
+               _loc9_ = GLOBAL._bTownhall._lvl.Get();
             }
-            _loc9_ = int(_loc7_[_loc8_]);
-            if(_loc2_.type == "decoration")
+            _loc10_ = int(_loc8_[_loc9_]);
+            if(_loc3_.type == "decoration")
             {
-               _loc10_ = _loc9_ = int(_loc7_[0]);
+               _loc11_ = _loc10_ = int(_loc8_[0]);
             }
             else
             {
-               _loc10_ = _loc9_;
-               if(_loc7_.length > _loc8_)
+               _loc11_ = _loc10_;
+               if(_loc8_.length > _loc9_)
                {
-                  _loc10_ = int(_loc7_[_loc8_ + 1]);
+                  _loc11_ = int(_loc8_[_loc9_ + 1]);
                }
             }
-            if(_loc9_ == 0)
+            if(_loc10_ == 0)
             {
-               _loc11_ = 0;
-               while(_loc11_ < _loc7_.length)
+               _loc12_ = 0;
+               while(_loc12_ < _loc8_.length)
                {
-                  if(_loc7_[_loc11_] > 0)
+                  if(_loc8_[_loc12_] > 0)
                   {
-                     _loc3_ = true;
-                     _loc4_ = KEYS.Get("base_builderr_thlevelreqd",{"v1":_loc11_});
+                     _loc4_ = true;
+                     _loc5_ = KEYS.Get("base_builderr_thlevelreqd",{"v1":_loc12_});
                      break;
                   }
-                  _loc11_++;
+                  _loc12_++;
                }
             }
-            else if(_loc2_.type != "decoration" || _loc2_.type == "decoration" && _loc2_.quantity[0] != 0)
+            else if(_loc3_.type != "decoration" || _loc3_.type == "decoration" && _loc3_.quantity[0] != 0)
             {
-               _loc5_ = 0;
-               for each(_loc12_ in BASE._buildingsAll)
+               _loc6_ = 0;
+               for each(_loc13_ in BASE._buildingsAll)
                {
-                  if(_loc12_._type == param1)
+                  if(_loc13_._type == param1)
                   {
-                     _loc5_++;
+                     _loc6_++;
                   }
                }
-               if(_loc5_ >= _loc9_)
+               if(_loc6_ >= _loc10_)
                {
-                  _loc3_ = true;
-                  if(_loc10_ > _loc9_)
+                  _loc4_ = true;
+                  if(_loc11_ > _loc10_)
                   {
-                     _loc4_ = KEYS.Get("base_builderr_uth");
+                     _loc5_ = KEYS.Get("base_builderr_uth");
                   }
                   else
                   {
-                     _loc4_ = KEYS.Get("base_builderr_onlybuildx",{"v1":_loc9_});
+                     _loc5_ = KEYS.Get("base_builderr_onlybuildx",{"v1":_loc10_});
                   }
                }
             }
          }
-         if(!_loc3_)
+         if(!_loc4_)
          {
-            _loc13_ = _loc2_.costs[0].re;
-            _loc14_ = 0;
-            _loc11_ = 0;
-            while(_loc11_ < _loc13_.length)
+            _loc14_ = _loc3_.costs[0].re;
+            _loc15_ = 0;
+            _loc12_ = 0;
+            while(_loc12_ < _loc14_.length)
             {
-               _loc5_ = 0;
-               for each(_loc12_ in BASE._buildingsAll)
+               _loc6_ = 0;
+               for each(_loc13_ in BASE._buildingsAll)
                {
-                  if(_loc12_._type == _loc13_[_loc11_][0] && _loc12_._lvl.Get() >= _loc13_[_loc11_][2])
+                  if(_loc13_._type == _loc14_[_loc12_][0] && _loc13_._lvl.Get() >= _loc14_[_loc12_][2])
                   {
-                     _loc5_++;
+                     _loc6_++;
                   }
                }
-               if(_loc5_ >= _loc13_[_loc11_][1])
+               if(_loc6_ >= _loc14_[_loc12_][1])
                {
-                  _loc14_++;
+                  _loc15_++;
                }
-               _loc11_++;
+               _loc12_++;
             }
-            if(_loc14_ < _loc13_.length)
+            if(_loc15_ < _loc14_.length)
             {
-               _loc3_ = true;
-               _loc4_ = "Requirements not met.";
+               _loc4_ = true;
+               _loc5_ = "Requirements not met.";
             }
          }
-         if(!_loc3_)
+         if(!_loc4_ && !param2)
          {
-            _loc15_ = int(_loc2_.costs[0].r1);
-            _loc16_ = int(_loc2_.costs[0].r2);
-            _loc17_ = int(_loc2_.costs[0].r3);
-            _loc18_ = int(_loc2_.costs[0].r4);
-            _loc19_ = 0;
-            _loc21_ = 0;
+            _loc16_ = int(_loc3_.costs[0].r1);
+            _loc17_ = int(_loc3_.costs[0].r2);
+            _loc18_ = int(_loc3_.costs[0].r3);
+            _loc19_ = int(_loc3_.costs[0].r4);
+            _loc20_ = 0;
+            _loc22_ = 0;
             if(GLOBAL._mode == "build")
             {
-               if(_loc15_ > BASE._resources.r1.Get())
+               if(_loc16_ > BASE._resources.r1.Get())
                {
-                  _loc20_ = 1;
-                  _loc21_ = _loc15_ - BASE._resources.r1.Get();
+                  _loc21_ = 1;
+                  _loc22_ = _loc16_ - BASE._resources.r1.Get();
                }
-               if(_loc16_ > BASE._resources.r2.Get())
+               if(_loc17_ > BASE._resources.r2.Get())
                {
-                  _loc20_ = 2;
-                  _loc21_ = _loc16_ - BASE._resources.r2.Get();
+                  _loc21_ = 2;
+                  _loc22_ = _loc17_ - BASE._resources.r2.Get();
                }
-               if(_loc17_ > BASE._resources.r3.Get())
+               if(_loc18_ > BASE._resources.r3.Get())
                {
-                  _loc20_ = 3;
-                  _loc21_ = _loc17_ - BASE._resources.r3.Get();
+                  _loc21_ = 3;
+                  _loc22_ = _loc18_ - BASE._resources.r3.Get();
                }
-               if(_loc18_ > BASE._resources.r4.Get())
+               if(_loc19_ > BASE._resources.r4.Get())
                {
-                  _loc20_ = 4;
-                  _loc21_ = _loc18_ - BASE._resources.r4.Get();
+                  _loc21_ = 4;
+                  _loc22_ = _loc19_ - BASE._resources.r4.Get();
                }
-               if(_loc20_ > 0)
+               if(_loc21_ > 0)
                {
-                  _loc3_ = true;
-                  _loc4_ = "You need " + GLOBAL.FormatNumber(_loc21_) + " more " + KEYS.Get(GLOBAL._resourceNames[_loc20_ - 1]);
+                  _loc4_ = true;
+                  _loc5_ = "You need " + GLOBAL.FormatNumber(_loc22_) + " more " + KEYS.Get(GLOBAL._resourceNames[_loc21_ - 1]);
                }
             }
          }
          return {
-            "error":_loc3_,
-            "errorMessage":_loc4_,
-            "needResource":_loc20_
+            "error":_loc4_,
+            "errorMessage":_loc5_,
+            "needResource":_loc21_
          };
       }
       
@@ -3483,23 +3633,23 @@ package
          return addBuildingB(_loc2_);
       }
       
-      public static function addBuildingB(param1:int) : *
+      public static function addBuildingB(param1:int, param2:Boolean = false) : *
       {
-         var _loc3_:Object = null;
+         var _loc4_:Object = null;
          BuildingDeselect();
-         var _loc2_:* = GLOBAL._buildingProps[param1 - 1].costs[0].time == 0;
-         if(!_loc2_)
+         var _loc3_:* = GLOBAL._buildingProps[param1 - 1].costs[0].time == 0;
+         if(!_loc3_)
          {
-            _loc2_ = QUEUE.CanDo().error == false;
+            _loc3_ = QUEUE.CanDo().error == false;
          }
          if(BuildingStorageCount(param1) > 0)
          {
-            _loc2_ = true;
+            _loc3_ = true;
          }
-         if(_loc2_)
+         if(_loc3_)
          {
-            _loc3_ = CanBuild(param1);
-            if(!_loc3_.error)
+            _loc4_ = CanBuild(param1,param2);
+            if(!_loc4_.error)
             {
                BASE.BuildingDeselect();
                ShowFootprints();
@@ -3507,7 +3657,7 @@ package
                GLOBAL._newBuilding.FollowMouse();
                return GLOBAL._newBuilding;
             }
-            GLOBAL.Message(_loc3_.errorMessage);
+            GLOBAL.Message(_loc4_.errorMessage);
          }
          else
          {

@@ -9,13 +9,19 @@ package
       
       private var offsetY:int;
       
-      public function TUTORIALPOPUPMC()
+      public var posX:int;
+      
+      public var posY:int;
+      
+      public function TUTORIALPOPUPMC(param1:int = 0, param2:int = 0)
       {
          super();
          mcButton.addEventListener(MouseEvent.CLICK,TUTORIAL.Advance);
          mcButton.Highlight = true;
          mcBlocker.mouseEnabled = true;
          mcText.autoSize = "left";
+         this.posX = param1;
+         this.posY = param2;
          if(GLOBAL._local)
          {
             addEventListener(MouseEvent.MOUSE_DOWN,this.DragStart);
@@ -76,6 +82,38 @@ package
       {
          x = GLOBAL._ROOT.mouseX - this.offsetX;
          y = GLOBAL._ROOT.mouseY - this.offsetY;
+      }
+      
+      public function SetPos(param1:int, param2:int) : void
+      {
+         this.posX = param1;
+         this.posY = param2;
+      }
+      
+      public function Resize() : void
+      {
+         x = GLOBAL._SCREEN.x + this.posX;
+         y = GLOBAL._SCREEN.y + this.posY;
+         var _loc1_:int = x;
+         var _loc2_:int = y;
+         var _loc3_:* = parent;
+         if(_loc3_ && Boolean(_loc3_.parent))
+         {
+            while(_loc3_.parent)
+            {
+               _loc1_ += _loc3_.x;
+               _loc2_ += _loc3_.y;
+               if(_loc3_.parent == GLOBAL._ROOT.stage)
+               {
+                  break;
+               }
+               _loc3_ = _loc3_.parent;
+            }
+         }
+         mcBlocker.x = GLOBAL._SCREEN.x - _loc1_;
+         mcBlocker.y = GLOBAL._SCREEN.y - _loc2_;
+         mcBlocker.width = GLOBAL._SCREEN.width;
+         mcBlocker.height = GLOBAL._SCREEN.height;
       }
    }
 }

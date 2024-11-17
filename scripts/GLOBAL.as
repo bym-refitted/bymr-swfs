@@ -79,6 +79,12 @@ package
       
       public static var _layerTicker:Sprite;
       
+      public static var _layerArr:Array;
+      
+      public static var _SCREEN:Rectangle;
+      
+      public static var _SCREENCENTER:Point;
+      
       public static var t:int;
       
       public static var _baseURL:String;
@@ -285,7 +291,7 @@ package
       
       public static var _testKongregate:Boolean = false;
       
-      public static var _version:int = 116;
+      public static var _version:SecNum = new SecNum(117);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -301,6 +307,10 @@ package
       
       public static var _giveTips:int = 1;
       
+      public static var _fluidWidthEnabled:Boolean = true;
+      
+      public static var _SCREENINIT:Rectangle = new Rectangle(0,0,760,520);
+      
       public static var _countryCode:String = "us";
       
       public static var _shinyShroomCount:int = 0;
@@ -308,6 +318,10 @@ package
       private static var _shinyShrooms:Array = [];
       
       public static var _shinyShroomValid:Boolean = false;
+      
+      public static var _allianceConquestTime:SecNum = new SecNum(0);
+      
+      public static var _allianceDeclareWarTime:SecNum = new SecNum(0);
       
       public static var _openBase:Object = null;
       
@@ -1092,7 +1106,7 @@ package
                "4":{"img":"5.4.png"}
             },
             "quantity":[0,1,1,1,1,1,1,1,1],
-            "capacity":[500,1000,1750,2250],
+            "capacity":[500,1000,1750,2250,50 * 60,0xfa0],
             "hp":[0xfa0,0x1f40,16000,28000],
             "repairTime":[100,5 * 60,10 * 60,15 * 60]
          },{
@@ -2062,6 +2076,20 @@ package
                "r4":0,
                "time":80 * 60 * 60,
                "re":[[14,1,6],[8,1,4]]
+            },{
+               "r1":10000000,
+               "r2":10000000,
+               "r3":100 * 60 * 1000,
+               "r4":0,
+               "time":160 * 60 * 60,
+               "re":[[14,1,7],[8,1,4]]
+            },{
+               "r1":16000000,
+               "r2":16000000,
+               "r3":10000000,
+               "r4":0,
+               "time":320 * 60 * 60,
+               "re":[[14,1,8],[8,1,4]]
             }],
             "imageData":{
                "baseurl":"buildings/monsterbaiter/",
@@ -2084,10 +2112,10 @@ package
                "1":{"img":"19.png"}
             },
             "quantity":[0,0,0,0,1,1,1,1,1],
-            "produce":[2,2,2,2,2],
-            "capacity":[10 * 60,15 * 60,20 * 60,25 * 60,35 * 60],
-            "hp":[1000,25 * 60,2250,3375,5000],
-            "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60,32 * 60]
+            "produce":[2,2,2,2,2,2,2],
+            "capacity":[10 * 60,15 * 60,20 * 60,25 * 60,35 * 60,3200,80 * 60],
+            "hp":[1000,25 * 60,2250,3375,5000,125 * 60,200 * 60],
+            "repairTime":[2 * 60,4 * 60,8 * 60,16 * 60,32 * 60,0xf00,128 * 60]
          },{
             "id":20,
             "group":3,
@@ -2577,7 +2605,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"23.png"}
             },
-            "quantity":[0,0,0,0,1,2,2,2,2],
+            "quantity":[0,0,0,0,1,2,3,3,3],
             "hp":[150 * 60,210 * 60,294 * 60,441 * 60,34400],
             "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
          },{
@@ -2718,7 +2746,7 @@ package
                "baseurl":"buildingthumbs/",
                "1":{"img":"25.png"}
             },
-            "quantity":[0,0,0,0,1,2,2,2,2],
+            "quantity":[0,0,0,0,1,2,3,3,3],
             "hp":[250 * 60,22000,500 * 60,800 * 60,60 * 1000],
             "repairTime":[32 * 60,0xf00,128 * 60,9260,200 * 60]
          },{
@@ -5539,22 +5567,22 @@ package
          },{
             "id":113,
             "group":2,
-            "order":2,
+            "order":15,
             "type":"special",
             "name":"#b_radio#",
             "size":80,
             "attackgroup":1,
             "tutstage":0,
             "sale":0,
-            "description":"radio_desc",
+            "description":"radio_build_desc",
             "isNew":true,
-            "block":true,
+            "block":false,
             "costs":[{
-               "r1":10000,
-               "r2":10000,
-               "r3":10000,
+               "r1":2000,
+               "r2":2000,
+               "r3":2000,
                "r4":0,
-               "time":60 * 60,
+               "time":5 * 60,
                "re":[[14,1,2]]
             }],
             "imageData":{
@@ -5568,7 +5596,7 @@ package
                   "shadowdestroyed":["shadow.destroyed.jpg",new Point(-41,19)]
                }
             },
-            "quantity":[0,1,1,1,1,1,1,1,1],
+            "quantity":[1,1,1,1,1,1,1,1,1],
             "hp":[3400],
             "repairTime":[4 * 60]
          },{
@@ -6551,7 +6579,7 @@ package
                "4":{"img":"5.4.png"}
             },
             "quantity":[0,1,1,1,1,1,1,1],
-            "capacity":[500,1000,1750,2250],
+            "capacity":[500,1000,1750,2250,50 * 60,0xfa0],
             "hp":[0xfa0,0x1f40,16000,28000],
             "repairTime":[100,5 * 60,10 * 60,15 * 60]
          },{
@@ -10676,14 +10704,14 @@ package
          },{
             "id":113,
             "group":2,
-            "order":2,
+            "order":15,
             "type":"special",
             "name":"#b_radio#",
             "size":80,
             "attackgroup":1,
             "tutstage":0,
             "sale":0,
-            "description":"radio_desc",
+            "description":"radio_build_desc",
             "block":true,
             "quantity":[0]
          },{
@@ -11016,6 +11044,10 @@ package
                _attackersCatapult = GLOBAL._bCatapult._lvl.Get();
             }
             ATTACK._countdown = 300;
+            if(Boolean(GLOBAL._advancedMap) && Boolean(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL")))
+            {
+               ATTACK._countdown = 420;
+            }
             if(Boolean(_advancedMap) && (_mode == "attack" || _mode == "wmattack"))
             {
                _attackerMapCreaturesStart = {};
@@ -11024,7 +11056,7 @@ package
                   _attackerMapCreaturesStart[_loc2_] = new SecNum(_attackerMapCreatures[_loc2_].Get());
                }
                _attackersCatapult = _attackerMapResources.catapult.Get();
-               _attackersFlinger = _attackerMapResources.flinger.Get();
+               _attackersFlinger = !!POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE") ? int(_attackerMapResources.flinger.Get() - 2) : int(_attackerMapResources.flinger.Get());
             }
          }
          if(_mode == "help")
@@ -11575,7 +11607,13 @@ package
          };
       }
       
-      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:int = 1) : *
+      public static function Message(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:String = null, param6:Function = null, param7:Array = null, param8:int = 1) : *
+      {
+         var _loc9_:* = new MESSAGE();
+         _loc9_.Show(param1,param2,param3,param4,param5,param6,param7,param8);
+      }
+      
+      public static function Confirm(param1:String, param2:String = null, param3:Function = null, param4:Array = null, param5:int = 1) : *
       {
          var _loc6_:* = new MESSAGE();
          _loc6_.Show(param1,param2,param3,param4,param5);
@@ -11632,7 +11670,7 @@ package
          hid = int(o.hid);
          s = s.split(",\"h\":\"" + h + "\"").join("");
          s = s.split(",\"hid\":" + hid).join("");
-         hash = MD5.hash(class_1.method_1(447,17) + s + hid * (hid % 11));
+         hash = MD5.hash(class_1.method_1(-391,-586) + s + hid * (hid % 11));
          if(hash == h)
          {
             return true;
@@ -11873,6 +11911,7 @@ package
       public static function BlockerAdd(param1:MovieClip = null) : *
       {
          var _loc2_:DisplayObject = null;
+         RefreshScreen();
          if(!param1)
          {
             param1 = GLOBAL._layerWindows;
@@ -11880,8 +11919,8 @@ package
          _loc2_ = param1.addChild(new popup_bg());
          _loc2_.width = GLOBAL._ROOT.stage.stageWidth;
          _loc2_.height = GLOBAL._ROOT.stage.stageHeight;
-         _loc2_.x = (760 - GLOBAL._ROOT.stage.stageWidth) / 2;
-         _loc2_.y = (520 - GLOBAL._ROOT.stage.stageHeight) / 2;
+         _loc2_.x = GLOBAL._SCREEN.x;
+         _loc2_.y = GLOBAL._SCREEN.y;
          _blockerList.push(_loc2_);
       }
       
@@ -11938,91 +11977,24 @@ package
          var _loc2_:int = 0;
          var _loc3_:int = 0;
          var _loc4_:int = 0;
-         var _loc5_:int = 0;
-         var _loc6_:int = 0;
-         var _loc7_:int = 0;
-         var _loc8_:int = 0;
          _flags = param1;
-         _flags.showFBCEarn = 0;
-         _flags.showFBCDaily = 0;
          if(!_flags.viximo && !_flags.kongregate)
          {
             _loc2_ = int(LOGIN._digits[LOGIN._digits.length - 1]);
             _loc3_ = int(LOGIN._digits[LOGIN._digits.length - 2]);
             _loc4_ = int(LOGIN._digits[LOGIN._digits.length - 3]);
-            _loc5_ = _loc2_ * _loc3_ % 10;
-            if(_loc5_ <= 6)
-            {
-               _flags.showPriceFBC = 0;
-            }
-            else
-            {
-               _flags.showPriceFBC = 1;
-            }
-            _loc6_ = Math.abs(_loc2_ - _loc3_) % 10;
-            if(_loc6_ <= 1)
-            {
-               _flags.showFBCEarn = 0;
-               _flags.showFBCDaily = 0;
-            }
-            else if(_loc6_ == 2 || _loc6_ == 3)
-            {
-               _flags.showFBCEarn = 1;
-               _flags.showFBCDaily = 0;
-            }
-            else if(_loc6_ == 4 || _loc6_ == 5)
-            {
-               _flags.showFBCEarn = 0;
-               _flags.showFBCDaily = 1;
-            }
-            else if(_loc6_ >= 6)
-            {
-               _flags.showFBCEarn = 1;
-               _flags.showFBCDaily = 1;
-            }
+            _flags.midgameIncentive = 0;
          }
          if(LOGIN._sumdigit != 0)
          {
             _flags.plinko = 0;
-         }
-         if(!_flags.viximo && !_flags.kongregate)
-         {
-            _flags.midgameIncentive = 0;
-            _loc7_ = (_loc4_ + _loc2_) % 10;
-            _loc8_ = (_loc3_ + _loc2_) % 10;
-            if(_loc7_ <= 7)
-            {
-               _flags.midgameIncentive = 0;
-            }
-            else if(_loc7_ == 8)
-            {
-               if(_loc8_ <= 4)
-               {
-                  _flags.midgameIncentive = 1;
-               }
-               else
-               {
-                  _flags.midgameIncentive = 2;
-               }
-            }
-            else if(_loc7_ == 9)
-            {
-               if(_loc8_ <= 4)
-               {
-                  _flags.midgameIncentive = 3;
-               }
-               else
-               {
-                  _flags.midgameIncentive = 4;
-               }
-            }
          }
          _flags.showProgressBar = 0;
       }
       
       public static function initChat() : void
       {
-         if(TUTORIAL._stage < 205)
+         if(TUTORIAL._stage < TUTORIAL._endstage)
          {
             return;
          }
@@ -12034,7 +12006,7 @@ package
             }
             return;
          }
-         if(_chatServers.length == 0)
+         if(_chatServers == null || _chatServers.length == 0)
          {
             return;
          }
@@ -12194,14 +12166,126 @@ package
          return true;
       }
       
+      public static function ResizeGame(param1:Event) : void
+      {
+         var _loc2_:int = 0;
+         if(_fluidWidthEnabled)
+         {
+            RefreshScreen();
+            UI2.ResizeHandler(param1);
+            _loc2_ = 0;
+            ResizeLayer(GLOBAL._layerUI);
+            ResizeLayer(GLOBAL._layerWindows);
+            ResizeLayer(GLOBAL._layerMessages);
+            ResizeLayer(GLOBAL._layerTop);
+            if(TUTORIAL._stage < TUTORIAL._endstage)
+            {
+               TUTORIAL.Resize();
+            }
+         }
+         else
+         {
+            UI2.ResizeHandler(param1);
+         }
+      }
+      
+      public static function RefreshScreen() : void
+      {
+         var _loc1_:* = GLOBAL._ROOT.stage.stageWidth;
+         var _loc2_:* = GLOBAL.GetGameHeight();
+         _SCREEN = new Rectangle(0 - (_loc1_ - _SCREENINIT.width) / 2,0 - (_loc2_ - _SCREENINIT.height) / 2,_loc1_,_loc2_);
+         _SCREENCENTER = new Point(_SCREEN.x + _SCREEN.width / 2,_SCREEN.y + _SCREEN.height / 2);
+      }
+      
+      public static function ResizeLayer(param1:MovieClip) : void
+      {
+         var _loc3_:* = undefined;
+         var _loc4_:int = 0;
+         var _loc2_:* = param1.numChildren;
+         while(_loc2_--)
+         {
+            _loc3_ = param1.getChildAt(_loc2_);
+            if(_loc3_.hasOwnProperty("Resize"))
+            {
+               _loc3_.Resize();
+            }
+            else if(_loc3_ is popup_bg)
+            {
+               _loc3_.width = _SCREEN.width;
+               _loc3_.height = _SCREEN.height;
+               _loc3_.x = _SCREEN.x;
+               _loc3_.y = _SCREEN.y;
+               _loc4_ = 0;
+               while(_loc4_ < _blockerList.length)
+               {
+                  _blockerList[_loc4_].width = _SCREEN.width;
+                  _blockerList[_loc4_].height = _SCREEN.height;
+                  _blockerList[_loc4_].x = _SCREEN.x;
+                  _blockerList[_loc4_].y = _SCREEN.y;
+                  _loc4_++;
+               }
+            }
+         }
+      }
+      
+      public static function DistanceFromRoot(param1:MovieClip) : Point
+      {
+         var _loc2_:int = param1.x;
+         var _loc3_:int = param1.y;
+         var _loc4_:* = param1.parent;
+         while(_loc4_.parent)
+         {
+            _loc2_ += _loc4_.x;
+            _loc3_ += _loc4_.y;
+            if(_loc4_.parent == GLOBAL._ROOT.stage)
+            {
+               break;
+            }
+            _loc4_ = _loc4_.parent;
+         }
+         return new Point(_loc2_,_loc3_);
+      }
+      
       public static function flagsShouldChatDisplay() : Boolean
       {
-         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat == 2 && chatUserIsInABTest();
+         if(_flags == null)
+         {
+            return false;
+         }
+         if(!_flags.hasOwnProperty("chat"))
+         {
+            return false;
+         }
+         if(_flags.chat != 2)
+         {
+            return false;
+         }
+         if(!chatUserIsInABTest())
+         {
+            return false;
+         }
+         return true;
       }
       
       public static function flagsShouldChatExist() : Boolean
       {
-         return _flags != null && Boolean(_flags.hasOwnProperty("chat")) && _flags.chat > 0 && chatUserIsInABTest();
+         if(_flags == null)
+         {
+            return false;
+         }
+         if(!_flags.hasOwnProperty("chat"))
+         {
+            return false;
+         }
+         if(_flags.chat <= 0)
+         {
+            return false;
+         }
+         if(!chatUserIsInABTest())
+         {
+            return false;
+         }
+         return true;
       }
       
       public static function flagsShouldChatConnectButStayInvisible() : Boolean

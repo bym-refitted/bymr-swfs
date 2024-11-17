@@ -2,6 +2,7 @@ package com.monsters.maproom_advanced
 {
    import com.adobe.serialization.json.JSON;
    import com.cc.utils.SecNum;
+   import com.monsters.alliances.*;
    import com.monsters.display.ImageCache;
    import com.monsters.effects.ResourceBombs;
    import flash.display.Bitmap;
@@ -82,6 +83,14 @@ package com.monsters.maproom_advanced
          this._enabled = false;
          this.bAttack.Enabled = false;
          this.ProfilePic();
+         if(this._cell._alliance)
+         {
+            this.AlliancePic(AllyInfo._picURLs.sizeM,this.mcAlliancePic.mcImage,this.mcAlliancePic.mcBG,true);
+         }
+         else
+         {
+            this.mcAlliancePic.visible = false;
+         }
          this.Update();
       }
       
@@ -164,29 +173,43 @@ package com.monsters.maproom_advanced
       
       public function Update() : *
       {
-         var _loc1_:Object = null;
-         var _loc3_:MapRoomCell = null;
-         var _loc4_:* = undefined;
-         var _loc5_:* = undefined;
+         var _loc3_:Object = null;
+         var _loc5_:MapRoomCell = null;
          var _loc6_:* = undefined;
-         var _loc7_:int = 0;
-         var _loc8_:CATAPULTITEM = null;
+         var _loc7_:* = undefined;
+         var _loc8_:* = undefined;
          var _loc9_:int = 0;
-         var _loc10_:int = 0;
-         var _loc11_:String = null;
+         var _loc10_:CATAPULTITEM = null;
+         var _loc11_:int = 0;
          var _loc12_:int = 0;
-         var _loc13_:int = 0;
+         var _loc13_:String = null;
          var _loc14_:int = 0;
-         var _loc15_:String = null;
-         var _loc16_:MapRoomPopupInfoMonster = null;
-         var _loc17_:MapRoomPopupInfoMonster = null;
+         var _loc15_:int = 0;
+         var _loc16_:int = 0;
+         var _loc17_:String = null;
+         var _loc18_:MapRoomPopupInfoMonster = null;
+         var _loc19_:MapRoomPopupInfoMonster = null;
+         var _loc1_:Boolean = false;
+         var _loc2_:Number = 0;
+         if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
+         {
+            _loc1_ = true;
+            _loc2_ = POWERUPS.Apply(POWERUPS.ALLIANCE_DECLAREWAR,[0]);
+         }
          if(MapRoom._open)
          {
-            this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
-            for each(_loc1_ in this._cellsInRange)
+            if(_loc1_)
             {
-               _loc3_ = _loc1_["cell"];
-               if(Boolean(_loc3_) && !_loc3_._processed)
+               this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,6);
+            }
+            else
+            {
+               this._cellsInRange = MapRoom._mc.GetCellsInRange(this._cell.X,this._cell.Y,4);
+            }
+            for each(_loc3_ in this._cellsInRange)
+            {
+               _loc5_ = _loc3_["cell"];
+               if((Boolean(_loc5_)) && !_loc5_._processed)
                {
                   return false;
                }
@@ -209,42 +232,42 @@ package com.monsters.maproom_advanced
                "catapult":new SecNum(0),
                "flinger":new SecNum(0)
             };
-            for each(_loc1_ in this._cellsInRange)
+            for each(_loc3_ in this._cellsInRange)
             {
-               _loc3_ = _loc1_["cell"];
-               _loc9_ = int(_loc1_["range"]);
-               if(Boolean(_loc3_) && Boolean(_loc3_._mine))
+               _loc5_ = _loc3_["cell"];
+               _loc11_ = int(_loc3_["range"]);
+               if(Boolean(_loc5_) && Boolean(_loc5_._mine))
                {
-                  _loc10_ = 0;
-                  if(_loc3_._flinger.Get() >= _loc9_)
+                  _loc12_ = 0;
+                  if(_loc5_._flinger.Get() + (_loc1_ ? 2 : 0) >= _loc11_)
                   {
-                     for(_loc11_ in _loc3_._monsters)
+                     for(_loc13_ in _loc5_._monsters)
                      {
-                        _loc12_ = int(_loc3_._monsters[_loc11_].Get());
+                        _loc14_ = int(_loc5_._monsters[_loc13_].Get());
                         this._monstersInRange = true;
-                        _loc10_++;
-                        if(_loc12_ > 0 && Boolean(_loc3_._protected))
+                        _loc12_++;
+                        if(_loc14_ > 0 && Boolean(_loc5_._protected))
                         {
                            this._protectedInRange = true;
                         }
-                        if(this._attackMonsters[_loc11_])
+                        if(this._attackMonsters[_loc13_])
                         {
-                           this._attackMonsters[_loc11_].Add(_loc12_);
+                           this._attackMonsters[_loc13_].Add(_loc14_);
                         }
                         else
                         {
-                           this._attackMonsters[_loc11_] = new SecNum(_loc12_);
+                           this._attackMonsters[_loc13_] = new SecNum(_loc14_);
                         }
                      }
                      MapRoom._flingerInRange = true;
                   }
-                  if(_loc3_._catapult.Get() >= _loc9_ && _loc3_._catapult.Get() > this._attackResources.catapult.Get())
+                  if(_loc5_._catapult.Get() >= _loc11_ && _loc5_._catapult.Get() > this._attackResources.catapult.Get())
                   {
-                     this._attackResources.catapult.Set(_loc3_._catapult.Get());
+                     this._attackResources.catapult.Set(_loc5_._catapult.Get());
                   }
-                  if(_loc3_._flinger.Get() >= this._attackResources.flinger.Get())
+                  if(_loc5_._flinger.Get() + (_loc1_ ? 2 : 0) >= this._attackResources.flinger.Get() + (_loc1_ ? 2 : 0))
                   {
-                     this._attackResources.flinger.Set(_loc3_._flinger.Get());
+                     this._attackResources.flinger.Set(_loc5_._flinger.Get() + (_loc1_ ? 0 : 0));
                   }
                }
             }
@@ -262,30 +285,30 @@ package com.monsters.maproom_advanced
                this._mcMonsters = new MovieClip();
                this._mcMonsters.x = -180;
                this._mcMonsters.y = 25;
-               _loc13_ = 0;
-               _loc14_ = 0;
+               _loc15_ = 0;
+               _loc16_ = 0;
                if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
                {
-                  _loc16_ = new MapRoomPopupInfoMonster();
-                  _loc16_.Setup(0,0,"G" + GLOBAL._playerGuardianData.t + "_L" + GLOBAL._playerGuardianData.l.Get(),1);
-                  this._mcMonsters.addChild(_loc16_);
-                  _loc13_ += 1;
+                  _loc18_ = new MapRoomPopupInfoMonster();
+                  _loc18_.Setup(0,0,"G" + GLOBAL._playerGuardianData.t + "_L" + GLOBAL._playerGuardianData.l.Get(),1);
+                  this._mcMonsters.addChild(_loc18_);
+                  _loc15_ += 1;
                }
-               for(_loc15_ in this._attackMonsters)
+               for(_loc17_ in this._attackMonsters)
                {
-                  if(_loc14_ < 4)
+                  if(_loc16_ < 4)
                   {
-                     _loc17_ = new MapRoomPopupInfoMonster();
-                     _loc17_.Setup(_loc13_ * 125,_loc14_ * 30,_loc15_,this._attackMonsters[_loc15_].Get());
-                     _loc13_ += 1;
-                     if(_loc14_ <= 2)
+                     _loc19_ = new MapRoomPopupInfoMonster();
+                     _loc19_.Setup(_loc15_ * 125,_loc16_ * 30,_loc17_,this._attackMonsters[_loc17_].Get());
+                     _loc15_ += 1;
+                     if(_loc16_ <= 2)
                      {
-                        this._mcMonsters.addChild(_loc17_);
+                        this._mcMonsters.addChild(_loc19_);
                      }
-                     if(_loc13_ == 3)
+                     if(_loc15_ == 3)
                      {
-                        _loc13_ = 0;
-                        _loc14_ += 1;
+                        _loc15_ = 0;
+                        _loc16_ += 1;
                      }
                   }
                }
@@ -296,99 +319,99 @@ package com.monsters.maproom_advanced
                this._mcMonsters.parent.removeChild(this._mcMonsters);
                this._mcMonsters = null;
             }
-            _loc5_ = -1;
-            _loc6_ = -1;
             _loc7_ = -1;
+            _loc8_ = -1;
+            _loc9_ = -1;
             this._mcResources = new MovieClip();
             this._mcResources.x = -175;
             this._mcResources.y = -75;
             if(this._attackResources.catapult.Get() >= 1)
             {
-               _loc4_ = 0;
-               while(_loc4_ < 3)
+               _loc6_ = 0;
+               while(_loc6_ < 3)
                {
-                  if(this._attackResources.r1 < ResourceBombs._bombs["tw" + _loc4_].cost)
+                  if(this._attackResources.r1 < ResourceBombs._bombs["tw" + _loc6_].cost)
                   {
                      break;
                   }
-                  _loc5_ = _loc4_;
-                  _loc4_++;
+                  _loc7_ = _loc6_;
+                  _loc6_++;
                }
             }
             if(this._attackResources.catapult.Get() >= 2)
             {
-               _loc4_ = 0;
-               while(_loc4_ < 4)
+               _loc6_ = 0;
+               while(_loc6_ < 4)
                {
-                  if(this._attackResources.r2 < ResourceBombs._bombs["pb" + _loc4_].cost)
+                  if(this._attackResources.r2 < ResourceBombs._bombs["pb" + _loc6_].cost)
                   {
                      break;
                   }
-                  _loc6_ = _loc4_;
-                  _loc4_++;
+                  _loc8_ = _loc6_;
+                  _loc6_++;
                }
             }
             if(this._attackResources.catapult.Get() >= 3)
             {
-               _loc4_ = 0;
-               while(_loc4_ < 4)
+               _loc6_ = 0;
+               while(_loc6_ < 4)
                {
-                  if(this._attackResources.r3 < ResourceBombs._bombs["pu" + _loc4_].cost)
+                  if(this._attackResources.r3 < ResourceBombs._bombs["pu" + _loc6_].cost)
                   {
                      break;
                   }
-                  _loc7_ = _loc4_;
-                  _loc4_++;
+                  _loc9_ = _loc6_;
+                  _loc6_++;
                }
             }
-            _loc8_ = new CATAPULTITEM();
-            if(_loc5_ >= 0)
-            {
-               _loc8_.Setup("tw" + _loc5_,true,true);
-            }
-            else
-            {
-               _loc8_.Setup("tw0",true,false);
-            }
-            _loc8_.x = 0;
-            _loc8_.y = 0;
-            this._mcResources.addChild(_loc8_);
-            _loc8_ = new CATAPULTITEM();
-            if(_loc6_ >= 0)
-            {
-               _loc8_.Setup("pb" + _loc6_,true,true);
-            }
-            else
-            {
-               _loc8_.Setup("pb0",true,false);
-            }
-            _loc8_.x = 65;
-            _loc8_.y = 0;
-            this._mcResources.addChild(_loc8_);
-            _loc8_ = new CATAPULTITEM();
+            _loc10_ = new CATAPULTITEM();
             if(_loc7_ >= 0)
             {
-               _loc8_.Setup("pu" + _loc7_,true,true);
+               _loc10_.Setup("tw" + _loc7_,true,true);
             }
             else
             {
-               _loc8_.Setup("pu0",true,false);
+               _loc10_.Setup("tw0",true,false);
             }
-            _loc8_.x = 130;
-            _loc8_.y = 0;
-            this._mcResources.addChild(_loc8_);
+            _loc10_.x = 0;
+            _loc10_.y = 0;
+            this._mcResources.addChild(_loc10_);
+            _loc10_ = new CATAPULTITEM();
+            if(_loc8_ >= 0)
+            {
+               _loc10_.Setup("pb" + _loc8_,true,true);
+            }
+            else
+            {
+               _loc10_.Setup("pb0",true,false);
+            }
+            _loc10_.x = 65;
+            _loc10_.y = 0;
+            this._mcResources.addChild(_loc10_);
+            _loc10_ = new CATAPULTITEM();
+            if(_loc9_ >= 0)
+            {
+               _loc10_.Setup("pu" + _loc9_,true,true);
+            }
+            else
+            {
+               _loc10_.Setup("pu0",true,false);
+            }
+            _loc10_.x = 130;
+            _loc10_.y = 0;
+            this._mcResources.addChild(_loc10_);
             this.addChild(this._mcResources);
             this.bAttack.Enabled = true;
             this._enabled = true;
          }
-         var _loc2_:String = "";
-         _loc2_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flinger + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + com.adobe.serialization.json.JSON.encode(this._cell._resources) + "<br>_ticks:" + com.adobe.serialization.json.JSON.encode(this._cell._ticks) + "<br>_monsters:" + com.adobe.serialization.json.JSON.encode(this._cell._monsters);
+         var _loc4_:String = "";
+         _loc4_ = "X:" + this._cell.X + " Y:" + this._cell.Y + "<br>_base:" + this._cell._base + "<br>_height:" + this._cell._height + "<br>_water:" + this._cell._water + "<br>_mine:" + this._cell._mine + "<br>_flinger:" + this._cell._flinger + "<br>_catapult:" + this._cell._catapult + "<br>_userID:" + this._cell._userID + "<br>_truce:" + this._cell._truce + "<br>_name:" + this._cell._name + "<br>_protected:" + this._cell._protected + "<br>_resources:" + com.adobe.serialization.json.JSON.encode(this._cell._resources) + "<br>_ticks:" + com.adobe.serialization.json.JSON.encode(this._cell._ticks) + "<br>_monsters:" + com.adobe.serialization.json.JSON.encode(this._cell._monsters);
          if(this._cell._monsterData)
          {
-            _loc2_ += "<br>_monsterData:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData);
-            _loc2_ += "<br>_monsterData.saved:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.saved);
-            _loc2_ += "<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h);
-            _loc2_ += "<br>_monsterData.hcount:" + this._cell._monsterData.hcount;
+            _loc4_ += "<br>_monsterData:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData);
+            _loc4_ = _loc4_ + ("<br>_monsterData.saved:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.saved));
+            _loc4_ = _loc4_ + ("<br>_monsterData.h:" + com.adobe.serialization.json.JSON.encode(this._cell._monsterData.h));
+            _loc4_ = _loc4_ + ("<br>_monsterData.hcount:" + this._cell._monsterData.hcount);
          }
          return this._enabled;
       }
@@ -400,8 +423,11 @@ package com.monsters.maproom_advanced
          var LoadImageError:Function = null;
          onImageLoad = function(param1:Event):void
          {
-            _profilePic.height = 50;
-            _profilePic.width = 50;
+            if(_profilePic)
+            {
+               _profilePic.height = 50;
+               _profilePic.width = 50;
+            }
          };
          imageComplete = function(param1:String, param2:BitmapData):void
          {
@@ -440,6 +466,58 @@ package com.monsters.maproom_advanced
                case "Abunakki":
                   ImageCache.GetImageWithCallBack("monsters/tribe_abunakki_50.v2.jpg",imageComplete);
             }
+         }
+      }
+      
+      public function AlliancePic(param1:String, param2:MovieClip, param3:MovieClip = null, param4:Boolean = false) : *
+      {
+         var k:int = 0;
+         var allyinfo:AllyInfo = null;
+         var size:String = param1;
+         var container:MovieClip = param2;
+         var containerBG:MovieClip = param3;
+         var showRel:Boolean = param4;
+         var AllianceIconLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         {
+            var _loc4_:Bitmap = new Bitmap(param2);
+            if(param3[0])
+            {
+               param3[0].addChild(_loc4_);
+               param3[0].setChildIndex(_loc4_,0);
+               if(param3[0].parent)
+               {
+                  param3[0].parent.visible = true;
+               }
+            }
+         };
+         var AllianceIconRelationLoaded:Function = function(param1:String, param2:BitmapData, param3:Array = null):*
+         {
+            var _loc4_:Bitmap = new Bitmap(param2);
+            if(param3[0])
+            {
+               param3[0].addChild(_loc4_);
+               param3[0].visible = true;
+            }
+         };
+         if(!this._cell._facebookID || this._cell._base <= 1)
+         {
+            this.mcAlliancePic.visible = false;
+            return;
+         }
+         if(this._cell._base > 1 && Boolean(this._cell._alliance))
+         {
+            k = int(this.mcAlliancePic.mcImage.numChildren);
+            while(k--)
+            {
+               this.mcAlliancePic.mcImage.removeChildAt(k);
+            }
+            this.mcAlliancePic.visible = true;
+            allyinfo = this._cell._alliance;
+            allyinfo.AlliancePic(size,container,containerBG,true);
+         }
+         else
+         {
+            this.mcAlliancePic.visible = false;
          }
       }
    }

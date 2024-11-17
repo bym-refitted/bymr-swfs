@@ -197,6 +197,11 @@ package com.monsters.mailbox
          };
          SOUNDS.Play("click1");
          popup = new popup_report();
+         popup.Resize = function():void
+         {
+            popup.x = mcFrame.x + mcFrame.width * 0.5 + 100;
+            popup.y = mcFrame.y + mcFrame.height * 0.5;
+         };
          popup.sendBtn.SetupKey("btn_send");
          popup.mcFrame.Setup(true,reportCloseDown);
          popup.x = mcFrame.x + mcFrame.width * 0.5 + 100;
@@ -229,8 +234,7 @@ package com.monsters.mailbox
       
       private function onMsgFocusIn(param1:FocusEvent = null) : void
       {
-         var _loc2_:Object = null;
-         _loc2_ = this.editMode;
+         var _loc2_:Object = this.editMode;
          outline_mc.visible = _loc2_["smallOutlineVisible"];
          largeOutline_mc.visible = _loc2_["largeOutlineVisible"];
          msg_txt.height = _loc2_["textHeight"];

@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.maproom_advanced.MapRoomPopupInfoMonster;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.MovieClip;
@@ -14,6 +15,8 @@ package
       public var _questsMC:*;
       
       public var _infoMC:*;
+      
+      public var _monsterRewardMC:MapRoomPopupInfoMonster;
       
       public var _groupID:int;
       
@@ -226,8 +229,9 @@ package
          var ImageLoaded:Function;
          var q:Object = null;
          var description:String = null;
-         var c:int = 0;
          var hintStr:String = null;
+         var qq:int = 0;
+         var c:int = 0;
          var questID:String = param1;
          SOUNDS.Play("click1");
          this._questID = questID;
@@ -294,12 +298,29 @@ package
                   };
                   ImageCache.GetImageWithCallBack("popups/" + q.questimage,ImageLoaded);
                }
-               c = 0;
-               while(c < 5)
+               if(q.monster_reward != undefined)
                {
-                  this._infoMC["tR" + (c + 1) + "title"].text = KEYS.Get(GLOBAL._resourceNames[c]);
-                  this._infoMC["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(q.reward[c]) + "</b>";
-                  c++;
+                  qq = 0;
+                  while(qq < 5)
+                  {
+                     this._infoMC["tR" + (qq + 1) + "title"].visible = false;
+                     this._infoMC["tR" + (qq + 1)].visible = false;
+                     qq++;
+                  }
+                  (this._infoMC as QUESTINFO).resBG.visible = false;
+                  this._monsterRewardMC = new MapRoomPopupInfoMonster();
+                  this._monsterRewardMC.Setup(this._infoMC.resBG.x,this._infoMC.resBG.y,q.reward_creatureid,q.monster_reward);
+                  this._infoMC.addChild(this._monsterRewardMC);
+               }
+               else
+               {
+                  c = 0;
+                  while(c < 5)
+                  {
+                     this._infoMC["tR" + (c + 1) + "title"].text = KEYS.Get(GLOBAL._resourceNames[c]);
+                     this._infoMC["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(q.reward[c]) + "</b>";
+                     c++;
+                  }
                }
                this._infoMC.bCollect.SetupKey("btn_collect");
                if(BASE._pendingPurchase.length == 0)
@@ -349,6 +370,12 @@ package
       public function Hide() : *
       {
          QUESTS.Hide();
+      }
+      
+      public function Resize() : void
+      {
+         this.x = GLOBAL._SCREENCENTER.x;
+         this.y = GLOBAL._SCREENCENTER.y;
       }
    }
 }

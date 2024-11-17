@@ -8,7 +8,6 @@ package
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    import flash.utils.getTimer;
    import gs.TweenLite;
    
@@ -1244,16 +1243,10 @@ package
       
       public static function Resize() : *
       {
-         var _loc1_:* = undefined;
-         var _loc2_:* = undefined;
-         var _loc3_:Rectangle = null;
          if(Boolean(_mc) && UI_PROGRESSBAR._loaded)
          {
-            _loc1_ = GLOBAL._ROOT.stage.stageWidth;
-            _loc2_ = GLOBAL._ROOT.stage.stageHeight;
-            _loc3_ = new Rectangle(0 - (_loc1_ - 760) / 2,(-520 - _loc2_) / 2,_loc1_,_loc2_);
-            _mc.x = int(_loc3_.x + _loc3_.width);
-            _mc.y = int((520 - _loc2_) / 2 + 50);
+            _mc.x = GLOBAL._SCREEN.right;
+            _mc.y = GLOBAL._SCREEN.top + 50;
          }
          else
          {

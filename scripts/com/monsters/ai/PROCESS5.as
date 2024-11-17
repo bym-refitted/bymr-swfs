@@ -188,7 +188,7 @@ package com.monsters.ai
          {
             _loc12_ = 1;
          }
-         var _loc13_:String = WMATTACK._looters[int((WMATTACK._looters.length - 1) * _loc12_)];
+         var _loc13_:String = WMATTACK._looters[int((WMATTACK._looters.length - 2) * _loc12_)];
          var _loc14_:String = WMATTACK._tanks[int((WMATTACK._tanks.length - 1) * _loc12_)];
          var _loc15_:String = WMATTACK._kamikaze[int((WMATTACK._kamikaze.length - 1) * _loc12_)];
          var _loc16_:Number = 0;

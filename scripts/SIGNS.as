@@ -77,6 +77,8 @@ package
          _view.closeBtn.addEventListener(MouseEvent.MOUSE_DOWN,Hide);
          l = new Loader();
          _view.placeholder.addChild(l);
+         _view.x = GLOBAL._SCREENCENTER.x;
+         _view.y = GLOBAL._SCREENCENTER.y;
          l.contentLoaderInfo.addEventListener(Event.COMPLETE,onImageComplete);
          l.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR,onErr);
          try

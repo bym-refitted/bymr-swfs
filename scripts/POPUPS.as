@@ -149,8 +149,8 @@ package
                _open = true;
                AddBG();
                _mc = GLOBAL._layerTop.addChild(message[0]) as MovieClip;
-               _mc.x = 380;
-               _mc.y = 250;
+               _mc.x = GLOBAL._SCREENCENTER.x;
+               _mc.y = GLOBAL._SCREENCENTER.y;
                _mc.scaleX = _mc.scaleY = 0.9;
                TweenLite.to(_mc,0.2,{
                   "scaleX":1,
@@ -248,11 +248,12 @@ package
       public static function AddBG() : *
       {
          RemoveBG();
+         GLOBAL.RefreshScreen();
          _mcBG = GLOBAL._layerTop.addChild(new popup_bg());
-         _mcBG.width = GLOBAL._ROOT.stage.stageWidth;
-         _mcBG.height = GLOBAL._ROOT.stage.stageHeight;
-         _mcBG.x = (760 - GLOBAL._ROOT.stage.stageWidth) / 2;
-         _mcBG.y = (520 - GLOBAL._ROOT.stage.stageHeight) / 2;
+         _mcBG.width = GLOBAL._SCREEN.width;
+         _mcBG.height = GLOBAL._SCREEN.height;
+         _mcBG.x = GLOBAL._SCREEN.x;
+         _mcBG.y = GLOBAL._SCREEN.y;
       }
       
       public static function RemoveBG(param1:MovieClip = null) : *
@@ -264,9 +265,25 @@ package
          _mcBG = null;
       }
       
+      public static function Resize() : void
+      {
+         var _loc2_:int = 0;
+         var _loc1_:int = 0;
+         while(_loc1_ < _popups.length)
+         {
+            _loc2_ = 0;
+            while(_loc2_ < _popups[_loc1_].length)
+            {
+               _popups[_loc1_][_loc2_].x = GLOBAL._SCREENCENTER.x;
+               _popups[_loc1_][_loc2_].x = GLOBAL._SCREENCENTER.y;
+               _loc2_++;
+            }
+            _loc1_++;
+         }
+      }
+      
       public static function Timeout() : *
       {
-         var _loc1_:MovieClip = null;
          SOUNDS.StopAll();
          if(GLOBAL._ROOT.stage.displayState == StageDisplayState.FULL_SCREEN)
          {
@@ -275,10 +292,10 @@ package
          _mcBG = GLOBAL._layerTop.addChild(new popup_bg2());
          _mcBG.width = GLOBAL._ROOT.stage.stageWidth;
          _mcBG.height = GLOBAL._ROOT.stage.stageHeight;
-         _mcBG.x = (760 - GLOBAL._ROOT.stage.stageWidth) / 2;
-         _mcBG.y = (520 - GLOBAL._ROOT.stage.stageHeight) / 2;
+         _mcBG.x = (GLOBAL._SCREENINIT.width - GLOBAL._ROOT.stage.stageWidth) / 2;
+         _mcBG.y = (GLOBAL._SCREENINIT.height - GLOBAL._ROOT.stage.stageHeight) / 2;
          _mcBG.cacheAsBitmap = true;
-         _loc1_ = new popup_timeout();
+         var _loc1_:MovieClip = new popup_timeout();
          _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_timeout_title") + "</b>";
          _loc1_.tB.htmlText = KEYS.Get("pop_timeout_body");
          if(!GLOBAL._flags.kongregate)

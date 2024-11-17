@@ -39,14 +39,14 @@ package
             }
             else
             {
-               _loc1_._baseURL = "http://bmdev.fb.casualcollective.com/base/";
-               _loc1_._apiURL = "http://bmdev.fb.casualcollective.com/api/";
+               _loc1_._baseURL = "http://bym-fb-trunk.dev.kixeye.com/base/";
+               _loc1_._apiURL = "http://bym-fb-trunk.dev.kixeye.com/api/";
                _loc1_._gameURL = "";
-               _loc1_._statsURL = "http://bmdev.fb.casualcollective.com/recordstats.php";
+               _loc1_._statsURL = "http://bym-fb-trunk.dev.kixeye.com/recordstats.php";
                _loc1_._storageURL = "assets/";
                _loc1_._soundPathURL = "assets/sounds/";
-               _loc1_._mapURL = "http://bmdev.fb.casualcollective.com/worldmapv2/";
-               _loc1_._allianceURL = "http://bmdev.fb.casualcollective.com/alliance/";
+               _loc1_._mapURL = "http://bym-fb-trunk.dev.kixeye.com/worldmapv2/";
+               _loc1_._allianceURL = "http://bym-fb-trunk.dev.kixeye.com/alliance/";
                _loc1_._appid = "";
                _loc1_._tpid = "";
                _loc1_._countryCode = "us";
@@ -82,6 +82,7 @@ package
          GLOBAL._layerWindows = GLOBAL._ROOT.addChild(new MovieClip());
          GLOBAL._layerMessages = GLOBAL._ROOT.addChild(new MovieClip());
          GLOBAL._layerTop = GLOBAL._ROOT.addChild(new MovieClip());
+         GLOBAL.RefreshScreen();
          if(obj.openbase)
          {
             GLOBAL._openBase = com.adobe.serialization.json.JSON.decode(obj.openbase);
@@ -93,7 +94,7 @@ package
          addEventListener(Event.ENTER_FRAME,GLOBAL.TickFast);
          LOGIN.Login();
          stage.scaleMode = StageScaleMode.NO_SCALE;
-         stage.addEventListener(Event.RESIZE,UI2.ResizeHandler);
+         stage.addEventListener(Event.RESIZE,GLOBAL.ResizeGame);
          stage.showDefaultContextMenu = false;
          u = GLOBAL._baseURL.split("/")[2];
          Security.allowDomain(u);
@@ -131,7 +132,7 @@ package
             });
             ExternalInterface.addCallback("twitteraccount",function(param1:String):*
             {
-               RADIO.Callback(param1);
+               RADIO.TwitterCallback(param1);
             });
             ExternalInterface.addCallback("updateCredits",function(param1:String):*
             {
@@ -165,11 +166,7 @@ package
             {
                BUY.startPromo(param1);
             });
-            ExternalInterface.addCallback("alliancesShow",function(param1:String):*
-            {
-               ALLIANCES.AlliancesCallback(param1);
-            });
-            ExternalInterface.addCallback("alliancesUpdate",function(param1:String):*
+            ExternalInterface.addCallback("alliancesupdate",function(param1:String):*
             {
                ALLIANCES.AlliancesServerUpdate(param1);
             });

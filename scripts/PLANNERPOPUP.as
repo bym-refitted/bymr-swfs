@@ -255,6 +255,12 @@ package
       {
          PLANNER.Hide();
       }
+      
+      public function Resize() : void
+      {
+         this.x = 0;
+         this.y = 0;
+      }
    }
 }
 

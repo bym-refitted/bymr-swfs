@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1017")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1052")]
    public dynamic class old_maproom extends MovieClip
    {
       public var mcHolder:MovieClip;

@@ -141,9 +141,31 @@ package
                "costs":[[800 * 60,86400],[20 * 60 * 60,86400],[30 * 60 * 60,86400]],
                "effect":[150,5 * 60,450]
             },
+            "C4":{
+               "name":"lab_finkname",
+               "order":2,
+               "description":"lab_finkdesc",
+               "ability":"Extra Target(s)",
+               "upgrade_description":"lab_finkdesc_u",
+               "stream":["lab_finkstream","lab_finkstream_unlock","lab_finkstream_upgrade"],
+               "streampic":"lab_fink4.png",
+               "costs":[[96000,108000],[128000,108000],[40 * 60 * 60,108000]],
+               "effect":[1,2,3]
+            },
+            "C5":{
+               "name":"lab_eyeraname",
+               "order":5,
+               "description":"lab_eyeradesc",
+               "ability":"Airburst Bonus",
+               "upgrade_description":"lab_eyeradesc_u",
+               "stream":["lab_eyerastream","lab_eyerastream_unlock","lab_eyerastream_upgrade"],
+               "streampic":"lab_eyera4.png",
+               "costs":[[3560000,172800],[4120000,194400],[5120000,216000]],
+               "effect":[0.2,0.3,0.4]
+            },
             "C7":{
                "name":"lab_banditoname",
-               "order":2,
+               "order":3,
                "description":"lab_banditodesc",
                "ability":"Whirlwind",
                "upgrade_description":"lab_banditodesc_u",
@@ -152,9 +174,20 @@ package
                "costs":[[1000000,115200],[25 * 60 * 1000,115200],[2000000,115200]],
                "effect":[1,1.5,2]
             },
+            "C8":{
+               "name":"lab_fangname",
+               "order":4,
+               "description":"lab_fangdesc",
+               "ability":"Venom Damage",
+               "upgrade_description":"lab_fangdesc_u",
+               "stream":["lab_fangstream","lab_fangstream_unlock","lab_fangstream_upgrade"],
+               "streampic":"lab_fang4.png",
+               "costs":[[2000000,129600],[50 * 60 * 1000,129600],[4500000,129600]],
+               "effect":[0.1,0.2,0.3]
+            },
             "C9":{
                "name":"lab_brainname",
-               "order":3,
+               "order":6,
                "description":"lab_braindesc",
                "ability":"s Cloak Delay",
                "upgrade_description":"lab_braindesc_u",
@@ -165,7 +198,7 @@ package
             },
             "C11":{
                "name":"lab_projectxname",
-               "order":4,
+               "order":7,
                "description":"lab_projectxdesc",
                "ability":"Acid Damage",
                "upgrade_description":"lab_projectxdesc_u",
@@ -176,7 +209,7 @@ package
             },
             "C12":{
                "name":"lab_davename",
-               "order":7,
+               "order":10,
                "description":"lab_davedesc",
                "ability":"Rocket Range",
                "upgrade_description":"lab_davedesc_u",
@@ -187,7 +220,7 @@ package
             },
             "C13":{
                "name":"lab_wormzername",
-               "order":5,
+               "order":8,
                "description":"lab_wormzerdesc",
                "ability":"Splash Damage",
                "upgrade_description":"lab_wormzerdesc_u",
@@ -198,7 +231,7 @@ package
             },
             "C14":{
                "name":"lab_teratornname",
-               "order":6,
+               "order":9,
                "description":"lab_teratorndesc",
                "ability":"Fireball Bounces",
                "upgrade_description":"lab_teratorndesc_u",
@@ -484,6 +517,7 @@ package
          {
             GLOBAL._playerCreatureUpgrades[id].powerup = level;
          }
+         this._upgradeLevel = level;
          LOGGER.Stat([48,id.substr(1),level]);
          if(GLOBAL._mode == "build")
          {
@@ -495,7 +529,7 @@ package
                }
                else
                {
-                  GLOBAL.CallJS("sendFeed",["lab-powerup",KEYS.Get(_powerupProps[_streamUpgradeCache].stream[0]),KEYS.Get(_powerupProps[_streamUpgradeCache].stream[2],{"v1":powerName}),_powerupProps[_streamUpgradeCache].streampic,0]);
+                  GLOBAL.CallJS("sendFeed",["lab-powerup",KEYS.Get(_powerupProps[_streamUpgradeCache].stream[0]),KEYS.Get(_powerupProps[_streamUpgradeCache].stream[2],{"v1":_upgradeLevel}),_powerupProps[_streamUpgradeCache].streampic,0]);
                }
                POPUPS.Next();
             };
