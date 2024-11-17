@@ -65,6 +65,13 @@ package
                   _loc1_._mapURL = "http://bym-fb-inferno.dev.kixeye.com/worldmapv2/";
                   _loc1_._allianceURL = "http://bym-fb-inferno.dev.kixeye.com/alliance/";
                   break;
+               case 6:
+                  _loc1_._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
+                  _loc1_._apiURL = "https://bym-fb-lbns.dc.kixeye.com/api/";
+                  _loc1_._statsURL = "https://bym-fb-lbns.dc.kixeye.com/recordstats.php";
+                  _loc1_._mapURL = "https://bym-fb-lbns.dc.kixeye.com/worldmapv2/";
+                  _loc1_._allianceURL = "https://bym-fb-lbns.dc.kixeye.com/alliance/";
+                  break;
                default:
                   _loc1_._baseURL = "http://bym-fb-web1.stage.kixeye.com/base/";
                   _loc1_._apiURL = "http://bym-fb-web1.stage.kixeye.com/api/";

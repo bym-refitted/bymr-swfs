@@ -1139,6 +1139,14 @@ package
                      }
                      GLOBAL._baseURL = "http://bym-fb-inferno.dev.kixeye.com/base/";
                      break;
+                  case 6:
+                     if(GLOBAL._baseURL == "https://bym-fb-lbns.dc.kixeye.com/base/")
+                     {
+                        GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/api/bm/base/";
+                        break;
+                     }
+                     GLOBAL._baseURL = "https://bym-fb-lbns.dc.kixeye.com/base/";
+                     break;
                   default:
                      if(GLOBAL._baseURL == "http://bym-fb-web1.stage.kixeye.com/base/")
                      {
@@ -2181,35 +2189,34 @@ package
                      fbPromoTimer = GLOBAL.Timestamp() + GLOBAL.StatGet("fbpromotimer");
                      if(GLOBAL.StatGet("fbpromotimer") == 0 || GLOBAL.StatGet("fbpromotimer") > 0 && GLOBAL.Timestamp() > GLOBAL.StatGet("fbpromotimer") + GLOBAL._fbPromoTimer)
                      {
-                        MoreInfo711 = function(param1:MouseEvent):void
+                        if(GLOBAL._countryCode == "us")
                         {
-                           GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
-                           POPUPS.Next();
-                        };
-                        if(GLOBAL._countryCode != "us")
-                        {
-                           return;
+                           MoreInfo711 = function(param1:MouseEvent):void
+                           {
+                              GLOBAL.gotoURL("http://on.fb.me/mTMRnd",null,true,null);
+                              POPUPS.Next();
+                           };
+                           fbPromoPopup = new FBPROMO_711_CLIP();
+                           fbPromoPopup.bAction3.buttonMode = true;
+                           fbPromoPopup.bAction3.useHandCursor = true;
+                           fbPromoPopup.bAction3.mouseChildren = false;
+                           fbPromoPopup.bAction3.txt.htmlText = KEYS.Get("btn_goldenbiggulp");
+                           fbPromoPopup.bAction3.bg.visible = false;
+                           fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           fbPromoPopup.bAction4.buttonMode = true;
+                           fbPromoPopup.bAction4.useHandCursor = true;
+                           fbPromoPopup.bAction4.mouseChildren = false;
+                           fbPromoPopup.bAction4.txt.htmlText = KEYS.Get("btn_hatcheryoverdrives");
+                           fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           fbPromoPopup.bAction4.bg.visible = false;
+                           fbPromoPopup.bInfo.useHandCursor = true;
+                           fbPromoPopup.bInfo.buttonMode = true;
+                           fbPromoPopup.bInfo.mouseChildren = false;
+                           fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
+                           POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
+                           GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
+                           GLOBAL._displayedPromoNew = true;
                         }
-                        fbPromoPopup = new FBPROMO_711_CLIP();
-                        fbPromoPopup.bAction3.buttonMode = true;
-                        fbPromoPopup.bAction3.useHandCursor = true;
-                        fbPromoPopup.bAction3.mouseChildren = false;
-                        fbPromoPopup.bAction3.txt.htmlText = KEYS.Get("btn_goldenbiggulp");
-                        fbPromoPopup.bAction3.bg.visible = false;
-                        fbPromoPopup.bAction3.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.buttonMode = true;
-                        fbPromoPopup.bAction4.useHandCursor = true;
-                        fbPromoPopup.bAction4.mouseChildren = false;
-                        fbPromoPopup.bAction4.txt.htmlText = KEYS.Get("btn_hatcheryoverdrives");
-                        fbPromoPopup.bAction4.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        fbPromoPopup.bAction4.bg.visible = false;
-                        fbPromoPopup.bInfo.useHandCursor = true;
-                        fbPromoPopup.bInfo.buttonMode = true;
-                        fbPromoPopup.bInfo.mouseChildren = false;
-                        fbPromoPopup.bInfo.addEventListener(MouseEvent.CLICK,MoreInfo711);
-                        POPUPS.Push(fbPromoPopup,BUY.logFB711PromoShown,null,null,null,false,"wait");
-                        GLOBAL.StatSet("fbpromotimer",GLOBAL.Timestamp());
-                        GLOBAL._displayedPromoNew = true;
                      }
                   }
                }
