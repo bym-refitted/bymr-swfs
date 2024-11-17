@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2379")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2477")]
    public dynamic class MonsterBunkerPopup_TransferBtnA_CLIP extends MovieClip
    {
       public var bRemove:Button_CLIP;

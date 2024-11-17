@@ -17,14 +17,17 @@ package
       
       public var _sent:Boolean = false;
       
-      public function CHAMPIONBUTTON(param1:String, param2:int)
+      private var _index:int = 0;
+      
+      public function CHAMPIONBUTTON(param1:String, param2:int, param3:int)
       {
          super();
+         this._index = param3;
          this._creatureID = param1;
          this._creatureData = CHAMPIONCAGE._guardians[param1];
          this._level = param2;
-         var _loc3_:String = CHAMPIONCAGE._guardians[param1].name;
-         txtName.htmlText = "<b>" + _loc3_ + "</b>";
+         var _loc4_:String = CHAMPIONCAGE._guardians[param1].name;
+         txtName.htmlText = "<b>" + _loc4_ + "</b>";
          ImageCache.GetImageWithCallBack("monsters/" + this._creatureID + "_L" + this._level + "-small.png",this.IconLoaded,true,1);
          this._description = new bubblepopup3();
          this._description.Setup(158,26,KEYS.Get(CHAMPIONCAGE._guardians[this._creatureID].description),5);
@@ -36,9 +39,10 @@ package
          bRetreat.addEventListener(MouseEvent.CLICK,this.Retreat);
          addEventListener(MouseEvent.ROLL_OVER,this.Over);
          addEventListener(MouseEvent.ROLL_OUT,this.Out);
-         if(Boolean(GLOBAL._playerGuardianData) && Boolean(GLOBAL._playerGuardianData.l.Get()))
+         CREEPS._flungGuardian[this._index] = false;
+         if(Boolean(GLOBAL._playerGuardianData[this._index]) && Boolean(GLOBAL._playerGuardianData[this._index].l.Get()))
          {
-            mcMonsterLevel.tLevel.htmlText = "<b>" + GLOBAL._playerGuardianData.l.Get() + "</b>";
+            mcMonsterLevel.tLevel.htmlText = "<b>" + GLOBAL._playerGuardianData[this._index].l.Get() + "</b>";
          }
          else
          {
@@ -54,7 +58,7 @@ package
       
       public function Update() : *
       {
-         if(CREEPS._flungGuardian)
+         if(CREEPS._flungGuardian[this._index])
          {
             bSend.removeEventListener(MouseEvent.CLICK,this.Send);
             bSend.Enabled = false;
@@ -82,9 +86,10 @@ package
       
       public function Retreat(param1:MouseEvent) : *
       {
-         if(CREEPS._guardian)
+         var _loc2_:int = CREEPS.getGuardianIndex(int(this._creatureID.substr(1)));
+         if(_loc2_ >= 0)
          {
-            CREEPS._guardian.ModeRetreat();
+            CREEPS._guardianList[_loc2_].ModeRetreat();
          }
       }
       

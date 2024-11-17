@@ -1,11 +1,14 @@
 package com.monsters.kingOfTheHill.rewards
 {
+   import com.monsters.champions.KOTHChampion;
    import com.monsters.debug.Console;
    import com.monsters.rewarding.Reward;
    
    public class KrallenBuffReward extends Reward
    {
       public static const ID:String = "krallenBuffReward";
+      
+      private const _MAX_BUFF_LEVEL:uint = 5;
       
       public function KrallenBuffReward()
       {
@@ -14,8 +17,8 @@ package com.monsters.kingOfTheHill.rewards
       
       override public function set value(param1:Number) : void
       {
+         param1 = Math.min(param1,this._MAX_BUFF_LEVEL);
          super.value = param1;
-         this.updateChampionBuff(_value);
       }
       
       override protected function onApplication() : void
@@ -30,10 +33,11 @@ package com.monsters.kingOfTheHill.rewards
       
       private function updateChampionBuff(param1:uint) : void
       {
-         var _loc2_:Object = CHAMPIONCAGE.GetGuardianData(5);
+         var _loc2_:CHAMPIONMONSTER = CREATURES.getGuardian(KOTHChampion.TYPE);
          if(_loc2_)
          {
-            _loc2_.buff = param1;
+            _loc2_.LevelSet(param1);
+            _loc2_.Export();
          }
          else
          {

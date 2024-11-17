@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1852")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1961")]
    public dynamic class HATCHERYCCPOPUP_CLIP extends MovieClip
    {
       public var tHousingLabel:TextField;
@@ -34,19 +34,19 @@ package
       
       public var mcCount3:MovieClip;
       
+      public var hatchery1:HatcheryMonsterIcon_CLIP;
+      
       public var bProgress5:creatureBar;
       
-      public var hatchery1:HatcheryMonsterIcon_CLIP;
+      public var title_txt:TextField;
       
       public var mcGoo:MovieClip;
       
       public var hatcheryRemove5:buttonClose_CLIP;
       
-      public var title_txt:TextField;
+      public var mcCount1:MovieClip;
       
       public var bProgress4:creatureBar;
-      
-      public var mcCount1:MovieClip;
       
       public var bContinue:Button_CLIP;
       
@@ -64,9 +64,9 @@ package
       
       public var bFinish:MovieClip;
       
-      public var slot2:HatcheryMonsterIcon_CLIP;
-      
       public var bProgress1:creatureBar;
+      
+      public var slot2:HatcheryMonsterIcon_CLIP;
       
       public var txtGoo:TextField;
       
@@ -78,6 +78,8 @@ package
       
       public var slot3:HatcheryMonsterIcon_CLIP;
       
+      public var mcMagma:MovieClip;
+      
       public var hatlabel5_txt:TextField;
       
       public var slot4:HatcheryMonsterIcon_CLIP;
@@ -88,6 +90,8 @@ package
       
       public var slot5:HatcheryMonsterIcon_CLIP;
       
+      public var txtMagma:TextField;
+      
       public var tGooLabel:TextField;
       
       public var mcRemove3:buttonClose_CLIP;
@@ -96,7 +100,11 @@ package
       
       public var tProgress4:TextField;
       
+      public var mcSlotsGoldFrame:MovieClip;
+      
       public var slot6:HatcheryMonsterIcon_CLIP;
+      
+      public var bTopupMagma:MovieClip;
       
       public var mcRemove2:buttonClose_CLIP;
       
@@ -123,6 +131,8 @@ package
       public var mcCount6:MovieClip;
       
       public var bSpeedup:MovieClip;
+      
+      public var tMagmaLabel:TextField;
       
       public var mcStorage:MovieClip;
       

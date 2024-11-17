@@ -7,6 +7,8 @@ package com.monsters.frontPage.messages
    
    public class Message
    {
+      protected static const _IMAGE_DIRECTORY:String = "popups/front_page/";
+      
       public var name:String;
       
       public var title:String;
@@ -27,8 +29,6 @@ package com.monsters.frontPage.messages
       
       protected var _bodyArguments:Object;
       
-      protected const _IMAGE_DIRECTORY:String = "popups/front_page/";
-      
       public function Message(param1:String, param2:String, param3:String = null, param4:String = null, param5:String = null)
       {
          super();
@@ -36,7 +36,7 @@ package com.monsters.frontPage.messages
          this.body = KEYS.Get(param2,this._bodyArguments);
          if(param3)
          {
-            this.imageURL = this._IMAGE_DIRECTORY + param3;
+            this.imageURL = _IMAGE_DIRECTORY + param3;
          }
          this.videoURL = param5;
          if(param4)
@@ -66,7 +66,7 @@ package com.monsters.frontPage.messages
          param1.Highlight = true;
          param1.Setup(this._buttonCopy);
          param1.removeEventListener(MouseEvent.CLICK,this.clickedButton);
-         param1.addEventListener(MouseEvent.CLICK,this.clickedButton,false,0,true);
+         param1.addEventListener(MouseEvent.CLICK,this.clickedButton,false,0,false);
          return param1;
       }
       

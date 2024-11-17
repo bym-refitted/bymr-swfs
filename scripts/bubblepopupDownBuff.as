@@ -41,6 +41,18 @@ package
          mcTextDuration.htmlText = param2;
       }
       
+      public function Resize(param1:Number = 0) : void
+      {
+         mcBG.height -= param1;
+         mcBG.y += param1;
+         if(param1 > 50)
+         {
+            param1 -= 5;
+         }
+         mcText.y += param1;
+         mcTextDuration.y += param1;
+      }
+      
       public function Wobble() : *
       {
          rotation += 3;

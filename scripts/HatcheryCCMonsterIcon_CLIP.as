@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2362")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2461")]
    public dynamic class HatcheryCCMonsterIcon_CLIP extends MovieClip
    {
       public var mcMonster:HatcheryMonsterIcon_CLIP;

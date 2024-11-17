@@ -385,7 +385,6 @@ package de.polygonal.ds
             _tailPool = _tailPool.next = _loc1_;
             _loc4_ = null;
             _loc1_.val = _loc4_;
-            null;
             ++_poolSize;
          }
          else
@@ -421,7 +420,7 @@ package de.polygonal.ds
       public function prepend(param1:Object) : DLLNode
       {
          var _loc3_:* = null as DLLNode;
-         var _loc2_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param1,this) : (_loc3_ = _headPool, null, _headPool = _headPool.next, --_poolSize, _loc3_.next = null, _loc3_.val = param1, _loc3_);
+         var _loc2_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param1,this) : (_loc3_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc3_.next = null, _loc3_.val = param1, _loc3_);
          _loc2_.next = head;
          if(head != null)
          {
@@ -515,7 +514,6 @@ package de.polygonal.ds
          var _loc3_:int = 0;
          var _loc4_:int = 0;
          var _loc5_:int = 0;
-         null;
          if(param1.head != null)
          {
             _loc2_ = param1.head;
@@ -631,7 +629,7 @@ package de.polygonal.ds
       public function insertAfter(param1:DLLNode, param2:Object) : DLLNode
       {
          var _loc4_:* = null as DLLNode;
-         var _loc3_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param2,this) : (_loc4_ = _headPool, null, _headPool = _headPool.next, --_poolSize, _loc4_.next = null, _loc4_.val = param2, _loc4_);
+         var _loc3_:DLLNode = _reservedSize == 0 || _poolSize == 0 ? new DLLNode(param2,this) : (_loc4_ = _headPool, _headPool = _headPool.next, --_poolSize, _loc4_.next = null, _loc4_.val = param2, _loc4_);
          param1._insertAfter(_loc3_);
          if(param1 == tail)
          {
@@ -726,7 +724,6 @@ package de.polygonal.ds
          var _loc7_:* = 0;
          var _loc8_:int = 0;
          var _loc9_:* = null as DLLNode;
-         null;
          var _loc2_:DLL = new DLL();
          var _loc3_:int = param1._size;
          if(_loc3_ > 0)
@@ -1288,7 +1285,6 @@ package de.polygonal.ds
             return new DLLNode(param1,this);
          }
          _loc2_ = _headPool;
-         null;
          _headPool = _headPool.next;
          --_poolSize;
          _loc2_.next = null;

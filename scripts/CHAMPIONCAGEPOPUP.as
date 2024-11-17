@@ -1,10 +1,19 @@
 package
 {
    import com.monsters.display.ImageCache;
+   import com.monsters.kingOfTheHill.KOTHHandler;
+   import com.monsters.replayableEvents.ReplayableEventHandler;
+   import com.monsters.utils.VideoUtils;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.display.DisplayObject;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
+   import flash.events.NetStatusEvent;
+   import flash.events.TimerEvent;
+   import flash.media.Video;
+   import flash.net.NetStream;
+   import flash.utils.Timer;
    import gs.*;
    import gs.easing.*;
    
@@ -23,6 +32,12 @@ package
       public static var buffsArr:Array;
       
       public static var kothStatsArr:Array;
+      
+      public static var kothArr0:Array;
+      
+      public static var kothArr1:Array;
+      
+      public static var kothArr2:Array;
       
       public static var feedIcons:Array;
       
@@ -70,13 +85,67 @@ package
       
       private var kothLevel:int;
       
+      private var kothWins:int;
+      
+      private var kothPowerLevel:int;
+      
       private var kothID:String;
       
       private var kothBonus:int;
       
       private var kothAbilities:int;
       
-      private var _testKOTH:int = 1;
+      public var kothTimeCurrent:Number;
+      
+      public var kothTimeLeft:Number;
+      
+      public var kothTimeStart:Number;
+      
+      public var kothTimeEnd:Number;
+      
+      public var kothTimeLength:Number = 604800;
+      
+      public var kothLootCurrent:Number;
+      
+      public var kothLootMax:Number;
+      
+      public var kothLootThresholds:Array;
+      
+      public var kothLastLootTotal:Number;
+      
+      public var kothLastLootThresholds:Array = [1000000,10000000];
+      
+      private var _timer:Timer = new Timer(1000);
+      
+      private var _videoStream:NetStream;
+      
+      private var _currentVideoURL:String;
+      
+      private var _currentPreviewUrl:String;
+      
+      private var _kothPreviewURL:String = "monsters/G5_L6-150.png";
+      
+      private var _kothVideoURL:String = "assets/koth/Krallen_200x200.flv";
+      
+      private var _kothToolTip1:DisplayObject;
+      
+      private var _kothToolTip2:DisplayObject;
+      
+      private var _kothToolTipAbility1:DisplayObject;
+      
+      private var _kothToolTipAbility2:DisplayObject;
+      
+      private const _PREVIEW_WIDTH:int = 200;
+      
+      private const _PREVIEW_HEIGHT:int = 200;
+      
+      private var _DOES_PLAY_VIDEO:Boolean = false;
+      
+      private const _KOTH_AWARD_GOAL:int = 1000000000;
+      
+      private const _KOTH_AWARD_ABILITY1:int = 1500000000;
+      
+      private const _KOTH_AWARD_ABILITY2:int = 2000000000;
       
       public function CHAMPIONCAGEPOPUP()
       {
@@ -85,15 +154,40 @@ package
          _bCage = GLOBAL._bCage as CHAMPIONCAGE;
          page1Assets = [mcImage,tEvoStage,damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff,tEvoDesc,tHP,barHP,bHeal];
          page2Assets = [barDNA,barDNA_bg,barDNA_mask,mcCurrGuardian,mcNextGuardian,tNextFeed,tFeedsFrom,mcInstant,mcFeed1,mcFeed2,gFeedBG,bEvolve,bFeedTimer,tNextFeedTitle];
-         page3Assets = [p3_mcImage,p3_tTitle,p3_tRank,p3_tDescription,p3_gRankBG,p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,mcAbility1,mcAbility2,mcAbility3,p3_bTimeleft,p3_tTimeleft,p3_bHP,p3_tHP,p3_bLeaderboard,p3_bHeal];
+         page3Assets = [p3_mcImage,p3_tDescription,p3_tDescription2,p3_tKothLevel,p3_gRankBG,p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,p3_mcAbility1,p3_bTimeleft,p3_tTimeleft,p3_tLootLeft,p3_bLootLeft,p3_bHP,p3_tHP,p3_bHeal,p3_mcLootMark1,p3_mcLootMark2,p3_timeleft_txt,p3_looted_txt];
          pagesArr = [page1Assets,page2Assets,page3Assets];
          statsArr = [damage_txt,tDamage,bDamage,health_txt,tHealth,bHealth,speed_txt,tSpeed,bSpeed,buff_txt,tBuff,bBuff];
          buffsArr = [damage_txt2,tDamage2,bDamage2,health_txt2,tHealth2,bHealth2,speed_txt2,tSpeed2,bSpeed2,buff_txt2,tBuff2,bBuff2,tBuffDesc,day1,day2,day3];
+         kothArr0 = [p3_mcImage,p3_tDescription,p3_gRankBG,p3_bTimeleft,p3_tTimeleft,p3_tLootLeft,p3_bLootLeft,p3_mcLootMark1,p3_mcLootMark2,p3_timeleft_txt,p3_looted_txt];
+         kothArr1 = [p3_tDescription2];
+         kothArr2 = [p3_tKothLevel,p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,p3_mcAbility1,p3_bHP,p3_tHP,p3_bHeal];
          feedIcons = [mcFeed1,mcFeed2];
-         kothStatsArr = [p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,mcAbility1,mcAbility2,mcAbility3];
+         kothStatsArr = [p3_damage_txt,p3_health_txt,p3_speed_txt,p3_buff_txt,p3_abilities_txt,p3_tDamage,p3_tHealth,p3_tSpeed,p3_tBuff,p3_bDamage,p3_bHealth,p3_bSpeed,p3_bBuff,p3_mcAbility1];
          this.Setup(0);
          mcCurrGuardian.stop();
          mcNextGuardian.stop();
+         this.kothLootThresholds = [];
+         if(GLOBAL._flags.krallen_award_threshold)
+         {
+            this.kothLootThresholds.push(int(GLOBAL._flags.krallen_award_threshold));
+         }
+         else
+         {
+            this.kothLootThresholds.push(this._KOTH_AWARD_GOAL);
+         }
+         if(GLOBAL._flags.krallen_special1_award_threshold)
+         {
+            this.kothLootThresholds.push(int(GLOBAL._flags.krallen_special1_award_threshold));
+         }
+         else
+         {
+            this.kothLootThresholds.push(this._KOTH_AWARD_ABILITY1);
+         }
+         this.kothLootCurrent = 0;
+         this.kothLootMax = this.kothLootThresholds[this.kothLootThresholds.length - 1];
+         this.kothTimeEnd = KOTHHandler.instance.timeToReset + ReplayableEventHandler.currentTime;
+         this.kothTimeStart = this.kothTimeEnd - KOTHHandler.instance.timePerRound;
+         this.kothTimeLeft = this.kothTimeEnd - ReplayableEventHandler.currentTime;
       }
       
       public static function FeedClick(param1:MouseEvent) : *
@@ -119,7 +213,7 @@ package
                b2.addEventListener(MouseEvent.CLICK,this.SwitchClick(1));
                if(_kothEnabled)
                {
-                  b3.Setup("KOTH");
+                  b3.SetupKey("btn_krallen");
                   b3.addEventListener(MouseEvent.CLICK,this.SwitchClick(2));
                }
                else
@@ -129,6 +223,8 @@ package
                }
                tEvoStage.mouseEnabled = false;
                tTitle.mouseEnabled = false;
+               this._timer.addEventListener(TimerEvent.TIMER,this.onTick);
+               this._timer.start();
                this.Switch(param1);
             }
             else
@@ -136,6 +232,168 @@ package
                GLOBAL.Message(KEYS.Get("cage_notbuilt"));
             }
          }
+      }
+      
+      public function addKothListeners() : void
+      {
+         if(!p3_mcLootMark2.check.visible)
+         {
+            p3_mcLootMark2.addEventListener(MouseEvent.ROLL_OVER,this.onOverKothTooltip);
+            p3_mcLootMark2.addEventListener(MouseEvent.ROLL_OUT,this.onOutKothTooltip);
+         }
+         p3_bHeal.addEventListener(MouseEvent.CLICK,this.kothHealClick);
+         p3_mcAbility1.addEventListener(MouseEvent.ROLL_OVER,this.onKothAbilityOver);
+         p3_mcAbility1.addEventListener(MouseEvent.ROLL_OUT,this.onKothAbilityOut);
+      }
+      
+      public function removeKothListeners() : void
+      {
+         p3_mcLootMark1.removeEventListener(MouseEvent.ROLL_OVER,this.onOverKothTooltip);
+         p3_mcLootMark2.removeEventListener(MouseEvent.ROLL_OVER,this.onOverKothTooltip);
+         p3_mcLootMark1.removeEventListener(MouseEvent.ROLL_OUT,this.onOutKothTooltip);
+         p3_mcLootMark2.removeEventListener(MouseEvent.ROLL_OUT,this.onOutKothTooltip);
+         p3_bHeal.removeEventListener(MouseEvent.CLICK,this.kothHealClick);
+         p3_mcAbility1.removeEventListener(MouseEvent.ROLL_OVER,this.onKothAbilityOver);
+         p3_mcAbility1.removeEventListener(MouseEvent.ROLL_OUT,this.onKothAbilityOut);
+      }
+      
+      public function onOverKothTooltip(param1:MouseEvent = null) : void
+      {
+         this.addKothTooltip(param1.target as MovieClip);
+      }
+      
+      public function onOutKothTooltip(param1:MouseEvent = null) : void
+      {
+         this.removeKothTooltip(param1.target as MovieClip);
+      }
+      
+      public function onKothAbilityOver(param1:MouseEvent = null) : void
+      {
+         this.addKothAbilityTooltip(param1.target as MovieClip);
+      }
+      
+      public function onKothAbilityOut(param1:MouseEvent = null) : void
+      {
+         this.removeKothAbilityTooltip(param1.target as MovieClip);
+      }
+      
+      public function addKothTooltip(param1:MovieClip) : void
+      {
+         var _loc4_:MovieClip = null;
+         var _loc2_:String = "";
+         switch(param1)
+         {
+            case p3_mcLootMark1:
+               _loc2_ = KEYS.Get("krallenquota1_tooltip",{"v1":GLOBAL.FormatNumber(this.kothLootThresholds[0])});
+               _loc4_ = p3_mcLootMark1;
+               break;
+            case p3_mcLootMark2:
+               _loc2_ = KEYS.Get("krallenquota2_tooltip",{"v1":GLOBAL.FormatNumber(this.kothLootThresholds[1])});
+               _loc4_ = p3_mcLootMark2;
+               break;
+            default:
+               return;
+         }
+         if(Boolean(this._kothToolTip1) || Boolean(this._kothToolTip2))
+         {
+            this.removeKothTooltip(_loc4_);
+         }
+         var _loc5_:bubblepopupDownBuff = new bubblepopupDownBuff();
+         if(_loc4_ == p3_mcLootMark1)
+         {
+            this._kothToolTip1 = addChild(_loc5_);
+         }
+         if(_loc4_ == p3_mcLootMark2)
+         {
+            this._kothToolTip2 = addChild(_loc5_);
+         }
+         _loc5_.Setup(_loc4_.x + _loc4_.width / 2,_loc4_.y + _loc4_.height + 4,_loc2_,"");
+         _loc5_.x = 0 + (_loc4_.x + _loc4_.width / 2) - 2;
+         _loc5_.y = 0 + (_loc4_.y - _loc4_.height + 4);
+         _loc5_.Resize(60);
+      }
+      
+      public function removeKothTooltip(param1:MovieClip = null) : void
+      {
+         if(param1 == p3_mcLootMark1 && Boolean(this._kothToolTip1))
+         {
+            removeChild(this._kothToolTip1);
+            this._kothToolTip1 = null;
+         }
+         else if(param1 == p3_mcLootMark2 && Boolean(this._kothToolTip2))
+         {
+            removeChild(this._kothToolTip2);
+            this._kothToolTip2 = null;
+         }
+         else if(param1 == null)
+         {
+            if(this._kothToolTip1)
+            {
+               removeChild(this._kothToolTip1);
+               this._kothToolTip1 = null;
+            }
+            if(this._kothToolTip2)
+            {
+               removeChild(this._kothToolTip2);
+               this._kothToolTip2 = null;
+            }
+         }
+      }
+      
+      public function addKothAbilityTooltip(param1:MovieClip) : void
+      {
+         var _loc4_:MovieClip = null;
+         var _loc2_:String = "";
+         switch(param1)
+         {
+            case p3_mcAbility1:
+               if(this.kothPowerLevel >= 2)
+               {
+                  _loc2_ = KEYS.Get("krallen_lootbuffactive_tooltip");
+               }
+               else
+               {
+                  _loc2_ = KEYS.Get("krallen_lootbuff_tooltip",{"v1":GLOBAL.FormatNumber(this.kothLootThresholds[1])});
+               }
+               _loc4_ = p3_mcAbility1;
+               if(Boolean(this._kothToolTipAbility1) || Boolean(this._kothToolTipAbility2))
+               {
+                  this.removeKothAbilityTooltip(_loc4_);
+               }
+               var _loc5_:bubblepopupDownBuff = new bubblepopupDownBuff();
+               if(_loc4_ == p3_mcAbility1)
+               {
+                  this._kothToolTipAbility1 = addChild(_loc5_);
+               }
+               _loc5_.Setup(_loc4_.x + _loc4_.width / 2,_loc4_.y + _loc4_.height + 4,_loc2_,"");
+               _loc5_.x = 0 + (_loc4_.x + _loc4_.width / 2) - 2;
+               _loc5_.y = 0 + (_loc4_.y - _loc4_.height / 4);
+               return;
+            default:
+               return;
+         }
+      }
+      
+      public function removeKothAbilityTooltip(param1:MovieClip = null) : void
+      {
+         if(param1 == p3_mcAbility1 && Boolean(this._kothToolTipAbility1))
+         {
+            removeChild(this._kothToolTipAbility1);
+            this._kothToolTipAbility1 = null;
+         }
+         else if(param1 == null)
+         {
+            if(this._kothToolTipAbility1)
+            {
+               removeChild(this._kothToolTipAbility1);
+               this._kothToolTipAbility1 = null;
+            }
+         }
+      }
+      
+      public function onTick(param1:TimerEvent) : void
+      {
+         this.update();
       }
       
       public function UpdateVars() : void
@@ -150,13 +408,15 @@ package
             this.totalFeeds = CHAMPIONCAGE.GetGuardianProperty(this.guardID,this.guardLevel,"feedCount");
             this.currFeeds = CREATURES._guardian._feeds.Get();
          }
-         if(this._testKOTH)
+         if(CREATURES._krallen)
          {
-            this.koth = CREATURES._guardian;
-            this.kothType = CREATURES._guardian._type;
-            this.kothLevel = CREATURES._guardian._level.Get();
-            this.kothBonus = CREATURES._guardian._foodBonus.Get();
-            this.kothID = CREATURES._guardian._creatureID;
+            this.koth = CREATURES._krallen;
+            this.kothType = CREATURES._krallen._type;
+            this.kothLevel = CREATURES._krallen._level.Get();
+            this.kothWins = KOTHHandler.instance.wins;
+            this.kothBonus = CREATURES._krallen._powerLevel.Get();
+            this.kothPowerLevel = CREATURES._krallen._powerLevel.Get();
+            this.kothID = CREATURES._krallen._creatureID;
          }
       }
       
@@ -168,6 +428,9 @@ package
          var _loc6_:* = false;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:int = 0;
          _page = param1;
          this.UpdateVars();
          mcInstant.bAction.removeEventListener(MouseEvent.CLICK,this.InstantClick);
@@ -384,21 +647,191 @@ package
          }
          if(param1 == 2)
          {
+            _loc9_ = this.getKothThreshold(1);
+            _loc10_ = this.getKothThreshold(2);
             this.UpdatePortrait();
             this.UpdateStats();
+            _loc11_ = 0;
+            _loc11_ = 0;
+            while(_loc11_ < page3Assets.length)
+            {
+               page3Assets[_loc11_].visible = false;
+               _loc11_++;
+            }
+            _loc11_ = 0;
+            while(_loc11_ < kothArr0.length)
+            {
+               kothArr0[_loc11_].visible = true;
+               _loc11_++;
+            }
+            if(!this.hasKoth())
+            {
+               _loc11_ = 0;
+               while(_loc11_ < kothArr1.length)
+               {
+                  kothArr1[_loc11_].visible = true;
+                  _loc11_++;
+               }
+            }
+            else
+            {
+               _loc11_ = 0;
+               while(_loc11_ < kothArr2.length)
+               {
+                  kothArr2[_loc11_].visible = true;
+                  _loc11_++;
+               }
+            }
+            p3_looted_txt.htmlText = "<b>" + KEYS.Get("krallen_looted") + "</b>";
+            p3_timeleft_txt.htmlText = "<b>" + KEYS.Get("krallen_remaining") + "</b>";
+            p3_tDescription.htmlText = KEYS.Get("mon_krallendesc");
+            p3_tDescription2.htmlText = KEYS.Get("krallen_desc");
+            if(this.kothPowerLevel >= 2)
+            {
+               p3_mcAbility1.gotoAndStop("loot_on");
+            }
+            else
+            {
+               p3_mcAbility1.gotoAndStop("loot_off");
+            }
+            p3_tKothLevel.htmlText = "<b>" + KEYS.Get("mon_krallen_level",{"v1":this.kothLevel}) + "</b>";
+            if(this.kothWins > 1)
+            {
+               p3_tKothLevel.htmlText += " " + KEYS.Get("mon_krallen_streak",{"v1":this.kothWins});
+            }
+            p3_bHeal.SetupKey("btn_healkrallen");
          }
          b1.Highlight = param1 == 0;
          b2.Highlight = param1 == 1;
          b3.Highlight = param1 == 2;
          window.gotoAndStop(param1 + 1);
+         if(param1 == 2)
+         {
+            this.addKothListeners();
+         }
+         else
+         {
+            this.removeKothTooltip();
+            this.removeKothAbilityTooltip();
+            this.removeKothListeners();
+         }
+      }
+      
+      private function hasKoth() : Boolean
+      {
+         var _loc1_:Boolean = false;
+         var _loc2_:int = 0;
+         while(_loc2_ < GLOBAL._playerGuardianData.length)
+         {
+            if(GLOBAL._playerGuardianData[_loc2_].t == 5)
+            {
+               _loc1_ = true;
+            }
+            _loc2_++;
+         }
+         return _loc1_;
+      }
+      
+      private function getKothRank() : Number
+      {
+         return 10;
+      }
+      
+      private function getKothLevel() : Number
+      {
+         return 3;
+      }
+      
+      private function getKothThreshold(param1:int = 1) : Number
+      {
+         return int(this.kothLootThresholds[Math.min(Math.max(param1 - 1,0),this.kothLootThresholds.length - 1)]);
+      }
+      
+      private function getKothTimeleft() : void
+      {
+      }
+      
+      private function getKothLootTotal() : Number
+      {
+         return 1000000;
+      }
+      
+      private function addVideo() : void
+      {
+         var _loc1_:Video = new Video(this._PREVIEW_WIDTH,this._PREVIEW_HEIGHT);
+         this._videoStream = VideoUtils.getVideoStream(_loc1_,this._kothVideoURL);
+         VideoUtils.loopStream(this._videoStream);
+         p3_mcImage.videoCanvas.addChild(_loc1_);
+         _loc1_.x = 25;
+         _loc1_.y = -20;
+      }
+      
+      protected function update() : void
+      {
+         if(_page == 2 && _kothEnabled)
+         {
+            if(this._DOES_PLAY_VIDEO)
+            {
+               if(this._currentVideoURL != this._kothVideoURL)
+               {
+                  if(this._videoStream)
+                  {
+                     this._videoStream.close();
+                  }
+                  this._currentVideoURL = this._kothVideoURL;
+                  this._videoStream.play(this._kothVideoURL);
+                  p3_mcImage.videoCanvas.visible = true;
+                  p3_mcImage.imageCanvas.visible = false;
+               }
+            }
+            else if(this._currentPreviewUrl != this._kothPreviewURL)
+            {
+               this._currentPreviewUrl = this._kothPreviewURL;
+               p3_mcImage.videoCanvas.visible = false;
+               p3_mcImage.imageCanvas.visible = true;
+               ImageCache.GetImageWithCallBack(this._kothPreviewURL,this.onPreviewImageLoaded,true,1,"",[p3_mcImage.imageCanvas]);
+            }
+            this.UpdateStats();
+            this.UpdatePortrait();
+         }
+      }
+      
+      private function onPreviewImageLoaded(param1:String, param2:BitmapData, param3:Array = null) : void
+      {
+         var _loc5_:* = undefined;
+         if(param1 != this._currentPreviewUrl)
+         {
+            return;
+         }
+         var _loc4_:MovieClip = param3[0];
+         if(_loc4_)
+         {
+            while(_loc4_.numChildren > 0)
+            {
+               _loc4_.removeChildAt(0);
+            }
+            _loc5_ = new Bitmap(param2);
+            _loc5_.x = 50;
+            _loc4_.addChild(_loc5_);
+            _loc4_.visible = true;
+         }
+      }
+      
+      protected function onErrorLoadingVideo(param1:*) : void
+      {
+      }
+      
+      private function onStreamNetStatus(param1:NetStatusEvent) : void
+      {
+         if(param1.info.code == "NetStream.Play.Stop")
+         {
+            this._videoStream.seek(0);
+         }
       }
       
       private function UpdatePortrait() : *
       {
          var UpdatePortraitIcon:Function;
-         var UpdatePortraitKoth:Function;
-         var kothGuardType:int = 0;
-         var kothGuardLevel:int = 0;
          if(CREATURES._guardian)
          {
             UpdatePortraitIcon = function(param1:String, param2:BitmapData):*
@@ -416,23 +849,34 @@ package
          }
          if(_page == 2 && _kothEnabled)
          {
-            UpdatePortraitKoth = function(param1:String, param2:BitmapData):*
+            if(this._DOES_PLAY_VIDEO)
             {
-               p3_mcImage.addChild(new Bitmap(param2));
-            };
-            kothGuardType = 2;
-            kothGuardLevel = 6;
-            if(p3_mcImage)
-            {
-               while(p3_mcImage.numChildren)
+               if(this._videoStream)
                {
-                  p3_mcImage.removeChildAt(0);
+                  if(this._currentVideoURL != this._kothVideoURL)
+                  {
+                     if(this._videoStream)
+                     {
+                        this._videoStream.close();
+                     }
+                     this._currentVideoURL = this._kothVideoURL;
+                     this._videoStream.play(this._kothVideoURL);
+                  }
                }
+               else if(!this._currentVideoURL)
+               {
+                  this.addVideo();
+               }
+               p3_mcImage.videoCanvas.visible = true;
+               p3_mcImage.imageCanvas.visible = false;
             }
-            if(!this._testKOTH)
+            else if(this._currentPreviewUrl != this._kothPreviewURL)
             {
+               this._currentPreviewUrl = this._kothPreviewURL;
+               p3_mcImage.videoCanvas.visible = false;
+               p3_mcImage.imageCanvas.visible = true;
+               ImageCache.GetImageWithCallBack(this._kothPreviewURL,this.onPreviewImageLoaded,true,1,"",[p3_mcImage.imageCanvas]);
             }
-            ImageCache.GetImageWithCallBack("monsters/G" + kothGuardType + "_L" + kothGuardLevel + "-250.png",UpdatePortraitKoth);
          }
       }
       
@@ -538,11 +982,16 @@ package
          var _loc14_:int = 0;
          var _loc15_:int = 0;
          var _loc16_:Number = NaN;
-         var _loc17_:Number = NaN;
-         var _loc18_:Number = NaN;
+         var _loc17_:String = null;
+         var _loc18_:String = null;
          var _loc19_:Number = NaN;
          var _loc20_:Number = NaN;
          var _loc21_:Number = NaN;
+         var _loc22_:Number = NaN;
+         var _loc23_:Number = NaN;
+         var _loc24_:int = 0;
+         var _loc25_:Boolean = false;
+         var _loc26_:int = 0;
          this.UpdateVars();
          if(CREATURES._guardian)
          {
@@ -754,126 +1203,147 @@ package
             barHP.mcBar.width = 100 / this.guard._maxHealth * Math.max(1,this.guard._health.Get());
             bFeedTimer.mcBar.width = 100 / CHAMPIONCAGE.GetGuardianProperty(CREATURES._guardian._creatureID,CREATURES._guardian._level.Get(),"feedTime") * (CREATURES._guardian._feedTime.Get() - GLOBAL.Timestamp());
          }
-         if(this._testKOTH && _kothEnabled && _page == 2)
+         if(_page == 2 && _kothEnabled)
          {
-            p3_damage_txt.htmlText = "<b>" + KEYS.Get("gcage_labelDamage") + "</b>";
-            p3_health_txt.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
-            p3_speed_txt.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
-            p3_buff_txt.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
-            _loc17_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
-            _loc18_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
-            _loc19_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
-            _loc20_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
-            if(this.foodBonus > 0)
+            this.kothLootCurrent = KOTHHandler.instance.totalLoot;
+            this.kothTimeCurrent = ReplayableEventHandler.currentTime - this.kothTimeStart;
+            this.kothTimeLeft = this.kothTimeEnd - ReplayableEventHandler.currentTime;
+            p3_bTimeleft.mcFill.width = 400 / KOTHHandler.instance.timePerRound * this.kothTimeCurrent;
+            p3_bLootLeft.mcFill.width = 400 / this.kothLootMax * KOTHHandler.instance.totalLoot;
+            _loc17_ = GLOBAL.ToTime(this.kothTimeLeft);
+            _loc18_ = GLOBAL.FormatNumber(KOTHHandler.instance.totalLoot);
+            p3_tTimeleft.htmlText = "<b>" + _loc17_ + " " + KEYS.Get("koth_bardesc_time") + "</b>";
+            p3_tLootLeft.htmlText = "<b>" + _loc18_ + " " + KEYS.Get("koth_bardesc_loot") + "</b>";
+            p3_mcLootMark1.check.visible = KOTHHandler.instance.totalLoot >= this.kothLootThresholds[0];
+            p3_mcLootMark2.check.visible = KOTHHandler.instance.totalLoot >= this.kothLootThresholds[1];
+            p3_mcLootMark1.x = p3_bLootLeft.x + p3_bLootLeft.mcBG.width / this.kothLootMax * this.kothLootThresholds[0] - p3_mcLootMark1.width / 2;
+            p3_mcLootMark2.x = p3_bLootLeft.x + p3_bLootLeft.mcBG.width / this.kothLootMax * this.kothLootThresholds[1] - p3_mcLootMark2.width;
+            if(p3_mcLootMark1.check.visible && !p3_mcLootMark2.check.visible)
             {
-               _loc17_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusDamage");
-               _loc18_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusHealth");
-               _loc19_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusSpeed");
-               _loc20_ += CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothBonus,"bonusBuffs") * 100;
+               this.addKothTooltip(p3_mcLootMark2);
             }
-            _loc5_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
-            _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
-            _loc7_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
-            _loc8_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
-            _loc21_ = int(_loc19_ * 10) / 10;
-            p3_tDamage.htmlText = "" + _loc17_;
-            p3_tHealth.htmlText = "" + _loc18_;
-            p3_tSpeed.htmlText = "" + _loc21_;
-            p3_tBuff.htmlText = "" + int(_loc20_) + "%";
-            p3_tHP.htmlText = Math.floor(this.koth._health.Get()) + " / " + Math.floor(this.koth._maxHealth);
-            TweenLite.to(bDamage.mcBar,0.4,{
-               "width":100 / _maxDamage * _loc17_,
-               "ease":Circ.easeInOut,
-               "delay":0
-            });
-            if(this.kothLevel == _maxLevel && _useBonusIndicators)
+            else if(!p3_mcLootMark1.check.visible && !p3_mcLootMark2.check.visible)
             {
-               _loc10_ = this.kothBonus;
-               while(_loc10_ <= 3)
+               this.addKothTooltip(p3_mcLootMark1);
+            }
+            if(CREATURES._krallen)
+            {
+               p3_damage_txt.htmlText = "<b>" + KEYS.Get("gcage_labelDamage") + "</b>";
+               p3_health_txt.htmlText = "<b>" + KEYS.Get("gcage_labelHealth") + "</b>";
+               p3_speed_txt.htmlText = "<b>" + KEYS.Get("gcage_labelSpeed") + "</b>";
+               p3_buff_txt.htmlText = "<b>" + KEYS.Get("gcage_labelBuff") + "</b>";
+               p3_abilities_txt.htmlText = "<b>" + KEYS.Get("gcage_labelAbilities") + "</b>";
+               _loc19_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
+               _loc20_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
+               _loc21_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
+               _loc22_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
+               _loc5_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"damage");
+               _loc6_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"health");
+               _loc7_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"speed");
+               _loc8_ = CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel,"buffs") * 100;
+               _loc23_ = int(_loc21_ * 10) / 10;
+               p3_tDamage.htmlText = "" + _loc19_;
+               p3_tHealth.htmlText = "" + _loc20_;
+               p3_tSpeed.htmlText = "" + _loc23_;
+               p3_tBuff.htmlText = "" + int(_loc22_) + "%";
+               p3_tHP.htmlText = Math.floor(this.koth._health.Get()) + " / " + Math.floor(this.koth._maxHealth);
+               _loc24_ = 5;
+               _loc25_ = true;
+               TweenLite.to(p3_bDamage.mcBar,0.4,{
+                  "width":100 / _maxDamage * _loc19_,
+                  "ease":Circ.easeInOut,
+                  "delay":0
+               });
+               if(this.kothLevel != _loc24_ && _loc25_)
                {
-                  if(_loc10_ > 0)
+                  if(this.kothLevel + 1 <= _loc24_)
                   {
-                     TweenLite.to(p3_bDamage["mcBuff" + _loc10_],0,{
-                        "width":100 / _maxDamage * (_loc5_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusDamage")) + 2,
+                     TweenLite.to(p3_bDamage["mcBuff1"],0,{
+                        "width":100 / _maxDamage * CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel + 1,"damage") + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     p3_bDamage["mcBuff" + _loc10_].gotoAndStop(_loc10_ + 1);
+                     p3_bDamage["mcBuff1"].gotoAndStop(2);
                   }
-                  _loc10_++;
-               }
-            }
-            TweenLite.to(p3_bHealth.mcBar,0.4,{
-               "width":100 / _maxHealth * _loc18_,
-               "ease":Circ.easeInOut,
-               "delay":0.05
-            });
-            if(this.kothLevel == _maxLevel && _useBonusIndicators)
-            {
-               _loc10_ = this.kothBonus;
-               while(_loc10_ <= 3)
-               {
-                  if(_loc10_ > 0)
+                  _loc26_ = 2;
+                  while(_loc26_ <= 3)
                   {
-                     TweenLite.to(p3_bHealth["mcBuff" + _loc10_],0,{
-                        "width":100 / _maxHealth * (_loc6_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusHealth")) + 2,
+                     p3_bDamage["mcBuff" + _loc26_].width = 0;
+                     _loc26_++;
+                  }
+               }
+               TweenLite.to(p3_bHealth.mcBar,0.4,{
+                  "width":100 / _maxHealth * _loc20_,
+                  "ease":Circ.easeInOut,
+                  "delay":0.05
+               });
+               if(this.kothLevel != _loc24_ && _loc25_)
+               {
+                  if(this.kothLevel + 1 <= _loc24_)
+                  {
+                     TweenLite.to(p3_bHealth["mcBuff1"],0,{
+                        "width":100 / _maxHealth * CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel + 1,"health") + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     p3_bHealth["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                     p3_bHealth["mcBuff1"].gotoAndStop(2);
                   }
-                  _loc10_++;
-               }
-            }
-            TweenLite.to(p3_bSpeed.mcBar,0.4,{
-               "width":100 / _maxSpeed * _loc19_,
-               "ease":Circ.easeInOut,
-               "delay":0.1
-            });
-            if(this.kothLevel == _maxLevel && _useBonusIndicators)
-            {
-               _loc10_ = this.kothBonus;
-               while(_loc10_ <= 3)
-               {
-                  if(_loc10_ > 0)
+                  _loc26_ = 2;
+                  while(_loc26_ <= 3)
                   {
-                     TweenLite.to(p3_bSpeed["mcBuff" + _loc10_],0,{
-                        "width":100 / _maxSpeed * (_loc7_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusSpeed")) + 2,
+                     p3_bHealth["mcBuff" + _loc26_].width = 0;
+                     _loc26_++;
+                  }
+               }
+               TweenLite.to(p3_bSpeed.mcBar,0.4,{
+                  "width":100 / _maxSpeed * _loc21_,
+                  "ease":Circ.easeInOut,
+                  "delay":0.1
+               });
+               if(this.kothLevel != _loc24_ && _loc25_)
+               {
+                  if(this.kothLevel + 1 <= _loc24_)
+                  {
+                     TweenLite.to(p3_bSpeed["mcBuff1"],0,{
+                        "width":100 / _maxSpeed * CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel + 1,"speed") + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     p3_bSpeed["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                     p3_bSpeed["mcBuff1"].gotoAndStop(2);
                   }
-                  _loc10_++;
-               }
-            }
-            TweenLite.to(p3_bBuff.mcBar,0.4,{
-               "width":100 / _maxBuff * _loc20_,
-               "ease":Circ.easeInOut,
-               "delay":0.15
-            });
-            if(this.kothLevel == _maxLevel && _useBonusIndicators)
-            {
-               _loc10_ = this.kothBonus;
-               while(_loc10_ <= 3)
-               {
-                  if(_loc10_ > 0)
+                  _loc26_ = 2;
+                  while(_loc26_ <= 3)
                   {
-                     TweenLite.to(p3_bBuff["mcBuff" + _loc10_],0,{
-                        "width":100 / _maxBuff * (_loc8_ + CHAMPIONCAGE.GetGuardianProperty(this.kothID,_loc10_,"bonusBuffs")) + 2,
+                     p3_bSpeed["mcBuff" + _loc26_].width = 0;
+                     _loc26_++;
+                  }
+               }
+               TweenLite.to(p3_bBuff.mcBar,0.4,{
+                  "width":100 / _maxBuff * _loc22_,
+                  "ease":Circ.easeInOut,
+                  "delay":0.15
+               });
+               if(this.kothLevel != _loc24_ && _loc25_)
+               {
+                  if(this.kothLevel + 1 <= _loc24_)
+                  {
+                     TweenLite.to(p3_bBuff["mcBuff1"],0,{
+                        "width":100 / _maxBuff * CHAMPIONCAGE.GetGuardianProperty(this.kothID,this.kothLevel + 1,"buff") + 2,
                         "ease":Circ.easeInOut,
                         "delay":0
                      });
-                     p3_bBuff["mcBuff" + _loc10_].gotoAndStop(1 + _loc10_);
+                     p3_bBuff["mcBuff1"].gotoAndStop(2);
                   }
-                  _loc10_++;
+                  _loc26_ = 2;
+                  while(_loc26_ <= 3)
+                  {
+                     p3_bBuff["mcBuff" + _loc26_].width = 0;
+                     _loc26_++;
+                  }
                }
+               p3_bHP.mcBar.width = 100 / this.koth._maxHealth * Math.max(1,this.koth._health.Get());
             }
          }
-      }
-      
-      private function UpdateFeeds() : *
-      {
       }
       
       public function Tick() : *
@@ -922,6 +1392,19 @@ package
          else
          {
             this.Switch(0);
+         }
+      }
+      
+      public function kothHealClick(param1:MouseEvent = null) : void
+      {
+         if(Boolean(CREATURES._krallen) && CREATURES._krallen._health.Get() < CREATURES._krallen._maxHealth)
+         {
+            CHAMPIONCAGE.HealGuardian(5);
+            this.Switch(2);
+         }
+         else
+         {
+            this.Switch(2);
          }
       }
       

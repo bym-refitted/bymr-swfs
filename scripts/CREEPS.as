@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.champions.KOTHChampion;
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.utils.getTimer;
@@ -22,11 +23,11 @@ package
       
       private static var _creepOverlap:Object;
       
-      public static var _guardian:CHAMPIONMONSTER;
-      
-      public static var _flungGuardian:Boolean;
-      
       public static var _bmdHPbar:BitmapData = new bmp_healthbarsmall(0,0);
+      
+      public static var _flungGuardian:Vector.<Boolean> = new Vector.<Boolean>();
+      
+      public static var _guardianList:Vector.<CHAMPIONMONSTER> = new Vector.<CHAMPIONMONSTER>();
       
       public function CREEPS()
       {
@@ -37,7 +38,22 @@ package
          _creepCount = 0;
          _ticks = 0;
          _creepOverlap = {};
-         _flungGuardian = false;
+         _flungGuardian = new Vector.<Boolean>(GLOBAL._playerGuardianData.length);
+         _guardianList.length = 0;
+      }
+      
+      public static function get krallen() : KOTHChampion
+      {
+         var _loc2_:CHAMPIONMONSTER = null;
+         var _loc1_:Vector.<CHAMPIONMONSTER> = CREEPS._guardianList;
+         for each(_loc2_ in _loc1_)
+         {
+            if(_loc2_._creatureID === "G5")
+            {
+               return _loc2_ as KOTHChampion;
+            }
+         }
+         return null;
       }
       
       public static function Tick() : void
@@ -143,20 +159,35 @@ package
       
       public static function SpawnGuardian(param1:int, param2:*, param3:String, param4:int, param5:Point, param6:Number, param7:int = 20000, param8:int = 0, param9:int = 0, param10:Boolean = false) : CHAMPIONMONSTER
       {
+         var _loc13_:int = 0;
+         var _loc11_:Class = CHAMPIONCAGE.getGuardianSpawnClass(param1);
          ++_creepID;
          ++_creepCount;
          ++_flungCount;
+         var _loc12_:CHAMPIONMONSTER = null;
          if(param10)
          {
-            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,0,0,param1,param7,param8,param9);
+            _loc12_ = new _loc11_(param3,param5,0,null,false,null,param4,0,0,param1,param7,param8,param9);
          }
          else
          {
-            _guardian = new CHAMPIONMONSTER(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData.fd,GLOBAL._playerGuardianData.ft,param1,param7,param8,param9);
+            _loc13_ = GLOBAL.getPlayerGuardianIndex(param1);
+            _loc12_ = new _loc11_(param3,param5,0,null,false,null,param4,GLOBAL._playerGuardianData[_loc13_].fd,GLOBAL._playerGuardianData[_loc13_].ft,param1,param7,param8,param9);
          }
-         _creeps[_creepID] = _guardian;
-         param2.addChild(_guardian);
-         return _guardian;
+         if(_loc11_ == CHAMPIONMONSTER)
+         {
+            _guardian = _loc12_;
+         }
+         else if(!addGuardian(_loc12_))
+         {
+            _loc12_ = null;
+         }
+         if(_loc12_)
+         {
+            _creeps[_creepID] = _loc12_;
+            param2.addChild(_loc12_);
+         }
+         return _loc12_;
       }
       
       public static function Retreat() : void
@@ -209,6 +240,7 @@ package
       {
          var _loc1_:* = undefined;
          var _loc2_:String = null;
+         var _loc3_:int = 0;
          for(_loc2_ in _creeps)
          {
             _loc1_ = _creeps[_loc2_];
@@ -217,13 +249,99 @@ package
          }
          _creeps = {};
          _creepCount = _flungCount = 0;
-         _flungGuardian = false;
-         if(_guardian)
+         _loc3_ = 0;
+         while(_loc3_ < _flungGuardian.length)
          {
-            MAP._BUILDINGTOPS.removeChild(_guardian);
-            _guardian.Clear();
-            _guardian = null;
+            _flungGuardian[_loc3_] = false;
+            _loc3_++;
          }
+         _loc3_ = 0;
+         while(_loc3_ < _guardianList.length)
+         {
+            _guardianList[_loc3_] = null;
+            _loc3_++;
+         }
+         _guardianList.length = 0;
+      }
+      
+      public static function get _guardian() : CHAMPIONMONSTER
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < _guardianList.length)
+         {
+            if(Boolean(_guardianList[_loc1_]) && CHAMPIONCAGE.isBasicGuardian(_guardianList[_loc1_]._creatureID))
+            {
+               return _guardianList[_loc1_];
+            }
+            _loc1_++;
+         }
+         return null;
+      }
+      
+      public static function set _guardian(param1:CHAMPIONMONSTER) : void
+      {
+         var _loc2_:int = -1;
+         var _loc3_:int = 0;
+         while(_loc3_ < _guardianList.length)
+         {
+            if(CHAMPIONCAGE.isBasicGuardian(_guardianList[_loc3_]._creatureID))
+            {
+               _loc2_ = _loc3_;
+            }
+            _loc3_++;
+         }
+         if(_loc2_ == -1)
+         {
+            if(param1)
+            {
+               _guardianList.unshift(param1);
+            }
+         }
+         else if(!param1)
+         {
+            _guardianList.splice(_loc2_,1);
+         }
+         else
+         {
+            _guardianList[_loc2_] = param1;
+         }
+      }
+      
+      public static function addGuardian(param1:CHAMPIONMONSTER) : Boolean
+      {
+         var _loc2_:int = -1;
+         var _loc3_:int = 0;
+         while(_loc3_ < _guardianList.length)
+         {
+            if(_guardianList[_loc3_]._creatureID == param1._creatureID)
+            {
+               _loc2_ = _loc3_;
+            }
+            _loc3_++;
+         }
+         if(_loc2_ == -1)
+         {
+            if(param1)
+            {
+               _guardianList.push(param1);
+               return true;
+            }
+         }
+         return false;
+      }
+      
+      public static function getGuardianIndex(param1:int) : int
+      {
+         var _loc2_:int = 0;
+         while(_loc2_ < _guardianList.length)
+         {
+            if(int(_guardianList[_loc2_]._creatureID.substr(1)) == param1)
+            {
+               return _loc2_;
+            }
+            _loc2_++;
+         }
+         return -1;
       }
    }
 }

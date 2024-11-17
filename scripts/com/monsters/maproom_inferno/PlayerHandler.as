@@ -241,7 +241,10 @@ package com.monsters.maproom_inferno
          }
          _loc3_ = _loc2_.wm.Get() == 1 ? "iwmview" : "iview";
          this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.INFERNO_YARD);
-         this._BRIDGE.MAPROOM._mc.Hide();
+         if(this._BRIDGE && this._BRIDGE.MAPROOM && Boolean(this._BRIDGE.MAPROOM._mc))
+         {
+            this._BRIDGE.MAPROOM._mc.Hide();
+         }
       }
       
       private function onTruce(param1:MouseEvent) : void
@@ -344,7 +347,7 @@ package com.monsters.maproom_inferno
             _loc6_ = _loc2_.wm.Get() == 1 ? "iwmattack" : "iattack";
             if(_loc7_)
             {
-               GLOBAL.Message(_loc4_,_loc5_,this.onAttackB,[_loc2_.baseid.Get(),_loc6_]);
+               GLOBAL.Message(_loc4_,_loc5_,this.onAttackB,[Number(_loc2_.baseid.Get()),_loc6_]);
             }
             else
             {
@@ -381,7 +384,7 @@ package com.monsters.maproom_inferno
             this._BRIDGE.setVisitingFriend(false);
          }
          GLOBAL._advancedMap = 0;
-         BASE.LoadBase(null,null,param1,param2,false,BASE.INFERNO_YARD);
+         BASE.LoadBase(null,null,Number(param1),param2,false,BASE.INFERNO_YARD);
          if(!MAPROOM_DESCENT.DescentPassed && param2 == "iwmattack")
          {
             LOGGER.Stat([87,_loc3_.level.Get(),"Attacked"]);

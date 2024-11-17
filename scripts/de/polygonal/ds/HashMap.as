@@ -384,11 +384,7 @@ package de.polygonal.ds
                _loc7_++;
                _loc11_ = _map[_loc9_];
                _loc10_ = _loc4_._map[_loc9_];
-               if(_loc10_ != null)
-               {
-                  false;
-               }
-               else
+               if(_loc10_ == null)
                {
                   _loc4_._map[_loc9_] = _map[_loc9_];
                   ++_loc4_._size;

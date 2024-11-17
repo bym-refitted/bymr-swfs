@@ -8,7 +8,7 @@ package
       {
       }
       
-      public static function method_4(param1:*, param2:*) : Boolean
+      public static function method_3(param1:*, param2:*) : Boolean
       {
          return Boot.__instanceof(param1,param2);
       }

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1878")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1987")]
    public dynamic class screenTransparent extends MovieClip
    {
       public var glare:MovieClip;

@@ -72,6 +72,8 @@ package
       
       public static var _repairCount:int = 0;
       
+      public static var _allowInfernoResourcesAboveGround:Boolean = true;
+      
       public function STORE()
       {
          super();
@@ -164,15 +166,24 @@ package
          var _loc14_:Number = 0;
          var _loc15_:Number = 0;
          var _loc16_:Object = null;
-         var _loc17_:Number = NaN;
-         var _loc18_:String = null;
+         var _loc17_:Object = null;
+         var _loc18_:Number = NaN;
+         var _loc19_:Number = NaN;
+         var _loc20_:String = null;
          if(BASE._yardType == BASE.OUTPOST)
          {
             _grouping = [[["BST","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","TOD","EXH"]]];
          }
          else if(BASE._yardType == BASE.MAIN_YARD)
          {
-            _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
+            if(MAPROOM_DESCENT.DescentPassed)
+            {
+               _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BR11I","BR12I","BR13I","BR21I","BR22I","BR23I","BR31I","BR32I","BR33I","BR41I","BR42I","BR43I","BIP"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
+            }
+            else
+            {
+               _grouping = [[["BEW","BST","ENL","BLK2","BLK3","BLK4","BLK5"]],[["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43","BIP"]],[["SP1","SP2","SP3","SP4","POD","FIX","HOD","HOD2","HOD3"]],[["PRO1","PRO2","PRO3","MOD","MDOD","MSOD","EXH","TOD"]]];
+            }
          }
          else
          {
@@ -181,7 +192,8 @@ package
          var _loc1_:int = 1;
          while(_loc1_ <= 4)
          {
-            _loc17_ = BASE._resources["r" + _loc1_ + "max"] * 0.1;
+            _loc18_ = BASE._resources["r" + _loc1_ + "max"] * 0.1;
+            _loc19_ = BASE._iresources["r" + _loc1_ + "max"] * 0.1;
             if(BASE.isInferno())
             {
                _loc16_ = _storeItems["BR" + _loc1_ + "1I"];
@@ -189,20 +201,21 @@ package
             else
             {
                _loc16_ = _storeItems["BR" + _loc1_ + "1"];
+               _loc17_ = _storeItems["BR" + _loc1_ + "1I"];
             }
             _loc16_.t = KEYS.Get("str_top_extra",{
-               "v1":GLOBAL.FormatNumber(_loc17_),
+               "v1":GLOBAL.FormatNumber(_loc18_),
                "v2":KEYS.Get(GLOBAL._resourceNames[_loc1_ - 1])
             });
             if(BASE._resources["r" + _loc1_].Get() + BASE._resources["r" + _loc1_ + "max"] * 0.1 < BASE._resources["r" + _loc1_ + "max"])
             {
-               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc17_ / 2),0.75))];
+               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc18_ / 2),0.75))];
                _loc16_.d = KEYS.Get("str_top_10pct",{
                   "v1":GLOBAL._resourceNames[_loc1_ - 1],
                   "v2":GLOBAL._resourceNames[_loc1_ - 1],
-                  "v3":GLOBAL.FormatNumber(BASE._resources["r" + _loc1_].Get() + _loc17_)
+                  "v3":GLOBAL.FormatNumber(BASE._resources["r" + _loc1_].Get() + _loc18_)
                });
-               _loc16_.quantity = _loc17_;
+               _loc16_.quantity = _loc18_;
             }
             else
             {
@@ -210,7 +223,34 @@ package
                _loc16_.c = [0];
                _loc16_.quantity = 0;
             }
-            _loc17_ = BASE._resources["r" + _loc1_ + "max"] * 0.5;
+            if(_loc17_)
+            {
+               _loc17_.t = KEYS.Get("str_top_extra",{
+                  "v1":GLOBAL.FormatNumber(_loc19_),
+                  "v2":KEYS.Get(GLOBAL.iresourceNames[_loc1_ - 1])
+               });
+            }
+            if(Boolean(BASE._iresources) && BASE._iresources["r" + _loc1_].Get() + BASE._iresources["r" + _loc1_ + "max"] * 0.1 < BASE._iresources["r" + _loc1_ + "max"])
+            {
+               if(_loc17_)
+               {
+                  _loc17_.c = [Math.ceil(Math.pow(Math.sqrt(_loc19_ / 2),0.75))];
+                  _loc17_.d = KEYS.Get("str_top_10pct",{
+                     "v1":GLOBAL.iresourceNames[_loc1_ - 1],
+                     "v2":GLOBAL.iresourceNames[_loc1_ - 1],
+                     "v3":GLOBAL.FormatNumber(BASE._iresources["r" + _loc1_].Get() + _loc19_)
+                  });
+                  _loc17_.quantity = _loc19_;
+               }
+            }
+            else if(_loc17_)
+            {
+               _loc17_.d = KEYS.Get("str_top_10pct_noroom",{"v1":GLOBAL.iresourceNames[_loc1_ - 1]});
+               _loc17_.c = [0];
+               _loc17_.quantity = 0;
+            }
+            _loc18_ = BASE._resources["r" + _loc1_ + "max"] * 0.5;
+            _loc19_ = BASE._iresources["r" + _loc1_ + "max"] * 0.5;
             if(BASE.isInferno())
             {
                _loc16_ = _storeItems["BR" + _loc1_ + "2I"];
@@ -218,26 +258,50 @@ package
             else
             {
                _loc16_ = _storeItems["BR" + _loc1_ + "2"];
+               _loc17_ = _storeItems["BR" + _loc1_ + "2I"];
             }
             _loc16_.t = KEYS.Get("str_top_extra",{
-               "v1":GLOBAL.FormatNumber(_loc17_),
+               "v1":GLOBAL.FormatNumber(_loc18_),
                "v2":KEYS.Get(GLOBAL._resourceNames[_loc1_ - 1])
             });
             if(BASE._resources["r" + _loc1_].Get() + BASE._resources["r" + _loc1_ + "max"] * 0.5 < BASE._resources["r" + _loc1_ + "max"])
             {
-               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc17_ / 2),0.75))];
+               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc18_ / 2),0.75))];
                _loc16_.d = KEYS.Get("str_top_50pct",{
                   "v1":GLOBAL._resourceNames[_loc1_ - 1],
                   "v2":GLOBAL._resourceNames[_loc1_ - 1],
-                  "v3":GLOBAL.FormatNumber(BASE._resources["r" + _loc1_].Get() + _loc17_)
+                  "v3":GLOBAL.FormatNumber(BASE._resources["r" + _loc1_].Get() + _loc18_)
                });
-               _loc16_.quantity = _loc17_;
+               _loc16_.quantity = _loc18_;
             }
             else
             {
                _loc16_.d = KEYS.Get("str_top_50pct_noroom",{"v1":GLOBAL._resourceNames[_loc1_ - 1]});
                _loc16_.c = [0];
                _loc16_.quantity = 0;
+            }
+            if(_loc17_)
+            {
+               _loc17_.t = KEYS.Get("str_top_extra",{
+                  "v1":GLOBAL.FormatNumber(_loc19_),
+                  "v2":KEYS.Get(GLOBAL.iresourceNames[_loc1_ - 1])
+               });
+               if(BASE._iresources["r" + _loc1_].Get() + BASE._iresources["r" + _loc1_ + "max"] * 0.5 < BASE._iresources["r" + _loc1_ + "max"])
+               {
+                  _loc17_.c = [Math.ceil(Math.pow(Math.sqrt(_loc19_ / 2),0.75))];
+                  _loc17_.d = KEYS.Get("str_top_50pct",{
+                     "v1":GLOBAL.iresourceNames[_loc1_ - 1],
+                     "v2":GLOBAL.iresourceNames[_loc1_ - 1],
+                     "v3":GLOBAL.FormatNumber(BASE._iresources["r" + _loc1_].Get() + _loc19_)
+                  });
+                  _loc17_.quantity = _loc19_;
+               }
+               else
+               {
+                  _loc17_.d = KEYS.Get("str_top_50pct_noroom",{"v1":GLOBAL.iresourceNames[_loc1_ - 1]});
+                  _loc17_.c = [0];
+                  _loc17_.quantity = 0;
+               }
             }
             if(BASE.isInferno())
             {
@@ -246,23 +310,47 @@ package
             else
             {
                _loc16_ = _storeItems["BR" + _loc1_ + "3"];
+               _loc17_ = _storeItems["BR" + _loc1_ + "3I"];
             }
             _loc16_.t = KEYS.Get("str_top_fill_label",{"v1":GLOBAL._resourceNames[_loc1_ - 1]});
             if(BASE._resources["r" + _loc1_ + "max"] > BASE._resources["r" + _loc1_].Get())
             {
-               _loc17_ = BASE._resources["r" + _loc1_ + "max"] - BASE._resources["r" + _loc1_].Get();
-               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc17_ / 2),0.75))];
+               _loc18_ = BASE._resources["r" + _loc1_ + "max"] - BASE._resources["r" + _loc1_].Get();
+               _loc19_ = BASE._iresources["r" + _loc1_ + "max"] - BASE._iresources["r" + _loc1_].Get();
+               _loc16_.c = [Math.ceil(Math.pow(Math.sqrt(_loc18_ / 2),0.75))];
                _loc16_.d = KEYS.Get("str_top_fill",{
-                  "v1":GLOBAL.FormatNumber(_loc17_),
+                  "v1":GLOBAL.FormatNumber(_loc18_),
                   "v2":GLOBAL._resourceNames[_loc1_ - 1]
                });
-               _loc16_.quantity = _loc17_;
+               _loc16_.quantity = _loc18_;
             }
             else
             {
                _loc16_.d = KEYS.Get("str_resourcesfull",{"v1":KEYS.Get(GLOBAL._resourceNames[_loc1_ - 1])});
                _loc16_.c = [0];
                _loc16_.quantity = 0;
+            }
+            if(_loc17_)
+            {
+               _loc17_.t = KEYS.Get("str_top_fill_label",{"v1":GLOBAL.iresourceNames[_loc1_ - 1]});
+            }
+            if(BASE._iresources["r" + _loc1_ + "max"] > BASE._iresources["r" + _loc1_].Get())
+            {
+               if(_loc17_)
+               {
+                  _loc17_.c = [Math.ceil(Math.pow(Math.sqrt(_loc19_ / 2),0.75))];
+                  _loc17_.d = KEYS.Get("str_top_fill",{
+                     "v1":GLOBAL.FormatNumber(_loc19_),
+                     "v2":GLOBAL.iresourceNames[_loc1_ - 1]
+                  });
+                  _loc17_.quantity = _loc19_;
+               }
+            }
+            else if(_loc17_)
+            {
+               _loc17_.d = KEYS.Get("str_resourcesfull",{"v1":GLOBAL.iresourceNames[_loc1_ - 1]});
+               _loc17_.c = [0];
+               _loc17_.quantity = 0;
             }
             _loc1_++;
          }
@@ -286,11 +374,11 @@ package
             }
             else if(GLOBAL._selectedBuilding._type == 8)
             {
-               for(_loc18_ in CREATURELOCKER._lockerData)
+               for(_loc20_ in CREATURELOCKER._lockerData)
                {
-                  if(CREATURELOCKER._lockerData[_loc18_].t == 1)
+                  if(CREATURELOCKER._lockerData[_loc20_].t == 1)
                   {
-                     _loc2_ = GetTimeCost(CREATURELOCKER._lockerData[_loc18_].e - GLOBAL.Timestamp());
+                     _loc2_ = GetTimeCost(CREATURELOCKER._lockerData[_loc20_].e - GLOBAL.Timestamp());
                      break;
                   }
                }
@@ -2007,7 +2095,7 @@ package
                {
                   _loc23_.bBuy.Enabled = false;
                }
-               if(_loc6_ >= _loc7_ && !_loc21_.i || _loc20_.substr(0,3) == "BEW" && QUEUE._workerCount >= 5 || _loc20_.substr(0,2) == "BR" && BASE._resources["r" + _loc20_.substr(2,1)].Get() >= BASE._resources["r" + _loc20_.substr(2,1) + "max"])
+               if(_loc6_ >= _loc7_ && !_loc21_.i || _loc20_.substr(0,3) == "BEW" && QUEUE._workerCount >= 5 || _loc20_.substr(0,2) == "BR" && BASE._resources["r" + _loc20_.substr(2,1)].Get() >= BASE._resources["r" + _loc20_.substr(2,1) + "max"] && _loc20_.substr(_loc20_.length - 1) != "I" || _loc20_.substr(0,2) == "BR" && !BASE.isInferno() && _loc20_.substr(_loc20_.length - 1) == "I" && BASE._iresources["r" + _loc20_.substr(2,1)].Get() >= BASE._iresources["r" + _loc20_.substr(2,1) + "max"])
                {
                   _loc23_.mcScreen.visible = true;
                   _loc23_.mcScreen.enabled = true;
@@ -2340,8 +2428,16 @@ package
          }
          if(param1.substr(0,2) == "BR")
          {
-            BASE.Fund(int(param1.substr(2,1)),Math.ceil(_loc6_));
-            BASE.PointsAdd(Math.ceil(_loc6_ * 0.3));
+            if(GLOBAL._loadmode == "build" && param1.substr(param1.length - 1) == "I")
+            {
+               BASE.Fund(int(param1.substr(2,1)),Math.ceil(_loc6_),false,null,true);
+               BASE.PointsAdd(Math.ceil(_loc6_ * 0.3));
+            }
+            else
+            {
+               BASE.Fund(int(param1.substr(2,1)),Math.ceil(_loc6_));
+               BASE.PointsAdd(Math.ceil(_loc6_ * 0.3));
+            }
          }
          if(param1.substr(0,3) == "HOD")
          {

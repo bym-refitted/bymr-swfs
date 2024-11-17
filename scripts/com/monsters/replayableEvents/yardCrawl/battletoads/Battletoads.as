@@ -44,13 +44,13 @@ package com.monsters.replayableEvents.yardCrawl.battletoads
       {
          if(this.doesAutomaticalyGetReward())
          {
-            RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnblockVorgReward.ID));
+            RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnblockVorgReward.ID));
          }
       }
       
       override protected function onEventComplete() : void
       {
-         RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnlockVorgReward.ID));
+         RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnlockVorgReward.ID));
       }
    }
 }

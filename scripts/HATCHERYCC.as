@@ -12,7 +12,7 @@ package
       
       public static var queueLimit:uint = DEFAULT_QUEUE_LIMIT;
       
-      public static var doesShowInfernoCreeps:Boolean = true;
+      public static var doesShowInfernoCreeps:Boolean = false;
       
       public static var _open:Boolean = false;
       

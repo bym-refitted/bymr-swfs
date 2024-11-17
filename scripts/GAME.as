@@ -239,15 +239,15 @@ package
                   _loc2_ = JSON.decode(param1);
                   if(_loc2_.viewleader)
                   {
-                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"view",true,BASE.MAIN_YARD);
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,Number(_loc2_.baseid),"view",true,BASE.MAIN_YARD);
                   }
                   else if(Boolean(_loc2_.infurl) && BASE.isInferno())
                   {
-                     BASE.LoadBase(_loc2_.infurl,0,_loc2_.infbaseid,"iview",true,BASE.INFERNO_YARD);
+                     BASE.LoadBase(_loc2_.infurl,0,Number(_loc2_.infbaseid),"iview",true,BASE.INFERNO_YARD);
                   }
                   else
                   {
-                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"help",true,BASE.MAIN_YARD);
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,Number(_loc2_.baseid),"help",true,BASE.MAIN_YARD);
                   }
                }
             });

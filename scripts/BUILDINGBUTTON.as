@@ -8,6 +8,8 @@ package
    
    public class BUILDINGBUTTON extends BUILDINGBUTTON_CLIP
    {
+      private static var s_LockedCallbacks:Array = [];
+      
       public var _buildingProps:Object;
       
       public var _id:int;
@@ -17,10 +19,16 @@ package
          super();
       }
       
+      public static function setOnClickedWhenLockedCallback(param1:int, param2:Function) : *
+      {
+         s_LockedCallbacks[param1] = param2;
+      }
+      
       public function Setup(param1:int, param2:Boolean = true) : *
       {
          var _loc6_:String = null;
          var _loc7_:* = null;
+         var _loc8_:int = 0;
          var _loc9_:* = undefined;
          var _loc10_:int = 0;
          var _loc11_:int = 0;
@@ -30,7 +38,14 @@ package
          mouseChildren = false;
          if(param2)
          {
-            addEventListener(MouseEvent.CLICK,this.ShowInfo);
+            if(this.isLocked)
+            {
+               addEventListener(MouseEvent.CLICK,this.ShowLockedInfo);
+            }
+            else
+            {
+               addEventListener(MouseEvent.CLICK,this.ShowInfo);
+            }
             buttonMode = true;
          }
          tName.htmlText = "<b>" + KEYS.Get(this._buildingProps.name) + "</b>";
@@ -48,7 +63,11 @@ package
                _loc5_++;
             }
          }
-         if(this._buildingProps.type == "decoration")
+         if(this.isLocked)
+         {
+            tQuantity.htmlText = "";
+         }
+         else if(this._buildingProps.type == "decoration")
          {
             _loc10_ = BASE.BuildingStorageCount(this._id);
             if(_loc10_ > 0)
@@ -98,7 +117,7 @@ package
                _loc7_ = "buildingbuttons/" + this._id + ".jpg";
             }
          }
-         var _loc8_:int = int(Math.max.apply(Math,this._buildingProps.quantity));
+         _loc8_ = int(Math.max.apply(Math,this._buildingProps.quantity));
          mcShroud.visible = _loc5_ >= _loc4_ && _loc4_ > 0;
          mcCheck.visible = _loc5_ >= _loc8_ && _loc8_ > 0;
          mcNew.visible = false;
@@ -107,6 +126,14 @@ package
             mcNew.visible = true;
          }
          ImageCache.GetImageWithCallBack(_loc7_,this.ImageLoaded);
+         if(this.isLocked)
+         {
+            mcShroud.visible = true;
+            if(this._buildingProps["lockedButtonOverlay"])
+            {
+               ImageCache.GetImageWithCallBack(this._buildingProps["lockedButtonOverlay"],this.OnLockedOverlayLoaded);
+            }
+         }
       }
       
       public function ImageLoaded(param1:String, param2:BitmapData) : void
@@ -114,10 +141,31 @@ package
          mcBG.addChild(new Bitmap(param2));
       }
       
+      private function OnLockedOverlayLoaded(param1:String, param2:BitmapData) : void
+      {
+         mcShroud.addChild(new Bitmap(param2));
+      }
+      
       public function ShowInfo(param1:MouseEvent) : *
       {
          SOUNDS.Play("click1");
          MovieClip(parent.parent).ShowInfo(this._id);
+      }
+      
+      private function ShowLockedInfo(param1:MouseEvent) : *
+      {
+         var _loc2_:Function = s_LockedCallbacks[this._id];
+         if(_loc2_ == null)
+         {
+            return;
+         }
+         SOUNDS.Play("click1");
+         _loc2_();
+      }
+      
+      private function get isLocked() : Boolean
+      {
+         return Boolean(this._buildingProps) && Boolean(this._buildingProps["locked"]);
       }
       
       public function Update() : *

@@ -1147,7 +1147,7 @@ package
             }
             _loc3_.sortOn(["index"],Array.NUMERIC);
          }
-         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && BASE.isInferno();
+         var _loc7_:Boolean = MAPROOM_DESCENT.DescentPassed && (BASE.isInferno() || HATCHERYCC.doesShowInfernoCreeps);
          if(_loc7_)
          {
             _loc12_ = CREATURELOCKER.GetCreatures("inferno");

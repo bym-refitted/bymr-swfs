@@ -829,7 +829,14 @@ package com.monsters.baseplanner.popups
       public function set hasBeenSaved(param1:Boolean) : void
       {
          this._hasBeenSaved = param1;
-         this._bSave.Enabled = !this._hasBeenSaved;
+         if(param1)
+         {
+            this._bSave.Enabled = false;
+         }
+         else
+         {
+            this._bSave.Enabled = true;
+         }
       }
    }
 }

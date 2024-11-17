@@ -2,7 +2,7 @@ package all_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2599")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2639")]
    public dynamic class BasePlannerTransferPencil_96 extends MovieClip
    {
       public function BasePlannerTransferPencil_96()

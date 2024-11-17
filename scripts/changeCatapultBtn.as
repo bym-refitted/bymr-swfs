@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol1559")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1716")]
    public dynamic class changeCatapultBtn extends SmallButton
    {
       public function changeCatapultBtn()

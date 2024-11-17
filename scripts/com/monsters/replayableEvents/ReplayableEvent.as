@@ -42,7 +42,10 @@ package com.monsters.replayableEvents
       public function ReplayableEvent()
       {
          super();
-         FrontPageLibrary.EVENTS.addMessage(this._rewardMessage);
+         if(this._rewardMessage)
+         {
+            FrontPageLibrary.EVENTS.addMessage(this._rewardMessage);
+         }
       }
       
       public function doesQualify() : Boolean
@@ -75,7 +78,7 @@ package com.monsters.replayableEvents
       public function getCurrentMessage() : Message
       {
          var _loc1_:Number = NaN;
-         if(this.hasCompletedEvent)
+         if(this.hasCompletedEvent && Boolean(this._rewardMessage))
          {
             return this._rewardMessage;
          }
@@ -121,16 +124,22 @@ package com.monsters.replayableEvents
       
       public function exportData() : Object
       {
-         return {
-            "startDate":this.startDate,
-            "reward":this._rewardMessage.export()
-         };
+         var _loc1_:Object = {};
+         _loc1_.startDate = this.startDate;
+         if(this._rewardMessage)
+         {
+            _loc1_.reward = this._rewardMessage.export();
+         }
+         return _loc1_;
       }
       
       public function importData(param1:Object) : void
       {
          this.setStartDate(param1.startDate);
-         this._rewardMessage.setup(param1.reward);
+         if(Boolean(this._rewardMessage) && Boolean(param1.reward))
+         {
+            this._rewardMessage.setup(param1.reward);
+         }
          this.onImport();
       }
       

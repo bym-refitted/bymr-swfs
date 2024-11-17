@@ -10,7 +10,7 @@ package com.monsters.maproom_advanced
    
    public class PopupTakeover extends MapRoomPopup_takeover_CLIP
    {
-      public static const TAKEOVER_CAP:* = 50000000;
+      public static const TAKEOVER_CAP:* = 65000000;
       
       private var _resourceCost:SecNum;
       
@@ -22,12 +22,19 @@ package com.monsters.maproom_advanced
       
       public function PopupTakeover(param1:MapRoomCell)
       {
+         var cellValue:Number;
+         var WMBASE:Boolean;
+         var WMLEVEL:int;
+         var slope:Number;
+         var intercept:Number;
+         var roundTo:int;
+         var half:Boolean;
          var i:int;
          var bonusTower:int;
          var bonusResource:int;
          var ImageLoaded:Function = null;
+         var newResource:Number = NaN;
          var bonusStr:String = null;
-         var numPosts:int = 0;
          var costMC:MovieClip = null;
          var colorString:String = null;
          var cell:MapRoomCell = param1;
@@ -41,11 +48,40 @@ package com.monsters.maproom_advanced
          ImageCache.GetImageWithCallBack("popups/outpost-takeover.png",ImageLoaded,true,1);
          this._costGap = 0;
          this._resourceCost = new SecNum(1000000);
-         if(GLOBAL._mapOutpost)
+         cellValue = this._cell._value;
+         WMBASE = this._cell._base == 1;
+         WMLEVEL = this._cell._level;
+         slope = WMBASE ? 562500 : 15820570.7;
+         intercept = WMBASE ? -14750000 : -227080916.9;
+         roundTo = 250000;
+         if(!WMBASE)
          {
-            numPosts = int(GLOBAL._mapOutpost.length);
-            this._resourceCost.Set(Math.min(this._resourceCost.Get() * ((numPosts + 1) * 0.25),TAKEOVER_CAP));
+            newResource = Math.min(Math.max(Math.round((Math.log(cellValue) * slope + intercept) / roundTo) * roundTo,1000000),TAKEOVER_CAP);
          }
+         else
+         {
+            newResource = Math.max(Math.round((WMLEVEL * slope + intercept) / roundTo) * roundTo,1000000);
+         }
+         half = false;
+         if(Math.abs(GLOBAL._mapHome.x - this._cell.X) == 1)
+         {
+            if(GLOBAL._mapHome.y + 1 - (GLOBAL._mapHome.x + 1) % 2 * 2 == this._cell.Y || GLOBAL._mapHome.y == this._cell.Y)
+            {
+               half = true;
+            }
+         }
+         else if(GLOBAL._mapHome.x == this._cell.X)
+         {
+            if(GLOBAL._mapHome.y + 1 == this._cell.Y || GLOBAL._mapHome.y - 1 == this._cell.Y)
+            {
+               half = true;
+            }
+         }
+         if(half)
+         {
+            newResource *= 0.5;
+         }
+         this._resourceCost.Set(newResource);
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))
          {
             this._resourceCost.Set(POWERUPS.Apply(POWERUPS.ALLIANCE_CONQUEST,[this._resourceCost.Get()]));

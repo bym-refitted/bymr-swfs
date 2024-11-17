@@ -1,6 +1,7 @@
 package
 {
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.events.BuildingEvent;
    import com.monsters.maproom_advanced.MapRoom;
    import flash.events.IOErrorEvent;
    import flash.events.MouseEvent;
@@ -107,6 +108,7 @@ package
                      _loc2_++;
                   }
                }
+               GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ENTER_MR2,this));
             }
             else
             {
@@ -196,12 +198,14 @@ package
                GLOBAL.Message(KEYS.Get("map_alliance_recycle",{"v1":ALLIANCES._myAlliance.name}));
                return;
             }
+            GLOBAL._mapOutpostIDs.length = 0;
             GLOBAL.Message(KEYS.Get("newmap_recycle1"),KEYS.Get("btn_recycle"),this.RecycleD);
          }
          else
          {
             GLOBAL.Message(KEYS.Get("newmap_recycle2"),KEYS.Get("btn_recycle"),this.RecycleD);
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ATTEMPT_RECYCLE,this));
       }
       
       private function RecycleD() : *
@@ -251,6 +255,7 @@ package
             {
                GLOBAL.Message(KEYS.Get("newmap_return"));
             }
+            GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.DESTROY_MAPROOM,this));
          }
          else
          {

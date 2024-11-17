@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1476")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1633")]
    public dynamic class AIATTACKPOPUP_CLIP extends MovieClip
    {
       public var waitBtn:Button_CLIP;

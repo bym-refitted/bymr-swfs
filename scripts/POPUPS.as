@@ -152,18 +152,15 @@ package
       public static function Add(param1:DisplayObject) : void
       {
          GLOBAL._layerTop.addChild(param1);
-         POPUPSETTINGS.AlignToUpperLeft(param1);
-         POPUPSETTINGS.ScaleUpFromTopLeft(param1);
-         param1.addEventListener(Event.ENTER_FRAME,onResize,false,0,true);
       }
       
       public static function Remove(param1:DisplayObject = null) : void
       {
          if(Boolean(param1) && Boolean(param1.parent))
          {
+            param1.removeEventListener(Event.ENTER_FRAME,onResize);
             param1.parent.removeChild(param1);
          }
-         param1.removeEventListener(Event.ENTER_FRAME,onResize);
       }
       
       protected static function onResize(param1:Event) : void

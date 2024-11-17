@@ -113,7 +113,7 @@ package com.monsters.frontPage.categories
          return _loc2_;
       }
       
-      private function getMessageByName(param1:String) : Message
+      public function getMessageByName(param1:String) : Message
       {
          var _loc3_:Message = null;
          var _loc2_:int = 0;

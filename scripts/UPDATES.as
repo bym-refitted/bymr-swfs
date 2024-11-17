@@ -17,6 +17,8 @@ package
       
       public static var _catchupList:Array;
       
+      public static var _actions:Array;
+      
       public function UPDATES()
       {
          super();
@@ -27,7 +29,13 @@ package
          _updates = [];
          _myUpdates = [];
          _catchupList = [];
+         _actions = [];
          _lastUpdateID = 0;
+      }
+      
+      public static function addAction(param1:Function, param2:String) : void
+      {
+         _actions[param2] = param1;
       }
       
       public static function Process(param1:Array) : *
@@ -77,9 +85,11 @@ package
             _loc3_ = _updates[_loc2_].data;
             if(_loc3_[0] <= _loc1_)
             {
-               Action(_updates[_loc2_]);
-               _updates.splice(_loc2_,1);
-               _loc2_--;
+               if(Action(_updates[_loc2_]))
+               {
+                  _updates.splice(_loc2_,1);
+                  _loc2_--;
+               }
             }
             _loc2_++;
          }
@@ -89,7 +99,7 @@ package
          }
       }
       
-      public static function Action(param1:Object) : *
+      public static function Action(param1:Object) : Boolean
       {
          var building:BFOUNDATION = null;
          var popupMC:MovieClip = null;
@@ -109,19 +119,33 @@ package
          var update:Object = param1;
          var freezeChamp:Function = function():void
          {
+            var _loc1_:int = 0;
+            var _loc2_:int = 0;
             if(CREATURES._guardian)
             {
                CREATURES._guardian._health.Set(CREATURES._guardian._maxHealth);
                CREATURES._guardian.Export();
                CREATURES._guardian.ModeFreeze();
-               BASE._guardianData.ft -= GLOBAL.Timestamp();
-               (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.push(BASE._guardianData);
-               BASE._guardianData = null;
-               CREATURES._guardian = null;
+               _loc1_ = 0;
+               _loc2_ = 0;
+               while(_loc2_ < BASE._guardianData.length)
+               {
+                  if(BASE._guardianData[_loc2_].t == CREATURES._guardian._type)
+                  {
+                     _loc1_ = _loc2_;
+                  }
+                  _loc2_++;
+               }
+               BASE._guardianData[_loc1_].ft -= GLOBAL.Timestamp();
+               (GLOBAL._bChamber as CHAMPIONCHAMBER)._frozen.push(BASE._guardianData[_loc1_]);
+               BASE._guardianData.splice(_loc1_,1);
                if(GLOBAL._mode == "build")
                {
-                  GLOBAL._playerGuardianData = null;
+                  _loc2_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
+                  GLOBAL._playerGuardianData[_loc2_] = null;
+                  GLOBAL._playerGuardianData.splice(_loc2_,1);
                }
+               CREATURES._guardian = null;
             }
          };
          var thawChamp:Function = function(param1:int):void
@@ -164,11 +188,15 @@ package
          };
          if(!GLOBAL._save)
          {
-            return;
+            return false;
          }
          if(BASE.isInferno())
          {
-            return;
+            return false;
+         }
+         if(_actions[update.data[1]])
+         {
+            return _actions[update.data[1]]();
          }
          if(update.data[1] == "BU")
          {
@@ -297,7 +325,7 @@ package
             if(BASE.isInferno())
             {
                LOGGER.Log("log","ABORTING Champion Refund because user is in Inferno",BASE._yardType);
-               return;
+               return false;
             }
             champArr = JSON.decode(update.data);
             refundType = int(update.data[2]);
@@ -331,8 +359,7 @@ package
             {
                CREATURES._guardian._health.Set(-10);
                CREATURES._guardian.Tick(1);
-               CREATURES._guardian.Clear();
-               BASE._guardianData = null;
+               CREATURES.removeGuardianType(CREATURES._guardian._type);
             }
             if(GLOBAL._bCage)
             {
@@ -343,6 +370,7 @@ package
                BASE.Save();
             }
          }
+         return true;
       }
       
       public static function Catchup() : *

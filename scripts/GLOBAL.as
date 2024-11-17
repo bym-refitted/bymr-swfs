@@ -301,9 +301,9 @@ package
       
       public static var _save:Boolean = true;
       
-      public static var _localMode:int = 1;
+      public static var _localMode:int = URLLoaderApi.k_sLOCAL_MODE_TRUNK;
       
-      public static var _version:SecNum = new SecNum(127);
+      public static var _version:SecNum = new SecNum(128);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -385,7 +385,7 @@ package
       
       public static var _wmCreatureLevels:Array = new Array();
       
-      public static var _playerGuardianData:Object = null;
+      public static var _playerGuardianData:Vector.<Object> = new Vector.<Object>(null);
       
       public static var _playerCatapultLevel:SecNum = new SecNum(0);
       
@@ -755,6 +755,7 @@ package
          _bRadio = null;
          _bSiegeLab = null;
          _bSiegeFactory = null;
+         _bCage = null;
       }
       
       public static function WaitShow(param1:String = "") : *
@@ -1026,8 +1027,8 @@ package
          var _loc4_:Number = NaN;
          var _loc5_:int = 0;
          var _loc6_:int = 0;
-         var _loc7_:BFOUNDATION = null;
-         var _loc8_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:BFOUNDATION = null;
          var _loc9_:IHandler = null;
          if(!_halt)
          {
@@ -1075,20 +1076,29 @@ package
                      if(CREEPS._creepCount > 0 || Boolean(SiegeWeapons.activeWeapon))
                      {
                         CREEPS.Tick();
-                        for each(_loc7_ in BASE._buildingsTowers)
+                        for each(_loc8_ in BASE._buildingsTowers)
                         {
-                           _loc7_.TickAttack();
+                           _loc8_.TickAttack();
                         }
                      }
                      CREATURES.Tick();
-                     if(CREATURES._guardian)
+                     _loc7_ = 0;
+                     while(_loc7_ < CREATURES._guardianList.length)
                      {
-                        if(CREATURES._guardian.Tick(1))
+                        if(Boolean(CREATURES._guardianList[_loc7_]) && CREATURES._guardianList[_loc7_].Tick(1))
                         {
-                           MAP._BUILDINGTOPS.removeChild(CREATURES._guardian);
-                           CREATURES._guardian.Clear();
-                           CREATURES._guardian = null;
+                           MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc7_]);
+                           if(CREATURES._guardianList[_loc7_] == CREATURES._guardian)
+                           {
+                              CREATURES._guardian = null;
+                           }
+                           else
+                           {
+                              CREATURES._guardianList.splice(_loc7_,1);
+                           }
+                           _loc7_--;
                         }
+                        _loc7_++;
                      }
                      PROJECTILES.Tick();
                      FIREBALLS.Tick();
@@ -1108,15 +1118,15 @@ package
                   Smoke.Tick();
                   Fire.Tick();
                   BASE.ShakeB();
-                  _loc8_ = 0;
-                  while(_loc8_ < BASE.HANDLERS.length)
+                  _loc7_ = 0;
+                  while(_loc7_ < BASE.HANDLERS.length)
                   {
-                     _loc9_ = BASE.HANDLERS[_loc8_];
+                     _loc9_ = BASE.HANDLERS[_loc7_];
                      if(_loc9_ is ITickable)
                      {
                         ITickable(_loc9_).tick();
                      }
-                     _loc8_++;
+                     _loc7_++;
                   }
                }
                if(_flags.logfps)
@@ -2140,6 +2150,25 @@ package
          MAP.Focus(0,0);
          RefreshScreen();
          UI_BOTTOM.Resize();
+      }
+      
+      public static function getPlayerGuardianIndex(param1:int) : int
+      {
+         var _loc2_:int = 0;
+         while(_loc2_ < GLOBAL._playerGuardianData.length)
+         {
+            if(GLOBAL._playerGuardianData[_loc2_].t == param1)
+            {
+               return _loc2_;
+            }
+            _loc2_++;
+         }
+         return -1;
+      }
+      
+      public static function isAtHome() : Boolean
+      {
+         return _mode == "build" && BASE._yardType == BASE.MAIN_YARD;
       }
    }
 }

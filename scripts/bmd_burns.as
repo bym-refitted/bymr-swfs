@@ -2,7 +2,7 @@ package
 {
    import flash.display.BitmapData;
    
-   [Embed(source="/_assets/1770_bmd_burns_bmd_burns.png")]
+   [Embed(source="/_assets/1859_bmd_burns_bmd_burns.png")]
    public dynamic class bmd_burns extends BitmapData
    {
       public function bmd_burns(param1:int = 320, param2:int = 40)

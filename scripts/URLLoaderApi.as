@@ -59,7 +59,7 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = this.GetFBDataChrisP();
+            _loc1_ = this.GetFBDataMichael();
          }
          else
          {
@@ -170,6 +170,11 @@ package
             return JSON.decode("{\"signed_request\":\"lPhv_kYkhrQvBX95w5_zcN2ePJRY_IS3OD9mu8hvoNw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjU5OTE2MDAsImlzc3VlZF9hdCI6MTMyNTk4NjM0Miwib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQU9rRVRKUldEWGNpemRReFRqYlhXWkMyOVFkWkJVSVVGY21xeHBHamQxZU5wSFloRWNaQnRWbGs4SE9JUXZDNDFVTVNoMHhIQk16RkpaQmlOYXJ5d0ZBN1BrR1MzUVpEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjYxMDY1NzkyOSJ9\",\"access_token\":\"AAADLTlQ61wcBAOkETJRWDXcizdQxTjbXWZC29QdZBUIUFcmqxpGjd1eNpHYhEcZBtVlk8HOIQvC41UMSh0xHBMzFJZBiNarywFA7PkGS3QZDZD\",\"PHPSESSID\":\"1c1a05300816a733364c9f0ee81a47d6\",\"app_id\":\"223537281029895\",\"tpid\":false}");
          }
          return JSON.decode("{\"signed_request\":\"zKMmDgwgnn-Oki5Ttzp59Y_QStZrUDrzlNI8coGCHYw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjAzNTA0MDAsImlzc3VlZF9hdCI6MTMyMDM0NDU2Miwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUpqaTk2ODlTdW91MGpmdzZ0Rzd5QUdmZmFiSUtDY0dvanl6eDZ2R1R0eGRZWGJJUmZIUFBPUFg0ZmhWWkNVNnNSUG4ycnhweEloSU5jc1JOb01UNjBLaGUzbWpCN0JoRFYxWGgiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjE4MzA4MjA4NjEifQ\",\"PHPSESSID\":\"d95ce481a3ad14d28ef164211dc59c69\",\"app_id\":\"495789755606\",\"tpid\":false}");
+      }
+      
+      private function GetFBDataDavid() : Object
+      {
+         return JSON.decode("{\"signed_request\":\"6QMYC9l62KyQGpKmsywzusUjAD7y32NZ9fuQ17JWpUI.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMzg4NTQ0MDAsImlzc3VlZF9hdCI6MTMzODg0Nzk4Miwib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUpwSU8zZmZ6QTcxSndHcGhpb2dhbExUUUVNQXRxajRHN0F3QndFSWFpWGhZcXJOa0piMnVuaG9OZjVPSDdSMlBHWkJqQVVWQlpDV0R4MTVIT2dxcTV2cnlTQkFaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9HQiIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiI2MDY5OTEwMTcifQ\",\"access_token\":\"AAADLTlQ61wcBAJpIO3ffzA71JwGphiogalLTQEMAtqj4G7AwBwEIaiXhYqrNkJb2unhoNf5OH7R2PGZBjAUVBZCWDx15HOgqq5vrySBAZDZD\",\"tpid\":\"mhopBiIxBOpywcXemphb5rU_Hnk\",\"PHPSESSID\":\"6d999084e3ae5b10d69b173d95ac6881\",\"app_id\":\"223537281029895\"}");
       }
       
       private function GetFBDataEric() : Object

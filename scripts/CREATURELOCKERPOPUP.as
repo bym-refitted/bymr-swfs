@@ -438,6 +438,7 @@ package
          var mc:popup_monster = null;
          var _body:String = null;
          var image:String = null;
+         var hatcheryName:String = null;
          var e:MouseEvent = param1;
          if(BASE._credits.Get() < this._instantUnlockCost)
          {
@@ -510,9 +511,10 @@ package
             mc.bAction.visible = false;
             if(CREATURELOCKER._creatures)
             {
+               hatcheryName = !!GLOBAL._bHatchery ? GLOBAL._bHatchery._buildingProps.name : GLOBAL._buildingProps[12].name;
                mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
                   "v1":KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name),
-                  "v2":GLOBAL._bHatchery._buildingProps.name
+                  "v2":hatcheryName
                });
             }
             image = this._creatureID + "-150.png";

@@ -200,9 +200,11 @@ package com.monsters.maproom_advanced
          var _loc14_:int = 0;
          var _loc15_:int = 0;
          var _loc16_:int = 0;
-         var _loc17_:String = null;
-         var _loc18_:MapRoomPopupInfoMonster = null;
-         var _loc19_:MapRoomPopupInfoMonster = null;
+         var _loc17_:int = 0;
+         var _loc18_:int = 0;
+         var _loc19_:String = null;
+         var _loc20_:MapRoomPopupInfoMonster = null;
+         var _loc21_:MapRoomPopupInfoMonster = null;
          var _loc1_:Number = 0;
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"NORMAL"))
          {
@@ -278,9 +280,14 @@ package com.monsters.maproom_advanced
                {
                   this._attackResources.catapult.Set(GLOBAL._playerCatapultLevel.Get());
                }
-               if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+               _loc15_ = 0;
+               while(_loc15_ < GLOBAL._playerGuardianData.length)
                {
-                  this._monstersInRange = true;
+                  if(Boolean(GLOBAL._playerGuardianData[_loc15_]) && GLOBAL._playerGuardianData[_loc15_].hp.Get() > 0)
+                  {
+                     this._monstersInRange = true;
+                  }
+                  _loc15_++;
                }
             }
             while(mMonsters.numChildren)
@@ -289,25 +296,35 @@ package com.monsters.maproom_advanced
             }
             if(this._monstersInRange)
             {
-               _loc15_ = 0;
                _loc16_ = 0;
-               if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+               _loc17_ = 0;
+               _loc18_ = 0;
+               while(_loc18_ < GLOBAL._playerGuardianData.length)
                {
-                  _loc18_ = new MapRoomPopupInfoMonster();
-                  _loc18_.Setup(0,0,"G" + GLOBAL._playerGuardianData.t + "_L" + GLOBAL._playerGuardianData.l.Get(),1);
-                  mMonsters.addChild(_loc18_);
-                  _loc15_ += 1;
-               }
-               for(_loc17_ in this._attackMonsters)
-               {
-                  _loc19_ = new MapRoomPopupInfoMonster();
-                  _loc19_.Setup(_loc15_ * 125,_loc16_ * 30,_loc17_,this._attackMonsters[_loc17_].Get());
-                  _loc15_ += 1;
-                  mMonsters.addChild(_loc19_);
-                  if(_loc15_ == 3)
+                  if(Boolean(GLOBAL._playerGuardianData[_loc18_]) && GLOBAL._playerGuardianData[_loc18_].hp.Get() > 0)
                   {
-                     _loc15_ = 0;
+                     _loc20_ = new MapRoomPopupInfoMonster();
+                     _loc20_.Setup(_loc16_ * 125,_loc17_ * 30,"G" + GLOBAL._playerGuardianData[_loc18_].t + "_L" + GLOBAL._playerGuardianData[_loc18_].l.Get(),1);
+                     mMonsters.addChild(_loc20_);
                      _loc16_ += 1;
+                     if(_loc16_ == 3)
+                     {
+                        _loc16_ = 0;
+                        _loc17_ += 1;
+                     }
+                  }
+                  _loc18_++;
+               }
+               for(_loc19_ in this._attackMonsters)
+               {
+                  _loc21_ = new MapRoomPopupInfoMonster();
+                  _loc21_.Setup(_loc16_ * 125,_loc17_ * 30,_loc19_,this._attackMonsters[_loc19_].Get());
+                  _loc16_ += 1;
+                  mMonsters.addChild(_loc21_);
+                  if(_loc16_ == 3)
+                  {
+                     _loc16_ = 0;
+                     _loc17_ += 1;
                   }
                }
                this.addChild(mMonsters);

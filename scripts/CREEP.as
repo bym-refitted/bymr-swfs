@@ -2,6 +2,7 @@ package
 {
    import com.cc.utils.SecNum;
    import com.monsters.components.statusEffects.VenomEffect;
+   import com.monsters.display.CreepSkinManager;
    import com.monsters.pathing.PATHING;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.Decoy;
@@ -9,7 +10,6 @@ package
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
-   import flash.filters.GlowFilter;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    import flash.utils.getTimer;
@@ -23,10 +23,6 @@ package
       public var _blinkPoints:int = 0;
       
       public var _blinkDistance:Number;
-      
-      private var _secureDamageMult:SecNum;
-      
-      private var _secureSpeedMult:SecNum;
       
       private var _lastFrame:int = -1;
       
@@ -44,11 +40,11 @@ package
       
       private var _dead:Boolean = false;
       
+      private var _currentSkinOverride:String = null;
+      
       public function CREEP(param1:String, param2:String, param3:Point, param4:Number, param5:Point = null, param6:Boolean = false, param7:BFOUNDATION = null, param8:Number = 1, param9:Boolean = false, param10:* = null)
       {
          var _loc12_:Point = null;
-         this._secureDamageMult = new SecNum(100);
-         this._secureSpeedMult = new SecNum(100);
          super();
          var _loc11_:int = getTimer();
          _mc = this;
@@ -121,7 +117,7 @@ package
          }
          _attacking = false;
          _frameNumber = 0;
-         SPRITES.SetupSprite(_creatureID);
+         CreepSkinManager.instance.SetupSkins(_creatureID);
          if(_creatureID == "C12")
          {
             SPRITES.SetupSprite("rocket");
@@ -223,8 +219,13 @@ package
          {
             this.ModeFeed();
          }
-         this.UpdateBuffs();
+         UpdateBuffs();
          this.Render();
+      }
+      
+      public function set currentSkinOverride(param1:String) : void
+      {
+         this._currentSkinOverride = param1;
       }
       
       public function ModeJuice() : void
@@ -256,14 +257,6 @@ package
          WaypointTo(CREATURES._guardian._tmpPoint,null);
       }
       
-      public function ModeEnrage(param1:Number, param2:Number, param3:Number) : void
-      {
-         _enraged = param1;
-         _speedMult = param2;
-         _damageMult = param3;
-         this.UpdateBuffs();
-      }
-      
       private function d2h(param1:uint) : String
       {
          var _loc4_:* = 0;
@@ -284,91 +277,6 @@ package
             param1 >>= 4;
          }
          return "0x" + _loc3_;
-      }
-      
-      public function UpdateBuffs() : void
-      {
-         var _loc1_:* = 0;
-         if(_enraged > 0)
-         {
-            if(_enraged > 0)
-            {
-               if(_glow)
-               {
-                  _glow.color = 16724735;
-                  _glow.blurX = 3;
-                  _glow.blurY = 3;
-                  _glow.strength = 5;
-               }
-               else
-               {
-                  _glow = new GlowFilter(16724735,1,3,3,5,1);
-               }
-               filters = [_glow];
-            }
-         }
-         else
-         {
-            _loc1_ = 0;
-            if(_friendly)
-            {
-               if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _loc1_ |= 13421568;
-               }
-               if(Boolean(GLOBAL._monsterDefenseOverdrive) && GLOBAL._monsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _damageMult = 0.7;
-                  _loc1_ |= 255;
-               }
-               if(Boolean(GLOBAL._monsterSpeedOverdrive) && GLOBAL._monsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _speedMult = 1.5;
-                  _loc1_ |= 16711680;
-               }
-            }
-            else
-            {
-               if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _loc1_ |= 13421568;
-               }
-               if(Boolean(GLOBAL._attackerMonsterDefenseOverdrive) && GLOBAL._attackerMonsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _damageMult = 0.7;
-                  _loc1_ |= 255;
-               }
-               if(Boolean(GLOBAL._attackerMonsterSpeedOverdrive) && GLOBAL._attackerMonsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _speedMult = 1.5;
-                  _loc1_ |= 16711680;
-               }
-            }
-            if(_loc1_ != 0)
-            {
-               if(_glow)
-               {
-                  _glow.color = _loc1_;
-                  _glow.strength = 6;
-                  _glow.blurX = 7;
-                  _glow.blurY = 7;
-               }
-               else
-               {
-                  _glow = new GlowFilter(_loc1_,1,7,7,6,1);
-               }
-               filters = [_glow];
-            }
-            else
-            {
-               _damageMult = 1;
-               _speedMult = 1;
-               filters = [];
-               _glow = null;
-            }
-         }
-         this._secureSpeedMult = new SecNum(int(_speedMult * 100));
-         this._secureDamageMult = new SecNum(int(_damageMult * 100));
       }
       
       public function ModeHeal() : void
@@ -1356,6 +1264,7 @@ package
          var directTargetCreep:Boolean = false;
          var id:String = null;
          var numTargets:int = 0;
+         var damageAmt:int = 0;
          var distToEnemy:int = 0;
          var enemy:* = undefined;
          var tmpAttDamage:Number = 1;
@@ -1705,10 +1614,11 @@ package
                      SOUNDS.Play("hit" + int(4 + Math.random() * 1),0.1 + Math.random() * 0.1);
                   }
                }
-               else if(_behaviour == "loot")
+               else if(_behaviour == k_sBHVR_LOOT)
                {
-                  _targetBuilding.Loot(_damage.Get() * tmpAttDamage);
-                  _targetBuilding.Damage(_damage.Get() * tmpAttDamage,_tmpPoint.x,_tmpPoint.y);
+                  damageAmt = _damage.Get() * tmpAttDamage;
+                  _targetBuilding.Loot(damageAmt * _secureLootMult.Get());
+                  _targetBuilding.Damage(damageAmt,_tmpPoint.x,_tmpPoint.y);
                   if(_targetBuilding._stored.Get() < 0)
                   {
                      _targetBuilding._stored.Set(0);
@@ -2244,13 +2154,13 @@ package
             }
             if(_frameNumber % 30 == 0)
             {
-               if(this._secureSpeedMult.Get() != int(_speedMult * 100))
+               if(_secureSpeedMult.Get() != int(_speedMult * 100))
                {
                   LOGGER.Log("err","Regular monster speed buff incorrect");
                   GLOBAL.ErrorMessage("CREEP hack 4");
                   return false;
                }
-               if(this._secureDamageMult.Get() != int(_damageMult * 100))
+               if(_secureDamageMult.Get() != int(_damageMult * 100))
                {
                   LOGGER.Log("err","Regular monster damage buff incorrect");
                   GLOBAL.ErrorMessage("CREEP hack 5");
@@ -2369,34 +2279,6 @@ package
                node = newNode;
             }
          }
-         if(_enraged != 0 && _enraged <= GLOBAL.Timestamp())
-         {
-            this.ModeEnrage(0,1,1);
-         }
-         if(_enraged == 0 && filters.length > 0)
-         {
-            if(_friendly)
-            {
-               if(GLOBAL._mode == "build")
-               {
-                  if(GLOBAL._playerMonsterOverdrive && GLOBAL._playerMonsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._playerMonsterDefenseOverdrive && GLOBAL._playerMonsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._playerMonsterSpeedOverdrive && GLOBAL._playerMonsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
-                  {
-                     this.UpdateBuffs();
-                  }
-               }
-               if(GLOBAL._mode != "build")
-               {
-                  if(GLOBAL._monsterOverdrive && GLOBAL._monsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._monsterDefenseOverdrive && GLOBAL._monsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._monsterSpeedOverdrive && GLOBAL._monsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
-                  {
-                     this.UpdateBuffs();
-                  }
-               }
-            }
-            else if(GLOBAL._attackerMonsterOverdrive && GLOBAL._attackerMonsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._attackerMonsterDefenseOverdrive && GLOBAL._attackerMonsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._attackerMonsterSpeedOverdrive && GLOBAL._attackerMonsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
-            {
-               this.UpdateBuffs();
-            }
-         }
          this.Move();
          this.Render();
          return false;
@@ -2408,19 +2290,19 @@ package
          var _loc2_:Number = NaN;
          var _loc3_:Number = NaN;
          _speed = _maxSpeed * 0.5 * _speedMult;
-         if(_behaviour == "pen")
+         if(_behaviour == k_sBHVR_PEN)
          {
             _speed *= 0.5;
          }
-         if(_behaviour == "juice" || _behaviour == "housing" || _behaviour == "bunker")
+         if(_behaviour == k_sBHVR_JUICE || _behaviour == k_sBHVR_HOUSING || _behaviour == k_sBHVR_BUNKER)
          {
             _speed *= 1.5;
          }
-         if(_behaviour == "defend")
+         if(_behaviour == k_sBHVR_DEFEND)
          {
             _speed *= 1.5;
          }
-         if(_behaviour == "juice" && _movement == "fly" && _altitude < 60)
+         if(_behaviour == k_sBHVR_JUICE && _movement == "fly" && _altitude < 60)
          {
             _speed = 0;
          }
@@ -2774,32 +2656,32 @@ package
                SPRITES.GetSprite(_shadow,"shadow","shadow",0);
                if(_health.Get() <= 0)
                {
-                  this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"landed",mcMarker.rotation,0,this._lastFrame);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"landed",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
                }
                else
                {
-                  this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,_frameNumber,this._lastFrame);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,_frameNumber,this._lastFrame,this._currentSkinOverride);
                }
             }
             else if(_creatureID == "C15")
             {
                SPRITES.GetSprite(_shadow,"bigshadow","bigshadow",0);
-               this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,0,this._lastFrame);
+               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"flying",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
             }
             else if(_creatureID == "C9")
             {
                if(PoweredUp() && _invisibleTime >= GLOBAL.Timestamp())
                {
-                  this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"invisible",mcMarker.rotation,0,this._lastFrame);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"invisible",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
                }
                else
                {
-                  this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,0,this._lastFrame);
+                  this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,0,this._lastFrame,this._currentSkinOverride);
                }
             }
             else
             {
-               this._lastFrame = SPRITES.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame);
+               this._lastFrame = CreepSkinManager.instance.GetSprite(_graphic,_creatureID,"walking",mcMarker.rotation,_frameNumber,this._lastFrame,this._currentSkinOverride);
             }
             _lastRotation = int(mcMarker.rotation / 12);
             if(_health.Get() < _maxHealth)

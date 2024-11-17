@@ -6,6 +6,8 @@ package com.monsters.rewarding
    {
       internal var id:String;
       
+      protected var _hasBeenApplied:Boolean;
+      
       protected var _name:String;
       
       protected var _description:String;
@@ -19,6 +21,7 @@ package com.monsters.rewarding
       
       internal function applyReward() : void
       {
+         this._hasBeenApplied = true;
          this.onApplication();
       }
       
@@ -65,6 +68,11 @@ package com.monsters.rewarding
       
       public function removed() : void
       {
+      }
+      
+      public function get hasBeenApplied() : Boolean
+      {
+         return this._hasBeenApplied;
       }
    }
 }

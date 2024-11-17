@@ -70,6 +70,8 @@ package
       
       public static var _EFFECTSTOP:*;
       
+      public static var _BGTILES:*;
+      
       public static var _BUILDINGTOPS:*;
       
       public static var _damageGrid:Object;
@@ -90,6 +92,16 @@ package
       
       public static var debugGoEasy:Number = 0;
       
+      public static const MAP_TYPE_GRASS:* = 0;
+      
+      public static const MAP_TYPE_ROCK:* = 1;
+      
+      public static const MAP_TYPE_SAND:* = 2;
+      
+      public static const MAP_TYPE_CRATER:* = 3;
+      
+      public static const MAP_TYPE_LAVA:* = 4;
+      
       public static var vol:Number = 1;
       
       private static var keyunlock:int = 0;
@@ -100,11 +112,6 @@ package
       
       public function MAP(param1:String)
       {
-         var tiles:Array = null;
-         var tile:* = undefined;
-         var h:* = undefined;
-         var v:* = undefined;
-         var g:* = undefined;
          var efxbmp:* = undefined;
          var texture:String = param1;
          super();
@@ -113,21 +120,14 @@ package
             tx = GLOBAL._SCREENINIT.width / 2;
             ty = GLOBAL._SCREENINIT.height / 2;
             _GROUND = GLOBAL._layerMap.addChild(new MovieClip());
-            tiles = [];
-            tile = MAPBG.MakeTile(texture);
-            h = -2;
-            while(h < 2)
+            _BGTILES = _GROUND.addChild(new MovieClip());
+            if(BASE.isInferno())
             {
-               v = -2;
-               while(v < 2)
-               {
-                  g = _GROUND.addChild(new Bitmap(tile));
-                  g.x = h * 998;
-                  g.y = v * 498;
-                  g.cacheAsBitmap = true;
-                  v++;
-               }
-               h++;
+               swapBG(MAP_TYPE_LAVA);
+            }
+            else
+            {
+               swapBG(MAP_TYPE_GRASS);
             }
          }
          catch(e:Error)
@@ -206,6 +206,32 @@ package
          _inited = true;
       }
       
+      public static function swapBG(param1:int) : void
+      {
+         var _loc2_:String = null;
+         var _loc6_:* = undefined;
+         var _loc7_:* = undefined;
+         switch(param1)
+         {
+            case MAP_TYPE_ROCK:
+               _loc2_ = "rock";
+               break;
+            case MAP_TYPE_SAND:
+               _loc2_ = "sand";
+               break;
+            case MAP_TYPE_CRATER:
+               _loc2_ = "crater";
+               break;
+            case MAP_TYPE_LAVA:
+               _loc2_ = "lava";
+               break;
+            case MAP_TYPE_GRASS:
+            default:
+               _loc2_ = "grass";
+         }
+         continue loop0;
+      }
+      
       public static function Clear() : void
       {
          if(_GROUND)
@@ -213,6 +239,7 @@ package
             _GROUND.removeEventListener(MouseEvent.MOUSE_DOWN,Click);
             _GROUND.removeEventListener(Event.ENTER_FRAME,Scroll);
          }
+         _BGTILES = null;
          _BUILDINGBASES = null;
          _BUILDINGFOOTPRINTS = null;
          _RESOURCES = null;

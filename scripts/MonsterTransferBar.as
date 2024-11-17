@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2564")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2863")]
    public dynamic class MonsterTransferBar extends MovieClip
    {
       public var t1:TextField;

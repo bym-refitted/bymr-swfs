@@ -76,6 +76,11 @@ package
                };
                tileCount = 7;
             }
+            else if(texture == "crater")
+            {
+               g = {"g1":new isocrater1(0,0)};
+               tileCount = 1;
+            }
             t = {
                "t1":new BitmapData(1000,500,true,0),
                "t2":new BitmapData(1000,500,true,0),

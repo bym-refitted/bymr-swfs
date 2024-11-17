@@ -16,7 +16,7 @@ package
       
       public static var _ticks:int;
       
-      public static var _guardian:CHAMPIONMONSTER;
+      public static var _guardianList:Vector.<CHAMPIONMONSTER> = new Vector.<CHAMPIONMONSTER>();
       
       public function CREATURES()
       {
@@ -25,7 +25,7 @@ package
          _creatureID = 0;
          _creatureCount = 0;
          _ticks = 0;
-         _guardian = null;
+         _guardianList.length = 0;
       }
       
       public static function GetProperty(param1:String, param2:String, param3:int = 0, param4:Boolean = true) : Number
@@ -166,6 +166,7 @@ package
       {
          var _loc1_:* = undefined;
          var _loc2_:String = null;
+         var _loc3_:int = 0;
          for(_loc2_ in _creatures)
          {
             _loc1_ = _creatures[_loc2_];
@@ -174,12 +175,145 @@ package
          }
          _creatures = {};
          _creatureCount = 0;
-         if(_guardian)
+         _loc3_ = 0;
+         while(_loc3_ < _guardianList.length)
          {
-            MAP._BUILDINGTOPS.removeChild(_guardian);
-            _guardian.Clear();
-            _guardian = null;
+            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc3_]);
+            _guardianList[_loc3_] = null;
+            _loc3_++;
          }
+         _guardianList.length = 0;
+      }
+      
+      public static function get _guardian() : CHAMPIONMONSTER
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < _guardianList.length)
+         {
+            if(Boolean(_guardianList[_loc1_]) && CHAMPIONCAGE.isBasicGuardian(_guardianList[_loc1_]._creatureID))
+            {
+               return _guardianList[_loc1_];
+            }
+            _loc1_++;
+         }
+         return null;
+      }
+      
+      public static function get _krallen() : CHAMPIONMONSTER
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < _guardianList.length)
+         {
+            if(Boolean(_guardianList[_loc1_]) && _guardianList[_loc1_]._creatureID == "G5")
+            {
+               return _guardianList[_loc1_];
+            }
+            _loc1_++;
+         }
+         return null;
+      }
+      
+      public static function getGuardian(param1:int) : CHAMPIONMONSTER
+      {
+         var _loc2_:int = 0;
+         while(_loc2_ < _guardianList.length)
+         {
+            if(int(_guardianList[_loc2_]._creatureID.substr(1)) == param1)
+            {
+               return _guardianList[_loc2_];
+            }
+            _loc2_++;
+         }
+         return null;
+      }
+      
+      public static function set _guardian(param1:CHAMPIONMONSTER) : void
+      {
+         var _loc2_:int = -1;
+         var _loc3_:int = 0;
+         while(_loc3_ < _guardianList.length)
+         {
+            if(Boolean(_guardianList[_loc3_]) && CHAMPIONCAGE.isBasicGuardian(_guardianList[_loc3_]._creatureID))
+            {
+               _loc2_ = _loc3_;
+            }
+            _loc3_++;
+         }
+         if(_loc2_ == -1)
+         {
+            if(param1)
+            {
+               _guardianList.unshift(param1);
+            }
+         }
+         else if(!param1)
+         {
+            _guardianList.splice(_loc2_,1);
+         }
+         else
+         {
+            _guardianList[_loc2_] = param1;
+         }
+      }
+      
+      public static function addGuardian(param1:CHAMPIONMONSTER) : Boolean
+      {
+         var _loc2_:int = -1;
+         var _loc3_:int = 0;
+         while(_loc3_ < _guardianList.length)
+         {
+            if(_guardianList[_loc3_]._creatureID == param1._creatureID)
+            {
+               _loc2_ = _loc3_;
+            }
+            _loc3_++;
+         }
+         if(_loc2_ == -1)
+         {
+            if(param1)
+            {
+               _guardianList.push(param1);
+               return true;
+            }
+         }
+         return false;
+      }
+      
+      public static function removeGuardianType(param1:int) : void
+      {
+         var _loc2_:int = 0;
+         while(_loc2_ < _guardianList.length)
+         {
+            if(int(_guardianList[_loc2_]._creatureID.substr(1)) == param1)
+            {
+               break;
+            }
+            _loc2_++;
+         }
+         if(_loc2_ < _guardianList.length)
+         {
+            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            if(_guardianList[_loc2_] == _guardian)
+            {
+               _guardian = null;
+            }
+            else
+            {
+               _guardianList.splice(_loc2_,1);
+            }
+         }
+      }
+      
+      public static function removeAllGuardians() : void
+      {
+         var _loc1_:int = int(_guardianList.length);
+         var _loc2_:int = 0;
+         while(_loc2_ < _loc1_)
+         {
+            MAP._BUILDINGTOPS.removeChild(_guardianList[_loc2_]);
+            _loc2_++;
+         }
+         _guardianList.length = 0;
       }
    }
 }

@@ -1,5 +1,6 @@
 package com.monsters.replayableEvents
 {
+   import com.cc.tests.ABTest;
    import com.monsters.debug.Console;
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.messages.Message;
@@ -42,7 +43,7 @@ package com.monsters.replayableEvents
       {
          var _loc2_:ReplayableEvent = null;
          var _loc3_:Number = NaN;
-         if(GLOBAL._mode != "build" || BASE.isInferno())
+         if(GLOBAL._mode != "build" || BASE.isInferno() || !TUTORIAL.hasFinished)
          {
             return;
          }
@@ -123,7 +124,7 @@ package com.monsters.replayableEvents
       
       private static function addUI() : void
       {
-         if(!activeEvent)
+         if(!activeEvent || !activeEvent.doesQualify())
          {
             return;
          }
@@ -203,7 +204,7 @@ package com.monsters.replayableEvents
       
       private static function canScheduleNewEvent() : Boolean
       {
-         return !activeEvent && !hasRecentlyParticipatedInAnEvent() || Boolean(getQualifiedLiveEvent());
+         return (!activeEvent && !hasRecentlyParticipatedInAnEvent() || Boolean(getQualifiedLiveEvent())) && ABTest.isInTestGroup("ers",205);
       }
       
       private static function getQualifiedLiveEvent() : ReplayableEvent
@@ -229,7 +230,7 @@ package com.monsters.replayableEvents
          while(_loc2_ < ReplayableEventLibrary.EVENTS.length)
          {
             _loc3_ = ReplayableEventLibrary.EVENTS[_loc2_];
-            if(Boolean(_loc3_.originalStartDate) && _loc3_.originalStartDate - param1 <= _DURATION_BETWEEN_EVENTS)
+            if(_loc3_.originalStartDate && _loc3_.originalStartDate >= param1 && _loc3_.originalStartDate - param1 <= _DURATION_BETWEEN_EVENTS)
             {
                return true;
             }
@@ -245,7 +246,7 @@ package com.monsters.replayableEvents
          while(_loc1_ < ReplayableEventLibrary.EVENTS.length)
          {
             _loc2_ = ReplayableEventLibrary.EVENTS[_loc1_];
-            if(Boolean(_loc2_.endDate) && currentTime - _loc2_.endDate <= 7 * 24 * 60 * 60)
+            if(Boolean(_loc2_.endDate) && currentTime - _loc2_.endDate <= _DURATION_BETWEEN_EVENTS)
             {
                return true;
             }

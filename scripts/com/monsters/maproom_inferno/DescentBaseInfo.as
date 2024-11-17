@@ -3,7 +3,7 @@ package com.monsters.maproom_inferno
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2818")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2914")]
    public dynamic class DescentBaseInfo extends MovieClip
    {
       public var info_txt:TextField;

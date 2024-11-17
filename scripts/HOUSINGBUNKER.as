@@ -58,20 +58,8 @@ package
       
       override public function StopMoveB() : *
       {
-         var _loc2_:Number = 0;
-         var _loc3_:* = undefined;
-         var _loc1_:uint = _creatures.length;
          super.StopMoveB();
-         while(_loc2_ < _loc1_)
-         {
-            _loc3_ = _creatures[_loc2_];
-            if(_loc3_._behaviour != CreepBase.k_sBHVR_JUICE)
-            {
-               _loc3_._targetCenter = GRID.FromISO(_mc.x,_mc.y);
-               _loc3_.ModeHousing();
-            }
-            _loc2_++;
-         }
+         UpdateHousedCreatureTargets();
       }
       
       override public function Description() : *
@@ -81,7 +69,10 @@ package
             "v1":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get() - 1]),
             "v2":GLOBAL.FormatNumber(_buildingProps.capacity[_lvl.Get()])
          });
-         _recycleDescription = "<b>" + KEYS.Get("bdg_housing_recycledesc") + "</b><br>" + _recycleCosts;
+         if(_recycleCosts != null)
+         {
+            _recycleDescription = "<b>" + KEYS.Get("bdg_housing_recycledesc") + "</b><br>" + _recycleCosts;
+         }
          HOUSING.HousingSpace();
          if(BASE._yardType != BASE.OUTPOST)
          {
@@ -136,6 +127,7 @@ package
          super.RecycleC();
          this.Removed();
          HOUSING.HousingSpace();
+         RelocateHousedCreatures();
       }
       
       override public function Destroyed(param1:Boolean = true) : *

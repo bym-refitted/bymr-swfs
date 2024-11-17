@@ -857,6 +857,14 @@ package com.monsters.maproom_advanced
             this._fullScreen = false;
             return;
          }
+         if((!this._fallbackHomeCell._updated || param1) && this._fallbackHomeCell._dataAge <= 0)
+         {
+            _loc6_ = MapRoom.GetCell(this._fallbackHomeCell.X,this._fallbackHomeCell.Y);
+            if(_loc6_)
+            {
+               this._fallbackHomeCell.Setup(_loc6_);
+            }
+         }
          this._sortArray = [];
          for each(_loc5_ in this._cells)
          {
@@ -940,14 +948,6 @@ package com.monsters.maproom_advanced
             }
             _loc5_.depth = _loc5_.y * 1000 + _loc5_.x;
             this._sortArray.push(_loc5_);
-         }
-         if((!this._fallbackHomeCell._updated || param1) && this._fallbackHomeCell._dataAge <= 0)
-         {
-            _loc6_ = MapRoom.GetCell(this._fallbackHomeCell.X,this._fallbackHomeCell.Y);
-            if(_loc6_)
-            {
-               this._fallbackHomeCell.Setup(_loc6_);
-            }
          }
          if(_loc4_)
          {

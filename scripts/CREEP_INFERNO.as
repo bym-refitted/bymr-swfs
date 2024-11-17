@@ -23,10 +23,6 @@ package
       
       public var _blinkDistance:Number;
       
-      private var _secureDamageMult:SecNum;
-      
-      private var _secureSpeedMult:SecNum;
-      
       private var _lastFrame:int = -1;
       
       private var _defenderRemoved:Boolean = false;
@@ -44,8 +40,6 @@ package
       public function CREEP_INFERNO(param1:String, param2:String, param3:Point, param4:Number, param5:Point = null, param6:Boolean = false, param7:BFOUNDATION = null, param8:Number = 1, param9:Boolean = false, param10:* = null)
       {
          var _loc12_:Point = null;
-         this._secureDamageMult = new SecNum(100);
-         this._secureSpeedMult = new SecNum(100);
          super();
          var _loc11_:int = getTimer();
          _mc = this;
@@ -234,7 +228,7 @@ package
          WaypointTo(CREATURES._guardian._tmpPoint,null);
       }
       
-      public function ModeEnrage(param1:Number, param2:Number, param3:Number) : void
+      override public function ModeEnrage(param1:Number, param2:Number, param3:Number) : void
       {
          _enraged = param1;
          _speedMult = param2;
@@ -264,7 +258,7 @@ package
          return "0x" + _loc3_;
       }
       
-      public function UpdateBuffs() : void
+      override public function UpdateBuffs() : void
       {
          var _loc1_:* = 0;
          if(_enraged > 0)
@@ -345,8 +339,8 @@ package
                _glow = null;
             }
          }
-         this._secureSpeedMult = new SecNum(int(_speedMult * 100));
-         this._secureDamageMult = new SecNum(int(_damageMult * 100));
+         _secureSpeedMult = new SecNum(int(_speedMult * 100));
+         _secureDamageMult = new SecNum(int(_damageMult * 100));
       }
       
       public function ModeHunt() : void
@@ -477,7 +471,6 @@ package
       
       public function ModeDecoy() : void
       {
-         var _loc1_:SiegeWeapon = null;
          var _loc2_:Decoy = null;
          var _loc3_:Rectangle = null;
          var _loc4_:Point = null;
@@ -488,7 +481,7 @@ package
          var _loc9_:* = undefined;
          var _loc10_:* = undefined;
          var _loc11_:* = undefined;
-         _loc1_ = SiegeWeapons.activeWeapon;
+         var _loc1_:SiegeWeapon = SiegeWeapons.activeWeapon;
          if(Boolean(_loc1_) && _loc1_ is Decoy)
          {
             _behaviour = "decoy";
@@ -1533,13 +1526,13 @@ package
          {
             if(_frameNumber % 30 == 0)
             {
-               if(this._secureSpeedMult.Get() != int(_speedMult * 100))
+               if(_secureSpeedMult.Get() != int(_speedMult * 100))
                {
                   LOGGER.Log("hak","Regular monster speed buff incorrect");
                   GLOBAL.ErrorMessage("CREEP_INFERNO hack 4");
                   return false;
                }
-               if(this._secureDamageMult.Get() != int(_damageMult * 100))
+               if(_secureDamageMult.Get() != int(_damageMult * 100))
                {
                   LOGGER.Log("hak","Regular monster damage buff incorrect");
                   GLOBAL.ErrorMessage("CREEP_INFERNO hack 5");

@@ -101,6 +101,8 @@ package com.monsters.maproom_advanced
       
       public static var _showAttackWait:Boolean = false;
       
+      private static var _pendingMapCellDataRequests:Array = [];
+      
       public function MapRoom()
       {
          super();
@@ -714,10 +716,11 @@ package com.monsters.maproom_advanced
       
       public static function RequestData(param1:Point, param2:Boolean = false) : void
       {
-         var handleLoadSuccessful:Function;
-         var handleLoadError:Function;
          var z:objZone = null;
          var loadvars:Array = null;
+         var dataRequest:Object = null;
+         var handleLoadSuccessful:Function = null;
+         var handleLoadError:Function = null;
          var zonePoint:Point = param1;
          var force:Boolean = param2;
          var zoneID:int = zonePoint.x * 10000 + zonePoint.y;
@@ -743,38 +746,48 @@ package com.monsters.maproom_advanced
          {
             handleLoadSuccessful = function(param1:Object):void
             {
-               var _loc2_:int = 0;
-               var _loc3_:int = 0;
-               var _loc4_:Array = null;
-               var _loc5_:Object = null;
+               var _loc3_:Object = null;
+               var _loc4_:int = 0;
+               var _loc5_:int = 0;
+               var _loc6_:Array = null;
+               var _loc7_:Object = null;
+               var _loc2_:Object = _pendingMapCellDataRequests.shift();
+               if(_loc2_ == null)
+               {
+               }
+               if(_pendingMapCellDataRequests.length > 0)
+               {
+                  _loc3_ = _pendingMapCellDataRequests[0];
+                  new URLLoaderApi().load(_loc3_.url,_loc3_.loadvars,handleLoadSuccessful,handleLoadError);
+               }
                if(!_open && !BASE._needCurrentCell)
                {
                   return;
                }
                if(param1 && !param1.error && Boolean(param1.data))
                {
-                  _loc2_ = param1.x * 10000 + param1.y;
-                  if(!_zones[_loc2_])
+                  _loc4_ = param1.x * 10000 + param1.y;
+                  if(!_zones[_loc4_])
                   {
-                     _zones[_loc2_] = new objZone();
+                     _zones[_loc4_] = new objZone();
                   }
-                  _zones[_loc2_].data = param1.data;
+                  _zones[_loc4_].data = param1.data;
                   if(param1.resources)
                   {
-                     _loc3_ = 1;
-                     while(_loc3_ < 5)
+                     _loc5_ = 1;
+                     while(_loc5_ < 5)
                      {
-                        GLOBAL._resources["r" + _loc3_].Set(param1.resources["r" + _loc3_]);
-                        GLOBAL._hpResources["r" + _loc3_] = GLOBAL._resources["r" + _loc3_].Get();
-                        GLOBAL._resources["r" + _loc3_ + "max"] = param1.resources["r" + _loc3_ + "max"];
-                        GLOBAL._hpResources["r" + _loc3_ + "max"] = param1.resources["r" + _loc3_ + "max"];
-                        _loc3_++;
+                        GLOBAL._resources["r" + _loc5_].Set(param1.resources["r" + _loc5_]);
+                        GLOBAL._hpResources["r" + _loc5_] = GLOBAL._resources["r" + _loc5_].Get();
+                        GLOBAL._resources["r" + _loc5_ + "max"] = param1.resources["r" + _loc5_ + "max"];
+                        GLOBAL._hpResources["r" + _loc5_ + "max"] = param1.resources["r" + _loc5_ + "max"];
+                        _loc5_++;
                      }
                   }
                   if(param1.alliancedata)
                   {
-                     _loc4_ = param1.alliancedata;
-                     ALLIANCES.ProcessAlliances(_loc4_);
+                     _loc6_ = param1.alliancedata;
+                     ALLIANCES.ProcessAlliances(_loc6_);
                   }
                   if(MapRoom._open)
                   {
@@ -782,11 +795,11 @@ package com.monsters.maproom_advanced
                   }
                   else if(BASE._needCurrentCell)
                   {
-                     if(_zones && _zones[_loc2_] && Boolean(_zones[_loc2_].data) && Boolean(_zones[_loc2_].data[BASE._currentCellLoc.x]))
+                     if(_zones && _zones[_loc4_] && Boolean(_zones[_loc4_].data) && Boolean(_zones[_loc4_].data[BASE._currentCellLoc.x]))
                      {
-                        _loc5_ = _zones[_loc2_].data[BASE._currentCellLoc.x][BASE._currentCellLoc.y];
+                        _loc7_ = _zones[_loc4_].data[BASE._currentCellLoc.x][BASE._currentCellLoc.y];
                         GLOBAL._currentCell = new MapRoomCell();
-                        GLOBAL._currentCell.Setup(_loc5_);
+                        GLOBAL._currentCell.Setup(_loc7_);
                         GLOBAL._currentCell.X = BASE._currentCellLoc.x;
                         GLOBAL._currentCell.Y = BASE._currentCellLoc.y;
                         _zones = {};
@@ -818,7 +831,15 @@ package com.monsters.maproom_advanced
             {
                loadvars.push(["worldid",_worldID]);
             }
-            new URLLoaderApi().load(url,loadvars,handleLoadSuccessful,handleLoadError);
+            dataRequest = {
+               "url":url,
+               "loadvars":loadvars
+            };
+            _pendingMapCellDataRequests.push(dataRequest);
+            if(_pendingMapCellDataRequests.length == 1)
+            {
+               new URLLoaderApi().load(url,loadvars,handleLoadSuccessful,handleLoadError);
+            }
          }
       }
       

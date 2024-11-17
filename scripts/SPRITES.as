@@ -38,6 +38,7 @@ package
          _sprites.C10 = new SpriteData("monsters/crabatron.png",37,27,15,18);
          _sprites.C11 = new SpriteData("monsters/sprite.11.v2.png",48,35,24,22);
          _sprites.C12 = new SpriteData("monsters/sprite.12.v2.png",53,46,21,27);
+         _sprites.C12Gold = new SpriteData("monsters/sprite.12.gold.png",53,46,21,27);
          _sprites.C13 = new SpriteData("monsters/13.png",40,26,19,17);
          _sprites.C14 = new SpriteData("monsters/14.v1.png",28,28,15,14);
          _sprites.C15 = new SpriteData("monsters/zafreeti.v2.png",56,70,28,35);
@@ -76,6 +77,9 @@ package
          _sprites.G4_4 = new SpriteData("monsters/korath_4.png",153,123,26,36);
          _sprites.G4_5 = new SpriteData("monsters/korath_5.png",199,162,26,36);
          _sprites.G4_6 = new SpriteData("monsters/korath_6.png",202,167,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.G5_1 = new SpriteData("monsters/krallen_1_rev_65.png",130,80,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.G5_2 = new SpriteData("monsters/krallen_2_rev_65.png",131,90,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
+         _sprites.G5_3 = new SpriteData("monsters/krallen_3_rev_65.png",142,100,SpriteData.FUBAR_X,SpriteData.FUBAR_Y);
          _sprites.C200 = new SpriteData("monsters/looter.png",51,47,7,33);
          _sprites.shadow = new SpriteData("monsters/flyingshadow.png",31,20,15,10);
          _sprites.bigshadow = new SpriteData("monsters/zafreeti-shadow.png",48,32,24,16);
@@ -355,6 +359,34 @@ package
             else if(param3 == "stomp")
             {
                GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % 10 + 20);
+            }
+            return param4 / 22.5;
+         }
+         if(param2.substr(0,2) == "G5" && Boolean(_sprites[param2]))
+         {
+            if(param3 == "walking" || param3 == "idle")
+            {
+               _loc9_ = 10;
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + 0);
+            }
+            else if(param3 == "attack")
+            {
+               _loc8_ = int(param2.substr(3,1));
+               switch(_loc8_)
+               {
+                  case 1:
+                     _loc9_ = 6;
+                     _loc10_ = 10;
+                     break;
+                  case 2:
+                     _loc9_ = 6;
+                     _loc10_ = 10;
+                     break;
+                  case 3:
+                     _loc9_ = 6;
+                     _loc10_ = 10;
+               }
+               GetFrame(param1,_sprites[param2],int(param4 / 22.5),param5 / 8 % _loc9_ + _loc10_);
             }
             return param4 / 22.5;
          }

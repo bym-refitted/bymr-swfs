@@ -8,6 +8,11 @@ package com.monsters.rewarding
    import com.monsters.rewarding.rewards.slimeattikus.UnlockSlimeattikusReward;
    import com.monsters.rewarding.rewards.vorg.UnblockVorgReward;
    import com.monsters.rewarding.rewards.vorg.UnlockVorgReward;
+   import com.monsters.subscriptions.rewards.DAVEStatueReward;
+   import com.monsters.subscriptions.rewards.ExtraTilesReward;
+   import com.monsters.subscriptions.rewards.GoldenDAVEReward;
+   import com.monsters.subscriptions.rewards.ImprovedHCCReward;
+   import com.monsters.subscriptions.rewards.YardPlannerExtraSlotsReward;
    
    public class RewardLibrary
    {
@@ -27,6 +32,11 @@ package com.monsters.rewarding
          addRewardType(UnlockMagmaTowers.ID,UnlockMagmaTowers);
          addRewardType(KrallenReward.ID,KrallenReward);
          addRewardType(KrallenBuffReward.ID,KrallenBuffReward);
+         addRewardType(DAVEStatueReward.ID,DAVEStatueReward);
+         addRewardType(ExtraTilesReward.ID,ExtraTilesReward);
+         addRewardType(GoldenDAVEReward.ID,GoldenDAVEReward);
+         addRewardType(ImprovedHCCReward.ID,ImprovedHCCReward);
+         addRewardType(YardPlannerExtraSlotsReward.ID,YardPlannerExtraSlotsReward);
       }
       
       public static function addRewardType(param1:String, param2:Class) : void

@@ -44,6 +44,8 @@ package
       
       public static const k_sBHVR_HUNT:String = "hunt";
       
+      public static const k_sBHVR_BUFF:String = "buff";
+      
       public var _components:Vector.<Component> = new Vector.<Component>();
       
       public var _frameNumber:int;
@@ -182,6 +184,16 @@ package
       
       public var _speedMult:Number = 1;
       
+      public var _lootMult:Number = 1;
+      
+      public var _lootMultTime:int = 0;
+      
+      protected var _secureDamageMult:SecNum = new SecNum(100);
+      
+      protected var _secureSpeedMult:SecNum = new SecNum(100);
+      
+      protected var _secureLootMult:SecNum = new SecNum(1);
+      
       public var _graphicMC:DisplayObject;
       
       public var _altitude:int = 0;
@@ -296,7 +308,54 @@ package
             this._components[_loc3_].tick(param1);
             _loc3_++;
          }
+         if(this._enraged != 0 && this._enraged <= GLOBAL.Timestamp())
+         {
+            this.ModeEnrage(0,1,1);
+         }
+         if(this._lootMultTime !== 0 && this._lootMultTime < GLOBAL.Timestamp())
+         {
+            this.ModeLoot(0,1);
+         }
+         if(this._enraged == 0 && filters.length > 0)
+         {
+            if(this._friendly)
+            {
+               if(GLOBAL._mode == "build")
+               {
+                  if(GLOBAL._playerMonsterOverdrive && GLOBAL._playerMonsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._playerMonsterDefenseOverdrive && GLOBAL._playerMonsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._playerMonsterSpeedOverdrive && GLOBAL._playerMonsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
+                  {
+                     this.UpdateBuffs();
+                  }
+               }
+               if(GLOBAL._mode != "build")
+               {
+                  if(GLOBAL._monsterOverdrive && GLOBAL._monsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._monsterDefenseOverdrive && GLOBAL._monsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._monsterSpeedOverdrive && GLOBAL._monsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
+                  {
+                     this.UpdateBuffs();
+                  }
+               }
+            }
+            else if(GLOBAL._attackerMonsterOverdrive && GLOBAL._attackerMonsterOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._attackerMonsterDefenseOverdrive && GLOBAL._attackerMonsterDefenseOverdrive.Get() < GLOBAL.Timestamp() || GLOBAL._attackerMonsterSpeedOverdrive && GLOBAL._attackerMonsterSpeedOverdrive.Get() < GLOBAL.Timestamp())
+            {
+               this.UpdateBuffs();
+            }
+         }
          return true;
+      }
+      
+      public function ModeEnrage(param1:Number, param2:Number, param3:Number) : void
+      {
+         this._enraged = param1;
+         this._speedMult = param2;
+         this._damageMult = param3;
+         this.UpdateBuffs();
+      }
+      
+      public function ModeLoot(param1:int, param2:Number) : void
+      {
+         this._lootMultTime = param1;
+         this._lootMult = param2;
+         this.UpdateBuffs();
       }
       
       public function ModeAttack() : void
@@ -344,6 +403,91 @@ package
          this._hasPath = false;
          var _loc1_:Point = GRID.ToISO(this._targetCenter.x + 100,this._targetCenter.y + 60,0);
          PATHING.GetPath(this._tmpPoint,new Rectangle(_loc1_.x,_loc1_.y,10,10),this.SetWaypoints,true);
+      }
+      
+      public function UpdateBuffs() : void
+      {
+         var _loc1_:* = 0;
+         if(this._enraged > 0)
+         {
+            this._glow = this._glow || new GlowFilter();
+            this._glow.color = 16724735;
+            this._glow.blurX = 3;
+            this._glow.blurY = 3;
+            this._glow.strength = 5;
+            filters = [this._glow];
+         }
+         else if(this._lootMultTime > 0)
+         {
+            this._glow = this._glow || new GlowFilter();
+            this._glow.color = 5635873;
+            this._glow.blurX = 3;
+            this._glow.blurY = 3;
+            this._glow.strength = 5;
+            filters = [this._glow];
+         }
+         else
+         {
+            _loc1_ = 0;
+            if(this._friendly)
+            {
+               if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  _loc1_ |= 13421568;
+               }
+               if(Boolean(GLOBAL._monsterDefenseOverdrive) && GLOBAL._monsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  this._damageMult = 0.7;
+                  _loc1_ |= 255;
+               }
+               if(Boolean(GLOBAL._monsterSpeedOverdrive) && GLOBAL._monsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  this._speedMult = 1.5;
+                  _loc1_ |= 16711680;
+               }
+            }
+            else
+            {
+               if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  _loc1_ |= 13421568;
+               }
+               if(Boolean(GLOBAL._attackerMonsterDefenseOverdrive) && GLOBAL._attackerMonsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  this._damageMult = 0.7;
+                  _loc1_ |= 255;
+               }
+               if(Boolean(GLOBAL._attackerMonsterSpeedOverdrive) && GLOBAL._attackerMonsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
+               {
+                  this._speedMult = 1.5;
+                  _loc1_ |= 16711680;
+               }
+            }
+            if(_loc1_ != 0)
+            {
+               if(this._glow)
+               {
+                  this._glow.color = _loc1_;
+                  this._glow.strength = 6;
+                  this._glow.blurX = 7;
+                  this._glow.blurY = 7;
+               }
+               else
+               {
+                  this._glow = new GlowFilter(_loc1_,1,7,7,6,1);
+               }
+               filters = [this._glow];
+            }
+            else
+            {
+               this._damageMult = this._speedMult = this._lootMult = 1;
+               filters = [];
+               this._glow = null;
+            }
+         }
+         this._secureSpeedMult = new SecNum(int(this._speedMult * 100));
+         this._secureDamageMult = new SecNum(int(this._damageMult * 100));
+         this._secureLootMult = new SecNum(this._lootMult);
       }
       
       public function PoweredUp() : Boolean
@@ -422,7 +566,7 @@ package
          var _loc2_:Array = [];
          for each(_loc3_ in CREATURES._creatures)
          {
-            if(!(_loc3_._behaviour != "defend" && _loc3_._behaviour != "bunker" && BASE._yardType < BASE.INFERNO_YARD))
+            if(!(_loc3_._behaviour != k_sBHVR_DEFEND && _loc3_._behaviour != k_sBHVR_BUNKER && BASE._yardType < BASE.INFERNO_YARD))
             {
                _loc2_.push({
                   "creep":_loc3_,
@@ -463,6 +607,7 @@ package
          var _loc9_:Point = null;
          var _loc10_:Point = null;
          var _loc11_:int = 0;
+         var _loc12_:Array = null;
          var _loc13_:* = undefined;
          var _loc14_:* = undefined;
          var _loc15_:Boolean = false;
@@ -475,9 +620,9 @@ package
          var _loc22_:* = undefined;
          var _loc23_:* = undefined;
          var _loc3_:int = getTimer();
-         var _loc12_:Array = [];
+         _loc12_ = [];
          this._looking = true;
-         if(this._behaviour == "hunt" && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0))
+         if(this._behaviour == k_sBHVR_HUNT && (CREATURES._creatureCount > 0 || CREATURES._guardian && CREATURES._guardian._health.Get() > 0))
          {
             this.FindHuntingTargets();
             if(this._targetCreep)

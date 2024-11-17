@@ -8,6 +8,12 @@ package com.monsters.events
       
       public static const PLACED_FOR_CONSTRUCTION:String = "buildingPlacedForConstruction";
       
+      public static var ATTEMPT_RECYCLE:String = "attemptedToRecycleBuilding";
+      
+      public static var ENTER_MR2:String = "enterMaproom2";
+      
+      public static var DESTROY_MAPROOM:String = "destroyMaproom";
+      
       private var _building:BFOUNDATION;
       
       public function BuildingEvent(param1:String, param2:BFOUNDATION)

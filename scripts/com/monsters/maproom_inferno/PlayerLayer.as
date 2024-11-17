@@ -265,7 +265,7 @@ package com.monsters.maproom_inferno
                   _loc3_ = false;
                   for each(_loc4_ in this.baseData)
                   {
-                     if(_loc4_.baseid.Get() == _loc2_.baseid)
+                     if(Number(_loc4_.baseid.Get()) == _loc2_.baseid)
                      {
                         _loc3_ = true;
                      }

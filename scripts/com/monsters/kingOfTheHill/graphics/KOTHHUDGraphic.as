@@ -1,12 +1,19 @@
 package com.monsters.kingOfTheHill.graphics
 {
-   import flash.display.MovieClip;
-   
-   public class KOTHHUDGraphic extends MovieClip
+   public class KOTHHUDGraphic extends KrallenHUD_CLIP
    {
-      public function KOTHHUDGraphic(param1:Boolean)
+      public function KOTHHUDGraphic(param1:Boolean, param2:uint)
       {
          super();
+         this.update(param1,param2);
+         buttonMode = true;
+      }
+      
+      public function update(param1:Boolean, param2:uint) : void
+      {
+         gotoAndStop(param1 ? "active" : "inactive");
+         mcLevel.tLevel.text = param2.toString();
+         mcLevel.visible = param2;
       }
    }
 }

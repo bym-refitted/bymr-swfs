@@ -1,9 +1,21 @@
 package com.monsters.kingOfTheHill
 {
+   import com.monsters.events.AttackEvent;
+   import com.monsters.events.BuildingEvent;
+   import com.monsters.frontPage.FrontPageGraphic;
+   import com.monsters.frontPage.messages.Message;
    import com.monsters.interfaces.IHandler;
    import com.monsters.kingOfTheHill.graphics.KOTHHUDGraphic;
+   import com.monsters.kingOfTheHill.messages.KOTHEndMessage;
+   import com.monsters.kingOfTheHill.messages.KOTHQuota1MetMessage;
+   import com.monsters.kingOfTheHill.messages.KOTHQuota2MetMessage;
+   import com.monsters.kingOfTheHill.messages.KOTHRewardMessage;
+   import com.monsters.kingOfTheHill.messages.KrallenAtRiskMessage;
+   import com.monsters.kingOfTheHill.messages.KrallenWinSoonMessage;
    import com.monsters.kingOfTheHill.rewards.KrallenBuffReward;
    import com.monsters.kingOfTheHill.rewards.KrallenReward;
+   import com.monsters.replayableEvents.ReplayableEventHandler;
+   import com.monsters.replayableEvents.looting.KingOfTheHill;
    import com.monsters.rewarding.Reward;
    import com.monsters.rewarding.RewardHandler;
    import com.monsters.rewarding.RewardLibrary;
@@ -11,13 +23,29 @@ package com.monsters.kingOfTheHill
    
    public class KOTHHandler implements IHandler
    {
-      private const _RANK_THRESHOLDS:Vector.<uint> = Vector.<uint>([5 * 60,200,100,0]);
+      private static var _instance:KOTHHandler;
       
-      private var _consecutiveWins:uint;
+      private const _WARNING_DURATION:uint = 86400;
       
-      private var _rank:uint;
+      private const _LAST_LOOT_SCORE_LABEL:String = "lastKOTHScore";
       
-      private var _progression:uint;
+      private const _LAST_TIER_LABEL:String = "lastKOTHTier";
+      
+      private var _lootingDuration:uint = 604800;
+      
+      private var _lootThresholds:Vector.<uint> = new Vector.<uint>();
+      
+      private var _tierChangeMessages:Vector.<Class> = Vector.<Class>([KOTHQuota1MetMessage,KOTHQuota2MetMessage]);
+      
+      private var _lootChangeMessages:Vector.<Class> = Vector.<Class>([KOTHQuota1MetMessage,KOTHQuota2MetMessage]);
+      
+      private var _wins:uint;
+      
+      private var _totalLoot:Number;
+      
+      private var _timeToReset:uint;
+      
+      private var _tier:uint;
       
       private var _hudGraphic:KOTHHUDGraphic;
       
@@ -26,85 +54,288 @@ package com.monsters.kingOfTheHill
          super();
       }
       
+      public static function get instance() : KOTHHandler
+      {
+         if(!_instance)
+         {
+            _instance = new KOTHHandler();
+         }
+         return _instance;
+      }
+      
       public function initialize(param1:Object = null) : void
       {
+         if(!GLOBAL._flags[this.name] || GLOBAL._mode != "build" || BASE._yardType != BASE.MAIN_YARD)
+         {
+            return;
+         }
+         if(param1)
+         {
+            this.importData(param1);
+         }
+         if(this.doesQualify)
+         {
+            CHAMPIONCAGEPOPUP._kothEnabled = true;
+         }
+         GLOBAL.eventDispatcher.addEventListener(AttackEvent.ATTACK_OVER,this.endedAttack);
+         GLOBAL.eventDispatcher.addEventListener(BuildingEvent.DESTROY_MAPROOM,this.destroyedMaproom);
+         this.updtateEvent();
+         this.checkWarnings();
+         this.checkEventReset();
+         this.checkQuotaPopups();
+         this.updateRewards();
+         this.addHUDGraphic();
       }
       
-      private function applyRewards() : void
+      private function checkEventReset() : void
       {
-         this.updateReward(KrallenReward.ID,this._progression);
-         this.updateReward(KrallenBuffReward.ID,this._consecutiveWins);
+         var _loc2_:Message = null;
+         var _loc1_:Number = GLOBAL.StatGet(this._LAST_LOOT_SCORE_LABEL);
+         if(this._totalLoot < _loc1_)
+         {
+            if(this._wins)
+            {
+               _loc2_ = new KOTHRewardMessage(this._wins > 1);
+            }
+            else
+            {
+               _loc2_ = new KOTHEndMessage(GLOBAL.StatGet(this._LAST_TIER_LABEL) >= 1);
+            }
+            POPUPS.Push(new FrontPageGraphic(_loc2_));
+         }
       }
       
-      private function updateReward(param1:String, param2:Number) : void
+      private function checkQuotaPopups() : void
       {
-         var _loc3_:Reward = RewardHandler.instance.getRewardByID(param1);
-         if(_loc3_)
+         var _loc3_:Message = null;
+         var _loc1_:uint = this.getTier(GLOBAL.StatGet(this._LAST_LOOT_SCORE_LABEL));
+         var _loc2_:uint = this.getTier(this._totalLoot);
+         if(_loc2_ > _loc1_ && _loc2_ <= this._lootChangeMessages.length)
+         {
+            _loc3_ = new this._lootChangeMessages[_loc2_ - 1]();
+            POPUPS.Push(new FrontPageGraphic(_loc3_));
+         }
+      }
+      
+      protected function endedAttack(param1:AttackEvent) : void
+      {
+         var _loc2_:Object = param1.loot;
+         var _loc3_:uint = _loc2_.r1.Get() + _loc2_.r2.Get() + _loc2_.r3.Get() + _loc2_.r4.Get();
+         LOGGER.StatB({
+            "st1":"KOTH",
+            "value":_loc3_.toString()
+         },"Loot");
+      }
+      
+      protected function destroyedMaproom(param1:BuildingEvent) : void
+      {
+         CHAMPIONCAGEPOPUP._kothEnabled = false;
+         var _loc2_:Object = {};
+         _loc2_.tier = 0;
+         _loc2_.wins = 0;
+         _loc2_.loot = 0;
+         _loc2_.countdown = 0;
+         this.initialize(_loc2_);
+      }
+      
+      private function checkWarnings() : void
+      {
+         if(this._timeToReset <= this._WARNING_DURATION)
+         {
+            if(Boolean(this._tier) && this._totalLoot < this.minimumLootRequiredToUnlockKrallen())
+            {
+               POPUPS.Push(new FrontPageGraphic(new KrallenAtRiskMessage()));
+            }
+            else if(!this._tier && this._totalLoot >= this.minimumLootRequiredToUnlockKrallen() * 0.9)
+            {
+               POPUPS.Push(new FrontPageGraphic(new KrallenWinSoonMessage()));
+            }
+         }
+      }
+      
+      private function updtateEvent() : void
+      {
+         var _loc1_:KingOfTheHill = null;
+         if(Boolean(ReplayableEventHandler.activeEvent) && ReplayableEventHandler.activeEvent is KingOfTheHill)
+         {
+            _loc1_ = ReplayableEventHandler.activeEvent as KingOfTheHill;
+            _loc1_.score = this._totalLoot;
+         }
+      }
+      
+      private function updateRewards() : void
+      {
+         this.updateReward(KrallenReward.ID,this.tier,true);
+         this.updateReward(KrallenBuffReward.ID,this._wins);
+      }
+      
+      private function updateReward(param1:String, param2:Number, param3:Boolean = false) : void
+      {
+         var _loc4_:Reward = RewardHandler.instance.getRewardByID(param1);
+         if(_loc4_)
          {
             if(!param2)
             {
-               RewardHandler.instance.removeReward(_loc3_);
-               _loc3_ = null;
+               RewardHandler.instance.removeReward(_loc4_);
+               _loc4_ = null;
+               if(param3)
+               {
+                  LOGGER.StatB({
+                     "st1":"KOTH",
+                     "st2":"Champion",
+                     "st3":"Removed"
+                  },this.tier + "_" + (this.wins - 1));
+               }
             }
          }
          else if(param2)
          {
-            _loc3_ = RewardLibrary.getRewardByID(param1);
+            _loc4_ = RewardLibrary.getRewardByID(param1);
+            if(param3)
+            {
+               LOGGER.StatB({
+                  "st1":"KOTH",
+                  "st2":"Champion",
+                  "st3":"Awarded"
+               },this.tier + "_" + (this.wins - 1));
+            }
          }
-         if(_loc3_)
+         if(_loc4_)
          {
-            _loc3_.value = param2;
-            RewardHandler.instance.addReward(_loc3_);
+            RewardHandler.instance.addReward(_loc4_);
+            _loc4_.value = param2;
+            RewardHandler.instance.applyReward(_loc4_);
          }
       }
       
       private function addHUDGraphic() : void
       {
-         this._hudGraphic = new KOTHHUDGraphic(this._consecutiveWins);
+         var _loc1_:* = 0;
+         if(!this.doesQualify || GLOBAL._mode != "build" || BASE._yardType != BASE.MAIN_YARD)
+         {
+            return;
+         }
+         if(CREATURES._krallen)
+         {
+            _loc1_ = CREATURES._krallen._level.Get();
+         }
+         this._hudGraphic = new KOTHHUDGraphic(this.tier,_loc1_);
+         UI2._top.addIcon(this._hudGraphic);
          this._hudGraphic.addEventListener(MouseEvent.CLICK,this.clickedHUDGraphic);
+      }
+      
+      private function removeHUDGraphic() : void
+      {
+         if(!this._hudGraphic)
+         {
+            return;
+         }
+         UI2._top.removeIcon(this._hudGraphic);
+         this._hudGraphic.removeEventListener(MouseEvent.CLICK,this.clickedHUDGraphic);
       }
       
       protected function clickedHUDGraphic(param1:MouseEvent) : void
       {
-         CHAMPIONCAGE.Show();
-         CHAMPIONCAGE._popup.Setup(2);
+         CHAMPIONCAGE.ShowKrallenTab();
       }
       
       public function get name() : String
       {
-         return "koth";
+         return "krallen";
       }
       
       public function importData(param1:Object) : void
       {
-         this._consecutiveWins = param1.consecutivewins;
-         this.rank = param1.rank;
+         this.getFlagData();
+         this._tier = param1.tier;
+         this._wins = param1.wins;
+         this._totalLoot = param1.loot;
+         this._timeToReset = param1.countdown;
+      }
+      
+      private function getFlagData() : void
+      {
+         this._lootThresholds.push(GLOBAL._flags["krallen_special1_award_threshold"]);
+         this._lootThresholds.push(GLOBAL._flags["krallen_award_threshold"]);
+         this._lootThresholds.push(0);
+         this._lootingDuration = GLOBAL._flags["krallen_duration"] * 86400;
+      }
+      
+      public function minimumLootRequiredToUnlockKrallen() : uint
+      {
+         if(this._lootThresholds.length >= 2)
+         {
+            return this._lootThresholds[this._lootThresholds.length - 2];
+         }
+         return uint.MAX_VALUE;
+      }
+      
+      public function setDebugTimeToReset(param1:uint) : void
+      {
+         this._timeToReset = param1;
+         this.checkWarnings();
+      }
+      
+      public function get timePerRound() : uint
+      {
+         return this._lootingDuration;
+      }
+      
+      public function get timeEnd() : uint
+      {
+         return ReplayableEventHandler.currentTime + this._timeToReset;
+      }
+      
+      public function get timeStart() : uint
+      {
+         return this.timeEnd - this._lootingDuration;
+      }
+      
+      public function get doesQualify() : Boolean
+      {
+         return GLOBAL._advancedMap;
       }
       
       public function exportData() : Object
       {
+         GLOBAL.StatSet(this._LAST_LOOT_SCORE_LABEL,this._totalLoot,false);
+         GLOBAL.StatSet(this._LAST_TIER_LABEL,this._tier,false);
          return null;
       }
       
-      public function get rank() : uint
+      public function get totalLoot() : Number
       {
-         return this._rank;
+         return this._totalLoot;
       }
       
-      public function set rank(param1:uint) : void
+      public function get timeToReset() : uint
       {
-         this._rank = param1;
-         this._progression = this.getProgressionFromRank(this._rank);
+         return this._timeToReset;
       }
       
-      private function getProgressionFromRank(param1:uint) : uint
+      public function get wins() : uint
+      {
+         return this._wins;
+      }
+      
+      public function get lootThresholds() : Vector.<uint>
+      {
+         return this._lootThresholds;
+      }
+      
+      public function get tier() : uint
+      {
+         return this._tier;
+      }
+      
+      public function getTier(param1:Number) : uint
       {
          var _loc2_:int = 0;
-         while(_loc2_ < this._RANK_THRESHOLDS.length)
+         while(_loc2_ < this._lootThresholds.length)
          {
-            if(this._RANK_THRESHOLDS[_loc2_] >= param1)
+            if(param1 >= this._lootThresholds[_loc2_])
             {
-               return _loc2_;
+               return this._lootThresholds.length - 1 - _loc2_;
             }
             _loc2_++;
          }

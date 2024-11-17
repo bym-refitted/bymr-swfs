@@ -8,6 +8,7 @@ package
    import com.monsters.effects.smoke.Smoke;
    import com.monsters.events.BuildingEvent;
    import com.monsters.pathing.PATHING;
+   import com.monsters.utils.MovieClipUtils;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
@@ -734,14 +735,24 @@ package
                         container.y = imageDataB["top" + state][1].y;
                         try
                         {
-                           _mcHit.gotoAndStop("f" + imageLevel + state);
+                           if(MovieClipUtils.validateFrameLabel(_mcHit as MovieClip,"f" + imageLevel + state))
+                           {
+                              _mcHit.gotoAndStop("f" + imageLevel + state);
+                           }
                         }
                         catch(e:Error)
                         {
                         }
                         if(state == "destroyed" && _type != 14)
                         {
-                           _mcHit.gotoAndStop("f" + state);
+                           if(MovieClipUtils.validateFrameLabel(_mcHit as MovieClip,"f" + state))
+                           {
+                              _mcHit.gotoAndStop("f" + state);
+                           }
+                           else
+                           {
+                              print("BFOUNDATION.ImageCallback building has no hit 1 " + _type + " frame f" + state);
+                           }
                         }
                         _mcHit.x = container.x;
                         _mcHit.y = container.y;
@@ -2282,7 +2293,14 @@ package
          {
             if(GLOBAL._mode == "build")
             {
-               GLOBAL.Message(KEYS.Get("msg_stopconstructionconfirm"),KEYS.Get("msg_destroybuilding_btn"),this.RecycleB);
+               if(BASE._yardType == BASE.OUTPOST || BASE._yardType == BASE.INFERNO_OUTPOST)
+               {
+                  GLOBAL.Message(KEYS.Get("msg_stopconstructionoutpostbuilding"));
+               }
+               else
+               {
+                  GLOBAL.Message(KEYS.Get("msg_stopconstructionconfirm"),KEYS.Get("msg_destroybuilding_btn"),this.RecycleB);
+               }
             }
          }
          else if(this._class == "taunt" || this._class == "gift")
@@ -2317,6 +2335,7 @@ package
                GLOBAL.Message(KEYS.Get("msg_recycleunavailable"));
             }
          }
+         GLOBAL.eventDispatcher.dispatchEvent(new BuildingEvent(BuildingEvent.ATTEMPT_RECYCLE,this));
       }
       
       public function RecycleB(param1:MouseEvent = null) : *
@@ -3590,6 +3609,48 @@ package
       public function get isBuilding() : Boolean
       {
          return this._countdownBuild.Get() > 0;
+      }
+      
+      protected function RelocateHousedCreatures() : *
+      {
+         var _loc4_:* = undefined;
+         var _loc1_:BFOUNDATION = BASE.FindClosestHousingToPoint(this.x,this.y,this);
+         if(_loc1_ == null)
+         {
+            return;
+         }
+         var _loc2_:uint = this._creatures.length;
+         var _loc3_:Number = 0;
+         while(_loc3_ < _loc2_)
+         {
+            _loc4_ = this._creatures[_loc3_];
+            if(_loc4_._behaviour != CreepBase.k_sBHVR_JUICE)
+            {
+               _loc1_._creatures.push(_loc4_);
+               _loc4_._house = _loc1_;
+               _loc4_._targetCenter = GRID.FromISO(_loc1_.x,_loc1_.y);
+               _loc4_.ModeHousing();
+            }
+            _loc3_++;
+         }
+         this._creatures.length = 0;
+      }
+      
+      protected function UpdateHousedCreatureTargets() : *
+      {
+         var _loc3_:* = undefined;
+         var _loc1_:uint = this._creatures.length;
+         var _loc2_:Number = 0;
+         while(_loc2_ < _loc1_)
+         {
+            _loc3_ = this._creatures[_loc2_];
+            if(!(_loc3_._behaviour == CreepBase.k_sBHVR_JUICE || _loc3_._behaviour == CreepBase.k_sBHVR_BUNKER))
+            {
+               _loc3_._targetCenter = GRID.FromISO(this.x,this.y);
+               _loc3_.ModeHousing();
+            }
+            _loc2_++;
+         }
       }
    }
 }

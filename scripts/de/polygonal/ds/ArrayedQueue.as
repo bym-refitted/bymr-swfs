@@ -98,11 +98,6 @@ package de.polygonal.ds
       
       public function swp(param1:int, param2:int) : void
       {
-         null;
-         null;
-         null;
-         null;
-         null;
          var _loc3_:Object = _a[int((param1 + _front) % _capacity)];
          _a[int((param1 + _front) % _capacity)] = _a[int((param2 + _front) % _capacity)];
          _a[int((param2 + _front) % _capacity)] = _loc3_;
@@ -395,9 +390,6 @@ package de.polygonal.ds
       
       public function cpy(param1:int, param2:int) : void
       {
-         null;
-         null;
-         null;
          _a[int((param1 + _front) % _capacity)] = _a[int((param2 + _front) % _capacity)];
       }
       
@@ -450,7 +442,6 @@ package de.polygonal.ds
             while(_loc6_ < _loc7_)
             {
                _loc8_ = _loc6_++;
-               null;
                _loc9_ = _a[_loc8_];
                _loc5_[_loc8_] = _loc9_.clone();
             }
@@ -507,7 +498,6 @@ package de.polygonal.ds
       public function assign(param1:Class, param2:Array = undefined, param3:int = 0) : void
       {
          var _loc5_:int = 0;
-         null;
          if(param3 <= 0)
          {
             param3 = _capacity;

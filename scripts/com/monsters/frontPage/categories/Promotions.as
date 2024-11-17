@@ -7,6 +7,7 @@ package com.monsters.frontPage.categories
          super();
          name = "Promotions";
          priority = 1;
+         _doesViewRepeatedly = false;
       }
    }
 }

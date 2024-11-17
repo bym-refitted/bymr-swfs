@@ -151,7 +151,7 @@ package com.monsters.replayableEvents.monsterInvasion.hellRaisers
       
       override protected function onEventComplete() : void
       {
-         RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnlockMagmaTowers.ID));
+         RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnlockMagmaTowers.ID));
       }
       
       public function doesAutomaticalyGetReward() : Boolean
@@ -163,7 +163,7 @@ package com.monsters.replayableEvents.monsterInvasion.hellRaisers
       {
          if(this.doesAutomaticalyGetReward())
          {
-            RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnlockMagmaTowers.ID));
+            RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnlockMagmaTowers.ID));
          }
       }
    }

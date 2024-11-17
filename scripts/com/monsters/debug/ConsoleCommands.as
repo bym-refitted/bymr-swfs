@@ -4,10 +4,16 @@ package com.monsters.debug
    import com.monsters.baseplanner.BaseTemplate;
    import com.monsters.frontPage.FrontPageGraphic;
    import com.monsters.frontPage.FrontPageLibrary;
+   import com.monsters.kingOfTheHill.KOTHHandler;
    import com.monsters.replayableEvents.ReplayableEvent;
    import com.monsters.replayableEvents.ReplayableEventHandler;
    import com.monsters.replayableEvents.ReplayableEventLibrary;
    import com.monsters.replayableEvents.monsterMadness.MonsterMadness;
+   import com.monsters.subscriptions.SubscriptionHandler;
+   import flash.display.Shape;
+   import flash.events.Event;
+   import flash.filters.GlowFilter;
+   import flash.geom.ColorTransform;
    import flash.utils.getDefinitionByName;
    
    public class ConsoleCommands
@@ -25,24 +31,203 @@ package com.monsters.debug
          Console.registerCommand("academy",creatureAcademy);
          Console.registerCommand("setfeedtime",setChampionFeedTime);
          Console.registerCommand("setstarvetime",setChampionStarveTime);
-         Console.registerCommand("tut_arrowRotation",tutorialArrowRotation);
          Console.registerCommand("tut_stage",tutorialGetStage);
-         Console.registerCommand("afk",forceAFK);
          Console.registerCommand("resetfrontpage",resetFrontPageData);
          Console.registerCommand("frontpageShow",showFrontPageMsg);
-         Console.registerCommand("setkorath",setKorathLevel);
          Console.registerCommand("removeDP",removeDamageProtection);
          Console.registerCommand("settime",setERSTime);
          Console.registerCommand("gettime",getERSTime);
          Console.registerCommand("setscore",setERSScore);
          Console.registerCommand("startevent",startERSEvent);
          Console.registerCommand("clearers",clearERSData);
-         Console.registerCommand("plannerZoom",plannerZoom);
-         Console.registerCommand("plannerTool",plannerTool);
-         Console.registerCommand("plannerRedraw",plannerRedraw);
          Console.registerCommand("setwmi2level",setWMI2Level);
+         Console.registerCommand("kothendin",setKOTHEndDate);
+         Console.registerCommand("debugChampion",setDebugChampion);
+         Console.registerCommand("giveChampion",giveChampion);
+         Console.registerCommand("setChampionPL",setChampionPL);
+         Console.registerCommand("deletechamps",deleteChampions);
+         Console.registerCommand("sam",sam);
+         Console.registerCommand("printMaxResources",printMaxResources);
+         Console.registerCommand("kothdata",getKOTHdata);
+         Console.registerCommand("showbuffradius",showBuffRadius);
+         Console.registerCommand("setkrallenlevel",setKrallenLevel);
+         Console.registerCommand("expirationDate",setSubscriptionsExpirationDate);
+         Console.registerCommand("renewalDate",setSubscriptionsRenewalDate);
+         Console.registerCommand("showbaseresources",showBaseResources);
          Console.registerCommand("printJS",printJSCalls);
          Console.registerCommand("fullscreen",toggleFullScreen);
+      }
+      
+      private static function setSubscriptionsRenewalDate(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         if(!_loc2_)
+         {
+            return "invalid date";
+         }
+         SubscriptionHandler.setRenewalDateDEBUG(_loc2_);
+         return "renewal date set to " + new Date(_loc2_).toUTCString();
+      }
+      
+      private static function setSubscriptionsExpirationDate(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         if(!_loc2_)
+         {
+            return "invalid date";
+         }
+         SubscriptionHandler.setExpirationDateDEBUG(_loc2_);
+         return "expiration date set to " + new Date(_loc2_).toUTCString();
+      }
+      
+      private static function setKrallenLevel(param1:*) : String
+      {
+         CREATURES._krallen.LevelSet(int(param1),0);
+         return "Set KOTH\'s level to " + param1;
+      }
+      
+      private static function showBuffRadius(param1:*) : String
+      {
+         var _loc2_:Shape = null;
+         if(CREEPS.krallen)
+         {
+            _loc2_ = new Shape();
+            _loc2_.graphics.beginFill(0xff00,0.3);
+            _loc2_.graphics.drawEllipse(0,0,CREEPS.krallen._buffRadius * 2,CREEPS.krallen._buffRadius);
+            _loc2_.graphics.endFill();
+            _loc2_.x = -_loc2_.width / 2;
+            _loc2_.y = -_loc2_.height / 2;
+            CREEPS.krallen.addChild(_loc2_);
+            return "toggled showing Champion buff radius.";
+         }
+         return "Must have a Krallen attacking.";
+      }
+      
+      private static function getKOTHdata(param1:*) : String
+      {
+         var _loc2_:KOTHHandler = KOTHHandler.instance;
+         return "tier: " + _loc2_.tier + ", wins:" + _loc2_.wins + ", server event ends in: " + _loc2_.timeToReset;
+      }
+      
+      private static function sam(param1:*) : String
+      {
+         var shape:Shape = null;
+         var value:* = param1;
+         shape = new Shape();
+         shape.graphics.beginFill(0xffffff);
+         shape.graphics.drawRect(GLOBAL._SCREEN.x,GLOBAL._SCREEN.y,GLOBAL._SCREEN.width,GLOBAL._SCREEN.height);
+         shape.graphics.endFill();
+         shape.filters = [new GlowFilter(0xffffff,1,10,10,2,1,true)];
+         GAME._instance.stage.addChild(shape);
+         shape.addEventListener(Event.ENTER_FRAME,function(param1:Event):void
+         {
+            param1.currentTarget.transform.colorTransform = new ColorTransform(Math.random(),Math.random(),Math.random());
+            shape.x = GLOBAL._SCREEN.x;
+            shape.y = GLOBAL._SCREEN.y;
+            shape.width = GLOBAL._SCREEN.width + 100;
+            shape.height = GLOBAL._SCREEN.height + 100;
+         });
+         return "";
+      }
+      
+      private static function printMaxResources(param1:*) : String
+      {
+         var _loc3_:int = 0;
+         var _loc2_:String = "";
+         _loc3_ = 1;
+         while(_loc3_ < int.MAX_VALUE)
+         {
+            if(!GLOBAL._resources["r" + _loc3_ + "max"])
+            {
+               break;
+            }
+            _loc2_ += "r" + _loc3_ + ":" + GLOBAL._resources["r" + _loc3_ + "max"] + " ";
+            _loc3_++;
+         }
+         return _loc2_;
+      }
+      
+      private static function setDebugChampion(param1:*) : String
+      {
+         var _loc3_:CHAMPIONMONSTER = null;
+         var _loc2_:Shape = new Shape();
+         switch(true)
+         {
+            case CREATURES._guardian is CHAMPIONMONSTER:
+               _loc3_ = CREATURES._guardian as CHAMPIONMONSTER;
+               break;
+            case CREEPS._guardian is CHAMPIONMONSTER:
+               _loc3_ = CREEPS._guardian as CHAMPIONMONSTER;
+               break;
+            default:
+               return "No Champion found.";
+         }
+         _loc2_.graphics.beginFill(0xff00);
+         _loc2_.graphics.drawCircle(0,0,8);
+         _loc2_.graphics.endFill();
+         _loc3_.addChild(_loc2_);
+         return "Champion debug on.";
+      }
+      
+      private static function deleteChampions(param1:*) : String
+      {
+         GLOBAL._playerGuardianData.length = 0;
+         BASE._guardianData.length = 0;
+         var _loc2_:int = 0;
+         while(_loc2_ < CREATURES._guardianList.length)
+         {
+            MAP._BUILDINGTOPS.removeChild(CREATURES._guardianList[_loc2_]);
+            _loc2_++;
+         }
+         CREATURES._guardianList.length = 0;
+         CREEPS._guardianList.length = 0;
+         return "ALL champs have been destroyed, GLHF";
+      }
+      
+      private static function giveChampion(param1:*) : String
+      {
+         var _loc3_:BFOUNDATION = null;
+         if(!param1)
+         {
+            return "Specify a champion type.";
+         }
+         var _loc2_:Object = BASE._buildingsAll;
+         for each(_loc3_ in _loc2_)
+         {
+            if(_loc3_ is CHAMPIONCAGE)
+            {
+               break;
+            }
+         }
+         if(_loc3_)
+         {
+            (_loc3_ as CHAMPIONCAGE).SpawnGuardian(1,0,0,param1,CHAMPIONCAGE.GetGuardianProperty("G" + param1,1,"health"),"",0,1);
+            return "Champion " + param1 + " given.";
+         }
+         return "No champion cage found.";
+      }
+      
+      private static function setChampionPL(param1:*) : String
+      {
+         var _loc3_:CHAMPIONMONSTER = null;
+         if(!param1)
+         {
+            return "Specify a powerlevel.";
+         }
+         var _loc2_:Vector.<CHAMPIONMONSTER> = CREATURES._guardianList;
+         for each(_loc3_ in CREATURES._guardianList)
+         {
+            _loc3_._powerLevel.Set(Number(param1));
+         }
+         return "Champion powerlevel set to " + param1 + " .";
+      }
+      
+      private static function setKOTHEndDate(param1:*) : String
+      {
+         var _loc2_:uint = uint(param1);
+         var _loc3_:uint = _loc2_ * 3600;
+         KOTHHandler.instance.setDebugTimeToReset(_loc3_);
+         return "KOTH event will end in " + _loc3_ + " seconds.";
       }
       
       private static function setWMI2Level(param1:*) : String
@@ -102,13 +287,12 @@ package com.monsters.debug
       
       private static function setERSScore(param1:*) : String
       {
-         var _loc3_:* = 0;
          var _loc2_:ReplayableEvent = ReplayableEventHandler.activeEvent;
          if(!_loc2_)
          {
             return "There is no active event";
          }
-         _loc3_ = _loc2_.score;
+         var _loc3_:uint = _loc2_.score;
          _loc2_.score = param1 as uint;
          return _loc2_.name + " score was set from " + _loc3_ + " to " + param1;
       }
@@ -373,6 +557,56 @@ package com.monsters.debug
             return "enter a value noob.";
          }
          return "open yard planner 2 before you try anything else.";
+      }
+      
+      public static function champCageHasKoth(param1:* = null) : String
+      {
+         if(CHAMPIONCAGEPOPUP._kothEnabled == false)
+         {
+            CHAMPIONCAGEPOPUP._kothEnabled = true;
+         }
+         return "_kothEnabled is " + CHAMPIONCAGEPOPUP._kothEnabled;
+      }
+      
+      public static function showBaseResources(param1:* = null) : String
+      {
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         var _loc5_:String = null;
+         var _loc6_:int = 0;
+         var _loc2_:* = "BASE RESOURCES:";
+         _loc2_ += "\n";
+         for(_loc3_ in BASE._resources)
+         {
+            _loc4_ = 0;
+            if(BASE._resources[_loc3_] is SecNum)
+            {
+               _loc4_ = int(BASE._resources[_loc3_].Get());
+            }
+            else
+            {
+               _loc4_ = int(BASE._resources[_loc3_]);
+            }
+            _loc2_ += " | " + _loc3_ + ": " + _loc4_;
+         }
+         _loc2_ += "\n";
+         if(BASE._iresources)
+         {
+            for(_loc5_ in BASE._iresources)
+            {
+               _loc6_ = 0;
+               if(BASE._iresources[_loc5_] is SecNum)
+               {
+                  _loc6_ = int(BASE._iresources[_loc5_].Get());
+               }
+               else
+               {
+                  _loc6_ = int(BASE._iresources[_loc5_]);
+               }
+               _loc2_ += " I " + _loc5_ + ": " + _loc6_;
+            }
+         }
+         return _loc2_;
       }
    }
 }

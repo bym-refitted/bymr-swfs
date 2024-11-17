@@ -96,6 +96,8 @@ package com.monsters.maproom_advanced
       
       public var _hasWarned:int = 0;
       
+      public var _value:Number = 0;
+      
       private var _smokeBMD:BitmapData;
       
       private var _smokeDO:DisplayObject;
@@ -188,6 +190,7 @@ package com.monsters.maproom_advanced
             }
             this._baseID = param1.bid;
          }
+         this._value = param1.v;
          if(param1.aid)
          {
             this._allianceID = param1.aid;

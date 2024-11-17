@@ -39,6 +39,7 @@ package
          var _loc11_:MovieClip = null;
          var _loc12_:MovieClip = null;
          super();
+         this.setupSubscriptions(HATCHERYCC.queueLimit > HATCHERYCC.DEFAULT_QUEUE_LIMIT);
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
          if(!BASE.isInferno())
@@ -155,6 +156,30 @@ package
          tGooLabel.htmlText = "<b>" + KEYS.Get("hcc_goousage") + "</b>";
          addEventListener(MouseEvent.MOUSE_UP,this.ClearEvents);
          (this.mcFrame as frame).Setup(true,null);
+      }
+      
+      protected function setupSubscriptions(param1:Boolean) : void
+      {
+         if(param1)
+         {
+            gotoAndStop("v1");
+            mcSlotsGoldFrame.visible = true;
+            mcSlotsGoldFrame.mouseEnabled = false;
+            if(HATCHERYCC.doesShowInfernoCreeps)
+            {
+               gotoAndStop("v2");
+               tMagmaLabel.htmlText = "<b>" + KEYS.Get("hcc_magmausage") + "</b>";
+               bTopupMagma.tName.htmlText = "<b>" + KEYS.Get("btn_topup2") + "</b>";
+               bTopupMagma.buttonMode = true;
+               bTopupMagma.gotoAndStop(1);
+               bTopupMagma.addEventListener(MouseEvent.CLICK,STORE.Show(2,4,["BR41I","BR42I","BR43I"]));
+            }
+         }
+         else
+         {
+            gotoAndStop("v1");
+            mcSlotsGoldFrame.visible = false;
+         }
       }
       
       public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *
@@ -322,7 +347,7 @@ package
             return;
          }
          var _loc2_:* = this._monsterID;
-         if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true))
+         if(!BASE.Charge(4,CREATURES.GetProperty(_loc2_,"cResource"),true,BASE.isInfernoCreep(_loc2_)))
          {
             return;
          }
@@ -446,7 +471,7 @@ package
          var _loc2_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          if(_loc2_.length >= this._monsterIndex)
          {
-            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterIndex - 1][0],"cResource"));
+            BASE.Fund(4,CREATURES.GetProperty(_loc2_[this._monsterIndex - 1][0],"cResource"),false,null,HATCHERYCC.doesShowInfernoCreeps);
             --_loc2_[this._monsterIndex - 1][1];
             if(_loc2_[this._monsterIndex - 1][1] <= 0)
             {
@@ -480,7 +505,7 @@ package
                {
                   if(_loc3_._inProduction != "" && _loc2_ == n)
                   {
-                     BASE.Fund(4,CREATURES.GetProperty(_loc3_._inProduction,"cResource"));
+                     BASE.Fund(4,CREATURES.GetProperty(_loc3_._inProduction,"cResource"),false,null,HATCHERYCC.doesShowInfernoCreeps);
                      _loc3_._inProduction = "";
                      _loc3_.ResetProduction();
                   }
@@ -496,6 +521,7 @@ package
          var _loc5_:int = 0;
          var _loc8_:BFOUNDATION = null;
          var _loc9_:int = 0;
+         var _loc10_:int = 0;
          var _loc2_:Array = GLOBAL._bHatcheryCC._monsterQueue;
          var _loc3_:int = 1;
          while(_loc3_ <= 7)
@@ -536,17 +562,32 @@ package
          if(_loc7_ > 0)
          {
             bFinish.Enabled = true;
-            bFinish.gotoAndStop(2);
+            if(HATCHERYCC.doesShowInfernoCreeps)
+            {
+               bFinish.gotoAndStop(3);
+            }
+            else
+            {
+               bFinish.gotoAndStop(2);
+            }
          }
          else
          {
             bFinish.Enabled = false;
             bFinish.gotoAndStop(1);
          }
+         if(HATCHERYCC.doesShowInfernoCreeps)
+         {
+            _loc6_ += "   ";
+         }
+         else
+         {
+            _loc6_ += "<br>";
+         }
          if(_loc7_ > 0 && GLOBAL._hatcheryOverdrivePower.Get() < 10)
          {
             bSpeedup.gotoAndStop(2);
-            _loc6_ += "<br><font size=\"9\">" + KEYS.Get("hcc_queuedup",{"v1":GLOBAL.FormatNumber(HOUSING._housingUsed.Get() + _loc7_)});
+            _loc6_ += "<font size=\"9\">" + KEYS.Get("hcc_queuedup",{"v1":GLOBAL.FormatNumber(HOUSING._housingUsed.Get() + _loc7_)});
             if(HOUSING._housingUsed.Get() + _loc7_ == HOUSING._housingCapacity.Get())
             {
                _loc6_ += " " + KEYS.Get("hcc_queuedfull");
@@ -559,7 +600,7 @@ package
          else
          {
             bSpeedup.gotoAndStop(1);
-            _loc6_ += "<br><font size=\"9\">" + KEYS.Get("hcc_queuedup",{"v1":GLOBAL.FormatNumber(HOUSING._housingUsed.Get() + _loc7_)});
+            _loc6_ += "<font size=\"9\">" + KEYS.Get("hcc_queuedup",{"v1":GLOBAL.FormatNumber(HOUSING._housingUsed.Get() + _loc7_)});
             if(HOUSING._housingUsed.Get() + _loc7_ == HOUSING._housingCapacity.Get())
             {
                _loc6_ += " " + KEYS.Get("hcc_queuedfull");
@@ -576,7 +617,7 @@ package
          }
          mcStorage.mcBarB.width = _loc5_;
          txtStorage.htmlText = _loc6_;
-         var _loc10_:int = int(BASE._resources.r4.Get());
+         _loc10_ = int(BASE._resources.r4.Get());
          _loc9_ = 0;
          while(_loc9_ < _loc2_.length)
          {
@@ -595,6 +636,29 @@ package
          if(BASE._resources.r4.Get() < BASE._resources.r4max * 0.1)
          {
             bTopup.gotoAndStop(2);
+         }
+         if(HATCHERYCC.doesShowInfernoCreeps)
+         {
+            _loc10_ = int(BASE._iresources.r4.Get());
+            _loc9_ = 0;
+            while(_loc9_ < _loc2_.length)
+            {
+               _loc10_ -= CREATURES.GetProperty(_loc2_[_loc9_][0],"cResource") * _loc2_[_loc9_][1];
+               _loc9_++;
+            }
+            mcMagma.mcBarB.width = 1;
+            _loc5_ = 100 / BASE._iresources.r4max * BASE._iresources.r4.Get();
+            if(_loc5_ > 100)
+            {
+               _loc5_ = 100;
+            }
+            mcMagma.mcBar.width = _loc5_;
+            txtMagma.htmlText = "<b>" + KEYS.Get("hat_magmaremaining",{"v1":GLOBAL.FormatNumber(BASE._iresources.r4.Get())}) + "</b>";
+            bTopupMagma.gotoAndStop(1);
+            if(BASE._iresources.r4.Get() < BASE._iresources.r4max * 0.1)
+            {
+               bTopupMagma.gotoAndStop(2);
+            }
          }
       }
       
@@ -657,7 +721,7 @@ package
          while(_loc6_ < this._monsterSlots.length)
          {
             _loc10_ = this._monsterSlots[_loc6_].id;
-            if(!BASE.Charge(4,CREATURES.GetProperty(_loc10_,"cResource"),true))
+            if(!BASE.Charge(4,CREATURES.GetProperty(_loc10_,"cResource"),true,BASE.isInfernoCreep(_loc10_)))
             {
                this._monsterSlots[_loc6_].mcMonster.alpha = 0.5;
                this._monsterSlots[_loc6_].mcLevel.alpha = 0.5;

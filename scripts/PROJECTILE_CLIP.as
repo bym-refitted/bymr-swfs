@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1801")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1898")]
    public dynamic class PROJECTILE_CLIP extends MovieClip
    {
       public var mcProjectile:MovieClip;

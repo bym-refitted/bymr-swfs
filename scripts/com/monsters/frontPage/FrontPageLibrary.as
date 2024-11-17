@@ -1,6 +1,7 @@
 package com.monsters.frontPage
 {
    import com.monsters.frontPage.categories.*;
+   import com.monsters.frontPage.messages.Message;
    import com.monsters.frontPage.messages.buildtree.*;
    import com.monsters.frontPage.messages.news.News01MagmaTower;
    import com.monsters.frontPage.messages.news.News02InfernoYardExpansion;
@@ -90,6 +91,24 @@ package com.monsters.frontPage
             if(_loc3_.name == param1)
             {
                return _loc3_;
+            }
+            _loc2_++;
+         }
+         return null;
+      }
+      
+      public static function getMessageByName(param1:String) : Message
+      {
+         var _loc3_:Category = null;
+         var _loc4_:Message = null;
+         var _loc2_:int = 0;
+         while(_loc2_ < CATEGORIES.length)
+         {
+            _loc3_ = CATEGORIES[_loc2_];
+            _loc4_ = _loc3_.getMessageByName(param1);
+            if(_loc4_)
+            {
+               return _loc4_;
             }
             _loc2_++;
          }

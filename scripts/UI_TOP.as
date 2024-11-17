@@ -1,9 +1,11 @@
 package
 {
    import com.monsters.dealspot.DealSpot;
+   import com.monsters.kingOfTheHill.graphics.KOTHHUDGraphic;
    import com.monsters.maproom_inferno.views.DescentDebuffPopup;
    import com.monsters.siege.SiegeWeapons;
    import com.monsters.siege.weapons.SiegeWeapon;
+   import com.monsters.subscriptions.SubscriptionHandler;
    import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -37,6 +39,8 @@ package
       
       public var _descentDebuff:DescentDebuffPopup;
       
+      public var extraResourceRows:int = 0;
+      
       public var _dealspot:DealSpot;
       
       public var _resourceUI:Object;
@@ -49,76 +53,66 @@ package
       
       public var _resourceR4:int;
       
+      public var _kothIcon:DisplayObject;
+      
+      public var _daveClub:DisplayObject;
+      
+      private const _RESOURCEBAR_HEIGHT:int = 37;
+      
       public function UI_TOP()
       {
-         var framename:String;
-         var InfoShow:Function;
-         var InfoHide:Function;
-         var i:int = 0;
-         var count:int = 0;
-         var s:String = null;
-         var availableSiegeWeapons:SiegeWeapon = null;
-         var gb:MovieClip = null;
-         var creatureID:int = 0;
-         var creature:String = null;
-         var cb:MovieClip = null;
+         var _loc1_:int = 0;
+         var _loc3_:int = 0;
+         var _loc4_:int = 0;
+         var _loc5_:String = null;
+         var _loc6_:SiegeWeapon = null;
+         var _loc7_:MovieClip = null;
+         var _loc8_:int = 0;
+         var _loc9_:String = null;
+         var _loc10_:MovieClip = null;
          super();
-         framename = GLOBAL._mode;
+         var _loc2_:String = GLOBAL._mode;
          switch(GLOBAL._mode)
          {
             case "build":
             case "ibuild":
-               framename = "build";
+               _loc2_ = "build";
                break;
             case "attack":
             case "iattack":
-               framename = "attack";
+               _loc2_ = "attack";
                break;
             case "wmattack":
             case "iwmattack":
-               framename = "wmattack";
+               _loc2_ = "wmattack";
                break;
             case "view":
             case "iview":
-               framename = "view";
+               _loc2_ = "view";
                break;
             case "help":
             case "ihelp":
-               framename = "help";
+               _loc2_ = "help";
                break;
             case "wmview":
             case "iwmview":
-               framename = "wmview";
+               _loc2_ = "wmview";
          }
          gotoAndStop(GLOBAL._loadmode);
          if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
          {
-            InfoShow = function(param1:MouseEvent):*
+            mc.mcPoints.addEventListener(MouseEvent.MOUSE_OVER,this.InfoShow);
+            mc.mcPoints.addEventListener(MouseEvent.MOUSE_OUT,this.InfoHide);
+            _loc1_ = 1;
+            while(_loc1_ < 5)
             {
-               mc.mcPoints.gotoAndStop(2);
-               var _loc2_:Object = BASE.BaseLevel();
-               mc.mcPoints.tInfo.htmlText = KEYS.Get("pop_experiencebar",{
-                  "v1":GLOBAL.FormatNumber(_loc2_.points),
-                  "v2":GLOBAL.FormatNumber(_loc2_.needed),
-                  "v3":_loc2_.level + 1
-               });
-            };
-            InfoHide = function(param1:MouseEvent):*
-            {
-               mc.mcPoints.gotoAndStop(1);
-            };
-            mc.mcPoints.addEventListener(MouseEvent.MOUSE_OVER,InfoShow);
-            mc.mcPoints.addEventListener(MouseEvent.MOUSE_OUT,InfoHide);
-            i = 1;
-            while(i < 5)
-            {
-               mc["mcR" + i].mcHit.addEventListener(MouseEvent.MOUSE_OVER,this.StatsShow(i,false));
-               mc["mcR" + i].mcHit.addEventListener(MouseEvent.MOUSE_OUT,this.StatsHide);
-               mc["mcR" + i].bAdd.addEventListener(MouseEvent.CLICK,this.Topup(i));
-               mc["mcR" + i].bAdd.buttonMode = true;
-               mc["mcR" + i].bAdd.mouseEnabled = true;
-               mc["mcR" + i].bAdd.mouseChildren = false;
-               i++;
+               mc["mcR" + _loc1_].mcHit.addEventListener(MouseEvent.MOUSE_OVER,this.StatsShow(_loc1_,false));
+               mc["mcR" + _loc1_].mcHit.addEventListener(MouseEvent.MOUSE_OUT,this.StatsHide);
+               mc["mcR" + _loc1_].bAdd.addEventListener(MouseEvent.CLICK,this.Topup(_loc1_));
+               mc["mcR" + _loc1_].bAdd.buttonMode = true;
+               mc["mcR" + _loc1_].bAdd.mouseEnabled = true;
+               mc["mcR" + _loc1_].bAdd.mouseChildren = false;
+               _loc1_++;
             }
             this._resourceUI = {};
             this._resourceUI.r1 = BASE._resources["r1"].Get();
@@ -204,64 +198,69 @@ package
             this._creatureButtonsMC = mc.addChild(new flingerLevel());
             this._creatureButtonsMC.tA.htmlText = BASE.isInferno() ? KEYS.Get("monster_limit") : KEYS.Get("attack_flingerbar");
             this._creatureButtonsMC.y = 84;
-            count = 0;
+            _loc3_ = 0;
             this._creatureButtons = [];
-            if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+            _loc4_ = 0;
+            while(_loc4_ < GLOBAL._playerGuardianData.length)
             {
-               if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
+               if(Boolean(GLOBAL._playerGuardianData[_loc4_]) && GLOBAL._playerGuardianData[_loc4_].hp.Get() > 0)
                {
-                  gb = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData.t,GLOBAL._playerGuardianData.l.Get()));
-                  gb.y = 25;
-                  this._creatureButtons.push(gb);
-                  count++;
+                  if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
+                  {
+                     _loc7_ = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData[_loc4_].t,GLOBAL._playerGuardianData[_loc4_].l.Get(),_loc4_));
+                     _loc7_.y = 25 + 60 * _loc3_;
+                     this._creatureButtons.push(_loc7_);
+                     _loc3_++;
+                  }
                }
+               _loc4_++;
             }
-            for(s in CREATURELOCKER._creatures)
+            for(_loc5_ in CREATURELOCKER._creatures)
             {
-               creatureID = int(s.substr(s.length - 1));
-               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[s] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[s])
+               _loc8_ = int(_loc5_.substr(_loc5_.length - 1));
+               if(GLOBAL._advancedMap && GLOBAL._attackerMapCreatures[_loc5_] || !GLOBAL._advancedMap && GLOBAL._attackerCreatures[_loc5_])
                {
-                  creature = s;
+                  _loc9_ = _loc5_;
                   if(GLOBAL._advancedMap)
                   {
-                     if(GLOBAL._attackerMapCreatures[creature].Get() > 0)
+                     if(GLOBAL._attackerMapCreatures[_loc9_].Get() > 0)
                      {
-                        cb = this._creatureButtonsMC.addChild(new CREATUREBUTTON(creature));
-                        cb.y = 25 + count * 60;
-                        if(count > 5)
+                        _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc9_));
+                        _loc10_.y = 25 + _loc3_ * 60;
+                        if(_loc3_ > 5)
                         {
                            if(this.HasChampionButton())
                            {
-                              cb.y -= 300;
+                              _loc10_.y -= 300;
                            }
                            else
                            {
-                              cb.y -= 360;
+                              _loc10_.y -= 360;
                            }
-                           cb.x += 136;
+                           _loc10_.x += 136;
                         }
-                        this._creatureButtons.push(cb);
-                        count++;
+                        this._creatureButtons.push(_loc10_);
+                        _loc3_++;
                      }
                   }
-                  else if(GLOBAL._attackerCreatures[creature].Get() > 0)
+                  else if(GLOBAL._attackerCreatures[_loc9_].Get() > 0)
                   {
-                     cb = this._creatureButtonsMC.addChild(new CREATUREBUTTON(creature));
-                     cb.y = 25 + count * 60;
-                     if(count > 5)
+                     _loc10_ = this._creatureButtonsMC.addChild(new CREATUREBUTTON(_loc9_));
+                     _loc10_.y = 25 + _loc3_ * 60;
+                     if(_loc3_ > 5)
                      {
                         if(this.HasChampionButton())
                         {
-                           cb.y -= 300;
+                           _loc10_.y -= 300;
                         }
                         else
                         {
-                           cb.y -= 360;
+                           _loc10_.y -= 360;
                         }
-                        cb.x += 136;
+                        _loc10_.x += 136;
                      }
-                     this._creatureButtons.push(cb);
-                     count++;
+                     this._creatureButtons.push(_loc10_);
+                     _loc3_++;
                   }
                }
             }
@@ -273,8 +272,8 @@ package
                this._catapult.y = 4;
                this._catapult.Setup();
             }
-            availableSiegeWeapons = SiegeWeapons.availableWeapon;
-            if(availableSiegeWeapons != null && !BASE.isInferno())
+            _loc6_ = SiegeWeapons.availableWeapon;
+            if(_loc6_ != null && !BASE.isInferno())
             {
                this._siegeweapon = new SIEGEWEAPONPOPUP();
                mc.addChild(this._siegeweapon);
@@ -288,6 +287,22 @@ package
             this.DescentDebuffHide();
          }
          this.Update();
+      }
+      
+      private function InfoShow(param1:MouseEvent) : *
+      {
+         mc.mcPoints.gotoAndStop(2);
+         var _loc2_:Object = BASE.BaseLevel();
+         mc.mcPoints.tInfo.htmlText = KEYS.Get("pop_experiencebar",{
+            "v1":GLOBAL.FormatNumber(_loc2_.points),
+            "v2":GLOBAL.FormatNumber(_loc2_.needed),
+            "v3":_loc2_.level + 1
+         });
+      }
+      
+      private function InfoHide(param1:MouseEvent) : *
+      {
+         mc.mcPoints.gotoAndStop(1);
       }
       
       private function HasChampionButton() : Boolean
@@ -306,6 +321,78 @@ package
       
       public function Clear() : void
       {
+         var _loc1_:int = 0;
+         if(GLOBAL._mode == "build")
+         {
+            if(mc.mcPoints)
+            {
+               mc.mcPoints.removeEventListener(MouseEvent.MOUSE_OVER,this.InfoShow);
+               mc.mcPoints.removeEventListener(MouseEvent.MOUSE_OUT,this.InfoHide);
+            }
+            _loc1_ = 1;
+            while(_loc1_ < 5)
+            {
+               if(mc["mcR" + _loc1_])
+               {
+                  if(mc["mcR" + _loc1_].mcHit)
+                  {
+                     mc["mcR" + _loc1_].mcHit.removeEventListener(MouseEvent.MOUSE_OVER,this.StatsShow(_loc1_,false));
+                     mc["mcR" + _loc1_].mcHit.removeEventListener(MouseEvent.MOUSE_OUT,this.StatsHide);
+                  }
+                  if(mc["mcR" + _loc1_].bAdd)
+                  {
+                     mc["mcR" + _loc1_].bAdd.removeEventListener(MouseEvent.CLICK,this.Topup(_loc1_));
+                  }
+               }
+               _loc1_++;
+            }
+            if(Boolean(mc.mcR5) && Boolean(mc.mcR5.bAdd))
+            {
+               mc.mcR5.bAdd.removeEventListener(MouseEvent.CLICK,BUY.Show);
+            }
+            if(Boolean(mc.mcOutposts) && Boolean(mc.mcOutposts.mcHit) && Boolean(mc.mcOutposts.bNext))
+            {
+               mc.mcOutposts.mcHit.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.mcOutposts.mcHit.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+               mc.mcOutposts.bNext.removeEventListener(MouseEvent.CLICK,BASE.LoadNext);
+            }
+            if(mc.bInvite)
+            {
+               mc.bInvite.removeEventListener(MouseEvent.CLICK,this.ButtonClick("invite"));
+               mc.bInvite.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bInvite.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+            if(mc.bGift)
+            {
+               mc.bGift.removeEventListener(MouseEvent.CLICK,this.ButtonClick("gift"));
+               mc.bGift.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bGift.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+            if(mc.bInbox)
+            {
+               mc.bInbox.removeEventListener(MouseEvent.CLICK,this.ButtonClick("inbox"));
+               mc.bInbox.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bInbox.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+            if(mc.bAlert)
+            {
+               mc.bAlert.removeEventListener(MouseEvent.CLICK,this.ButtonClick("alert"));
+               mc.bAlert.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bAlert.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+            if(mc.bEarn)
+            {
+               mc.bEarn.removeEventListener(MouseEvent.CLICK,this.ButtonClick("earn"));
+               mc.bEarn.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bEarn.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+            if(Boolean(mc.bDailyDeal) && GLOBAL._flags.showFBCDaily == 1)
+            {
+               mc.bDailyDeal.removeEventListener(MouseEvent.CLICK,this.ButtonClick("daily"));
+               mc.bDailyDeal.removeEventListener(MouseEvent.MOUSE_OVER,this.ButtonInfoShow);
+               mc.bDailyDeal.removeEventListener(MouseEvent.MOUSE_OUT,this.ButtonInfoHide);
+            }
+         }
       }
       
       public function ClearSiegeWeapon() : void
@@ -413,6 +500,85 @@ package
                this.DescentDebuffHide();
             }
          }
+      }
+      
+      public function addIcon(param1:DisplayObject) : void
+      {
+         if(Boolean(mc) && GLOBAL._mode == "build")
+         {
+            param1.x = 222;
+            param1.y = 0;
+            this._kothIcon = mc.addChild(param1);
+            mc.mcR5.x = 284;
+            mc.bEarn.x = 415;
+            mc.bDealSpot.x = 502;
+            mc.bDailyDeal.x = 493;
+         }
+      }
+      
+      public function removeIcon(param1:DisplayObject) : void
+      {
+         if(Boolean(mc) && mc.contains(param1))
+         {
+            mc.removeChild(param1);
+            if(GLOBAL._mode == "build")
+            {
+               mc.mcR5.x = 227;
+               mc.bEarn.x = 358;
+               mc.bDailyDeal = 436;
+               mc.bDealSpot = 445;
+            }
+         }
+         if(this._kothIcon)
+         {
+            if(this._kothIcon.parent)
+            {
+               this._kothIcon.parent.removeChild(this._kothIcon);
+            }
+            this._kothIcon = null;
+         }
+      }
+      
+      public function addResourceBar(param1:DisplayObject) : void
+      {
+         var _loc2_:MovieClip = null;
+         if(Boolean(mc) && GLOBAL._mode == "build")
+         {
+            if(GLOBAL._advancedMap)
+            {
+               _loc2_ = mc.mcOutposts;
+            }
+            else
+            {
+               _loc2_ = mc.mcR4;
+            }
+            param1.x = -4;
+            param1.y = _loc2_.y + 37;
+            this._daveClub = mc.addChild(param1);
+            ++this.extraResourceRows;
+            this.Update();
+         }
+      }
+      
+      public function removeResourceBar(param1:DisplayObject) : void
+      {
+         if(Boolean(mc) && mc.contains(param1))
+         {
+            mc.removeChild(param1);
+            if(this.extraResourceRows > 0)
+            {
+               --this.extraResourceRows;
+            }
+         }
+         if(this._daveClub)
+         {
+            if(this._daveClub.parent)
+            {
+               this._daveClub.parent.removeChild(this._daveClub);
+            }
+            this._daveClub = null;
+         }
+         this.Update();
       }
       
       public function BombSelect(param1:int) : *
@@ -556,8 +722,12 @@ package
          var _loc7_:Number = NaN;
          var _loc8_:int = 0;
          var _loc9_:int = 0;
-         var _loc10_:int = 0;
-         var _loc11_:String = null;
+         var _loc10_:Boolean = false;
+         var _loc11_:int = 0;
+         var _loc12_:Boolean = false;
+         var _loc13_:int = 0;
+         var _loc14_:int = 0;
+         var _loc15_:String = null;
          if(!GLOBAL._catchup)
          {
             if(GLOBAL._loadmode == "build" || GLOBAL._loadmode == "ibuild")
@@ -659,7 +829,8 @@ package
                   {
                      mc.bInvite.visible = false;
                   }
-                  this.SortButtonIcons();
+                  _loc9_ = this.extraResourceRows * this._RESOURCEBAR_HEIGHT;
+                  this.SortButtonIcons(2,4,_loc9_);
                   mc.bGift.visible = true;
                   _loc8_ = POPUPS.QueueCount("gifts");
                   if(_loc8_ > 0)
@@ -712,6 +883,21 @@ package
                      mc.bAlert.visible = false;
                   }
                   this.DisplayBuffs();
+                  if(this._kothIcon)
+                  {
+                     _loc10_ = Boolean(CREATURES._krallen);
+                     _loc11_ = 0;
+                     if(_loc10_)
+                     {
+                        _loc11_ = CREATURES._krallen._level.Get();
+                     }
+                     (this._kothIcon as KOTHHUDGraphic).update(_loc10_,_loc11_);
+                  }
+                  if(this._daveClub)
+                  {
+                     _loc12_ = SubscriptionHandler.instance.isSubscriptionActive;
+                     (this._daveClub as MovieClip).gotoAndStop(_loc12_ ? "on" : "off");
+                  }
                }
             }
             else if(GLOBAL._loadmode == "attack" || GLOBAL._loadmode == "wmattack" || GLOBAL._loadmode == "iattack" || GLOBAL._loadmode == "iwmattack")
@@ -730,28 +916,28 @@ package
                   this._creatureButtons[_loc1_].Update();
                   _loc1_++;
                }
-               _loc9_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+               _loc13_ = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
                if(MAPROOM_DESCENT.InDescent)
                {
-                  _loc9_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
+                  _loc13_ = int(YARD_PROPS._yardProps[4].capacity[GLOBAL._attackersFlinger - 1]);
                }
                if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_DECLAREWAR,"OFFENSE"))
                {
-                  _loc9_ += _loc9_ * 0.25;
+                  _loc13_ += _loc13_ * 0.25;
                }
-               _loc10_ = _loc9_;
-               for(_loc11_ in ATTACK._flingerBucket)
+               _loc14_ = _loc13_;
+               for(_loc15_ in ATTACK._flingerBucket)
                {
-                  if(_loc11_.substr(0,1) == "G")
+                  if(_loc15_.substr(0,1) == "G")
                   {
-                     _loc10_ -= CHAMPIONCAGE.GetGuardianProperty(_loc11_.substr(0,2),1,"bucket");
+                     _loc14_ -= CHAMPIONCAGE.GetGuardianProperty(_loc15_.substr(0,2),1,"bucket");
                   }
                   else
                   {
-                     _loc10_ -= CREATURES.GetProperty(_loc11_,"bucket") * ATTACK._flingerBucket[_loc11_].Get();
+                     _loc14_ -= CREATURES.GetProperty(_loc15_,"bucket") * ATTACK._flingerBucket[_loc15_].Get();
                   }
                }
-               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc9_ * _loc10_;
+               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc13_ * _loc14_;
                if(GLOBAL._mode != GLOBAL._loadmode)
                {
                   if(ATTACK._countdown > 0)
@@ -793,36 +979,36 @@ package
          }
       }
       
-      public function SortButtonIcons(param1:int = 2, param2:int = 4) : void
+      public function SortButtonIcons(param1:int = 2, param2:int = 4, param3:int = 0) : void
       {
-         var _loc5_:* = param1;
-         var _loc6_:* = param2;
-         var _loc9_:int = 0;
-         var _loc10_:int = 0;
+         var _loc6_:* = param1;
+         var _loc7_:* = param2;
+         var _loc10_:int = param3;
          var _loc11_:int = 0;
          var _loc12_:int = 0;
+         var _loc13_:int = 0;
          if(GLOBAL._advancedMap)
          {
-            _loc9_ += 35;
+            _loc10_ += 35;
          }
-         var _loc13_:int = 0;
-         while(_loc13_ < this._buttonIcons.length)
+         var _loc14_:int = 0;
+         while(_loc14_ < this._buttonIcons.length)
          {
-            if(this._buttonIcons[_loc13_].visible)
+            if(this._buttonIcons[_loc14_].visible)
             {
-               this._buttonIcons[_loc13_].x = 9 + _loc10_;
-               this._buttonIcons[_loc13_].y = 195 + _loc9_;
-               _loc12_++;
-               _loc9_ += 55;
-               if(_loc12_ >= _loc6_)
+               this._buttonIcons[_loc14_].x = 9 + _loc11_;
+               this._buttonIcons[_loc14_].y = 195 + _loc10_;
+               _loc13_++;
+               _loc10_ += 55;
+               if(_loc13_ >= _loc7_)
                {
-                  _loc12_ = 0;
-                  _loc11_++;
-                  _loc9_ = 0;
-                  _loc10_ += 67;
+                  _loc13_ = 0;
+                  _loc12_++;
+                  _loc10_ = 0;
+                  _loc11_ += 67;
                }
             }
-            _loc13_++;
+            _loc14_++;
          }
       }
       

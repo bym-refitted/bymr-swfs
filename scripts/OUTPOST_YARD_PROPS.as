@@ -6163,6 +6163,42 @@ package
          "quantity":[1,1,1,1,1,1,1,1,1,1],
          "hp":[100,100,100,100,100,100],
          "repairTime":[1,1,1,1,1,1,1]
+      },{
+         "id":135,
+         "group":4,
+         "subgroup":4,
+         "order":11,
+         "buildStatus":0,
+         "type":"decoration",
+         "name":"bdg_dave_trophy",
+         "size":70,
+         "attackgroup":999,
+         "tutstage":200,
+         "sale":0,
+         "description":"bdg_dave_trophy_desc",
+         "block":true,
+         "locked":true,
+         "lockedButtonOverlay":"buildingbuttons/135locked.png",
+         "costs":[{
+            "r1":0,
+            "r2":0,
+            "r3":0,
+            "r4":0,
+            "r5":0,
+            "time":0,
+            "re":[]
+         }],
+         "buildingbuttons":["135"],
+         "imageData":{
+            "baseurl":"buildings/decorations/dave_trophy/",
+            "1":{
+               "top":["top.png",new Point(-38,-30)],
+               "shadow":["shadow.jpg",new Point(-38,20)]
+            }
+         },
+         "quantity":[0],
+         "hp":[100],
+         "repairTime":[1]
       }];
       
       public function OUTPOST_YARD_PROPS()

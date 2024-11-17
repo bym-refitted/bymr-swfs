@@ -31,7 +31,7 @@ package com.monsters.baseplanner.components
       
       internal var stroke:Shape = new Shape();
       
-      public function DashedLine(param1:* = 0, param2:* = 0, param3:Array = null)
+      public function DashedLine(param1:Number = 0, param2:Number = 0, param3:Array = null)
       {
          super();
          if(param3 != null)
@@ -59,7 +59,7 @@ package com.monsters.baseplanner.components
          addChild(this.stroke);
       }
       
-      public function moveTo(param1:*, param2:*) : void
+      public function moveTo(param1:Number, param2:Number) : void
       {
          this.stroke.graphics.moveTo(param1,param2);
          this.fill.graphics.moveTo(param1,param2);
@@ -69,7 +69,7 @@ package com.monsters.baseplanner.components
          this.startIndex = 0;
       }
       
-      public function lineTo(param1:*, param2:*) : void
+      public function lineTo(param1:Number, param2:Number) : void
       {
          var _loc8_:int = 0;
          var _loc9_:Number = NaN;
@@ -137,7 +137,7 @@ package com.monsters.baseplanner.components
          this.fill.graphics.lineTo(param1,param2);
       }
       
-      private function getCoords(param1:*, param2:*) : Point
+      private function getCoords(param1:Number, param2:Number) : Point
       {
          var _loc3_:Number = Math.atan(param2);
          var _loc4_:Number = Math.abs(Math.sin(_loc3_) * param1);
@@ -145,7 +145,7 @@ package com.monsters.baseplanner.components
          return new Point(_loc5_,_loc4_);
       }
       
-      private function getDistance(param1:*, param2:*, param3:*, param4:*) : Number
+      private function getDistance(param1:Number, param2:Number, param3:Number, param4:Number) : Number
       {
          return Math.sqrt(Math.pow(param3 - param1,2) + Math.pow(param4 - param2,2));
       }
@@ -158,7 +158,7 @@ package com.monsters.baseplanner.components
          this.moveTo(0,0);
       }
       
-      public function lineStyle(param1:* = 0, param2:* = 0, param3:* = 1) : void
+      public function lineStyle(param1:Number = 0, param2:Number = 0, param3:Number = 1) : void
       {
          this.lineWeight = param1;
          this.lineColor = param2;
@@ -166,7 +166,7 @@ package com.monsters.baseplanner.components
          this.stroke.graphics.lineStyle(this.lineWeight,this.lineColor,this.lineAlpha,false,"none",CapsStyle.NONE);
       }
       
-      public function beginFill(param1:*, param2:* = 1) : void
+      public function beginFill(param1:Number, param2:Number = 1) : void
       {
          this.fill.graphics.beginFill(param1,param2);
       }

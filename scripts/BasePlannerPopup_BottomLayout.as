@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2777")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2817")]
    public dynamic class BasePlannerPopup_BottomLayout extends MovieClip
    {
       public var btnClear:MovieClip;

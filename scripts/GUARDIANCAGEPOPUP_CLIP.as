@@ -3,12 +3,14 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1669")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1371")]
    public dynamic class GUARDIANCAGEPOPUP_CLIP extends MovieClip
    {
       public var buff_txt:TextField;
       
       public var p3_abilities_txt:TextField;
+      
+      public var p3_bLootLeft:meterBar_rounded_red_CLIP;
       
       public var p3_bSpeed:creatureBarGuardian;
       
@@ -21,8 +23,6 @@ package
       public var damage_txt2:TextField;
       
       public var day1:MovieClip;
-      
-      public var p3_tTitle:TextField;
       
       public var p3_speed_txt:TextField;
       
@@ -38,7 +38,9 @@ package
       
       public var day3:MovieClip;
       
-      public var p3_tRank:TextField;
+      public var p3_mcAbility1:MovieClip;
+      
+      public var p3_tKothLevel:TextField;
       
       public var bBuff:creatureBarGuardian;
       
@@ -53,6 +55,10 @@ package
       public var bDamage:creatureBarGuardian;
       
       public var bEvolve:Button_CLIP;
+      
+      public var p3_tDescription2:TextField;
+      
+      public var p3_timeleft_txt:TextField;
       
       public var p3_tSpeed:TextField;
       
@@ -72,7 +78,7 @@ package
       
       public var mcInstant:MovieClip;
       
-      public var p3_bTimeleft:creatureBarGuardian;
+      public var p3_bTimeleft:meterBar_rounded_blue_CLIP;
       
       public var b2:ButtonBrown_CLIP;
       
@@ -92,6 +98,8 @@ package
       
       public var p3_gRankBG:MovieClip;
       
+      public var p3_looted_txt:TextField;
+      
       public var p3_bDamage:creatureBarGuardian;
       
       public var tFeedsFrom:TextField;
@@ -106,8 +114,6 @@ package
       
       public var mcCurrGuardian:MovieClip;
       
-      public var p3_bLeaderboard:Button_CLIP;
-      
       public var p3_health_txt:TextField;
       
       public var p3_tBuff:TextField;
@@ -115,8 +121,6 @@ package
       public var p3_bHP:MovieClip;
       
       public var tEvoDesc:TextField;
-      
-      public var mcAbility1:MovieClip;
       
       public var tEvoStage:TextField;
       
@@ -126,9 +130,9 @@ package
       
       public var bHealth2:creatureBarGuardian;
       
-      public var p3_tDescription:TextField;
+      public var p3_mcLootMark2:koth_looted_marker;
       
-      public var mcAbility2:MovieClip;
+      public var p3_tDescription:TextField;
       
       public var mcFrame:frame_CLIP;
       
@@ -139,8 +143,6 @@ package
       public var bFeedTimer:MovieClip;
       
       public var barDNA_mask:MovieClip;
-      
-      public var mcAbility3:MovieClip;
       
       public var window:MovieClip;
       
@@ -163,6 +165,10 @@ package
       public var bBuff2:creatureBarGuardian;
       
       public var barDNA_bg:GuardianCage_DNABar;
+      
+      public var p3_mcLootMark1:koth_looted_marker;
+      
+      public var p3_tLootLeft:TextField;
       
       public var p3_tHealth:TextField;
       

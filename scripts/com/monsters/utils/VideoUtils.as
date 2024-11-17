@@ -9,6 +9,10 @@ package com.monsters.utils
    
    public class VideoUtils
    {
+      private static var stream:NetStream;
+      
+      private static var _videoURL:String;
+      
       public function VideoUtils()
       {
          super();
@@ -20,16 +24,18 @@ package com.monsters.utils
          _loc3_.addEventListener(NetStatusEvent.NET_STATUS,netStatusHandler);
          _loc3_.addEventListener(SecurityErrorEvent.SECURITY_ERROR,securityErrorHandler);
          _loc3_.connect(null);
-         var _loc4_:NetStream = new NetStream(_loc3_);
-         _loc4_.addEventListener(NetStatusEvent.NET_STATUS,netStatusHandler);
-         _loc4_.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrorHandler);
-         _loc4_.client = {"onMetaData":onMetaData};
+         stream = new NetStream(_loc3_);
+         stream.addEventListener(NetStatusEvent.NET_STATUS,netStatusHandler);
+         stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncErrorHandler);
+         stream.client = {"onMetaData":onMetaData};
+         stream.bufferTime = 0;
          if(param2)
          {
-            _loc4_.play(param2);
+            stream.play(param2);
+            _videoURL = param2;
          }
-         param1.attachNetStream(_loc4_);
-         return _loc4_;
+         param1.attachNetStream(stream);
+         return stream;
       }
       
       private static function onMetaData(param1:*) : void
@@ -61,7 +67,13 @@ package com.monsters.utils
       {
          if(param1.info.code == "NetStream.Play.Stop")
          {
+            NetStream(param1.target).pause();
             NetStream(param1.target).seek(0);
+            NetStream(param1.target).resume();
+         }
+         if(param1.info.code == "NetStream.Buffer.Empty")
+         {
+            stream.play(_videoURL);
          }
       }
    }

@@ -145,7 +145,7 @@ package com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg
       
       override protected function onEventComplete() : void
       {
-         RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnlockSlimeattikusReward.ID));
+         RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnlockSlimeattikusReward.ID));
       }
       
       public function doesAutomaticalyGetReward() : Boolean
@@ -157,7 +157,7 @@ package com.monsters.replayableEvents.monsterInvasion.monsterBlitzkrieg
       {
          if(this.doesAutomaticalyGetReward())
          {
-            RewardHandler.instance.addReward(RewardLibrary.getRewardByID(UnblockSlimeattikusReward.ID));
+            RewardHandler.instance.addAndApplyReward(RewardLibrary.getRewardByID(UnblockSlimeattikusReward.ID));
          }
       }
    }

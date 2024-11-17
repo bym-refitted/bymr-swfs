@@ -167,7 +167,7 @@ package
                               KillJar();
                            }
                         }
-                        else
+                        else if(this._target)
                         {
                            if(_targetVacuum)
                            {

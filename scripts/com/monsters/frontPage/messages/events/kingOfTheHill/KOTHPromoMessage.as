@@ -41,7 +41,7 @@ package com.monsters.frontPage.messages.events.kingOfTheHill
          navigateToURL(new URLRequest(this._EVENT_PAGE_URL));
       }
       
-      private function upgradeMapRoom() : void
+      protected function upgradeMapRoom() : void
       {
          upgradeBuilding(MAPROOM.TYPE);
       }

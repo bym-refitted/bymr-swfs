@@ -76,8 +76,6 @@ package de.polygonal.ds
                while(_loc4_ < _loc5_)
                {
                   _loc6_ = _loc4_++;
-                  null;
-                  null;
                   _loc7_ = _loc3_ * _w + _loc6_;
                   _loc8_ = _loc6_ * _w + _loc3_;
                   _loc9_ = _a[_loc7_];
@@ -306,7 +304,6 @@ package de.polygonal.ds
       public function setRow(param1:int, param2:Array) : void
       {
          var _loc6_:int = 0;
-         null;
          var _loc3_:* = param1 * _w;
          var _loc4_:int = 0;
          var _loc5_:int = _w;
@@ -325,7 +322,6 @@ package de.polygonal.ds
       public function setCol(param1:int, param2:Array) : void
       {
          var _loc5_:int = 0;
-         null;
          var _loc3_:int = 0;
          var _loc4_:int = _h;
          while(_loc3_ < _loc4_)
@@ -448,7 +444,6 @@ package de.polygonal.ds
       
       public function indexToCell(param1:int, param2:Array2Cell) : Array2Cell
       {
-         null;
          param2.y = int(param1 / _w);
          param2.x = int(param1 % _w);
          return param2;
@@ -501,7 +496,6 @@ package de.polygonal.ds
       public function getCol(param1:int, param2:Array) : Array
       {
          var _loc5_:int = 0;
-         null;
          var _loc3_:int = 0;
          var _loc4_:int = _h;
          while(_loc3_ < _loc4_)
@@ -524,7 +518,6 @@ package de.polygonal.ds
       
       public function method_2(param1:int, param2:int) : Object
       {
-         null;
          return _a[param2 * _w + param1];
       }
       
@@ -627,7 +620,6 @@ package de.polygonal.ds
       
       public function cellToIndex(param1:Array2Cell) : int
       {
-         null;
          return param1.y * _w + param1.x;
       }
       
@@ -648,7 +640,6 @@ package de.polygonal.ds
          {
             return null;
          }
-         null;
          param2.y = int(_loc3_ / _w);
          param2.x = int(_loc3_ % _w);
          return param2;

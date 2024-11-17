@@ -46,7 +46,7 @@ package com.monsters.baseplanner
       
       public static const TOOL_STORE:String = "storebuilding";
       
-      public static const MOUSE_POSITION_SNAP_THRESHHOLD:int = 12;
+      public static const MOUSE_POSITION_SNAP_THRESHHOLD:int = 5;
       
       private var _canvas:Sprite;
       

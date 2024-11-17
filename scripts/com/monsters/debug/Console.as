@@ -79,7 +79,7 @@ package com.monsters.debug
       {
          var _loc6_:Number = NaN;
          var _loc3_:int = param1.indexOf(" ") + 1;
-         var _loc4_:String = param1.substring(0,!!_loc3_ ? _loc3_ - 1 : param1.length);
+         var _loc4_:String = param1.substring(0,!!_loc3_ ? _loc3_ - 1 : param1.length).toLowerCase();
          var _loc5_:Function = _commands[_loc4_];
          if(_loc5_ != null)
          {
@@ -100,7 +100,7 @@ package com.monsters.debug
       
       public static function registerCommand(param1:String, param2:Function) : void
       {
-         _commands[param1] = param2;
+         _commands[param1.toLowerCase()] = param2;
       }
       
       private static function getSource(param1:uint = 4) : String

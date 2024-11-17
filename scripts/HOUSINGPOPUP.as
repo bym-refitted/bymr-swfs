@@ -213,7 +213,7 @@ package
             _loc3_ += CREATURELOCKER._creatures[_loc2_].props.cStorage * this._juiceList[_loc2_];
          }
          HOUSING._housingUsed.Add(-_loc3_);
-         _loc6_ = 100 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
+         _loc6_ = Math.round(100 / Number(HOUSING._housingCapacity.Get()) * Number(HOUSING._housingUsed.Get()));
          mcStorage.mcBar.width = 535 / HOUSING._housingCapacity.Get() * HOUSING._housingUsed.Get();
          mcStorage.mcBarB.width = 1;
          tStorage.htmlText = "<b>" + GLOBAL.FormatNumber(HOUSING._housingUsed.Get()) + " / " + GLOBAL.FormatNumber(HOUSING._housingCapacity.Get()) + " (" + _loc6_ + "%)</b>";

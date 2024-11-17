@@ -15,13 +15,13 @@ package com.monsters.baseplanner
    {
       public static const TYPE:uint = 10;
       
-      public static var maxNumberOfSlots:uint = _DEFAULT_NUMBER_OF_SLOTS;
+      public static var maxNumberOfSlots:uint = DEFAULT_NUMBER_OF_SLOTS;
       
-      public static var slots:uint = _DEFAULT_NUMBER_OF_SLOTS;
+      public static var slots:uint = DEFAULT_NUMBER_OF_SLOTS;
       
       public static var canSave:Boolean = true;
       
-      private static const _DEFAULT_NUMBER_OF_SLOTS:uint = 2;
+      public static const DEFAULT_NUMBER_OF_SLOTS:uint = 2;
       
       public var popup:BasePlannerPopup;
       

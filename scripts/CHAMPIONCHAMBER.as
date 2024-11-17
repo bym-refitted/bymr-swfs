@@ -53,9 +53,14 @@ package
             GLOBAL.Message(KEYS.Get("msg_chamber_nochamp"));
             return;
          }
-         if(Boolean(BASE._guardianData) && CREATURES._guardian == null)
+         var _loc2_:int = 0;
+         while(_loc2_ < BASE._guardianData.length)
          {
-            GLOBAL._bCage.SpawnGuardian(BASE._guardianData.l.Get(),BASE._guardianData.fd,BASE._guardianData.ft,BASE._guardianData.t,BASE._guardianData.hp.Get(),BASE._guardianData.nm,BASE._guardianData.fb.Get(),BASE._guardianData.pl.Get());
+            if(Boolean(BASE._guardianData[_loc2_]) && CREATURES._guardian == null)
+            {
+               GLOBAL._bCage.SpawnGuardian(BASE._guardianData[_loc2_].l.Get(),BASE._guardianData[_loc2_].fd,BASE._guardianData[_loc2_].ft,BASE._guardianData[_loc2_].t,BASE._guardianData[_loc2_].hp.Get(),BASE._guardianData[_loc2_].nm,BASE._guardianData[_loc2_].fb.Get(),BASE._guardianData[_loc2_].pl.Get());
+            }
+            _loc2_++;
          }
          if(!_open)
          {
@@ -110,6 +115,8 @@ package
       
       public function FreezeGuardian() : *
       {
+         var _loc1_:int = 0;
+         var _loc2_:int = 0;
          if(CREATURES._guardian)
          {
             if(CREATURES._guardian._health.Get() < CREATURES._guardian._maxHealth)
@@ -122,22 +129,35 @@ package
                GLOBAL.Message(KEYS.Get("bdg_chamber_hungry"));
                return;
             }
-            LOGGER.Stat([69,BASE._guardianData.t,BASE._guardianData.l.Get()]);
+            _loc1_ = 0;
+            _loc2_ = 0;
+            while(_loc2_ < BASE._guardianData.length)
+            {
+               if(BASE._guardianData[_loc2_].t == CREATURES._guardian._type)
+               {
+                  _loc1_ = _loc2_;
+               }
+               _loc2_++;
+            }
+            LOGGER.Stat([69,BASE._guardianData[_loc1_].t,BASE._guardianData[_loc1_].l.Get()]);
             CREATURES._guardian.Export();
             CREATURES._guardian.ModeFreeze();
-            BASE._guardianData.ft -= GLOBAL.Timestamp();
-            this._frozen.push(BASE._guardianData);
-            BASE._guardianData = null;
-            CREATURES._guardian = null;
+            BASE._guardianData[_loc1_].ft -= GLOBAL.Timestamp();
+            this._frozen.push(BASE._guardianData[_loc1_]);
+            BASE._guardianData[_loc1_] = null;
+            BASE._guardianData.splice(_loc1_,1);
             if(GLOBAL._mode == "build")
             {
-               GLOBAL._playerGuardianData = null;
+               _loc1_ = GLOBAL.getPlayerGuardianIndex(CREATURES._guardian._type);
+               GLOBAL._playerGuardianData[_loc1_] = null;
+               GLOBAL._playerGuardianData.splice(_loc1_,1);
             }
+            CREATURES._guardian = null;
             BASE.Save();
          }
       }
       
-      public function ThawGuardian(param1:int) : *
+      public function ThawGuardian(param1:int) : void
       {
          var i:int;
          var StreamPost:Function;
@@ -183,12 +203,12 @@ package
                this._frozen = newFrozen;
                if(GLOBAL._mode == "build")
                {
-                  StreamPost = function(param1:String, param2:String, param3:String):*
+                  StreamPost = function(param1:String, param2:String, param3:String):Function
                   {
                      var st:String = param1;
                      var sd:String = param2;
                      var im:String = param3;
-                     return function(param1:MouseEvent = null):*
+                     return function(param1:MouseEvent = null):void
                      {
                         GLOBAL.CallJS("sendFeed",["unlock-end",st,sd,im,0]);
                         POPUPS.Next();
@@ -202,7 +222,7 @@ package
                   mc.tText.htmlText = KEYS.Get("chamber_thawstreamdesc",{"v1":CHAMPIONCAGE._guardians["G" + type].name});
                   POPUPS.Push(mc,null,null,null,"G" + type + "_L" + level + "-150.png");
                }
-               LOGGER.Stat([70,BASE._guardianData.t,BASE._guardianData.l.Get()]);
+               LOGGER.Stat([70,CREATURES._guardian._type,CREATURES._guardian._level.Get()]);
                BASE.Save();
                break;
             }
@@ -284,7 +304,7 @@ package
       override public function Export() : *
       {
          var _loc4_:Object = null;
-         var _loc1_:* = super.Export();
+         var _loc1_:Object = super.Export();
          var _loc2_:Array = [];
          var _loc3_:int = 0;
          while(_loc3_ < this._frozen.length)

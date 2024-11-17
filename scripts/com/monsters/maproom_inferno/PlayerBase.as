@@ -36,8 +36,8 @@ package com.monsters.maproom_inferno
          };
          super();
          this.data = {};
-         this.data.baseid = new SecNum(int(baseID));
-         this.data.baseseed = new SecNum(int(baseSeed));
+         this.data.baseid = new SecNum(Number(baseID));
+         this.data.baseseed = new SecNum(Number(baseSeed));
          this.data.ownerName = "My Yard";
          this.loader = new Loader();
          try

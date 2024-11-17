@@ -27,13 +27,26 @@ package com.monsters.rewarding
          return "rewards";
       }
       
-      public function addReward(param1:Reward) : void
+      public function addReward(param1:Reward) : Boolean
       {
          if(this.getRewardByID(param1.id))
          {
-            return;
+            return false;
          }
          this.rewards.push(param1);
+         return true;
+      }
+      
+      public function addAndApplyReward(param1:Reward) : void
+      {
+         if(this.addReward(param1))
+         {
+            param1.applyReward();
+         }
+      }
+      
+      public function applyReward(param1:Reward) : void
+      {
          param1.applyReward();
       }
       
@@ -63,10 +76,19 @@ package com.monsters.rewarding
          return null;
       }
       
+      public function removeRewardByID(param1:String) : void
+      {
+         var _loc2_:Reward = this.getRewardByID(param1);
+         if(_loc2_)
+         {
+            this.removeReward(_loc2_);
+         }
+      }
+      
       public function removeReward(param1:Reward) : void
       {
          var _loc2_:int = int(this.rewards.indexOf(param1));
-         if(_loc2_)
+         if(_loc2_ >= 0)
          {
             param1.removed();
             this.rewards.splice(_loc2_,1);
@@ -79,6 +101,7 @@ package com.monsters.rewarding
          {
             return;
          }
+         UPDATES.addAction(this.processUpdate,this.name);
          RewardLibrary.initialize();
          if(param1)
          {
@@ -89,11 +112,74 @@ package com.monsters.rewarding
       
       public function exportData() : Object
       {
-         return null;
+         var _loc3_:Reward = null;
+         if(GLOBAL._mode != "build")
+         {
+            return null;
+         }
+         var _loc1_:Object = {};
+         var _loc2_:int = 0;
+         while(_loc2_ < this.rewards.length)
+         {
+            _loc3_ = this.rewards[_loc2_];
+            _loc1_[_loc3_.id] = _loc3_.exportData();
+            _loc2_++;
+         }
+         return _loc1_;
       }
       
       public function importData(param1:Object) : void
       {
+         var _loc2_:String = null;
+         var _loc3_:Reward = null;
+         for(_loc2_ in param1)
+         {
+            _loc3_ = RewardLibrary.getRewardByID(_loc2_);
+            if(_loc3_)
+            {
+               _loc3_.importData(param1[_loc2_]);
+               this.addReward(_loc3_);
+            }
+         }
+      }
+      
+      public function updateExistingOrAddNewReward(param1:String, param2:* = null) : Reward
+      {
+         var _loc3_:Reward = this.getRewardByID(param1);
+         if(!_loc3_)
+         {
+            _loc3_ = RewardLibrary.getRewardByID(param1);
+         }
+         if(_loc3_)
+         {
+            this.addReward(_loc3_);
+            if(param2)
+            {
+               _loc3_.value = param2;
+            }
+         }
+         return _loc3_;
+      }
+      
+      public function processUpdate(param1:Object) : Boolean
+      {
+         var _loc2_:Reward = null;
+         if(param1.method == "add")
+         {
+            _loc2_ = this.getRewardByID(param1.id);
+            if(!_loc2_)
+            {
+               _loc2_ = RewardLibrary.getRewardByID(param1.id);
+            }
+            if(_loc2_)
+            {
+               _loc2_.value = param1.value;
+               this.addReward(_loc2_);
+               return true;
+            }
+            return false;
+         }
+         return false;
       }
    }
 }

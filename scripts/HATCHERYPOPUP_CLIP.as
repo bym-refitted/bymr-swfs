@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1870")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1979")]
    public dynamic class HATCHERYPOPUP_CLIP extends MovieClip
    {
       public var mcCount4:MovieClip;

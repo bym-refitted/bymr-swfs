@@ -3,6 +3,7 @@ package
    import com.cc.utils.SecNum;
    import com.monsters.ai.*;
    import com.monsters.alliances.ALLIANCES;
+   import com.monsters.champions.KOTHChampion;
    import com.monsters.display.ScrollSet;
    import com.monsters.effects.ResourceBombs;
    import com.monsters.effects.particles.ParticleText;
@@ -142,15 +143,15 @@ package
       
       public static function Tick() : void
       {
-         var _loc3_:Boolean = false;
-         var _loc4_:Object = null;
-         var _loc5_:int = 0;
-         var _loc6_:String = null;
-         var _loc7_:SecNum = null;
-         var _loc8_:Boolean = false;
-         var _loc9_:BFOUNDATION = null;
-         var _loc10_:SecNum = null;
+         var _loc4_:Boolean = false;
+         var _loc5_:Object = null;
+         var _loc6_:int = 0;
+         var _loc7_:String = null;
+         var _loc8_:SecNum = null;
+         var _loc9_:Boolean = false;
+         var _loc10_:BFOUNDATION = null;
          var _loc11_:SecNum = null;
+         var _loc12_:SecNum = null;
          if(_flingerCooling > 0)
          {
             --_flingerCooling;
@@ -162,65 +163,70 @@ package
          }
          var _loc1_:* = false;
          var _loc2_:int = 0;
-         if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+         var _loc3_:int = 0;
+         while(_loc3_ < GLOBAL._playerGuardianData.length)
          {
-            _loc2_ = 1;
+            if(Boolean(GLOBAL._playerGuardianData[_loc3_]) && GLOBAL._playerGuardianData[_loc3_].hp.Get() > 0)
+            {
+               _loc2_++;
+            }
+            _loc3_++;
          }
          if(GLOBAL._advancedMap)
          {
-            for each(_loc10_ in GLOBAL._attackerMapCreatures)
-            {
-               _loc2_ += _loc10_.Get();
-            }
-         }
-         else
-         {
-            for each(_loc11_ in GLOBAL._attackerCreatures)
+            for each(_loc11_ in GLOBAL._attackerMapCreatures)
             {
                _loc2_ += _loc11_.Get();
             }
          }
-         _loc3_ = false;
-         for each(_loc4_ in ResourceBombs._bombs)
+         else
          {
-            if(_loc4_.catapultLevel <= GLOBAL._attackersCatapult)
+            for each(_loc12_ in GLOBAL._attackerCreatures)
             {
-               if(_loc4_.resource == 3)
+               _loc2_ += _loc12_.Get();
+            }
+         }
+         _loc4_ = false;
+         for each(_loc5_ in ResourceBombs._bombs)
+         {
+            if(_loc5_.catapultLevel <= GLOBAL._attackersCatapult)
+            {
+               if(_loc5_.resource == 3)
                {
-                  if(!_loc4_.used && _loc2_ > 0)
+                  if(!_loc5_.used && _loc2_ > 0)
                   {
-                     _loc3_ = true;
+                     _loc4_ = true;
                   }
                }
-               else if(!_loc4_.used)
+               else if(!_loc5_.used)
                {
-                  _loc3_ = true;
+                  _loc4_ = true;
                }
             }
          }
-         _loc5_ = 0;
-         for(_loc6_ in ResourceBombs._activeBombs)
+         _loc6_ = 0;
+         for(_loc7_ in ResourceBombs._activeBombs)
          {
-            _loc5_++;
+            _loc6_++;
          }
-         _loc3_ ||= _loc5_ > 0;
-         for each(_loc7_ in _flingerBucket)
+         _loc4_ ||= _loc6_ > 0;
+         for each(_loc8_ in _flingerBucket)
          {
-            _loc2_ += _loc7_.Get();
+            _loc2_ += _loc8_.Get();
          }
          _loc1_ = _loc2_ > 0;
-         _loc8_ = false;
-         for each(_loc9_ in BASE._buildingsAll)
+         _loc9_ = false;
+         for each(_loc10_ in BASE._buildingsAll)
          {
-            if(_loc9_._class != "wall" && _loc9_._class != "trap" && _loc9_._class != "enemy" && _loc9_._class != "decoration" && _loc9_._class != "cage" && _loc9_._hp.Get() > 0)
+            if(_loc10_._class != "wall" && _loc10_._class != "trap" && _loc10_._class != "enemy" && _loc10_._class != "decoration" && _loc10_._class != "cage" && _loc10_._hp.Get() > 0)
             {
-               _loc8_ = true;
+               _loc9_ = true;
                break;
             }
          }
-         if(!_sentOver && (!_loc8_ || !CREEPS._creepCount))
+         if(!_sentOver && (!_loc9_ || !CREEPS._creepCount))
          {
-            if(_countdown < 0 || !_loc8_ || !_loc1_ && !_loc3_)
+            if(_countdown < 0 || !_loc9_ || !_loc1_ && !_loc4_)
             {
                _sentOver = true;
                if(BASE._saveOver != 1)
@@ -502,9 +508,10 @@ package
          var _loc8_:String = null;
          var _loc9_:Boolean = false;
          var _loc10_:int = 0;
-         var _loc11_:String = null;
-         var _loc12_:int = 0;
-         var _loc13_:* = undefined;
+         var _loc11_:int = 0;
+         var _loc12_:String = null;
+         var _loc13_:int = 0;
+         var _loc14_:* = undefined;
          var _loc6_:Array = [];
          for(_loc8_ in _flingerBucket)
          {
@@ -513,30 +520,31 @@ package
                _loc9_ = false;
                if(_loc8_.substr(0,1) == "G")
                {
-                  _loc10_ = int(GLOBAL._playerGuardianData.l.Get());
+                  _loc10_ = GLOBAL.getPlayerGuardianIndex(int(_loc8_.substr(1)));
+                  _loc11_ = int(GLOBAL._playerGuardianData[_loc10_].l.Get());
                   _loc3_ = Math.random() * 360 * 0.0174532925;
                   _loc4_ = Math.random() * param2 / 2;
                   _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
-                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData.t,MAP._BUILDINGTOPS,"bounce",_loc10_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData.hp.Get(),GLOBAL._playerGuardianData.fb.Get(),GLOBAL._playerGuardianData.pl.Get());
-                  _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc10_,"bucket"));
-                  _loc11_ = "Level " + GLOBAL._playerGuardianData.l.Get() + " " + CHAMPIONCAGE._guardians[CREEPS._guardian._creatureID].name;
-                  _loc6_.push([1,_loc11_]);
-                  CREEPS._flungGuardian = true;
+                  CREEPS.SpawnGuardian(GLOBAL._playerGuardianData[_loc10_].t,MAP._BUILDINGTOPS,"bounce",_loc11_,_loc5_,Math.random() * 360,GLOBAL._playerGuardianData[_loc10_].hp.Get(),GLOBAL._playerGuardianData[_loc10_].fb.Get(),GLOBAL._playerGuardianData[_loc10_].pl.Get());
+                  _flungSpace.Add(CHAMPIONCAGE.GetGuardianProperty(_loc8_,_loc11_,"bucket"));
+                  _loc12_ = "Level " + GLOBAL._playerGuardianData[_loc10_].l.Get() + " " + CHAMPIONCAGE._guardians["G" + GLOBAL._playerGuardianData[_loc10_].t].name;
+                  _loc6_.push([1,_loc12_]);
+                  CREEPS._flungGuardian[_loc10_] = true;
                }
                else
                {
                   _flungSpace.Add(CREATURES.GetProperty(_loc8_,"cStorage") * _flingerBucket[_loc8_].Get());
                   _loc7_ = KEYS.Get(CREATURELOCKER._creatures[_loc8_].name);
                   _loc6_.push([_flingerBucket[_loc8_].Get(),_loc7_]);
-                  _loc12_ = 0;
-                  while(_loc12_ < _flingerBucket[_loc8_].Get())
+                  _loc13_ = 0;
+                  while(_loc13_ < _flingerBucket[_loc8_].Get())
                   {
                      _loc3_ = Math.random() * 360 * 0.0174532925;
                      _loc4_ = Math.random() * param2 / 2;
                      _loc5_ = param1.add(new Point(Math.sin(_loc3_) * _loc4_,Math.cos(_loc3_) * _loc4_));
-                     _loc13_ = CREEPS.Spawn(_loc8_,MAP._BUILDINGTOPS,"bounce",_loc5_,Math.random() * 360);
-                     _loc13_._hitLimit = int.MAX_VALUE;
-                     _loc12_++;
+                     _loc14_ = CREEPS.Spawn(_loc8_,MAP._BUILDINGTOPS,"bounce",_loc5_,Math.random() * 360);
+                     _loc14_._hitLimit = int.MAX_VALUE;
+                     _loc13_++;
                   }
                   if(ALLIANCES._myAlliance)
                   {
@@ -573,7 +581,8 @@ package
       
       public static function BucketAdd(param1:String) : Boolean
       {
-         var _loc3_:String = null;
+         var _loc3_:int = 0;
+         var _loc4_:String = null;
          var _loc2_:int = int(GLOBAL._buildingProps[4].capacity[GLOBAL._attackersFlinger - 1]);
          if(MAPROOM_DESCENT.InDescent)
          {
@@ -585,7 +594,8 @@ package
          }
          if(param1.substr(0,1) == "G")
          {
-            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
+            _loc3_ = GLOBAL.getPlayerGuardianIndex(int(param1.substr(1)));
+            _loc2_ -= CHAMPIONCAGE.GetGuardianProperty(param1.substr(0,2),GLOBAL._playerGuardianData[_loc3_].l.Get(),"bucket");
             ATTACK._flingerBucket[param1] = new SecNum(1);
             _creaturesLoaded.Add(1);
             SOUNDS.Play("click1");
@@ -594,9 +604,9 @@ package
          {
             if(GLOBAL._attackerMapCreatures[param1].Get() > 0)
             {
-               for(_loc3_ in _flingerBucket)
+               for(_loc4_ in _flingerBucket)
                {
-                  _loc2_ -= CREATURES.GetProperty(_loc3_,"bucket") * ATTACK._flingerBucket[_loc3_].Get();
+                  _loc2_ -= CREATURES.GetProperty(_loc4_,"bucket") * ATTACK._flingerBucket[_loc4_].Get();
                }
                if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
                {
@@ -613,9 +623,9 @@ package
          }
          else if(GLOBAL._attackerCreatures[param1].Get() > 0)
          {
-            for(_loc3_ in _flingerBucket)
+            for(_loc4_ in _flingerBucket)
             {
-               _loc2_ -= CREATURES.GetProperty(_loc3_,"bucket") * ATTACK._flingerBucket[_loc3_].Get();
+               _loc2_ -= CREATURES.GetProperty(_loc4_,"bucket") * ATTACK._flingerBucket[_loc4_].Get();
             }
             if(_loc2_ >= CREATURES.GetProperty(param1,"bucket"))
             {
@@ -660,12 +670,22 @@ package
       public static function BucketUpdate() : void
       {
          var _loc2_:String = null;
+         var _loc3_:int = 0;
          var _loc1_:int = 0;
          for(_loc2_ in _flingerBucket)
          {
             if(_loc2_.substr(0,1) == "G")
             {
-               _loc1_ += CHAMPIONCAGE.GetGuardianProperty(_loc2_.substr(0,2),GLOBAL._playerGuardianData.l.Get(),"bucket");
+               _loc3_ = 0;
+               while(_loc3_ < GLOBAL._playerGuardianData.length)
+               {
+                  if(_loc2_.substr(1) == GLOBAL._playerGuardianData[_loc3_].t)
+                  {
+                     break;
+                  }
+                  _loc3_++;
+               }
+               _loc1_ += CHAMPIONCAGE.GetGuardianProperty(_loc2_.substr(0,2),GLOBAL._playerGuardianData[_loc3_].l.Get(),"bucket");
             }
             else
             {
@@ -715,11 +735,18 @@ package
                _hpLoot4 += param2;
          }
          var _loc8_:int = param2;
-         if(GLOBAL._resources["r" + param1].Get() + param2 > GLOBAL._resources["r" + param1 + "max"])
+         var _loc9_:Number = Number(GLOBAL._resources["r" + param1 + "max"]);
+         var _loc10_:Number = Number(GLOBAL._resources["r" + param1].Get());
+         var _loc11_:KOTHChampion = CREEPS.krallen;
+         if(_loc11_)
+         {
+            _loc9_ += _loc9_ * _loc11_._buff;
+         }
+         if(_loc10_ + param2 > _loc9_)
          {
             if(BASE.isInferno() && MAPROOM_DESCENT.DescentPassed || GLOBAL._mode == GLOBAL._loadmode)
             {
-               _loc8_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
+               _loc8_ = _loc9_ - _loc10_;
                if(_loc8_ < 0)
                {
                   _loc8_ = 0;
@@ -979,7 +1006,7 @@ package
          {
             SOUNDS.PlayMusic("musicbuild");
          }
-         GLOBAL.eventDispatcher.dispatchEvent(new AttackEvent(AttackEvent.ATTACK_OVER,_loc1_,BASE._wmID));
+         GLOBAL.eventDispatcher.dispatchEvent(new AttackEvent(AttackEvent.ATTACK_OVER,_loc1_,BASE._wmID,_loot));
          if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST || (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
          {
             _loc8_ = new popup_attackend(_loc1_);

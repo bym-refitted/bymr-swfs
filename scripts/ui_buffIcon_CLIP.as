@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1992")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2101")]
    public dynamic class ui_buffIcon_CLIP extends MovieClip
    {
       public function ui_buffIcon_CLIP()

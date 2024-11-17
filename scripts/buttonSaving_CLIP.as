@@ -1,6 +1,6 @@
 package
 {
-   [Embed(source="/_assets/assets.swf", symbol="symbol1154")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1155")]
    public dynamic class buttonSaving_CLIP extends buttonSaving
    {
       public function buttonSaving_CLIP()
