@@ -199,7 +199,7 @@ package com.monsters.missions
       public function Skin() : void
       {
          var _loc1_:int = 1;
-         if(GLOBAL.InfernoMode)
+         if(GLOBAL.InfernoMode())
          {
             _loc1_ = 2;
          }
@@ -395,7 +395,7 @@ package com.monsters.missions
                _loc4_.sortOn("order",Array.NUMERIC);
             }
          }
-         if(_loc4_.length < 1)
+         if(_loc4_.length < 1 && GLOBAL._mode == GLOBAL._loadmode)
          {
             this.frame.mcMask.height = (this._numDisplaySlots + 1) * (32 + this._ItemPaddingY);
          }

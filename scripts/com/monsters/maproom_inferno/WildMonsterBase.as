@@ -2,7 +2,6 @@ package com.monsters.maproom_inferno
 {
    import com.monsters.display.ImageCache;
    import com.monsters.maproom.WildMonsterBaseInfo;
-   import com.monsters.maproom.WildMonsterBase_CLIP;
    import com.monsters.maproom_inferno.model.BaseObject;
    import com.monsters.maproom_inferno.views.MapBasePopup;
    import flash.display.Bitmap;
@@ -16,7 +15,7 @@ package com.monsters.maproom_inferno
    import flash.text.TextFieldAutoSize;
    import flash.utils.Timer;
    
-   public class WildMonsterBase extends WildMonsterBase_CLIP
+   public class WildMonsterBase extends WildMonsterBaseInferno_CLIP
    {
       public var mapX:uint;
       
@@ -103,7 +102,8 @@ package com.monsters.maproom_inferno
          removeChild(smallhit);
          removeChild(largehit);
          name_txt.autoSize = TextFieldAutoSize.LEFT;
-         name_txt.htmlText = "<b>" + this.data.ownerName.toUpperCase() + "</b>";
+         level_txt.htmlText = "<b>" + this.data.level.Get().toString() + "</b>";
+         name_txt.htmlText = "<b>" + KEYS.Get("inf_ai_tribe_mapview",{"v1":this.data.ownerName}).toUpperCase() + "</b>";
          name_txt.x = name_txt.textWidth * -0.5;
          var _loc2_:Number = name_txt.textWidth + 14;
          box_mc.width = _loc2_ < 51 ? 51 : _loc2_;

@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.utils.SecNum;
    import com.monsters.ui.UI_BOTTOM;
    import flash.display.MovieClip;
    import flash.events.MouseEvent;
@@ -7,13 +8,13 @@ package
    
    public class SPECIALEVENT
    {
-      private static var _eventCount:int = 1;
+      private static var _eventCount:SecNum = new SecNum(1);
       
       private static var _setupCalled:Boolean = false;
       
       private static var _lastTimestamp:Number = 0;
       
-      private static var _wave:int = -1;
+      private static var _wave:SecNum = new SecNum(-1);
       
       private static var _group:int = 0;
       
@@ -29,9 +30,9 @@ package
       
       private static var _retreatAllMonsters:Boolean = false;
       
-      private static var _eventStartTime:Number = -1;
+      private static var _eventStartTime:SecNum = new SecNum(-1);
       
-      private static var _eventEndTime:Number = -1;
+      private static var _eventEndTime:SecNum = new SecNum(-1);
       
       public static var _currentAttackers:Array = new Array();
       
@@ -48,7 +49,7 @@ package
          "W":3 * 60
       };
       
-      private static const TIME_OFFSETS:Array = [-604800,-345600,-86400,0,7 * 24 * 60 * 60];
+      private static const TIME_OFFSETS:Array = [new SecNum(-604800),new SecNum(-345600),new SecNum(-86400),new SecNum(0),new SecNum(7 * 24 * 60 * 60)];
       
       private static const CREEP:int = 0;
       
@@ -1432,7 +1433,7 @@ package
             return;
          }
          _setupCalled = true;
-         _wave = GetStat("wmi_wave");
+         _wave = new SecNum(GetStat("wmi_wave"));
          _group = 0;
          _knownFlag = invasionpop;
          InitializeTimes();
@@ -1440,8 +1441,8 @@ package
       
       private static function InitializeTimes() : void
       {
-         _eventStartTime = 0;
-         _eventEndTime = _eventStartTime + 604800;
+         _eventStartTime = new SecNum(0);
+         _eventEndTime = new SecNum(_eventStartTime.Get() + 604800);
       }
       
       public static function StartRound() : void
@@ -1451,15 +1452,15 @@ package
             return;
          }
          _active = true;
-         if(_wave == -1)
+         if(_wave.Get() == -1)
          {
-            _wave = SPECIALEVENT.GetStat("wmi_wave");
+            _wave.Set(SPECIALEVENT.GetStat("wmi_wave"));
          }
          _group = 0;
          _currentAttackers = new Array();
          _retreatAllMonsters = false;
          _randomDirection = Math.floor(Math.random() * 4) * 90;
-         LOGGER.Stat([83,_wave]);
+         LOGGER.Stat([83,_wave.Get()]);
          SendWave();
       }
       
@@ -1473,7 +1474,7 @@ package
          var _loc8_:BFOUNDATION = null;
          if(param1)
          {
-            LOGGER.Stat([84,_wave]);
+            LOGGER.Stat([84,_wave.Get()]);
             StartRepairs();
             if(isMajorWave(wave) && wave != 1)
             {
@@ -1481,13 +1482,13 @@ package
             }
             _loc3_ = new WMIROUNDCOMPLETE(wave);
             POPUPS.Push(_loc3_,null,null,null,null,false,"now");
-            ++_wave;
+            _wave.Add(1);
             UI_BOTTOM._nextwave.SetWave(wave);
-            SetStat("wmi_wave",_wave);
+            SetStat("wmi_wave",_wave.Get());
          }
          else
          {
-            LOGGER.Stat([85,_wave]);
+            LOGGER.Stat([85,_wave.Get()]);
             StartRepairs();
             _loc3_ = new WMIROUNDCOMPLETE(-1,param2);
             POPUPS.Push(_loc3_,null,null,null,null,false,"now");
@@ -1546,20 +1547,27 @@ package
          var _loc8_:Number = NaN;
          var _loc9_:Point = null;
          var _loc10_:CHAMPIONMONSTER = null;
-         if(_wave >= WAVES.length)
+         if(_wave.Get() >= WAVES.length)
          {
             return;
          }
-         SOUNDS.PlayMusic("musicpanic");
+         if(BASE.isInferno())
+         {
+            SOUNDS.PlayMusic("musicipanic");
+         }
+         else
+         {
+            SOUNDS.PlayMusic("musicpanic");
+         }
          _spawningWaves = true;
-         switch(WAVES[_wave][_group].type)
+         switch(WAVES[_wave.Get()][_group].type)
          {
             case CREEP:
-               _loc1_ = WAVES[_wave][_group].wave;
+               _loc1_ = WAVES[_wave.Get()][_group].wave;
                _loc2_ = _loc1_[0][0];
-               _loc3_ = int(WAVES[_wave][_group].powerup);
-               _loc4_ = int(WAVES[_wave][_group].level);
-               _loc5_ = int(WAVES[_wave][_group].rage);
+               _loc3_ = int(WAVES[_wave.Get()][_group].powerup);
+               _loc4_ = int(WAVES[_wave.Get()][_group].level);
+               _loc5_ = int(WAVES[_wave.Get()][_group].rage);
                GLOBAL._wmCreaturePowerups[_loc2_] = _loc3_;
                GLOBAL._wmCreatureLevels[_loc2_] = _loc4_;
                _loc1_[0][4] = (_loc1_[0][4] + _randomDirection) % 360;
@@ -1576,18 +1584,18 @@ package
                _currentAttackers = _currentAttackers.concat(_loc6_);
                break;
             case GUARDIAN:
-               _loc7_ = WAVES[_wave][_group];
+               _loc7_ = WAVES[_wave.Get()][_group];
                _loc8_ = (_loc7_.angle + _randomDirection) % 360;
                _loc9_ = GRID.ToISO(Math.cos(_loc8_ * 0.0174532925) * 900,Math.sin(_loc8_ * 0.0174532925) * 900,0);
                _loc10_ = CREEPS.SpawnGuardian(_loc7_.guardianID,MAP._BUILDINGTOPS,"bounce",_loc7_.level,_loc9_,_loc7_.direction,_loc7_.health,_loc7_.foodbonus,true);
                _currentAttackers.push([_loc10_]);
          }
          _timeOfNextWave = GLOBAL.Timestamp();
-         while(++_group < WAVES[_wave].length && WAVES[_wave][_group] instanceof Number)
+         while(++_group < WAVES[_wave.Get()].length && WAVES[_wave.Get()][_group] instanceof Number)
          {
-            _timeOfNextWave += WAVES[_wave][_group];
+            _timeOfNextWave += WAVES[_wave.Get()][_group];
          }
-         if(_group >= WAVES[_wave].length)
+         if(_group >= WAVES[_wave.Get()].length)
          {
             _spawningWaves = false;
             _timeOfNextWave = -1;
@@ -1704,12 +1712,12 @@ package
       
       public static function GetTimeUntilStart() : Number
       {
-         return _eventStartTime - GLOBAL.Timestamp();
+         return _eventStartTime.Get() - GLOBAL.Timestamp();
       }
       
       public static function GetTimeUntilEnd() : Number
       {
-         return _eventEndTime - GLOBAL.Timestamp();
+         return _eventEndTime.Get() - GLOBAL.Timestamp();
       }
       
       public static function TimerClicked(param1:MouseEvent) : void
@@ -1756,7 +1764,7 @@ package
          {
             return false;
          }
-         if(ACTIVE_OVERRIDE || INFERNO_EMERGENCE_EVENT.ShouldRunEvent())
+         if(ACTIVE_OVERRIDE)
          {
             return true;
          }
@@ -1765,7 +1773,7 @@ package
       
       public static function get invasionpop() : Number
       {
-         if(_eventStartTime <= 0)
+         if(_eventStartTime.Get() <= 0)
          {
             return -1;
          }
@@ -1773,7 +1781,7 @@ package
          _loc1_ = 0;
          while(_loc1_ < TIME_OFFSETS.length)
          {
-            if(GLOBAL.Timestamp() < _eventStartTime + TIME_OFFSETS[_loc1_])
+            if(GLOBAL.Timestamp() < _eventStartTime.Get() + TIME_OFFSETS[_loc1_].Get())
             {
                return _loc1_;
             }
@@ -1818,10 +1826,10 @@ package
          }
       }
       
-      public static function DEBUGOVERRIDEROUND(param1:int) : void
+      public static function DEBUGOVERRIDEWAVE(param1:int) : void
       {
-         _wave = param1;
-         UI_BOTTOM._nextwave.SetWave(wave);
+         _wave.Set(param1);
+         UI_BOTTOM._nextwave.SetWave(param1);
       }
       
       public static function DebugToggleActive(param1:Boolean) : void
@@ -1878,7 +1886,7 @@ package
       public static function GetStat(param1:String) : int
       {
          var _loc2_:int = GLOBAL.StatGet(param1);
-         if(_loc2_ < _eventCount * 100)
+         if(_loc2_ < _eventCount.Get() * 100)
          {
             _loc2_ = 0;
          }
@@ -1895,13 +1903,13 @@ package
          {
             param2 = 0;
          }
-         param2 += _eventCount * 100;
+         param2 += _eventCount.Get() * 100;
          GLOBAL.StatSet(param1,param2);
       }
       
       public static function get wave() : int
       {
-         return _wave + 1;
+         return _wave.Get() + 1;
       }
       
       public static function get active() : Boolean

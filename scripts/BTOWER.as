@@ -252,7 +252,7 @@ package
          var mc:MovieClip = null;
          super.Upgraded();
          this.Props();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
          {
             Brag = function(param1:MouseEvent):*
             {
@@ -311,7 +311,7 @@ package
          var _loc7_:* = undefined;
          var _loc8_:* = undefined;
          var _loc9_:int = 0;
-         if(_type == 21 || _type == 25)
+         if(_type == 21 || _type == 25 || _type == 132)
          {
             _loc9_ = 1;
          }

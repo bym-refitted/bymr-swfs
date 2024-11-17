@@ -176,11 +176,11 @@ package
                   _loc2_ = com.adobe.serialization.json.JSON.decode(param1);
                   if(_loc2_.viewleader)
                   {
-                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"view",true);
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"view",true,BASE.MAIN_YARD);
                   }
                   else
                   {
-                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"help",true);
+                     BASE.LoadBase(_loc2_.url,_loc2_.userid,_loc2_.baseid,"help",true,BASE.MAIN_YARD);
                   }
                }
             });

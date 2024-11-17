@@ -30,7 +30,7 @@ package
          else
          {
             _sprites.worker = {
-               "key":"monsters/inferno_worker.png",
+               "key":"monsters/inferno_worker.v2.png",
                "sprite":null,
                "width":64,
                "height":55,

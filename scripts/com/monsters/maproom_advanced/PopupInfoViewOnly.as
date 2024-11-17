@@ -210,6 +210,7 @@ package com.monsters.maproom_advanced
       
       public function View() : *
       {
+         var _loc1_:int = 0;
          MapRoom.HideFromViewOnly();
          if(MapRoom._mc)
          {
@@ -218,13 +219,12 @@ package com.monsters.maproom_advanced
          GLOBAL._currentCell = this._cell;
          if(this._cell._base == 1)
          {
-            BASE._yardType = BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,this._cell._baseID,"wmview");
+            BASE.LoadBase(null,null,this._cell._baseID,"wmview",false,BASE.MAIN_YARD);
          }
          else
          {
-            BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,this._cell._baseID,"view");
+            _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+            BASE.LoadBase(null,null,this._cell._baseID,"view",false,_loc1_);
          }
       }
       

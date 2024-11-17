@@ -107,6 +107,10 @@ package
                AnimFrame(false);
                if(_animTick < _animFrames)
                {
+                  if(_animTick == _animFrames - 6)
+                  {
+                     SOUNDS.Play("quake");
+                  }
                   ++_animTick;
                }
                else
@@ -135,15 +139,13 @@ package
       
       private function DelayedFire() : void
       {
-         var _loc3_:QuakeGraphic = null;
-         SOUNDS.Play("quake");
          var _loc2_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
          {
             _loc2_ = 1.25;
          }
          this.Quake(int(_damage * 1 * _loc2_));
-         _loc3_ = new QuakeGraphic(20,_range * 2);
+         var _loc3_:QuakeGraphic = new QuakeGraphic(20,_range * 2);
          _loc3_.graphic.y += _top;
          _mc.addChild(_loc3_.graphic);
          _origin = new Point(x,y);
@@ -165,9 +167,9 @@ package
             _loc3_ = _loc2_.creep;
             _loc4_ = int(_loc2_.dist);
             _loc5_ = param1 / _range * (_range - _loc4_);
-            if(_loc5_ < param1 / 2)
+            if(_loc5_ < param1 / 3)
             {
-               _loc5_ = param1 / 2;
+               _loc5_ = param1 / 3;
             }
             _loc5_ *= _loc3_._damageMult;
             if(_loc5_ > _loc3_._health.Get())

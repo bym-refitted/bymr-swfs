@@ -223,7 +223,7 @@ package
       
       public static const INFERNO_OUTPOST:int = 3;
       
-      public static var _yardType:int = INFERNO_YARD;
+      public static var _yardType:int = MAIN_YARD;
       
       public static var _userDigits:Array = [];
       
@@ -760,7 +760,18 @@ package
                }
                if(GLOBAL._otherStats && GLOBAL._otherStats.descentLvl && GLOBAL._mode == "build")
                {
-                  GLOBAL._inInferno = obj.stats.other.descentLvl > MAPROOM_DESCENT._descentLvlMax ? 1 : 0;
+                  if(Boolean(WMBASE._descentBases) && WMBASE._descentBases.length > 0)
+                  {
+                     if(MAPROOM_DESCENT.DescentLevel > 1)
+                     {
+                        MAPROOM_DESCENT._descentLvl = MAPROOM_DESCENT.DescentLevel;
+                        GLOBAL.StatSet("descentLvl",MAPROOM_DESCENT._descentLvl);
+                     }
+                  }
+                  else if(MAPROOM_DESCENT._descentLvl < obj.stats.other.descentLvl)
+                  {
+                     MAPROOM_DESCENT._descentLvl = obj.stats.other.descentLvl;
+                  }
                }
                ACADEMY.Data(obj.academy);
                if(GLOBAL._mode == "build" && _yardType % 2 == MAIN_YARD)
@@ -786,15 +797,18 @@ package
                }
                _rawMonsters = obj.monsters;
                TRIBES.Setup();
-               WMBASE.Data(obj.wmstatus);
+               if(obj.wmstatus)
+               {
+                  WMBASE.Data(obj.wmstatus);
+               }
+               else
+               {
+                  WMBASE.Clear();
+               }
                WMATTACK.Setup(obj.aiattacks);
                if(GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" || GLOBAL._mode == "iwmattack")
                {
                   WMBASE.Setup();
-                  if(INFERNO_DESCENT_POPUPS.isInDescent())
-                  {
-                     INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
-                  }
                }
                TUTORIAL.Setup();
                if(GLOBAL._mode == "build")
@@ -1056,11 +1070,8 @@ package
                      POPUPS.Push(popupMC);
                   }
                }
-               if(GLOBAL._mode == GLOBAL._loadmode)
-               {
-                  _ownerName = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).name : obj.name;
-                  _ownerPic = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).profilepic : obj.pic_square;
-               }
+               _ownerName = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).name : obj.name;
+               _ownerPic = GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview" ? TRIBES.TribeForBaseID(_wmID).profilepic : obj.pic_square;
                if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
                {
                   if(obj.promotiontimer)
@@ -1348,7 +1359,7 @@ package
          {
             new URLLoaderApi().load(url + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
-         else if(isInferno() && GLOBAL._localMode != 5)
+         else if(isInferno())
          {
             new URLLoaderApi().load(GLOBAL._infBaseURL + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
@@ -1420,13 +1431,13 @@ package
             PATHING.Setup();
             t = getTimer();
             texture = "grass";
-            if(_yardType >= INFERNO_YARD)
-            {
-               texture = "lava";
-            }
             if(GLOBAL._currentCell && (_yardType % 2 == OUTPOST || GLOBAL._mode == "wmattack" || GLOBAL._mode == "wmview"))
             {
                texture = GLOBAL._currentCell._terrain;
+            }
+            if(BASE.isInferno())
+            {
+               texture = "lava";
             }
             m = new MAP(texture);
             QUEUE.Spawn(0);
@@ -1541,7 +1552,7 @@ package
                {
                   b = addBuildingC(14);
                   b.Setup({
-                     "X":-70,
+                     "X":-100,
                      "Y":0,
                      "id":count++,
                      "t":14,
@@ -1761,7 +1772,7 @@ package
                   BASE.PointsAdd(_tempLoot.r4);
                   lootArray.push([_tempLoot.r4,GLOBAL._resourceNames[3]]);
                }
-               if(GLOBAL._mode == "build" && lootArray.length > 0)
+               if(GLOBAL._mode == "build" && lootArray.length > 0 && (BASE.isInferno() || !_tempLoot.isInferno))
                {
                   Post = function(param1:MouseEvent):*
                   {
@@ -2046,6 +2057,8 @@ package
          var WhatsNewAction48:Function;
          var WhatsNewAction49:Function;
          var WhatsNewAction50:Function;
+         var ShowBuilding:Function;
+         var LoadInferno:Function;
          var popupWhatsNewDisplayed:Function;
          var MoreInfo711:Function;
          var Action:Function;
@@ -2129,7 +2142,7 @@ package
             helpedCount = 0;
             if(!GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
             {
-               if(!GLOBAL._displayedWhatsNew && BASE._yardType == MAIN_YARD && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
+               if(!GLOBAL._displayedWhatsNew && (BASE._yardType == MAIN_YARD || BASE._yardType == INFERNO_YARD && GLOBAL._whatsnewid >= 1049) && GLOBAL._mode == "build" && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
                {
                   GLOBAL._displayedWhatsNew = true;
                   display = false;
@@ -2297,6 +2310,49 @@ package
                      popupWhatsNew.bAction.SetupKey("btn_buildnow");
                      popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,WhatsNewAction50);
                   }
+                  else if(GLOBAL._whatsnewid < 1051)
+                  {
+                     ShowBuilding = function(param1:MouseEvent):void
+                     {
+                        BUILDINGS._buildingID = 132;
+                        BUILDINGS.Show();
+                        BUILDINGS._mc.ShowInfo(132);
+                        POPUPS.Next();
+                     };
+                     LoadInferno = function(param1:MouseEvent):void
+                     {
+                        BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,INFERNO_YARD);
+                     };
+                     popupWhatsNew = new popup_whatsnew50();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew_magmatower_body");
+                     newWhatsnewid = 1051;
+                     display = true;
+                     if(BASE.isInferno())
+                     {
+                        popupWhatsNew.bAction.SetupKey("btn_buildnow");
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,ShowBuilding);
+                     }
+                     else if(MAPROOM_DESCENT.DescentPassed)
+                     {
+                        popupWhatsNew.bAction.SetupKey(INFERNOPORTAL.ENTER_BUTTON);
+                        popupWhatsNew.bAction.addEventListener(MouseEvent.CLICK,LoadInferno);
+                     }
+                     else
+                     {
+                        popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew_magmatower_body2");
+                        popupWhatsNew.bAction.visible = false;
+                     }
+                  }
+                  else if(GLOBAL._whatsnewid < 1052 && BASE.isInferno())
+                  {
+                     popupWhatsNew = new popup_whatsnew51();
+                     popupWhatsNew.tTitle.htmlText = "<b>" + KEYS.Get("whatsnew_title") + "</b>";
+                     popupWhatsNew.tBody.htmlText = KEYS.Get("whatsnew_move_body");
+                     popupWhatsNew.bAction.visible = false;
+                     newWhatsnewid = 1052;
+                     display = true;
+                  }
                   if(display)
                   {
                      popupWhatsNewDisplayed = function():*
@@ -2310,6 +2366,10 @@ package
                }
             }
             INFERNO_EMERGENCE_EVENT.Initialize();
+            if(INFERNO_DESCENT_POPUPS.isInDescent() && MAPROOM_DESCENT._descentLvl < MAPROOM_DESCENT._descentLvlMax && MAPROOM_DESCENT._descentLvl > 0)
+            {
+               INFERNO_DESCENT_POPUPS.ShowTauntDialog(MAPROOM_DESCENT._descentLvl);
+            }
             if(is711Valid())
             {
                if(GLOBAL._mode == "build" && _yardType == MAIN_YARD && TUTORIAL._stage > 200 && GLOBAL._sessionCount >= 5)
@@ -2567,6 +2627,7 @@ package
             LOGGER.Log("err","BASE.RebuildTH " + e.getStackTrace);
          }
          LOGGER.Stat([29,GLOBAL._mode]);
+         LOGGER.Stat([88,GLOBAL._loadmode,BASE._yardType]);
          _loading = false;
          if(_takeoverFirstOpen)
          {
@@ -2838,11 +2899,11 @@ package
                {
                   if(isInferno())
                   {
-                     LoadBase(null,0,0,"ibuild");
+                     LoadBase(null,0,0,"ibuild",false,BASE.INFERNO_YARD);
                   }
                   else
                   {
-                     LoadBase(null,0,0,"build");
+                     LoadBase(null,0,0,"build",false,BASE.MAIN_YARD);
                   }
                   return;
                }
@@ -3006,6 +3067,14 @@ package
             stats.updateid = GLOBAL._whatsnewid;
             stats.other = GLOBAL._otherStats;
             stats.achievements = ACHIEVEMENTS.Export();
+            if(BASE.isInferno() && GLOBAL._otherStats.descentLvl >= MAPROOM_DESCENT._descentLvlMax)
+            {
+               stats.inferno = 1;
+            }
+            else
+            {
+               stats.inferno = 0;
+            }
             CalcResources();
             SaveDeltaResources();
             r = {
@@ -3229,13 +3298,14 @@ package
                   "r1":ATTACK._savedDeltaLoot.r1.Get() + GLOBAL._savedAttackersDeltaResources.r1.Get(),
                   "r2":ATTACK._savedDeltaLoot.r2.Get() + GLOBAL._savedAttackersDeltaResources.r2.Get(),
                   "r3":ATTACK._savedDeltaLoot.r3.Get() + GLOBAL._savedAttackersDeltaResources.r3.Get(),
-                  "r4":ATTACK._savedDeltaLoot.r4.Get()
+                  "r4":ATTACK._savedDeltaLoot.r4.Get() + GLOBAL._savedAttackersDeltaResources.r4.Get()
                };
                lootreport = {
                   "r1":ATTACK._loot.r1.Get(),
                   "r2":ATTACK._loot.r2.Get(),
                   "r3":ATTACK._loot.r3.Get(),
                   "r4":ATTACK._loot.r4.Get(),
+                  "isInferno":BASE.isInferno(),
                   "name":_ownerName
                };
                t = getTimer();
@@ -3493,7 +3563,7 @@ package
             _lastSaved = GLOBAL.Timestamp();
             return;
          }
-         if((isInferno() || _infernoSaveLoad && loadObjects.type == "inferno") && GLOBAL._localMode != 5)
+         if(isInferno() || _infernoSaveLoad && loadObjects.type == "inferno")
          {
             new URLLoaderApi().load(GLOBAL._infBaseURL + "save",loadVars,handleLoadSuccessful,handleLoadError);
          }
@@ -3569,7 +3639,7 @@ package
                {
                   UPDATES.Process(param1.updates);
                }
-               if(GLOBAL._mode == "build" && _yardType == MAIN_YARD)
+               if(GLOBAL._loadmode == "build" && _yardType == MAIN_YARD)
                {
                   if(param1.alliancedata)
                   {
@@ -3614,7 +3684,7 @@ package
             }
          };
          var t:int = getTimer();
-         var tmpMode:String = GLOBAL._mode;
+         var tmpMode:String = GLOBAL._loadmode;
          if(tmpMode == "wmattack")
          {
             tmpMode = "attack";
@@ -3623,19 +3693,16 @@ package
          {
             tmpMode = "view";
          }
-         if(isInferno())
+         if(tmpMode == "iwmattack")
          {
-            if(tmpMode.substr(0,1) != "i")
-            {
-               tmpMode.substring();
-            }
-            else
-            {
-               tmpMode = "i" + tmpMode;
-            }
+            tmpMode = "iattack";
+         }
+         if(tmpMode == "iwmview")
+         {
+            tmpMode = "iview";
          }
          _paging = true;
-         if(isInferno() && GLOBAL._localMode != 5)
+         if(isInferno())
          {
             new URLLoaderApi().load(GLOBAL._infBaseURL + "updatesaved",[["baseid",BASE._loadedBaseID],["version",GLOBAL._version.Get()],["lastupdate",UPDATES._lastUpdateID],["type",tmpMode]],handleLoadSuccessful,handleLoadError);
          }
@@ -4220,6 +4287,7 @@ package
                GLOBAL._newBuilding = addBuildingC(param1);
                if(GLOBAL._newBuilding)
                {
+                  GLOBAL._newBuilding._mc.alpha = 0.5;
                   GLOBAL._newBuilding.FollowMouse();
                }
                else
@@ -4256,10 +4324,6 @@ package
       public static function addBuildingC(param1:int) : BFOUNDATION
       {
          var _loc2_:BFOUNDATION = null;
-         if(GLOBAL._local && GLOBAL._localMode == 5 && isInferno() && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate)
-         {
-            param1 = ConvertToInfernoBuilding(param1);
-         }
          if(GLOBAL._buildingProps[param1 - 1].type == "decoration")
          {
             if(BTOTEM.IsTotem2(param1))
@@ -4492,7 +4556,14 @@ package
                param1.Update();
                if(!param2)
                {
-                  BUILDINGINFO.Show(param1);
+                  if(param1._type == 127 && GLOBAL.StatGet("p_id") != 1 && !MAPROOM_DESCENT.DescentPassed && !BASE.isInferno())
+                  {
+                     INFERNO_DESCENT_POPUPS.ShowEnticePopup();
+                  }
+                  else
+                  {
+                     BUILDINGINFO.Show(param1);
+                  }
                }
             }
          }
@@ -4555,11 +4626,13 @@ package
       
       public static function Charge(param1:int, param2:int, param3:Boolean = false) : int
       {
+         var _loc4_:Object = null;
+         var _loc5_:Object = null;
          if(param3)
          {
          }
-         var _loc4_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _resources : GLOBAL._attackersResources;
-         var _loc5_:Object = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
+         _loc4_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _resources : GLOBAL._attackersResources;
+         _loc5_ = GLOBAL._mode == "build" || GLOBAL._mode == "ibuild" ? _hpResources : GLOBAL._hpAttackersResources;
          if(param2 <= _loc4_["r" + param1].Get())
          {
             if(!param3)
@@ -4801,7 +4874,7 @@ package
                         {
                            if(_loc3_ < GLOBAL._mapOutpostIDs.length - 1)
                            {
-                              _yardType = isInferno() ? INFERNO_OUTPOST : OUTPOST;
+                              _yardType = OUTPOST;
                               _currentCellLoc = GLOBAL._mapOutpost[_loc3_ + 1];
                               GLOBAL._currentCell = null;
                               _needCurrentCell = true;
@@ -4809,10 +4882,9 @@ package
                               PLEASEWAIT.Show(KEYS.Get("process_outpost"));
                               break;
                            }
-                           _yardType = isInferno() ? INFERNO_YARD : MAIN_YARD;
                            _needCurrentCell = false;
                            GLOBAL._currentCell = null;
-                           LoadBase(null,null,GLOBAL._homeBaseID,"build");
+                           LoadBase(null,null,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
                            break;
                         }
                         _loc3_++;
@@ -4941,7 +5013,7 @@ package
                j = 1;
                while(j < 5)
                {
-                  if(Boolean(GLOBAL._advancedMap) || _yardType == INFERNO_YARD)
+                  if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
                   {
                      GLOBAL._resources["r" + j + "max"] = GLOBAL._yardResources["r" + j + "max"] + GLOBAL._mapOutpost.length * GLOBAL._outpostCapacity.Get();
                      _resources["r" + j + "max"] = GLOBAL._resources["r" + j + "max"];
@@ -4991,7 +5063,7 @@ package
             }
          }
          baseValue = Math.ceil(baseValue / 10);
-         if(baseValue > _baseValue && _yardType == MAIN_YARD)
+         if(baseValue > _baseValue && _yardType % 2 == MAIN_YARD)
          {
             _baseValue = baseValue;
          }
@@ -5010,6 +5082,8 @@ package
          var levels:Array = null;
          var i:int = 0;
          var mc:popup_levelup = null;
+         var title:String = null;
+         var body:String = null;
          var StreamPost:Function = null;
          CalcBaseValue();
          points = _basePoints + Number(_baseValue);
@@ -5042,10 +5116,17 @@ package
                {
                   StreamPost = function(param1:MouseEvent):*
                   {
-                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get("pop_levelup_streamtitle",{"v1":lvl.level}),KEYS.Get("pop_levelup_body"),"levelup/levelup" + lvl.level + ".png"]);
+                     GLOBAL.CallJS("sendFeed",["levelup" + lvl.level,KEYS.Get(title,{"v1":lvl.level}),KEYS.Get(body),"levelup/levelup" + lvl.level + ".png"]);
                      POPUPS.Next();
                   };
                   mc = new popup_levelup();
+                  title = "pop_levelup_streamtitle";
+                  body = "pop_levelup_body";
+                  if(BASE.isInferno())
+                  {
+                     title = "inf_pop_levelup_streamtitle";
+                     body = "inf_pop_levelup_body";
+                  }
                   mc.title_txt.htmlText = "<b>" + KEYS.Get("pop_levelup_title") + "</b>";
                   mc.headline_txt.htmlText = KEYS.Get("pop_levelup_headline",{"v1":lvl.level});
                   mc.body_txt.htmlText = KEYS.Get("pop_levelup_body");
@@ -5281,19 +5362,6 @@ package
       public static function isInferno() : Boolean
       {
          return BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
-      }
-      
-      public static function ModeInferno(param1:Boolean = false) : String
-      {
-         var _loc2_:String = null;
-         var _loc3_:Boolean = false;
-         _loc2_ = GLOBAL._mode;
-         _loc3_ = BASE._yardType == BASE.INFERNO_OUTPOST || BASE._yardType == BASE.INFERNO_YARD;
-         if(param1 || _loc3_)
-         {
-            _loc2_ = "i" + GLOBAL._mode;
-         }
-         return _loc2_;
       }
    }
 }

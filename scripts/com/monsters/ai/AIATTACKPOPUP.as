@@ -109,7 +109,14 @@ package com.monsters.ai
             _loc7_[_loc8_].addEventListener(MouseEvent.MOUSE_OUT,this.hideDescription);
             _loc8_++;
          }
-         name_txt.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":TRIBES.TribeForBaseID(WMATTACK._attackersBaseID).name}) + "</b>";
+         if(BASE.isInferno())
+         {
+            name_txt.htmlText = "<b>" + KEYS.Get("inf_ai_tribe_mapview",{"v1":TRIBES.TribeForBaseID(WMATTACK._attackersBaseID).name}) + "</b>";
+         }
+         else
+         {
+            name_txt.htmlText = "<b>" + KEYS.Get("ai_tribe",{"v1":TRIBES.TribeForBaseID(WMATTACK._attackersBaseID).name}) + "</b>";
+         }
       }
       
       public function IconLoaded(param1:String, param2:BitmapData, param3:Array = null) : *

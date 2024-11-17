@@ -1,6 +1,5 @@
 package
 {
-   import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -39,7 +38,7 @@ package
          super();
          _type = 128;
          _footprint = [new Rectangle(0,0,160,160)];
-         _gridCost = [[new Rectangle(10,10,140,20),400],[new Rectangle(130,30,20,2 * 60),400],[new Rectangle(10,30,20,2 * 60),400],[new Rectangle(30,130,30,20),400],[new Rectangle(100,130,30,20),400]];
+         _gridCost = [[new Rectangle(10,10,140,20),400],[new Rectangle(10,30,20,2 * 60),400],[new Rectangle(30,130,2 * 60,20),400],[new Rectangle(130,30,20,30),400],[new Rectangle(130,100,20,30),400]];
          this._frameNumber = 0;
          _spoutPoint = new Point(0,0);
          _spoutHeight = 40;
@@ -92,26 +91,15 @@ package
          }
          if(HOUSING._housingSpace.Get() - _buildingProps.capacity[_lvl.Get() - 1] < 0)
          {
-            _recycleDescription = "<font color=\"#CC0000\">" + KEYS.Get("bdg_housing_recyclewarning") + "</font>";
+            _recycleDescription = "<font color=\"#CC0000\">" + KEYS.Get("bdg_compound_recyclewarning") + "</font>";
             _blockRecycle = true;
          }
       }
       
       override public function Constructed() : *
       {
-         var _loc1_:MovieClip = null;
          super.Constructed();
          HOUSING.AddHouse(this);
-         if(GLOBAL._mode == "build" && BASE._yardType != BASE.OUTPOST)
-         {
-            _loc1_ = new popup_building();
-            _loc1_.tA.htmlText = "<b>" + KEYS.Get("pop_bunkerbuilt_title") + "</b>";
-            _loc1_.tB.htmlText = KEYS.Get("pop_bunkerbuilt_body");
-            _loc1_.bPost.SetupKey("btn_brag");
-            _loc1_.bPost.addEventListener(MouseEvent.CLICK,this.CloseConstructionPopUp);
-            _loc1_.bPost.Highlight = true;
-            POPUPS.Push(_loc1_,null,null,null,"build.png");
-         }
          this.updateLocalProperties();
       }
       
@@ -128,16 +116,6 @@ package
       {
          super.Upgraded();
          HOUSING.HousingSpace();
-         if(GLOBAL._mode == "build" && BASE._yardType != BASE.OUTPOST)
-         {
-            this.bragPopUp = new popup_building();
-            this.bragPopUp.tA.htmlText = "<b>" + KEYS.Get("pop_housingupgraded_title") + "</b>";
-            this.bragPopUp.tB.htmlText = KEYS.Get("pop_housingupgraded_body",{"v1":_lvl.Get()});
-            this.bragPopUp.bPost.SetupKey("btn_brag");
-            this.bragPopUp.bPost.addEventListener(MouseEvent.CLICK,this.CloseUpgradePopUp);
-            this.bragPopUp.bPost.Highlight = true;
-            POPUPS.Push(this.bragPopUp,null,null,null,"build.png");
-         }
          this.updateLocalProperties();
       }
       
@@ -168,7 +146,10 @@ package
          var _loc2_:int = 0;
          while(_loc2_ < _creatures.length)
          {
-            _creatures[_loc2_]._health.Set(0);
+            if(_creatures[_loc2_]._behaviour == "pen")
+            {
+               _creatures[_loc2_]._health.Set(0);
+            }
             _loc2_++;
          }
          HOUSING.Cull();
@@ -226,7 +207,18 @@ package
       
       private function canTargetAir() : Boolean
       {
-         return Boolean(_creatures["C12"]) && Boolean(ACADEMY._upgrades["C12"].powerup) || Boolean(_creatures["C5"]) && Boolean(ACADEMY._upgrades["C5"].powerup);
+         var _loc2_:* = undefined;
+         var _loc1_:int = 0;
+         while(_loc1_ < _creatures.length)
+         {
+            _loc2_ = _creatures[_loc1_];
+            if(_loc2_._creatureID == "IC5" || _loc2_._creatureID == "IC7")
+            {
+               return true;
+            }
+            _loc1_++;
+         }
+         return false;
       }
       
       private function addTargetCreeps(param1:int, param2:Array, param3:int) : Array
@@ -343,49 +335,50 @@ package
             this.FindTargets(3);
          }
          ++this._tickNumber;
-         this._targetFlyers.length > 0 || this._targetCreeps.length > 0;
-         if(this._tickNumber % 30 == 0)
+         if((this._targetFlyers.length > 0 || this._targetCreeps.length > 0) && this._tickNumber % 30 == 0)
          {
             _loc4_ = null;
             this._targetCreeps.sortOn(["dist"],Array.NUMERIC);
             this._targetFlyers.sortOn(["dist"],Array.NUMERIC);
-            _loc7_ = 0;
-            while(_loc7_ < this._targetFlyers.length)
+            if(this._targetFlyers.length > 0)
             {
-               _loc5_ = this._targetFlyers[_loc3_].creep;
-               _loc6_ = this.getRangedCreature(_loc1_,_loc5_);
-               if(_loc6_)
+               _loc7_ = 0;
+               while(_loc7_ < this._targetFlyers.length)
                {
-                  this.dispatchCreature(_loc6_,_loc5_);
-                  _loc1_.splice(_loc1_.indexOf(_loc6_),1);
+                  _loc5_ = this._targetFlyers[_loc7_].creep;
+                  _loc6_ = this.getInterceptor(_loc1_,_loc5_);
+                  if(_loc6_)
+                  {
+                     this.dispatchCreature(_loc6_,_loc5_);
+                     _loc1_.splice(_loc1_.indexOf(_loc6_),1);
+                  }
+                  _loc7_++;
                }
-               _loc7_++;
             }
-            _loc8_ = _loc1_.length;
-            _loc9_ = int(_loc8_ - 1);
-            while(_loc9_ >= 0)
+            if(this._targetCreeps.length > 0)
             {
-               _loc5_ = this._targetCreeps[0].creep;
-               _loc6_ = _loc1_[_loc3_];
-               this.dispatchCreature(_loc6_,_loc5_);
-               _loc1_.splice(_loc3_,1);
-               _loc9_--;
+               _loc8_ = _loc1_.length;
+               _loc9_ = int(_loc8_ - 1);
+               while(_loc9_ >= 0)
+               {
+                  _loc5_ = this._targetCreeps[0].creep;
+                  _loc6_ = _loc1_[_loc3_];
+                  this.dispatchCreature(_loc6_,_loc5_);
+                  _loc1_.splice(_loc3_,1);
+                  _loc9_--;
+               }
             }
          }
       }
       
-      private function getRangedCreature(param1:Array, param2:*) : *
+      private function getInterceptor(param1:Array, param2:*) : *
       {
          var _loc4_:* = undefined;
-         var _loc5_:Boolean = false;
          var _loc3_:int = 0;
          while(_loc3_ < param1.length)
          {
             _loc4_ = param1[_loc3_];
-            _loc4_._targetCreep = param2;
-            _loc5_ = Boolean(_loc4_.CanShootCreep());
-            _loc4_._targetCreep = null;
-            if(_loc5_)
+            if(_loc4_._creatureID == "IC7" || _loc4_._creatureID == "IC5")
             {
                return _loc4_;
             }
@@ -425,10 +418,10 @@ package
             }
          }
          var _loc7_:* = param1;
-         _loc7_._targetRotation = Math.random() * 360;
-         _loc7_.ModeDefend();
          if(_loc7_)
          {
+            _loc7_._targetRotation = Math.random() * 360;
+            _loc7_.ModeDefend();
             _loc7_._targetCreep = param2;
             _loc7_._homeBunker = this;
             _loc7_._hasTarget = true;
@@ -447,33 +440,6 @@ package
       override public function TickFast(param1:Event = null) : *
       {
          ++this._frameNumber;
-         if(!GLOBAL._catchup)
-         {
-            if(this._used > 0 && (this._targetCreeps.length > 0 || this._targetFlyers.length > 0 || this._monstersDispatchedTotal > 0))
-            {
-               if(_animTick == 1)
-               {
-                  SOUNDS.Play("bunkerdoor");
-               }
-               if(_animTick < 15)
-               {
-                  _animTick += 1;
-                  AnimFrame(false);
-               }
-            }
-            else
-            {
-               if(_animTick == 15)
-               {
-                  SOUNDS.Play("bunkerdoor");
-               }
-               if(_animTick > 0)
-               {
-                  --_animTick;
-                  AnimFrame(false);
-               }
-            }
-         }
       }
       
       override public function Damage(param1:int, param2:int, param3:int, param4:int = 1, param5:Boolean = true) : void
@@ -525,8 +491,12 @@ package
          {
             this._monstersDispatchedTotal = 0;
          }
-         HOUSING._creatures[param1].Add(-1);
-         HOUSING.Cull();
+         if(HOUSING._creatures[param1].Get() > 0)
+         {
+            HOUSING._creatures[param1].Add(-1);
+         }
+         HOUSING.HousingSpace();
+         BASE.Save();
       }
       
       public function GetTarget(param1:int = 0) : *

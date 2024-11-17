@@ -364,7 +364,7 @@ package
             while(_loc12_ < 5)
             {
                _loc13_ = this.mcResources["mcR" + _loc12_];
-               _loc13_.gotoAndStop(_loc12_);
+               _loc13_.gotoAndStop(BASE.isInferno() ? _loc12_ + 6 : _loc12_);
                _loc13_.tTitle.htmlText = "<b>" + KEYS.Get(GLOBAL._resourceNames[_loc12_ - 1]) + "</b>";
                _loc13_.tValue.htmlText = "<b><font color=\"#" + (_loc3_["r" + _loc12_] > GLOBAL._resources["r" + _loc12_].Get() && (param1 == "upgrade" || param1 == "build" || param1 == "fortify") ? "FF0000" : "000000") + "\">" + GLOBAL.FormatNumber(_loc3_["r" + _loc12_]) + "</font></b>";
                if(Boolean(_loc3_["r" + _loc12_]) && _loc3_["r" + _loc12_] > 0)
@@ -378,7 +378,7 @@ package
                _loc12_++;
             }
             _loc13_ = this.mcResources.mcTime;
-            _loc13_.gotoAndStop(6);
+            _loc13_.gotoAndStop(BASE.isInferno() ? 12 : 6);
             if(TUTORIAL._stage >= 200 && _loc3_.time > 0)
             {
                _loc13_.visible = true;
@@ -519,7 +519,7 @@ package
                _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
                if(_loc2_)
                {
-                  GLOBAL.Message(KEYS.Get("buildoptions_err_moresilos"));
+                  GLOBAL.Message(BASE.isInferno() ? KEYS.Get("inf_buildoptions_err_moresilos") : KEYS.Get("buildoptions_err_moresilos"));
                }
                else
                {
@@ -572,7 +572,7 @@ package
             _loc4_ = Math.ceil(Math.pow(Math.sqrt(_loc3_ / 2),0.75));
             if(_loc2_)
             {
-               GLOBAL.Message(KEYS.Get("buildoptions_err_moresilosupgrade"));
+               GLOBAL.Message(BASE.isInferno() ? KEYS.Get("inf_buildoptions_err_moresilosupgrade") : KEYS.Get("buildoptions_err_moresilosupgrade"));
             }
             else
             {

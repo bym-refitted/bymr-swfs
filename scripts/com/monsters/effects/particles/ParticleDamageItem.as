@@ -67,7 +67,7 @@ package com.monsters.effects.particles
                return "3F3B36";
             case BRESOURCE.RESOURCE_BONE:
                return "F0E6C5";
-            case BRESOURCE.RESOURCE_SULPHER:
+            case BRESOURCE.RESOURCE_SULFUR:
                return "EEED71";
             case BRESOURCE.RESOURCE_MAGMA:
                return "D95300";

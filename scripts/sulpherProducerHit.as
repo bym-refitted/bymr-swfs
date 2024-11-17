@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol617")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol614")]
    public dynamic class sulpherProducerHit extends MovieClip
    {
       public function sulpherProducerHit()

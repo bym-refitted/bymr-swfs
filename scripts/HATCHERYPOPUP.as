@@ -21,10 +21,17 @@ package
          var _loc3_:int = 0;
          var _loc4_:MovieClip = null;
          super();
-         title_txt.htmlText = KEYS.Get("hat_title");
+         title_txt.htmlText = KEYS.Get(GLOBAL._bHatchery._buildingProps.name);
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
-         bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
+         if(!BASE.isInferno())
+         {
+            bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
+         }
+         else
+         {
+            bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HODI","HOD2I","HOD3I"]));
+         }
          bSpeedup.buttonMode = true;
          bFinish.tName.htmlText = "<b>" + KEYS.Get("str_finishnow") + "</b>";
          bFinish.mouseChildren = false;
@@ -59,7 +66,7 @@ package
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          mcMonsterInfo.health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
          mcMonsterInfo.damage_txt.htmlText = "<b>" + KEYS.Get("mon_att_damage") + "</b>";
-         mcMonsterInfo.goo_txt.htmlText = "<b>" + KEYS.Get("mon_att_cost") + "</b>";
+         mcMonsterInfo.goo_txt.htmlText = "<b>" + KEYS.Get("mon_att_cost",{"v1":KEYS.Get(BRESOURCE.GetResourceNameKey(3))}) + "</b>";
          mcMonsterInfo.housing_txt.htmlText = "<b>" + KEYS.Get("mon_att_housing") + "</b>";
          mcMonsterInfo.time_txt.htmlText = "<b>" + KEYS.Get("mon_att_time") + "</b>";
          this.MonsterInfoB(1);
@@ -164,7 +171,10 @@ package
          {
             mcMonsterInfo.tDamage.htmlText = -_loc11_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cResource"))});
+         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{
+            "v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc2_,"cResource")),
+            "v2":KEYS.Get(BRESOURCE.GetResourceNameKey(3))
+         });
          mcMonsterInfo.tStorage.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc2_,"cStorage")});
          mcMonsterInfo.tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_loc2_,"cTime"),true);
          var _loc12_:int = 1;
@@ -179,7 +189,10 @@ package
          }
          else
          {
-            mcMonsterInfo.mcLocked.tText.htmlText = "<b>" + KEYS.Get("hat_unlockinlocker",{"v1":KEYS.Get(CREATURELOCKER._creatures[_loc2_].name)}) + "</b>";
+            mcMonsterInfo.mcLocked.tText.htmlText = KEYS.Get(BASE.isInferno() ? "incubator_unlockinlocker" : "hat_unlockinlocker",{
+               "v1":KEYS.Get(CREATURELOCKER._creatures[_loc2_].name),
+               "v2":KEYS.Get(GLOBAL._bHatchery._buildingProps.name)
+            });
             mcMonsterInfo.mcLocked.visible = true;
          }
          this.MonsterInfoShow();
@@ -274,7 +287,7 @@ package
       private function Charge(param1:String) : *
       {
          BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"));
-         ResourcePackages.Create(4,this._hatchery,CREATURES.GetProperty(param1,"cResource"),true);
+         ResourcePackages.Create(BASE.isInferno() ? 8 : 4,this._hatchery,CREATURES.GetProperty(param1,"cResource"),true);
          BASE.Save();
       }
       
@@ -338,7 +351,7 @@ package
          _loc3_ = _loc1_ - 1;
          while(_loc3_ < 4)
          {
-            this["slot" + (_loc3_ + 1)].tLabel.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("hat_slot_upgrade") + "</font>";
+            this["slot" + (_loc3_ + 1)].tLabel.htmlText = "<font color=\"#CC0000\">" + KEYS.Get("hat_slot_upgrade",{"v1":KEYS.Get(GLOBAL._bHatchery._buildingProps.name)}) + "</font>";
             this["slot" + (_loc3_ + 1)].mcImage.visible = false;
             this["slot" + (_loc3_ + 1)].mcLoading.visible = false;
             this["mcCount" + (_loc3_ + 1)].visible = false;
@@ -455,7 +468,7 @@ package
             }
             else
             {
-               _loc2_ = [1,"<b>" + KEYS.Get("hat_producing",{"v1":CREATURELOCKER._creatures[this._hatchery._inProduction].name}) + "</b>"];
+               _loc2_ = [1,"<b>" + KEYS.Get("hat_producing",{"v1":KEYS.Get(CREATURELOCKER._creatures[this._hatchery._inProduction].name)}) + "</b>"];
                _loc4_ = true;
                if(_loc1_.length < _loc3_)
                {

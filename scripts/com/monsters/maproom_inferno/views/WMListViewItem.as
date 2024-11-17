@@ -1,14 +1,13 @@
 package com.monsters.maproom_inferno.views
 {
    import com.monsters.display.ImageCache;
-   import com.monsters.maproom.views.WMListViewItem_CLIP;
    import com.monsters.maproom_inferno.PlayerHandler;
    import com.monsters.maproom_inferno.model.BaseObject;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.Loader;
    
-   public class WMListViewItem extends WMListViewItem_CLIP
+   public class WMListViewItem extends WMListViewItemInferno_CLIP
    {
       private var loaded:Boolean = false;
       
@@ -82,7 +81,18 @@ package com.monsters.maproom_inferno.views
       public function Update(... rest) : void
       {
          var _loc2_:Object = this.handler.configure(this);
-         name_txt.htmlText = "<b>" + this.data.ownerName;
+         if(this.level_txt)
+         {
+            this.level_txt.htmlText = "<b>" + this.data.level.Get();
+            name_txt.htmlText = "<b>" + KEYS.Get("inf_ai_tribe_mapview",{"v1":this.data.ownerName}) + "</b>";
+         }
+         else
+         {
+            name_txt.htmlText = "<b>" + KEYS.Get("inf_ai_tribe_listview",{
+               "v1":this.data.ownerName,
+               "v2":this.data.level.Get()
+            }) + "</b>";
+         }
          this.ownerName = this.data.ownerName;
          this.online = 0;
          this.attackStarPoints = 5;

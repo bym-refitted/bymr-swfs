@@ -15,6 +15,8 @@ package
       
       public static var _open:Boolean;
       
+      public static var _loot:Object;
+      
       private static var loadState:int;
       
       private static var bridge_obj:Object;
@@ -23,7 +25,7 @@ package
       
       public static var _descentLvl:int = 0;
       
-      public static const _descentLvlMax:int = 13;
+      public static const _descentLvlMax:int = 14;
       
       public static var _bases:Array = [];
       
@@ -38,6 +40,8 @@ package
       private static var andShow:Boolean = true;
       
       private static var loadThenShow:Boolean = false;
+      
+      public static var DEBUG_UNLOCKDESCENT:Boolean = false;
       
       public static var _descentTribe:Object = {
          "id":1,
@@ -72,7 +76,8 @@ package
          {
             _visitingFriend = false;
             _descentLvl = GLOBAL.StatGet("descentLvl");
-            _inDescent = _descentLvl <= _descentLvlMax ? true : false;
+            _inDescent = _descentLvl < _descentLvlMax ? true : false;
+            _loot = {};
             bridge_obj = {
                "Timestamp":GLOBAL.Timestamp,
                "GLOBAL":GLOBAL,
@@ -121,6 +126,11 @@ package
          INFERNOAPI.removeEventListener(INFERNOAPI.EVENT_DESCENTLOADED,DescentDataLoaded);
          _initialized = true;
          _initing = false;
+         if(DescentLevel >= _descentLvlMax && DescentPassed)
+         {
+            INFERNOPORTAL.ToggleYard();
+            return;
+         }
          if(loadThenShow)
          {
             Show();
@@ -443,18 +453,36 @@ package
          if(GLOBAL._mode == "build")
          {
             _loc1_ = WMBASE.CheckDescentProgress();
+            _descentLvl = _loc1_;
+            GLOBAL.StatSet("descentLvl",_descentLvl);
          }
          return _loc1_;
       }
       
       public static function get InDescent() : Boolean
       {
+         var _loc1_:Boolean = false;
          if(GLOBAL._mode == "build")
          {
             _descentLvl = GLOBAL.StatGet("descentLvl");
          }
-         _inDescent = _descentLvl < _descentLvlMax ? true : false;
-         return _inDescent;
+         return _descentLvl < _descentLvlMax ? true : false;
+      }
+      
+      public static function get DescentPassed() : Boolean
+      {
+         var _loc2_:int = 0;
+         var _loc1_:Boolean = false;
+         if(GLOBAL._mode == "build" && GLOBAL.StatGet("descentLvl") < 1)
+         {
+            return false;
+         }
+         if(GLOBAL._mode == "build")
+         {
+            _loc2_ = GLOBAL.StatGet("descentLvl");
+            _descentLvl = _descentLvl < _loc2_ ? _loc2_ : _descentLvl;
+         }
+         return _descentLvl >= _descentLvlMax;
       }
    }
 }

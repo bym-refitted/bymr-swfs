@@ -19,7 +19,7 @@ package
       
       public static const RESOURCE_COAL:uint = 6;
       
-      public static const RESOURCE_SULPHER:uint = 7;
+      public static const RESOURCE_SULFUR:uint = 7;
       
       public static const RESOURCE_MAGMA:uint = 8;
       
@@ -39,6 +39,37 @@ package
             return Math.max(int(param2 * GLOBAL._averageAltitude.Get() / param1._height),1);
          }
          return param2;
+      }
+      
+      public static function GetResourceNameKey(param1:uint) : String
+      {
+         if(param1 <= 3 && BASE.isInferno())
+         {
+            param1 += 4;
+         }
+         switch(param1)
+         {
+            case 0:
+               return "#r_twigs#";
+            case 1:
+               return "#r_pebbles#";
+            case 2:
+               return "#r_putty#";
+            case 3:
+               return "#r_goo#";
+            case 4:
+               return "#r_bone#";
+            case 5:
+               return "#r_coal#";
+            case 6:
+               return "#r_sulfur#";
+            case 7:
+               return "#r_magma#";
+            case 8:
+               return "#r_shiny#";
+            default:
+               return null;
+         }
       }
       
       override public function SetProps() : *
@@ -134,7 +165,7 @@ package
          {
             this.StartProduction();
          }
-         if(GLOBAL._mode == "build" && _lvl.Get() >= 3 && TUTORIAL._stage > 200)
+         if(GLOBAL._mode == "build" && _lvl.Get() >= 3 && TUTORIAL._stage > 200 && !BASE.isInferno())
          {
             Brag = function(param1:MouseEvent):*
             {
@@ -179,6 +210,7 @@ package
       
       override public function Description() : *
       {
+         var _loc1_:int = 0;
          var _loc2_:int = 0;
          var _loc3_:Number = NaN;
          var _loc4_:Number = NaN;
@@ -189,7 +221,7 @@ package
          var _loc9_:int = 0;
          var _loc10_:* = undefined;
          super.Description();
-         var _loc1_:int = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
+         _loc1_ = _buildingProps.produce[_lvl.Get() - 1] / _buildingProps.cycleTime[_lvl.Get() - 1] * 60 * 60;
          if(BASE._yardType == BASE.OUTPOST)
          {
             _loc1_ = AdjustProduction(GLOBAL._currentCell,_loc1_);
@@ -480,7 +512,7 @@ package
             _loc3_ = new SecNum(BASE.Fund(_type,_loc1_.Get(),false,this));
             if(_loc3_.Get() > 0)
             {
-               ResourcePackages.Create(_type,this,_loc1_.Get());
+               ResourcePackages.Create(BASE.isInferno() ? _type + 4 : _type,this,_loc1_.Get());
                if(TUTORIAL._stage < 200)
                {
                   BASE.PointsAdd(_loc3_.Get());

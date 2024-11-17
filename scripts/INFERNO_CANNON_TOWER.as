@@ -36,7 +36,7 @@ package
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         SOUNDS.Play("splash1");
+         SOUNDS.Play("icannon");
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())

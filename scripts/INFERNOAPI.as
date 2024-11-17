@@ -1,5 +1,6 @@
 package
 {
+   import com.cc.utils.SecNum;
    import com.monsters.ai.WMBASE;
    import flash.events.*;
    import flash.external.ExternalInterface;
@@ -27,6 +28,8 @@ package
       public static var _wmBasesInferno:Array;
       
       public static var _wmBases:Array;
+      
+      public static var _descentLootData:Object;
       
       private static var _infernoapi:INFERNOAPI;
       
@@ -92,6 +95,50 @@ package
                      ProcessWmBases(_wmBasesDescent);
                      DescentDataReady();
                   }
+                  if(param1.resources)
+                  {
+                     _descentLootData = param1.resources;
+                     if(_descentLootData.r1)
+                     {
+                        MAPROOM_DESCENT._loot.r1 = new SecNum(int(_descentLootData.r1));
+                     }
+                     else
+                     {
+                        MAPROOM_DESCENT._loot.r1 = new SecNum(int(0));
+                     }
+                     if(_descentLootData.r2)
+                     {
+                        MAPROOM_DESCENT._loot.r2 = new SecNum(int(_descentLootData.r2));
+                     }
+                     else
+                     {
+                        MAPROOM_DESCENT._loot.r2 = new SecNum(int(0));
+                     }
+                     if(_descentLootData.r3)
+                     {
+                        MAPROOM_DESCENT._loot.r3 = new SecNum(int(_descentLootData.r3));
+                     }
+                     else
+                     {
+                        MAPROOM_DESCENT._loot.r3 = new SecNum(int(0));
+                     }
+                     if(_descentLootData.r4)
+                     {
+                        MAPROOM_DESCENT._loot.r4 = new SecNum(int(_descentLootData.r4));
+                     }
+                     else
+                     {
+                        MAPROOM_DESCENT._loot.r4 = new SecNum(int(0));
+                     }
+                  }
+                  else
+                  {
+                     _descentLootData = {};
+                     MAPROOM_DESCENT._loot.r1 = new SecNum(int(0));
+                     MAPROOM_DESCENT._loot.r2 = new SecNum(int(0));
+                     MAPROOM_DESCENT._loot.r3 = new SecNum(int(0));
+                     MAPROOM_DESCENT._loot.r4 = new SecNum(int(0));
+                  }
                }
                else if(BASE.isInferno())
                {
@@ -128,7 +175,7 @@ package
          {
             new URLLoaderApi().load(url + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }
-         else if(isInferno() && GLOBAL._localMode != 5)
+         else if(isInferno())
          {
             new URLLoaderApi().load(GLOBAL._infBaseURL + "load",loadVars,handleLoadSuccessful,handleLoadError);
          }

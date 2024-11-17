@@ -34,8 +34,13 @@ package
             tileCount = 0;
             if(texture == "lava")
             {
-               g = {"g1":new inferno_lava(0,0)};
-               tileCount = 1;
+               g = {
+                  "g1":new inferno_lava1(0,0),
+                  "g2":new inferno_lava2(0,0),
+                  "g3":new inferno_lava3(0,0),
+                  "g4":new inferno_lava4(0,0)
+               };
+               tileCount = 4;
             }
             else if(texture == "rock")
             {

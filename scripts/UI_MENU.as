@@ -28,6 +28,8 @@ package
       
       public var _loaded:Boolean = false;
       
+      public var _sorted:Boolean = false;
+      
       public var wood_mc:MovieClip;
       
       public function UI_MENU()
@@ -55,7 +57,10 @@ package
                wood.scale9Grid = new Rectangle(15,15,10,10);
                addChild(wood);
                addChild(bBuild);
-               addChild(bQuests);
+               if(GLOBAL._loadmode == GLOBAL._mode)
+               {
+                  addChild(bQuests);
+               }
                addChild(bStore);
                addChild(bMap);
                if(BASE._yardType == BASE.OUTPOST)
@@ -68,26 +73,36 @@ package
                UI_BOTTOM.Update();
             };
             bBuild.SetupKey("ui_topbuildings",12);
-            bQuests.SetupKey("ui_topquests",12);
+            if(GLOBAL._loadmode == GLOBAL._mode)
+            {
+               bQuests.SetupKey("ui_topquests",12);
+            }
             bStore.SetupKey("ui_topstore",12);
             bMap.SetupKey("ui_topmap",12);
             if(BASE._yardType == BASE.OUTPOST)
             {
                bKits.SetupKey("btn_kits",12);
             }
-            if(GLOBAL.InfernoMode)
+            if(GLOBAL.InfernoMode())
             {
-               ImageCache.GetImageWithCallBack("ui/stonemenu1.png",cbf2);
+               ImageCache.GetImageWithCallBack("ui/stonemenu2.png",cbf2);
             }
             else
             {
                ImageCache.GetImageWithCallBack("ui/wood1.png",cbf2);
             }
          };
-         ImageCache.GetImageGroupWithCallBack("bottom_ui",["ui/wood1.png","ui/stone1.png","ui/stone2.png","ui/stone3.png","ui/lava1.png","ui/lava2.png","ui/lava3.png","ui/stonemenu1.png"],cbf1,true,1);
+         if(GLOBAL.InfernoMode())
+         {
+            ImageCache.GetImageGroupWithCallBack("bottom_ui_inferno",["ui/lava1.png","ui/lava2.png","ui/lava3.png","ui/stonemenu2.png"],cbf1,true,1);
+         }
+         else
+         {
+            ImageCache.GetImageGroupWithCallBack("bottom_ui",["ui/wood1.png","ui/stone1.png","ui/stone2.png","ui/stone3.png"],cbf1,true,1);
+         }
       }
       
-      public function sortAll() : void
+      public function sortAll() : Boolean
       {
          var _loc1_:Array = null;
          var _loc2_:StoneButton = null;
@@ -97,12 +112,20 @@ package
          {
             _loc1_ = [this.bKits,this.bBuild,this.bQuests,this.bStore,this.bMap];
          }
+         else if(GLOBAL._mode != GLOBAL._loadmode)
+         {
+            _loc1_ = [this.bBuild,this.bStore,this.bMap];
+         }
          else
          {
             _loc1_ = [this.bBuild,this.bQuests,this.bStore,this.bMap];
          }
          for each(_loc3_ in _loc1_)
          {
+            if(_loc3_._bm == null)
+            {
+               return false;
+            }
             if(!_loc2_)
             {
                _loc3_.x = this.woodmargin;
@@ -116,6 +139,8 @@ package
          }
          _loc4_ = this.bMap.x + this.bMap.width + this.woodmargin;
          this.wood.setSize(_loc4_,this.wood.height);
+         this._sorted = true;
+         return true;
       }
       
       public function Resize() : void

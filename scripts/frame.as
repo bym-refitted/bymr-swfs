@@ -47,11 +47,11 @@ package
       
       public function Setup(param1:Boolean = true, param2:Function = null) : *
       {
-         var _loc3_:* = false;
+         var _loc3_:Boolean = false;
          var _loc4_:MovieClip = null;
          this.Clear();
          this._customCloseFunction = param2;
-         _loc3_ = "Help" in parent;
+         _loc3_ = false;
          if(BASE.isInferno())
          {
             this._bottomLeft = new Bitmap(new frame3_bottom_left(0,0));

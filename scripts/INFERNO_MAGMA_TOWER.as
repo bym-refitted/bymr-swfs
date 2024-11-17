@@ -1,8 +1,6 @@
 package
 {
    import flash.display.BitmapData;
-   import flash.display.MovieClip;
-   import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
@@ -50,7 +48,14 @@ package
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         SOUNDS.Play("magma_attack");
+         if(Math.random() * 2 <= 1)
+         {
+            SOUNDS.Play("magma1");
+         }
+         else
+         {
+            SOUNDS.Play("magma2");
+         }
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())
@@ -108,28 +113,6 @@ package
          param1.t = _type;
          super.Setup(param1);
          Props();
-      }
-      
-      override public function Constructed() : *
-      {
-         var Brag:Function;
-         var mc:MovieClip = null;
-         super.Constructed();
-         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
-         {
-            Brag = function():*
-            {
-               GLOBAL.CallJS("sendFeed",["aatower-construct",KEYS.Get("pop_aabuilt_streamtitle"),KEYS.Get("pop_aabuilt_streambody"),"build-aerial.v2.png"]);
-               POPUPS.Next();
-            };
-            mc = new popup_building();
-            mc.tA.htmlText = "<b>" + KEYS.Get("pop_aabuilt_title") + "</b>";
-            mc.tB.htmlText = KEYS.Get("pop_aabuilt_body");
-            mc.bPost.SetupKey("btn_brag");
-            mc.bPost.addEventListener(MouseEvent.CLICK,Brag);
-            mc.bPost.Highlight = true;
-            POPUPS.Push(mc,null,null,null,"build.png");
-         }
       }
    }
 }

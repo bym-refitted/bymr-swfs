@@ -100,6 +100,10 @@ package com.monsters.ui
          {
             _mc.bMap.Enabled = false;
          }
+         if(!_mc._sorted)
+         {
+            _mc.sortAll();
+         }
       }
       
       public static function Resize() : *

@@ -15,8 +15,6 @@ package
       
       public static var _mainCreatures:Object;
       
-      public static var _infernoCreatures:Object;
-      
       public static var _page:int;
       
       public static var _unlocking:String;
@@ -69,7 +67,6 @@ package
          _popupCreatureID = getFirstCreatureID();
          _lockerData = {};
          _open = false;
-         _infernoCreatures = INFERNOCREATURES.infernoCreatures;
          _mainCreatures = {
             "C1":{
                "page":1,
@@ -423,7 +420,7 @@ package
                "level":1,
                "name":"#m_zagnoid#",
                "description":"mi_Zagnoid_desc",
-               "stream":["mi_Zagnoid_stream","mi_Zagnoid_streambody","quests/inferno_monster2.png"],
+               "stream":["mi_Zagnoid_stream","mi_Zagnoid_streambody","quests/zagnoid.v3.png"],
                "trainingCosts":[[80 * 60,4 * 60 * 60],[160 * 60,0x7080],[4 * 60 * 60,12 * 60 * 60],[320 * 60,16 * 60 * 60],[0x7080,24 * 60 * 60]],
                "props":{
                   "speed":[1.8],
@@ -444,7 +441,7 @@ package
                "level":2,
                "name":"#m_valgos#",
                "description":"mi_Valgos_desc",
-               "stream":["mi_Valgos_stream","mi_Valgos_streambody","quests/inferno_monster3.png"],
+               "stream":["mi_Valgos_stream","mi_Valgos_streambody","quests/valgos.png"],
                "trainingCosts":[[640 * 60,18 * 60 * 60],[76800,36 * 60 * 60],[32 * 60 * 60,54 * 60 * 60],[153600,3 * 24 * 60 * 60],[64 * 60 * 60,108 * 60 * 60]],
                "movement":"burrow",
                "pathing":"direct",
@@ -467,7 +464,7 @@ package
                "level":2,
                "name":"#m_malphus#",
                "description":"mi_Malphus_desc",
-               "stream":["mi_Malphus_stream","mi_Malphus_streambody","quests/inferno_monster4.png"],
+               "stream":["mi_Malphus_stream","mi_Malphus_streambody","quests/malphus.png"],
                "trainingCosts":[[76800,18 * 60 * 60],[153600,36 * 60 * 60],[64 * 60 * 60,54 * 60 * 60],[307200,3 * 24 * 60 * 60],[128 * 60 * 60,108 * 60 * 60]],
                "movement":"jump",
                "props":{
@@ -489,7 +486,7 @@ package
                "level":3,
                "name":"#m_balthazar#",
                "description":"mi_Balthazar_desc",
-               "stream":["mi_Balthazar_stream","mi_Balthazar_streambody","quests/inferno_monster5.png"],
+               "stream":["mi_Balthazar_stream","mi_Balthazar_streambody","quests/balthazar.png"],
                "trainingCosts":[[614400,24 * 60 * 60],[1228800,2 * 24 * 60 * 60],[512 * 60 * 60,3 * 24 * 60 * 60],[2457600,4 * 24 * 60 * 60],[3686400,6 * 24 * 60 * 60]],
                "movement":"fly",
                "pathing":"direct",
@@ -512,7 +509,7 @@ package
                "level":3,
                "name":"#m_grokus#",
                "description":"mi_Grokus_desc",
-               "stream":["mi_Grokus_stream","mi_Grokus_streambody","quests/inferno_monster6.png"],
+               "stream":["mi_Grokus_stream","mi_Grokus_streambody","quests/grokus.png"],
                "trainingCosts":[[1228800,24 * 60 * 60],[2457600,2 * 24 * 60 * 60],[3686400,3 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60]],
                "props":{
                   "speed":[1.3,1.3,1.4,1.4,1.5,1.6],
@@ -533,7 +530,7 @@ package
                "level":3,
                "name":"#m_sabnox#",
                "description":"mi_Sabnox_desc",
-               "stream":["mi_Sabnox_stream","mi_Sabnox_streambody","quests/inferno_monster7.png"],
+               "stream":["mi_Sabnox_stream","mi_Sabnox_streambody","quests/sabnox.png"],
                "trainingCosts":[[2457600,2 * 24 * 60 * 60],[4915200,4 * 24 * 60 * 60],[0x708000,6 * 24 * 60 * 60],[9830400,8 * 24 * 60 * 60],[14745600,12 * 24 * 60 * 60]],
                "props":{
                   "speed":[1.7,1.8,1.9,2,2.1,2.2],
@@ -554,7 +551,7 @@ package
                "level":4,
                "name":"#m_king_wormzer#",
                "description":"mi_King_Wormzer_desc",
-               "stream":["mon_king_wormzerstream","mon_king_wormzerstreambody","quests/inferno_monster8.png"],
+               "stream":["mi_King_Wormzer_stream","mi_King_Wormzer_streambody","quests/king_wormzer.png"],
                "trainingCosts":[[4915200,3 * 24 * 60 * 60],[9830400,6 * 24 * 60 * 60],[14745600,9 * 24 * 60 * 60],[19660800,12 * 24 * 60 * 60],[29491200,18 * 24 * 60 * 60]],
                "movement":"burrow",
                "pathing":"direct",
@@ -656,7 +653,10 @@ package
                      mc.bSpeedup.addEventListener(MouseEvent.CLICK,StreamPost(KEYS.Get(creature.stream[0]),_body,img));
                      mc.bSpeedup.Highlight = true;
                      mc.bAction.visible = false;
-                     mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{"v1":KEYS.Get(CREATURELOCKER._creatures[_unlocking].name)});
+                     mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
+                        "v1":KEYS.Get(CREATURELOCKER._creatures[_unlocking].name),
+                        "v2":GLOBAL._bHatchery._buildingProps.name
+                     });
                      POPUPS.Push(mc,null,null,null,_unlocking + "-150.png");
                   }
                   if(_mc)
@@ -697,7 +697,10 @@ package
          creature = _creatures[creatureID];
          if(GLOBAL._bLocker._lvl.Get() < creature.level)
          {
-            GLOBAL.Message(KEYS.Get("mon_upgradelocker",{"v1":creature.level}));
+            GLOBAL.Message(KEYS.Get("mon_upgradelocker",{
+               "v1":KEYS.Get(GLOBAL._bLocker._buildingProps.name),
+               "v2":creature.level
+            }));
             return false;
          }
          if(BASE.Charge(3,creature.resource))
@@ -736,7 +739,14 @@ package
             POPUPS.Push(popupMC,null,null,null,creatureID + "-150.png");
             return true;
          }
-         GLOBAL.Message(KEYS.Get("mon_needputty"),KEYS.Get("btn_openstore"),STORE.ShowB,[2,0.8,["BR31","BR32","BR33"]]);
+         if(!BASE.isInferno())
+         {
+            GLOBAL.Message(KEYS.Get("mon_needputty"),KEYS.Get("btn_openstore"),STORE.ShowB,[2,0.8,["BR31","BR32","BR33"]]);
+         }
+         else
+         {
+            GLOBAL.Message(KEYS.Get("mon_needsulfur"),KEYS.Get("btn_openstore"),STORE.ShowB,[2,0.8,["BR31I","BR32I","BR33I"]]);
+         }
          return false;
       }
       

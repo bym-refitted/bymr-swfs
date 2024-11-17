@@ -72,7 +72,8 @@ package
                "TUTORIAL":TUTORIAL,
                "WMBASE":WMBASE,
                "TRIBES":TRIBES,
-               "KEYS":KEYS
+               "KEYS":KEYS,
+               "MAPROOM":MAPROOM
             };
          }
       }

@@ -25,7 +25,7 @@ package com.monsters.maproom_inferno
       
       public var baseData:Array;
       
-      private var divisor:uint = 85;
+      private var divisor:uint = 90;
       
       public var lastOpened:ForeignBase;
       
@@ -37,7 +37,9 @@ package com.monsters.maproom_inferno
       
       public var _playersLimit:uint = 180;
       
-      public var mapWidth:uint = 1500;
+      public var mapWidth:uint = 1200;
+      
+      public var mapHeight:uint = 1200;
       
       public var player:PlayerBase;
       
@@ -74,7 +76,8 @@ package com.monsters.maproom_inferno
          this.player.addEventListener(MouseEvent.MOUSE_OVER,this.sortToTop);
          this.basesAll.push(this.player);
          addChild(this.player);
-         this.setMapCoords(this.player);
+         this.player.x = 740;
+         this.player.y = 200;
          this.wmBasesUsed = 0;
       }
       
@@ -166,7 +169,7 @@ package com.monsters.maproom_inferno
                                     _o.wm = 1;
                                     _o.friend = 0;
                                     _o.pic = aib[ai].tribe.profilepic;
-                                    _o.basename = KEYS.Get("ai_tribe",{"v1":aib[ai].tribe.name});
+                                    _o.basename = aib[ai].tribe.name;
                                     if(_o.level >= BASE._baseLevel - 10)
                                     {
                                        obj.wmbases.push(_o);
@@ -368,25 +371,19 @@ package com.monsters.maproom_inferno
          var _loc4_:int = 0;
          var _loc5_:int = 0;
          var _loc6_:Number = NaN;
-         var _loc7_:Object = null;
-         var _loc8_:int = 0;
-         var _loc9_:WildMonsterBase = null;
+         var _loc7_:int = 0;
+         var _loc8_:WildMonsterBase = null;
+         var _loc9_:* = 0;
          var _loc10_:* = 0;
          var _loc11_:Point = null;
          if(param2)
          {
-            _loc7_ = {
-               "l":0,
-               "k":1,
-               "a":2,
-               "d":3
-            };
-            _loc8_ = int(_loc7_[param1.data.basename.charAt(0).toLowerCase()]);
-            _loc4_ = Obstruction.Reserved[_loc8_].x / this.divisor;
-            _loc5_ = (Obstruction.Reserved[_loc8_].y - 130) / this.divisor;
-            for each(_loc9_ in this.basesWM)
+            _loc7_ = param1.data.baseid.Get() % 10;
+            _loc4_ = Obstruction.Slots[_loc7_].x / this.divisor;
+            _loc5_ = (Obstruction.Slots[_loc7_].y - 130) / this.divisor;
+            for each(_loc8_ in this.basesWM)
             {
-               if(_loc9_.mapX == _loc4_ && _loc9_.mapY == _loc5_)
+               if(_loc8_.mapX == _loc4_ && _loc8_.mapY == _loc5_)
                {
                   return false;
                }
@@ -397,10 +394,11 @@ package com.monsters.maproom_inferno
          }
          else
          {
-            _loc10_ = this.mapWidth / this.divisor - 2;
-            _loc4_ = 1 + param1.data.baseid.Get() % _loc10_;
+            _loc9_ = this.mapWidth / this.divisor - 2;
+            _loc10_ = this.mapHeight / this.divisor - 2;
+            _loc4_ = 1 + param1.data.baseid.Get() % _loc9_;
             _loc5_ = 1 + param1.data.baseseed.Get() % _loc10_;
-            _loc11_ = this.getNonConflictingCoords(new Point(_loc4_,_loc5_),new Rectangle(2,2,_loc10_ - 2,_loc10_ - 2),10);
+            _loc11_ = this.getNonConflictingCoords(new Point(_loc4_,_loc5_),new Rectangle(2,2,_loc9_ - 2,_loc10_ - 2),6);
             if(!_loc11_)
             {
                return false;
@@ -409,8 +407,8 @@ package com.monsters.maproom_inferno
             param1.mapY = _loc11_.y;
             _loc6_ = param1.data.baseid.Get() % (this.divisor * 0.5);
          }
-         param1.x = 130 + this.divisor * param1.mapX + _loc6_;
-         param1.y = 130 + this.divisor * param1.mapY + _loc6_;
+         param1.x = 30 + this.divisor * param1.mapX + _loc6_;
+         param1.y = 30 + this.divisor * param1.mapY + _loc6_;
          return true;
       }
       

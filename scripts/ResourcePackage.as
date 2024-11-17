@@ -37,7 +37,14 @@ package
          super();
          Sound = function():*
          {
-            SOUNDS.Play("bankfire");
+            if(BASE.isInferno())
+            {
+               SOUNDS.Play("ibankfire");
+            }
+            else
+            {
+               SOUNDS.Play("bankfire");
+            }
          };
          this._target = target;
          visible = false;
@@ -95,7 +102,14 @@ package
       
       internal function Arrived() : *
       {
-         SOUNDS.Play("bankland");
+         if(BASE.isInferno())
+         {
+            SOUNDS.Play("ibankland");
+         }
+         else
+         {
+            SOUNDS.Play("bankland");
+         }
          if(this._target)
          {
             this._target._hasResources = true;

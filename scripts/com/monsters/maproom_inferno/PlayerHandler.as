@@ -121,7 +121,7 @@ package com.monsters.maproom_inferno
             }
             else
             {
-               this.player.truceBtn.Enabled = true;
+               this.player.truceBtn.Enabled = false;
                this.player.truceBtn.addEventListener(MouseEvent.CLICK,this.onTruce);
                switch(this.data.attackpermitted.Get())
                {
@@ -157,16 +157,8 @@ package com.monsters.maproom_inferno
             this.player.helpBtn.removeEventListener(MouseEvent.CLICK,this.onView);
             this.player.attackBtn.removeEventListener(MouseEvent.CLICK,this.onAttack);
             this.player.msgBtn.addEventListener(MouseEvent.CLICK,this.onMessage);
-            if(int(this.data.friend.Get()) == 1)
-            {
-               this.player.helpBtn.SetupKey("map_help_btn");
-               this.player.helpBtn.addEventListener(MouseEvent.CLICK,this.onHelp);
-            }
-            else
-            {
-               this.player.helpBtn.SetupKey("map_view_btn");
-               this.player.helpBtn.addEventListener(MouseEvent.CLICK,this.onView);
-            }
+            this.player.helpBtn.SetupKey("map_view_btn");
+            this.player.helpBtn.addEventListener(MouseEvent.CLICK,this.onView);
             if(!_loc3_)
             {
                this.player.helpBtn.Enabled = false;
@@ -230,7 +222,7 @@ package com.monsters.maproom_inferno
          {
             this._BRIDGE.setVisitingFriend(false);
          }
-         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),"ihelp");
+         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),"ihelp",false,BASE.INFERNO_YARD);
          this._BRIDGE.MAPROOM._mc.Hide();
       }
       
@@ -248,48 +240,19 @@ package com.monsters.maproom_inferno
             this._BRIDGE.setVisitingFriend(false);
          }
          _loc3_ = _loc2_.wm.Get() == 1 ? "iwmview" : "iview";
-         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_);
+         this._BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.INFERNO_YARD);
          this._BRIDGE.MAPROOM._mc.Hide();
       }
       
       private function onTruce(param1:MouseEvent) : void
       {
-         var _loc2_:* = undefined;
-         var _loc3_:Contact = null;
          SOUNDS.Play("click1");
-         if(!this.data.trucestate || this.data.trucestate == "")
-         {
-            if(MapRoom._useMailBoxForTruces)
-            {
-               _loc2_ = new Message();
-               _loc3_ = new Contact(String(this.player.data.userid.Get()),{
-                  "first_name":this.player.data.ownerName,
-                  "last_name":"",
-                  "pic_square":this.player.data.pic
-               });
-               _loc2_.picker.preloadSelection(_loc3_);
-               _loc2_.subject_txt.htmlText = "<b>" + KEYS.Get("map_trucesubject");
-               _loc2_.body_txt.htmlText = KEYS.Get("map_trucemessage");
-               _loc2_.requestType = "trucerequest";
-               _loc2_.truceShareHandler = this._BRIDGE.truceShareHandler;
-               GLOBAL.BlockerAdd();
-               GLOBAL._layerWindows.addChild(_loc2_);
-            }
-            else
-            {
-               this._BRIDGE.RequestTruce(this.data.ownerName,this.data.baseid.Get());
-            }
-         }
-         else
-         {
-            GLOBAL.Message(KEYS.Get("msg_trucealreadyrequested"));
-         }
+         GLOBAL.Message(KEYS.Get("msg_infernotruce"));
       }
       
       private function onAttack(param1:MouseEvent) : void
       {
          var _loc6_:String = null;
-         var _loc8_:int = 0;
          SOUNDS.Play("click1");
          var _loc2_:BaseObject = this.player.data;
          var _loc3_:Boolean = false;
@@ -314,7 +277,7 @@ package com.monsters.maproom_inferno
                {
                   case 1:
                      _loc3_ = true;
-                     if(BASE._isProtected > 0)
+                     if(BASE._isProtected > GLOBAL.Timestamp())
                      {
                         _loc4_ = KEYS.Get("map_msg_protection",{"v1":GLOBAL.ToTime(BASE._isProtected - GLOBAL.Timestamp(),false,false)});
                         break;
@@ -367,15 +330,6 @@ package com.monsters.maproom_inferno
             }
             else
             {
-               if(!GLOBAL._inInferno)
-               {
-                  _loc8_ = WMBASE.CheckDescentProgress();
-                  if(_loc2_.level.Get() != _loc8_)
-                  {
-                     _loc4_ = "You can\'t click on this shit yet.";
-                     return;
-                  }
-               }
                _loc6_ = _loc2_.wm.Get() == 1 ? "iwmattack" : "iattack";
                if(_loc7_)
                {
@@ -394,7 +348,14 @@ package com.monsters.maproom_inferno
             }
             else
             {
-               _loc4_ = KEYS.Get("map_msg_nomonsters");
+               if(MAPROOM_DESCENT.DescentPassed)
+               {
+                  _loc4_ = KEYS.Get("infmap_msg_nomonsters");
+               }
+               else
+               {
+                  _loc4_ = KEYS.Get("map_msg_nomonsters");
+               }
                GLOBAL.Message(_loc4_);
             }
          }
@@ -419,9 +380,12 @@ package com.monsters.maproom_inferno
          {
             this._BRIDGE.setVisitingFriend(false);
          }
-         GLOBAL.StatSet("descentLvl",_loc3_.level.Get());
          GLOBAL._advancedMap = 0;
          BASE.LoadBase(null,null,param1,param2,false,BASE.INFERNO_YARD);
+         if(!MAPROOM_DESCENT.DescentPassed && param2 == "iwmattack")
+         {
+            LOGGER.Stat([87,_loc3_.level.Get(),"Attacked"]);
+         }
          this._BRIDGE.MAPROOM._mc.Hide();
       }
    }

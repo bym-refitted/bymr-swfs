@@ -169,6 +169,10 @@ package
          {
             return;
          }
+         if(BASE.isInferno())
+         {
+            return;
+         }
          if(update.data[1] == "BU")
          {
             building = GetBuilding(update.data[2]);
@@ -359,6 +363,10 @@ package
          {
             return;
          }
+         if(BASE.isInferno())
+         {
+            return;
+         }
          if(_catchupList.length > 0)
          {
             _loc3_ = [];
@@ -465,6 +473,10 @@ package
       
       public static function Create(param1:Array, param2:int = 0) : void
       {
+         if(BASE.isInferno())
+         {
+            return;
+         }
          var _loc3_:int = BASE._loadedBaseID;
          if(param2)
          {
@@ -499,6 +511,10 @@ package
             LOGGER.Log("err","UPDATES.Create HTTP");
          };
          if(!GLOBAL._save)
+         {
+            return;
+         }
+         if(BASE.isInferno())
          {
             return;
          }

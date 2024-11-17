@@ -51,15 +51,19 @@ package
       
       private function NewWorld() : *
       {
-         PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
-         ACHIEVEMENTS.Check("map2",1);
-         if(this.callPending)
+         var _loc1_:Array = null;
+         if(GLOBAL._mode == GLOBAL._loadmode)
          {
-            return;
+            PLEASEWAIT.Show(KEYS.Get("wait_newworld"));
+            ACHIEVEMENTS.Check("map2",1);
+            if(this.callPending)
+            {
+               return;
+            }
+            this.callPending = true;
+            _loc1_ = [["version",2]];
+            new URLLoaderApi().load(GLOBAL._mapURL + "setmapversion",_loc1_,this.NewWorldSuccess,this.NewWorldFail);
          }
-         this.callPending = true;
-         var _loc1_:Array = [["version",2]];
-         new URLLoaderApi().load(GLOBAL._mapURL + "setmapversion",_loc1_,this.NewWorldSuccess,this.NewWorldFail);
       }
       
       private function NewWorldSuccess(param1:Object) : *
@@ -67,6 +71,10 @@ package
          var _loc2_:int = 0;
          if(param1.error == 0)
          {
+            if(GLOBAL._mode != GLOBAL._loadmode)
+            {
+               return;
+            }
             GLOBAL.StatSet("mrl",2,true);
             GLOBAL._newMapFirstOpen = true;
             GLOBAL._advancedMap = 1;
@@ -200,6 +208,10 @@ package
       
       private function RecycleD() : *
       {
+         if(GLOBAL._mode != GLOBAL._loadmode)
+         {
+            return;
+         }
          var _loc1_:Array = [["version",1]];
          new URLLoaderApi().load(GLOBAL._mapURL + "setmapversion",_loc1_,this.RecycleDSuccess,this.RecycleDFail);
          PLEASEWAIT.Show(KEYS.Get("wait_processing"));
@@ -208,7 +220,7 @@ package
       private function RecycleDSuccess(param1:Object) : *
       {
          PLEASEWAIT.Hide();
-         if(param1.error == 0)
+         if(param1.error == 0 && GLOBAL._mode == GLOBAL._loadmode)
          {
             GLOBAL.StatSet("mrl",1,true);
             GLOBAL._bMap = null;

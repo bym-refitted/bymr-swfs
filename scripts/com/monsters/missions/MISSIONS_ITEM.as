@@ -34,22 +34,8 @@ package com.monsters.missions
          this._missionObject = QUESTS._quests[missionID];
          this._missionID = missionID;
          this._missionKey = this._missionObject.id;
-         if(this._missionObject.creatureid != undefined)
-         {
-            nametxt = KEYS.Get(this._missionObject.name,{"v1":KEYS.Get(this._missionObject.keyvars.v1)});
-         }
-         else
-         {
-            nametxt = KEYS.Get(this._missionObject.name);
-         }
-         if(this._missionObject.creatureid != undefined)
-         {
-            description = KEYS.Get(this._missionObject.description,{"v1":KEYS.Get(this._missionObject.keyvars.v1)});
-         }
-         else
-         {
-            description = KEYS.Get(this._missionObject.description);
-         }
+         nametxt = KEYS.Get(this._missionObject.name,this._missionObject.keyvars);
+         description = KEYS.Get(this._missionObject.description,this._missionObject.keyvars);
          description = description.replace("#installsgenerated#",BASE._installsGenerated);
          description = description.replace("#mushroomspicked#",QUESTS._global.mushroomspicked);
          description = description.replace("#goldmushroomspicked#",QUESTS._global.goldmushroomspicked);

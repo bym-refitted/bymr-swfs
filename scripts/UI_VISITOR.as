@@ -17,7 +17,7 @@ package
             mc.bReturn.SetupKey("btn_endattack");
             mc.bAttack.visible = false;
          }
-         else if(GLOBAL._advancedMap)
+         else if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
          {
             mc.bReturn.SetupKey("btn_openmap");
             if(GLOBAL._mode != "help" && !MapRoom._viewOnly && GLOBAL._currentCell && MapRoom._flingerInRange)
@@ -101,7 +101,7 @@ package
          }
          else if(BASE.isInferno())
          {
-            if(GLOBAL._inInferno <= 0)
+            if(MAPROOM_DESCENT.InDescent)
             {
                BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
             }
@@ -235,7 +235,7 @@ package
          }
          else
          {
-            mc.y = GLOBAL._SCREENHUD.y - (mc.height + 10);
+            mc.y = GLOBAL._SCREENHUD.y - (mc.mcBG.height + 10);
          }
       }
    }

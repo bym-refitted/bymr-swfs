@@ -971,7 +971,7 @@ package
                   this._anim2Loaded = false;
                   this._anim3Loaded = false;
                }
-               ImageCache.GetImageGroupWithCallBack("b" + this._type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
+               ImageCache.GetImageGroupWithCallBack(BASE._yardType + "b" + this._type + "-" + imageLevel + state,loadImages,ImageCallback,true,2,state);
             }
          }
          if(this._fortification.Get() != this._renderFortLevel)
@@ -1255,8 +1255,16 @@ package
             {
                if(BASE.BuildBlockers(this,this._class == "decoration") == "")
                {
-                  SOUNDS.Play("buildingplace");
+                  if(BASE.isInferno())
+                  {
+                     SOUNDS.Play("inf_buildingplace");
+                  }
+                  else
+                  {
+                     SOUNDS.Play("buildingplace");
+                  }
                   GLOBAL._newBuilding = null;
+                  this._mc.alpha = 1;
                   this._mc.removeEventListener(Event.ENTER_FRAME,this.FollowMouseB);
                   MAP._GROUND.removeEventListener(MouseEvent.MOUSE_UP,this.Place);
                   this._mc.removeEventListener(MouseEvent.MOUSE_DOWN,MAP.Click);
@@ -1514,6 +1522,7 @@ package
          this._mcBase.mouseEnabled = false;
          this._mcBase.x = this._mc.x;
          this._mcBase.y = this._mc.y;
+         this._mc.alpha = 1;
          this._mcFootprint.x = this._mc.x;
          this._mcFootprint.y = this._mc.y;
          if(GLOBAL._mode != "attack" && GLOBAL._mode != "wmattack" || this._senderid == LOGIN._playerID)
@@ -1667,17 +1676,27 @@ package
          }
          this._repairing = 0;
          this._hp.Set(this._hpMax.Get());
+         if(this._type == 15 || this._type == 128)
+         {
+            if(BASE._buildingsHousing.indexOf(this) < 0)
+            {
+               HOUSING.AddHouse(this);
+            }
+            HOUSING.HousingSpace();
+         }
          this.Description();
          UI2.Update();
       }
       
       public function HasWorker() : *
       {
+         var _loc1_:* = 0;
          this._hasWorker = true;
          if(this._countdownBuild.Get() + this._countdownUpgrade.Get() + this._countdownFortify.Get() > 0)
          {
-            ResourcePackages.Create(1,this,2,true);
-            ResourcePackages.Create(2,this,2,true);
+            _loc1_ = BASE.isInferno() ? 5 : 1;
+            ResourcePackages.Create(_loc1_,this,2,true);
+            ResourcePackages.Create(_loc1_ + 1,this,2,true);
          }
       }
       
@@ -2375,11 +2394,14 @@ package
             while(_loc2_ < this._lvl.Get())
             {
                _loc3_ = this._buildingProps.costs[_loc2_];
-               _loc1_.r1 += _loc3_.r1;
-               _loc1_.r2 += _loc3_.r2;
-               _loc1_.r3 += _loc3_.r3;
-               _loc1_.r4 += _loc3_.r4;
-               _loc1_.r5 += _loc3_.r5;
+               if(_loc3_)
+               {
+                  _loc1_.r1 += _loc3_.r1;
+                  _loc1_.r2 += _loc3_.r2;
+                  _loc1_.r3 += _loc3_.r3;
+                  _loc1_.r4 += _loc3_.r4;
+                  _loc1_.r5 += _loc3_.r5;
+               }
                _loc2_++;
             }
             _loc1_.r1 = int(_loc1_.r1 * 0.5);

@@ -21,7 +21,7 @@ package
          var _loc6_:Number = NaN;
          var _loc7_:int = 0;
          var _loc8_:int = 0;
-         var _loc1_:Array = ["e62d46a32543629641c35d4358f4865f","280d2443b3ac8d0f0ab08b7c796b0dfc","17442f0d163d87e0581f9218f0cbd62e"];
+         var _loc1_:Array = ["e62d46a32543629641c35d4358f4865f","280d2443b3ac8d0f0ab08b7c796b0dfc","796d86fa5b67964703d294d4bde1402c"];
          if(GLOBAL._local && !checkedAllYards)
          {
             checkedAllYards = true;
@@ -70,7 +70,7 @@ package
          {
             if(BASE._yardType >= BASE.INFERNO_YARD)
             {
-               if(QUESTS.CheckB() != "bdc7a255333b53d12418cb60883fa547")
+               if(QUESTS.CheckB() != "4f4964f22f5df5bd647df0b48a6b79b4")
                {
                   LOGGER.Log("err","CHECKER.Quests FB " + QUESTS.CheckB());
                   GLOBAL.ErrorMessage("CHECKER.Quests FB");

@@ -12,7 +12,7 @@ package
       
       public static const EXIT_BUTTON:String = "btn_exitcavern";
       
-      public static var _descentPassed:Boolean = true;
+      public static var _descentPassed:Boolean = false;
       
       private var _popup:popup_horse;
       
@@ -36,8 +36,7 @@ package
       
       public static function EnterPortal(param1:Boolean = false) : void
       {
-         CheckInferno(param1);
-         if(_descentPassed || Boolean(GLOBAL._inInferno))
+         if(MAPROOM_DESCENT.DescentPassed)
          {
             ToggleYard();
          }
@@ -47,40 +46,27 @@ package
          }
       }
       
-      public static function CheckInferno(param1:Boolean = false) : void
-      {
-         if(GLOBAL._mode == "build")
-         {
-            GLOBAL._inInferno = GLOBAL.StatGet("descentLvl") >= MAPROOM_DESCENT._descentLvlMax ? 1 : 0;
-            if(param1)
-            {
-               _descentPassed = MAPROOM_DESCENT.InDescent;
-            }
-         }
-      }
-      
       private static function EnterDescent() : void
       {
          MAPROOM_DESCENT.Setup(true);
       }
       
-      private static function ToggleYard() : void
+      public static function ToggleYard() : void
       {
+         GLOBAL._advancedMap = 0;
          if(BASE.isInferno())
          {
-            GLOBAL._advancedMap = 0;
             BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
          }
          else
          {
-            GLOBAL._advancedMap = 0;
             BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
          }
       }
       
       public static function AddPortal(param1:uint = 0) : INFERNOPORTAL
       {
-         var _loc2_:Point = new Point(-1200,-240);
+         var _loc2_:Point = BASE.isInferno() ? new Point(-750,-150) : new Point(-1200,-150);
          var _loc3_:Point = GRID.ToISO(_loc2_.x,_loc2_.y,0);
          var _loc4_:INFERNOPORTAL = BASE.addBuildingC(127) as INFERNOPORTAL;
          building = _loc4_;
@@ -103,20 +89,13 @@ package
       
       override public function Click(param1:MouseEvent = null) : *
       {
-         if(isAboveMaxLevel())
+         if(isAboveMaxLevel() && (BASE.isInferno() || GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT))
          {
             super.Click(param1);
          }
          else if(GLOBAL._mode == "build" && !INFERNO_EMERGENCE_EVENT.isAttackActive)
          {
-            if(new Date().time / 1000 > INFERNO_EMERGENCE_EVENT.EVENT_END_DATE.time / 1000)
-            {
-               INFERNO_EMERGENCE_POPUPS.ShowUpgrade();
-            }
-            else
-            {
-               INFERNO_EMERGENCE_POPUPS.ShowRSVP(building._lvl.Get());
-            }
+            INFERNO_EMERGENCE_POPUPS.ShowRSVP(building._lvl.Get());
          }
       }
       

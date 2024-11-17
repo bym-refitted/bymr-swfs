@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.ai.WMBASE;
    import flash.display.MovieClip;
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -8,11 +9,15 @@ package
    
    public class INFERNO_DESCENT_POPUPS
    {
+      private static var _level:uint;
+      
       private static const _MOLOCH_PORTRAIT_GLOAT:String = "portrait_muloch_gloat.png";
       
       private static const _MOLOCH_PORTRAIT_WHIMPER:String = "portrait_muloch_whimper.png";
       
-      private static const _MOLOCH_PORTRAIT_NUETRAL:String = "portrait_moloch.png";
+      private static const _MOLOCH_PORTRAIT_NEUTRAL:String = "portrait_moloch.png";
+      
+      private static const _TOTAL_LOOT_LABEL:String = "descentTotalLoot";
       
       private static const _PORTRAIT_IMAGE_OFFSET:Point = new Point(-75,50);
       
@@ -23,68 +28,130 @@ package
       
       public static function ShowTauntDialog(param1:uint) : void
       {
-         var _loc2_:popup_dialogue = POPUPS.DisplayDialogue("",KEYS.Get("ai_moloch_taunt" + param1),KEYS.Get("taunt_player_response" + param1),_MOLOCH_PORTRAIT_NUETRAL,_PORTRAIT_IMAGE_OFFSET,POPUPS.Next) as popup_dialogue;
+         var _loc2_:popup_dialogue = POPUPS.DisplayDialogue("",KEYS.Get("descent_moloch_taunt" + param1),KEYS.Get("taunt_player_response" + param1),_MOLOCH_PORTRAIT_NEUTRAL,_PORTRAIT_IMAGE_OFFSET,POPUPS.Next) as popup_dialogue;
          FormatTextFieldForDialog(_loc2_.tBody);
       }
       
-      public static function ShowPostAttackPopup(param1:uint, param2:Boolean) : void
+      public static function ShowPostAttackPopup(param1:uint, param2:Boolean, param3:Vector.<uint>, param4:Vector.<uint>) : void
       {
-         var _loc3_:MovieClip = null;
-         if(!param2)
+         var _loc5_:MovieClip = null;
+         _level = param1;
+         var _loc6_:Vector.<uint> = UpdateTotalLoot(param3,param4);
+         if(param2)
          {
-            _loc3_ = ShowWhimperDialog(param1);
+            _loc5_ = ShowWhimperDialog(param1);
+            ShowBattleReport(param1,param3,_loc6_);
+            if(param1 >= MAPROOM_DESCENT._descentLvlMax - 1)
+            {
+               ShowCapturePopup();
+            }
+            LOGGER.Stat([87,param1,"Victory"]);
          }
          else
          {
-            _loc3_ = ShowGloatDialog(param1);
+            _loc5_ = ShowGloatDialog(param1);
+            LOGGER.Stat([87,param1,"Defeat"]);
          }
-         _loc3_.addEventListener(Event.REMOVED_FROM_STAGE,ClosedPostAttackPopup);
       }
       
-      private static function ClosedPostAttackPopup(param1:Event) : void
+      public static function ShowEnticePopup() : void
       {
-         MovieClip(param1.target).removeEventListener(Event.REMOVED_FROM_STAGE,ClosedPostAttackPopup);
-         ShowBattleReport();
+         var CloseAndEnter:Function = null;
+         CloseAndEnter = function(param1:MouseEvent):void
+         {
+            POPUPS.Next();
+            GLOBAL.StatSet("p_id",1);
+            INFERNOPORTAL.EnterPortal();
+         };
+         var entice:MovieClip = new popup_infernoentice_CLIP();
+         entice.tTitle.htmlText = KEYS.Get("entercavern_direct_popup_title");
+         entice.tDesc.htmlText = KEYS.Get("entercavern_direct_popup");
+         entice.tButton.htmlText = KEYS.Get(INFERNOPORTAL.ENTER_BUTTON);
+         entice.tButton.mouseEnabled = false;
+         entice.bEnter.Setup(" ");
+         entice.bEnter.addEventListener(MouseEvent.CLICK,CloseAndEnter);
+         POPUPS.Push(entice);
       }
       
       public static function ShowGloatDialog(param1:uint) : MovieClip
       {
-         return ShowAttackEndDialog(_MOLOCH_PORTRAIT_GLOAT,KEYS.Get("ai_moloch_gloat" + param1),KEYS.Get("gloat_player_response" + param1));
+         return ShowAttackEndDialog(_MOLOCH_PORTRAIT_GLOAT,KEYS.Get("descent_moloch_gloat" + param1),KEYS.Get("gloat_player_response" + param1));
       }
       
       public static function ShowWhimperDialog(param1:uint) : MovieClip
       {
-         return ShowAttackEndDialog(_MOLOCH_PORTRAIT_WHIMPER,KEYS.Get("ai_moloch_whimper" + param1),KEYS.Get("whimper_player_response" + param1));
+         return ShowAttackEndDialog(_MOLOCH_PORTRAIT_WHIMPER,KEYS.Get("descent_moloch_whimper" + param1),KEYS.Get("whimper_player_response" + param1));
       }
       
-      public static function ShowBattleReport(param1:Array = null) : void
+      public static function ShowBattleReport(param1:uint, param2:Vector.<uint>, param3:Vector.<uint>) : void
       {
-         param1 = [ATTACK._loot.r1.Get(),ATTACK._loot.r2.Get(),ATTACK._loot.r3.Get(),ATTACK._loot.r4.Get()];
-         var _loc2_:String = KEYS.Get("descent_battlereport",{
-            "v1":param1[0],
-            "v2":param1[1],
-            "v3":param1[2],
-            "v4":param1[3]
+         var _loc4_:String = KEYS.Get("descent_battlereport",{
+            "v1":param2[0],
+            "v2":param2[1],
+            "v3":param2[2],
+            "v4":param2[3]
          });
-         var _loc3_:InfernoBattleReportPopup = new InfernoBattleReportPopup(KEYS.Get("pop_youlooted_title"),_loc2_,param1,"btn_brag");
-         _loc3_.bButton.addEventListener(MouseEvent.CLICK,BragBattleReport,false,0,true);
-         POPUPS.Push(_loc3_,null,null,null,"loot.png");
+         var _loc5_:InfernoBattleReportPopup = new InfernoBattleReportPopup("<b>" + KEYS.Get("pop_youlooted_title") + "</b>",_loc4_,param3);
+         if(isBragable(param1))
+         {
+            _loc5_.bButton.SetupKey("btn_brag");
+            _loc5_.bButton.Highlight = true;
+            _loc5_.bButton.addEventListener(MouseEvent.CLICK,BragBattleReport,false,0,true);
+         }
+         else
+         {
+            _loc5_.bButton.SetupKey("btn_close");
+            _loc5_.bButton.addEventListener(MouseEvent.CLICK,CloseBattleReport,false,0,true);
+         }
+         POPUPS.Push(_loc5_,null,null,null,"portrait_moloch.png");
+      }
+      
+      private static function UpdateTotalLoot(param1:Vector.<uint>, param2:Vector.<uint>) : Vector.<uint>
+      {
+         var _loc3_:Vector.<uint> = new Vector.<uint>();
+         var _loc4_:int = 0;
+         while(_loc4_ < param1.length)
+         {
+            _loc3_[_loc4_] = param1[_loc4_] + param2[_loc4_];
+            _loc4_++;
+         }
+         return _loc3_;
+      }
+      
+      private static function CloseBattleReport(param1:MouseEvent) : void
+      {
+         MovieClip(param1.target).removeEventListener(Event.REMOVED_FROM_STAGE,CloseBattleReport);
+         POPUPS.Next();
+      }
+      
+      private static function isBragable(param1:uint) : Boolean
+      {
+         return param1 == 1 || param1 == 6 || param1 == 13;
       }
       
       private static function BragBattleReport(param1:MouseEvent) : void
       {
-         GLOBAL.CallJS("sendFeed",["loot",KEYS.Get("pop_cavernwin1_streamtitle"),KEYS.Get("pop_cavernwin2_streambody"),"loot.png"]);
+         GLOBAL.CallJS("sendFeed",["loot",KEYS.Get("pop_cavernwin" + _level + "_streamtitle"),KEYS.Get("pop_cavernwin" + _level + "_streambody"),"pop_cavernwin" + _level + ".png"]);
          POPUPS.Next();
       }
       
       public static function ShowCapturePopup() : void
       {
-         POPUPS.DisplayDialogue("descent_pop_victory_title",KEYS.Get("descent_pop_victory_body"),KEYS.Get("descent_pop_victory_button"),null,null,ClosedCapturePopup);
-         GLOBAL.StatSet("descentLvl",14,true);
+         var _loc1_:MovieClip = new popup_infernoemerge_dialog();
+         _loc1_.tBody.htmlText = "<b>" + KEYS.Get("descent_pop_victory_title") + "</b><br><br>";
+         _loc1_.tBody.htmlText += KEYS.Get("descent_pop_victory_body");
+         _loc1_.bAction.Setup(KEYS.Get("descent_pop_victory_button"));
+         _loc1_.bAction.addEventListener(MouseEvent.CLICK,ClosedCapturePopup);
+         POPUPS.Push(_loc1_,null,null,"");
+         GLOBAL.StatSet("descentLvl",MAPROOM_DESCENT._descentLvlMax);
+         MAPROOM_DESCENT._descentLvl = MAPROOM_DESCENT._descentLvlMax;
+         MAPROOM_DESCENT.DescentPassed;
+         WMBASE.DestroyAllDescent();
       }
       
-      private static function ClosedCapturePopup() : void
+      private static function ClosedCapturePopup(param1:MouseEvent) : void
       {
+         GLOBAL._advancedMap = 0;
          BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
       }
       
@@ -103,7 +170,7 @@ package
       
       public static function isInDescent() : Boolean
       {
-         return BASE.isInferno() && GLOBAL._inInferno == 0;
+         return BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "wmattack";
       }
    }
 }
@@ -112,24 +179,39 @@ import flash.display.MovieClip;
 
 class InfernoBattleReportPopup extends popup_infernodescent_battle_report
 {
-   public function InfernoBattleReportPopup(param1:String, param2:String, param3:Array, param4:String)
+   public function InfernoBattleReportPopup(param1:String, param2:String, param3:Vector.<uint>)
    {
-      var _loc6_:String = null;
-      var _loc7_:MovieClip = null;
+      var _loc5_:String = null;
+      var _loc6_:MovieClip = null;
       super();
       tTitle.htmlText = param1;
       tBody.htmlText = param2;
-      var _loc5_:int = 0;
-      while(_loc5_ < param3.length)
+      var _loc4_:int = 0;
+      while(_loc4_ < param3.length)
       {
-         _loc6_ = "mcResource" + (_loc5_ + 1);
-         _loc7_ = MovieClip(getChildByName(_loc6_));
-         _loc7_.tValue.htmlText = int(param3[_loc5_]).toString();
-         _loc7_.stop();
-         _loc5_++;
+         _loc5_ = "mcResource" + (_loc4_ + 1);
+         _loc6_ = MovieClip(getChildByName(_loc5_));
+         switch(_loc4_)
+         {
+            case 0:
+               _loc6_.tTitle.htmlText = "<b>" + KEYS.Get("#r_bone#") + "</b>";
+               break;
+            case 1:
+               _loc6_.tTitle.htmlText = "<b>" + KEYS.Get("#r_coal#") + "</b>";
+               break;
+            case 2:
+               _loc6_.tTitle.htmlText = "<b>" + KEYS.Get("#r_sulfur#") + "</b>";
+               break;
+            case 3:
+               _loc6_.tTitle.htmlText = "<b>" + KEYS.Get("#r_magma#") + "</b>";
+               break;
+            case 4:
+               _loc6_.tTitle.htmlText = "<b>" + KEYS.Get("#r_shiny#") + "</b>";
+               break;
+         }
+         _loc6_.tValue.htmlText = "<b>" + int(param3[_loc4_]).toString() + "</b>";
+         _loc6_.stop();
+         _loc4_++;
       }
-      bButton.htmlText = param4;
-      bButton.SetupKey(param4);
-      bButton.Highlight = true;
    }
 }

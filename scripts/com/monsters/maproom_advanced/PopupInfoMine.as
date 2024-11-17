@@ -261,6 +261,7 @@ package com.monsters.maproom_advanced
       
       public function Open() : *
       {
+         var _loc1_:int = 0;
          if(!this._cell._locked || this._cell._locked == LOGIN._playerID)
          {
             GLOBAL._currentCell = this._cell;
@@ -268,8 +269,8 @@ package com.monsters.maproom_advanced
             MapRoom.Hide();
             MapRoom.ClearCells();
             GLOBAL._attackerCellsInRange = [];
-            BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,this._cell._baseID,"build");
+            _loc1_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+            BASE.LoadBase(null,null,this._cell._baseID,"build",false,_loc1_);
          }
          else
          {

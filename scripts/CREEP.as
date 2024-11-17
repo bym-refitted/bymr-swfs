@@ -290,6 +290,7 @@ package
          this._graphicMC = addChild(new Bitmap(this._graphic));
          this._graphicMC.x = -26;
          this._graphicMC.y = -36;
+         this.ApplyInfernoVenom();
          if(param2 == "housing")
          {
             _loc12_ = GRID.ToISO(this._targetCenter.x + 100,this._targetCenter.y + 100,0);
@@ -1538,6 +1539,22 @@ package
          }
       }
       
+      private function ApplyInfernoVenom() : void
+      {
+         var _loc1_:int = 0;
+         var _loc2_:Array = null;
+         if(BASE.isInferno() && (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack"))
+         {
+            _loc2_ = [0,0,0,0,0,0,4 * 60,210,3 * 60,150,2 * 60,60,10,5,1];
+            if(MAPROOM_DESCENT._descentLvl >= _loc2_.length)
+            {
+               _loc1_ = this._health.Get() / 40;
+            }
+            _loc1_ = Math.max(this._health.Get() / (40 * _loc2_[MAPROOM_DESCENT._descentLvl - 1]),1);
+            this._venom.Add(_loc1_);
+         }
+      }
+      
       public function Tick() : Boolean
       {
          var Distance:int = 0;
@@ -1556,7 +1573,7 @@ package
          var id:String = null;
          var numTargets:int = 0;
          var distToEnemy:int = 0;
-         var enemy:CREEP = null;
+         var enemy:* = undefined;
          var tmpDefDamage:Number = NaN;
          var i:int = 0;
          var tmpDamage:int = 0;

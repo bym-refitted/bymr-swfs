@@ -35,7 +35,7 @@ package
          var _loc1_:BFOUNDATION = null;
          for each(_loc1_ in BASE._buildingsAll)
          {
-            if(_loc1_._type == BTOTEM_BUILDING_TYPE)
+            if(IsTotem2(_loc1_._type))
             {
                _loc1_.Upgraded();
             }
@@ -51,7 +51,7 @@ package
          var _loc1_:BFOUNDATION = null;
          for each(_loc1_ in BASE._buildingsAll)
          {
-            if(_loc1_._type == BTOTEM_BUILDING_TYPE)
+            if(IsTotem2(_loc1_._type))
             {
                _loc1_.Downgrade_TOTEM_DEBUG();
             }
@@ -109,7 +109,7 @@ package
             }
             if(param2)
             {
-               if(_loc3_._type == BTOTEM_BUILDING_TYPE)
+               if(IsTotem2(_loc3_._type))
                {
                   _loc3_.GridCost(false);
                   _loc3_.Clean();

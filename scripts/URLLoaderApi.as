@@ -118,7 +118,7 @@ package
          var _loc1_:Object = {};
          if(GLOBAL._local)
          {
-            _loc1_ = this.GetFBDataNickH();
+            _loc1_ = this.GetFBDataEric();
             GLOBAL._appid = _loc1_.app_id;
             GLOBAL._tpid = _loc1_.tpid;
          }
@@ -147,6 +147,10 @@ package
       
       private function GetFBDataBo() : Object
       {
+         if(GLOBAL._localMode == 1)
+         {
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"lPhv_kYkhrQvBX95w5_zcN2ePJRY_IS3OD9mu8hvoNw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjU5OTE2MDAsImlzc3VlZF9hdCI6MTMyNTk4NjM0Miwib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQU9rRVRKUldEWGNpemRReFRqYlhXWkMyOVFkWkJVSVVGY21xeHBHamQxZU5wSFloRWNaQnRWbGs4SE9JUXZDNDFVTVNoMHhIQk16RkpaQmlOYXJ5d0ZBN1BrR1MzUVpEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjYxMDY1NzkyOSJ9\",\"access_token\":\"AAADLTlQ61wcBAOkETJRWDXcizdQxTjbXWZC29QdZBUIUFcmqxpGjd1eNpHYhEcZBtVlk8HOIQvC41UMSh0xHBMzFJZBiNarywFA7PkGS3QZDZD\",\"PHPSESSID\":\"1c1a05300816a733364c9f0ee81a47d6\",\"app_id\":\"223537281029895\",\"tpid\":false}");
+         }
          return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"zKMmDgwgnn-Oki5Ttzp59Y_QStZrUDrzlNI8coGCHYw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjAzNTA0MDAsImlzc3VlZF9hdCI6MTMyMDM0NDU2Miwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUpqaTk2ODlTdW91MGpmdzZ0Rzd5QUdmZmFiSUtDY0dvanl6eDZ2R1R0eGRZWGJJUmZIUFBPUFg0ZmhWWkNVNnNSUG4ycnhweEloSU5jc1JOb01UNjBLaGUzbWpCN0JoRFYxWGgiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjE4MzA4MjA4NjEifQ\",\"PHPSESSID\":\"d95ce481a3ad14d28ef164211dc59c69\",\"app_id\":\"495789755606\",\"tpid\":false}");
       }
       
@@ -160,15 +164,23 @@ package
          {
             return com.adobe.serialization.json.JSON.decode("{\"v_publisher\":\"vixtest-casualcollective\",\"v_country\":\"US\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"Eric Foley\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"401-eric-foley\",\"v_session_key\":\"7240de11be3464d20354063d92be4d45-1319063967\",\"v_expires\":\"1319063967\",\"PHPSESSID\":\"7f8bf16cf7ba26c58e154a30bb841bec\",\"app_id\":123,\"tpid\":false}");
          }
+         if(GLOBAL._localMode == 6)
+         {
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"pEwWA65LnqAgucwicKNrdpOdAelbG_N2HrJ3QSvgWsU.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjY0MDIwMDAsImlzc3VlZF9hdCI6MTMyNjM5NzEzNiwib2F1dGhfdG9rZW4iOiJBQUFBQVQ4bVNEcmdCQUVQUW9EZUttZThiT2I3NGRaQTZDbHd0ZmN4TGVJVGkxZlIyZ21ub1VaQk1CZk14ZWVCbTFlbk9Bc09SeVZkbVFkOG00aDJRcEQzczBESnIwZ0JhcGNKT2ZhbXpYYVpCRHJOZHk4eSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTEyMjgyMDE1MyJ9\",\"access_token\":\"AAAAAT8mSDrgBAEPQoDeKme8bOb74dZA6ClwtfcxLeITi1fR2gmnoUZBMBfMxeeBm1enOAsORyVdmQd8m4h2QpD3s0DJr0gBapcJOfamzXaZBDrNdy8y\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"342684208824\",\"tpid\":false}");
+         }
          if(GLOBAL._localMode == 4)
          {
             return com.adobe.serialization.json.JSON.decode("{\"v_publisher\":\"google\",\"v_country\":\"\",\"v_app_id\":\"backyardmonsters\",\"v_username\":\"Nick Moore\",\"v_currency_singular\":\"Credit\",\"v_currency_plural\":\"Credits\",\"v_locale\":\"en-US\",\"v_user\":\"104951533135356791664\",\"v_session_key\":\"37cf704435af02d87a7507c1845479ab-1320418752\",\"v_expires\":\"1320418752\",\"PHPSESSID\":\"8b8778f4b84ca3aa6f4803e54c7d679b\",\"app_id\":123,\"tpid\":false}");
+         }
+         if(GLOBAL._localMode == 9)
+         {
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"-Vn3w0-BgJY8F6vogBUdTYauJWlWsdaj3mFaX2DJb34.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ0NTgwMDAsImlzc3VlZF9hdCI6MTMyNDQ1MTM4MSwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBQzZXR05WSGZFTGpxeEdLZ0NqSElIUFYyT054V3MxeTJqY3l3UUhZbVBrbUJKSjYxNXpQMmJhS3NjMFlIZVc4UzBaQkY0WWtOWU9lbXA0MFlEOThjMlAyOXlUbGJVWkM1c1NYTmoiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjExMjI4MjAxNTMifQ\",\"access_token\":\"AAAB42FeHZBZBQBAC6WGNVHfELjqxGKgCjHIHPV2ONxWs1y2jcywQHYmPkmBJJ615zP2baKsc0YHeW8S0ZBF4YkNYOemp40YD98c2P29yTlbUZC5sSXNj\",\"PHPSESSID\":\"4ffb47ddcce7e9e1b4baa7cd60329135\",\"app_id\":\"132870576798692\",\"tpid\":false}");
          }
          if(GLOBAL._localMode > 0)
          {
             return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"4OUhOsA-EbJ8t7TF0UH-hIY-SsWK1vyPvrySjrF_uBE.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTcyNDM2MDAsImlzc3VlZF9hdCI6MTMxNzIzNjg1NCwib2F1dGhfdG9rZW4iOiIyMjM1MzcyODEwMjk4OTV8Mi5BUUNNWnpTUkNRdWI1WUNvLjM2MDAuMTMxNzI0MzYwMC4xLTExMjI4MjAxNTN8ZTZtN2o1eHpXb1Zqd3poZUJBNzgwOXZUcUkwIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMTIyODIwMTUzIn0\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"223537281029895\",\"tpid\":false}");
          }
-         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"PYag8sMNkcUZkNrYQV3CuuUFPQfI6KQNsf-w1NW2QbA.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTc0MzQ0MDAsImlzc3VlZF9hdCI6MTMxNzQyODIxMiwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUNZTElNUkpveVl2T0ROSU5UWUFZQ2JEV205ckJWam1aQmhGTG94djBBMUVNaElYbmhrQWRJQm9wUWZLeW1aQ3A5WkNsYWdhc3BUSXJPdXdaQWhaQUdVdVpDVFRaQ1pDcW10WkJrR25CZ2pkUSIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTEyMjgyMDE1MyJ9\",\"PHPSESSID\":\"88b2b354fde7d4e4d805b8b1bc66d1f8\",\"app_id\":\"495789755606\",\"tpid\":false}");
+         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"hkikAE2unyZCzLGotoKsr1w1EWI5CR5sBC9NgNVNmSo.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjY0MjAwMDAsImlzc3VlZF9hdCI6MTMyNjQxNDYwNCwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUY3dk01M3VjRnFFWWhlYnJvYzJESWZRM2hiVlhMdmhqZW5CVzVaQXBLVWhRT0tFOWpLVzh6R1dFMHROUnRpSFJtTU1kNEJ2cU40amRKU0tqSjRYcHpySVFVekI3aFRuZzNCVVAiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjExMjI4MjAxNTMifQ\",\"access_token\":\"AAAAAc29fTNYBAF7vM53ucFqEYhebroc2DIfQ3hbVXLvhjenBW5ZApKUhQOKE9jKW8zGWE0tNRtiHRmMMd4BvqN4jdJSKjJ4XpzrIQUzB7hTng3BUP\",\"PHPSESSID\":\"a32eae6052c401484875c914ae0c57fd\",\"app_id\":\"495789755606\",\"tpid\":false}");
       }
       
       private function GetFBDataKevin() : Object
@@ -199,26 +211,14 @@ package
          }
          if(GLOBAL._localMode == 9)
          {
-            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"6os4hpTv2GVTXADjQmPu4b3wbtGrUkihC16fEc3cjpU.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjM5MjUyMDAsImlzc3VlZF9hdCI6MTMyMzkxODE2MSwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBQ3NnQ2RUeFdFVThPeTVHSnVOek80WkNhTDBxRkw3OGRUM0NBWkF5TUtObUxhTVpDY2NQZG05YnZjWFpDeUNKRFdTRUJpelZCOGtrM3pna00xcXVnNnlNeWZ1ek5mSVpBdkdWeEdCZmQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAAB42FeHZBZBQBACsgCdTxWEU8Oy5GJuNzO4ZCaL0qFL78dT3CAZAyMKNmLaMZCccPdm9bvcXZCyCJDWSEBizVB8kk3zgkM1qug6yMyfuzNfIZAvGVxGBfd\",\"PHPSESSID\":\"f6e0763b85c9f387a1916943d03e6325\",\"app_id\":\"132870576798692\",\"tpid\":false}");
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"AxnEnbAL7nbHkxEGv46S1IHY8U3lc9nTa1p87lCkJ4M.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ0MjIwMDAsImlzc3VlZF9hdCI6MTMyNDQxNzk3OCwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBQ2dMcUg4YXJubWh4VzVDVlpBM1lkVVh5YU1QbzNMYnhnWkFaQ0NJRFUzVzUyRTVQMmhMbmI0M3BlV3pDdGI5bURkZGsxdk9HaGh4dW1FZVlNbmlVZWVYejVFb3ZYa2EwNnQ4QVpBdCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTAwMDAyMjY5OTEzNDYzIn0\",\"access_token\":\"AAAB42FeHZBZBQBACgLqH8arnmhxW5CVZA3YdUXyaMPo3LbxgZAZCCIDU3W52E5P2hLnb43peWzCtb9mDddk1vOGhhxumEeYMniUeeXz5EovXka06t8AZAt\",\"PHPSESSID\":\"f6e0763b85c9f387a1916943d03e6325\",\"app_id\":\"132870576798692\",\"tpid\":false}");
          }
          return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"XMcUmtokOBufSfOxSatYxwS2NBZsFKnJbrKhW_ikGtM.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI3OTEyMDAsImlzc3VlZF9hdCI6MTMyMjc4NTE1Nywib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUFOaGtRYlpBZWlLZ1VhOUYyaHZ0YUMwYjRCSjZVbmxPc1RoTlJnV2VlY0FtaVN6UmhHdll0Vm5XcnI2a01FaHV2ZE9laWNMRkJ4cE9pVEgyTTg1REdYZEx3TklpWW1VcUFEWU8iLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjI2OTkxMzQ2MyJ9\",\"access_token\":\"AAAAAc29fTNYBAANhkQbZAeiKgUa9F2hvtaC0b4BJ6UnlOsThNRgWeecAmiSzRhGvYtVnWrr6kMEhuvdOeicLFBxpOiTH2M85DGXdLwNIiYmUqADYO\",\"PHPSESSID\":\"0a3287793c5da304c64d0f43cd38d6c1\",\"app_id\":\"495789755606\",\"tpid\":false}");
       }
       
       private function GetFBDataNickH() : Object
       {
-         switch(GLOBAL._localMode)
-         {
-            case 0:
-               return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"h5n6ZM5SrPL3sxgSsEiLZvQxUqw3Dr6V_-rPTNOg2qk.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQwMTg4MDAsImlzc3VlZF9hdCI6MTMyNDAxNDIwNSwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUNEak9oUzhVYzdiV3dHY0FmWkNKZjBlUk1yaXBQM0xhQ05oTlpDU2RZbDcwQUlSa2FmUThXcGZFeWlPd2p2Q3ZrNElaQ0tXaG5HQklWNGY2OWtwamFicFRNcFBnWkRaRCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiMTM3MDQ5NDAifQ\",\"access_token\":\"AAAAAc29fTNYBACDjOhS8Uc7bWwGcAfZCJf0eRMripP3LaCNhNZCSdYl70AIRkafQ8WpfEyiOwjvCvk4IZCKWhnGBIV4f69kpjabpTMpPgZDZD\",\"PHPSESSID\":\"1f42465981c6af9a2426ad2ae7d23254\",\"app_id\":\"495789755606\",\"tpid\":false}");
-            case 5:
-               return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"GBpiWegGJ_sDTvBoE7ri5DUj0OgRebx9l86scWSgy-Q.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI4NjY4MDAsImlzc3VlZF9hdCI6MTMyMjg2MjAxMSwib2F1dGhfdG9rZW4iOiJBQUFCd3ZldWh6M01CQUZhQmllQ2QzS0VlbUo0eUhvSFpDQnF1NHZkSUVSWkM5TzM5ZTd0Y3Qyb3pxWEJISTVvTzVIOW9GWTdYZ2U3QUJSRFVZWWpKbk04bFhmNFVtbmREdThCMXpwWUFaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMzcwNDk0MCJ9\",\"access_token\":\"AAABwveuhz3MBAFaBieCd3KEemJ4yHoHZCBqu4vdIERZC9O39e7tct2ozqXBHI5oO5H9oFY7Xge7ABRDUYYjJnM8lXf4UmndDu8B1zpYAZDZD\",\"PHPSESSID\":\"ec7584357fa3035c31343e7bb1b46287\",\"app_id\":\"123961004380019\",\"tpid\":false}");
-            case 8:
-               return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"9GUiECeHUhMBhHZDP7Z3nTaXGZeDUgDY66xqlctuyhE.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQwMTUyMDAsImlzc3VlZF9hdCI6MTMyNDAxMTAyNiwib2F1dGhfdG9rZW4iOiJBQUFETXhMNXpXdlVCQVBBQ0JpRHZFT1FjY2J4eUxRWkFaQ0JWQmhHVWRjSEVtczVLeDlEa0ZERWNEejJ4bkdEcWNPU3hDNjB2bXNnTG80cHNxNjVtT1lnZHJMeFRtSlRVU1c3SWEwOEFaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMzcwNDk0MCJ9\",\"access_token\":\"AAADMxL5zWvUBAPACBiDvEOQccbxyLQZAZCBVBhGUdcHEms5Kx9DkFDEcDz2xnGDqcOSxC60vmsgLo4psq65mOYgdrLxTmJTUSW7Ia08AZDZD\",\"PHPSESSID\":\"06cb33ad51338bcded873024f098440c\",\"app_id\":\"225145380887285\",\"tpid\":false}");
-            case 9:
-               return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"4PnAh79w0tCKxGEGjkITgM8U6YrMjalYhdZBQA1ES4w.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQyODE2MDAsImlzc3VlZF9hdCI6MTMyNDI3NTE4Miwib2F1dGhfdG9rZW4iOiJBQUFCNDJGZUhaQlpCUUJBSFpCdVlDTEgzc0FwdVBkaWNPbUNRWkM0WVpBSHNFUmY0RFZHUmExMEZ0NHc1S3dWUjdrRkk4ZWpuWXVRYlpCak9HWVMzUlpBNUtQd0RXa0xrb1dtTjhMQWFTeTc5Z1pEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEzNzA0OTQwIn0\",\"access_token\":\"AAAB42FeHZBZBQBAHZBuYCLH3sApuPdicOmCQZC4YZAHsERf4DVGRa10Ft4w5KwVR7kFI8ejnYuQbZBjOGYS3RZA5KPwDWkLkoWmN8LAaSy79gZDZD\",\"PHPSESSID\":\"f5d24c342d3c268bf758b2d60244f61b\",\"app_id\":\"132870576798692\",\"tpid\":false}");
-            default:
-               return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"FcJ8jZlhjitrV0-qZw5yY9s4JCzFXT6rlUtZmaB9QFM.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjMyMTI0MDAsImlzc3VlZF9hdCI6MTMyMzIwNjc0Niwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQUlvZGtwZlpDQnVoejJCWHZKR3Job1FRclUzNzlxS2l0RkVCdFJvMVlQazcyaVlJU3BKT1FBWkJKRDdaQWtWMGk1clZ4Q1pDckh1d1NrWkIyckZzSGd6TGZuMXRDQndaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMzcwNDk0MCJ9\",\"access_token\":\"AAAAAc29fTNYBAIodkpfZCBuhz2BXvJGrhoQQrU379qKitFEBtRo1YPk72iYISpJOQAZBJD7ZAkV0i5rVxCZCrHuwSkZB2rFsHgzLfn1tCBwZDZD\",\"PHPSESSID\":\"1f42465981c6af9a2426ad2ae7d23254\",\"app_id\":\"495789755606\",\"tpid\":false}");
-         }
+         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"tAeNqCSPHo1QTrRjrWtbyU8sPosxCDcAfT5AtUK8alY.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjcxMDc2MDAsImlzc3VlZF9hdCI6MTMyNzEwMTUyOSwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQU1wdlVsWDhaQkg0b1FHT3I0SFBuOE5CNHE3VWk3TElLcTdBQktYVTRQV3g4WkNuQlhFMWx3cWFRS0NTN2hOYnhUM2k5RmJSaHE3YnR6dUR2QUM3WkFnTUdaQUQzV09yVFYyS21rWWIiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjEwMDAwMjcyNjE2OTM3MSJ9\",\"access_token\":\"AAAAAc29fTNYBAMpvUlX8ZBH4oQGOr4HPn8NB4q7Ui7LIKq7ABKXU4PWx8ZCnBXE1lwqaQKCS7hNbxT3i9FbRhq7btzuDvAC7ZAgMGZAD3WOrTV2KmkYb\",\"PHPSESSID\":\"a99cb0a6ee8e3095b2432878c8d15008\",\"app_id\":\"495789755606\",\"tpid\":false}");
       }
       
       private function GetFBDataNickM() : Object
@@ -228,11 +228,16 @@ package
       
       private function GetFBDataOrlando() : Object
       {
-         if(GLOBAL._localMode == 5)
+         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"sMNsInaEUM6oDqUz1lxCZBSnFqgsiduYSYFVL_esBQQ.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjU3MzI0MDAsImlzc3VlZF9hdCI6MTMyNTcyODAwNywib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQURJbHdPVG1FbFpCYWFuUlVkcWg2WG96TVIzeFl0YlQ4c1lLOFA0djFwVVZoaWkzekdmaG5rTndHR1NreU40UmlSNjJyUmhyRG1ZTlIwQUlJbHlkRUxIbTdQQVpEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJ1cyIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjU4NzcyNTAzNyJ9\",\"access_token\":\"AAADLTlQ61wcBADIlwOTmElZBaanRUdqh6XozMR3xYtbT8sYK8P4v1pUVhii3zGfhnkNwGGSkyN4RiR62rRhrDmYNR0AIIlydELHm7PAZDZD\",\"PHPSESSID\":\"2d9fbc27e77c8007b6b2a284d7d76ef4\",\"app_id\":\"223537281029895\",\"tpid\":false}");
+      }
+      
+      private function GetFBDataRyan() : Object
+      {
+         if(GLOBAL._localMode == 1)
          {
-            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"k45nJKLATFg1x4ZKHeo6aYNFt6y4IYGW1KPpXafYWnY.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjI3OTEyMDAsImlzc3VlZF9hdCI6MTMyMjc4NjYwMCwib2F1dGhfdG9rZW4iOiJBQUFCd3ZldWh6M01CQUYyd0QxNlNqbnpwa2xzRjVYZ2hTZGxkRzh3ZlhuTkdHcFpCdksxUHZFRlpBWkN4aDRieDNHaUNqV2tUbkZ1a2tkQnpybFdOUzVPMmRiUk1iT2NzaVNSbGN2cnJ3WkRaRCIsInVzZXIiOnsiY291bnRyeSI6InVzIiwibG9jYWxlIjoiZW5fVVMiLCJhZ2UiOnsibWluIjoyMX19LCJ1c2VyX2lkIjoiNTg3NzI1MDM3In0\",\"access_token\":\"AAABwveuhz3MBAF2wD16SjnzpklsF5XghSdldG8wfXnNGGpZBvK1PvEFZAZCxh4bx3GiCjWkTnFukkdBzrlWNS5O2dbRMbOcsiSRlcvrrwZDZD\",\"PHPSESSID\":\"85919de42685177b1b15d477b6b751d5\",\"app_id\":\"123961004380019\",\"tpid\":false}");
+            return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"6yfYU6wuqFulS6FW694BuArS32UwOGkWKuLhYGOy5_U.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ1MjY0MDAsImlzc3VlZF9hdCI6MTMyNDUyMjM3Nywib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUJYc0RWODVKTlhhWU9qYXFSdFpBbWYzVVpBdmlheWplYkJwVlRITzlJMnhUeU0zNU9tQ0V4cGVkNkliM0FSc2FaQ2lISjBMajFZeGtTV0R2aVhSTjVVa01NdzB0OUlYYW5aQllaQVU1IiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMDI4ODU4NTY4In0\",\"access_token\":\"AAADLTlQ61wcBABXsDV85JNXaYOjaqRtZAmf3UZAviayjebBpVTHO9I2xTyM35OmCExped6Ib3ARsaZCiHJ0Lj1YxkSWDviXRN5UkMMw0t9IXanZBYZAU5\",\"PHPSESSID\":\"8a8435a597d612b038a36a80ca71d36a\",\"app_id\":\"223537281029895\",\"tpid\":false}");
          }
-         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"ailJIxRwcOwy0TyAm1i3fj6sqyS9wDfTMN1hxsL4Drg.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMTk1MDQ0MDAsImlzc3VlZF9hdCI6MTMxOTQ5OTQ2NCwib2F1dGhfdG9rZW4iOiJBQUFBQWMyOWZUTllCQU1qdXdlcURCWkF3aHU0TlBSbGpmRHQ1VmI1TDJCbnhLMEFUelRBWkNjMXBOOVR6VVRST1QzNTYzRlFjWGJPbWs5UjlyMUV0Z3JrSVZxT1gwMEwxenJoTmtHcmdaRFpEIiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiI1ODc3MjUwMzcifQ\",\"PHPSESSID\":\"cb990ef3b07bc6eb645c577c837eef98\",\"app_id\":\"495789755606\",\"tpid\":false}");
+         return com.adobe.serialization.json.JSON.decode("{\"signed_request\":\"6yfYU6wuqFulS6FW694BuArS32UwOGkWKuLhYGOy5_U.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQ1MjY0MDAsImlzc3VlZF9hdCI6MTMyNDUyMjM3Nywib2F1dGhfdG9rZW4iOiJBQUFETFRsUTYxd2NCQUJYc0RWODVKTlhhWU9qYXFSdFpBbWYzVVpBdmlheWplYkJwVlRITzlJMnhUeU0zNU9tQ0V4cGVkNkliM0FSc2FaQ2lISjBMajFZeGtTV0R2aVhSTjVVa01NdzB0OUlYYW5aQllaQVU1IiwidXNlciI6eyJjb3VudHJ5IjoidXMiLCJsb2NhbGUiOiJlbl9VUyIsImFnZSI6eyJtaW4iOjIxfX0sInVzZXJfaWQiOiIxMDI4ODU4NTY4In0\",\"access_token\":\"AAADLTlQ61wcBABXsDV85JNXaYOjaqRtZAmf3UZAviayjebBpVTHO9I2xTyM35OmCExped6Ib3ARsaZCiHJ0Lj1YxkSWDviXRN5UkMMw0t9IXanZBYZAU5\",\"PHPSESSID\":\"8a8435a597d612b038a36a80ca71d36a\",\"app_id\":\"223537281029895\",\"tpid\":false}");
       }
       
       private function getHash(param1:String, param2:int) : *
@@ -242,7 +247,7 @@ package
       
       private function getSalt() : *
       {
-         return this.decodeSalt("TU1S0wu1T2S045ttu1WQB5VQ1B10Qsg1I");
+         return this.decodeSalt("YU87XV0U16511302843X74619X747UV4UZ34558V");
       }
       
       private function decodeSalt(param1:String) : String
@@ -430,7 +435,7 @@ package
                   _loc2_ += "4";
                   break;
                case "6":
-                  _loc2_ += "5";
+                  _loc2_ += "3";
                   break;
                case "7":
                   _loc2_ += "2";
@@ -455,6 +460,48 @@ package
       private function setStatus(param1:HTTPStatusEvent) : *
       {
          this._status = param1.status;
+         switch(this._status)
+         {
+            case 404:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Not Found");
+               break;
+            case 401:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Unauthorized");
+               break;
+            case 403:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Forbidden");
+               break;
+            case 405:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Method Not Allowed");
+               break;
+            case 406:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Not Acceptable");
+               break;
+            case 407:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Proxy Authentication Required");
+               break;
+            case 408:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Request Timeout");
+               break;
+            case 500:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Internal Server Error");
+               break;
+            case 501:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Not Implemented");
+               break;
+            case 502:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Bad Gateway");
+               break;
+            case 503:
+               LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Service Unavailable");
+               break;
+            default:
+               if(this._status > 400)
+               {
+                  LOGGER.Log("err","URLLoaderApi HTTP status " + this._status + " Other status");
+                  break;
+               }
+         }
       }
       
       private function loadError(param1:IOErrorEvent) : *

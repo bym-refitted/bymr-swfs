@@ -47,6 +47,8 @@ package
          var val:int = 0;
          var level:int = 0;
          var n2:int = 0;
+         var monsterID:String = null;
+         var yardType:String = null;
          var o:Object = null;
          var data:Array = param1;
          if(!GLOBAL._flags.gamestatsb)
@@ -100,7 +102,8 @@ package
                }
                else
                {
-                  st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                  monsterID = BASE.isInferno() ? "IC" : "C";
+                  st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                }
                name = "speedup";
                val = int(data[4]);
@@ -139,21 +142,24 @@ package
             {
                st1 = "monsters";
                st2 = "unlock";
-               st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+               monsterID = BASE.isInferno() ? "IC" : "C";
+               st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "start";
             }
             else if(data[0] == 10)
             {
                st1 = "monsters";
                st2 = "unlock";
-               st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+               monsterID = BASE.isInferno() ? "IC" : "C";
+               st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "finish";
             }
             else if(data[0] == 11)
             {
                st1 = "monsters";
                st2 = "train";
-               st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+               monsterID = BASE.isInferno() ? "IC" : "C";
+               st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "start";
                val = int(data[2]);
             }
@@ -161,7 +167,8 @@ package
             {
                st1 = "monsters";
                st2 = "train";
-               st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+               monsterID = BASE.isInferno() ? "IC" : "C";
+               st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                name = "finish";
                val = int(data[2]);
             }
@@ -349,14 +356,16 @@ package
                   {
                      st1 = "monsters";
                      st2 = "unlock";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "instant";
                   }
                   else if(data[0] == 47)
                   {
                      st1 = "monsters";
                      st2 = "train";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "instant";
                      val = int(data[2]);
                   }
@@ -364,7 +373,8 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "shiny";
                      val = int(data[2]);
                   }
@@ -372,7 +382,8 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "start";
                      val = int(data[2]);
                   }
@@ -380,7 +391,8 @@ package
                   {
                      st1 = "monsters";
                      st2 = "powerup";
-                     st3 = KEYS.Get(CREATURELOCKER._creatures["C" + data[1]].name);
+                     monsterID = BASE.isInferno() ? "IC" : "C";
+                     st3 = KEYS.Get(CREATURELOCKER._creatures[monsterID + data[1]].name);
                      name = "finish";
                      val = int(data[2]);
                   }
@@ -605,6 +617,42 @@ package
                   {
                      st1 = "WMI2";
                      st2 = "totem_placed";
+                     name = data[1];
+                  }
+                  else if(data[0] == 87)
+                  {
+                     st1 = "Inferno";
+                     st2 = "Descent";
+                     st3 = data[1];
+                     name = data[2];
+                  }
+                  else if(data[0] == 88)
+                  {
+                     st1 = "loadmode";
+                     name = data[1];
+                     switch(data[2])
+                     {
+                        case BASE.MAIN_YARD:
+                           yardType = "main_yard";
+                           break;
+                        case BASE.OUTPOST:
+                           yardType = "outpost";
+                           break;
+                        case BASE.INFERNO_YARD:
+                           yardType = "inferno_yard";
+                           break;
+                        case BASE.INFERNO_OUTPOST:
+                           yardType = "outpost";
+                           break;
+                        default:
+                           yardType = "none";
+                     }
+                     st2 = yardType;
+                  }
+                  else if(data[0] == 89)
+                  {
+                     st1 = "attackpref";
+                     st2 = "inferno";
                      name = data[1];
                   }
                }

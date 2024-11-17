@@ -1,5 +1,6 @@
 package
 {
+   import com.monsters.maproom_inferno.views.DescentDebuffPopup;
    import flash.display.DisplayObject;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -28,6 +29,8 @@ package
       public var _catapult:CATAPULTPOPUP;
       
       public var _buttonIcons:Array;
+      
+      public var _descentDebuff:DescentDebuffPopup;
       
       public function UI_TOP()
       {
@@ -178,10 +181,13 @@ package
             this._creatureButtons = [];
             if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
             {
-               gb = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData.t,GLOBAL._playerGuardianData.l.Get()));
-               gb.y = 25;
-               this._creatureButtons.push(gb);
-               count++;
+               if(GLOBAL._loadmode == GLOBAL._mode || GLOBAL._loadmode != GLOBAL._mode && !MAPROOM_DESCENT.DescentPassed)
+               {
+                  gb = this._creatureButtonsMC.addChild(new CHAMPIONBUTTON("G" + GLOBAL._playerGuardianData.t,GLOBAL._playerGuardianData.l.Get()));
+                  gb.y = 25;
+                  this._creatureButtons.push(gb);
+                  count++;
+               }
             }
             for(s in CREATURELOCKER._creatures)
             {
@@ -197,7 +203,7 @@ package
                         cb.y = 25 + count * 60;
                         if(count > 5)
                         {
-                           if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+                           if(this.HasChampionButton())
                            {
                               cb.y -= 300;
                            }
@@ -205,7 +211,7 @@ package
                            {
                               cb.y -= 360;
                            }
-                           cb.x += 2 * 60;
+                           cb.x += 136;
                         }
                         this._creatureButtons.push(cb);
                         count++;
@@ -217,7 +223,7 @@ package
                      cb.y = 25 + count * 60;
                      if(count > 5)
                      {
-                        if(Boolean(GLOBAL._playerGuardianData) && GLOBAL._playerGuardianData.hp.Get() > 0)
+                        if(this.HasChampionButton())
                         {
                            cb.y -= 300;
                         }
@@ -225,7 +231,7 @@ package
                         {
                            cb.y -= 360;
                         }
-                        cb.x += 2 * 60;
+                        cb.x += 136;
                      }
                      this._creatureButtons.push(cb);
                      count++;
@@ -241,7 +247,25 @@ package
                this._catapult.Setup();
             }
          }
+         else
+         {
+            this.DescentDebuffHide();
+         }
          this.Update();
+      }
+      
+      private function HasChampionButton() : Boolean
+      {
+         var _loc1_:int = 0;
+         while(_loc1_ < this._creatureButtons.length)
+         {
+            if(this._creatureButtons[_loc1_] is CHAMPIONBUTTON)
+            {
+               return true;
+            }
+            _loc1_++;
+         }
+         return false;
       }
       
       public function Clear() : void
@@ -254,7 +278,14 @@ package
          return function(param1:MouseEvent = null):*
          {
             var _loc2_:* = Math.min((n - 1) * 0.4,1);
-            STORE.ShowB(2,_loc2_,["BR" + n + "1","BR" + n + "2","BR" + n + "3"]);
+            if(BASE.isInferno())
+            {
+               STORE.ShowB(2,_loc2_,["BR" + n + "1I","BR" + n + "2I","BR" + n + "3I"]);
+            }
+            else
+            {
+               STORE.ShowB(2,_loc2_,["BR" + n + "1","BR" + n + "2","BR" + n + "3"]);
+            }
          };
       }
       
@@ -276,9 +307,13 @@ package
                   mc.mcPoints.tName.htmlText = KEYS.Get("uitop_yardownerlong",{"v1":BASE._ownerName.toUpperCase()});
                }
             }
-            else
+            else if(GLOBAL._mode == GLOBAL._loadmode)
             {
                mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonsters");
+            }
+            else
+            {
+               mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonstersinferno");
             }
             try
             {
@@ -314,9 +349,24 @@ package
             {
             }
          }
-         else
+         else if(GLOBAL._mode == GLOBAL._loadmode)
          {
             mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonsters");
+         }
+         else
+         {
+            mc.mcPoints.tName.htmlText = KEYS.Get("uitop_backyardmonstersinferno");
+         }
+         if((GLOBAL._loadmode == "iwmattack" || GLOBAL._loadmode == "iattack") && !MAPROOM_DESCENT.DescentPassed)
+         {
+            if(BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed)
+            {
+               this.DescentDebuffShow();
+            }
+            else
+            {
+               this.DescentDebuffHide();
+            }
          }
       }
       
@@ -407,7 +457,7 @@ package
          {
             this._popupWarning = addChild(new bubblepopup4());
          }
-         this._popupWarning.tA.htmlText = KEYS.Get("ui_needmoreroom");
+         this._popupWarning.tA.htmlText = BASE.isInferno() ? KEYS.Get("inf_ui_needmoreroom") : KEYS.Get("ui_needmoreroom");
          this._popupWarning.x = 150;
          this._popupWarning.y = 20 + 41 * param1;
          this._popupWarning.Wobble();
@@ -608,8 +658,19 @@ package
                      _loc7_ -= CREATURES.GetProperty(_loc8_,"bucket") * ATTACK._flingerBucket[_loc8_].Get();
                   }
                }
-               this._creatureButtonsMC.mcBar.width = 100 - 100 / _loc6_ * _loc7_;
-               if(ATTACK._countdown > 0)
+               this._creatureButtonsMC.mcBar.width = 115 - 115 / _loc6_ * _loc7_;
+               if(GLOBAL._mode != GLOBAL._loadmode)
+               {
+                  if(ATTACK._countdown > 0)
+                  {
+                     mc.tMessage.htmlText = KEYS.Get("attack_ui_attacklock");
+                  }
+                  else
+                  {
+                     mc.tMessage.htmlText = KEYS.Get("attack_ui_attackends");
+                  }
+               }
+               else if(ATTACK._countdown > 0)
                {
                   mc.tMessage.htmlText = KEYS.Get("attack_ui_flingerlock");
                }
@@ -718,6 +779,28 @@ package
          };
       }
       
+      public function DescentDebuffShow() : void
+      {
+         var _loc1_:Boolean = (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack") && BASE.isInferno() && !MAPROOM_DESCENT.DescentPassed && (MAPROOM_DESCENT.DescentLevel > 9 && MAPROOM_DESCENT.DescentLevel < MAPROOM_DESCENT._descentLvlMax);
+         if(this._descentDebuff)
+         {
+            this.DescentDebuffHide();
+         }
+         if(_loc1_)
+         {
+            this._descentDebuff = new DescentDebuffPopup();
+            this._descentDebuff.Show(MAPROOM_DESCENT.DescentLevel);
+         }
+      }
+      
+      public function DescentDebuffHide() : void
+      {
+         if(this._descentDebuff)
+         {
+            this._descentDebuff.Hide();
+         }
+      }
+      
       public function DisplayBuffs() : void
       {
          var _loc3_:* = undefined;
@@ -731,6 +814,11 @@ package
          var _loc11_:Object = null;
          var _loc12_:String = null;
          var _loc13_:MovieClip = null;
+         if(BASE.isInferno())
+         {
+            this.BuffHide(null);
+            return;
+         }
          var _loc1_:Number = POWERUPS.CheckPowers(null,"NORMAL");
          var _loc2_:int = this.mcBuffHolder.numChildren;
          while(_loc2_--)
@@ -895,7 +983,7 @@ package
          var newLevel:Boolean = param6;
          try
          {
-            if(GLOBAL._loadmode == "build")
+            if(GLOBAL._mode == "build")
             {
                mc.mcPoints.mcLevel.text = level.toString();
                p = 200 / (pointsMax - pointsMin) * (points - pointsMin);

@@ -1,6 +1,5 @@
 package com.monsters.maproom_inferno
 {
-   import com.monsters.maproom.ForeignBase_CLIP;
    import com.monsters.maproom_inferno.model.BaseObject;
    import com.monsters.maproom_inferno.views.MapBasePopup;
    import flash.display.Loader;
@@ -15,7 +14,7 @@ package com.monsters.maproom_inferno
    import flash.text.TextFieldAutoSize;
    import flash.utils.Timer;
    
-   public class ForeignBase extends ForeignBase_CLIP
+   public class ForeignBase extends ForeignBaseInferno_CLIP
    {
       public var mapX:uint;
       
@@ -106,8 +105,7 @@ package com.monsters.maproom_inferno
          this.nameBox.addChild(name_txt);
          this.offState.addChild(this.nameBox);
          this.nameBox.x = -2;
-         this.pin = PushPin.getRandomPinWithColor(this.colorCode);
-         addChild(this.pin);
+         addChild(nail);
          removeChild(smallhit);
          removeChild(largehit);
          name_txt.autoSize = TextFieldAutoSize.LEFT;

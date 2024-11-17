@@ -53,6 +53,8 @@ package com.monsters.maproom_inferno
       
       public var pctY:Number;
       
+      public const fowCoordMap:Array = [25,35,37,45,64,60,82,96,106,126,148,148,190];
+      
       public function MiniMap(param1:MovieClip)
       {
          super();
@@ -64,7 +66,7 @@ package com.monsters.maproom_inferno
       {
          if(!instance)
          {
-            if(GLOBAL._inInferno)
+            if(MAPROOM_DESCENT.DescentPassed)
             {
                instance = new MiniMap(new MiniMapInferno_CLIP());
             }
@@ -78,6 +80,7 @@ package com.monsters.maproom_inferno
       
       public function Setup() : void
       {
+         var _loc2_:int = 0;
          if(this._mc == null)
          {
             return;
@@ -101,6 +104,11 @@ package com.monsters.maproom_inferno
          this._mc.addChild(this.selector);
          this.selector.addEventListener(MouseEvent.MOUSE_DOWN,this.selectorDown);
          this.addEventListener(MouseEvent.MOUSE_DOWN,this.mapDown);
+         if(this._mc.fow_mc)
+         {
+            _loc2_ = Math.min(Math.max(MAPROOM_DESCENT._descentLvl - 1,0),MAPROOM_DESCENT._descentLvlMax);
+            this._mc.fow_mc.y = this.fowCoordMap[_loc2_];
+         }
       }
       
       public function Clear() : void
@@ -211,7 +219,7 @@ package com.monsters.maproom_inferno
          this.players.cacheAsBitmap = true;
          this.ai.cacheAsBitmap = false;
          this.ai.graphics.clear();
-         if(GLOBAL._inInferno)
+         if(MAPROOM_DESCENT.DescentPassed)
          {
             for each(_loc5_ in param2)
             {
@@ -222,7 +230,10 @@ package com.monsters.maproom_inferno
          {
             for each(_loc6_ in param2)
             {
-               this.dotAt(_loc6_.x * _loc3_,_loc6_.y * _loc3_,0xff0000,this.ai);
+               if(_loc6_.data.destroyed == 0)
+               {
+                  this.dotAt(_loc6_.x * _loc3_,_loc6_.y * _loc3_,0xff0000,this.ai);
+               }
             }
          }
          this.ai.cacheAsBitmap = true;

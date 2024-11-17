@@ -552,8 +552,9 @@ package
             }
             POPUPS.Next();
          };
+         var workerImage:String = BASE.isInferno() ? "BYM_WorkerGuy2.png" : "helpinghand.png";
          var mc:MovieClip = new popup_noworker();
-         if(BASE._yardType)
+         if(BASE._yardType != BASE.MAIN_YARD)
          {
             mc.tA.htmlText = KEYS.Get("worker_busy");
             mc.tB.htmlText = KEYS.Get("worker_speedupoutpost",{"v1":QUEUE.GetFinishCost()});
@@ -584,7 +585,7 @@ package
             }
             mc.bGet.Highlight = true;
          }
-         POPUPS.Push(mc,null,null,null,"helpinghand.png");
+         POPUPS.Push(mc,null,null,null,workerImage);
       }
       
       public static function DisplayPleaseBuy(param1:String) : *

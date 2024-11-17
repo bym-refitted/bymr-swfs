@@ -39,7 +39,14 @@ package
       override public function Fire(param1:*) : *
       {
          super.Fire(param1);
-         SOUNDS.Play("snipe1");
+         if(BASE.isInferno())
+         {
+            SOUNDS.Play("isniper");
+         }
+         else
+         {
+            SOUNDS.Play("snipe1");
+         }
          var _loc2_:Number = 0.5 + 0.5 / _hpMax.Get() * _hp.Get();
          var _loc3_:Number = 1;
          if(Boolean(GLOBAL._towerOverdrive) && GLOBAL._towerOverdrive.Get() >= GLOBAL.Timestamp())

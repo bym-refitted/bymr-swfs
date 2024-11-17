@@ -94,13 +94,13 @@ package com.monsters.ai
             "process":PROCESS7,
             "type":WMATTACK.TYPE_NERD,
             "taunt":KEYS.Get("ai_descenttribe_taunt"),
-            "splash":"popups/portrait_moloch.png",
+            "splash":"popups/tribe_moloch.png",
             "description":KEYS.Get("ai_descenttribe_description"),
             "succ":KEYS.Get("ai_descenttribe_succ"),
             "succ_stream":KEYS.Get("ai_descenttribe_succstream"),
             "fail":KEYS.Get("ai_descenttribe_fail"),
-            "profilepic":"monsters/tribe_dreadnaut_50.v2.jpg",
-            "streampostpic":"tribe-dreadnaut.v2.png"
+            "profilepic":"monsters/tribe_moloch_50.jpg",
+            "streampostpic":"tribe-moloch.v2.png"
          };
       }
       

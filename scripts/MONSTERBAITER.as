@@ -86,7 +86,14 @@ package
                else
                {
                   UI2._warning.Update("<font size=\"28\">" + int(_attPrep - 1) + "</font>");
-                  SOUNDS.PlayMusic("musicpanic");
+                  if(BASE.isInferno())
+                  {
+                     SOUNDS.PlayMusic("musicipanic");
+                  }
+                  else
+                  {
+                     SOUNDS.PlayMusic("musicpanic");
+                  }
                   --_attPrep;
                }
             }
@@ -117,7 +124,14 @@ package
          }
          UI2.Hide("scareAway");
          UI2.Hide("warning");
-         SOUNDS.PlayMusic("musicbuild");
+         if(BASE.isInferno())
+         {
+            SOUNDS.PlayMusic("musicibuild");
+         }
+         else
+         {
+            SOUNDS.PlayMusic("musicbuild");
+         }
          for each(_loc2_ in _currentAttackers)
          {
             _loc3_ = 0;

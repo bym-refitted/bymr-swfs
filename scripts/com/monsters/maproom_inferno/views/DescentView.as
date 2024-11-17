@@ -30,6 +30,8 @@ package com.monsters.maproom_inferno.views
       
       public var players:DescentLayer;
       
+      public var shroud:MovieClip;
+      
       private var dragPoint:Point;
       
       private var bounds:Rectangle;
@@ -72,6 +74,11 @@ package com.monsters.maproom_inferno.views
             this.shell.parent.removeChild(this.shell);
          }
          this.shell = null;
+         if(Boolean(this.shroud) && Boolean(this.shroud.parent))
+         {
+            this.shroud.parent.removeChild(this.shroud);
+         }
+         this.shroud = null;
          if(Boolean(this.map_mc) && Boolean(this.map_mc.parent))
          {
             this.map_mc.parent.removeChild(this.map_mc);
@@ -115,7 +122,7 @@ package com.monsters.maproom_inferno.views
          this.hardBounds = new Rectangle(mask_mc.x,mask_mc.y,-_MAPSIZE.width + mask_mc.width + mask_mc.x,-_MAPSIZE.height + mask_mc.height + mask_mc.y);
          this.shell = new Sprite();
          addChild(this.shell);
-         this.map_mc = new map_bg();
+         this.map_mc = new map_descent_bg();
          i = 1;
          while(i < this.map_mc.numChildren)
          {
@@ -132,6 +139,12 @@ package com.monsters.maproom_inferno.views
          this.players.addEventListener("down",this.onBaseDown,false,0,true);
          this.players.addEventListener(Event.COMPLETE,this.onPlayersData,false,0,true);
          this.shell.addChild(this.players);
+         this.shroud = new MapViewDescent_Fog_Shroud();
+         this.shroud.mouseEnabled = false;
+         this.shroud.mouseChildren = false;
+         this.shroud.x = -50;
+         this.shroud.x = -225;
+         this.shell.addChild(this.shroud);
          this.map.addEventListener(MouseEvent.MOUSE_DOWN,this.shellDown);
          this.scrollTo(0.5,0.5);
          this.miniMap = MiniMap.getInstance();
@@ -147,9 +160,9 @@ package com.monsters.maproom_inferno.views
       
       public function onAdd() : void
       {
-         if(true)
+         if(this.players.targetBase)
          {
-            this.scrollToBase(this.players.basesWM[0]);
+            this.scrollToBase(this.players.targetBase);
          }
          else
          {
@@ -164,6 +177,10 @@ package com.monsters.maproom_inferno.views
             if(TUTORIAL._stage < 130)
             {
                this.scrollToBase(this.players.basesWM[0]);
+            }
+            else if(this.players.targetBase)
+            {
+               this.scrollToBase(this.players.targetBase);
             }
             else
             {

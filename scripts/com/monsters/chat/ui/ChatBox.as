@@ -634,7 +634,7 @@ package com.monsters.chat.ui
       public function Skin() : void
       {
          var _loc1_:int = 1;
-         if(GLOBAL.InfernoMode)
+         if(GLOBAL.InfernoMode())
          {
             _loc1_ = 2;
          }

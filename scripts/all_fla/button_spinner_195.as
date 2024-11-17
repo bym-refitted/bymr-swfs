@@ -3,7 +3,7 @@ package all_fla
    import flash.display.MovieClip;
    import flash.events.Event;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol216")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol224")]
    public dynamic class button_spinner_195 extends MovieClip
    {
       public function button_spinner_195()

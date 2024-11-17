@@ -19,7 +19,7 @@ package
             {
                if(GLOBAL._mode == "wmattack")
                {
-                  this.tMessage.htmlText = KEYS.Get("newmap_des_wm1");
+                  this.tMessage.htmlText = KEYS.Get("newmap_des_wm2");
                }
                else
                {
@@ -28,7 +28,21 @@ package
             }
             else if(GLOBAL._mode == "wmattack")
             {
-               this.tMessage.htmlText = KEYS.Get("newmap_des_wm2");
+               if(BASE.isInferno())
+               {
+                  if(MAPROOM_DESCENT.InDescent)
+                  {
+                     this.tMessage.htmlText = KEYS.Get("descent_newmap_des_wm2");
+                  }
+                  else
+                  {
+                     this.tMessage.htmlText = KEYS.Get("inf_newmap_des_wm2");
+                  }
+               }
+               else
+               {
+                  this.tMessage.htmlText = KEYS.Get("newmap_des_wm2");
+               }
             }
             else
             {
@@ -55,7 +69,21 @@ package
             }
             else if(GLOBAL._mode == "wmattack")
             {
-               this.tMessage.htmlText = KEYS.Get("popup_attackended_failedWMTH");
+               if(BASE.isInferno())
+               {
+                  if(MAPROOM_DESCENT.InDescent)
+                  {
+                     this.tMessage.htmlText = KEYS.Get("descent_popup_attackended_failedWMTH");
+                  }
+                  else
+                  {
+                     this.tMessage.htmlText = KEYS.Get("inf_popup_attackended_failedWMTH");
+                  }
+               }
+               else
+               {
+                  this.tMessage.htmlText = KEYS.Get("popup_attackended_failedWMTH");
+               }
             }
             else
             {
@@ -64,7 +92,7 @@ package
          }
          this.tProcessing.htmlText = KEYS.Get("please_wait");
          this.bAction.Enabled = false;
-         if(!GLOBAL._advancedMap)
+         if(!GLOBAL._advancedMap || BASE.isInferno())
          {
             this.bAction.Setup(KEYS.Get("btn_returnhome"));
          }
@@ -99,7 +127,7 @@ package
          }
          else if(GLOBAL._loadmode == GLOBAL._mode)
          {
-            BASE.LoadBase(null,null,0,"build");
+            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
          }
          else if(MAPROOM_DESCENT._inDescent)
          {

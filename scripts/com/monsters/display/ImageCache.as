@@ -128,6 +128,11 @@ package com.monsters.display
          }
       }
       
+      public static function ClearCache() : void
+      {
+         getInstance().cache = {};
+      }
+      
       public static function GetImageWithCallBack(param1:String, param2:Function = null, param3:Boolean = true, param4:int = 4, param5:String = "", param6:Array = null) : void
       {
          var _loc9_:Loadable = null;

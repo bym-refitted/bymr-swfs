@@ -39,16 +39,7 @@ package com.monsters.missions
          this._mcImage = this.mcImage;
          this.x = GLOBAL._SCREENCENTER.x;
          this.y = GLOBAL._SCREENCENTER.y;
-         description = "<b>" + KEYS.Get(this._missionObject.name) + "</b><br>";
-         if(this._missionObject.creatureid != undefined)
-         {
-            description = "<b>" + KEYS.Get(this._missionObject.name,{"v1":KEYS.Get(this._missionObject.keyvars.v1)}) + "</b><br>";
-            description += KEYS.Get(this._missionObject.description,{"v1":KEYS.Get(this._missionObject.keyvars.v1)});
-         }
-         else
-         {
-            description += KEYS.Get(this._missionObject.description);
-         }
+         description = "<b>" + KEYS.Get(this._missionObject.description,this._missionObject.keyvars) + "</b><br>";
          description = description.replace("#installsgenerated#",BASE._installsGenerated);
          description = description.replace("#mushroomspicked#",QUESTS._global.mushroomspicked);
          description = description.replace("#goldmushroomspicked#",QUESTS._global.goldmushroomspicked);
@@ -69,7 +60,7 @@ package com.monsters.missions
          }
          else
          {
-            hintStr = this._missionObject.creatureid != undefined ? KEYS.Get(this._missionObject.hint,{"v1":KEYS.Get(this._missionObject.keyvars.v1)}) : KEYS.Get(this._missionObject.hint);
+            hintStr = KEYS.Get(this._missionObject.hint,this._missionObject.keyvars);
             tHint.htmlText = "<b>" + KEYS.Get("q_ui_hint") + "</b> <i>" + hintStr + "</i>";
          }
          if(this._missionObject.questimage)
@@ -101,13 +92,21 @@ package com.monsters.missions
             qq = 0;
             while(qq < 5)
             {
-               this["tR" + (qq + 1) + "title"].visible = false;
-               this["tR" + (qq + 1)].visible = false;
+               if(GLOBAL._mode == GLOBAL._loadmode)
+               {
+                  this["R" + (qq + 1)].gotoAndStop(c + 1);
+               }
+               else
+               {
+                  this["R" + (qq + 1)].gotoAndStop(c + 7);
+               }
+               this["R" + (qq + 1)].tTitle.htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
+               this["R" + (qq + 1)].tValue.htmlText = "<b>" + GLOBAL.FormatNumber(this._missionObject.reward[c]) + "</b>";
+               this["R" + (qq + 1)].visible = false;
                qq++;
             }
-            this.resBG.visible = false;
             this._monsterRewardMC = new MapRoomPopupInfoMonster();
-            this._monsterRewardMC.Setup(resBG.x,resBG.y,this._missionObject.reward_creatureid,this._missionObject.monster_reward);
+            this._monsterRewardMC.Setup(R1.x,R1.y,this._missionObject.reward_creatureid,this._missionObject.monster_reward);
             this.addChild(this._monsterRewardMC);
          }
          else
@@ -115,8 +114,17 @@ package com.monsters.missions
             c = 0;
             while(c < 5)
             {
-               this["tR" + (c + 1) + "title"].htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
-               this["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(this._missionObject.reward[c]) + "</b>";
+               if(GLOBAL._mode == GLOBAL._loadmode)
+               {
+                  this["R" + (c + 1)].gotoAndStop(c + 1);
+               }
+               else
+               {
+                  this["R" + (c + 1)].gotoAndStop(c + 7);
+               }
+               this["R" + (c + 1)].tTitle.htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
+               this["R" + (c + 1)].tValue.htmlText = "<b>" + GLOBAL.FormatNumber(this._missionObject.reward[c]) + "</b>";
+               this["R" + (c + 1)].visible = true;
                c++;
             }
          }

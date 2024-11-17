@@ -95,7 +95,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL._mode == "build" && BASE._yardType == BASE.MAIN_YARD)
          {
             Brag = function(param1:MouseEvent):*
             {
@@ -120,7 +120,7 @@ package
       
       override public function Upgrade() : *
       {
-         if(CREATURELOCKER._unlocking)
+         if(CREATURELOCKER._unlocking != null)
          {
             GLOBAL.Message(KEYS.Get("cloc_err_cantupgrade",{"v1":KEYS.Get(CREATURELOCKER._creatures[CREATURELOCKER._unlocking].name)}));
             return false;
@@ -130,7 +130,7 @@ package
       
       override public function Recycle() : *
       {
-         if(CREATURELOCKER._unlocking)
+         if(CREATURELOCKER._unlocking != null)
          {
             GLOBAL.Message(KEYS.Get("cloc_err_cantrecycle",{"v1":CREATURELOCKER._creatures[CREATURELOCKER._unlocking].name}),KEYS.Get("msg_recyclebuilding_btn"),this.RecycleB);
          }

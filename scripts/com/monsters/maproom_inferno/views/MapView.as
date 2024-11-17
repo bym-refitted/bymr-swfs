@@ -101,11 +101,13 @@ package com.monsters.maproom_inferno.views
          var imageLoaded:Function = null;
          imageLoaded = function(param1:String, param2:BitmapData):*
          {
+            var bmp:Bitmap = null;
             var key:String = param1;
             var bmd:BitmapData = param2;
             try
             {
-               map_mc.addChild(new Bitmap(bmd));
+               bmp = new Bitmap(bmd);
+               map_mc.addChild(bmp);
             }
             catch(e:Error)
             {
@@ -116,7 +118,8 @@ package com.monsters.maproom_inferno.views
          this.hardBounds = new Rectangle(mask_mc.x,mask_mc.y,-_MAPSIZE.width + mask_mc.width + mask_mc.x,-_MAPSIZE.height + mask_mc.height + mask_mc.y);
          this.shell = new Sprite();
          addChild(this.shell);
-         this.map_mc = new map_bg();
+         this.map_mc = new map_bg_inferno();
+         Obstruction.Clear();
          i = 1;
          while(i < this.map_mc.numChildren)
          {
@@ -130,6 +133,7 @@ package com.monsters.maproom_inferno.views
          this.shell.addChild(this.map);
          this.shell.mask = mask_mc;
          this.players.mapWidth = Math.abs(this.bounds.width + 260);
+         this.players.mapHeight = Math.abs(this.bounds.height + 200);
          this.players.addEventListener("down",this.onBaseDown,false,0,true);
          this.players.addEventListener(Event.COMPLETE,this.onPlayersData,false,0,true);
          this.shell.addChild(this.players);

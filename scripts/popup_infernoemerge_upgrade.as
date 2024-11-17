@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2031")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2058")]
    public dynamic class popup_infernoemerge_upgrade extends MovieClip
    {
       public var tBody:TextField;

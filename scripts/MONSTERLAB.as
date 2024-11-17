@@ -105,7 +105,7 @@ package
                "ability":"Extra Target(s)",
                "upgrade_description":"lab_finkdesc_u",
                "stream":["lab_finkstream","lab_finkstream_unlock","lab_finkstream_upgrade"],
-               "streampic":"lab_fink4.png",
+               "streampic":"lab_fink5.png",
                "costs":[[96000,108000],[128000,108000],[40 * 60 * 60,108000]],
                "effect":[1,2,3]
             },
@@ -116,7 +116,7 @@ package
                "ability":"Airburst Bonus",
                "upgrade_description":"lab_eyeradesc_u",
                "stream":["lab_eyerastream","lab_eyerastream_unlock","lab_eyerastream_upgrade"],
-               "streampic":"lab_eyera4.png",
+               "streampic":"lab_eyera5.png",
                "costs":[[3560000,172800],[4120000,194400],[5120000,216000]],
                "effect":[0.2,0.3,0.4]
             },
@@ -138,7 +138,7 @@ package
                "ability":"Venom Damage",
                "upgrade_description":"lab_fangdesc_u",
                "stream":["lab_fangstream","lab_fangstream_unlock","lab_fangstream_upgrade"],
-               "streampic":"lab_fang4.png",
+               "streampic":"lab_fang5.png",
                "costs":[[2000000,129600],[50 * 60 * 1000,129600],[4500000,129600]],
                "effect":[0.1,0.2,0.3]
             },
@@ -171,7 +171,7 @@ package
                "ability":"Rocket Range",
                "upgrade_description":"lab_davedesc_u",
                "stream":["lab_davestream","lab_davestream_unlock","lab_davestream_upgrade"],
-               "strampic":"lab_dave.png",
+               "streampic":"lab_dave.png",
                "costs":[[250 * 60 * 1000,518400],[22500000,518400],[33750000,518400]],
                "effect":[140,3 * 60,220]
             },

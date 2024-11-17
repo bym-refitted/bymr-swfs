@@ -114,6 +114,7 @@ package com.monsters.maproom.views
          this.shell = new Sprite();
          addChild(this.shell);
          this.map_mc = new map_bg_inferno();
+         Obstruction.Clear();
          i = 1;
          while(i < this.map_mc.numChildren)
          {

@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1311")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1316")]
    public dynamic class DROPZONE_CLIP extends MovieClip
    {
       public var ring1:MovieClip;

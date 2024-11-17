@@ -410,7 +410,6 @@ package
       
       public function UpdateBuffs() : void
       {
-         var _loc1_:* = 0;
          if(this._enraged > 0)
          {
             if(this._enraged > 0)
@@ -427,66 +426,6 @@ package
                   this._glow = new GlowFilter(13582340,1,3,3,5,1);
                }
                filters = [this._glow];
-            }
-         }
-         else
-         {
-            _loc1_ = 0;
-            if(this._friendly)
-            {
-               if(Boolean(GLOBAL._monsterOverdrive) && GLOBAL._monsterOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _loc1_ |= 13421568;
-               }
-               if(Boolean(GLOBAL._monsterDefenseOverdrive) && GLOBAL._monsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  this._damageMult = 0.7;
-                  _loc1_ |= 255;
-               }
-               if(Boolean(GLOBAL._monsterSpeedOverdrive) && GLOBAL._monsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  this._speedMult = 1.5;
-                  _loc1_ |= 16711680;
-               }
-            }
-            else
-            {
-               if(Boolean(GLOBAL._attackerMonsterOverdrive) && GLOBAL._attackerMonsterOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  _loc1_ |= 13421568;
-               }
-               if(Boolean(GLOBAL._attackerMonsterDefenseOverdrive) && GLOBAL._attackerMonsterDefenseOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  this._damageMult = 0.7;
-                  _loc1_ |= 255;
-               }
-               if(Boolean(GLOBAL._attackerMonsterSpeedOverdrive) && GLOBAL._attackerMonsterSpeedOverdrive.Get() >= GLOBAL.Timestamp())
-               {
-                  this._speedMult = 1.5;
-                  _loc1_ |= 16711680;
-               }
-            }
-            if(_loc1_ != 0)
-            {
-               if(this._glow)
-               {
-                  this._glow.color = _loc1_;
-                  this._glow.strength = 6;
-                  this._glow.blurX = 7;
-                  this._glow.blurY = 7;
-               }
-               else
-               {
-                  this._glow = new GlowFilter(_loc1_,1,7,7,6,1);
-               }
-               filters = [this._glow];
-            }
-            else
-            {
-               this._damageMult = 1;
-               this._speedMult = 1;
-               filters = [];
-               this._glow = null;
             }
          }
          this._secureSpeedMult = new SecNum(int(this._speedMult * 100));
@@ -539,10 +478,6 @@ package
          var _loc5_:* = undefined;
          var _loc6_:* = undefined;
          var _loc7_:* = undefined;
-         var _loc8_:Number = NaN;
-         var _loc9_:Number = NaN;
-         var _loc10_:int = 0;
-         var _loc11_:int = 0;
          this._behaviour = "bunker";
          this._hasTarget = false;
          this._atTarget = false;
@@ -568,38 +503,10 @@ package
          }
          if(this._homeBunker)
          {
-            _loc8_ = this._tmpPoint.x - this._homeBunker._position.x;
-            _loc9_ = this._tmpPoint.y - this._homeBunker._position.y;
-            _loc10_ = int(this._homeBunker._footprint[0].width);
-            _loc11_ = int(this._homeBunker._footprint[0].height);
-            if(_loc9_ <= 0)
-            {
-               _loc9_ = _loc11_ / 4;
-               if(_loc8_ <= 0)
-               {
-                  _loc8_ = _loc10_ / -3;
-               }
-               else
-               {
-                  _loc8_ = _loc10_ / 2;
-               }
-            }
-            else
-            {
-               _loc9_ = _loc11_ / 2;
-               if(_loc8_ <= 0)
-               {
-                  _loc8_ = _loc10_ / -4;
-               }
-               else
-               {
-                  _loc8_ = _loc10_ / 2;
-               }
-            }
-            this._targetCenter = GRID.FromISO(this._homeBunker._position.x + _loc8_,this._homeBunker._position.y + _loc9_);
-            this._targetPosition = new Point(this._homeBunker._mc.x,this._homeBunker._mc.y);
+            this._targetCenter = GRID.FromISO(this._homeBunker._mc.x,this._homeBunker._mc.y);
+            this._targetPosition = GRID.FromISO(this._homeBunker._mc.x,this._homeBunker._mc.y);
             this._jumpingUp = false;
-            var _loc1_:Point = GRID.ToISO(this._targetCenter.x,this._targetCenter.y,0);
+            var _loc1_:Point = GRID.ToISO(this._targetCenter.x + 100,this._targetCenter.y + 60,0);
             PATHING.GetPath(this._tmpPoint,new Rectangle(_loc1_.x,_loc1_.y,10,10),this.SetWaypoints,true);
             return;
          }
@@ -787,11 +694,11 @@ package
       public function FindDefenseTargets() : void
       {
          var _loc3_:int = 0;
-         if((this._creatureID == "C12" || this._creatureID == "C5") && this.PoweredUp())
+         if(this._creatureID == "IC7" || this._creatureID == "IC5")
          {
             _loc3_ = 1;
          }
-         this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,100,_loc3_);
+         this._targetCreeps = MAP.CreepCellFind(this._tmpPoint,200,_loc3_);
          if(this._targetCreeps.length > 0)
          {
             this._targetCreeps.sortOn(["dist"],Array.NUMERIC);
@@ -1197,7 +1104,7 @@ package
             return true;
          }
          var _loc1_:Number = GLOBAL.QuickDistance(this._targetCreep._tmpPoint,this._tmpPoint);
-         if(_loc1_ > 110 && this._targetCreep._targetCreep != this)
+         if(_loc1_ > 4 * 60 && this._targetCreep._targetCreep != this)
          {
             return false;
          }
@@ -1219,7 +1126,7 @@ package
             return false;
          }
          var _loc1_:Number = GLOBAL.QuickDistance(this._targetBuilding._position,this._tmpPoint);
-         if(_loc1_ > 110)
+         if(_loc1_ > 4 * 60)
          {
             return false;
          }
@@ -1504,18 +1411,7 @@ package
                {
                   this._attacking = true;
                   FIREBALLS.Spawn2(new Point(this._tmpPoint.x,this._tmpPoint.y - this._altitude),this._targetCreep._tmpPoint,this._targetCreep,25,this._damage.Get() * _loc1_,50);
-                  if(int(this._creatureID.substr(1)) < 5)
-                  {
-                     SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
-                  }
-                  else if(int(this._creatureID.substr(1)) < 10)
-                  {
-                     SOUNDS.Play("hit" + int(3 + Math.random() * 2),0.1 + Math.random() * 0.1);
-                  }
-                  else
-                  {
-                     SOUNDS.Play("hit" + int(4 + Math.random() * 1),0.1 + Math.random() * 0.1);
-                  }
+                  SOUNDS.Play("ihit" + int(1 + Math.random() * 7),0.1 + Math.random() * 0.1);
                }
                else
                {
@@ -1686,18 +1582,7 @@ package
                {
                   ++this._hits;
                }
-               if(int(this._creatureID.substr(1)) < 5)
-               {
-                  SOUNDS.Play("hit" + int(1 + Math.random() * 3),0.1 + Math.random() * 0.1);
-               }
-               else if(int(this._creatureID.substr(1)) < 10)
-               {
-                  SOUNDS.Play("hit" + int(3 + Math.random() * 2),0.1 + Math.random() * 0.1);
-               }
-               else
-               {
-                  SOUNDS.Play("hit" + int(4 + Math.random() * 1),0.1 + Math.random() * 0.1);
-               }
+               SOUNDS.Play("ihit" + int(1 + Math.random() * 7),0.1 + Math.random() * 0.1);
             }
             else
             {
@@ -1909,8 +1794,6 @@ package
                {
                }
             }
-            this._homeBunker = null;
-            this._behaviour = "pen";
          }
          return false;
       }
@@ -1952,7 +1835,7 @@ package
                this._graphicMC.y = -this._altitude - 36 + _loc2_;
             }
          }
-         if(this._homeBunker && (this._behaviour != "defend" && this._behaviour != "bunker" && this._behaviour != "juice"))
+         if(this._homeBunker && (this._behaviour != "defend" && this._behaviour != "bunker" && this._behaviour != "juice" && this._behaviour != "pen"))
          {
             this._behaviour = "defend";
          }
@@ -2095,7 +1978,23 @@ package
                this._speed *= 2;
             }
          }
-         if(this._waypoints.length > 0)
+         if(this._creatureID == "IC7" && this._behaviour != "juice" && this._behaviour != "housing" && this._behaviour != "bunker" && this._behaviour != "pen" && !this._atTarget && (this._targetCreep && this.CanShootCreep() || this.CanShootBuilding()))
+         {
+            this._atTarget = true;
+            if(this._targetCreep)
+            {
+               this._xd = this._targetCreep._tmpPoint.x - this._tmpPoint.x;
+               this._yd = this._targetCreep._tmpPoint.y - this._tmpPoint.y;
+               this._targetPosition = this._targetCreep._tmpPoint;
+            }
+            else
+            {
+               this._xd = this._targetBuilding._position.x - this._tmpPoint.x;
+               this._yd = this._targetBuilding._position.y - this._tmpPoint.y;
+               this._targetPosition = this._targetBuilding._position;
+            }
+         }
+         else if(this._waypoints.length > 0)
          {
             if(GLOBAL.QuickDistance(this._targetPosition,this._tmpPoint) <= 10)
             {

@@ -46,7 +46,7 @@ package
          var _loc9_:int = 0;
          var _loc1_:int = int(this._targetArray[_lvl.Get() - 1]);
          ++_frameNumber;
-         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() == 0)
+         if(_hp.Get() > 0 && _countdownBuild.Get() + _countdownUpgrade.Get() + _countdownFortify.Get() == 0)
          {
             if(this._fireStage == 1)
             {

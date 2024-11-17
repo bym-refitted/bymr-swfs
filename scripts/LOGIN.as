@@ -8,6 +8,7 @@ package
    import flash.events.*;
    import flash.external.ExternalInterface;
    import flash.net.*;
+   import flash.system.Capabilities;
    
    public class LOGIN
    {
@@ -32,6 +33,8 @@ package
       public static var _digits:Array;
       
       public static var _sumdigit:int;
+      
+      public static var _inferno:int = 0;
       
       public function LOGIN()
       {
@@ -104,6 +107,13 @@ package
             _playerPic = param1.pic_square;
             _timePlayed = param1.timeplayed;
             _email = param1.email;
+            if(param1.stats)
+            {
+               if(param1.stats.inferno != undefined)
+               {
+                  _inferno = param1.stats.inferno;
+               }
+            }
             GLOBAL._friendCount = param1.friendcount;
             GLOBAL._sessionCount = param1.sessioncount;
             GLOBAL._addTime = param1.addtime;
@@ -176,14 +186,6 @@ package
       {
          var _loc1_:int = 0;
          GLOBAL.Setup();
-         if(GLOBAL._localMode == 5)
-         {
-            BASE._yardType = BASE.INFERNO_YARD;
-         }
-         else
-         {
-            BASE._yardType = BASE.MAIN_YARD;
-         }
          if(GLOBAL._openBase && GLOBAL._openBase.url && (Boolean(GLOBAL._openBase.userid) || Boolean(GLOBAL._openBase.baseid)) && GLOBAL._openBase.userid != LOGIN._playerID)
          {
             BASE._yardType = BASE.MAIN_YARD;
@@ -206,9 +208,30 @@ package
             }
             BASE.Load(GLOBAL._openBase.url,GLOBAL._openBase.userid,GLOBAL._openBase.baseid);
          }
+         else if(_inferno != 0)
+         {
+            GLOBAL._advancedMap = 0;
+            BASE._yardType = BASE.INFERNO_YARD;
+            BASE.LoadBase(GLOBAL._infBaseURL,0,0,"ibuild",false,BASE.INFERNO_YARD);
+         }
          else
          {
+            BASE._yardType = BASE.MAIN_YARD;
             BASE.Load();
+         }
+      }
+      
+      private static function logFlashCapabilities() : void
+      {
+         var _loc1_:Object = null;
+         if(ExternalInterface.available)
+         {
+            _loc1_ = {
+               "flash_version":Capabilities.version,
+               "screen_resolution":Capabilities.screenResolutionX + "x" + Capabilities.screenResolutionY,
+               "screen_dpi":Capabilities.screenDPI
+            };
+            ExternalInterface.call("logFlashCapabilities",_loc1_);
          }
       }
       
@@ -235,7 +258,7 @@ package
       
       public static function getSalt() : *
       {
-         return decodeSalt("TU1S0wu1T2S045ttu1WQB5VQ1B10Qsg1I");
+         return decodeSalt("YU87XV0U16511302843X74619X747UV4UZ34558V");
       }
       
       public static function decodeSalt(param1:String) : String
@@ -423,7 +446,7 @@ package
                   _loc2_ += "4";
                   break;
                case "6":
-                  _loc2_ += "5";
+                  _loc2_ += "3";
                   break;
                case "7":
                   _loc2_ += "2";

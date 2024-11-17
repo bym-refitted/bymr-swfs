@@ -164,7 +164,14 @@ package
                      }
                      if(_props.id == 8)
                      {
-                        _loc1_.push(["btn_openlocker",30,true]);
+                        if(BASE.isInferno())
+                        {
+                           _loc1_.push(["btn_openstrongbox",30,true]);
+                        }
+                        else
+                        {
+                           _loc1_.push(["btn_openlocker",30,true]);
+                        }
                         if(CREATURELOCKER._unlocking != null && !_loc10_)
                         {
                            _loc1_.push(["btn_speedup",30,true]);
@@ -198,7 +205,7 @@ package
                         }
                         else
                         {
-                           _loc1_.push(["btn_viewhatchery",30,true]);
+                           _loc1_.push([BASE.isInferno() ? "btn_viewincubator" : "btn_viewhatchery",30,true]);
                         }
                         if(!GLOBAL._hatcheryOverdrive && !_loc10_ && TUTORIAL._stage > 200)
                         {
@@ -207,7 +214,14 @@ package
                      }
                      else if(HOUSING.isHousingBuilding(_props.id))
                      {
-                        _loc1_.push(["btn_viewhousing",30,true]);
+                        if(BASE.isInferno())
+                        {
+                           _loc1_.push(["btn_viewcompound",30,true]);
+                        }
+                        else
+                        {
+                           _loc1_.push(["btn_viewhousing",30,true]);
+                        }
                      }
                      else if(_props.id == 19)
                      {
@@ -502,7 +516,7 @@ package
             }
             SALESPECIALSPOPUP.Check();
          }
-         if(param1.target.labelKey == "btn_openlocker")
+         if(param1.target.labelKey == "btn_openlocker" || param1.target.labelKey == "btn_openstrongbox")
          {
             CREATURELOCKER.Show();
          }
@@ -515,11 +529,11 @@ package
             _loc3_ = GLOBAL._bLab as MONSTERLAB;
             _loc3_.Show();
          }
-         if(param1.target.labelKey == "btn_viewhatchery")
+         if(param1.target.labelKey == "btn_viewhatchery" || param1.target.labelKey == "btn_viewincubator")
          {
             HATCHERY.Show(_building as BUILDING13);
          }
-         if(param1.target.labelKey == "btn_viewhousing" || param1.target.labelKey == "btn_juicemonsters")
+         if(param1.target.labelKey == "btn_viewhousing" || param1.target.labelKey == "btn_viewcompound" || param1.target.labelKey == "btn_juicemonsters")
          {
             HOUSING.Show();
          }
@@ -605,7 +619,14 @@ package
          }
          if(param1.target.labelKey == "btn_upgradeall")
          {
-            STORE.ShowB(1,0,["BLK2","BLK3","BLK4","BLK5"]);
+            if(BASE.isInferno())
+            {
+               STORE.ShowB(1,0,["BLK2I","BLK3I"]);
+            }
+            else
+            {
+               STORE.ShowB(1,0,["BLK2","BLK3","BLK4","BLK5"]);
+            }
          }
          if(param1.target.labelKey == "btn_more")
          {
@@ -628,7 +649,14 @@ package
             }
             else if(_props.id == 13 || _props.id == 16)
             {
-               STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+               if(!BASE.isInferno())
+               {
+                  STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+               }
+               else
+               {
+                  STORE.ShowB(3,1,["HODI","HOD2I","HOD3I"]);
+               }
             }
             else if(_props.id == 26)
             {

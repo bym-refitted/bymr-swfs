@@ -31,7 +31,7 @@ package
       {
          var _loc1_:Point = null;
          var _loc2_:BFOUNDATION = null;
-         if(!BUILDING27._exists)
+         if(!BUILDING27._exists && !BASE.isInferno())
          {
             _loc1_ = GRID.ToISO(-70,-800,0);
             _loc2_ = BASE.addBuildingC(27);
@@ -82,7 +82,14 @@ package
          _loc1_ = WMATTACK.SpawnA([["C2","bounce",2,190,0,0,1]]);
          _loc2_ = _loc1_[0][0];
          _loc3_ = Point.distance(new Point(GLOBAL._bTower.x,GLOBAL._bTower.y),new Point(_loc2_.x,_loc2_.y));
-         SOUNDS.PlayMusic("musicpanic");
+         if(BASE.isInferno())
+         {
+            SOUNDS.PlayMusic("musicipanic");
+         }
+         else
+         {
+            SOUNDS.PlayMusic("musicpanic");
+         }
          WMATTACK.AttackB();
          WMATTACK.AttackC();
          MAP.FocusTo(GLOBAL._bTower.x,GLOBAL._bTower.y,int(_loc3_ / 100),0,0,false);

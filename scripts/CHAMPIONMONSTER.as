@@ -203,6 +203,7 @@ package
          this._id = GLOBAL.NextCreepID();
          this._friendly = param5;
          this._level = new SecNum(param7);
+         this._middle = param7 * 5;
          this._creatureID = "G" + param10;
          this._feeds = new SecNum(param8);
          if(param9 > 0)
@@ -388,6 +389,7 @@ package
          {
             this.ModeJuice();
          }
+         this.ApplyInfernoVenom();
          this.Render();
          mouseEnabled = false;
          mouseChildren = false;
@@ -1111,7 +1113,7 @@ package
                }
                else
                {
-                  if(this._targetBuilding._fortification.Get() > 0)
+                  if(Boolean(this._targetBuilding) && this._targetBuilding._fortification.Get() > 0)
                   {
                      ATTACK.Damage(this._tmpPoint.x,this._tmpPoint.y - 5,this._damage.Get() * _loc1_ * (100 - (this._targetBuilding._fortification.Get() * 10 + 10)) / 100,this._mc.visible);
                   }
@@ -1854,6 +1856,22 @@ package
          else
          {
             this._buff = CHAMPIONCAGE.GetGuardianProperty(this._creatureID,this._level.Get(),"buffs");
+         }
+      }
+      
+      private function ApplyInfernoVenom() : void
+      {
+         var _loc1_:int = 0;
+         var _loc2_:Array = null;
+         if(BASE.isInferno() && (GLOBAL._mode == "attack" || GLOBAL._mode == "wmattack"))
+         {
+            _loc2_ = [0,0,0,0,0,0,0,0,0,5 * 60,270,4 * 60,210,2 * 60,60,10,5,1];
+            if(MAPROOM_DESCENT._descentLvl >= _loc2_.length)
+            {
+               _loc1_ = this._health.Get() / 40;
+            }
+            _loc1_ = Math.max(this._health.Get() / (40 * _loc2_[MAPROOM_DESCENT._descentLvl - 1]),1);
+            this._venom.Add(_loc1_);
          }
       }
       

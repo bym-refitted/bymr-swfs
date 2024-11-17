@@ -2,6 +2,7 @@ package com.monsters.maproom_inferno
 {
    import com.monsters.maproom_inferno.model.BaseObject;
    import com.monsters.maproom_inferno.views.DescentBasePopup;
+   import com.monsters.maproom_inferno.views.DescentView;
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.display.Loader;
@@ -56,13 +57,15 @@ package com.monsters.maproom_inferno
       
       public var info_mc:DescentBaseInfo;
       
+      public const popupCoordMap:Array = [[15,-230],[-145,-215],[15,-225],[15,-225],[40,-215],[-170,-210],[-170,-215],[40,-200],[-170,-225],[30,-230],[50,-240],[-170,-220],[-60,-280]];
+      
       public function DescentMonsterBase()
       {
          super();
          this.popUp = new DescentBasePopup();
-         this.popUp.title_txt.htmlText = "<b>" + KEYS.Get("map_options") + "</b>";
-         this.popUp.x = 21;
-         this.popUp.y = 40;
+         this.popUp.tDepth.htmlText = "<b>" + KEYS.Get("descent_depthBar") + "</b>";
+         this.popUp.x = 20;
+         this.popUp.y = -250;
          this.addChild(this.popUp);
          this.info_mc = new DescentBaseInfo();
          this.info_mc.x = 22;
@@ -72,7 +75,8 @@ package com.monsters.maproom_inferno
       
       public function Setup(param1:BaseObject) : void
       {
-         this.data = param1;
+         var dataObj:BaseObject = param1;
+         this.data = dataObj;
          this.colorCode = PushPin.RED;
          this.loader = new Loader();
          removeChild(this.popUp);
@@ -93,14 +97,38 @@ package com.monsters.maproom_inferno
          this.helpBtn.SetupKey("map_view_btn");
          removeChild(mediumhit);
          this.setState("off");
-         addEventListener(MouseEvent.MOUSE_OVER,this.thisOver);
-         addEventListener(MouseEvent.MOUSE_DOWN,this.thisDown);
+         try
+         {
+            addEventListener(MouseEvent.MOUSE_OVER,this.thisOver);
+            if(this.data.level.Get() == DescentView.getInstance().players.targetLvl)
+            {
+               addEventListener(MouseEvent.MOUSE_DOWN,this.thisDown);
+            }
+         }
+         catch(e:Error)
+         {
+         }
          this.mouseTimer = new Timer(400);
          this.mouseTimer.addEventListener(TimerEvent.TIMER,this.onTimer);
          this.mouseTimer.start();
          new PlayerHandler().configure(this);
          stop();
          this.SetLevelArt();
+      }
+      
+      public function InitTargetListener() : void
+      {
+         try
+         {
+            addEventListener(MouseEvent.MOUSE_OVER,this.thisOver);
+            if(this.data.level.Get() == DescentView.getInstance().players.targetLvl + 1)
+            {
+               addEventListener(MouseEvent.MOUSE_DOWN,this.thisDown);
+            }
+         }
+         catch(e:Error)
+         {
+         }
       }
       
       public function SetLevelArt() : void
@@ -160,6 +188,7 @@ package com.monsters.maproom_inferno
       
       public function setState(param1:String) : void
       {
+         var _loc2_:int = 0;
          if(param1 == "off")
          {
             if(this.contains(this.overState))
@@ -181,10 +210,20 @@ package com.monsters.maproom_inferno
             }
             this.currentHitArea = largehit;
             addChild(this.popUp);
-            this.popUp.Show();
+            addChild(this.offState);
+            _loc2_ = this.data.level.Get() - 1;
+            if(this.data)
+            {
+               this.popUp.Show(this.data.level.Get(),this.popupCoordMap[_loc2_][0],this.popupCoordMap[_loc2_][1]);
+            }
+            else
+            {
+               this.popUp.Show();
+            }
          }
          else if(param1 == "over")
          {
+            addChild(this.offState);
          }
          this._state = param1;
          dispatchEvent(new Event(param1));

@@ -77,7 +77,12 @@ package
       
       public function getButtonHeight() : int
       {
-         return this._bm.height;
+         var _loc1_:int = 0;
+         if(this._bm)
+         {
+            _loc1_ = this._bm.height;
+         }
+         return _loc1_;
       }
       
       public function set Enabled(param1:Boolean) : void
@@ -203,7 +208,7 @@ package
          tgtDiff = -1;
          this._tgtWidth = tx.width + 2 * this.margin;
          imgArray = _bgKeys;
-         if(GLOBAL.InfernoMode)
+         if(GLOBAL.InfernoMode())
          {
             imgArray = _bgKeysInferno;
          }

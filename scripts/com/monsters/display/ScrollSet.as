@@ -55,7 +55,7 @@ package com.monsters.display
          this._ScrollBarHeight = param5;
          this._MinScrollerHeight = param6;
          this._OffsetY = param4;
-         param3 = GLOBAL.InfernoMode ? 1 : 0;
+         param3 = GLOBAL.InfernoMode() ? 1 : 0;
          if(param3 < 0 || param3 >= NUM_COLORS)
          {
             return;
@@ -99,7 +99,7 @@ package com.monsters.display
             this.ResizeScrollBar();
          }
          this._ContainerHeight = this._Container.height;
-         var _loc1_:* = GLOBAL.InfernoMode ? 1 : 0;
+         var _loc1_:int = GLOBAL.InfernoMode() ? 1 : 0;
          if(_loc1_ < 0 || _loc1_ >= NUM_COLORS)
          {
             return;

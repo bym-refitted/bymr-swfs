@@ -11,7 +11,6 @@ package
    import com.monsters.display.ImageCache;
    import com.monsters.effects.fire.Fire;
    import com.monsters.effects.smoke.Smoke;
-   import com.monsters.inferno.InfernoMap;
    import com.monsters.maproom_advanced.MapRoom;
    import com.monsters.pathing.PATHING;
    import com.monsters.ui.UI_BOTTOM;
@@ -307,7 +306,7 @@ package
       
       public static var _localMode:int = 0;
       
-      public static var _version:SecNum = new SecNum(122);
+      public static var _version:SecNum = new SecNum(123);
       
       public static var _aiDesignMode:Boolean = false;
       
@@ -6728,24 +6727,24 @@ package
             "imageData":{
                "baseurl":"buildings/iportal/",
                "1":{
-                  "top":["top.1.png",new Point(-85,-5)],
-                  "shadow":["shadow.1.jpg",new Point(-43,47)]
+                  "top":["top.1.v2.png",new Point(-85,-5)],
+                  "shadow":["shadow.1.v2.jpg",new Point(-43,47)]
                },
                "2":{
-                  "top":["top.2.png",new Point(-105,-29)],
-                  "shadow":["shadow.2.jpg",new Point(-87,52)]
+                  "top":["top.2.v2.png",new Point(-105,-29)],
+                  "shadow":["shadow.2.v2.jpg",new Point(-87,52)]
                },
                "3":{
-                  "top":["top.3.png",new Point(-136,-64)],
-                  "shadow":["shadow.3.jpg",new Point(-110,47)]
+                  "top":["top.3.v2.png",new Point(-136,-64)],
+                  "shadow":["shadow.3.v2.jpg",new Point(-110,47)]
                },
                "4":{
-                  "top":["top.4.png",new Point(-140,-114)],
-                  "shadow":["shadow.4.jpg",new Point(-140,11)]
+                  "top":["top.4.v2.png",new Point(-140,-114)],
+                  "shadow":["shadow.4.v2.jpg",new Point(-140,11)]
                },
                "5":{
-                  "top":["top.5.png",new Point(-160,-172)],
-                  "shadow":["shadow.5.jpg",new Point(-169,0)]
+                  "top":["top.5.v2.png",new Point(-160,-172)],
+                  "shadow":["shadow.5.v2.jpg",new Point(-169,0)]
                }
             },
             "quantity":[1,1,1,1,1],
@@ -12604,7 +12603,7 @@ package
                "re":[[14,1,1]]
             }],
             "imageData":{
-               "baseurl":"inferno/buildings/trojanhorse/",
+               "baseurl":"buildings/trojanhorse/",
                "1":{
                   "anim":["anim.1.png",new Rectangle(-92,-23,39,31),2],
                   "top":["top.1.png",new Point(-91,-65)],
@@ -12743,7 +12742,8 @@ package
          _savedAttackersDeltaResources = {
             "r1":new SecNum(0),
             "r2":new SecNum(0),
-            "r3":new SecNum(0)
+            "r3":new SecNum(0),
+            "r4":new SecNum(0)
          };
          _attackersDeltaResources = {"dirty":false};
          _attackerMonsterOverdrive = new SecNum(0);
@@ -12804,47 +12804,26 @@ package
                _myMapRoom = _bMap._lvl.Get();
             }
          }
-         switch(_mode)
+         switch(_loadmode)
          {
             case "iattack":
             case "iwmattack":
-               if(BASE.isInferno())
-               {
-                  SOUNDS.PlayMusic("musicattack");
-                  break;
-               }
-               SOUNDS.PlayMusic("musicattack");
+               SOUNDS.PlayMusic("musiciattack");
                break;
             case "ibuild":
             case "ihelp":
             case "iview":
-               if(BASE.isInferno())
-               {
-                  SOUNDS.PlayMusic("musicbuild");
-                  break;
-               }
-               SOUNDS.PlayMusic("musicbuild");
+               SOUNDS.PlayMusic("musicibuild");
                break;
             case "attack":
             case "wmattack":
-               if(BASE.isInferno())
-               {
-                  SOUNDS.PlayMusic("musicattack");
-                  break;
-               }
                SOUNDS.PlayMusic("musicattack");
                break;
             case "build":
             case "help":
             case "view":
             default:
-               if(BASE.isInferno())
-               {
-                  SOUNDS.PlayMusic("musicbuild");
-                  break;
-               }
                SOUNDS.PlayMusic("musicbuild");
-               break;
          }
          _degtorad = 0.0174532925;
          _radtodeg = 57.2957795;
@@ -12965,6 +12944,7 @@ package
          var tmpStored:int = 0;
          var tmpCountdown:int = 0;
          var whichmap:int = 0;
+         var isOutpost:int = 0;
          if(!_halt && !GLOBAL._catchup)
          {
             t += 1;
@@ -13093,20 +13073,14 @@ package
             whichmap = _showMapWaiting;
             _showMapWaiting = 0;
             PLEASEWAIT.Hide();
-            if(whichmap == 2)
-            {
-               InfernoMap.ShowDelayed();
-            }
-            else
-            {
-               MapRoom.ShowDelayed();
-            }
+            MapRoom.ShowDelayed();
          }
          if(BASE._needCurrentCell && GLOBAL._currentCell)
          {
             PLEASEWAIT.Hide();
             BASE._needCurrentCell = false;
-            BASE.LoadBase(null,null,GLOBAL._currentCell._baseID,"build");
+            isOutpost = GLOBAL._currentCell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+            BASE.LoadBase(null,null,GLOBAL._currentCell._baseID,"build",false,isOutpost);
          }
       }
       
@@ -13764,7 +13738,7 @@ package
          if(_attackersDeltaResources.dirty)
          {
             _loc1_ = 1;
-            while(_loc1_ < 4)
+            while(_loc1_ < 5)
             {
                if(_attackersDeltaResources["r" + _loc1_])
                {
@@ -13789,6 +13763,7 @@ package
             "r1":new SecNum(0),
             "r2":new SecNum(0),
             "r3":new SecNum(0),
+            "r4":new SecNum(0),
             "dirty":false
          };
       }
@@ -14048,7 +14023,7 @@ package
          }
          else
          {
-            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 118);
+            _SCREENHUD = new Point(_SCREEN.x,_SCREEN.y + _SCREEN.height - 208);
          }
          if(UI_BOTTOM && UI_BOTTOM._missions && !UI_BOTTOM._missions._open)
          {
@@ -14267,34 +14242,51 @@ package
          return _loc2_;
       }
       
-      public static function GetABTestHash(param1:String) : int
+      public static function GetABTestHash(param1:String, param2:int = 1) : int
       {
-         var _loc2_:String = LOGIN._playerID.toString();
-         var _loc3_:String = MD5.hash(param1 + _loc2_);
-         var _loc4_:String = _loc3_.substr(_loc3_.length - 1,1);
-         switch(_loc4_)
+         var _loc7_:String = null;
+         var _loc8_:int = 0;
+         var _loc3_:String = LOGIN._playerID.toString();
+         var _loc4_:String = MD5.hash(param1 + _loc3_);
+         var _loc5_:int = param2;
+         var _loc6_:int = 0;
+         while(_loc5_ > 0)
          {
-            case "a":
-               return 10;
-            case "b":
-               return 11;
-            case "c":
-               return 12;
-            case "d":
-               return 13;
-            case "e":
-               return 14;
-            case "f":
-               return 15;
-            default:
-               return int(_loc4_);
+            _loc7_ = _loc4_.substr(_loc4_.length - 1,1);
+            _loc8_ = 0;
+            _loc6_ *= 16;
+            switch(_loc7_)
+            {
+               case "a":
+                  _loc8_ = 10;
+               case "b":
+                  _loc8_ = 11;
+               case "c":
+                  _loc8_ = 12;
+               case "d":
+                  _loc8_ = 13;
+               case "e":
+                  _loc8_ = 14;
+               case "f":
+                  _loc8_ = 15;
+                  break;
+            }
+            _loc8_ = int(_loc7_);
+            _loc6_ += _loc8_;
+            _loc5_--;
          }
+         return _loc6_;
       }
       
-      public static function get InfernoMode() : Boolean
+      public static function InfernoMode(param1:String = null) : Boolean
       {
-         var _loc1_:Boolean = false;
-         switch(_loadmode)
+         var _loc2_:String = _loadmode;
+         if(param1)
+         {
+            _loc2_ = param1;
+         }
+         var _loc3_:Boolean = false;
+         switch(_loc2_)
          {
             case "ibuild":
             case "iattack":
@@ -14302,7 +14294,7 @@ package
             case "ihelp":
             case "iwmattack":
             case "iwmview":
-               _loc1_ = true;
+               _loc3_ = true;
                break;
             case "build":
             case "attack":
@@ -14311,9 +14303,9 @@ package
             case "wmattack":
             case "wmview":
             default:
-               _loc1_ = false;
+               _loc3_ = false;
          }
-         return _loc1_;
+         return _loc3_;
       }
    }
 }

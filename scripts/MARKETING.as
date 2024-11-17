@@ -144,7 +144,14 @@ package
                      pButton = KEYS.Get("mkting_fillapult_btn");
                      pAction = function fcatapult(param1:MouseEvent):*
                      {
-                        STORE.ShowB(2,0,["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43"]);
+                        if(!BASE.isInferno())
+                        {
+                           STORE.ShowB(2,0,["BR11","BR12","BR13","BR21","BR22","BR23","BR31","BR32","BR33","BR41","BR42","BR43"]);
+                        }
+                        else
+                        {
+                           STORE.ShowB(2,0,["BR11I","BR12I","BR13I","BR21I","BR22I","BR23I","BR31I","BR32I","BR33I","BR41I","BR42I","BR43I"]);
+                        }
                         POPUPS.Next();
                      };
                      found = true;
@@ -197,7 +204,14 @@ package
                      pButton = KEYS.Get("mkting_overdrive_btn");
                      pAction = function fcatapult(param1:MouseEvent):*
                      {
-                        STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+                        if(!BASE.isInferno())
+                        {
+                           STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+                        }
+                        else
+                        {
+                           STORE.ShowB(3,1,["HODI","HOD2I","HOD3I"]);
+                        }
                         POPUPS.Next();
                      };
                      found = true;
@@ -252,7 +266,7 @@ package
                   {
                      GLOBAL.StatSet("CM9",GLOBAL.Timestamp());
                      pTitle = KEYS.Get("mkting_silo_title");
-                     pBody = KEYS.Get("mkting_silo_body");
+                     pBody = BASE.isInferno() ? KEYS.Get("inf_mkting_silo_body") : KEYS.Get("mkting_silo_body");
                      pImage = "building-storage.png";
                      pButton = KEYS.Get("mkting_silo_btn");
                      pAction = function fcatapult(param1:MouseEvent):*

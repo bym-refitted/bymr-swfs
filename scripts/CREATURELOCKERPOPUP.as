@@ -61,12 +61,12 @@ package
             CREATURELOCKER._page = CREATURELOCKER._creatures[CREATURELOCKER._popupCreatureID].page;
             this.ShowB(CREATURELOCKER._popupCreatureID);
          }
-         title_txt.htmlText = KEYS.Get("cloc_title");
+         title_txt.htmlText = KEYS.Get(GLOBAL._bLocker._buildingProps.name);
          prod_label_txt.htmlText = KEYS.Get("cloc_prodstats_label");
          speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
          damage_txt.htmlText = "<b>" + KEYS.Get("mon_att_damage") + "</b>";
-         goo_txt.htmlText = "<b>" + KEYS.Get("mon_att_cost") + "</b>";
+         goo_txt.htmlText = "<b>" + KEYS.Get("moni_att_cost") + "</b>";
          housing_txt.htmlText = "<b>" + KEYS.Get("mon_att_housing") + "</b>";
          time_txt.htmlText = "<b>" + KEYS.Get("mon_att_time") + "</b>";
       }
@@ -248,7 +248,7 @@ package
          }
          else if(Boolean(CREATURELOCKER._lockerData[this._creatureID]) && CREATURELOCKER._lockerData[this._creatureID].t == 2)
          {
-            str = KEYS.Get("mon_infounlocked");
+            str = KEYS.Get(BASE.isInferno() ? "inf_mon_infounlocked" : "mon_infounlocked");
          }
          else
          {
@@ -431,6 +431,7 @@ package
          var img:String = null;
          var mc:popup_monster = null;
          var _body:String = null;
+         var image:String = null;
          var e:MouseEvent = param1;
          if(BASE._credits.Get() < this._instantUnlockCost)
          {
@@ -439,7 +440,10 @@ package
          }
          if(GLOBAL._bLocker._lvl.Get() < CREATURELOCKER._creatures[this._creatureID].level)
          {
-            GLOBAL.Message(KEYS.Get("mon_upgradelocker",{"v1":CREATURELOCKER._creatures[this._creatureID].level}));
+            GLOBAL.Message(KEYS.Get("mon_upgradelocker",{
+               "v1":KEYS.Get(GLOBAL._bLocker._buildingProps.name),
+               "v2":CREATURELOCKER._creatures[this._creatureID].level
+            }));
             return;
          }
          if(CREATURELOCKER._unlocking && CREATURELOCKER._lockerData[CREATURELOCKER._unlocking] && CREATURELOCKER._lockerData[CREATURELOCKER._unlocking] == this._creatureID)
@@ -448,7 +452,7 @@ package
             delete CREATURELOCKER._lockerData[CREATURELOCKER._unlocking].e;
          }
          creature = CREATURELOCKER._creatures[this._creatureID];
-         if(!BASE.isInferno)
+         if(!BASE.isInferno())
          {
             img = "quests/monster" + this._creatureID.substr(1) + ".v2.png";
          }
@@ -463,9 +467,13 @@ package
          CREATURELOCKER._lockerData[this._creatureID] = {"t":2};
          ACADEMY._upgrades[this._creatureID] = {"level":1};
          GLOBAL._playerCreatureUpgrades[this._creatureID] = {"level":1};
-         if(!BASE.isInferno)
+         if(!BASE.isInferno())
          {
             LOGGER.Stat([46,int(this._creatureID.substr(1))]);
+         }
+         else
+         {
+            LOGGER.Stat([46,int(this._creatureID.substr(2))]);
          }
          if(GLOBAL._mode == "build")
          {
@@ -490,8 +498,12 @@ package
             mc.bSpeedup.addEventListener(MouseEvent.CLICK,StreamPost(KEYS.Get(creature.stream[0]),_body,img));
             mc.bSpeedup.Highlight = true;
             mc.bAction.visible = false;
-            mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{"v1":KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name)});
-            POPUPS.Push(mc,null,null,null,this._creatureID + "-150.png");
+            mc.tText.htmlText = KEYS.Get("pop_unlock_complete",{
+               "v1":KEYS.Get(CREATURELOCKER._creatures[this._creatureID].name),
+               "v2":GLOBAL._bHatchery._buildingProps.name
+            });
+            image = this._creatureID + "-150.png";
+            POPUPS.Push(mc,null,null,null,image);
          }
          CREATURELOCKER._unlocking = null;
          QUESTS.Check();

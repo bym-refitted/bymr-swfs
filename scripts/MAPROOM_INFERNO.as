@@ -99,18 +99,25 @@ package
          bridge_obj._lastSort = _lastSort;
          bridge_obj._lastSortReversed = _lastSortReversed;
          andShow = true;
-         GLOBAL.BlockerAdd();
-         SOUNDS.Play("click1");
-         _open = true;
-         if(loadState != 2 && loadState != 1)
+         if(GLOBAL._flags.maproom == 1)
          {
-            _mc = new MapRoom();
-            _mc.init(bridge_obj);
-            GLOBAL._layerTop.addChild(_mc);
+            GLOBAL.BlockerAdd();
+            SOUNDS.Play("click1");
+            _open = true;
+            if(loadState != 2 && loadState != 1)
+            {
+               _mc = new MapRoom();
+               _mc.init(bridge_obj);
+               GLOBAL._layerTop.addChild(_mc);
+            }
+            else if(loadState == 2)
+            {
+               ShowB();
+            }
          }
-         else if(loadState == 2)
+         else
          {
-            ShowB();
+            GLOBAL.Message(KEYS.Get("map_msg_disabled"));
          }
       }
       

@@ -57,7 +57,8 @@ package
          "splat4":"sound_splat4",
          "splat5":"sound_splat5",
          "snipe1":"sound_snipe1",
-         "magma":"sound_magma_attack",
+         "magma1":"sound_magma_attack1",
+         "magma2":"sound_magma_attack2",
          "quake":"sound_quake_attack",
          "railgun1":"sound_railgun1",
          "splash1":"sound_splash1",
@@ -89,19 +90,38 @@ package
          "hit3":"sound_hit3",
          "hit4":"sound_hit4",
          "hit5":"sound_hit5",
+         "ihit1":"sound_ihit1",
+         "ihit2":"sound_ihit2",
+         "ihit3":"sound_ihit3",
+         "ihit4":"sound_ihit4",
+         "ihit5":"sound_ihit5",
+         "ihit6":"sound_ihit6",
+         "ihit7":"sound_ihit7",
+         "ihit8":"sound_ihit8",
+         "inf_buildingplace":"sound_infernoplace",
+         "ibankfire":"sound_ibankfire",
+         "ibankland":"sound_ibankland",
+         "icannon":"inferno_cannonfire",
+         "isniper":"inferno_sniperfire",
          "arise":"wormzer_arise",
          "dig":"wormzer_dig",
          "bunkerdoor":"bunkerdoor",
          "pumpkintreat":"sound_pumpkin_treat",
          "musicattack":"Music_Attack",
          "musicbuild":"Music_Building",
-         "musicpanic":"Music_UnderAttack"
+         "musicpanic":"Music_UnderAttack",
+         "musiciattack":"Music_IAttack",
+         "musicibuild":"Music_IBuild",
+         "musicipanic":"Music_IDefense"
       };
       
       public static var music_volumes:Object = {
          "musicattack":0.7,
          "musicbuild":0.6,
-         "musicpanic":0.7
+         "musicpanic":0.7,
+         "musicibuild":0.6,
+         "musicipanic":0.7,
+         "musiciattack":0.7
       };
       
       public function SOUNDS()
@@ -181,11 +201,11 @@ package
                LOGGER.Log("err","SOUNDS.Setup: " + e.message + " | " + e.getStackTrace());
             }
             surl = GLOBAL._soundPathURL + "uisounds.v" + GLOBAL._soundVersion + ".swf";
-            _assets = [surl,GLOBAL._soundPathURL + "othersounds.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "attacksounds.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "music.v" + GLOBAL._soundVersion + ".swf"];
+            _assets = [surl,GLOBAL._soundPathURL + "othersounds.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "attacksounds.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "music.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "infernoSounds.v" + GLOBAL._soundVersion + ".swf",GLOBAL._soundPathURL + "infernoMusic.v" + GLOBAL._soundVersion + ".swf"];
             if(GLOBAL._local)
             {
                surl = GLOBAL._soundPathURL + "uisounds.swf";
-               _assets = [surl,GLOBAL._soundPathURL + "othersounds.swf",GLOBAL._soundPathURL + "attacksounds.swf",GLOBAL._soundPathURL + "music.swf"];
+               _assets = [surl,GLOBAL._soundPathURL + "othersounds.swf",GLOBAL._soundPathURL + "attacksounds.swf",GLOBAL._soundPathURL + "music.swf",GLOBAL._soundPathURL + "infernoSounds.swf",GLOBAL._soundPathURL + "infernoMusic.swf"];
             }
             soundLibraries = new Vector.<SoundLibrary>();
             i = 0;

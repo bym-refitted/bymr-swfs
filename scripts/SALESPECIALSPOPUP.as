@@ -427,7 +427,14 @@ package
          if(_page == "giftconfirm")
          {
             POPUPS.Next();
-            STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+            if(!BASE.isInferno())
+            {
+               STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+            }
+            else
+            {
+               STORE.ShowB(3,1,["HODI","HOD2I","HOD3I"]);
+            }
          }
          else if(_page == "biggulp")
          {
@@ -440,7 +447,14 @@ package
                else
                {
                   POPUPS.Next();
-                  STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+                  if(!BASE.isInferno())
+                  {
+                     STORE.ShowB(3,1,["HOD","HOD2","HOD3"]);
+                  }
+                  else
+                  {
+                     STORE.ShowB(3,1,["HODI","HOD2I","HOD3I"]);
+                  }
                }
             }
             else if(param1.currentTarget == _popup.bAction3)

@@ -55,15 +55,29 @@ package
             this["m" + _loc1_].visible = false;
             _loc1_++;
          }
-         title_txt.htmlText = KEYS.Get("mh_title");
-         capacity_desc_txt.htmlText = "<b>" + KEYS.Get("mh_capacity_desc") + "</b>";
+         if(BASE.isInferno())
+         {
+            title_txt.htmlText = KEYS.Get("mhi_title");
+         }
+         else
+         {
+            title_txt.htmlText = KEYS.Get("mh_title");
+         }
+         if(BASE.isInferno())
+         {
+            capacity_desc_txt.htmlText = "<b>" + KEYS.Get("compound_capacity_desc") + "</b>";
+         }
+         else
+         {
+            capacity_desc_txt.htmlText = "<b>" + KEYS.Get("mh_capacity_desc") + "</b>";
+         }
          if(GLOBAL._bJuicer)
          {
             juicefooter_desc_txt.htmlText = KEYS.Get("mh_juicefooter_desc");
          }
          else
          {
-            footer_desc_txt.htmlText = KEYS.Get("mh_footer_desc");
+            footer_desc_txt.htmlText = KEYS.Get(BASE.isInferno() ? "hb_footer_desc" : "mh_footer_desc");
          }
          this.Update();
       }
@@ -107,7 +121,14 @@ package
             _loc1_ = _loc7_;
             if(!CREATURELOCKER._lockerData[_loc1_])
             {
-               this["m" + _loc8_].tInfo.htmlText = KEYS.Get("mh_item_locked");
+               if(BASE.isInferno())
+               {
+                  this["m" + _loc8_].tInfo.htmlText = KEYS.Get("compound_item_locked");
+               }
+               else
+               {
+                  this["m" + _loc8_].tInfo.htmlText = KEYS.Get("mh_item_locked");
+               }
                this["m" + _loc8_].alpha = 0.5;
             }
             else if(CREATURELOCKER._lockerData[_loc1_].t == 1)

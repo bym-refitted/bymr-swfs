@@ -77,6 +77,13 @@ package com.monsters.ai
          }
       }
       
+      public static function Clear() : void
+      {
+         _bases = [];
+         _destroyed = false;
+         _descentMode = false;
+      }
+      
       public static function Data(param1:Array) : void
       {
          var _loc2_:Array = null;
@@ -101,40 +108,30 @@ package com.monsters.ai
       
       public static function DescentData(param1:Array) : void
       {
-         var _loc2_:Boolean = false;
-         var _loc3_:int = 0;
-         var _loc4_:Array = null;
-         var _loc5_:Object = null;
+         var _loc2_:int = 0;
+         var _loc3_:Array = null;
+         var _loc4_:Object = null;
          _descentMode = true;
          if(GLOBAL._mode == "build" && Boolean(param1))
          {
-            _loc2_ = true;
-            _loc3_ = 0;
+            _loc2_ = 1;
             _descentBases = [];
-            for each(_loc4_ in param1)
+            for each(_loc3_ in param1)
             {
-               _loc5_ = {};
-               _loc5_.baseid = _loc4_[0];
-               _loc5_.tribe = MAPROOM_DESCENT._descentTribe;
-               _loc5_.level = _loc4_[1];
-               _loc5_.destroyed = _loc4_[2];
-               _descentBases.push(_loc5_);
-               if(_loc5_.destroyed == 0)
+               _loc4_ = {};
+               _loc4_.baseid = _loc3_[0];
+               _loc4_.tribe = MAPROOM_DESCENT._descentTribe;
+               _loc4_.level = _loc3_[1];
+               _loc4_.destroyed = _loc3_[2];
+               _descentBases.push(_loc4_);
+               if(_loc4_.destroyed == 1)
                {
-                  _loc2_ = false;
-                  _loc3_++;
+                  _loc2_++;
                }
             }
             _descentBases.sortOn("level",Array.NUMERIC);
-            if(_loc3_ == MAPROOM_DESCENT._descentLvlMax)
-            {
-               _loc3_++;
-            }
-            GLOBAL.StatSet("descentLvl",_loc3_);
-            if(_loc3_ >= MAPROOM_DESCENT._descentLvlMax)
-            {
-               INFERNOPORTAL.EnterPortal(true);
-            }
+            GLOBAL.StatSet("descentLvl",_loc2_);
+            MAPROOM_DESCENT._descentLvl = _loc2_;
          }
       }
       
@@ -201,6 +198,15 @@ package com.monsters.ai
          for each(_loc1_ in _descentBases)
          {
             _loc1_.destroyed = 0;
+         }
+      }
+      
+      public static function DestroyAllDescent() : void
+      {
+         var _loc1_:Object = null;
+         for each(_loc1_ in _descentBases)
+         {
+            _loc1_.destroyed = 1;
          }
       }
       
@@ -293,8 +299,7 @@ package com.monsters.ai
          {
             onImage = function(param1:String, param2:BitmapData):void
             {
-               var _loc3_:Bitmap = null;
-               _loc3_ = new Bitmap(param2);
+               var _loc3_:Bitmap = new Bitmap(param2);
                _loc3_.x = 155;
                _loc3_.y = 196;
                _mc.addChild(_loc3_);
@@ -318,7 +323,7 @@ package com.monsters.ai
             ImageCache.GetImageWithCallBack(BaseForID(BASE._wmID).tribe.splash,onImage);
             _mc.b2.addEventListener(MouseEvent.MOUSE_DOWN,shareDown);
             _destroyed = true;
-            if(GLOBAL._advancedMap)
+            if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
             {
                _mc.b1.SetupKey("btn_openmap");
             }
@@ -406,7 +411,7 @@ package com.monsters.ai
                ImageCache.GetImageWithCallBack(base.tribe.splash,onImage);
                _mc.body_txt.htmlText = BaseForID(BASE._wmID).tribe.fail;
             }
-            if(GLOBAL._advancedMap)
+            if(Boolean(GLOBAL._advancedMap) && !BASE.isInferno())
             {
                _mc.b1.SetupKey("btn_openmap");
             }

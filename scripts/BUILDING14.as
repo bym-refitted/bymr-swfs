@@ -49,38 +49,17 @@ package
       
       override public function Recycle() : *
       {
-         if(!GLOBAL._aiDesignMode)
-         {
-            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
-         }
-         else
-         {
-            super.Recycle();
-         }
+         GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
       override public function RecycleB(param1:MouseEvent = null) : *
       {
-         if(!GLOBAL._aiDesignMode)
-         {
-            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
-         }
-         else
-         {
-            super.RecycleB(param1);
-         }
+         GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
       override public function RecycleC() : *
       {
-         if(!GLOBAL._aiDesignMode)
-         {
-            GLOBAL.Message(KEYS.Get("msg_cantrecycleth"));
-         }
-         else
-         {
-            super.RecycleC();
-         }
+         GLOBAL.Message(KEYS.Get("msg_cantrecycleth",{"v1":GLOBAL._bTownhall._buildingProps.name}));
       }
       
       override public function Destroyed(param1:Boolean = true) : *

@@ -216,7 +216,7 @@ package com.monsters.maproom
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
          var _loc3_:String = _loc2_.wm.Get() == 1 ? "wmview" : "view";
-         MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_);
+         MapRoom.BRIDGE.LoadBase(null,null,this.player.data.baseid.Get(),_loc3_,false,BASE.MAIN_YARD);
          MAPROOM._mc.Hide();
       }
       
@@ -283,7 +283,7 @@ package com.monsters.maproom
                   {
                      case 1:
                         _loc3_ = true;
-                        if(MapRoom.BRIDGE.BASE._isProtected > 0)
+                        if(MapRoom.BRIDGE.BASE._isProtected > GLOBAL.Timestamp())
                         {
                            _loc4_ = MapRoom.BRIDGE.KEYS.Get("map_msg_protection",{"v1":MapRoom.BRIDGE.GLOBAL.ToTime(MapRoom.BRIDGE.BASE._isProtected - MapRoom.BRIDGE.GLOBAL.Timestamp(),false,false)});
                            break;
@@ -396,7 +396,7 @@ package com.monsters.maproom
          {
             MapRoom.BRIDGE.setVisitingFriend(false);
          }
-         MapRoom.BRIDGE.BASE.LoadBase(null,null,param1,param2);
+         MapRoom.BRIDGE.BASE.LoadBase(null,null,param1,param2,false,BASE.MAIN_YARD);
          MAPROOM._mc.Hide();
       }
    }

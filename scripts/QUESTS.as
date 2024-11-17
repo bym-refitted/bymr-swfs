@@ -62,7 +62,10 @@ package
             "b25lvl":0,
             "b26lvl":0,
             "b51lvl":0,
+            "b128lvl":0,
             "b113lvl":0,
+            "b130lvl":0,
+            "b132lvl":0,
             "kills":0,
             "bonus_bookmark":0,
             "bonus_fan":0,
@@ -1193,7 +1196,7 @@ package
             "reward_creatureid":"C4",
             "monster_reward":_loc1_[4],
             "prereq":"UC3",
-            "rules":{"UNLOCK":"C2"}
+            "rules":{"UNLOCK":"C4"}
          });
          _loc2_ = CREATURELOCKER._creatures["C5"];
          _quests.push({
@@ -1584,11 +1587,11 @@ package
                {
                   if(HOUSING._housingSpace.Get() < storage)
                   {
-                     GLOBAL.Message(KEYS.Get("msg_quest_housing"),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                     GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "msg_questi_housing" : "msg_quest_housing"),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
                      return false;
                   }
                   quantity = HOUSING._housingSpace.Get() / storage;
-                  GLOBAL.Message(KEYS.Get("msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
+                  GLOBAL.Message(KEYS.Get(BASE.isInferno() ? "inf_msg_housinglimited" : "msg_housinglimited",{"v1":quantity}),KEYS.Get("btn_collect"),CollectMonsters,[questID]);
                   return false;
                }
             }
@@ -1675,14 +1678,14 @@ package
                      _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
                   }
                   var _loc2_:String = GLOBAL.Array2String(_loc1_);
-                  var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
-                  var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
+                  var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
+                  var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
                   var _loc5_:String = q.streamImage;
                   GLOBAL.CallJS("sendFeed",["quest-collected",_loc3_,_loc4_,_loc5_,0]);
                   POPUPS.Next();
                };
                popupMC = new popup_quest();
-               popupMC.tA.htmlText = "<b>" + KEYS.Get("pop_questcollected_body",{"v1":KEYS.Get(q.name)}) + "</b>";
+               popupMC.tA.htmlText = "<b>" + KEYS.Get("pop_questcollected_body",{"v1":KEYS.Get(q.name,q.keyvars)}) + "</b>";
                popupMC.bAction.SetupKey("btn_brag");
                popupMC.bAction.addEventListener(MouseEvent.CLICK,Brag);
                popupMC.bAction.Highlight = true;
@@ -1794,14 +1797,14 @@ package
                      _loc1_.push([q.monster_reward,KEYS.Get(CREATURELOCKER._creatures[q.reward_creatureid].name)]);
                   }
                   var _loc2_:String = GLOBAL.Array2String(_loc1_);
-                  var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
-                  var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name)).replace("#collected#",_loc2_);
+                  var _loc3_:String = KEYS.Get(q.streamTitle).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
+                  var _loc4_:String = KEYS.Get(q.streamDescription).replace("#questname#",KEYS.Get(q.name,q.keyvars)).replace("#collected#",_loc2_);
                   var _loc5_:String = q.streamImage;
                   GLOBAL.CallJS("sendFeed",["quest-collected",_loc3_,_loc4_,_loc5_,0]);
                   POPUPS.Next();
                };
                popupMC = new popup_quest();
-               popupMC.tA.htmlText = "<b>" + KEYS.Get("pop_questcollected_body",{"v1":KEYS.Get(q.name)}) + "</b>";
+               popupMC.tA.htmlText = "<b>" + KEYS.Get("pop_questcollected_body",{"v1":KEYS.Get(q.name,q.keyvars)}) + "</b>";
                popupMC.bAction.SetupKey("btn_brag");
                popupMC.bAction.addEventListener(MouseEvent.CLICK,Brag);
                popupMC.bAction.Highlight = true;

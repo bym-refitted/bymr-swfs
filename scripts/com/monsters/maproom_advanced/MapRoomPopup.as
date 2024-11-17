@@ -488,12 +488,12 @@ package com.monsters.maproom_advanced
          if(BASE._loadedFriendlyBaseID)
          {
             BASE._yardType = BASE._loadedYardType;
-            BASE.LoadBase(null,null,BASE._loadedFriendlyBaseID,"build");
+            BASE.LoadBase(null,null,BASE._loadedFriendlyBaseID,"build",false,BASE._loadedYardType);
          }
          else
          {
             BASE._yardType = BASE.MAIN_YARD;
-            BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build");
+            BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
          }
          SOUNDS.Play("close");
          this.Cleanup();

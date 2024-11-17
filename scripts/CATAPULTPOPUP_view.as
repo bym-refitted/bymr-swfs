@@ -4,7 +4,7 @@ package
    import flash.display.Sprite;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1449")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1454")]
    public dynamic class CATAPULTPOPUP_view extends Sprite
    {
       public var _tCost:TextField;

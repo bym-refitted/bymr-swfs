@@ -44,7 +44,7 @@ package com.monsters.maproom_advanced
             numPosts = int(GLOBAL._mapOutpost.length);
             if(numPosts >= 5)
             {
-               this._resourceCost.Set(2000000 + 2000000 * (numPosts - 4));
+               this._resourceCost.Set(Math.min(10000000,2000000 + 2000000 * (numPosts - 4)));
             }
          }
          if(POWERUPS.CheckPowers(POWERUPS.ALLIANCE_CONQUEST,"NORMAL"))
@@ -142,7 +142,7 @@ package com.monsters.maproom_advanced
                GLOBAL._currentCell = _cell;
                GLOBAL._currentCell._base = 3;
                BASE._yardType = BASE.OUTPOST;
-               BASE.LoadBase(null,null,_cell._baseID,"build");
+               BASE.LoadBase(null,null,_cell._baseID,"build",false,BASE.OUTPOST);
                LOGGER.Stat([37,BASE._takeoverFirstOpen]);
             }
             else

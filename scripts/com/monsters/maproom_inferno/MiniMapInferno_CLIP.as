@@ -2,7 +2,7 @@ package com.monsters.maproom_inferno
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2335")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2374")]
    public dynamic class MiniMapInferno_CLIP extends MovieClip
    {
       public var background_mc:MovieClip;

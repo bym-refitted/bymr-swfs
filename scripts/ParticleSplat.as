@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1707")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1721")]
    public dynamic class ParticleSplat extends MovieClip
    {
       public function ParticleSplat()

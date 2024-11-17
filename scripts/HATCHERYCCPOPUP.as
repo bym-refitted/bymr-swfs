@@ -25,7 +25,14 @@ package
          super();
          bSpeedup.tName.htmlText = "<b>" + KEYS.Get("btn_speedup") + "</b>";
          bSpeedup.mouseChildren = false;
-         bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
+         if(!BASE.isInferno())
+         {
+            bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HOD","HOD2","HOD3"]));
+         }
+         else
+         {
+            bSpeedup.addEventListener(MouseEvent.CLICK,STORE.Show(3,2,["HODI","HOD2I","HOD3I"]));
+         }
          bSpeedup.buttonMode = true;
          bFinish.tName.htmlText = "<b>" + KEYS.Get("str_finishnow") + "</b>";
          bFinish.mouseChildren = false;
@@ -33,7 +40,14 @@ package
          bFinish.buttonMode = true;
          bTopup.tName.htmlText = "<b>" + KEYS.Get("btn_topup2") + "</b>";
          bTopup.mouseChildren = false;
-         bTopup.addEventListener(MouseEvent.CLICK,STORE.Show(2,4,["BR41","BR42","BR43"]));
+         if(!BASE.isInferno())
+         {
+            bTopup.addEventListener(MouseEvent.CLICK,STORE.Show(2,4,["BR41","BR42","BR43"]));
+         }
+         else
+         {
+            bTopup.addEventListener(MouseEvent.CLICK,STORE.Show(2,4,["BR41I","BR42I","BR43I"]));
+         }
          bTopup.buttonMode = true;
          var _loc2_:int = 1;
          while(_loc2_ <= 15)
@@ -76,7 +90,7 @@ package
          mcMonsterInfo.speed_txt.htmlText = "<b>" + KEYS.Get("mon_att_speed") + "</b>";
          mcMonsterInfo.health_txt.htmlText = "<b>" + KEYS.Get("mon_att_health") + "</b>";
          mcMonsterInfo.damage_txt.htmlText = "<b>" + KEYS.Get("mon_att_damage") + "</b>";
-         mcMonsterInfo.goo_txt.htmlText = "<b>" + KEYS.Get("mon_att_cost") + "</b>";
+         mcMonsterInfo.goo_txt.htmlText = "<b>" + KEYS.Get("mon_att_cost",{"v1":KEYS.Get(BRESOURCE.GetResourceNameKey(3))}) + "</b>";
          mcMonsterInfo.housing_txt.htmlText = "<b>" + KEYS.Get("mon_att_housing") + "</b>";
          mcMonsterInfo.time_txt.htmlText = "<b>" + KEYS.Get("mon_att_time") + "</b>";
          hatlabel1_txt.htmlText = "<b>" + KEYS.Get("hcc_hatcherynum",{"v1":1}) + "</b>";
@@ -192,7 +206,10 @@ package
          {
             mcMonsterInfo.tDamage.htmlText = -_loc12_ + " (" + KEYS.Get("str_heal") + ")";
          }
-         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{"v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"cResource"))});
+         mcMonsterInfo.tResource.htmlText = KEYS.Get("mon_att_costvalue",{
+            "v1":GLOBAL.FormatNumber(CREATURES.GetProperty(_loc3_,"cResource")),
+            "v2":KEYS.Get(BRESOURCE.GetResourceNameKey(3))
+         });
          mcMonsterInfo.tStorage.htmlText = KEYS.Get("mon_att_housingvalue",{"v1":CREATURES.GetProperty(_loc3_,"cStorage")});
          mcMonsterInfo.tTime.htmlText = GLOBAL.ToTime(CREATURES.GetProperty(_loc3_,"cTime"),true);
          var _loc13_:int = 1;
@@ -341,7 +358,7 @@ package
       private function Charge(param1:String) : *
       {
          BASE.Charge(4,CREATURES.GetProperty(param1,"cResource"));
-         ResourcePackages.Create(4,GLOBAL._bHatcheryCC,CREATURES.GetProperty(param1,"cResource"),true);
+         ResourcePackages.Create(BASE.isInferno() ? 8 : 4,GLOBAL._bHatcheryCC,CREATURES.GetProperty(param1,"cResource"),true);
          BASE.Save();
       }
       

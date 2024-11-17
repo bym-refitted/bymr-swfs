@@ -1,7 +1,6 @@
 package com.monsters.maproom_inferno
 {
    import com.cc.utils.SecNum;
-   import com.monsters.maproom.PlayerBase_CLIP;
    import flash.display.Loader;
    import flash.display.Sprite;
    import flash.events.Event;
@@ -10,7 +9,7 @@ package com.monsters.maproom_inferno
    import flash.system.LoaderContext;
    import flash.text.TextFieldAutoSize;
    
-   public class PlayerBase extends PlayerBase_CLIP
+   public class PlayerBase extends PlayerBaseInferno_CLIP
    {
       public var data:Object;
       
@@ -71,8 +70,7 @@ package com.monsters.maproom_inferno
          this.nameBox.x = -2;
          tgtWidth = name_txt.textWidth + 14;
          box_mc.width = tgtWidth < 51 ? 51 : tgtWidth;
-         this.pin = PushPin.getRandomPinWithColor(PushPin.GREEN);
-         addChild(this.pin);
+         addChild(nail);
          this.mouseChildren = false;
       }
       

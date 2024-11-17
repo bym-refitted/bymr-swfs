@@ -3,7 +3,7 @@ package
    import flash.display.MovieClip;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol205")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol213")]
    public dynamic class RADIOSETTINGSPOPUP_CLIP extends MovieClip
    {
       public var tAttack:TextField;

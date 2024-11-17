@@ -20,13 +20,26 @@ package
       public static function Setup() : *
       {
          _workers = [];
-         _sayings = {
-            "assign":[KEYS.Get("ui_worker_assign1"),KEYS.Get("ui_worker_assign2"),KEYS.Get("ui_worker_assign3"),KEYS.Get("ui_worker_assign4"),KEYS.Get("ui_worker_assign5"),KEYS.Get("ui_worker_assign6")],
-            "remove":[KEYS.Get("ui_worker_remove1"),KEYS.Get("ui_worker_remove2"),KEYS.Get("ui_worker_remove3"),KEYS.Get("ui_worker_remove4")],
-            "doneConstruct":[KEYS.Get("ui_worker_doneconstruct1"),KEYS.Get("ui_worker_doneconstruct2"),KEYS.Get("ui_worker_doneconstruct3"),KEYS.Get("ui_worker_doneconstruct4"),KEYS.Get("ui_worker_doneconstruct5"),KEYS.Get("ui_worker_doneconstruct6"),KEYS.Get("ui_worker_doneconstruct7"),KEYS.Get("ui_worker_doneconstruct8")],
-            "doneRepair":[KEYS.Get("ui_worker_donerepair1"),KEYS.Get("ui_worker_donerepair2")],
-            "doneUpgrade":[KEYS.Get("ui_worker_doneupgrade1"),KEYS.Get("ui_worker_doneupgrade2"),KEYS.Get("ui_worker_doneupgrade3"),KEYS.Get("ui_worker_doneupgrade4"),KEYS.Get("ui_worker_doneupgrade5")]
-         };
+         if(BASE.isInferno())
+         {
+            _sayings = {
+               "assign":[KEYS.Get("ai_worker_comment1"),KEYS.Get("ai_worker_comment2"),KEYS.Get("ai_worker_comment3"),KEYS.Get("ai_worker_comment5"),KEYS.Get("ai_worker_comment6"),KEYS.Get("ai_worker_comment7")],
+               "remove":[KEYS.Get("ai_worker_cancel1"),KEYS.Get("ai_worker_cancel2"),KEYS.Get("ai_worker_cancel3"),KEYS.Get("ai_worker_cancel4")],
+               "doneConstruct":[KEYS.Get("ai_worker_doneconstruct1"),KEYS.Get("ai_worker_doneconstruct2"),KEYS.Get("ai_worker_doneconstruct3"),KEYS.Get("ai_worker_doneconstruct4")],
+               "doneRepair":[KEYS.Get("ai_worker_donerepair1"),KEYS.Get("ai_worker_donerepair2"),KEYS.Get("ai_worker_donerepair3"),KEYS.Get("ai_worker_donerepair4")],
+               "doneUpgrade":[KEYS.Get("ai_worker_doneupgrade1"),KEYS.Get("ai_worker_doneupgrade2"),KEYS.Get("ai_worker_doneupgrade3"),KEYS.Get("ai_worker_doneupgrade4")]
+            };
+         }
+         else
+         {
+            _sayings = {
+               "assign":[KEYS.Get("ui_worker_assign1"),KEYS.Get("ui_worker_assign2"),KEYS.Get("ui_worker_assign3"),KEYS.Get("ui_worker_assign4"),KEYS.Get("ui_worker_assign5"),KEYS.Get("ui_worker_assign6")],
+               "remove":[KEYS.Get("ui_worker_remove1"),KEYS.Get("ui_worker_remove2"),KEYS.Get("ui_worker_remove3"),KEYS.Get("ui_worker_remove4")],
+               "doneConstruct":[KEYS.Get("ui_worker_doneconstruct1"),KEYS.Get("ui_worker_doneconstruct2"),KEYS.Get("ui_worker_doneconstruct3"),KEYS.Get("ui_worker_doneconstruct4"),KEYS.Get("ui_worker_doneconstruct5"),KEYS.Get("ui_worker_doneconstruct6"),KEYS.Get("ui_worker_doneconstruct7"),KEYS.Get("ui_worker_doneconstruct8")],
+               "doneRepair":[KEYS.Get("ui_worker_donerepair1"),KEYS.Get("ui_worker_donerepair2")],
+               "doneUpgrade":[KEYS.Get("ui_worker_doneupgrade1"),KEYS.Get("ui_worker_doneupgrade2"),KEYS.Get("ui_worker_doneupgrade3"),KEYS.Get("ui_worker_doneupgrade4"),KEYS.Get("ui_worker_doneupgrade5")]
+            };
+         }
       }
       
       public static function Spawn() : *

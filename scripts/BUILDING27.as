@@ -79,7 +79,14 @@ package
          {
             if(!this._spewed)
             {
-               SOUNDS.PlayMusic("musicpanic");
+               if(BASE.isInferno())
+               {
+                  SOUNDS.PlayMusic("musicipanic");
+               }
+               else
+               {
+                  SOUNDS.PlayMusic("musicpanic");
+               }
                this._spewed = true;
                POPUPS.Next();
                UI2.Show("warning");

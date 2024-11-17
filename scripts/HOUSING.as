@@ -33,7 +33,10 @@ package
          _creatures = {};
          for(_loc2_ in param1)
          {
-            _creatures[_loc2_] = new SecNum(int(param1[_loc2_]));
+            if(_loc2_.substr(0,1) == "C" || _loc2_.substr(0,2) == "IC")
+            {
+               _creatures[_loc2_] = new SecNum(int(param1[_loc2_]));
+            }
          }
          if(_creatures.C100)
          {
@@ -251,7 +254,7 @@ package
             for(_loc3_ in _creatures)
             {
                _loc4_ = _creatures[_loc3_].Get();
-               if(_loc4_ > 50)
+               if(!BASE.isInferno() && _loc4_ > 50)
                {
                   _loc4_ = 50;
                }

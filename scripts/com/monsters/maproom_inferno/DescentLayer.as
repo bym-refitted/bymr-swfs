@@ -1,12 +1,15 @@
 package com.monsters.maproom_inferno
 {
    import com.monsters.maproom_inferno.model.BaseObject;
+   import com.monsters.maproom_inferno.views.DescentView;
+   import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    import flash.utils.getTimer;
+   import gs.easing.*;
    
    public class DescentLayer extends Sprite
    {
@@ -43,6 +46,12 @@ package com.monsters.maproom_inferno
       public var _wmbToDisplay:int = 13;
       
       private var wmBasesUsed:* = 0;
+      
+      private var descentShroud:MovieClip;
+      
+      public var targetLvl:int = 0;
+      
+      public var targetBase:DescentMonsterBase;
       
       private var _BRIDGE:Object;
       
@@ -128,6 +137,7 @@ package com.monsters.maproom_inferno
                this._BRIDGE = MapRoom.BRIDGE;
             }
          }
+         this.descentShroud = new MapViewDescent_Fog_Shroud();
          this.player = new PlayerBase(this._BRIDGE.playerBaseID,this._BRIDGE.playerBaseSeed);
          this.player.addEventListener(MouseEvent.MOUSE_OVER,this.sortToTop);
          this.basesAll.push(this.player);
@@ -163,6 +173,7 @@ package com.monsters.maproom_inferno
          this.basesAll = [];
          this.basesWM = [];
          this.player = null;
+         this.descentShroud = null;
       }
       
       public function Tick(... rest) : void
@@ -277,7 +288,8 @@ package com.monsters.maproom_inferno
          var _loc6_:* = 0;
          var _loc7_:* = 0;
          var _loc8_:DescentMonsterBase = null;
-         var _loc9_:ForeignBase = null;
+         var _loc9_:DescentMonsterBase = null;
+         var _loc10_:ForeignBase = null;
          var _loc3_:Boolean = false;
          if(this.basesForeign == null)
          {
@@ -314,24 +326,40 @@ package com.monsters.maproom_inferno
                   if(!_loc3_)
                   {
                      _loc5_ = new BaseObject(_loc2_);
-                     _loc8_ = new DescentMonsterBase();
-                     _loc8_.Setup(_loc5_);
-                     _loc8_.useHandCursor = true;
-                     _loc8_.buttonMode = true;
-                     _loc8_.addEventListener("over",this.onBaseStateChange);
-                     _loc8_.addEventListener("off",this.onBaseStateChange);
-                     _loc8_.addEventListener("down",this.onBaseStateChange);
-                     if(this.setMapLinear(_loc8_,_loc2_.level))
+                     _loc9_ = new DescentMonsterBase();
+                     _loc9_.Setup(_loc5_);
+                     _loc9_.useHandCursor = true;
+                     _loc9_.buttonMode = true;
+                     _loc9_.addEventListener("over",this.onBaseStateChange);
+                     _loc9_.addEventListener("off",this.onBaseStateChange);
+                     _loc9_.addEventListener("down",this.onBaseStateChange);
+                     if(this.setMapLinear(_loc9_,_loc2_.level))
                      {
                         this.baseData.push(_loc5_);
-                        addChild(_loc8_);
-                        this.basesAll.push(_loc8_);
-                        this.basesWM.push(_loc8_);
+                        addChild(_loc9_);
+                        this.basesAll.push(_loc9_);
+                        this.basesWM.push(_loc9_);
                         ++this.wmBasesUsed;
+                        if(Boolean(_loc9_.data) && _loc9_.data.destroyed == 1)
+                        {
+                           ++this.targetLvl;
+                        }
+                        else if(this.targetLvl + 1 == _loc9_.data.level.Get())
+                        {
+                           this.targetBase = _loc9_;
+                           this.PositionShroud(this.targetBase);
+                        }
                      }
                   }
                }
                _loc7_++;
+            }
+            for each(_loc8_ in this.basesWM)
+            {
+               if(_loc8_ == this.targetBase)
+               {
+                  _loc8_.InitTargetListener();
+               }
             }
          }
          if(this.basesForeign.length < this._playersLimit && param1 && Boolean(param1.bases))
@@ -364,19 +392,19 @@ package com.monsters.maproom_inferno
                   if(!_loc3_)
                   {
                      _loc5_ = new BaseObject(_loc2_);
-                     _loc9_ = new ForeignBase();
-                     _loc9_.Setup(_loc5_);
-                     _loc9_.useHandCursor = true;
-                     _loc9_.buttonMode = true;
-                     _loc9_.addEventListener("over",this.onBaseStateChange);
-                     _loc9_.addEventListener("off",this.onBaseStateChange);
-                     _loc9_.addEventListener("down",this.onBaseStateChange);
+                     _loc10_ = new ForeignBase();
+                     _loc10_.Setup(_loc5_);
+                     _loc10_.useHandCursor = true;
+                     _loc10_.buttonMode = true;
+                     _loc10_.addEventListener("over",this.onBaseStateChange);
+                     _loc10_.addEventListener("off",this.onBaseStateChange);
+                     _loc10_.addEventListener("down",this.onBaseStateChange);
                      this.baseData.push(_loc5_);
-                     if(this.setMapCoords(_loc9_))
+                     if(this.setMapCoords(_loc10_))
                      {
-                        addChild(_loc9_);
-                        this.basesForeign.push(_loc9_);
-                        this.basesAll.push(_loc9_);
+                        addChild(_loc10_);
+                        this.basesForeign.push(_loc10_);
+                        this.basesAll.push(_loc10_);
                      }
                   }
                   _loc7_ += 1;
@@ -384,6 +412,24 @@ package com.monsters.maproom_inferno
             }
             setChildIndex(this.player,this.numChildren - 1);
             return;
+         }
+      }
+      
+      public function PositionShroud(param1:DescentMonsterBase) : void
+      {
+         var _loc2_:DescentMonsterBase = null;
+         var _loc3_:Boolean = false;
+         for each(_loc2_ in this.basesWM)
+         {
+            if(int(_loc2_.data.baseid.Get()) == param1.data.baseid.Get())
+            {
+               _loc3_ = true;
+            }
+         }
+         if(_loc3_)
+         {
+            DescentView.getInstance().shroud.x = -50;
+            DescentView.getInstance().shroud.y = param1.mapY;
          }
       }
       

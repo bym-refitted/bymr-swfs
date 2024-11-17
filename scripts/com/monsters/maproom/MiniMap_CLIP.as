@@ -2,7 +2,7 @@ package com.monsters.maproom
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol2208")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol2239")]
    public dynamic class MiniMap_CLIP extends MovieClip
    {
       public var background_mc:MovieClip;

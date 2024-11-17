@@ -8,6 +8,8 @@ package com.monsters.maproom_inferno
       
       public static var Reserved:Array = new Array(new Rectangle(196,771,209,184),new Rectangle(605,478,186,174),new Rectangle(917,1137,191,162),new Rectangle(1238,1084,198,174));
       
+      public static var Slots:Array = new Array(new Rectangle(350,320,160,160),new Rectangle(170,610,160,160),new Rectangle(670,9 * 60,160,160),new Rectangle(145,890,160,160),new Rectangle(570,1000,160,160),new Rectangle(1060,340,160,160),new Rectangle(1400,1000,160,160),new Rectangle(1100,10 * 60,160,160),new Rectangle(25 * 60,580,160,160),new Rectangle(1220,800,160,160));
+      
       public function Obstruction()
       {
          super();

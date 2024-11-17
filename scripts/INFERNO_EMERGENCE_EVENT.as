@@ -16,7 +16,7 @@ package
       
       private static var _isPostEvent:Boolean;
       
-      private static var _currentTime:Number;
+      private static var _currentDate:Date;
       
       private static var ns:Namespace;
       
@@ -24,7 +24,7 @@ package
       
       public static const _LAST_LEVEL_LABEL:String = "lastLevel";
       
-      public static const EVENT_END_DATE:Date = new Date(2012,0,13);
+      public static const EVENT_END_DATE:Date = new Date(2012,0,14);
       
       private static const _MINIMUM_BASE_HEALTH:Number = 0.1;
       
@@ -62,13 +62,23 @@ package
       
       public static function Initialize() : Boolean
       {
-         _currentTime = new Date().time / 1000;
-         ns = _currentTime > EVENT_END_DATE.time / 1000 ? postEvent : duringEvent;
+         if(GLOBAL._mode != "build")
+         {
+            return false;
+         }
+         _lastLevel = GLOBAL.StatGet(_LAST_LEVEL_LABEL);
+         _currentDate = new Date();
+         if(ShouldShowPortal() && _maxLevel > 5 || BASE.isInferno() && MAPROOM_DESCENT.DescentPassed && GLOBAL._mode == "build")
+         {
+            INFERNOPORTAL.AddPortal(5);
+            return false;
+         }
+         ns = IsPostEvent() ? postEvent : duringEvent;
          if(ShouldShowUpgradePopup())
          {
             ShowUpgradePopup();
          }
-         if(!ShouldRunEvent())
+         if(!ShouldShowPortal())
          {
             return false;
          }
@@ -87,7 +97,6 @@ package
       
       private static function SetupPortal() : void
       {
-         _lastLevel = GLOBAL.StatGet(_LAST_LEVEL_LABEL);
          var _loc1_:INFERNOPORTAL = INFERNOPORTAL.AddPortal(_lastLevel);
          if(_lastLevel == 0)
          {
@@ -103,14 +112,14 @@ package
       private static function Save() : void
       {
          GLOBAL.StatSet(_LAST_LEVEL_LABEL,INFERNOPORTAL.building._lvl.Get(),false);
-         GLOBAL.StatSet(_LAST_TIME_LABEL,_currentTime,false);
+         GLOBAL.StatSet(_LAST_TIME_LABEL,_currentDate.time / 1000,false);
          BASE.Save(0,false,true);
       }
       
       internal static function ShouldUpgradePortal(param1:uint) : Boolean
       {
          var _loc2_:Number = GLOBAL.StatGet(_LAST_TIME_LABEL);
-         if(_currentTime - _loc2_ >= _intermissionDuration)
+         if(_currentDate.time / 1000 - _loc2_ >= _intermissionDuration)
          {
             if(param1 < _maxLevel)
             {
@@ -132,7 +141,7 @@ package
       
       internal static function GetUpgradeLevel() : Number
       {
-         if(new Date().date == EVENT_END_DATE.date - 1)
+         if(isLastDay())
          {
             return _maxLevel;
          }
@@ -141,7 +150,7 @@ package
       
       public static function FocusOnPortal() : void
       {
-         if(!ShouldRunEvent())
+         if(!ShouldShowPortal())
          {
             return;
          }
@@ -159,7 +168,7 @@ package
       
       private static function FocusedOnPortal() : void
       {
-         if(!ShouldRunEvent())
+         if(!ShouldShowPortal())
          {
             return;
          }
@@ -175,7 +184,7 @@ package
       
       private static function UpgradePortal(param1:Event = null) : void
       {
-         if(!ShouldRunEvent())
+         if(!ShouldShowPortal())
          {
             return;
          }
@@ -224,14 +233,29 @@ package
          return _loc2_ / _loc3_ > _MINIMUM_BASE_HEALTH;
       }
       
+      public static function ShouldShowPortal() : Boolean
+      {
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
+      }
+      
       public static function ShouldRunEvent() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT) && _maxLevel > 0 && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && (ns == duringEvent || ns == postEvent && GLOBAL._bTownhall._lvl.Get() >= TOWN_HALL_LEVEL_REQUIREMENT || ns == postEvent && _lastLevel > 0) && _maxLevel > 0 && _lastLevel < 5 && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200;
       }
       
       public static function ShouldShowUpgradePopup() : Boolean
       {
-         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && _maxLevel > 0 && BASE._yardType == BASE.MAIN_YARD && TUTORIAL._stage > 200;
+         return _SHOULD_RUN_EVENT && !GLOBAL._flags.viximo && !GLOBAL._flags.kongregate && GLOBAL._mode == "build" && _maxLevel > 0 && (BASE._yardType == BASE.MAIN_YARD || BASE._yardType == BASE.INFERNO_YARD) && TUTORIAL._stage > 200;
+      }
+      
+      public static function IsPostEvent() : Boolean
+      {
+         return _currentDate.time / 1000 > EVENT_END_DATE.time / 1000;
+      }
+      
+      public static function isLastDay() : Boolean
+      {
+         return _currentDate.date + 2 >= EVENT_END_DATE.date;
       }
       
       public static function EndRound() : void

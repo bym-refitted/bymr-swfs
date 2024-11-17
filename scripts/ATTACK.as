@@ -211,7 +211,7 @@ package
          _loc8_ = false;
          for each(_loc9_ in BASE._buildingsAll)
          {
-            if(_loc9_._class != "wall" && _loc9_._class != "trap" && _loc9_._hp.Get() > 0)
+            if(_loc9_._class != "wall" && _loc9_._class != "trap" && _loc9_._class != "enemy" && _loc9_._class != "decoration" && _loc9_._hp.Get() > 0)
             {
                _loc8_ = true;
                break;
@@ -703,10 +703,13 @@ package
          var _loc7_:int = param2;
          if(GLOBAL._resources["r" + param1].Get() + param2 > GLOBAL._resources["r" + param1 + "max"])
          {
-            _loc7_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
-            if(_loc7_ < 0)
+            if(BASE.isInferno() && MAPROOM_DESCENT.DescentPassed || GLOBAL._mode == GLOBAL._loadmode)
             {
-               _loc7_ = 0;
+               _loc7_ = GLOBAL._resources["r" + param1 + "max"] - GLOBAL._resources["r" + param1].Get();
+               if(_loc7_ < 0)
+               {
+                  _loc7_ = 0;
+               }
             }
          }
          GLOBAL._resources["r" + param1].Add(_loc7_);
@@ -866,7 +869,7 @@ package
             ShowLog();
             _shownFinal = false;
          }
-         else if(MAPROOM_DESCENT.DescentLevel)
+         else if(Boolean(MAPROOM_DESCENT.DescentLevel) && MAPROOM_DESCENT.InDescent)
          {
             ShowComplete();
          }
@@ -899,7 +902,7 @@ package
             for(_loc5_ in BASE._buildingsAll)
             {
                _loc6_ = BASE._buildingsAll[_loc5_];
-               if(!(_loc6_._class == "trap" && _loc6_._fired || _loc6_._type == 53 && _loc6_._expireTime < GLOBAL.Timestamp()))
+               if(!(_loc6_._class == "trap" && _loc6_._class == "enemy" && _loc6_._fired || _loc6_._type == 53 && _loc6_._expireTime < GLOBAL.Timestamp()))
                {
                   if(_loc6_._class != "wall")
                   {
@@ -909,7 +912,7 @@ package
                }
             }
             _loc2_ = 100 - 100 / _loc4_ * _loc3_;
-            if((BASE._yardType == BASE.OUTPOST || GLOBAL._mode == "wmattack") && _loc2_ >= 90)
+            if((BASE._yardType == BASE.OUTPOST || GLOBAL._loadmode == "wmattack") && _loc2_ >= 90)
             {
                _loc1_ = true;
                if(GLOBAL._mode == "wmattack")
@@ -917,10 +920,10 @@ package
                   WMBASE._destroyed = true;
                }
             }
-            else if((BASE._yardType == BASE.INFERNO_YARD || GLOBAL._mode == "iwmattack") && _loc2_ >= 90)
+            else if((BASE._yardType == BASE.INFERNO_YARD || GLOBAL._loadmode == "iwmattack") && _loc2_ >= 90)
             {
                _loc1_ = true;
-               if(GLOBAL._mode == "iwmattack")
+               if(GLOBAL._loadmode == "iwmattack")
                {
                   WMBASE._destroyed = true;
                }
@@ -942,10 +945,17 @@ package
             }
             if(INFERNO_DESCENT_POPUPS.isInDescent())
             {
-               INFERNO_DESCENT_POPUPS.ShowPostAttackPopup(MAPROOM_DESCENT._descentLvl,!_loc1_);
+               INFERNO_DESCENT_POPUPS.ShowPostAttackPopup(MAPROOM_DESCENT._descentLvl,_loc1_,Vector.<uint>([_loot.r1.Get(),_loot.r2.Get(),_loot.r3.Get(),_loot.r4.Get()]),Vector.<uint>([MAPROOM_DESCENT._loot.r1.Get(),MAPROOM_DESCENT._loot.r2.Get(),MAPROOM_DESCENT._loot.r3.Get(),MAPROOM_DESCENT._loot.r4.Get()]));
             }
          }
-         SOUNDS.PlayMusic("musicbuild");
+         if(BASE.isInferno())
+         {
+            SOUNDS.PlayMusic("musicibuild");
+         }
+         else
+         {
+            SOUNDS.PlayMusic("musicbuild");
+         }
          if(GLOBAL._advancedMap && BASE._yardType == BASE.OUTPOST || (GLOBAL._mode == "wmattack" || GLOBAL._mode == "iwmattack"))
          {
             _loc8_ = new popup_attackend(_loc1_);
@@ -958,9 +968,9 @@ package
          }
          else if(GLOBAL._loadmode == GLOBAL._mode)
          {
-            BASE.LoadBase(null,null,0,"build");
+            BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
          }
-         else if(GLOBAL._inInferno <= 0)
+         else if(MAPROOM_DESCENT.InDescent)
          {
             BASE.LoadBase(null,null,0,"build",false,BASE.MAIN_YARD);
          }

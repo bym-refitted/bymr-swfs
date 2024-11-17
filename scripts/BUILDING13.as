@@ -61,6 +61,11 @@ package
                }
             }
          }
+         else if(_animTick != 0)
+         {
+            _animTick = 0;
+            super.AnimFrame(false);
+         }
          ++this._frameNumber;
       }
       
@@ -473,7 +478,7 @@ package
          var Brag:Function;
          var mc:MovieClip = null;
          super.Upgraded();
-         if(GLOBAL._mode == "build")
+         if(GLOBAL._mode == "build" && !BASE.isInferno())
          {
             Brag = function(param1:MouseEvent):*
             {

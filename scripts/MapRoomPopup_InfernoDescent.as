@@ -2,7 +2,7 @@ package
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol1218")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol1223")]
    public dynamic class MapRoomPopup_InfernoDescent extends MovieClip
    {
       public var background_mc:frame_CLIP;

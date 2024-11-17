@@ -477,8 +477,7 @@ package com.monsters.maproom_advanced
                      Hide();
                      ClearCells();
                      Setup(GLOBAL._mapHome);
-                     BASE._yardType = BASE.MAIN_YARD;
-                     BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build");
+                     BASE.LoadBase(null,null,GLOBAL._homeBaseID,"build",false,BASE.MAIN_YARD);
                   }
                   else
                   {

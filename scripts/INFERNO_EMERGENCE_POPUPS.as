@@ -38,27 +38,27 @@ package
       
       public static function ShowUpgrade() : void
       {
-         var emergeUpgrade:MovieClip = null;
-         var EmergeUpgradeCB:Function = null;
-         EmergeUpgradeCB = function(param1:MouseEvent):void
-         {
-            GLOBAL._selectedBuilding = GLOBAL._bTownhall;
-            BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
-            POPUPS.Next();
-         };
-         emergeUpgrade = new popup_infernoemerge_upgrade();
-         emergeUpgrade.tTitle.htmlText = KEYS.Get("emerge_upgrade_title");
-         emergeUpgrade.tBody.htmlText = KEYS.Get("emerge_upgrade_body");
-         emergeUpgrade.bAction.buttonMode = true;
-         emergeUpgrade.bAction.useHandCursor = true;
-         emergeUpgrade.bAction.mouseChildren = false;
-         emergeUpgrade.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
+         var _loc1_:MovieClip = null;
+         _loc1_ = new popup_infernoemerge_upgrade();
+         _loc1_.tTitle.htmlText = KEYS.Get("emerge_upgrade_title");
+         _loc1_.tBody.htmlText = KEYS.Get("emerge_upgrade_body");
+         _loc1_.bAction.buttonMode = true;
+         _loc1_.bAction.useHandCursor = true;
+         _loc1_.bAction.mouseChildren = false;
+         _loc1_.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
          if(GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
          {
-            emergeUpgrade.bAction.visible = false;
+            _loc1_.bAction.visible = false;
          }
-         emergeUpgrade.bAction.addEventListener(MouseEvent.CLICK,EmergeUpgradeCB);
-         POPUPS.Push(emergeUpgrade,INFERNO_EMERGENCE_POPUPS.ShownUpgradeCB);
+         _loc1_.bAction.addEventListener(MouseEvent.CLICK,EmergeUpgradeCB);
+         POPUPS.Push(_loc1_,INFERNO_EMERGENCE_POPUPS.ShownUpgradeCB);
+      }
+      
+      private static function EmergeUpgradeCB(param1:MouseEvent) : void
+      {
+         GLOBAL._selectedBuilding = GLOBAL._bTownhall;
+         BUILDINGOPTIONS.Show(GLOBAL._bTownhall,"upgrade");
+         POPUPS.Next();
       }
       
       public static function ShowStart() : void
@@ -144,6 +144,7 @@ package
       public static function ShowRSVP(param1:int) : void
       {
          var showRSVP:MovieClip;
+         var isEventOver:Boolean;
          var portrait:String = null;
          var imgOffset:Point = null;
          var title:String = null;
@@ -204,7 +205,7 @@ package
                portrait = "portrait_moloch.png";
                imgOffset = new Point(-75,50);
                title = "";
-               line = KEYS.Get("cavern_pop4");
+               line = KEYS.Get("entercavernfail_popup");
                btnLabel = KEYS.Get("emerge_RSVP");
                action = POPUPS.Next;
          }
@@ -213,8 +214,21 @@ package
          showRSVP.bAction.buttonMode = true;
          showRSVP.bAction.useHandCursor = true;
          showRSVP.bAction.mouseChildren = false;
-         showRSVP.bAction.Setup(btnLabel);
-         showRSVP.bAction.addEventListener(MouseEvent.CLICK,RSVPLink);
+         isEventOver = INFERNO_EMERGENCE_EVENT.isLastDay() || INFERNO_EMERGENCE_EVENT.IsPostEvent();
+         if(!isEventOver)
+         {
+            showRSVP.bAction.Setup(btnLabel);
+            showRSVP.bAction.addEventListener(MouseEvent.CLICK,RSVPLink);
+         }
+         else if(GLOBAL._bTownhall._lvl.Get() < INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
+         {
+            showRSVP.bAction.Setup(KEYS.Get("emerge_upgrade_btnaction"));
+            showRSVP.bAction.addEventListener(MouseEvent.CLICK,EmergeUpgradeCB);
+         }
+         else
+         {
+            showRSVP.bAction.visible = false;
+         }
          POPUPS.Push(showRSVP,null,null,"");
       }
       
@@ -291,13 +305,21 @@ package
          var action:Function = POPUPS.Next;
          completeEmerge = new popup_infernoemerge_complete();
          completeEmerge.tBody.htmlText = KEYS.Get("entercavern_popup");
-         completeEmerge.bAction.buttonMode = true;
-         completeEmerge.bAction.useHandCursor = true;
-         completeEmerge.bAction.mouseChildren = false;
-         completeEmerge.bAction.Highlight = true;
-         completeEmerge.bAction.Setup(BASE.isInferno() ? KEYS.Get(INFERNOPORTAL.EXIT_BUTTON) : KEYS.Get(INFERNOPORTAL.ENTER_BUTTON));
-         completeEmerge.bAction.addEventListener(MouseEvent.CLICK,INFERNOPORTAL.EnterPortal);
-         ImageCache.GetImageWithCallBack("popups/popup_emergecomplete.jpg",imageCompleteEmerge);
+         if(GLOBAL._bTownhall._lvl.Get() >= INFERNO_EMERGENCE_EVENT.TOWN_HALL_LEVEL_REQUIREMENT)
+         {
+            completeEmerge.bAction.buttonMode = true;
+            completeEmerge.bAction.useHandCursor = true;
+            completeEmerge.bAction.mouseChildren = false;
+            completeEmerge.bAction.Highlight = true;
+            completeEmerge.bAction.Setup(BASE.isInferno() ? KEYS.Get(INFERNOPORTAL.EXIT_BUTTON) : KEYS.Get(INFERNOPORTAL.ENTER_BUTTON));
+            completeEmerge.bAction.addEventListener(MouseEvent.CLICK,INFERNOPORTAL.EnterPortal);
+         }
+         else
+         {
+            completeEmerge.bAction.visible = false;
+            completeEmerge.bAction.mouseEnabled = false;
+         }
+         ImageCache.GetImageWithCallBack("popups/popup_emergecomplete.v2.jpg",imageCompleteEmerge);
          POPUPS.Push(completeEmerge,null,null,"");
       }
       

@@ -104,6 +104,7 @@ package com.monsters.maproom_advanced
       
       private function Attack(param1:MouseEvent) : *
       {
+         var _loc2_:int = 0;
          if(!this._enabled)
          {
             return false;
@@ -124,13 +125,12 @@ package com.monsters.maproom_advanced
             GLOBAL._currentCell = this._cell;
             if(this._cell._base == 1)
             {
-               BASE._yardType = BASE.MAIN_YARD;
-               BASE.LoadBase(null,null,this._cell._baseID,"wmattack");
+               BASE.LoadBase(null,null,this._cell._baseID,"wmattack",false,BASE.MAIN_YARD);
             }
             else
             {
-               BASE._yardType = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
-               BASE.LoadBase(null,null,this._cell._baseID,"attack");
+               _loc2_ = this._cell._base == 3 ? BASE.OUTPOST : BASE.MAIN_YARD;
+               BASE.LoadBase(null,null,this._cell._baseID,"attack",false,_loc2_);
             }
          }
          else if(this._cell._protected)

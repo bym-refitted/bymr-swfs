@@ -52,7 +52,14 @@ package
             _loc1_ = 0;
             while(_loc1_ < _maxWorkers)
             {
-               _loc2_ = new icon_worker();
+               if(GLOBAL.InfernoMode())
+               {
+                  _loc2_ = new icon_worker_inferno();
+               }
+               else
+               {
+                  _loc2_ = new icon_worker();
+               }
                _loc2_.y = 20 + _loc1_ * _workerMCOffset;
                _loc2_.mouseChildren = false;
                _loc2_.addEventListener(MouseEvent.CLICK,MouseClicked(_loc1_));

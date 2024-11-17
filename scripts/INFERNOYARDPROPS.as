@@ -93,11 +93,11 @@ package
             "1":{
                "anim":["anim.1.v2.png",new Rectangle(-32,-33,65,80),47],
                "top":["top.1.v2.png",new Point(-48,-33)],
-               "shadow":["shadow.1.jpg",new Point(-53,11)],
+               "shadow":["shadow.1.v4.jpg",new Point(-53,11)],
                "topdamaged":["top.1.damaged.v2.png",new Point(-41,-26)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-51,5)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-51,5)],
                "topdestroyed":["top.1.destroyed.v2.png",new Point(-45,0)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-46,4)]
+               "shadowdestroyed":["shadow.1.destroyed.v4.jpg",new Point(-46,4)]
             }
          },
          "buildingbuttons":["bone_crusher"],
@@ -112,7 +112,7 @@ package
             "6":{"img":"1.6.png"},
             "10":{"img":"1.10.png"}
          },
-         "quantity":[1,2,4,5,6],
+         "quantity":[0,1,2,4,5,6,6,6,6,6],
          "produce":[2,4,7,11,16,22,29,37,46,56],
          "cycleTime":[10,10,10,10,10,10,10,10,10,10],
          "capacity":[12 * 60,36 * 60,5670,13365,486 * 60,60142,118918,227584,424414,775018],
@@ -204,15 +204,15 @@ package
          "imageData":{
             "baseurl":"buildings/icoalproducer/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-21,-45,40,18),47],
-               "anim2":["anim.2.png",new Rectangle(-39,-9,39,63),47],
-               "anim3":["anim.3.png",new Rectangle(-3,8.9,31,18),47],
-               "top":["top.1.png",new Point(-32,-40)],
+               "anim":["anim.1.v2.png",new Rectangle(-21,-45,40,18),47],
+               "anim2":["anim.2.v2.png",new Rectangle(-39,-9,39,63),47],
+               "anim3":["anim.3.v2.png",new Rectangle(-3,8.9,31,18),47],
+               "top":["top.1.v2.png",new Point(-32,-40)],
                "shadow":["shadow.1.jpg",new Point(-40,14)],
-               "topdamaged":["top.1.damaged.png",new Point(-34,-42)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-64,4)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-44,-4)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-50,-2)]
+               "topdamaged":["top.1.damaged.v2.png",new Point(-34,-42)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-64,4)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-44,-4)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-50,-2)]
             }
          },
          "buildingbuttons":["coal_producer"],
@@ -319,15 +319,15 @@ package
          "imageData":{
             "baseurl":"buildings/isulpherproducer/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-35,-4,20,50),51],
-               "anim2":["anim.2.png",new Rectangle(-20,-58,34,36),51],
-               "anim3":["anim.3.png",new Rectangle(-11,-14,26,17),51],
-               "top":["top.1.png",new Point(-24,-41)],
+               "anim":["anim.1.v2.png",new Rectangle(-35,-4,20,50),51],
+               "anim2":["anim.2.v2.png",new Rectangle(-20,-58,34,36),51],
+               "anim3":["anim.3.v2.png",new Rectangle(-11,-14,26,17),51],
+               "top":["top.1.v2.png",new Point(-24,-41)],
                "shadow":["shadow.1.jpg",new Point(-33,13)],
-               "topdamaged":["top.1.damaged.png",new Point(-45,-48)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-49,17)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-34,4)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-34,15)]
+               "topdamaged":["top.1.damaged.v2.png",new Point(-45,-48)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-49,17)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-34,4)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-34,15)]
             }
          },
          "buildingbuttons":["sulfur"],
@@ -434,15 +434,15 @@ package
          "imageData":{
             "baseurl":"buildings/imagmaproducer/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(9.2,12.6,25,31),49],
-               "anim2":["anim.2.png",new Rectangle(-32,9,36,26),49],
-               "anim3":["anim.3.png",new Rectangle(-18,-60,34,58),49],
-               "top":["top.1.png",new Point(-35,-15)],
-               "shadow":["shadow.1.jpg",new Point(-36,4)],
-               "topdamaged":["top.1.damaged.png",new Point(-39,-36)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-49,2)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-37,-2)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-41,6)]
+               "anim":["anim.1.v2.png",new Rectangle(9.2,12.6,25,31),49],
+               "anim2":["anim.2.v2.png",new Rectangle(-32,9,36,26),49],
+               "anim3":["anim.3.v2.png",new Rectangle(-18,-60,34,58),49],
+               "top":["top.1.v2.png",new Point(-35,-15)],
+               "shadow":["shadow.1.v2.jpg",new Point(-36,4)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-39,-36)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-49,2)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-37,-2)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-41,6)]
             }
          },
          "buildingbuttons":["magma_producer"],
@@ -664,12 +664,12 @@ package
          "imageData":{
             "baseurl":"buildings/istoragesilo/",
             "1":{
-               "top":["top.1.png",new Point(-45,-58)],
-               "shadow":["shadow.1.jpg",new Point(-48,17)],
-               "topdamaged":["top.1.damaged.png",new Point(-47,-56)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-47,17)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-54,-14)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-54,12)]
+               "top":["top.1.v2.png",new Point(-45,-58)],
+               "shadow":["shadow.1.v2.jpg",new Point(-48,17)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-47,-56)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-47,17)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-54,-14)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-54,12)]
             }
          },
          "buildingbuttons":["sillo"],
@@ -741,48 +741,45 @@ package
             "r3":0,
             "r4":0,
             "time":10 * 60,
-            "re":[[14,1,2]]
+            "re":[[14,1,1],[13,1,1]]
          },{
             "r1":0x7080,
             "r2":18400,
             "r3":0,
             "r4":0,
             "time":5 * 60 * 60,
-            "re":[[14,1,3]]
+            "re":[[14,1,2]]
          },{
             "r1":32 * 60 * 60,
             "r2":147200,
             "r3":0,
             "r4":0,
             "time":20 * 60 * 60,
-            "re":[[14,1,4]]
+            "re":[[14,1,3]]
          },{
             "r1":128 * 60 * 60,
             "r2":588800,
             "r3":0,
             "r4":0,
             "time":36 * 60 * 60,
-            "re":[[14,1,5]]
+            "re":[[14,1,4]]
          }],
          "imageData":{
             "baseurl":"buildings/imonsterlab/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-42,-41,86,88),31],
-               "top":["top.1.png",new Point(-56,8)],
-               "shadow":["shadow.1.jpg",new Point(-81,10)],
-               "topdamaged":["top.1.damaged.png",new Point(-56,-31)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-76,8)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-53,10)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-83,13)]
+               "anim":["anim.1.v2.png",new Rectangle(-42,-41,86,88),31],
+               "top":["top.1.v2.png",new Point(-56,8)],
+               "shadow":["shadow.1.v2.jpg",new Point(-81,10)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-56,-31)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-76,8)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-53,10)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-83,13)]
             }
          },
          "buildingbuttons":["monster_locker"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"8.1.jpg"},
-            "2":{"img":"8.2.jpg"},
-            "3":{"img":"8.3.jpg"},
-            "4":{"img":"8.4.jpg"}
+            "1":{"img":"monster_locker.jpg"}
          },
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
@@ -791,7 +788,7 @@ package
             "3":{"img":"8.3.png"},
             "4":{"img":"8.4.png"}
          },
-         "quantity":[0,0,1,1,1,1,1,1,1,1],
+         "quantity":[0,1,1,1,1,1,1,1,1,1],
          "hp":[0xfa0,16000,32000,64000],
          "repairTime":[8 * 60,32 * 60,0xf00,256 * 60]
       },{
@@ -862,7 +859,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"yardplanner_desc",
-         "block":false,
+         "block":true,
          "costs":[{
             "r1":250000,
             "r2":250000,
@@ -1021,14 +1018,14 @@ package
          "imageData":{
             "baseurl":"buildings/ihatchery/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-48,-45,33,78),50],
-               "anim2":["anim.2.png",new Rectangle(4,13.5,27,31),50],
-               "top":["top.1.png",new Point(-55,-28)],
-               "shadow":["shadow.1.jpg",new Point(-77,15)],
-               "topdamaged":["top.1.damaged.png",new Point(-50,-22)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-75,16)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-40,13)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-58,18)]
+               "anim":["anim.1.v2.png",new Rectangle(-48,-45,33,78),50],
+               "anim2":["anim.2.v2.png",new Rectangle(4,13.5,27,31),50],
+               "top":["top.1.v2.png",new Point(-55,-28)],
+               "shadow":["shadow.1.v2.jpg",new Point(-77,15)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-50,-22)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-75,16)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-40,13)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-58,18)]
             }
          },
          "buildingbuttons":["hatchery"],
@@ -1056,7 +1053,7 @@ package
          "tutstage":0,
          "sale":0,
          "description":"bi_townhall_desc",
-         "block":false,
+         "block":true,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -1125,41 +1122,36 @@ package
          "imageData":{
             "baseurl":"buildings/itownhall/",
             "1":{
-               "top":["top.1.png",new Point(-52,-31)],
-               "shadow":["shadow.1.jpg",new Point(-65,49)],
-               "topdamaged":["top.1.damaged.png",new Point(-56,-33)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-65,47)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-63,10)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-68,43)]
+               "top":["top.1.v2.png",new Point(-52,-31)],
+               "shadow":["shadow.1.v2.jpg",new Point(-65,49)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-56,-33)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-65,47)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-63,10)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-68,43)]
             },
             "2":{
-               "top":["top.2.png",new Point(-50,-46)],
-               "shadow":["shadow.2.jpg",new Point(-70,35)],
-               "topdamaged":["top.2.damaged.png",new Point(-49,-46)],
-               "shadowdamaged":["shadow.2.damaged.jpg",new Point(-59,44)],
-               "topdestroyed":["top.2.destroyed.png",new Point(-52,5)],
-               "shadowdestroyed":["shadow.2.destroyed.jpg",new Point(-76,33)]
+               "top":["top.2.v2.png",new Point(-50,-46)],
+               "shadow":["shadow.2.v2.jpg",new Point(-70,35)],
+               "topdamaged":["top.2.damaged.v2.png",new Point(-49,-46)],
+               "shadowdamaged":["shadow.2.damaged.v2.jpg",new Point(-59,44)],
+               "topdestroyed":["top.2.destroyed.v2.png",new Point(-52,5)],
+               "shadowdestroyed":["shadow.2.destroyed.v2.jpg",new Point(-76,33)]
             },
             "3":{
-               "top":["top.3.png",new Point(-51,-57)],
-               "shadow":["shadow.3.jpg",new Point(-74,35)],
-               "topdamaged":["top.3.damaged.png",new Point(-56,-55)],
-               "shadowdamaged":["shadow.3.damaged.jpg",new Point(-73,33)],
-               "topdestroyed":["top.3.destroyed.png",new Point(-62,-12)],
-               "shadowdestroyed":["shadow.3.destroyed.jpg",new Point(-75,29)]
+               "top":["top.3.v2.png",new Point(-51,-57)],
+               "shadow":["shadow.3.v2.jpg",new Point(-74,35)],
+               "topdamaged":["top.3.damaged.v2.png",new Point(-56,-55)],
+               "shadowdamaged":["shadow.3.damaged.v2.jpg",new Point(-73,33)],
+               "topdestroyed":["top.3.destroyed.v2.png",new Point(-62,-12)],
+               "shadowdestroyed":["shadow.3.destroyed.v2.jpg",new Point(-75,29)]
             }
          },
+         "buildingbuttons":["townhall_L1"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"14.1.jpg"},
-            "2":{"img":"14.2.jpg"},
-            "3":{"img":"14.3.jpg"},
-            "4":{"img":"14.4.jpg"},
-            "5":{"img":"14.5.jpg"},
-            "6":{"img":"14.6.jpg"},
-            "7":{"img":"14.7.jpg"},
-            "8":{"img":"14.8.jpg"},
-            "9":{"img":"14.9.jpg"}
+            "1":{"img":"townhall_L1.jpg"},
+            "2":{"img":"townhall_L2.jpg"},
+            "3":{"img":"townhall_L3.jpg"}
          },
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
@@ -1324,7 +1316,7 @@ package
          "attackgroup":1,
          "tutstage":200,
          "sale":0,
-         "description":"woodenblock_desc",
+         "description":"infernoblock_desc",
          "costs":[{
             "r1":1000,
             "r2":0,
@@ -1350,45 +1342,42 @@ package
          "imageData":{
             "baseurl":"buildings/iwalls/",
             "1":{
-               "top":["top.1.png",new Point(-24,-10)],
-               "shadow":["shadow.1.jpg",new Point(-21,-2)],
-               "topdamaged":["top.1.damaged.png",new Point(-24,-10)],
-               "shadowdamaged":["shadow.1.damaged.jpg",new Point(-21,-2)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-24,-10)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-21,-2)]
+               "top":["top.1.v2.png",new Point(-24,-5)],
+               "shadow":["shadow.1.v2.jpg",new Point(-20,0.8)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-24,-5)],
+               "shadowdamaged":["shadow.1.damaged.v2.jpg",new Point(-20,0.8)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-24,-5)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-20,0.8)]
             },
             "2":{
-               "top":["top.2.png",new Point(-20,-12)],
-               "shadow":["shadow.2.jpg",new Point(-21,-3)],
-               "topdamaged":["top.2.damaged.png",new Point(-20,-12)],
-               "shadowdamaged":["shadow.2.jpg",new Point(-21,-3)],
-               "topdestroyed":["top.2.destroyed.png",new Point(-20,-12)],
-               "shadowdestroyed":["shadow.2.jpg",new Point(-21,-3)]
+               "top":["top.2.v2.png",new Point(-20,-9)],
+               "shadow":["shadow.2.v2.jpg",new Point(-20,-0.9)],
+               "topdamaged":["top.2.damaged.v2.png",new Point(-20,-9)],
+               "shadowdamaged":["shadow.2.v2.jpg",new Point(-20,-0.9)],
+               "topdestroyed":["top.2.destroyed.v2.png",new Point(-20,-9)],
+               "shadowdestroyed":["shadow.2.v2.jpg",new Point(-20,-0.9)]
             },
             "3":{
-               "top":["top.3.png",new Point(-21,-29)],
-               "shadow":["shadow.3.jpg",new Point(-21,-2)],
-               "topdamaged":["top.3.damaged.png",new Point(-21,-29)],
-               "shadowdamaged":["shadow.3.jpg",new Point(-21,-2)],
-               "topdestroyed":["top.3.destroyed.png",new Point(-21,-29)],
-               "shadowdestroyed":["shadow.3.jpg",new Point(-21,-2)]
+               "top":["top.3.v2.png",new Point(-20,-27)],
+               "shadow":["shadow.3.v2.jpg",new Point(-20,-1)],
+               "topdamaged":["top.3.damaged.v2.png",new Point(-20,-27)],
+               "shadowdamaged":["shadow.3.v2.jpg",new Point(-20,-1)],
+               "topdestroyed":["top.3.destroyed.v2.png",new Point(-18,-8)],
+               "shadowdestroyed":["shadow.3.v2.jpg",new Point(-20,-1)]
             }
          },
+         "buildingbuttons":["coal_wall.v2","iron_wall.v2","steel_wall.v2"],
          "upgradeImgData":{
             "baseurl":"buildingbuttons/",
-            "1":{"img":"17.1.jpg"},
-            "2":{"img":"17.2.v2.jpg"},
-            "3":{"img":"17.3.v2.jpg"},
-            "4":{"img":"17.4.jpg"},
-            "5":{"img":"17.5.jpg"}
+            "1":{"img":"coal_wall.v2.jpg"},
+            "2":{"img":"iron_wall.v2.jpg"},
+            "3":{"img":"steel_wall.v2.jpg"}
          },
          "thumbImgData":{
             "baseurl":"buildingthumbs/",
-            "1":{"img":"17.1.png"},
-            "2":{"img":"17.2.png"},
-            "3":{"img":"17.3.png"},
-            "4":{"img":"17.4.png"},
-            "4":{"img":"17.5.png"}
+            "1":{"img":"coal_wall.png"},
+            "2":{"img":"iron_wall.png"},
+            "3":{"img":"steel_wall.png"}
          },
          "quantity":[0,0,30,60,2 * 60,200],
          "hp":[1000,2300,5750,5 * 60 * 60,450 * 60],
@@ -1646,14 +1635,14 @@ package
          "imageData":{
             "baseurl":"buildings/icannontower/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-38,-53,74,64),30],
-               "animdamaged":["anim.1.damaged.png",new Rectangle(-38,-53,74,64),30],
-               "top":["top.1.png",new Point(-38,11)],
-               "shadow":["shadow.1.jpg",new Point(-48,11)],
-               "topdamaged":["top.1.damaged.png",new Point(-38,11)],
-               "shadowdamaged":["shadow.1.jpg",new Point(-48,11)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-57,-18)],
-               "shadowdestroyed":["shadow.1.jpg",new Point(-55,8)]
+               "anim":["anim.1.v2.png",new Rectangle(-38,-53,74,64),30],
+               "animdamaged":["anim.1.damaged.v2.png",new Rectangle(-38,-53,74,64),30],
+               "top":["top.1.v2.png",new Point(-38,11)],
+               "shadow":["shadow.1.v2.jpg",new Point(-48,11)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-38,11)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-48,11)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-57,-18)],
+               "shadowdestroyed":["shadow.1.v2.jpg",new Point(-55,8)]
             }
          },
          "upgradeImgData":{
@@ -1683,7 +1672,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,4,5,6,6,6,6,6],
+         "quantity":[0,0,0,0,0,0],
          "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400,750 * 60,58000,75500,98200],
          "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60,23000,46000,18 * 60 * 60,24 * 60 * 60]
       },{
@@ -1727,6 +1716,12 @@ package
             "rate":80,
             "speed":15,
             "splash":0
+         },{
+            "range":340,
+            "damage":650,
+            "rate":80,
+            "speed":17,
+            "splash":0
          }],
          "costs":[{
             "r1":25 * 60,
@@ -1762,6 +1757,13 @@ package
             "r3":312500,
             "r4":0,
             "time":12 * 60 * 60,
+            "re":[[14,1,4]]
+         },{
+            "r1":4687500,
+            "r2":6250000,
+            "r3":1562500,
+            "r4":0,
+            "time":24 * 60 * 60,
             "re":[[14,1,5]]
          }],
          "fortify_costs":[{
@@ -1796,14 +1798,14 @@ package
          "imageData":{
             "baseurl":"buildings/isnipertower/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-56,-86,85,81),30],
-               "top":["top.1.png",new Point(-35,-5)],
-               "shadow":["shadow.1.jpg",new Point(-50,12)],
-               "animdamaged":["anim1.damaged.png",new Rectangle(-52,-90,85,81),30],
-               "topdamaged":["top.1.damaged.png",new Point(-40,-9)],
-               "shadowdamaged":["shadow.1.jpg",new Point(-50,9)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-43,-8)],
-               "shadowdestroyed":["shadow.1.jpg",new Point(-54,2)]
+               "anim":["anim.1.v2.png",new Rectangle(-56,-86,85,81),30],
+               "top":["top.1.v2.png",new Point(-35,-5)],
+               "shadow":["shadow.1.v2.jpg",new Point(-50,12)],
+               "animdamaged":["anim.1.damaged.v2.png",new Rectangle(-52,-90,85,81),30],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-40,-9)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-50,9)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-43,-8)],
+               "shadowdestroyed":["shadow.1.v2.jpg",new Point(-54,2)]
             }
          },
          "buildingbuttons":["sniper_tower"],
@@ -1834,9 +1836,9 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,4,5,6],
-         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60],
-         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60]
+         "quantity":[0,2,3,3,4,4],
+         "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400],
+         "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60]
       },{
          "id":22,
          "group":3,
@@ -3850,7 +3852,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bdg_tikitorch_desc",
-         "block":false,
+         "block":true,
          "costs":[{
             "r1":0,
             "r2":0,
@@ -5672,7 +5674,7 @@ package
                "shadowdestroyed":["shadow.3.jpg",new Point(-67,14)]
             }
          },
-         "quantity":[0,0,0,0,1,1,1,1,1,1],
+         "quantity":[0,0,0,0,0,0,0,0,0,0],
          "hp":[16000],
          "repairTime":[60 * 60]
       },{
@@ -5822,24 +5824,24 @@ package
          "imageData":{
             "baseurl":"buildings/iportal/",
             "1":{
-               "top":["top.1.png",new Point(-85,-5)],
-               "shadow":["shadow.1.jpg",new Point(-43,47)]
+               "top":["top.1.v2.png",new Point(-85,-5)],
+               "shadow":["shadow.1.v2.jpg",new Point(-43,47)]
             },
             "2":{
-               "top":["top.2.png",new Point(-105,-29)],
-               "shadow":["shadow.2.jpg",new Point(-87,52)]
+               "top":["top.2.v2.png",new Point(-105,-29)],
+               "shadow":["shadow.2.v2.jpg",new Point(-87,52)]
             },
             "3":{
-               "top":["top.3.png",new Point(-136,-64)],
-               "shadow":["shadow.3.jpg",new Point(-110,47)]
+               "top":["top.3.v2.png",new Point(-136,-64)],
+               "shadow":["shadow.3.v2.jpg",new Point(-110,47)]
             },
             "4":{
-               "top":["top.4.png",new Point(-140,-114)],
-               "shadow":["shadow.4.jpg",new Point(-140,11)]
+               "top":["top.4.v2.png",new Point(-140,-114)],
+               "shadow":["shadow.v2.4.jpg",new Point(-140,11)]
             },
             "5":{
-               "top":["top.5.png",new Point(-160,-172)],
-               "shadow":["shadow.5.jpg",new Point(-169,0)]
+               "top":["top.5.v2.png",new Point(-160,-172)],
+               "shadow":["shadow.5.v2.jpg",new Point(-169,0)]
             }
          },
          "quantity":[0,1,1,1,1,1],
@@ -5857,7 +5859,7 @@ package
          "tutstage":50,
          "sale":0,
          "description":"bi_housing_desc",
-         "stats":[{"range":5 * 60},{"range":330},{"range":6 * 60},{"range":390},{"range":7 * 60},{"range":450}],
+         "stats":[{"range":500},{"range":530},{"range":560},{"range":590},{"range":620},{"range":650}],
          "costs":[{
             "r1":36 * 60,
             "r2":36 * 60,
@@ -5897,11 +5899,11 @@ package
          "imageData":{
             "baseurl":"buildings/ihousingbunker/",
             "1":{
-               "top":["top.1.png",new Point(-110,-49)],
+               "top":["top.1.v2.png",new Point(-110,-49)],
                "shadow":["shadow.1.jpg",new Point(-118,26)],
-               "topdamaged":["top.1.damaged.png",new Point(-106,-39)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-106,-39)],
                "shadowdamaged":["shadow.1.damaged.jpg",new Point(-117,30)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-73,10)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-73,10)],
                "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-96,8)]
             }
          },
@@ -5929,26 +5931,26 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_quaketower_desc",
-         "block":false,
+         "block":true,
          "stats":[{
-            "range":2 * 60,
-            "damage":10 * 60,
-            "rate":15
-         },{
-            "range":130,
-            "damage":1280,
-            "rate":15
-         },{
-            "range":140,
-            "damage":32 * 60,
-            "rate":15
-         },{
-            "range":150,
-            "damage":43 * 60,
-            "rate":15
-         },{
             "range":160,
-            "damage":54 * 60,
+            "damage":1100,
+            "rate":15
+         },{
+            "range":170,
+            "damage":28 * 60,
+            "rate":15
+         },{
+            "range":3 * 60,
+            "damage":37 * 60,
+            "rate":15
+         },{
+            "range":190,
+            "damage":48 * 60,
+            "rate":15
+         },{
+            "range":200,
+            "damage":3640,
             "rate":15
          }],
          "costs":[{
@@ -6020,11 +6022,11 @@ package
             "baseurl":"buildings/iquaketower/",
             "1":{
                "anim":["anim.1.png",new Rectangle(-37,-75,75,132),33],
-               "shadow":["shadow.1.jpg",new Point(-37,17)],
+               "shadow":["shadow.1.v2.jpg",new Point(-37,17)],
                "topdamaged":["top.1.damaged.png",new Point(-40,-75)],
-               "shadowdamaged":["shadow.1.jpg",new Point(-40,16)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-40,16)],
                "topdestroyed":["top.1.destroyed.png",new Point(-42,-8)],
-               "shadowdestroyed":["shadow.1.jpg",new Point(-44,10)]
+               "shadowdestroyed":["shadow.1.v2.jpg",new Point(-44,10)]
             }
          },
          "buildingbuttons":["quake_tower"],
@@ -6055,7 +6057,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,1,2,2,2],
+         "quantity":[0,0,0,0,0,0],
          "hp":[10000,16000,22000,28000,34000],
          "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000]
       },{
@@ -6181,14 +6183,14 @@ package
          "imageData":{
             "baseurl":"buildings/icannontower/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-38,-53,74,64),30],
-               "animdamaged":["anim.1.damaged.png",new Rectangle(-38,-53,74,64),30],
-               "top":["top.1.png",new Point(-38,11)],
-               "shadow":["shadow.1.jpg",new Point(-48,11)],
-               "topdamaged":["top.1.damaged.png",new Point(-38,11)],
-               "shadowdamaged":["shadow.1.jpg",new Point(-48,11)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-38,11)],
-               "shadowdestroyed":["shadow.1.jpg",new Point(-48,11)]
+               "anim":["anim.1.v2.png",new Rectangle(-38,-53,74,64),30],
+               "animdamaged":["anim.1.damaged.v2.png",new Rectangle(-38,-53,74,64),30],
+               "top":["top.1.v2.png",new Point(-38,11)],
+               "shadow":["shadow.1.v2.jpg",new Point(-48,11)],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-38,11)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-48,11)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-38,11)],
+               "shadowdestroyed":["shadow.1.v2.jpg",new Point(-48,11)]
             }
          },
          "buildingbuttons":["cannon_tower"],
@@ -6219,7 +6221,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,2,3,4,5,6],
+         "quantity":[0,2,3,3,4,4],
          "hp":[100 * 60,150 * 60,210 * 60,294 * 60,441 * 60,34400],
          "repairTime":[6 * 60,12 * 60,24 * 60,48 * 60,96 * 60,192 * 60]
       },{
@@ -6327,6 +6329,7 @@ package
          "tutstage":200,
          "sale":0,
          "description":"bi_magmatower_desc",
+         "block":false,
          "stats":[{
             "range":3 * 60,
             "damage":3 * 60,
@@ -6362,7 +6365,7 @@ package
             "r1":187500,
             "r2":250000,
             "r3":62500,
-            "r4":1,
+            "r4":0,
             "time":5 * 60 * 60,
             "re":[[14,1,3]]
          },{
@@ -6426,16 +6429,16 @@ package
          "imageData":{
             "baseurl":"buildings/imagmatower/",
             "1":{
-               "anim":["anim.1.png",new Rectangle(-26,-51,54,42),31],
-               "anim2":["anim.2.png",new Rectangle(-17,26,38,19),31],
-               "top":["top.1.png",new Point(-34,-9)],
-               "shadow":["shadow.1.jpg",new Point(-31,10)],
-               "animdamaged":["anim.1.damaged.png",new Rectangle(-28,-47,54,42),31],
-               "animdamaged2":["anim.2.damaged.png",new Rectangle(-21,28,38,19),31],
-               "topdamaged":["top.1.damaged.png",new Point(-38,-4)],
-               "shadowdamaged":["shadow.1.jpg",new Point(-38,16)],
-               "topdestroyed":["top.1.destroyed.png",new Point(-36,6)],
-               "shadowdestroyed":["shadow.1.destroyed.jpg",new Point(-36,22)]
+               "anim":["anim.1.v2.png",new Rectangle(-26,-50,54,42),31],
+               "anim2":["anim.2.v2.png",new Rectangle(-17,26,38,19),31],
+               "top":["top.1.v2.png",new Point(-34,-9)],
+               "shadow":["shadow.1.v2.jpg",new Point(-31,10)],
+               "animdamaged":["anim.1.damaged.v2.png",new Rectangle(-28.6,-47.6,52,43),31],
+               "animdamaged2":["anim.2.damaged.v2.png",new Rectangle(-21,28,38,19),31],
+               "topdamaged":["top.1.damaged.v2.png",new Point(-38,-4)],
+               "shadowdamaged":["shadow.1.v2.jpg",new Point(-38,16)],
+               "topdestroyed":["top.1.destroyed.v2.png",new Point(-36,6)],
+               "shadowdestroyed":["shadow.1.destroyed.v2.jpg",new Point(-36,22)]
             }
          },
          "buildingbuttons":["magma_tower"],
@@ -6462,7 +6465,7 @@ package
                "back":["fort70_B4.png",new Point(-61,-36)]
             }
          },
-         "quantity":[0,0,1,2],
+         "quantity":[0,0,0,1,2,2],
          "hp":[250 * 60,22000,500 * 60,49000,59000],
          "repairTime":[24 * 60,48 * 60,96 * 60,192 * 60,23000,46000]
       }];

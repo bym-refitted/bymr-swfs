@@ -143,7 +143,7 @@ package
                   return 0;
                }
                _loc3_ = _questsMC.addChild(new QUESTITEM());
-               _loc3_.tLabel.htmlText = !!param1.creatureid ? KEYS.Get(param1.name,{"v1":KEYS.Get(param1.keyvars.v1)}) : KEYS.Get(param1.name);
+               _loc3_.tLabel.htmlText = KEYS.Get(param1.name,param1.keyvars);
                _loc3_.y = 10 + 30 * param2;
                _loc3_.x = 10;
                _loc3_.mouseChildren = false;
@@ -252,14 +252,7 @@ package
             q = QUESTS._quests[i];
             if(q.id == questID)
             {
-               if(q.creatureid != undefined)
-               {
-                  description = KEYS.Get(q.description,{"v1":KEYS.Get(q.keyvars.v1)});
-               }
-               else
-               {
-                  description = KEYS.Get(q.description);
-               }
+               description = KEYS.Get(q.description,q.keyvars);
                description = description.replace("#installsgenerated#",BASE._installsGenerated);
                description = description.replace("#mushroomspicked#",QUESTS._global.mushroomspicked);
                description = description.replace("#goldmushroomspicked#",QUESTS._global.goldmushroomspicked);
@@ -280,7 +273,7 @@ package
                }
                else
                {
-                  hintStr = q.creatureid != undefined ? KEYS.Get(q.hint,{"v1":KEYS.Get(q.keyvars.v1)}) : KEYS.Get(q.hint);
+                  hintStr = KEYS.Get(q.hint,q.keyvars);
                   this._infoMC.tHint.htmlText = "<b>" + KEYS.Get("q_ui_hint") + "</b> <i>" + hintStr + "</i>";
                }
                if(q.questimage)
@@ -304,13 +297,19 @@ package
                   qq = 0;
                   while(qq < 5)
                   {
-                     this._infoMC["tR" + (qq + 1) + "title"].visible = false;
-                     this._infoMC["tR" + (qq + 1)].visible = false;
+                     if(GLOBAL._mode == GLOBAL._loadmode)
+                     {
+                        this._infoMC["R" + (qq + 1)].gotoAndStop(qq + 1);
+                     }
+                     else
+                     {
+                        this._infoMC["R" + (qq + 1)].gotoAndStop(qq + 7);
+                     }
+                     this._infoMC["R" + (qq + 1)].visible = false;
                      qq++;
                   }
-                  (this._infoMC as QUESTINFO).resBG.visible = false;
                   this._monsterRewardMC = new MapRoomPopupInfoMonster();
-                  this._monsterRewardMC.Setup(this._infoMC.resBG.x,this._infoMC.resBG.y,q.reward_creatureid,q.monster_reward);
+                  this._monsterRewardMC.Setup(this._infoMC.R1.x,this._infoMC.R1.y,q.reward_creatureid,q.monster_reward);
                   this._infoMC.addChild(this._monsterRewardMC);
                }
                else
@@ -318,8 +317,17 @@ package
                   c = 0;
                   while(c < 5)
                   {
-                     this._infoMC["tR" + (c + 1) + "title"].htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
-                     this._infoMC["tR" + (c + 1)].htmlText = "<b>" + GLOBAL.FormatNumber(q.reward[c]) + "</b>";
+                     if(GLOBAL._mode == GLOBAL._loadmode)
+                     {
+                        this._infoMC["R" + (c + 1)].gotoAndStop(c + 1);
+                     }
+                     else
+                     {
+                        this._infoMC["R" + (c + 1)].gotoAndStop(c + 7);
+                     }
+                     this._infoMC["R" + (c + 1)].tTitle.htmlText = KEYS.Get(GLOBAL._resourceNames[c]);
+                     this._infoMC["R" + (c + 1)].tValue.htmlText = "<b>" + GLOBAL.FormatNumber(q.reward[c]) + "</b>";
+                     this._infoMC["R" + (c + 1)].visible = true;
                      c++;
                   }
                }
